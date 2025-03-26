@@ -100,10 +100,10 @@ void FSI::MonolithicNoNOX::setup_system()
   // map at the structural side. This enables us to use just one
   // interface dof map for all fields and have just one transfer
   // operator from the interface map to the full field map.
-  if (not coupsf.master_dof_map()->SameAs(*coupsa.master_dof_map()))
+  if (not coupsf.master_dof_map()->same_as(*coupsa.master_dof_map()))
     FOUR_C_THROW("structure interface dof maps do not match");
 
-  if (coupsf.master_dof_map()->NumGlobalElements() == 0)
+  if (coupsf.master_dof_map()->num_global_elements() == 0)
     FOUR_C_THROW("No nodes in matching FSI interface. Empty FSI coupling condition?");
 
   // the fluid-ale coupling always matches

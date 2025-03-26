@@ -73,8 +73,8 @@ namespace PoroElast
         const Core::LinAlg::Map* structnodecolmap = structdis->node_col_map();
         const Core::LinAlg::Map* fluidnodecolmap = fluiddis->node_col_map();
 
-        const int numglobalstructnodes = structnodecolmap->NumGlobalElements();
-        const int numglobalfluidnodes = fluidnodecolmap->NumGlobalElements();
+        const int numglobalstructnodes = structnodecolmap->num_global_elements();
+        const int numglobalfluidnodes = fluidnodecolmap->num_global_elements();
 
         // the problem is two way coupled, thus each discretization must know the other
         // discretization

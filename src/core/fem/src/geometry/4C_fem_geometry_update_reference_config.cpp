@@ -28,15 +28,15 @@ void Core::Geo::update_reference_config_with_disp(
     const unsigned int ndim = mynode->n_dim();
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    FOUR_C_ASSERT(static_cast<int>(ndim * dis.node_row_map()->NumGlobalElements()) ==
-                      disp.get_map().NumGlobalElements(),
+    FOUR_C_ASSERT(static_cast<int>(ndim * dis.node_row_map()->num_global_elements()) ==
+                      disp.get_map().num_global_elements(),
         "Number of space dimensions does not fit to displacement vector.");
 
-    for (int disp_lid = 0; disp_lid < disp.get_map().NumMyElements(); ++disp_lid)
+    for (int disp_lid = 0; disp_lid < disp.get_map().num_my_elements(); ++disp_lid)
     {
-      const int disp_gid = disp.get_map().GID(disp_lid);
+      const int disp_gid = disp.get_map().gid(disp_lid);
       FOUR_C_ASSERT(
-          dis.dof_row_map()->LID(disp_gid) >= 0, "Displacement dofs not part of dof_row_map()");
+          dis.dof_row_map()->lid(disp_gid) >= 0, "Displacement dofs not part of dof_row_map()");
     }
 #endif
 
@@ -47,7 +47,7 @@ void Core::Geo::update_reference_config_with_disp(
     for (unsigned int i = 0; i < ndim; ++i)
     {
       const int gid = globaldofs[0] + static_cast<int>(i);
-      const int lid = coldisp.get_map().LID(gid);
+      const int lid = coldisp.get_map().lid(gid);
 
       FOUR_C_ASSERT(lid >= 0, "Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank(coldisp.get_comm()), globaldofs[i]);

@@ -147,11 +147,11 @@ void Solid::ModelEvaluator::Meshtying::setup()
           for (int d = 0; d < strategy_ptr_->n_dim(); ++d)
           {
             int dof = gdiscret->dof(node, d);
-            if (strategy_ptr_->non_redist_slave_row_dofs()->LID(dof) != -1)
+            if (strategy_ptr_->non_redist_slave_row_dofs()->lid(dof) != -1)
             {
-              mesh_relocation_->operator[](mesh_relocation_->get_map().LID(dof)) =
+              mesh_relocation_->operator[](mesh_relocation_->get_map().lid(dof)) =
                   node->x()[d] -
-                  Xslavemod_noredist->operator[](Xslavemod_noredist->get_map().LID(dof));
+                  Xslavemod_noredist->operator[](Xslavemod_noredist->get_map().lid(dof));
             }
           }
         }
@@ -419,17 +419,17 @@ void Solid::ModelEvaluator::Meshtying::apply_mesh_initialization(
       Core::LinAlg::create_vector(*dof_colmap, false);
   Core::LinAlg::export_to(*Xslavemod, *Xslavemodcol);
 
-  const int numnode = allreduceslavemap->NumMyElements();
+  const int numnode = allreduceslavemap->num_my_elements();
   const int numdim = Global::Problem::instance()->n_dim();
   const Core::LinAlg::Vector<double>& gvector = *Xslavemodcol;
 
   // loop over all slave nodes (for all procs)
   for (int index = 0; index < numnode; ++index)
   {
-    int gid = allreduceslavemap->GID(index);
+    int gid = allreduceslavemap->gid(index);
 
     // only do something for nodes in my column map
-    int ilid = node_colmap->LID(gid);
+    int ilid = node_colmap->lid(gid);
     if (ilid < 0) continue;
 
     Core::Nodes::Node* mynode = discret_ptr()->g_node(gid);
@@ -441,7 +441,7 @@ void Solid::ModelEvaluator::Meshtying::apply_mesh_initialization(
     // create new position vector
     for (int i = 0; i < numdim; ++i)
     {
-      const int lid = gvector.get_map().LID(nodedofs[i]);
+      const int lid = gvector.get_map().lid(nodedofs[i]);
 
       if (lid < 0)
         FOUR_C_THROW("ERROR: Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",

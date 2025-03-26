@@ -201,7 +201,7 @@ void FLD::XFluidStateCreator::create_new_cut_state(
   dofset = std::make_shared<XFEM::XFEMDofSet>(*wizard, maxNumMyReservedDofsperNode, *xdiscret);
 
   const int restart = Global::Problem::instance()->restart();
-  if ((step < 1) or restart) minnumdofsets_ = xdiscret->dof_row_map()->MinAllGID();
+  if ((step < 1) or restart) minnumdofsets_ = xdiscret->dof_row_map()->min_all_gid();
 
   dofset->set_min_gid(minnumdofsets_);         // set the minimal GID of xfem dis
   xdiscret->replace_dof_set(0, dofset, true);  // fluid dofset has nds = 0

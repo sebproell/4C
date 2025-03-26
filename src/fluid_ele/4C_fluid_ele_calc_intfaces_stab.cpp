@@ -687,7 +687,7 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
 
   for (int i = 0; i < ndofinpatch; ++i)
   {
-    int lid = velaf->get_map().LID(patchlm[i]);
+    int lid = velaf->get_map().lid(patchlm[i]);
     if (lid == -1) FOUR_C_THROW("Cannot find degree of freedom on this proc");
     patch_velaf[i] = (*velaf)[lid];
   }
@@ -720,7 +720,7 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
     std::vector<double> patch_velnp(ndofinpatch);
     for (int i = 0; i < ndofinpatch; ++i)
     {
-      int lid = velnp->get_map().LID(patchlm[i]);
+      int lid = velnp->get_map().lid(patchlm[i]);
       if (lid == -1) FOUR_C_THROW("Cannot find degree of freedom on this proc");
       patch_velnp[i] = (*velnp)[lid];
     }
@@ -775,11 +775,11 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
 
     for (int i = 0; i < ndofinpatch; ++i)
     {
-      int lid_1 = dispnp->get_map().LID(patchlm[i]);
+      int lid_1 = dispnp->get_map().lid(patchlm[i]);
       if (lid_1 == -1) FOUR_C_THROW("Cannot find degree of freedom on this proc");
       patch_dispnp[i] = (*dispnp)[lid_1];
 
-      int lid_2 = gridv->get_map().LID(patchlm[i]);
+      int lid_2 = gridv->get_map().lid(patchlm[i]);
       if (lid_2 == -1) FOUR_C_THROW("Cannot find degree of freedom on this proc");
       patch_gridv[i] = (*gridv)[lid_2];
     }

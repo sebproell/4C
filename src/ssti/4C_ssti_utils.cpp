@@ -93,7 +93,7 @@ std::shared_ptr<Core::LinAlg::Map> SSTI::SSTIMaps::map_interface(
   auto mergedInterfaceMap = Core::LinAlg::MultiMapExtractor::merge_maps(
       {meshtyingstrategy->coupling_adapter()->master_dof_map(),
           meshtyingstrategy->coupling_adapter()->slave_dof_map()});
-  if (not mergedInterfaceMap->UniqueGIDs()) FOUR_C_THROW("Map not unique");
+  if (not mergedInterfaceMap->unique_gids()) FOUR_C_THROW("Map not unique");
   return mergedInterfaceMap;
 }
 

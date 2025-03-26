@@ -14,11 +14,6 @@
 
 
 
-// Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
-// naming of the Core::LinAlg::Map
-
-// NOLINTBEGIN(readability-identifier-naming)
-
 FOUR_C_NAMESPACE_OPEN
 
 Core::LinAlg::Map::Map(int NumGlobalElements, int IndexBase, const MPI_Comm& Comm)
@@ -78,7 +73,7 @@ Core::LinAlg::Map& Core::LinAlg::Map::operator=(const Map& other)
   return *this;
 }
 
-MPI_Comm Core::LinAlg::Map::Comm() const
+MPI_Comm Core::LinAlg::Map::get_comm() const
 {
   return Core::Communication::unpack_epetra_comm(wrapped().Comm());
 }
@@ -112,6 +107,7 @@ std::unique_ptr<Core::LinAlg::Map> Core::LinAlg::Map::create_view(Epetra_BlockMa
   return ret;
 }
 
+
 std::unique_ptr<const Core::LinAlg::Map> Core::LinAlg::Map::create_view(const Epetra_BlockMap& view)
 {
   std::unique_ptr<Map> ret(new Map);
@@ -134,6 +130,5 @@ Core::LinAlg::Map::Map(const Epetra_BlockMap& Source)
 {
 }
 
-// NOLINTEND(readability-identifier-naming)
 
 FOUR_C_NAMESPACE_CLOSE

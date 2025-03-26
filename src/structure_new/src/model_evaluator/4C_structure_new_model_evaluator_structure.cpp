@@ -933,12 +933,12 @@ void Solid::ModelEvaluator::Structure::output_runtime_structure_postprocess_opti
     std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>> mapdata{};
 
     Core::Communication::UnpackBuffer buffer(raw_data);
-    for (int i = 0; i < discret_ptr()->element_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < discret_ptr()->element_row_map()->num_my_elements(); ++i)
     {
       std::shared_ptr<Core::LinAlg::SerialDenseMatrix> gpthickness =
           std::make_shared<Core::LinAlg::SerialDenseMatrix>();
       extract_from_pack(buffer, *gpthickness);
-      mapdata[discret_ptr()->element_row_map()->GID(i)] = gpthickness;
+      mapdata[discret_ptr()->element_row_map()->gid(i)] = gpthickness;
     }
     return mapdata;
   };
@@ -1017,14 +1017,14 @@ void Solid::ModelEvaluator::Structure::output_runtime_structure_postprocess_stre
       std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>> mapdata{};
 
       Core::Communication::UnpackBuffer buffer(raw_data);
-      for (int i = 0; i < discret_ptr()->element_row_map()->NumMyElements(); ++i)
+      for (int i = 0; i < discret_ptr()->element_row_map()->num_my_elements(); ++i)
       {
         if (DoPostprocessingOnElement(*discret().l_row_element(i)))
         {
           std::shared_ptr<Core::LinAlg::SerialDenseMatrix> gpstress =
               std::make_shared<Core::LinAlg::SerialDenseMatrix>();
           extract_from_pack(buffer, *gpstress);
-          mapdata[discret_ptr()->element_row_map()->GID(i)] = gpstress;
+          mapdata[discret_ptr()->element_row_map()->gid(i)] = gpstress;
         }
       }
       return mapdata;

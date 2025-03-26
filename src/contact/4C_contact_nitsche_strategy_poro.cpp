@@ -86,9 +86,9 @@ void CONTACT::NitscheStrategyPoro::set_parent_state(const enum Mortar::StateType
     {
       Core::FE::Discretization& idiscret = interface->discret();
 
-      for (int j = 0; j < interface->discret().element_col_map()->NumMyElements(); ++j)
+      for (int j = 0; j < interface->discret().element_col_map()->num_my_elements(); ++j)
       {
-        const int gid = interface->discret().element_col_map()->GID(j);
+        const int gid = interface->discret().element_col_map()->gid(j);
 
         auto* ele = dynamic_cast<Mortar::Element*>(idiscret.g_element(gid));
 

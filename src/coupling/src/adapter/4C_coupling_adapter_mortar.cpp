@@ -218,9 +218,9 @@ void Coupling::Adapter::CouplingMortar::check_slave_dirichlet_overlap(
   slavedis->evaluate_dirichlet(p, temp, nullptr, nullptr, nullptr, dbcmaps);
 
   // loop over all slave row nodes of the interface
-  for (int j = 0; j < interface_->slave_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < interface_->slave_row_nodes()->num_my_elements(); ++j)
   {
-    int gid = interface_->slave_row_nodes()->GID(j);
+    int gid = interface_->slave_row_nodes()->gid(j);
     Core::Nodes::Node* node = interface_->discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Mortar::Node* mtnode = static_cast<Mortar::Node*>(node);
@@ -229,7 +229,7 @@ void Coupling::Adapter::CouplingMortar::check_slave_dirichlet_overlap(
     for (int k = 0; k < mtnode->num_dof(); ++k)
     {
       int currdof = mtnode->dofs()[k];
-      int lid = (dbcmaps->cond_map())->LID(currdof);
+      int lid = (dbcmaps->cond_map())->lid(currdof);
 
       // found slave node with dbc
       if (lid >= 0)
@@ -324,8 +324,8 @@ void Coupling::Adapter::CouplingMortar::setup_interface(
   int dofoffset = 0;
   if (slidingale == true)
   {
-    nodeoffset = masterdis->node_row_map()->MaxAllGID() + 1;
-    dofoffset = masterdis->dof_row_map(nds_master)->MaxAllGID() + 1;
+    nodeoffset = masterdis->node_row_map()->max_all_gid() + 1;
+    dofoffset = masterdis->dof_row_map(nds_master)->max_all_gid() + 1;
   }
 
   // number of coupled dofs (defined in coupleddof by a 1)
@@ -398,7 +398,7 @@ void Coupling::Adapter::CouplingMortar::setup_interface(
     Core::Communication::sum_all(&nummastermtreles, &eleoffset, 1, comm);
   }
 
-  if (slidingale == true) eleoffset = masterdis->element_row_map()->MaxAllGID() + 1;
+  if (slidingale == true) eleoffset = masterdis->element_row_map()->max_all_gid() + 1;
 
   // feeding master elements to the interface
   std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator elemiter;
@@ -528,9 +528,9 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
       Core::LinAlg::create_vector(*masterdofrowmap, true);
 
   // loop over all slave row nodes
-  for (int j = 0; j < interface_->slave_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < interface_->slave_row_nodes()->num_my_elements(); ++j)
   {
-    int gid = interface_->slave_row_nodes()->GID(j);
+    int gid = interface_->slave_row_nodes()->gid(j);
     Core::Nodes::Node* node = interface_->discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Mortar::Node* mtnode = static_cast<Mortar::Node*>(node);
@@ -559,7 +559,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).lid(gdofs[k])];
       }
     }
 
@@ -568,9 +568,9 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
   }
 
   // loop over all master row nodes
-  for (int j = 0; j < interface_->master_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < interface_->master_row_nodes()->num_my_elements(); ++j)
   {
-    int gid = interface_->master_row_nodes()->GID(j);
+    int gid = interface_->master_row_nodes()->gid(j);
     Core::Nodes::Node* node = interface_->discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Mortar::Node* mtnode = static_cast<Mortar::Node*>(node);
@@ -598,7 +598,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).lid(gdofs[k])];
       }
     }
 
@@ -679,9 +679,9 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
       Core::LinAlg::create_vector(*masterdofrowmap, true);
 
   // loop over all master row nodes on the current interface
-  for (int j = 0; j < interface_->master_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < interface_->master_row_nodes()->num_my_elements(); ++j)
   {
-    int gid = interface_->master_row_nodes()->GID(j);
+    int gid = interface_->master_row_nodes()->gid(j);
     Core::Nodes::Node* node = interface_->discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Mortar::Node* mtnode = static_cast<Mortar::Node*>(node);
@@ -693,11 +693,11 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
     for (int k = 0; k < dim; ++k)
     {
       int dof = mtnode->dofs()[k];
-      (*Xmaster)[(Xmaster->get_map()).LID(dof)] = mtnode->x()[k];
+      (*Xmaster)[(Xmaster->get_map()).lid(dof)] = mtnode->x()[k];
 
       // add ALE displacements, if required
       if (idisp != nullptr)
-        (*Xmaster)[(Xmaster->get_map()).LID(dof)] += (*idisp)[(idisp->get_map()).LID(dof)];
+        (*Xmaster)[(Xmaster->get_map()).lid(dof)] += (*idisp)[(idisp->get_map()).lid(dof)];
     }
   }
 
@@ -724,15 +724,15 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
   Core::LinAlg::export_to(*Xslavemod, Xslavemodcol);
 
   // loop over all slave nodes on the current interface
-  for (int j = 0; j < fullsnodes->NumMyElements(); ++j)
+  for (int j = 0; j < fullsnodes->num_my_elements(); ++j)
   {
     // get global ID of current node
-    int gid = fullsnodes->GID(j);
+    int gid = fullsnodes->gid(j);
 
     // be careful to modify BOTH mtnode in interface discret ...
     // (check if the node is available on this processor)
     bool isininterfacecolmap = false;
-    int ilid = interface_->slave_col_nodes()->LID(gid);
+    int ilid = interface_->slave_col_nodes()->lid(gid);
     if (ilid >= 0) isininterfacecolmap = true;
     Core::Nodes::Node* node = nullptr;
     Mortar::Node* mtnode = nullptr;
@@ -746,7 +746,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
     // ... AND standard node in underlying slave discret
     // (check if the node is available on this processor)
     bool isinproblemcolmap = false;
-    int lid = slavedis.node_col_map()->LID(gid);
+    int lid = slavedis.node_col_map()->lid(gid);
     if (lid >= 0) isinproblemcolmap = true;
     Core::Nodes::Node* pnode = nullptr;
     if (isinproblemcolmap)
@@ -761,7 +761,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
     Core::Nodes::Node* alenode = nullptr;
     if (aledis != nullptr)
     {
-      int lid2 = aledis->node_col_map()->LID(gid);
+      int lid2 = aledis->node_col_map()->lid(gid);
       if (lid2 >= 0) isinproblemcolmap2 = true;
       if (isinproblemcolmap2)
       {
@@ -792,12 +792,12 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
         for (int k = 0; k < numdim; ++k)
         {
-          locindex[k] = (Xslavemodcol.get_map()).LID(mtnode->dofs()[k]);
+          locindex[k] = (Xslavemodcol.get_map()).lid(mtnode->dofs()[k]);
           if (locindex[k] < 0) FOUR_C_THROW("Did not find dof in map");
           Xnew[k] = Xslavemodcol[locindex[k]];
           Xold[k] = mtnode->x()[k];
           if (idisp != nullptr)
-            Xold[k] += (*idisp)[(idisp->get_map()).LID(interface_->discret().dof(node)[k])];
+            Xold[k] += (*idisp)[(idisp->get_map()).lid(interface_->discret().dof(node)[k])];
         }
 
         // check is mesh distortion is still OK
@@ -872,7 +872,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
           for (int k = 0; k < dim; ++k)
           {
             // get global ID of degree of freedom for this spatial direction
-            int dofgid = (idisp->get_map()).LID(gdofs[k]);
+            int dofgid = (idisp->get_map()).lid(gdofs[k]);
             // get new coordinate value for this spatial direction
             const double value = Xnewglobal[k] - node->x()[k];
             // replace respective value in displacement vector
@@ -896,9 +896,9 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
   xm = Core::LinAlg::create_vector(*masterdofrowmap, true);
 
   // loop over all slave row nodes
-  for (int j = 0; j < interface_->slave_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < interface_->slave_row_nodes()->num_my_elements(); ++j)
   {
-    int gid = interface_->slave_row_nodes()->GID(j);
+    int gid = interface_->slave_row_nodes()->gid(j);
     Core::Nodes::Node* node = interface_->discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Mortar::Node* mtnode = static_cast<Mortar::Node*>(node);
@@ -923,7 +923,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).lid(gdofs[k])];
       }
     }
 
@@ -932,9 +932,9 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
   }
 
   // loop over all master row nodes
-  for (int j = 0; j < interface_->master_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < interface_->master_row_nodes()->num_my_elements(); ++j)
   {
-    int gid = interface_->master_row_nodes()->GID(j);
+    int gid = interface_->master_row_nodes()->gid(j);
     Core::Nodes::Node* node = interface_->discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Mortar::Node* mtnode = static_cast<Mortar::Node*>(node);
@@ -959,7 +959,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).lid(gdofs[k])];
       }
     }
 
@@ -1091,9 +1091,9 @@ void Coupling::Adapter::CouplingMortar::evaluate(
 {
   // safety checks
   check_setup();
-  FOUR_C_ASSERT(idispma->get_map().PointSameAs(*pmasterdofrowmap_),
+  FOUR_C_ASSERT(idispma->get_map().point_same_as(*pmasterdofrowmap_),
       "Map of incoming master vector does not match the stored master dof row map.");
-  FOUR_C_ASSERT(idispsl->get_map().PointSameAs(*pslavedofrowmap_),
+  FOUR_C_ASSERT(idispsl->get_map().point_same_as(*pslavedofrowmap_),
       "Map of incoming slave vector does not match the stored slave dof row map.");
 
   const Core::LinAlg::Map stdmap = idispsl->get_map();
@@ -1288,7 +1288,7 @@ Coupling::Adapter::CouplingMortar::master_to_slave(
   // safety check
   check_setup();
 
-  FOUR_C_ASSERT(masterdofrowmap_->SameAs(mv.get_map()), "Vector with master dof map expected");
+  FOUR_C_ASSERT(masterdofrowmap_->same_as(mv.get_map()), "Vector with master dof map expected");
 
   Core::LinAlg::MultiVector<double> tmp =
       Core::LinAlg::MultiVector<double>(M_->row_map(), mv.NumVectors());
@@ -1311,7 +1311,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Coupling::Adapter::CouplingMortar:
   // safety check
   check_setup();
 
-  FOUR_C_ASSERT(masterdofrowmap_->SameAs(mv.get_map()), "Vector with master dof map expected");
+  FOUR_C_ASSERT(masterdofrowmap_->same_as(mv.get_map()), "Vector with master dof map expected");
 
   Core::LinAlg::Vector<double> tmp = Core::LinAlg::Vector<double>(M_->row_map());
 
@@ -1332,9 +1332,9 @@ void Coupling::Adapter::CouplingMortar::master_to_slave(
     const Core::LinAlg::MultiVector<double>& mv, Core::LinAlg::MultiVector<double>& sv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.get_map().PointSameAs(P_->col_map().get_epetra_block_map()))
+  if (not mv.get_map().point_same_as(P_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.get_map().PointSameAs(D_->col_map().get_epetra_block_map()))
+  if (not sv.get_map().point_same_as(D_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("slave dof map vector expected");
 #endif
 
@@ -1363,9 +1363,9 @@ void Coupling::Adapter::CouplingMortar::slave_to_master(
     const Core::LinAlg::MultiVector<double>& sv, Core::LinAlg::MultiVector<double>& mv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.get_map().PointSameAs(P_->col_map().get_epetra_block_map()))
+  if (not mv.get_map().point_same_as(P_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.get_map().PointSameAs(D_->col_map().get_epetra_block_map()))
+  if (not sv.get_map().point_same_as(D_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("slave dof map vector expected");
 #endif
 

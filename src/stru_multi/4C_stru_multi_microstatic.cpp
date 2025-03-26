@@ -727,7 +727,7 @@ void MultiScale::MicroStatic::write_restart(std::shared_ptr<Core::IO::Discretiza
 
   Core::Communication::PackBuffer data;
 
-  for (int i = 0; i < discret_->element_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < discret_->element_col_map()->num_my_elements(); ++i)
   {
     if ((*lastalpha_)[i] != nullptr)
     {
@@ -792,7 +792,7 @@ void MultiScale::MicroStatic::evaluate_micro_bc(
     for (int nodeid : nodeids)
     {
       // do only nodes in my row map
-      if (!discret_->node_row_map()->MyGID(nodeid)) continue;
+      if (!discret_->node_row_map()->my_gid(nodeid)) continue;
       Core::Nodes::Node* actnode = discret_->g_node(nodeid);
       if (!actnode) FOUR_C_THROW("Cannot find global node {}", nodeid);
 
@@ -827,7 +827,7 @@ void MultiScale::MicroStatic::evaluate_micro_bc(
       {
         const int gid = dofs[l];
 
-        const int lid = disp.get_map().LID(gid);
+        const int lid = disp.get_map().lid(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
         (disp)[lid] = disp_prescribed[l];
       }

@@ -44,8 +44,8 @@ Adapter::StructureFSITimIntAda::StructureFSITimIntAda(
   std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
-  numdbcdofs_ = sti->get_dbc_map_extractor()->cond_map()->NumGlobalElements();
-  numdbcfsidofs_ = intersectionmap->NumGlobalElements();
+  numdbcdofs_ = sti->get_dbc_map_extractor()->cond_map()->num_global_elements();
+  numdbcfsidofs_ = intersectionmap->num_global_elements();
   numdbcinnerdofs_ = numdbcdofs_ - numdbcfsidofs_;
 }
 

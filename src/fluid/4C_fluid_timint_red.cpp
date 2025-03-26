@@ -314,7 +314,7 @@ void FLD::TimIntRedModels::setup_meshtying()
   //            as well as the profile will be different
   //            since it is based on a different surface discretization!!
 
-  if (vol_surf_flow_bc_maps_->NumGlobalElements() != 0)
+  if (vol_surf_flow_bc_maps_->num_global_elements() != 0)
   {
     meshtying_->check_overlapping_bc(*vol_surf_flow_bc_maps_);
     meshtying_->dirichlet_on_master(vol_surf_flow_bc_maps_);

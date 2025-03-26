@@ -147,7 +147,7 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_for
       // incremental form this will force the value to zero
       for (const auto& mydof : dofs)
         rhs_art_with_collapsed.replace_global_value(
-            mydof, 0, -(*phinp_art_)[dofrowmap->LID(mydof)]);
+            mydof, 0, -(*phinp_art_)[dofrowmap->lid(mydof)]);
     }
   }
 
@@ -200,9 +200,9 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::pre_evaluate_coup
   std::map<int, std::vector<double>> duplicates;
 
   // loop over all artery elements
-  for (int i = 0; i < arterydis_->element_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < arterydis_->element_col_map()->num_my_elements(); ++i)
   {
-    const int artelegid = arterydis_->element_col_map()->GID(i);
+    const int artelegid = arterydis_->element_col_map()->gid(i);
     if (gid_to_seglength[artelegid].size() > 0)  // check if element projects
     {
       // compare all segment with each other if it might be identical
@@ -300,9 +300,9 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
   // no need to do this
   if (porofluidprob_)
   {
-    for (int i = 0; i < arterydis_->element_col_map()->NumMyElements(); ++i)
+    for (int i = 0; i < arterydis_->element_col_map()->num_my_elements(); ++i)
     {
-      const int artelegid = arterydis_->element_col_map()->GID(i);
+      const int artelegid = arterydis_->element_col_map()->gid(i);
       Core::Elements::Element* artele = arterydis_->g_element(artelegid);
 
       // TODO: this will not work for higher order artery eles
@@ -338,9 +338,9 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
       std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_block_map());
 
   // set segment ID on coupling pairs and fill the unaffected artery length
-  for (int iele = 0; iele < arterydis_->element_col_map()->NumMyElements(); ++iele)
+  for (int iele = 0; iele < arterydis_->element_col_map()->num_my_elements(); ++iele)
   {
-    const int artelegid = arterydis_->element_col_map()->GID(iele);
+    const int artelegid = arterydis_->element_col_map()->gid(iele);
     Core::Elements::Element* thisele = arterydis_->g_element(artelegid);
 
     // TODO: this will not work for higher order artery eles
@@ -406,9 +406,9 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_i
   Epetra_FEVector unaffected_diams_artery_row(
       arterydis_->element_row_map()->get_epetra_block_map(), true);
 
-  for (int i = 0; i < arterydis_->element_row_map()->NumMyElements(); ++i)
+  for (int i = 0; i < arterydis_->element_row_map()->num_my_elements(); ++i)
   {
-    const int artelegid = arterydis_->element_row_map()->GID(i);
+    const int artelegid = arterydis_->element_row_map()->gid(i);
     Core::Elements::Element* artele = arterydis_->g_element(artelegid);
 
     // TODO: this will not work for higher order artery eles
@@ -525,9 +525,9 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::create_gid_to_seg
   fill_gid_to_segment_vector(coupl_elepairs_, gid_to_segment_);
 
   // sort and take care of special cases
-  for (int i = 0; i < arterydis_->element_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < arterydis_->element_col_map()->num_my_elements(); ++i)
   {
-    const int artelegid = arterydis_->element_col_map()->GID(i);
+    const int artelegid = arterydis_->element_col_map()->gid(i);
     if (gid_to_segment_[artelegid].size() > 0)  // check if element projects
     {
       // sort
@@ -557,10 +557,10 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::create_gid_to_seg
   }
 
   // safety checks
-  for (int i = 0; i < arterydis_->element_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < arterydis_->element_col_map()->num_my_elements(); ++i)
   {
     // 1) check if artery element has more than MAXNUMSEGPERARTELE segments
-    const int artelegid = arterydis_->element_col_map()->GID(i);
+    const int artelegid = arterydis_->element_col_map()->gid(i);
     if ((int)gid_to_segment_[artelegid].size() > 2 * maxnumsegperartele_)
     {
       FOUR_C_THROW(
@@ -869,7 +869,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::depth_first_searc
     std::vector<int>& this_connected_comp)
 {
   // mark this node visited and add it to this connected component
-  const int lid = visited->get_map().LID(actnode->id());
+  const int lid = visited->get_map().lid(actnode->id());
   (*visited)[lid] = 1;
   this_connected_comp.push_back(actnode->id());
 

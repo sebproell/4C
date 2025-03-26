@@ -183,9 +183,9 @@ Constraints::MPConstraint2::create_discretization_from_condition(
     copy(ngid.data(), ngid.data() + numnodes, inserter(colnodeset, colnodeset.begin()));
 
     // construct boundary nodes, which use the same global id as the cutter nodes
-    for (int i = 0; i < actnoderowmap->NumMyElements(); ++i)
+    for (int i = 0; i < actnoderowmap->num_my_elements(); ++i)
     {
-      const int gid = actnoderowmap->GID(i);
+      const int gid = actnoderowmap->gid(i);
       if (rownodeset.find(gid) != rownodeset.end())
       {
         const Core::Nodes::Node* standardnode = actdisc->l_row_node(i);
@@ -308,7 +308,7 @@ void Constraints::MPConstraint2::evaluate_constraint(std::shared_ptr<Core::FE::D
       // define global and local index of this bc in redundant vectors
       const int offsetID = params.get<int>("OffsetID");
       int gindex = condID - offsetID;
-      const int lindex = (systemvector3->get_map()).LID(gindex);
+      const int lindex = (systemvector3->get_map()).lid(gindex);
 
       // Get the current lagrange multiplier value for this condition
       const std::shared_ptr<Core::LinAlg::Vector<double>> lagramul =

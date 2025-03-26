@@ -87,9 +87,9 @@ void ScaTra::TimIntHDG::setup()
   if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {
     std::cout << "Number of degrees of freedom in HDG system: "
-              << discret_->dof_row_map(0)->NumGlobalElements() << std::endl;
+              << discret_->dof_row_map(0)->num_global_elements() << std::endl;
     std::cout << "Number of degrees of freedom of interior variables: "
-              << discret_->dof_row_map(nds_intvar_)->NumGlobalElements() << std::endl;
+              << discret_->dof_row_map(nds_intvar_)->num_global_elements() << std::endl;
   }
 
   // implement ost and bdf2 through gen-alpha facilities
@@ -324,7 +324,7 @@ namespace
       for (int i = 0; i < ele->num_node(); ++i)
       {
         Core::Nodes::Node* node = ele->nodes()[i];
-        const int localIndex = dis.node_row_map()->LID(node->id());
+        const int localIndex = dis.node_row_map()->lid(node->id());
         if (localIndex < 0) continue;
         touchCount[localIndex]++;
         (*phi)[localIndex] += interpolVec(i);
@@ -555,14 +555,14 @@ void ScaTra::TimIntHDG::set_initial_field(
           FOUR_C_ASSERT(
               localDofs.size() == static_cast<std::size_t>(updateVec2.numRows()), "Internal error");
           for (unsigned int i = 0; i < localDofs.size(); ++i)
-            localDofs[i] = intdofrowmap->LID(localDofs[i]);
+            localDofs[i] = intdofrowmap->lid(localDofs[i]);
           intphinp_->replace_local_values(localDofs.size(), updateVec2.values(), localDofs.data());
         }
 
         // now fill the element vector into the discretization
         for (unsigned int i = 0; i < la[0].lm_.size(); ++i)
         {
-          const int lid = dofrowmap->LID(la[0].lm_[i]);
+          const int lid = dofrowmap->lid(la[0].lm_[i]);
           if (lid >= 0)
           {
             // safety check if initial value for trace dof is set for all elements the same
@@ -673,7 +673,7 @@ void ScaTra::TimIntHDG::update_interior_variables(
         localDofs.size() == static_cast<std::size_t>(updateVec.numRows()), "Internal error");
     for (unsigned int i = 0; i < localDofs.size(); ++i)
     {
-      localDofs[i] = intdofrowmap->LID(localDofs[i]);
+      localDofs[i] = intdofrowmap->lid(localDofs[i]);
     }
     updatevector->replace_local_values(localDofs.size(), updateVec.values(), localDofs.data());
   }
@@ -765,10 +765,10 @@ void ScaTra::TimIntHDG::fd_check()
     double maxrelerr(0.);
 
     // calculate fd matrix
-    for (int colgid = 0; colgid <= sysmatcopy->col_map().MaxAllGID(); ++colgid)
+    for (int colgid = 0; colgid <= sysmatcopy->col_map().max_all_gid(); ++colgid)
     {
       // check whether current column index is a valid global column index and continue loop if not
-      int collid(sysmatcopy->col_map().LID(colgid));
+      int collid(sysmatcopy->col_map().lid(colgid));
       int maxcollid(-1);
       Core::Communication::max_all(&collid, &maxcollid, 1, discret_->get_comm());
       if (maxcollid < 0) continue;
@@ -779,7 +779,7 @@ void ScaTra::TimIntHDG::fd_check()
       phinp_->update(1., phinp_original, 0.);
 
       // impose perturbation and update interior variables
-      if (phinp_->get_map().MyGID(colgid))
+      if (phinp_->get_map().my_gid(colgid))
       {
         if (phinp_->sum_into_global_value(colgid, 0, eps))
           FOUR_C_THROW(
@@ -820,10 +820,10 @@ void ScaTra::TimIntHDG::fd_check()
       for (int j = 0; j < phinp_->local_length(); ++j)
         (*fdvec)[j] = -(*systemvector1)[j] / eps + (residualVec)[j] / eps;
 
-      for (int rowlid = 0; rowlid < discret_->dof_row_map()->NumMyElements(); ++rowlid)
+      for (int rowlid = 0; rowlid < discret_->dof_row_map()->num_my_elements(); ++rowlid)
       {
         // get global index of current matrix row
-        const int rowgid = sysmatcopy->row_map().GID(rowlid);
+        const int rowgid = sysmatcopy->row_map().gid(rowlid);
         if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
         // get current entry in original system matrix
@@ -836,7 +836,7 @@ void ScaTra::TimIntHDG::fd_check()
 
         for (int ientry = 0; ientry < length; ++ientry)
         {
-          if (sysmatcopy->col_map().GID(indices[ientry]) == colgid)
+          if (sysmatcopy->col_map().gid(indices[ientry]) == colgid)
           {
             entry = values[ientry];
             break;
@@ -1147,7 +1147,7 @@ void ScaTra::TimIntHDG::adapt_degree()
       hdgele->set_degree(deg);
 
       // store element degree (only for output)
-      const int eleIndex = discret_->element_row_map()->LID(ele->id());
+      const int eleIndex = discret_->element_row_map()->lid(ele->id());
       if (eleIndex >= 0) (*elementdegree_)[eleIndex] = deg;
     }
   }
@@ -1346,14 +1346,14 @@ void ScaTra::TimIntHDG::adapt_variable_vector(std::shared_ptr<Core::LinAlg::Vect
       FOUR_C_ASSERT(
           localDofs.size() == static_cast<std::size_t>(intphi_ele.numRows()), "Internal error");
       for (unsigned int i = 0; i < localDofs.size(); ++i)
-        localDofs[i] = intdofrowmap->LID(localDofs[i]);
+        localDofs[i] = intdofrowmap->lid(localDofs[i]);
       (intphi_new)->replace_local_values(localDofs.size(), intphi_ele.values(), localDofs.data());
     }
 
     // now fill the element vector into the new state vector for the trace values
     for (unsigned int i = 0; i < la[0].lm_.size(); ++i)
     {
-      const int lid = dofrowmap->LID(la[0].lm_[i]);
+      const int lid = dofrowmap->lid(la[0].lm_[i]);
 
       if (lid >= 0) (*phi_new)[lid] = phi_ele(i);
     }

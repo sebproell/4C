@@ -101,7 +101,7 @@ void BeamInteraction::BeamToSolidOutputWriterVisualization::
   Core::LinAlg::export_to(vector, vector_extract);
 
   // Add the values form the vector to the writer data.
-  const int num_my_gid = node_gid_map_->NumMyElements();
+  const int num_my_gid = node_gid_map_->num_my_elements();
   std::vector<double>& data_vector =
       get_visualization_data().get_point_data<double>(data_name, 3 * num_my_gid);
   data_vector.reserve(3 * num_my_gid);

@@ -375,10 +375,10 @@ void Constraints::ConstrManager::update_lagr_mult(double factor)
     std::vector<int> volconID = volconstr3d_->get_active_cond_id();
     for (unsigned int i = 0; i < volconID.size(); i++)
     {
-      if (constrmap_->LID(int(i - offset_id_)) != -1)
+      if (constrmap_->lid(int(i - offset_id_)) != -1)
       {
         std::cout << "Multiplier for Volume Constraint: " << volconID.at(i) << ":  "
-                  << (*lagr_mult_vec_)[constrmap_->LID(int(i - offset_id_))] << '\n';
+                  << (*lagr_mult_vec_)[constrmap_->lid(int(i - offset_id_))] << '\n';
       }
     }
   }
@@ -427,7 +427,7 @@ void Constraints::ConstrManager::compute_monitor_values(
   std::vector<const Core::Conditions::Condition*> monitcond;
   monitorvalues_->put_scalar(0.0);
   Teuchos::ParameterList p;
-  if (not actdisc_->dof_row_map()->SameAs(disp->get_map()))
+  if (not actdisc_->dof_row_map()->same_as(disp->get_map()))
   {
     // build merged dof row map
     std::shared_ptr<Core::LinAlg::Map> largemap =

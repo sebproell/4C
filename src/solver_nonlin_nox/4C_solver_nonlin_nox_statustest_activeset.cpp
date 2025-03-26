@@ -83,7 +83,7 @@ NOX::Nln::StatusTest::ActiveSet::ActiveSet(
           // reset the detected cycle size
           for (citer = cycling_maps_.begin(); citer != cycling_maps_.end(); ++citer)
           {
-            if ((activeset->NumGlobalElements() != 0) and (*citer)->SameAs(*activeset))
+            if ((activeset->num_global_elements() != 0) and (*citer)->same_as(*activeset))
               cycle_size_ = count;
             ++count;
           }

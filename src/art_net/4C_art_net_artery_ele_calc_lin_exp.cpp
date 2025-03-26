@@ -261,7 +261,7 @@ int Discret::Elements::ArteryEleCalcLinExp<distype>::scatra_evaluate(Artery* ele
     escatran(2 * i) = myescatran[2 * i];
     escatran(2 * i + 1) = myescatran[2 * i + 1];
     // get element scalar transport
-    int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+    int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
     //    escatran(i)     = (*scatran)[local_id];
     ewfnp(i) = (*wfnp)[local_id] - (*wfo)[local_id];
     ewbnp(i) = (*wbnp)[local_id] - (*wbo)[local_id];
@@ -1120,7 +1120,7 @@ bool Discret::Elements::ArteryEleCalcLinExp<distype>::solve_riemann(Artery* ele,
                 std::map<const int, std::shared_ptr<Arteries::Utils::JunctionNodeParams>>>>(
                 "Junctions Parameters");
 
-        int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+        int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
         if (local_id < 0)
         {
           FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
@@ -1294,7 +1294,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
       Cparams.set<double>("artery beta", beta);
       Cparams.set<double>("artery area", area0_(i));
       Cparams.set<double>("blood density", dens);
-      int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+      int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
       if (local_id < 0)
       {
         FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
@@ -1385,7 +1385,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
           {
             double val2 = Wb;
             Wbnp->replace_global_values(1, &val2, &gid);
-            int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+            int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
             Wf = (*Wfnp)[local_id];
           }
         }
@@ -1438,7 +1438,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
       // -------------------------------------------------------------------------------
       // Update the Dirichlet BC vector
       // -------------------------------------------------------------------------------
-      int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+      int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
       int gid;
       double val;
       // set A at node i
@@ -1900,7 +1900,7 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::solve_scatra_analytically(
     escatran(2 * i) = myescatran[2 * i];
     escatran(2 * i + 1) = myescatran[2 * i + 1];
     // get element scalar transport
-    int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+    int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
     //    escatran(i)     = (*scatran)[local_id];
     ewfn(i) = (*wfn)[local_id] - (*wfo)[local_id];
     ewbn(i) = (*wbn)[local_id] - (*wbo)[local_id];

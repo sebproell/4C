@@ -144,7 +144,7 @@ void FSI::Monolithic::init_tim_int_ada(const Teuchos::ParameterList& fsidyn)
 
   // store number of interface DOFs subject to Dirichlet BCs on structure and fluid side of the
   // interface
-  numflfsidbcdofs_ = intersectionmapfluid->NumGlobalElements();
+  numflfsidbcdofs_ = intersectionmapfluid->num_global_elements();
 
   //----------------------------------------------------------------------------
   // Check whether input parameters make sense

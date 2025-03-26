@@ -92,10 +92,10 @@ void FS3I::FS3IBase::check_interface_dirichlet_bc()
 
   // filter out master dirichlet dofs associated with the interface
   Core::LinAlg::Vector<double> masterifdirich(*mastermap, true);
-  for (int i = 0; i < mastermap->NumMyElements(); ++i)
+  for (int i = 0; i < mastermap->num_my_elements(); ++i)
   {
-    int gid = mastermap->GID(i);
-    if (masterdirichmap->MyGID(gid))
+    int gid = mastermap->gid(i);
+    if (masterdirichmap->my_gid(gid))
     {
       (masterifdirich)[i] = 1.0;
     }
@@ -109,10 +109,10 @@ void FS3I::FS3IBase::check_interface_dirichlet_bc()
 
   // filter out slave dirichlet dofs associated with the interface
   Core::LinAlg::Vector<double> slaveifdirich(*slavemap, true);
-  for (int i = 0; i < slavemap->NumMyElements(); ++i)
+  for (int i = 0; i < slavemap->num_my_elements(); ++i)
   {
-    int gid = slavemap->GID(i);
-    if (slavedirichmap->MyGID(gid))
+    int gid = slavemap->gid(i);
+    if (slavedirichmap->my_gid(gid))
     {
       (slaveifdirich)[i] = 1.0;
     }
@@ -121,26 +121,26 @@ void FS3I::FS3IBase::check_interface_dirichlet_bc()
       scatracoup_->slave_to_master(slaveifdirich);
 
   // check if the locations of non-zero entries do not match
-  for (int i = 0; i < slavedis->dof_row_map()->NumMyElements(); ++i)
+  for (int i = 0; i < slavedis->dof_row_map()->num_my_elements(); ++i)
   {
-    int gid = slavedis->dof_row_map()->GID(i);
-    if (slavemap->MyGID(gid))  // in this case, the current dof is part of the interface
+    int gid = slavedis->dof_row_map()->gid(i);
+    if (slavemap->my_gid(gid))  // in this case, the current dof is part of the interface
     {
-      if ((*test_slaveifdirich)[slavemap->LID(gid)] == 1.0 and
-          (slaveifdirich)[slavemap->LID(gid)] != 1.0)
+      if ((*test_slaveifdirich)[slavemap->lid(gid)] == 1.0 and
+          (slaveifdirich)[slavemap->lid(gid)] != 1.0)
       {
         FOUR_C_THROW("Dirichlet boundary conditions not matching at the interface");
       }
     }
   }
 
-  for (int i = 0; i < masterdis->dof_row_map()->NumMyElements(); ++i)
+  for (int i = 0; i < masterdis->dof_row_map()->num_my_elements(); ++i)
   {
-    int gid = masterdis->dof_row_map()->GID(i);
-    if (mastermap->MyGID(gid))  // in this case, the current dof is part of the interface
+    int gid = masterdis->dof_row_map()->gid(i);
+    if (mastermap->my_gid(gid))  // in this case, the current dof is part of the interface
     {
-      if ((*test_masterifdirich)[mastermap->LID(gid)] == 1.0 and
-          (masterifdirich)[mastermap->LID(gid)] != 1.0)
+      if ((*test_masterifdirich)[mastermap->lid(gid)] == 1.0 and
+          (masterifdirich)[mastermap->lid(gid)] != 1.0)
       {
         FOUR_C_THROW("Dirichlet boundary conditions not matching at the interface");
       }

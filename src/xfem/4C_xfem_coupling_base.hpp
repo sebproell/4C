@@ -199,7 +199,7 @@ namespace XFEM
                        ///< LevelsetCoupling cut and side-Id for MeshCoupling)
     )
     {
-      int lid = cutter_dis_->element_col_map()->LID(gid);
+      int lid = cutter_dis_->element_col_map()->lid(gid);
       return cutterele_conds_[lid];
     }
 

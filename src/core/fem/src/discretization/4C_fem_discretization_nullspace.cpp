@@ -55,7 +55,7 @@ namespace Core::FE
         if (localLength == 0) continue;
 
         // check if dof is existing as index
-        if (dofmap.LID(dofs[0]) == -1) continue;
+        if (dofmap.lid(dofs[0]) == -1) continue;
 
         // check size of degrees of freedom
         if (localLength != numdf)
@@ -100,11 +100,11 @@ namespace Core::FE
           double** arrayOfPointers;
           nullspace->ExtractView(&arrayOfPointers);
           double* data = arrayOfPointers[dim];
-          Teuchos::ArrayRCP<double> dataVector(data, dofmap.LID(dofs[0]), localLength, false);
+          Teuchos::ArrayRCP<double> dataVector(data, dofmap.lid(dofs[0]), localLength, false);
 
           for (int j = 0; j < localLength; ++j)
           {
-            const int lid = dofmap.LID(dofs[j]);
+            const int lid = dofmap.lid(dofs[j]);
             dataVector[lid] = nodalNullspace(j, dim);
           }
         }

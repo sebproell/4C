@@ -47,7 +47,7 @@ void Core::LinearSolver::Parameters::compute_solver_parameters(
         Core::Nodes::Node* actnode = dis.l_row_node(i);
         std::vector<int> dofs = dis.dof(0, actnode);
 
-        const int localIndex = nullspaceMap->LID(dofs[0]);
+        const int localIndex = nullspaceMap->lid(dofs[0]);
 
         if (localIndex == -1) continue;
 
@@ -107,7 +107,7 @@ void Core::LinearSolver::Parameters::fix_null_space(std::string field,
     const Core::LinAlg::Map& oldmap, const Core::LinAlg::Map& newmap,
     Teuchos::ParameterList& solveparams)
 {
-  if (!Core::Communication::my_mpi_rank(oldmap.Comm()))
+  if (!Core::Communication::my_mpi_rank(oldmap.get_comm()))
     printf("Fixing %s Nullspace\n", field.c_str());
 
   // find the ML or MueLu list
@@ -128,12 +128,12 @@ void Core::LinearSolver::Parameters::fix_null_space(std::string field,
   if (nullspace == nullptr) FOUR_C_THROW("List does not contain nullspace");
 
   const int nullspaceLength = nullspace->MyLength();
-  const int newmapLength = newmap.NumMyElements();
+  const int newmapLength = newmap.num_my_elements();
 
   if (nullspaceLength == newmapLength) return;
-  if (nullspaceLength != oldmap.NumMyElements())
+  if (nullspaceLength != oldmap.num_my_elements())
     FOUR_C_THROW("Nullspace map of length {} does not match old map length of {}", nullspaceLength,
-        oldmap.NumMyElements());
+        oldmap.num_my_elements());
   if (newmapLength > nullspaceLength)
     FOUR_C_THROW("New problem size larger than old - full rebuild of nullspace necessary");
 
@@ -148,8 +148,8 @@ void Core::LinearSolver::Parameters::fix_null_space(std::string field,
 
     for (int j = 0; j < myLength; j++)
     {
-      int gid = newmap.GID(j);
-      int olid = oldmap.LID(gid);
+      int gid = newmap.gid(j);
+      int olid = oldmap.lid(gid);
       if (olid == -1) continue;
       nullspaceDataNew[j] = nullspaceData[olid];
     }

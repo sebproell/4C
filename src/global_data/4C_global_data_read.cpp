@@ -899,7 +899,7 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
   std::set<int> my_multimat_IDs;
 
   // take care also of ghosted elements! -> ElementColMap!
-  for (int i = 0; i < macro_dis->element_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < macro_dis->element_col_map()->num_my_elements(); ++i)
   {
     Core::Elements::Element* actele = macro_dis->l_col_element(i);
     std::shared_ptr<Core::Mat::Material> actmat = actele->material();
@@ -1711,7 +1711,7 @@ void Global::read_knots(Global::Problem& problem, Core::IO::InputFile& input)
 
       // the smallest gid in the discretisation determines the access
       // pattern via the element offset
-      int smallest_gid_in_dis = dis->element_row_map()->MinAllGID();
+      int smallest_gid_in_dis = dis->element_row_map()->min_all_gid();
 
       // consistency checks
       disknots->finish_knots(smallest_gid_in_dis);

@@ -161,7 +161,7 @@ void CONTACT::MtAbstractStrategy::setup(bool redistributed)
 
     // merge interface Lagrange multiplier dof maps to global LM dof map
     glmdofrowmap_ = Core::LinAlg::merge_map(glmdofrowmap_, interface_[i]->lag_mult_dofs());
-    offset_if = glmdofrowmap_->NumGlobalElements();
+    offset_if = glmdofrowmap_->num_global_elements();
     if (offset_if < 0) offset_if = 0;
 
     // merge interface master, slave maps to global master, slave map
@@ -423,16 +423,16 @@ void CONTACT::MtAbstractStrategy::restrict_meshtying_zone()
     std::vector<int> data;
 
     // loop over all entries of allreduced map
-    const int numMyFullSlaveDofs = fullsdofs->NumMyElements();
+    const int numMyFullSlaveDofs = fullsdofs->num_my_elements();
     for (int k = 0; k < numMyFullSlaveDofs; ++k)
     {
       // get global ID of current dof
-      int gid = fullsdofs->GID(k);
+      int gid = fullsdofs->gid(k);
 
       /* Check if this GID is stored on this processor in the slave dof row map based on the old
        * distribution and add to data vector if so.
        */
-      if (non_redist_gsdofrowmap_->MyGID(gid)) data.push_back(gid);
+      if (non_redist_gsdofrowmap_->my_gid(gid)) data.push_back(gid);
     }
 
     // re-setup old slave dof row map (with restriction now)
@@ -498,10 +498,10 @@ void CONTACT::MtAbstractStrategy::mesh_initialization(
     Core::LinAlg::export_to(*Xslavemod, Xslavemodcol);
 
     // loop over all slave column nodes on the current interface
-    for (int j = 0; j < interface_[i]->slave_col_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->slave_col_nodes()->num_my_elements(); ++j)
     {
       // get global ID of current node
-      int gid = interface_[i]->slave_col_nodes()->GID(j);
+      int gid = interface_[i]->slave_col_nodes()->gid(j);
 
       // get the mortar node
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
@@ -523,7 +523,7 @@ void CONTACT::MtAbstractStrategy::mesh_initialization(
 
       for (int dof = 0; dof < numdof; ++dof)
       {
-        locindex[dof] = (Xslavemodcol.get_map()).LID(mtnode->dofs()[dof]);
+        locindex[dof] = (Xslavemodcol.get_map()).lid(mtnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("Did not find dof in map");
         Xnew[dof] = Xslavemodcol[locindex[dof]];
       }
@@ -646,9 +646,9 @@ void CONTACT::MtAbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Q
       FOUR_C_THROW("store_nodal_quantities: Null vector handed in!");
 
     // loop over all slave row nodes on the current interface
-    for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interface_[i]->slave_row_nodes()->GID(j);
+      int gid = interface_[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Mortar::Node* mtnode = dynamic_cast<Mortar::Node*>(node);
@@ -663,7 +663,7 @@ void CONTACT::MtAbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Q
 
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (vectorinterface.get_map()).LID(mtnode->dofs()[dof]);
+        locindex[dof] = (vectorinterface.get_map()).lid(mtnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("StoreNodalQuantities: Did not find dof in map");
 
         switch (type)
@@ -717,9 +717,9 @@ void CONTACT::MtAbstractStrategy::store_dirichlet_status(
   for (int i = 0; i < (int)interface_.size(); ++i)
   {
     // loop over all slave row nodes on the current interface
-    for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interface_[i]->slave_row_nodes()->GID(j);
+      int gid = interface_[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Mortar::Node* mtnode = dynamic_cast<Mortar::Node*>(node);
@@ -728,7 +728,7 @@ void CONTACT::MtAbstractStrategy::store_dirichlet_status(
       for (int k = 0; k < mtnode->num_dof(); ++k)
       {
         int currdof = mtnode->dofs()[k];
-        int lid = (dbcmaps->cond_map())->LID(currdof);
+        int lid = (dbcmaps->cond_map())->lid(currdof);
 
         // store dbc status if found
         if (lid >= 0 && mtnode->dbc_dofs()[k] == false)
@@ -850,9 +850,9 @@ void CONTACT::MtAbstractStrategy::assemble_coords(
     FOUR_C_THROW("Unknown sidename");
 
   // loop over all row nodes of this side (at the global level)
-  for (int j = 0; j < sidemap->NumMyElements(); ++j)
+  for (int j = 0; j < sidemap->num_my_elements(); ++j)
   {
-    int gid = sidemap->GID(j);
+    int gid = sidemap->gid(j);
 
     // find this node in interface discretizations
     bool found = false;

@@ -19,7 +19,7 @@ FOUR_C_NAMESPACE_OPEN
 void FS3I::BioFilm::Utils::scatra_change_config(Core::FE::Discretization& scatradis,
     Core::FE::Discretization& dis, Core::LinAlg::Vector<double>& disp)
 {
-  const int numnode = (scatradis.node_col_map())->NumMyElements();
+  const int numnode = (scatradis.node_col_map())->num_my_elements();
 
   // Create Vector which holds all col-displacements of processor
   Core::LinAlg::Vector<double> coldisp(*(dis.dof_col_map()));
@@ -34,7 +34,7 @@ void FS3I::BioFilm::Utils::scatra_change_config(Core::FE::Discretization& scatra
   for (int index = 0; index < numnode; ++index)
   {
     // get current node
-    int gid = (scatradis.node_col_map())->GID(index);
+    int gid = (scatradis.node_col_map())->gid(index);
     Core::Nodes::Node* mynode = scatradis.g_node(gid);
 
     // get local fluid/structure node with the same local node id
@@ -52,7 +52,7 @@ void FS3I::BioFilm::Utils::scatra_change_config(Core::FE::Discretization& scatra
 
     for (int i = 0; i < numdim; ++i)
     {
-      const int lid = gvector.get_map().LID(nodedofs[i]);
+      const int lid = gvector.get_map().lid(nodedofs[i]);
 
       if (lid < 0)
         FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",

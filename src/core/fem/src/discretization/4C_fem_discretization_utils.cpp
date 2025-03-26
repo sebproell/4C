@@ -71,7 +71,7 @@ void Core::FE::Utils::do_initial_field(const Core::Utils::FunctionManager& funct
   for (const int cond_nodeid : cond_nodeids)
   {
     // do only nodes in my row map
-    int cond_node_lid = discret.node_row_map()->LID(cond_nodeid);
+    int cond_node_lid = discret.node_row_map()->lid(cond_nodeid);
     if (cond_node_lid < 0) continue;
     Core::Nodes::Node* node = discret.l_row_node(cond_node_lid);
 
@@ -111,7 +111,7 @@ void Core::FE::Utils::do_initial_field(const Core::Utils::FunctionManager& funct
 
           // assign value
           const int gid = node_dofs[j];
-          const int lid = fieldvector.get_map().LID(gid);
+          const int lid = fieldvector.get_map().lid(gid);
           if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
           fieldvector[lid] = functfac;
         }

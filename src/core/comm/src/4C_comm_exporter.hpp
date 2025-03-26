@@ -561,7 +561,7 @@ namespace Core::Communication
         std::map<int, std::shared_ptr<T>> newmap;
         typename std::map<int, std::shared_ptr<T>>::const_iterator fool;
         for (fool = parobjects_.begin(); fool != parobjects_.end(); ++fool)
-          if (exporter->target_map().MyGID(fool->first)) newmap[fool->first] = fool->second;
+          if (exporter->target_map().my_gid(fool->first)) newmap[fool->first] = fool->second;
         swap(newmap, parobjects_);
       }
 
@@ -616,7 +616,7 @@ namespace Core::Communication
         std::map<int, std::shared_ptr<T>> newmap;
         typename std::map<int, std::shared_ptr<T>>::const_iterator fool;
         for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().MyGID(fool->first)) newmap[fool->first] = fool->second;
+          if (exporter->target_map().my_gid(fool->first)) newmap[fool->first] = fool->second;
         swap(newmap, objects_);
       }
 
@@ -660,7 +660,7 @@ namespace Core::Communication
         std::map<int, T> newmap;
         typename std::map<int, T>::const_iterator fool;
         for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().MyGID(fool->first)) newmap[fool->first] = fool->second;
+          if (exporter->target_map().my_gid(fool->first)) newmap[fool->first] = fool->second;
         swap(newmap, objects_);
       }
 
@@ -705,7 +705,7 @@ namespace Core::Communication
         std::map<int, std::vector<T>> newmap;
         typename std::map<int, std::vector<T>>::iterator fool;
         for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().MyGID(fool->first)) swap(newmap[fool->first], fool->second);
+          if (exporter->target_map().my_gid(fool->first)) swap(newmap[fool->first], fool->second);
         swap(newmap, objects_);
       }
 
@@ -747,7 +747,7 @@ namespace Core::Communication
         std::map<int, std::set<T>> newmap;
         typename std::map<int, std::set<T>>::iterator fool;
         for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().MyGID(fool->first)) swap(newmap[fool->first], fool->second);
+          if (exporter->target_map().my_gid(fool->first)) swap(newmap[fool->first], fool->second);
         swap(newmap, objects_);
       }
 
@@ -790,7 +790,7 @@ namespace Core::Communication
         std::map<int, std::map<T, U>> newmap;
         typename std::map<int, std::map<T, U>>::iterator fool;
         for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().MyGID(fool->first)) swap(newmap[fool->first], fool->second);
+          if (exporter->target_map().my_gid(fool->first)) swap(newmap[fool->first], fool->second);
         swap(newmap, objects_);
       }
 

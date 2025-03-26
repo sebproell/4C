@@ -63,7 +63,7 @@ int Core::DOFSets::PBCDofSet::assign_degrees_of_freedom(
   for (std::map<int, std::vector<int>>::iterator master = perbndcouples_->begin();
       master != perbndcouples_->end(); ++master)
   {
-    int master_lid = dis.node_col_map()->LID(master->first);
+    int master_lid = dis.node_col_map()->lid(master->first);
 
     if (master_lid < 0)
     {
@@ -74,7 +74,7 @@ int Core::DOFSets::PBCDofSet::assign_degrees_of_freedom(
     for (std::vector<int>::iterator slave = master->second.begin(); slave != master->second.end();
         ++slave)
     {
-      int slave_lid = dis.node_col_map()->LID(*slave);
+      int slave_lid = dis.node_col_map()->lid(*slave);
 
       if (slave_lid > -1)
       {
@@ -84,7 +84,7 @@ int Core::DOFSets::PBCDofSet::assign_degrees_of_freedom(
       else
       {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-        if (dis.node_row_map()->MyGID(master->first))
+        if (dis.node_row_map()->my_gid(master->first))
         {
           FOUR_C_THROW("slave not on proc but master owned by proc\n");
         }

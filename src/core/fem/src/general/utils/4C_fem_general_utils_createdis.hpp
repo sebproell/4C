@@ -198,9 +198,9 @@ namespace Core::FE
       }  // loop over all source elements
 
       // construct new nodes, which use the same global id as the source nodes
-      for (int i = 0; i < sourcenoderowmap->NumMyElements(); ++i)
+      for (int i = 0; i < sourcenoderowmap->num_my_elements(); ++i)
       {
-        const int gid = sourcenoderowmap->GID(i);
+        const int gid = sourcenoderowmap->gid(i);
         if (rownodeset_.find(gid) != rownodeset_.end())
         {
           const Core::Nodes::Node* sourcenode = sourcedis.l_row_node(i);
@@ -365,9 +365,9 @@ namespace Core::FE
     )
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (!(sourcedis.have_global_node(sourcedis.node_row_map()->GID(0))))
+      if (!(sourcedis.have_global_node(sourcedis.node_row_map()->gid(0))))
         FOUR_C_THROW("Cloning not possible since node with GID {} is not stored on this proc!",
-            sourcedis.node_row_map()->GID(0));
+            sourcedis.node_row_map()->gid(0));
 #endif
       // try to cast sourcedis to NurbsDiscretisation
       Core::FE::Nurbs::NurbsDiscretization* nurbsdis =
@@ -467,7 +467,7 @@ namespace Core::FE
       for (int i = 0; i < numelements; ++i)
       {
         Core::Elements::Element* actele = sourcedis.l_col_element(i);
-        bool ismyele = sourcedis.element_row_map()->MyGID(actele->id());
+        bool ismyele = sourcedis.element_row_map()->my_gid(actele->id());
 
         // we get the element type std::string and a boolean if this element
         // is considered! (see submeshes for Fluid-ALE case!)

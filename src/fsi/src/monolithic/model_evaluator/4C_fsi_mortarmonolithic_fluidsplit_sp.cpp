@@ -52,7 +52,7 @@ FSI::MortarMonolithicFluidSplitSaddlePoint::MortarMonolithicFluidSplitSaddlePoin
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   // Check whether the intersection is empty
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
   {
     //      std::cout << "Slave interface nodes with Dirichlet boundary condition "
     //                "(input file numbering):" << std::endl;
@@ -270,10 +270,10 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::setup_system()
 void FSI::MortarMonolithicFluidSplitSaddlePoint::create_lagrange_multiplier_dof_row_map()
 {
   const int num_glob_elem_fluid_interface =
-      fluid_field()->interface()->fsi_cond_map()->NumGlobalElements();
+      fluid_field()->interface()->fsi_cond_map()->num_global_elements();
   const int num_loc_elem_fluid_interface =
-      fluid_field()->interface()->fsi_cond_map()->NumMyElements();
-  const int max_gid_ale = ale_field()->dof_row_map()->MaxAllGID();
+      fluid_field()->interface()->fsi_cond_map()->num_my_elements();
+  const int max_gid_ale = ale_field()->dof_row_map()->max_all_gid();
   lag_mult_dof_map_ = std::make_shared<Core::LinAlg::Map>(
       num_glob_elem_fluid_interface, num_loc_elem_fluid_interface, max_gid_ale + 1, comm_);
 }
@@ -288,7 +288,7 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::create_combined_dof_row_map()
   vecSpaces.push_back(ale_field()->interface()->other_map());
   vecSpaces.push_back(lag_mult_dof_map_);
 
-  if (vecSpaces[1]->NumGlobalElements() == 0)
+  if (vecSpaces[1]->num_global_elements() == 0)
     FOUR_C_THROW("No inner fluid equations. Splitting not possible.");
 
   set_dof_row_maps(vecSpaces);

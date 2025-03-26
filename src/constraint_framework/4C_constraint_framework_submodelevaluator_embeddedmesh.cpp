@@ -72,7 +72,7 @@ Constraints::SubmodelEvaluator::EmbeddedMeshConstraintManager::EmbeddedMeshConst
 
   mortar_manager_ = std::make_shared<Constraints::EmbeddedMesh::SolidToSolidMortarManager>(
       discret_ptr, dispnp, embedded_mesh_coupling_params, visualization_manager,
-      discret_ptr->dof_row_map()->MaxAllGID() + 1);
+      discret_ptr->dof_row_map()->max_all_gid() + 1);
 }
 
 bool Constraints::SubmodelEvaluator::EmbeddedMeshConstraintManager::evaluate_force_stiff(

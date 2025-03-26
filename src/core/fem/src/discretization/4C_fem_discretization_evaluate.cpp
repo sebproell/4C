@@ -194,7 +194,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
     for (const int nodeid : *nodeids)
     {
       // do only nodes in my row map
-      if (!node_row_map()->MyGID(nodeid)) continue;
+      if (!node_row_map()->my_gid(nodeid)) continue;
       Core::Nodes::Node* actnode = g_node(nodeid);
       if (!actnode) FOUR_C_THROW("Cannot find global node {}", nodeid);
       // call explicitly the main dofset, nodeid.e. the first column
@@ -226,7 +226,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
             });
 
         value *= functfac;
-        const int lid = systemvector.get_map().LID(gid);
+        const int lid = systemvector.get_map().lid(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
         systemvector[lid] += value;
       }
@@ -292,7 +292,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
       std::vector<int> lmstride;
 
       // do only nodes in my row map
-      if (!node_row_map()->MyGID(nodeid)) continue;
+      if (!node_row_map()->my_gid(nodeid)) continue;
 
       // get global node
       Core::Nodes::Node* actnode = g_node(nodeid);
@@ -626,7 +626,7 @@ void Core::FE::Discretization::evaluate_scalars(
     // pointer to current element
     Core::Elements::Element* actele = l_row_element(i);
 
-    if (!scalars.get_map().MyGID(actele->id()))
+    if (!scalars.get_map().my_gid(actele->id()))
       FOUR_C_THROW("Proc does not have global element {}", actele->id());
 
     // get element location vector

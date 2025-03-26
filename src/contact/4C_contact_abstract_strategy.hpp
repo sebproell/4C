@@ -605,7 +605,7 @@ namespace CONTACT
     int number_of_active_nodes() const override
     {
       if (data().global_active_node_row_map_ptr())
-        return data().global_active_node_row_map_ptr()->NumGlobalElements();
+        return data().global_active_node_row_map_ptr()->num_global_elements();
       return 0;
     }
 
@@ -613,7 +613,7 @@ namespace CONTACT
     int number_of_slip_nodes() const override
     {
       if (data().global_slip_node_row_map_ptr())
-        return data().global_slip_node_row_map_ptr()->NumGlobalElements();
+        return data().global_slip_node_row_map_ptr()->num_global_elements();
       return 0;
     }
 

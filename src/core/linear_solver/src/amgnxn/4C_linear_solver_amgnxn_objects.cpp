@@ -181,13 +181,13 @@ Core::LinearSolver::AMGNxN::BlockedMatrix::get_block_sparse_matrix(Core::LinAlg:
   for (int row = 0; row < rows; row++)
     for (int col = 1; col < cols; col++)
       if (!((matrices_[row * cols + col]->range_map())
-                  .SameAs(matrices_[row * cols + 0]->range_map())))
+                  .same_as(matrices_[row * cols + 0]->range_map())))
         FOUR_C_THROW("The range map must be the same for all matrices_ in the same row");
 
   for (int col = 0; col < cols; col++)
     for (int row = 1; row < rows; row++)
       if (!((matrices_[row * cols + col]->domain_map())
-                  .SameAs(matrices_[0 * cols + col]->domain_map())))
+                  .same_as(matrices_[0 * cols + col]->domain_map())))
         FOUR_C_THROW("The domain map must be the same for all blocks in the same col");
 
   // build the partial and full domain maps

@@ -333,7 +333,7 @@ void CONTACT::LagrangeStrategyPoro::poro_initialize(
     //
     //************************************************************************************************
     //
-    if (gactivedofs_->NumGlobalElements())
+    if (gactivedofs_->num_global_elements())
     {
       std::shared_ptr<Core::LinAlg::SparseMatrix> tanginvD =
           Core::LinAlg::matrix_multiply(*Tangential_, false, *invda_, true, false, false, true);
@@ -540,8 +540,8 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
   }
 
   // abbreviations for slave  and master set
-  int sset = fgsdofrowmap_->NumGlobalElements();
-  int mset = fgmdofrowmap_->NumGlobalElements();
+  int sset = fgsdofrowmap_->num_global_elements();
+  int mset = fgmdofrowmap_->num_global_elements();
 
   // we want to split fsm into 2 groups s,m
   fs = std::make_shared<Core::LinAlg::Vector<double>>(*fgsdofrowmap_);
@@ -587,8 +587,8 @@ void CONTACT::LagrangeStrategyPoro::evaluate_mat_poro_no_pen(
       k_fs_mi, tempmtx1, tempmtx2);
 
   // abbreviations for active and inactive set
-  int aset = fgactivedofs_->NumGlobalElements();
-  int iset = fgidofs->NumGlobalElements();
+  int aset = fgactivedofs_->num_global_elements();
+  int iset = fgidofs->num_global_elements();
 
   // we want to split fsmod into 2 groups a,i
   std::shared_ptr<Core::LinAlg::Vector<double>> fa =
@@ -1034,12 +1034,12 @@ void CONTACT::LagrangeStrategyPoro::evaluate_other_mat_poro_no_pen(
       F_s, fgactivedofs_, fgidofs, domainmap, tempmap1, F_a, F_a0, F_i, F_i0);
 
   // abbreviations for active and inactive set
-  int aset = fgactivedofs_->NumGlobalElements();
-  int iset = fgidofs->NumGlobalElements();
+  int aset = fgactivedofs_->num_global_elements();
+  int iset = fgidofs->num_global_elements();
 
   // abbreviations for slave  and master set
   // int sset = fgsdofrowmap_->NumGlobalElements(); // usually slave should anyway exist!
-  int mset = fgmdofrowmap_->NumGlobalElements();
+  int mset = fgmdofrowmap_->num_global_elements();
 
   /**********************************************************************/
   /* (7) Build the final K blocks                                       */
@@ -1174,15 +1174,15 @@ void CONTACT::LagrangeStrategyPoro::recover_poro_no_pen(Core::LinAlg::Vector<dou
 
     // extract slave displacements from disi
     Core::LinAlg::Vector<double> disis(*gsdofrowmap_);
-    if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(disi, disis);
+    if (gsdofrowmap_->num_global_elements()) Core::LinAlg::export_to(disi, disis);
 
     // extract master displacements from disi
     Core::LinAlg::Vector<double> disim(*gmdofrowmap_);
-    if (gmdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(disi, disim);
+    if (gmdofrowmap_->num_global_elements()) Core::LinAlg::export_to(disi, disim);
 
     // extract other displacements from disi
     Core::LinAlg::Vector<double> disin(*gndofrowmap_);
-    if (gndofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(disi, disin);
+    if (gndofrowmap_->num_global_elements()) Core::LinAlg::export_to(disi, disin);
 
     // condensation has been performed for active LM only,
     // thus we construct a modified invd matrix here which
@@ -1361,7 +1361,7 @@ void CONTACT::LagrangeStrategyPoro::set_state(
 
               fpres = node->dofs()[0];  // here get ids of first component of node
 
-              myfpres = global.get_values()[global.get_map().LID(fpres)];
+              myfpres = global.get_values()[global.get_map().lid(fpres)];
 
               *node->poro_data().fpres() = myfpres;
             }
@@ -1406,11 +1406,11 @@ void CONTACT::LagrangeStrategyPoro::set_parent_state(const enum Mortar::StateTyp
 
       if (poroslave_)
       {
-        for (int j = 0; j < interface_[i]->slave_col_elements()->NumMyElements();
+        for (int j = 0; j < interface_[i]->slave_col_elements()->num_my_elements();
             ++j)  // will just work for onesided poro contact as the porosity is just on slave
                   // side!!!
         {
-          int gid = interface_[i]->slave_col_elements()->GID(j);
+          int gid = interface_[i]->slave_col_elements()->gid(j);
 
           Mortar::Element* ele = dynamic_cast<Mortar::Element*>(idiscret_.g_element(gid));
 
@@ -1429,9 +1429,9 @@ void CONTACT::LagrangeStrategyPoro::set_parent_state(const enum Mortar::StateTyp
       }
       if (poromaster_)  // add master parent element displacements
       {
-        for (int j = 0; j < interface_[i]->master_col_elements()->NumMyElements(); ++j)
+        for (int j = 0; j < interface_[i]->master_col_elements()->num_my_elements(); ++j)
         {
-          int gid = interface_[i]->master_col_elements()->GID(j);
+          int gid = interface_[i]->master_col_elements()->gid(j);
 
           Mortar::Element* mele = dynamic_cast<Mortar::Element*>(idiscret_.g_element(gid));
 
@@ -1513,7 +1513,7 @@ void CONTACT::LagrangeStrategyPoro::poro_mt_set_coupling_matrices()
 
   std::shared_ptr<Core::LinAlg::Map> gidofs;
 
-  int aset = gactivedofs_->NumGlobalElements();
+  int aset = gactivedofs_->num_global_elements();
 
   // invert dmatrix to invd
   invd_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dmatrix_);
@@ -1548,7 +1548,7 @@ void CONTACT::LagrangeStrategyPoro::poro_mt_set_coupling_matrices()
   Core::LinAlg::split_matrix2x2(
       dmatrix_, gactivedofs_, gidofs, gactivedofs_, gidofs, tempmtx1, dai, tempmtx2, tempmtx3);
 
-  int iset = gidofs->NumGlobalElements();
+  int iset = gidofs->num_global_elements();
   // do the multiplication dhat = invda * dai
   std::shared_ptr<Core::LinAlg::SparseMatrix> dhat =
       std::make_shared<Core::LinAlg::SparseMatrix>(*gactivedofs_, 10);

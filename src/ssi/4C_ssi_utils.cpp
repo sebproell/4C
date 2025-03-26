@@ -967,8 +967,8 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(const Core::FE::Discret
     // setup coupling adapter
     auto coupling_adapter = std::make_shared<Coupling::Adapter::Coupling>();
     const int num_dofs =
-        static_cast<int>(static_cast<double>(dis.dof_row_map()->NumGlobalElements()) /
-                         static_cast<double>(dis.node_row_map()->NumGlobalElements()));
+        static_cast<int>(static_cast<double>(dis.dof_row_map()->num_global_elements()) /
+                         static_cast<double>(dis.node_row_map()->num_global_elements()));
     coupling_adapter->setup_coupling(
         dis, dis, inodegidvec_master, inodegidvec_slave, num_dofs, true, 1.0e-8);
 
@@ -1342,7 +1342,7 @@ void SSI::Utils::SSIMeshTying::check_slave_side_has_dirichlet_conditions(
   for (const auto& meshtying : meshtying_handlers_)
   {
     maps[1] = meshtying->slave_master_coupling()->slave_dof_map();
-    if (Core::LinAlg::MultiMapExtractor::intersect_maps(maps)->NumGlobalElements() > 0)
+    if (Core::LinAlg::MultiMapExtractor::intersect_maps(maps)->num_global_elements() > 0)
       FOUR_C_THROW("Must not apply Dirichlet conditions to slave-side structural displacements!");
   }
 }

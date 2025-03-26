@@ -31,7 +31,7 @@ void Solid::ModelEvaluator::BaseSSI::determine_stress_strain()
 
   Core::Communication::UnpackBuffer buffer(stressdata);
   // loop over all row elements
-  for (int i = 0; i < discret().element_row_map()->NumMyElements(); ++i)
+  for (int i = 0; i < discret().element_row_map()->num_my_elements(); ++i)
   {
     // initialize matrix for stresses associated with current element
     const auto stresses_ele = std::make_shared<Core::LinAlg::SerialDenseMatrix>();
@@ -40,7 +40,7 @@ void Solid::ModelEvaluator::BaseSSI::determine_stress_strain()
     extract_from_pack(buffer, *stresses_ele);
 
     // store stresses
-    (*stresses)[discret().element_row_map()->GID(i)] = stresses_ele;
+    (*stresses)[discret().element_row_map()->gid(i)] = stresses_ele;
   }
 
   // export map to column format
@@ -59,17 +59,17 @@ void Solid::ModelEvaluator::BaseSSI::determine_stress_strain()
       });
 
   const auto* nodegids = discret().node_row_map();
-  for (int i = 0; i < nodegids->NumMyElements(); ++i)
+  for (int i = 0; i < nodegids->num_my_elements(); ++i)
   {
-    const int nodegid = nodegids->GID(i);
+    const int nodegid = nodegids->gid(i);
 
     // extract lid of node as multi-vector is sorted according to the node ids
     const Core::Nodes::Node* const node = discret().g_node(nodegid);
-    const int nodelid = discret().node_row_map()->LID(nodegid);
+    const int nodelid = discret().node_row_map()->lid(nodegid);
 
     // extract dof lid of first degree of freedom associated with current node in second nodeset
     const int dofgid = discret().dof(2, node, 0);
-    const int doflid = mechanical_stress_state_np_->get_map().LID(dofgid);
+    const int doflid = mechanical_stress_state_np_->get_map().lid(dofgid);
     if (doflid < 0) FOUR_C_THROW("Local ID not found in vector!");
 
     (*mechanical_stress_state_np_)[doflid] = (nodal_stresses_source(0))[nodelid];

@@ -99,7 +99,7 @@ void Core::Conditions::setup_extractor(const Core::FE::Discretization& dis,
 
   // Find all non-conditioned dofs by subtracting all conditioned ones.
   std::set<int> otherdofset(
-      full_map.MyGlobalElements(), full_map.MyGlobalElements() + full_map.NumMyElements());
+      full_map.my_global_elements(), full_map.my_global_elements() + full_map.num_my_elements());
 
   for (auto& conddofset : conditioned_dof_sets)
   {

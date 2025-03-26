@@ -54,7 +54,7 @@ int Core::DOFSets::IndependentDofSet::get_first_gid_number_to_be_used(
 int Core::DOFSets::IndependentDofSet::get_minimal_node_gid_if_relevant(
     const Core::FE::Discretization& dis) const
 {
-  return ignoreminnodegid_ ? 0 : dis.node_row_map()->MinAllGID();
+  return ignoreminnodegid_ ? 0 : dis.node_row_map()->min_all_gid();
 }
 
 FOUR_C_NAMESPACE_CLOSE

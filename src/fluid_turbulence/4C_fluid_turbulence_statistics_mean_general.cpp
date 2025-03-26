@@ -157,8 +157,8 @@ void FLD::TurbulenceStatisticsGeneralMean::add_to_current_time_average(const dou
     else
     {
       // any XFEM problem with scatra will crash here, it could probably be removed     henke 12/11
-      MPI_Comm comm =
-          (discret_ != nullptr) ? (discret_->get_comm()) : (standarddofset_->dof_row_map()->Comm());
+      MPI_Comm comm = (discret_ != nullptr) ? (discret_->get_comm())
+                                            : (standarddofset_->dof_row_map()->get_comm());
       if (Core::Communication::my_mpi_rank(comm) == 0)
         std::cout << "curr_avg_sca_ or scavec is nullptr" << std::endl;
     }
@@ -609,25 +609,25 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
 
             // u velocity
             gid = nodedofset[0];
-            lid = dofrowmap->LID(gid);
+            lid = dofrowmap->lid(gid);
 
             avg_u[pos] += (*curr_avg_)[lid];
 
             // v velocity
             gid = nodedofset[1];
-            lid = dofrowmap->LID(gid);
+            lid = dofrowmap->lid(gid);
 
             avg_v[pos] += (*curr_avg_)[lid];
 
             // w velocity
             gid = nodedofset[2];
-            lid = dofrowmap->LID(gid);
+            lid = dofrowmap->lid(gid);
 
             avg_w[pos] += (*curr_avg_)[lid];
 
             // pressure p
             gid = nodedofset[3];
-            lid = dofrowmap->LID(gid);
+            lid = dofrowmap->lid(gid);
 
             avg_p[pos] += (*curr_avg_)[lid];
 
@@ -895,25 +895,25 @@ void FLD::TurbulenceStatisticsGeneralMean::space_average_in_one_direction(const 
 
           // u velocity
           gid = nodedofset[0];
-          lid = dofrowmap->LID(gid);
+          lid = dofrowmap->lid(gid);
 
           err += curr_avg_->replace_local_values(1, &(avg_u[pos]), &lid);
 
           // v velocity
           gid = nodedofset[1];
-          lid = dofrowmap->LID(gid);
+          lid = dofrowmap->lid(gid);
 
           err += curr_avg_->replace_local_values(1, &(avg_v[pos]), &lid);
 
           // w velocity
           gid = nodedofset[2];
-          lid = dofrowmap->LID(gid);
+          lid = dofrowmap->lid(gid);
 
           err += curr_avg_->replace_local_values(1, &(avg_w[pos]), &lid);
 
           // pressure p
           gid = nodedofset[3];
-          lid = dofrowmap->LID(gid);
+          lid = dofrowmap->lid(gid);
 
           err += curr_avg_->replace_local_values(1, &(avg_p[pos]), &lid);
 

@@ -113,7 +113,7 @@ Arteries::Utils::ArtJunctionWrapper::ArtJunctionWrapper(
         if (nodes->size() != 1)
           FOUR_C_THROW("Artery Connection BC should have only one node connected to it!");
 
-        int local_id = discret_->node_row_map()->LID((*nodes)[0]);
+        int local_id = discret_->node_row_map()->lid((*nodes)[0]);
         // Get the actual node connected to the condition
         Core::Nodes::Node* nd = discret_->l_col_node(local_id);
 
@@ -221,7 +221,7 @@ Arteries::Utils::ArtJunctionWrapper::ArtJunctionWrapper(
           const std::vector<int>* nodes = SortedConds[i][j]->get_nodes();
           std::shared_ptr<JunctionNodeParams> nodeparams = std::make_shared<JunctionNodeParams>();
 
-          int local_id = discret_->node_row_map()->LID((*nodes)[0]);
+          int local_id = discret_->node_row_map()->lid((*nodes)[0]);
           inserted = nodalParams->insert(std::make_pair(local_id, nodeparams)).second;
           if (!inserted) FOUR_C_THROW("Node {} has more than one condition", (*nodes)[0] + 1);
         }
@@ -437,7 +437,7 @@ int Arteries::Utils::ArtJunctionBc::solve(Teuchos::ParameterList& params)
   // loop over all the nodes and read in the required parameters
   for (unsigned int i = 0; i < nodes_.size(); i++)
   {
-    int local_id = discret_->node_row_map()->LID(nodes_[i]);
+    int local_id = discret_->node_row_map()->lid(nodes_[i]);
     A[i] = (*nodalMap)[local_id]->A_;
     Q[i] = (*nodalMap)[local_id]->Q_;
     W[i] = (*nodalMap)[local_id]->W_;
@@ -527,7 +527,7 @@ int Arteries::Utils::ArtJunctionBc::solve(Teuchos::ParameterList& params)
   //----------------------------------------------------------------------
   for (unsigned int i = 0; i < nodes_.size(); i++)
   {
-    int local_id = discret_->node_row_map()->LID(nodes_[i]);
+    int local_id = discret_->node_row_map()->lid(nodes_[i]);
     (*nodalMap)[local_id]->A_ = A[i];
     (*nodalMap)[local_id]->Q_ = Q[i];
   }

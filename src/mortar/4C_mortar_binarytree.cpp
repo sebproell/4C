@@ -408,15 +408,15 @@ void Mortar::BinaryTree::init()
   std::vector<int> slist;
   std::vector<int> mlist;
 
-  for (int i = 0; i < selements_->NumMyElements(); ++i)
+  for (int i = 0; i < selements_->num_my_elements(); ++i)
   {
-    int gid = selements_->GID(i);
+    int gid = selements_->gid(i);
     slist.push_back(gid);
   }
 
-  for (int i = 0; i < melements_->NumMyElements(); ++i)
+  for (int i = 0; i < melements_->num_my_elements(); ++i)
   {
-    int gid = melements_->GID(i);
+    int gid = melements_->gid(i);
     mlist.push_back(gid);
   }
 
@@ -540,9 +540,9 @@ void Mortar::BinaryTree::init_search_elements()
 {
   // loop over all elements to reset candidates / search lists
   // (use standard slave column map)
-  for (int i = 0; i < selements_->NumMyElements(); ++i)
+  for (int i = 0; i < selements_->num_my_elements(); ++i)
   {
-    int gid = selements_->GID(i);
+    int gid = selements_->gid(i);
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     Mortar::Element* sele = dynamic_cast<Mortar::Element*>(ele);
@@ -601,9 +601,9 @@ void Mortar::BinaryTree::set_enlarge()
   double lmin = 1.0e12;
 
   // calculate mininmal length of slave elements
-  for (int i = 0; i < selements_->NumMyElements(); ++i)
+  for (int i = 0; i < selements_->num_my_elements(); ++i)
   {
-    int gid = selements_->GID(i);
+    int gid = selements_->gid(i);
     Core::Elements::Element* element = discret().g_element(gid);
     if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
     Mortar::Element* mrtrelement = dynamic_cast<Mortar::Element*>(element);
@@ -612,9 +612,9 @@ void Mortar::BinaryTree::set_enlarge()
   }
 
   // calculate minimal length of master elements
-  for (int i = 0; i < melements_->NumMyElements(); ++i)
+  for (int i = 0; i < melements_->num_my_elements(); ++i)
   {
-    int gid = melements_->GID(i);
+    int gid = melements_->gid(i);
     Core::Elements::Element* element = discret().g_element(gid);
     if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
     Mortar::Element* mrtrelement = dynamic_cast<Mortar::Element*>(element);

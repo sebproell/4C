@@ -65,7 +65,7 @@ Cardiovascular0D::ProperOrthogonalDecomposition::ProperOrthogonalDecomposition(
   if (err != 0) FOUR_C_THROW("POD projection matrix could not be mapped onto the dof map");
 
   // check row dimension
-  if (projmatrix_->GlobalLength() != full_model_dof_row_map_->NumGlobalElements())
+  if (projmatrix_->GlobalLength() != full_model_dof_row_map_->num_global_elements())
     FOUR_C_THROW("Projection matrix does not match discretization.");
 
   // check orthogonality
@@ -74,9 +74,9 @@ Cardiovascular0D::ProperOrthogonalDecomposition::ProperOrthogonalDecomposition(
 
   // maps for reduced system
   structmapr_ = std::make_shared<Core::LinAlg::Map>(
-      projmatrix_->NumVectors(), 0, full_model_dof_row_map_->Comm());
+      projmatrix_->NumVectors(), 0, full_model_dof_row_map_->get_comm());
   redstructmapr_ = std::make_shared<Core::LinAlg::Map>(
-      projmatrix_->NumVectors(), projmatrix_->NumVectors(), 0, full_model_dof_row_map_->Comm());
+      projmatrix_->NumVectors(), projmatrix_->NumVectors(), 0, full_model_dof_row_map_->get_comm());
   // Core::LinAlg::allreduce_e_map cant't be used here, because NumGlobalElements will be chosen
   // wrong
 
@@ -218,7 +218,7 @@ void Cardiovascular0D::ProperOrthogonalDecomposition::multi_vector_to_linalg_spa
     for (int j = 0; j < multivect.MyLength(); j++)
     {
       // assemble the values into the Core::LinAlg::SparseMatrix (value by value)
-      sparsemat.assemble(Values[i * multivect.MyLength() + j], rangemap.GID(j), i);
+      sparsemat.assemble(Values[i * multivect.MyLength() + j], rangemap.gid(j), i);
     }
   }
 
@@ -286,8 +286,8 @@ void Cardiovascular0D::ProperOrthogonalDecomposition::read_pod_basis_vectors_fro
   delete[] sizeblock;
 
   // allocate multivector according to matrix size:
-  std::shared_ptr<Core::LinAlg::Map> mymap =
-      std::make_shared<Core::LinAlg::Map>(NumRows.ValueAsInt, 0, full_model_dof_row_map_->Comm());
+  std::shared_ptr<Core::LinAlg::Map> mymap = std::make_shared<Core::LinAlg::Map>(
+      NumRows.ValueAsInt, 0, full_model_dof_row_map_->get_comm());
   projmatrix = std::make_shared<Core::LinAlg::MultiVector<double>>(*mymap, NumCols.ValueAsInt);
 
 
@@ -317,12 +317,12 @@ void Cardiovascular0D::ProperOrthogonalDecomposition::read_pod_basis_vectors_fro
   char* memblock = new char[mysize];
 
   // calculation of starting points in matrix for each processor
-  MPI_Comm comm(full_model_dof_row_map_->Comm());
+  MPI_Comm comm(full_model_dof_row_map_->get_comm());
   const int numproc(Core::Communication::num_mpi_ranks(comm));
   const int mypid(Core::Communication::my_mpi_rank(comm));
   std::vector<int> localnumbers(numproc, 0);
   std::vector<int> globalnumbers(numproc, 0);
-  localnumbers[mypid] = mymap->NumMyElements();
+  localnumbers[mypid] = mymap->num_my_elements();
   Core::Communication::sum_all(localnumbers.data(), globalnumbers.data(), numproc, comm);
 
   int factor(0);
@@ -378,7 +378,7 @@ bool Cardiovascular0D::ProperOrthogonalDecomposition::is_pod_basis_orthogonal(
   const int n = M.NumVectors();
 
   // calculate V^T * V (should be an nxn identity matrix)
-  Core::LinAlg::Map map = Core::LinAlg::Map(n, n, 0, full_model_dof_row_map_->Comm());
+  Core::LinAlg::Map map = Core::LinAlg::Map(n, n, 0, full_model_dof_row_map_->get_comm());
   Core::LinAlg::MultiVector<double> identity = Core::LinAlg::MultiVector<double>(map, n, true);
   identity.Multiply('T', 'N', 1.0, M, M, 0.0);
 

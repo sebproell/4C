@@ -89,7 +89,7 @@ namespace FLD
         add_vector(cond, cond_other, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
-      bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+      bool other_relevant() const { return other_map()->num_global_elements() != 0; }
       void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_other, scalar);
@@ -125,7 +125,7 @@ namespace FLD
         add_vector(cond, cond_fsi, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& fsi_cond_map() const { return map(cond_fsi); }
-      bool fsi_cond_relevant() const { return fsi_cond_map()->NumGlobalElements() != 0; }
+      bool fsi_cond_relevant() const { return fsi_cond_map()->num_global_elements() != 0; }
       void fsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_fsi, scalar);
@@ -164,7 +164,10 @@ namespace FLD
       {
         return map(cond_lung_asi);
       }
-      bool lung_asi_cond_relevant() const { return lung_asi_cond_map()->NumGlobalElements() != 0; }
+      bool lung_asi_cond_relevant() const
+      {
+        return lung_asi_cond_map()->num_global_elements() != 0;
+      }
       void lung_asi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_lung_asi, scalar);
@@ -203,7 +206,7 @@ namespace FLD
       {
         return map(cond_mortar);
       }
-      bool mortar_cond_relevant() const { return mortar_cond_map()->NumGlobalElements() != 0; }
+      bool mortar_cond_relevant() const { return mortar_cond_map()->num_global_elements() != 0; }
       void mortar_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_mortar, scalar);
@@ -239,7 +242,7 @@ namespace FLD
         add_vector(cond, cond_au, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& au_cond_map() const { return map(cond_au); }
-      bool au_cond_relevant() const { return au_cond_map()->NumGlobalElements() != 0; }
+      bool au_cond_relevant() const { return au_cond_map()->num_global_elements() != 0; }
       void au_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_au, scalar);
@@ -291,7 +294,7 @@ namespace FLD
         add_vector(cond, cond_other, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
-      bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+      bool other_relevant() const { return other_map()->num_global_elements() != 0; }
       void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_other, scalar);
@@ -332,7 +335,7 @@ namespace FLD
       }
       bool volumetric_surface_flow_cond_relevant() const
       {
-        return volumetric_surface_flow_cond_map()->NumGlobalElements() != 0;
+        return volumetric_surface_flow_cond_map()->num_global_elements() != 0;
       }
       void volumetric_surface_flow_cond_put_scalar(
           Core::LinAlg::Vector<double>& full, double scalar) const
@@ -389,7 +392,7 @@ namespace FLD
         add_vector(cond, cond_other, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
-      bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+      bool other_relevant() const { return other_map()->num_global_elements() != 0; }
       void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_other, scalar);
@@ -425,7 +428,7 @@ namespace FLD
         add_vector(cond, cond_ksp, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& ksp_cond_map() const { return map(cond_ksp); }
-      bool ksp_cond_relevant() const { return ksp_cond_map()->NumGlobalElements() != 0; }
+      bool ksp_cond_relevant() const { return ksp_cond_map()->num_global_elements() != 0; }
       void ksp_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_ksp, scalar);
@@ -470,7 +473,7 @@ namespace FLD
         add_vector(cond, 0, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& velocity_map() const { return map(0); }
-      bool velocity_relevant() const { return velocity_map()->NumGlobalElements() != 0; }
+      bool velocity_relevant() const { return velocity_map()->num_global_elements() != 0; }
       void velocity_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, 0, scalar);
@@ -506,7 +509,7 @@ namespace FLD
         add_vector(cond, 1, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& pressure_map() const { return map(1); }
-      bool pressure_relevant() const { return pressure_map()->NumGlobalElements() != 0; }
+      bool pressure_relevant() const { return pressure_map()->num_global_elements() != 0; }
       void pressure_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, 1, scalar);
@@ -560,7 +563,7 @@ namespace FLD
         add_vector(cond, cond_other, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
-      bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+      bool other_relevant() const { return other_map()->num_global_elements() != 0; }
       void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_other, scalar);
@@ -596,7 +599,7 @@ namespace FLD
         add_vector(cond, cond_fsi, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& fsi_map() const { return map(cond_fsi); }
-      bool fsi_relevant() const { return fsi_map()->NumGlobalElements() != 0; }
+      bool fsi_relevant() const { return fsi_map()->num_global_elements() != 0; }
       void fsi_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_fsi, scalar);
@@ -649,7 +652,7 @@ namespace FLD
         add_vector(cond, cond_fluid, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& fluid_map() const { return map(cond_fluid); }
-      bool fluid_relevant() const { return fluid_map()->NumGlobalElements() != 0; }
+      bool fluid_relevant() const { return fluid_map()->num_global_elements() != 0; }
       void fluid_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_fluid, scalar);
@@ -688,7 +691,7 @@ namespace FLD
       {
         return map(cond_xfluid);
       }
-      bool x_fluid_relevant() const { return x_fluid_map()->NumGlobalElements() != 0; }
+      bool x_fluid_relevant() const { return x_fluid_map()->num_global_elements() != 0; }
       void x_fluid_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_xfluid, scalar);

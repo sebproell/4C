@@ -37,7 +37,7 @@ void Core::FE::Discretization::boundary_conditions_geometry()
     if (!nodes) continue;
     for (int node : *nodes)
     {
-      if (!node_col_map()->MyGID(node)) continue;
+      if (!node_col_map()->my_gid(node)) continue;
       Core::Nodes::Node* actnode = g_node(node);
       if (!actnode) FOUR_C_THROW("Cannot find global node");
       actnode->set_condition(name, condition);
@@ -231,7 +231,7 @@ bool Core::FE::Discretization::build_lines_in_condition(
 
   for (const auto& nodeid : *nodeids)
   {
-    if (node_col_map()->MyGID(nodeid))
+    if (node_col_map()->my_gid(nodeid))
     {
       Core::Nodes::Node* actnode = g_node(nodeid);
       if (!actnode) FOUR_C_THROW("Cannot find global node");
@@ -324,13 +324,13 @@ bool Core::FE::Discretization::build_surfaces_in_condition(
   std::map<int, Core::Nodes::Node*> mycolnodes;
   for (const auto& nodeid : *nodeids)
   {
-    if (node_col_map()->MyGID(nodeid))
+    if (node_col_map()->my_gid(nodeid))
     {
       Core::Nodes::Node* actnode = g_node(nodeid);
       if (!actnode) FOUR_C_THROW("Cannot find global node");
       mycolnodes[actnode->id()] = actnode;
     }
-    if (node_row_map()->MyGID(nodeid))
+    if (node_row_map()->my_gid(nodeid))
     {
       Core::Nodes::Node* actnode = g_node(nodeid);
       if (!actnode) FOUR_C_THROW("Cannot find global node");

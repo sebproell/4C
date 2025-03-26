@@ -199,7 +199,7 @@ struct WriteElementCenterRotation : public SpecialFieldInterface
           const Core::LinAlg::SerialDenseMatrix& elecenterrot = *data->at(ele.id());
 
           const Core::LinAlg::Map& elemap = elerotation.get_map();
-          int lid = elemap.LID(ele.id());
+          int lid = elemap.lid(ele.id());
           if (lid != -1)
             for (int i = 0; i < elecenterrot.numRows(); ++i)
               for (int j = 0; j < elecenterrot.numCols(); ++j)

@@ -132,9 +132,9 @@ void XFEM::XFieldField::Coupling::master_to_slave(const Core::LinAlg::MultiVecto
     case XFEM::map_nodes:
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (not mv.get_map().PointSameAs(masternodemap_->get_epetra_block_map()))
+      if (not mv.get_map().point_same_as(masternodemap_->get_epetra_block_map()))
         FOUR_C_THROW("master node map vector expected");
-      if (not sv.get_map().PointSameAs(slavenodemap_->get_epetra_block_map()))
+      if (not sv.get_map().point_same_as(slavenodemap_->get_epetra_block_map()))
         FOUR_C_THROW("slave node map vector expected");
       if (sv.NumVectors() != mv.NumVectors())
         FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
@@ -164,9 +164,9 @@ void XFEM::XFieldField::Coupling::slave_to_master(const Core::LinAlg::MultiVecto
     case XFEM::map_nodes:
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (not mv.get_map().PointSameAs(masternodemap_->get_epetra_block_map()))
+      if (not mv.get_map().point_same_as(masternodemap_->get_epetra_block_map()))
         FOUR_C_THROW("master node map vector expected");
-      if (not sv.get_map().PointSameAs(slavenodemap_->get_epetra_block_map()))
+      if (not sv.get_map().point_same_as(slavenodemap_->get_epetra_block_map()))
         FOUR_C_THROW("slave node map vector expected");
       if (sv.NumVectors() != mv.NumVectors())
         FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
@@ -268,8 +268,8 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
   std::vector<int> dofmapvec;
   std::map<int, std::vector<int>> dofs;
 
-  const int* ngids = min_nodemap.MyGlobalElements();
-  const int numnode = min_nodemap.NumMyElements();
+  const int* ngids = min_nodemap.my_global_elements();
+  const int numnode = min_nodemap.num_my_elements();
 
   for (int i = 0; i < numnode; ++i)
   {
@@ -293,8 +293,8 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
   Core::Communication::Exporter exportdofs(min_nodemap, min_permnodemap, min_dis.get_comm());
   exportdofs.do_export(dofs);
 
-  const int* permngids = min_permnodemap.MyGlobalElements();
-  const int permnumnode = min_permnodemap.NumMyElements();
+  const int* permngids = min_permnodemap.my_global_elements();
+  const int permnumnode = min_permnodemap.num_my_elements();
 
   for (int i = 0; i < permnumnode; ++i)
   {
@@ -309,8 +309,8 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
   std::map<int, std::vector<int>>::const_iterator cit;
   for (cit = dofs.begin(); cit != dofs.end(); ++cit)
   {
-    const int min_permlid = min_permnodemap.LID(cit->first);
-    const int max_gid = max_nodemap.GID(min_permlid);
+    const int min_permlid = min_permnodemap.lid(cit->first);
+    const int max_gid = max_nodemap.gid(min_permlid);
     my_mindofpernode[max_gid] = cit->second.size();
   }
   dofs.clear();
@@ -337,8 +337,8 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
   std::vector<int> dofmapvec;
   std::map<int, std::vector<int>> dofs;
 
-  const int* ngids = max_nodemap.MyGlobalElements();
-  const int numnode = max_nodemap.NumMyElements();
+  const int* ngids = max_nodemap.my_global_elements();
+  const int numnode = max_nodemap.num_my_elements();
 
   for (int i = 0; i < numnode; ++i)
   {
@@ -373,8 +373,8 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
   Core::Communication::Exporter exportdofs(max_nodemap, max_permnodemap, max_dis.get_comm());
   exportdofs.do_export(dofs);
 
-  const int* permngids = max_permnodemap.MyGlobalElements();
-  const int permnumnode = max_permnodemap.NumMyElements();
+  const int* permngids = max_permnodemap.my_global_elements();
+  const int permnumnode = max_permnodemap.num_my_elements();
 
   for (int i = 0; i < permnumnode; ++i)
   {

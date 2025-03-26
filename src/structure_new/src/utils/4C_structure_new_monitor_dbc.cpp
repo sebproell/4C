@@ -198,7 +198,7 @@ void Solid::MonitorDbc::create_reaction_maps(const Core::FE::Discretization& dis
   MPI_Comm comm = discret.get_comm();
   for (int nid : *nids)
   {
-    const int rlid = discret.node_row_map()->LID(nid);
+    const int rlid = discret.node_row_map()->lid(nid);
     if (rlid == -1) continue;
 
     const Core::Nodes::Node* node = discret.l_row_node(rlid);
@@ -517,7 +517,7 @@ double Solid::MonitorDbc::get_reaction_force(Core::LinAlg::Matrix<DIM, 1>& rforc
 
     double& lrforce_comp = lrforce_xyz(d, 0);
     const double* vals = partial_freact_ptr->get_values();
-    for (int i = 0; i < react_maps[d]->NumMyElements(); ++i) lrforce_comp += vals[i];
+    for (int i = 0; i < react_maps[d]->num_my_elements(); ++i) lrforce_comp += vals[i];
   }
 
   Core::Communication::sum_all(
@@ -553,7 +553,7 @@ double Solid::MonitorDbc::get_reaction_moment(Core::LinAlg::Matrix<DIM, 1>& rmom
   for (int nid : *nids)
   {
     // Check if the node of the boundary condition is owned by this rank.
-    const int rlid = discret_ptr_->node_row_map()->LID(nid);
+    const int rlid = discret_ptr_->node_row_map()->lid(nid);
     if (rlid == -1) continue;
 
     const Core::Nodes::Node* node = discret_ptr_->l_row_node(rlid);
@@ -570,7 +570,7 @@ double Solid::MonitorDbc::get_reaction_moment(Core::LinAlg::Matrix<DIM, 1>& rmom
     {
       if (onoff[i] == 1)
       {
-        const int lid = complete_freact.get_map().LID(node_gid[i]);
+        const int lid = complete_freact.get_map().lid(node_gid[i]);
         if (lid < 0)
           FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
               Core::Communication::my_mpi_rank(complete_freact.get_comm()), node_gid[i]);

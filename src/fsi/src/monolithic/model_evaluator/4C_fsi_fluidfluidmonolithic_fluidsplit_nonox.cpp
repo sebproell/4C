@@ -48,7 +48,7 @@ FSI::FluidFluidMonolithicFluidSplitNoNOX::FluidFluidMonolithicFluidSplitNoNOX(
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   // It is not allowed, that slave DOFs at the interface hold a Dirichlet
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
   {
     std::stringstream errormsg;
     errormsg << "  "
@@ -804,7 +804,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::create_combined_dof_row_map()
   vecSpaces.push_back(ale_field()->interface()->other_map());
 
   // If the non-FSI fluid maps are empty
-  if (vecSpaces[1]->NumGlobalElements() == 0)
+  if (vecSpaces[1]->num_global_elements() == 0)
     FOUR_C_THROW("No inner fluid equations. Can't split!");
 
   // The vector is complete, fill the system's global BlockRowMap
@@ -1175,7 +1175,7 @@ bool FSI::FluidFluidMonolithicFluidSplitNoNOX::has_fluid_dof_map_changed(
     const Core::LinAlg::Map& fluidincrementmap)
 {
   bool isoldmap =
-      fluidincrementmap.SameAs(fluid_field()->interface()->other_map()->get_epetra_block_map());
+      fluidincrementmap.same_as(fluid_field()->interface()->other_map()->get_epetra_block_map());
   return !isoldmap;
 }
 

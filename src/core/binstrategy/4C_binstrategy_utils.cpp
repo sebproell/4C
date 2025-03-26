@@ -37,9 +37,9 @@ namespace Core::Binstrategy::Utils
     // get the node ids of the elements that are to be ghosted
     // and create a proper node column map for their export
     std::set<int> nodes;
-    for (int lid = 0; lid < extendedelecolmap.NumMyElements(); ++lid)
+    for (int lid = 0; lid < extendedelecolmap.num_my_elements(); ++lid)
     {
-      Core::Elements::Element* ele = discret.g_element(extendedelecolmap.GID(lid));
+      Core::Elements::Element* ele = discret.g_element(extendedelecolmap.gid(lid));
       const int* nodeids = ele->node_ids();
       for (int inode = 0; inode < ele->num_node(); ++inode) nodes.insert(nodeids[inode]);
     }
@@ -248,7 +248,7 @@ namespace Core::Binstrategy::Utils
     if (disnp != nullptr)
     {
       const int gid = discret.dof(node, 0);
-      const int lid = disnp->get_map().LID(gid);
+      const int lid = disnp->get_map().lid(gid);
       if (lid < 0)
         FOUR_C_THROW(
             "Your displacement is incomplete (need to be based on a column map"

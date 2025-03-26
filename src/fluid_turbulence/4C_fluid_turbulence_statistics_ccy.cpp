@@ -146,10 +146,10 @@ FLD::TurbulenceStatisticsCcy::TurbulenceStatisticsCcy(
     const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
     // loop all available elements
-    for (int iele = 0; iele < elementmap->NumMyElements(); ++iele)
+    for (int iele = 0; iele < elementmap->num_my_elements(); ++iele)
     {
       // get element pointer
-      Core::Elements::Element* const actele = nurbsdis->g_element(elementmap->GID(iele));
+      Core::Elements::Element* const actele = nurbsdis->g_element(elementmap->gid(iele));
 
       // want to loop all control points of the element,
       // so get the number of points
@@ -591,10 +591,10 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
     else
       scatranurbsdis->set_state("phinp_for_statistics", *meanfullphinp_);
 
-    if (not(scatranurbsdis->dof_row_map())->SameAs(meanfullphinp_->get_map()))
+    if (not(scatranurbsdis->dof_row_map())->same_as(meanfullphinp_->get_map()))
     {
-      scatranurbsdis->dof_row_map()->Print(std::cout);
-      meanfullphinp_->get_map().Print(std::cout);
+      scatranurbsdis->dof_row_map()->print(std::cout);
+      meanfullphinp_->get_map().print(std::cout);
       FOUR_C_THROW("Global dof numbering in maps does not match");
     }
   }
@@ -612,10 +612,10 @@ void FLD::TurbulenceStatisticsCcy::evaluate_pointwise_mean_values_in_planes()
   const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
   // loop all available elements
-  for (int iele = 0; iele < elementmap->NumMyElements(); ++iele)
+  for (int iele = 0; iele < elementmap->num_my_elements(); ++iele)
   {
     // get element pointer
-    Core::Elements::Element* const actele = nurbsdis->g_element(elementmap->GID(iele));
+    Core::Elements::Element* const actele = nurbsdis->g_element(elementmap->gid(iele));
 
     // want to loop all control points of the element,
     // so get the number of points

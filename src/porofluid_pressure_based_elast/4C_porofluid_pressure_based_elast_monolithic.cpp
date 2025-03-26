@@ -166,8 +166,8 @@ void PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_maps()
 
   vecSpaces.push_back(porofluid_dof_row_map());
 
-  if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No structure equation. Panic.");
-  if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No fluid equation. Panic.");
+  if (vecSpaces[0]->num_global_elements() == 0) FOUR_C_THROW("No structure equation. Panic.");
+  if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No fluid equation. Panic.");
 
   // full Poromultiphase-elasticity-map
   fullmap_ = Core::LinAlg::MultiMapExtractor::merge_maps(vecSpaces);
@@ -1034,8 +1034,8 @@ void PoroPressureBased::PorofluidElastMonolithicAlgorithm::poro_fd_check()
 {
   std::cout << "\n******************finite difference check***************" << std::endl;
 
-  int dof_struct = (structure_algo()->dof_row_map()->NumGlobalElements());
-  int dof_fluid = (porofluid_algo()->dof_row_map()->NumGlobalElements());
+  int dof_struct = (structure_algo()->dof_row_map()->num_global_elements());
+  int dof_fluid = (porofluid_algo()->dof_row_map()->num_global_elements());
 
   std::cout << "structure field has " << dof_struct << " DOFs" << std::endl;
   std::cout << "fluid field has " << dof_fluid << " DOFs" << std::endl;
@@ -1067,7 +1067,7 @@ void PoroPressureBased::PorofluidElastMonolithicAlgorithm::poro_fd_check()
   const int spaltenr = -1;
   for (int i = 0; i < dofs; ++i)
   {
-    if (combined_dbc_map()->MyGID(i))
+    if (combined_dbc_map()->my_gid(i))
     {
       iterinc->replace_global_value(i, 0, 0.0);
     }
@@ -1132,7 +1132,7 @@ void PoroPressureBased::PorofluidElastMonolithicAlgorithm::poro_fd_check()
       }
     }
 
-    if (not combined_dbc_map()->MyGID(i)) iterinc->replace_global_value(i, 0, -delta);
+    if (not combined_dbc_map()->my_gid(i)) iterinc->replace_global_value(i, 0, -delta);
 
     iterinc->replace_global_value(i - 1, 0, 0.0);
 
@@ -1162,11 +1162,11 @@ void PoroPressureBased::PorofluidElastMonolithicAlgorithm::poro_fd_check()
   double abs_error_max = 0.0;
   for (int i = 0; i < dofs; ++i)
   {
-    if (not combined_dbc_map()->MyGID(i))
+    if (not combined_dbc_map()->my_gid(i))
     {
       for (int j = 0; j < dofs; ++j)
       {
-        if (not combined_dbc_map()->MyGID(j))
+        if (not combined_dbc_map()->my_gid(j))
         {
           double stiff_approx_ij = 0.0;
           double sparse_ij = 0.0;

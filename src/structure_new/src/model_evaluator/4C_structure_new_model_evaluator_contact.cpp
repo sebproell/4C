@@ -695,12 +695,12 @@ void Solid::ModelEvaluator::Contact::extend_lagrange_multiplier_domain(
     std::shared_ptr<Core::LinAlg::Vector<double>>& lm_vec) const
 {
   // default case: do nothing
-  if (strategy().lm_dof_row_map(false).NumGlobalElements() ==
-      get_block_dof_row_map_ptr()->NumGlobalElements())
+  if (strategy().lm_dof_row_map(false).num_global_elements() ==
+      get_block_dof_row_map_ptr()->num_global_elements())
     return;
 
-  if (strategy().lm_dof_row_map(false).NumGlobalElements() <
-      get_block_dof_row_map_ptr()->NumGlobalElements())
+  if (strategy().lm_dof_row_map(false).num_global_elements() <
+      get_block_dof_row_map_ptr()->num_global_elements())
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp_ptr =
         std::make_shared<Core::LinAlg::Vector<double>>(*get_block_dof_row_map_ptr());

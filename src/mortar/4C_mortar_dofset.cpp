@@ -30,9 +30,9 @@ int Mortar::DofSet::assign_degrees_of_freedom(
 
   // we'll get ourselves the row and column dof maps from the base class
   // and later replace them with our own version of them
-  const int nummyrow = dofrowmap_->NumMyElements();
+  const int nummyrow = dofrowmap_->num_my_elements();
   std::vector<int> myrow(nummyrow);
-  const int nummycol = dofcolmap_->NumMyElements();
+  const int nummycol = dofcolmap_->num_my_elements();
   std::vector<int> mycol(nummycol);
 
   // now we loop all nodes in the interface discretization and create the new DOF vectors
@@ -58,14 +58,14 @@ int Mortar::DofSet::assign_degrees_of_freedom(
     for (std::size_t j = 0; j < numDofsOfNode; ++j)
     {
       // build dof column map
-      if (!dofcolmap_->MyGID(gdofs[j])) FOUR_C_THROW("Mismatch in degrees of freedom");
-      int lid = dofcolmap_->LID(gdofs[j]);
+      if (!dofcolmap_->my_gid(gdofs[j])) FOUR_C_THROW("Mismatch in degrees of freedom");
+      int lid = dofcolmap_->lid(gdofs[j]);
       mycol[lid] = newdofs[j];
 
       // build dof row map
-      if (dofrowmap_->MyGID(gdofs[j]))  // only if proc owns this DOF
+      if (dofrowmap_->my_gid(gdofs[j]))  // only if proc owns this DOF
       {
-        lid = dofrowmap_->LID(gdofs[j]);
+        lid = dofrowmap_->lid(gdofs[j]);
         myrow[lid] = newdofs[j];
       }
     }
@@ -77,16 +77,16 @@ int Mortar::DofSet::assign_degrees_of_freedom(
 
   // we have new vectors, so recreate maps and replace old ones with them
   std::shared_ptr<Core::LinAlg::Map> newdofrowmap =
-      std::make_shared<Core::LinAlg::Map>(-1, nummyrow, myrow.data(), 0, dofrowmap_->Comm());
+      std::make_shared<Core::LinAlg::Map>(-1, nummyrow, myrow.data(), 0, dofrowmap_->get_comm());
   std::shared_ptr<Core::LinAlg::Map> newdofcolmap =
-      std::make_shared<Core::LinAlg::Map>(-1, nummycol, mycol.data(), 0, dofcolmap_->Comm());
+      std::make_shared<Core::LinAlg::Map>(-1, nummycol, mycol.data(), 0, dofcolmap_->get_comm());
 
   // be a little psychotic in checking whether everything is ok....
-  if (newdofrowmap->NumMyElements() != dofrowmap_->NumMyElements() ||
-      newdofrowmap->NumGlobalElements() != dofrowmap_->NumGlobalElements() ||
-      newdofcolmap->NumMyElements() != dofcolmap_->NumMyElements() ||
-      newdofcolmap->NumGlobalElements() != dofcolmap_->NumGlobalElements() ||
-      !newdofrowmap->UniqueGIDs())
+  if (newdofrowmap->num_my_elements() != dofrowmap_->num_my_elements() ||
+      newdofrowmap->num_global_elements() != dofrowmap_->num_global_elements() ||
+      newdofcolmap->num_my_elements() != dofcolmap_->num_my_elements() ||
+      newdofcolmap->num_global_elements() != dofcolmap_->num_global_elements() ||
+      !newdofrowmap->unique_gids())
     FOUR_C_THROW("Something's wrong in dof maps");
 
   // replace the old maps by our new ones (note: automatically deletes old ones)

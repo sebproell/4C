@@ -36,8 +36,8 @@ namespace
       is_subset = true;
 
     // loop over column elements
-    const int numcolele = col_ele_map->NumMyElements();
-    const int* ele_gids = col_ele_map->MyGlobalElements();
+    const int numcolele = col_ele_map->num_my_elements();
+    const int* ele_gids = col_ele_map->my_global_elements();
 
     for (int i = 0; i < numcolele; ++i)
     {

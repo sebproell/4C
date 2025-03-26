@@ -153,16 +153,16 @@ void PoroElastScaTra::Utils::create_volume_ghosting(Core::FE::Discretization& id
     const std::shared_ptr<Core::LinAlg::Map> allredelecolmap =
         Core::LinAlg::allreduce_e_map(*voldi->element_row_map());
 
-    for (int i = 0; i < elecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < elecolmap->num_my_elements(); ++i)
     {
-      int gid = elecolmap->GID(i);
+      int gid = elecolmap->gid(i);
       rdata.push_back(gid);
     }
 
     // Find elements, which are ghosted on the interface but not in the volume discretization
-    for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < ielecolmap->num_my_elements(); ++i)
     {
-      int gid = ielecolmap->GID(i);
+      int gid = ielecolmap->gid(i);
 
       Core::Elements::Element* ele = idiscret.g_element(gid);
       if (!ele) FOUR_C_THROW("ERROR: Cannot find element with gid %", gid);
@@ -175,8 +175,8 @@ void PoroElastScaTra::Utils::create_volume_ghosting(Core::FE::Discretization& id
         volgid = faceele->parent_element_id();
 
       // Ghost the parent element additionally
-      if (elecolmap->LID(volgid) == -1 &&
-          allredelecolmap->LID(volgid) !=
+      if (elecolmap->lid(volgid) == -1 &&
+          allredelecolmap->lid(volgid) !=
               -1)  // Volume discretization has not Element on this proc but on another
         rdata.push_back(volgid);
     }

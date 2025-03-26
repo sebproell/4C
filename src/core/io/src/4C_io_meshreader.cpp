@@ -558,9 +558,9 @@ namespace
         rebalanceParams.set("partitioning method", "RCB");
 
         rowmap = std::make_shared<Core::LinAlg::Map>(
-            -1, graph->row_map().NumMyElements(), graph->row_map().MyGlobalElements(), 0, comm);
+            -1, graph->row_map().num_my_elements(), graph->row_map().my_global_elements(), 0, comm);
         colmap = std::make_shared<Core::LinAlg::Map>(
-            -1, graph->col_map().NumMyElements(), graph->col_map().MyGlobalElements(), 0, comm);
+            -1, graph->col_map().num_my_elements(), graph->col_map().my_global_elements(), 0, comm);
 
         discret.redistribute(*rowmap, *colmap,
             {.assign_degrees_of_freedom = false,
@@ -582,9 +582,9 @@ namespace
         rebalanceParams.set("partitioning method", "HYPERGRAPH");
 
         rowmap = std::make_shared<Core::LinAlg::Map>(
-            -1, graph->row_map().NumMyElements(), graph->row_map().MyGlobalElements(), 0, comm);
+            -1, graph->row_map().num_my_elements(), graph->row_map().my_global_elements(), 0, comm);
         colmap = std::make_shared<Core::LinAlg::Map>(
-            -1, graph->col_map().NumMyElements(), graph->col_map().MyGlobalElements(), 0, comm);
+            -1, graph->col_map().num_my_elements(), graph->col_map().my_global_elements(), 0, comm);
 
         discret.redistribute(*rowmap, *colmap, {.do_boundary_conditions = false});
 
@@ -611,7 +611,7 @@ namespace
     std::shared_ptr<const Core::LinAlg::Graph> graph = nullptr;
 
     // Skip building the node graph if there are no elements
-    if (row_elements.NumGlobalElements() > 0)
+    if (row_elements.num_global_elements() > 0)
       graph = Core::Rebalance::build_graph(discret, row_elements);
 
     // Create partitioning parameters
@@ -626,7 +626,8 @@ namespace
     const int max_global_procs = Core::Communication::num_mpi_ranks(comm);
     int min_global_procs = max_global_procs;
 
-    if (minele_per_proc > 0) min_global_procs = row_elements.NumGlobalElements() / minele_per_proc;
+    if (minele_per_proc > 0)
+      min_global_procs = row_elements.num_global_elements() / minele_per_proc;
     const int num_procs = std::min(max_global_procs, min_global_procs);
     rebalanceParams.set<std::string>("num parts", std::to_string(num_procs));
 
@@ -1017,7 +1018,7 @@ void Core::IO::MeshReader::read_and_partition()
   {
     domain_reader.create_partitioned_mesh(max_node_id);
     domain_reader.complete();
-    max_node_id = domain_reader.my_dis()->node_row_map()->MaxAllGID() + 1;
+    max_node_id = domain_reader.my_dis()->node_row_map()->max_all_gid() + 1;
   }
 
   // First, we look at all the mesh files we are going to read and determine if they are

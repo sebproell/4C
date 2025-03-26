@@ -58,11 +58,11 @@ void Core::LinAlg::MultiMapExtractor::check_for_valid_map_extractor() const
   {
     if (maps_[i] != nullptr)
     {
-      if (maps_[i]->DataPtr() == nullptr)
+      if (maps_[i]->get_data_ptr() == nullptr)
       {
         FOUR_C_THROW("Got zero data pointer on setup of block {} of maps_\n", i);
       }
-      if (not maps_[i]->UniqueGIDs())
+      if (not maps_[i]->unique_gids())
       {
         FOUR_C_THROW("map {} not unique", i);
       }
@@ -80,16 +80,16 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::merge_maps(
   for (unsigned i = 0; i < maps.size(); ++i)
   {
     if (maps[i] == nullptr) FOUR_C_THROW("can not merge extractor with null maps");
-    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map {} not unique", i);
+    if (not maps[i]->unique_gids()) FOUR_C_THROW("map {} not unique", i);
   }
   std::set<int> mapentries;
   for (unsigned i = 0; i < maps.size(); ++i)
   {
     const Core::LinAlg::Map& map = *maps[i];
-    std::copy(map.MyGlobalElements(), map.MyGlobalElements() + map.NumMyElements(),
+    std::copy(map.my_global_elements(), map.my_global_elements() + map.num_my_elements(),
         std::inserter(mapentries, mapentries.begin()));
   }
-  return Core::LinAlg::create_map(mapentries, maps[0]->Comm());
+  return Core::LinAlg::create_map(mapentries, maps[0]->get_comm());
 }
 
 
@@ -104,7 +104,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::merge_maps_k
   for (std::size_t i = 0; i < maps.size(); ++i)
   {
     if (maps[i] == nullptr) FOUR_C_THROW("can not merge extractor with null maps");
-    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map {} not unique", i);
+    if (not maps[i]->unique_gids()) FOUR_C_THROW("map {} not unique", i);
   }
 
   // collect gids
@@ -112,12 +112,12 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::merge_maps_k
   for (std::size_t i = 0; i < maps.size(); ++i)
   {
     const Core::LinAlg::Map& map = *maps[i];
-    for (int j = 0; j < map.NumMyElements(); ++j) gids.push_back(map.GID(j));
+    for (int j = 0; j < map.num_my_elements(); ++j) gids.push_back(map.gid(j));
   }
 
   // build combined map
   std::shared_ptr<Core::LinAlg::Map> fullmap =
-      std::make_shared<Core::LinAlg::Map>(-1, gids.size(), gids.data(), 0, maps[0]->Comm());
+      std::make_shared<Core::LinAlg::Map>(-1, gids.size(), gids.data(), 0, maps[0]->get_comm());
   return fullmap;
 }
 
@@ -131,16 +131,16 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::intersect_ma
   for (unsigned i = 0; i < maps.size(); ++i)
   {
     if (maps[i] == nullptr) FOUR_C_THROW("can not intersect extractor with null maps");
-    if (not maps[i]->UniqueGIDs()) FOUR_C_THROW("map {} not unique", i);
+    if (not maps[i]->unique_gids()) FOUR_C_THROW("map {} not unique", i);
   }
   std::set<int> mapentries(
-      maps[0]->MyGlobalElements(), maps[0]->MyGlobalElements() + maps[0]->NumMyElements());
+      maps[0]->my_global_elements(), maps[0]->my_global_elements() + maps[0]->num_my_elements());
   for (unsigned i = 1; i < maps.size(); ++i)
   {
     const Core::LinAlg::Map& map = *maps[i];
     std::set<int> newset;
-    int numele = map.NumMyElements();
-    int* ele = map.MyGlobalElements();
+    int numele = map.num_my_elements();
+    int* ele = map.my_global_elements();
     for (int j = 0; j < numele; ++j)
     {
       if (mapentries.find(ele[j]) != mapentries.end())
@@ -150,7 +150,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::intersect_ma
     }
     std::swap(mapentries, newset);
   }
-  return Core::LinAlg::create_map(mapentries, maps[0]->Comm());
+  return Core::LinAlg::create_map(mapentries, maps[0]->get_comm());
 }
 
 
@@ -233,7 +233,7 @@ void Core::LinAlg::MultiMapExtractor::add_vector(const Core::LinAlg::MultiVector
     int block, Core::LinAlg::MultiVector<double>& full, double scale) const
 {
   std::shared_ptr<Core::LinAlg::MultiVector<double>> v = extract_vector(full, block);
-  if (not v->get_map().SameAs(partial.get_map()))
+  if (not v->get_map().same_as(partial.get_map()))
     FOUR_C_THROW("The maps of the vectors must be the same!");
   v->Update(scale, partial, 1.0);
   insert_vector(*v, block, full);
@@ -248,12 +248,12 @@ void Core::LinAlg::MultiMapExtractor::put_scalar(
   const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
-  int numv = bm.NumMyElements();
-  int* v = bm.MyGlobalElements();
+  int numv = bm.num_my_elements();
+  int* v = bm.my_global_elements();
 
   for (int i = 0; i < numv; ++i)
   {
-    int lid = fm.LID(v[i]);
+    int lid = fm.lid(v[i]);
     if (lid == -1) FOUR_C_THROW("maps do not match");
     full[lid] = scalar;
   }
@@ -268,21 +268,21 @@ double Core::LinAlg::MultiMapExtractor::norm2(
   const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
-  int numv = bm.NumMyElements();
-  int* v = bm.MyGlobalElements();
+  int numv = bm.num_my_elements();
+  int* v = bm.my_global_elements();
 
   double local_norm = 0;
 
   for (int i = 0; i < numv; ++i)
   {
-    int lid = fm.LID(v[i]);
+    int lid = fm.lid(v[i]);
     if (lid == -1) FOUR_C_THROW("maps do not match");
     double value = full[lid];
     local_norm += value * value;
   }
 
   double global_norm = 0;
-  Core::Communication::sum_all(&local_norm, &global_norm, 1, fm.Comm());
+  Core::Communication::sum_all(&local_norm, &global_norm, 1, fm.get_comm());
   return std::sqrt(global_norm);
 }
 
@@ -296,12 +296,12 @@ void Core::LinAlg::MultiMapExtractor::scale(
   const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
-  int numv = bm.NumMyElements();
-  int* v = bm.MyGlobalElements();
+  int numv = bm.num_my_elements();
+  int* v = bm.my_global_elements();
 
   for (int i = 0; i < numv; ++i)
   {
-    int lid = fm.LID(v[i]);
+    int lid = fm.lid(v[i]);
     if (lid == -1) FOUR_C_THROW("maps do not match");
     full[lid] *= scalar;
   }
@@ -334,18 +334,19 @@ Core::LinAlg::MapExtractor::MapExtractor(const Core::LinAlg::Map& fullmap,
 {
   // initialise other DOFs by inserting all DOFs of full map
   std::set<int> othergids;
-  const int* fullgids = fullmap.MyGlobalElements();
-  copy(fullgids, fullgids + fullmap.NumMyElements(), inserter(othergids, othergids.begin()));
+  const int* fullgids = fullmap.my_global_elements();
+  copy(fullgids, fullgids + fullmap.num_my_elements(), inserter(othergids, othergids.begin()));
 
   // throw away all DOFs which are in condmap
-  if (partialmap->NumMyElements() > 0)
+  if (partialmap->num_my_elements() > 0)
   {
-    const int* condgids = partialmap->MyGlobalElements();
-    for (int lid = 0; lid < partialmap->NumMyElements(); ++lid) othergids.erase(condgids[lid]);
+    const int* condgids = partialmap->my_global_elements();
+    for (int lid = 0; lid < partialmap->num_my_elements(); ++lid) othergids.erase(condgids[lid]);
   }
 
   // create (non-overlapping) othermap for non-condmap DOFs
-  std::shared_ptr<Core::LinAlg::Map> othermap = Core::LinAlg::create_map(othergids, fullmap.Comm());
+  std::shared_ptr<Core::LinAlg::Map> othermap =
+      Core::LinAlg::create_map(othergids, fullmap.get_comm());
 
   // create the extractor based on choice 'iscondmap'
   if (iscondmap)
@@ -372,8 +373,8 @@ void Core::LinAlg::MapExtractor::setup(const Core::LinAlg::Map& full_map,
 void Core::LinAlg::MapExtractor::setup(
     const Core::LinAlg::Map& full_map, const std::shared_ptr<const Core::LinAlg::Map>& cond_map)
 {
-  std::span<const int> full_gids(full_map.MyGlobalElements(), full_map.NumMyElements());
-  std::span<const int> cond_gids(cond_map->MyGlobalElements(), cond_map->NumMyElements());
+  std::span<const int> full_gids(full_map.my_global_elements(), full_map.num_my_elements());
+  std::span<const int> cond_gids(cond_map->my_global_elements(), cond_map->num_my_elements());
 
   // The set_difference algorithm requires the input ranges to be sorted.
   FOUR_C_ASSERT(std::ranges::is_sorted(full_gids), "Internal error: GIDs in map not sorted.");
@@ -382,7 +383,7 @@ void Core::LinAlg::MapExtractor::setup(
   std::vector<int> other_gids;
   std::ranges::set_difference(full_gids, cond_gids, std::back_inserter(other_gids));
 
-  auto other_map = Core::LinAlg::create_map(other_gids, full_map.Comm());
+  auto other_map = Core::LinAlg::create_map(other_gids, full_map.get_comm());
 
   setup(full_map, cond_map, other_map);
 }

@@ -75,7 +75,7 @@ int Utils::Cardiovascular0DDofSet::assign_degrees_of_freedom(
   Core::LinAlg::Map dofrowmap(ndofs, count, dis->get_comm());
 
   std::vector<int> gids;
-  for (int i = 0; i < dofrowmap.NumMyElements(); i++) gids.push_back(dofrowmap.GID(i));
+  for (int i = 0; i < dofrowmap.num_my_elements(); i++) gids.push_back(dofrowmap.gid(i));
 
   // dofrowmap with index base = 0
   dofrowmap_ =

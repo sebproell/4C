@@ -151,7 +151,7 @@ void ALE::Ale::set_initial_displacement(const ALE::InitialDisp init, const int s
         for (unsigned int d = 0; d < nodedofset.size(); ++d)
         {
           const int dofgid = nodedofset[d];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
 
           // evaluate component d of function
           double initialval = Global::Problem::instance()

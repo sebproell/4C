@@ -204,12 +204,12 @@ void XFEM::XFluidTimeInt::transfer_dofs_to_new_map(
   //------------------------------------------------------------
   // loop background fluid row nodes
   const Core::LinAlg::Map* noderowmap = dis_->node_row_map();
-  const int numrownode = noderowmap->NumMyPoints();
+  const int numrownode = noderowmap->num_my_points();
 
   for (int lid = 0; lid < numrownode; ++lid)
   {
     // get global id of a node
-    int gid = noderowmap->GID(lid);
+    int gid = noderowmap->gid(lid);
     transfer_nodal_dofs_to_new_map(oldRowStateVectors, newRowStateVectors, dbcgids, gid);
   }
 
@@ -1026,10 +1026,10 @@ void XFEM::XFluidTimeInt::copy_dofs(const Core::Nodes::Node* node,  /// drt node
     // copy values from old vector to new vector
     for (size_t i = 0; i < dofs_new.size(); i++)
     {
-      int dof_lid_new = vec_new->get_map().LID(dofs_new[i]);
+      int dof_lid_new = vec_new->get_map().lid(dofs_new[i]);
       if (dof_lid_new == -1) FOUR_C_THROW("new dof {} not local on this proc!", dofs_new[i]);
 
-      int dof_lid_old = vec_old->get_map().LID(dofs_old[i]);
+      int dof_lid_old = vec_old->get_map().lid(dofs_old[i]);
       if (dof_lid_old == -1) FOUR_C_THROW("old dof {} not local on this proc!", dofs_old[i]);
 
       (*vec_new)[dof_lid_new] = (*vec_old)[dof_lid_old];
@@ -1115,7 +1115,7 @@ void XFEM::XFluidTimeInt::mark_dofs(const Core::Nodes::Node* node,  /// drt node
 
         // comment this block if we do not want to reconstruct ghost values of ghost nodes around
         // SL-standard nodes
-        if (dis_->node_row_map()->LID(nid) != -1)  // is row node on this proc
+        if (dis_->node_row_map()->lid(nid) != -1)  // is row node on this proc
         {
           Core::Nodes::Node* n = dis_->g_node(nid);
           mark_dofs(n, dofset, newRowStateVectors, Inpar::XFEM::Xf_TimeInt_GHOST_by_GP, dbcgids);
@@ -1144,7 +1144,7 @@ void XFEM::XFluidTimeInt::mark_dofs(const Core::Nodes::Node* node,  /// drt node
     // set a dummy value for dofs in the vector
     for (size_t i = 0; i < dofs_new.size(); i++)
     {
-      int dof_lid_new = vec_new->get_map().LID(dofs_new[i]);
+      int dof_lid_new = vec_new->get_map().lid(dofs_new[i]);
       if (dof_lid_new == -1) FOUR_C_THROW("new dof {} not local on this proc!", dofs_new[i]);
 
       (*vec_new)[dof_lid_new] =
@@ -2162,7 +2162,7 @@ void XFEM::XFluidTimeInt::export_methods(
         // distribute the received information on this proc if the info is required on this node
 
         // set reconstruction method on this proc only for received row node information
-        int lid = dis_->node_row_map()->LID(nid);
+        int lid = dis_->node_row_map()->lid(nid);
 
 
         if (lid == -1) continue;  // this is not a row node on this proc

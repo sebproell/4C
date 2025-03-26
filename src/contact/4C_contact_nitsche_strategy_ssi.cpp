@@ -105,9 +105,9 @@ void CONTACT::NitscheStrategySsi::set_parent_state(const enum Mortar::StateType&
         const auto& interface_dis = interface->discret();
 
         // loop over all interface column elements owned by current processor
-        for (int j = 0; j < interface_dis.element_col_map()->NumMyElements(); ++j)
+        for (int j = 0; j < interface_dis.element_col_map()->num_my_elements(); ++j)
         {
-          const int gid = interface_dis.element_col_map()->GID(j);
+          const int gid = interface_dis.element_col_map()->gid(j);
 
           auto* interface_ele = interface_dis.g_element(gid);
           if (interface_ele == nullptr) FOUR_C_THROW("Did not find element.");

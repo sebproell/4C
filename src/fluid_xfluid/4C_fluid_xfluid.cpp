@@ -1577,7 +1577,7 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
     int row = sysmat_gp->global_row_index(i);
 
     // check if there is already a value set, otherwise set at least a diagonal entry
-    if (dbctoggle.MyGID(row))
+    if (dbctoggle.my_gid(row))
     {
       if (diagonalblock)
       {
@@ -4056,7 +4056,7 @@ std::shared_ptr<Core::LinAlg::MapExtractor> FLD::XFluid::create_dbc_map_extracto
     myglobalelements = dbcgidsv.data();
   }
   std::shared_ptr<Core::LinAlg::Map> dbcmap = std::make_shared<Core::LinAlg::Map>(
-      -1, nummyelements, myglobalelements, dofrowmap->IndexBase(), dofrowmap->Comm());
+      -1, nummyelements, myglobalelements, dofrowmap->index_base(), dofrowmap->get_comm());
 
   // build the map extractor of Dirichlet-conditioned and free DOFs
   return std::make_shared<Core::LinAlg::MapExtractor>(*dofrowmap, dbcmap);
@@ -4142,15 +4142,15 @@ void FLD::XFluid::x_timint_reconstruct_ghost_values(
   int numentries_dbc_row = 1;
   int numentries_ghost_penalty_row = 162;
 
-  std::vector<int> numentries(state_->xfluiddofrowmap_->NumMyElements());
+  std::vector<int> numentries(state_->xfluiddofrowmap_->num_my_elements());
 
   const Core::LinAlg::Map& rowmap = *state_->xfluiddofrowmap_;
   const Core::LinAlg::Map& condmap = *(ghost_penalty_dbcmaps.cond_map());
 
   for (unsigned i = 0; i < numentries.size(); ++i)
   {
-    int gid = rowmap.GID(i);
-    int dbclid = condmap.LID(gid);
+    int gid = rowmap.gid(i);
+    int dbclid = condmap.lid(gid);
     if (dbclid < 0)  // non-dbc-row
       numentries[i] = numentries_ghost_penalty_row;
     else  // dbc-row
@@ -4545,7 +4545,7 @@ void FLD::XFluid::set_initial_flow_field(
       for (int nveldof = 0; nveldof < numdim_; nveldof++)
       {
         const int gid = nodedofset[nveldof];
-        int lid = dofrowmap->LID(gid);
+        int lid = dofrowmap->lid(gid);
         err += state_->velnp_->replace_local_values(1, &(u[nveldof]), &lid);
         err += state_->veln_->replace_local_values(1, &(u[nveldof]), &lid);
         err += state_->velnm_->replace_local_values(1, &(u[nveldof]), &lid);
@@ -4553,7 +4553,7 @@ void FLD::XFluid::set_initial_flow_field(
 
       // set initial pressure
       const int gid = nodedofset[npredof];
-      int lid = dofrowmap->LID(gid);
+      int lid = dofrowmap->lid(gid);
       err += state_->velnp_->replace_local_values(1, &p, &lid);
       err += state_->veln_->replace_local_values(1, &p, &lid);
       err += state_->velnm_->replace_local_values(1, &p, &lid);
@@ -4712,7 +4712,7 @@ void FLD::XFluid::set_initial_flow_field(
         {
           const int gid = std_dofs[idim];
           // local node id
-          int lid = dofrowmap->LID(gid);
+          int lid = dofrowmap->lid(gid);
           if (idim == 3)
           {  // pressure dof
             err += state_->velnp_->replace_local_values(1, &pres, &lid);
@@ -5142,11 +5142,11 @@ void FLD::XFluid::read_restart(int step)
   // that was used when the restart data was written. Especially
   // in case of multiphysics problems & periodic boundary conditions
   // it is better to check the consistency of the maps here:
-  if (not(discret_->dof_row_map())->SameAs(state_->velnp_->get_map()))
+  if (not(discret_->dof_row_map())->same_as(state_->velnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(state_->veln_->get_map()))
+  if (not(discret_->dof_row_map())->same_as(state_->veln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(state_->accn_->get_map()))
+  if (not(discret_->dof_row_map())->same_as(state_->accn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 
 

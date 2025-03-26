@@ -314,7 +314,7 @@ void Mat::MicroMaterialGP::update()
   std::shared_ptr<Core::FE::Discretization> microdis = microproblem->get_dis("structure");
   const Core::LinAlg::Map* elemap = microdis->element_row_map();
 
-  for (int i = 0; i < elemap->NumMyElements(); ++i) (*lastalpha_)[i] = (*oldalpha_)[i];
+  for (int i = 0; i < elemap->num_my_elements(); ++i) (*lastalpha_)[i] = (*oldalpha_)[i];
 
   // in case of modified Newton, the stiffness matrix needs to be rebuilt at
   // the beginning of the new time step

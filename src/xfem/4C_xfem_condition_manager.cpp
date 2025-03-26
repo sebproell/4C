@@ -498,7 +498,7 @@ void XFEM::ConditionManager::update_level_set_field()
   // loop all row elements on the processor
   for (int leleid = 0; leleid < bg_dis_->num_my_row_elements(); ++leleid)
   {
-    const int gid = elerowmap->GID(leleid);
+    const int gid = elerowmap->gid(leleid);
     Core::Elements::Element* ele = bg_dis_->g_element(gid);
     const int numnode = ele->num_node();
     const int* nodeids = ele->node_ids();
@@ -507,7 +507,7 @@ void XFEM::ConditionManager::update_level_set_field()
 
     for (int n = 0; n < numnode; ++n)
     {
-      int nlid = nodecolmap->LID(nodeids[n]);
+      int nlid = nodecolmap->lid(nodeids[n]);
       lsc_coupling_indices.insert((node_lsc_coup_idx_col)[nlid]);
     }
 
@@ -558,7 +558,7 @@ void XFEM::ConditionManager::combine_level_set_field(Core::LinAlg::Vector<double
 void XFEM::ConditionManager::check_for_equal_maps(
     Core::LinAlg::Vector<double>& vec1, Core::LinAlg::Vector<double>& vec2)
 {
-  if (not vec1.get_map().PointSameAs(vec2.get_map())) FOUR_C_THROW("maps do not match!");
+  if (not vec1.get_map().point_same_as(vec2.get_map())) FOUR_C_THROW("maps do not match!");
 }
 
 

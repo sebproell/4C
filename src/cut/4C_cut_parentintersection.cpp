@@ -854,7 +854,7 @@ void Cut::ParentIntersection::dump_gmsh_num_dof_sets(
 
     if (nid >= 0)
     {
-      if (dis.node_row_map()->LID(nid) == -1) continue;  // non-local row node
+      if (dis.node_row_map()->lid(nid) == -1) continue;  // non-local row node
 
       Node* n = i->second;
       Point* p = n->point();

@@ -32,7 +32,7 @@ using NO = Node;
 std::shared_ptr<Epetra_CrsMatrix> Core::LinAlg::create_matrix(
     const Core::LinAlg::Map& rowmap, const int npr)
 {
-  if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
+  if (!rowmap.unique_gids()) FOUR_C_THROW("Row map is not unique");
   return std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap.get_epetra_map(), npr, false);
 }
 
@@ -48,8 +48,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::create_identity_matrix
 
 void Core::LinAlg::fill_identity_matrix(Core::LinAlg::SparseMatrix& mat)
 {
-  int numelements = mat.row_map().NumMyElements();
-  int* gids = mat.row_map().MyGlobalElements();
+  int numelements = mat.row_map().num_my_elements();
+  int* gids = mat.row_map().my_global_elements();
 
   for (int i = 0; i < numelements; ++i)
   {

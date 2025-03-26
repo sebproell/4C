@@ -188,10 +188,10 @@ void ScaTra::MeshtyingStrategyS2IElch::evaluate_point_coupling()
     const int el_pot_gid = master_dofs[1];
 
     auto dof_row_map = scatratimint_->dof_row_map();
-    const int ed_conc_lid = dof_row_map->LID(ed_conc_gid);
-    const int ed_pot_lid = dof_row_map->LID(ed_pot_gid);
-    const int el_conc_lid = dof_row_map->LID(el_conc_gid);
-    const int el_pot_lid = dof_row_map->LID(el_pot_gid);
+    const int ed_conc_lid = dof_row_map->lid(ed_conc_gid);
+    const int ed_pot_lid = dof_row_map->lid(ed_pot_gid);
+    const int el_conc_lid = dof_row_map->lid(el_conc_gid);
+    const int el_pot_lid = dof_row_map->lid(el_pot_gid);
 
     // extract electrode-side and electrolyte-side values at coupling point
     auto phinp = scatratimint_->phinp();
@@ -426,7 +426,7 @@ void ScaTra::MeshtyingStrategyS2IElch::update() const
               {
                 // extract local ID of first scalar transport degree of freedom associated with
                 // current node
-                const int doflid_scatra = scatratimint_->discretization()->dof_row_map()->LID(
+                const int doflid_scatra = scatratimint_->discretization()->dof_row_map()->lid(
                     scatratimint_->discretization()->dof(
                         0, node, 0));  // Do not remove the first zero, i.e., the first function
                                        // argument, otherwise an error is thrown in debug mode!
@@ -435,7 +435,7 @@ void ScaTra::MeshtyingStrategyS2IElch::update() const
 
                 // extract local ID of scatra-scatra interface layer thickness variable associated
                 // with current node
-                const int doflid_growth = scatratimint_->discretization()->dof_row_map(2)->LID(
+                const int doflid_growth = scatratimint_->discretization()->dof_row_map(2)->lid(
                     scatratimint_->discretization()->dof(2, node, 0));
                 if (doflid_growth < 0)
                   FOUR_C_THROW(

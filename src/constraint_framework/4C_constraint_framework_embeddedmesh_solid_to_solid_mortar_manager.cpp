@@ -106,7 +106,7 @@ void Constraints::EmbeddedMesh::SolidToSolidMortarManager::setup(
 {
   // Get the global ids of all mesh nodes on this rank
   std::vector<int> my_nodes_gid;
-  for (int i_node = 0; i_node < discret_->node_row_map()->NumMyElements(); i_node++)
+  for (int i_node = 0; i_node < discret_->node_row_map()->num_my_elements(); i_node++)
   {
     Core::Nodes::Node const& node = *(discret_->l_row_node(i_node));
     if (Constraints::EmbeddedMesh::is_interface_node(node)) my_nodes_gid.push_back(node.id());
@@ -162,7 +162,7 @@ void Constraints::EmbeddedMesh::SolidToSolidMortarManager::setup(
       for (unsigned int i_lambda = 0; i_lambda < n_lambda_node_; i_lambda++)
       {
         // Get the global Lagrange multiplier id for this node.
-        lagrange_gid = lambda_dof_rowmap_->GID(i_node * n_lambda_node_ + i_lambda);
+        lagrange_gid = lambda_dof_rowmap_->gid(i_node * n_lambda_node_ + i_lambda);
 
         // Set the global Lagrange multiplier id for this node.
         error_code = node_gid_to_lambda_gid_->ReplaceMyValue(i_node, i_lambda, lagrange_gid);
@@ -201,7 +201,7 @@ void Constraints::EmbeddedMesh::SolidToSolidMortarManager::set_global_maps()
   // Get the dofs of the background and interface elements
   std::vector<int> boundary_layer_interface_dofs;
   std::vector<int> background_dofs;
-  for (int i_node = 0; i_node < discret_->node_row_map()->NumMyElements(); i_node++)
+  for (int i_node = 0; i_node < discret_->node_row_map()->num_my_elements(); i_node++)
   {
     const Core::Nodes::Node* node = discret_->l_row_node(i_node);
     if (is_cut_node(*node))
@@ -288,11 +288,11 @@ void Constraints::EmbeddedMesh::SolidToSolidMortarManager::set_local_maps(
   if (node_gid_to_lambda_gid_ != nullptr)
   {
     std::vector<int> temp_node(n_lambda_node_);
-    for (int i_node = 0; i_node < node_gid_needed_rowmap.NumMyElements(); i_node++)
+    for (int i_node = 0; i_node < node_gid_needed_rowmap.num_my_elements(); i_node++)
     {
       for (unsigned int i_temp = 0; i_temp < n_lambda_node_; i_temp++)
         temp_node[i_temp] = (int)((*node_gid_to_lambda_gid_copy)(i_temp)[i_node]);
-      node_gid_to_lambda_gid_map_[node_gid_needed_rowmap.GID(i_node)] = temp_node;
+      node_gid_to_lambda_gid_map_[node_gid_needed_rowmap.gid(i_node)] = temp_node;
       lambda_gid_for_col_map.insert(
           std::end(lambda_gid_for_col_map), std::begin(temp_node), std::end(temp_node));
     }
@@ -498,12 +498,12 @@ Constraints::EmbeddedMesh::SolidToSolidMortarManager::penalty_invert_kappa() con
   // Calculate the local inverse of kappa.
   double penalty = 0.0;
   double local_kappa_inv_value = 0.;
-  for (int lid = 0; lid < lambda_dof_rowmap_->NumMyElements(); lid++)
+  for (int lid = 0; lid < lambda_dof_rowmap_->num_my_elements(); lid++)
   {
     if (global_active_lambda_->Values()[lid] > 0.1)
     {
-      const int gid = lambda_dof_rowmap_->GID(lid);
-      if (lambda_dof_rowmap_->LID(gid) != -1)
+      const int gid = lambda_dof_rowmap_->gid(lid);
+      if (lambda_dof_rowmap_->lid(gid) != -1)
         penalty = penalty_params;
       else
         FOUR_C_THROW("Could not find the GID {} in translation map", gid);

@@ -40,9 +40,9 @@ void CONTACT::ConstitutivelawInterface::assemble_reg_normal_forces(
     bool& localisincontact, bool& localactivesetchange)
 {
   // loop over all slave row nodes on the current interface
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);

@@ -91,7 +91,7 @@ void FSI::Partitioned::setup_coupling(const Teuchos::ParameterList& fsidyn, MPI_
         structure_field()->interface()->fsi_cond_map(), *mb_fluid_field()->discretization(),
         mb_fluid_field()->interface()->fsi_cond_map(), "FSICoupling", ndim);
 
-    if (coupsf.master_dof_map()->NumGlobalElements() == 0)
+    if (coupsf.master_dof_map()->num_global_elements() == 0)
       FOUR_C_THROW("No nodes in matching FSI interface. Empty FSI coupling condition?");
   }
   else if ((fsidyn.sublist("PARTITIONED SOLVER").get<std::string>("COUPMETHOD") == "conforming") and
@@ -110,7 +110,7 @@ void FSI::Partitioned::setup_coupling(const Teuchos::ParameterList& fsidyn, MPI_
         *x_movingboundary->boundary_discretization(),  // use the matching boundary discretization
         x_movingboundary->struct_interface()->fsi_cond_map(), "FSICoupling", ndim);
 
-    if (coupsf.master_dof_map()->NumGlobalElements() == 0)
+    if (coupsf.master_dof_map()->num_global_elements() == 0)
       FOUR_C_THROW("No nodes in matching FSI interface. Empty FSI coupling condition?");
   }
   else if ((Global::Problem::instance()->get_problem_type() == Core::ProblemType::fbi))

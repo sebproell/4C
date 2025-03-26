@@ -525,7 +525,7 @@ inline int Core::LinAlg::DefaultBlockMatrixStrategy::row_block(int rgid)
   int rows = mat_.rows();
   for (int rblock = 0; rblock < rows; ++rblock)
   {
-    if (mat_.range_map(rblock).MyGID(rgid))
+    if (mat_.range_map(rblock).my_gid(rgid))
     {
       return rblock;
     }
@@ -546,14 +546,14 @@ inline int Core::LinAlg::DefaultBlockMatrixStrategy::col_block(int rblock, int c
     // If we have a filled matrix we know the column map already.
     if (matrix.filled())
     {
-      if (matrix.col_map().MyGID(cgid))
+      if (matrix.col_map().my_gid(cgid))
       {
         return cblock;
       }
     }
 
     // otherwise we can get just the non-ghost entries right now
-    else if (mat_.domain_map(cblock).MyGID(cgid))
+    else if (mat_.domain_map(cblock).my_gid(cgid))
     {
       return cblock;
     }

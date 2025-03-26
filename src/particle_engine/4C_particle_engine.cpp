@@ -498,13 +498,13 @@ void PARTICLEENGINE::ParticleEngine::build_particle_to_particle_neighbors()
   validparticleneighbors_ = false;
 
   // loop over row bins
-  for (int rowlidofbin = 0; rowlidofbin < binrowmap_->NumMyElements(); ++rowlidofbin)
+  for (int rowlidofbin = 0; rowlidofbin < binrowmap_->num_my_elements(); ++rowlidofbin)
   {
     // get global id of bin
-    const int gidofbin = binrowmap_->GID(rowlidofbin);
+    const int gidofbin = binrowmap_->gid(rowlidofbin);
 
     // get local id of bin
-    const int collidofbin = bincolmap_->LID(gidofbin);
+    const int collidofbin = bincolmap_->lid(gidofbin);
 
     // check if current bin contains owned particles
     if (particlestobins_[collidofbin].empty()) continue;
@@ -531,13 +531,13 @@ void PARTICLEENGINE::ParticleEngine::build_particle_to_particle_neighbors()
       for (int gidofneighborbin : halfneighboringbinstobins_[rowlidofbin])
       {
         // get local id of neighboring bin
-        const int collidofneighboringbin = bincolmap_->LID(gidofneighborbin);
+        const int collidofneighboringbin = bincolmap_->lid(gidofneighborbin);
 
         // check if current neighboring bin contains particles
         if (particlestobins_[collidofneighboringbin].empty()) continue;
 
         // get status of neighboring particles
-        ParticleStatus neighborstatus = (binrowmap_->LID(gidofneighborbin) < 0) ? Ghosted : Owned;
+        ParticleStatus neighborstatus = (binrowmap_->lid(gidofneighborbin) < 0) ? Ghosted : Owned;
 
         // iterate over particles in current neighboring bin
         for (const auto& neighborParticleIt : particlestobins_[collidofneighboringbin])
@@ -756,7 +756,7 @@ void PARTICLEENGINE::ParticleEngine::get_particles_within_radius(const double* p
   if (gidofbin == -1) FOUR_C_THROW("position outside of computational domain!");
 
   // bin not owned or ghosted by this processor
-  if (bincolmap_->LID(gidofbin) < 0)
+  if (bincolmap_->lid(gidofbin) < 0)
     FOUR_C_THROW("position not in owned or ghosted bin on this processor!");
 #endif
 
@@ -768,7 +768,7 @@ void PARTICLEENGINE::ParticleEngine::get_particles_within_radius(const double* p
   for (int gidofneighborbin : binvec)
   {
     // get local id of neighboring bin
-    const int collidofneighboringbin = bincolmap_->LID(gidofneighborbin);
+    const int collidofneighboringbin = bincolmap_->lid(gidofneighborbin);
 
     // neighboring bin not ghosted by this processor
     if (collidofneighboringbin < 0) continue;
@@ -777,7 +777,7 @@ void PARTICLEENGINE::ParticleEngine::get_particles_within_radius(const double* p
     if (particlestobins_[collidofneighboringbin].empty()) continue;
 
     // get status of neighboring particles
-    ParticleStatus neighborstatus = (binrowmap_->LID(gidofneighborbin) < 0) ? Ghosted : Owned;
+    ParticleStatus neighborstatus = (binrowmap_->lid(gidofneighborbin) < 0) ? Ghosted : Owned;
 
     // iterate over particles in current neighboring bin
     for (const auto& neighborParticleIt : particlestobins_[collidofneighboringbin])
@@ -957,9 +957,9 @@ void PARTICLEENGINE::ParticleEngine::setup_bin_ghosting()
 {
   // gather bins of row map and all its neighbors (row + ghost)
   std::set<int> bins;
-  for (int lid = 0; lid < binrowmap_->NumMyElements(); ++lid)
+  for (int lid = 0; lid < binrowmap_->num_my_elements(); ++lid)
   {
-    int gidofbin = binrowmap_->GID(lid);
+    int gidofbin = binrowmap_->gid(lid);
     std::vector<int> binvec;
     // get neighboring bins
     binstrategy_->get_neighbor_and_own_bin_ids(gidofbin, binvec);
@@ -971,9 +971,9 @@ void PARTICLEENGINE::ParticleEngine::setup_bin_ghosting()
     // create copy of column bins
     std::set<int> ghostbins(bins);
     // find ghost bins and check for existence
-    for (int lid = 0; lid < binrowmap_->NumMyElements(); ++lid)
+    for (int lid = 0; lid < binrowmap_->num_my_elements(); ++lid)
     {
-      const int gid = binrowmap_->GID(lid);
+      const int gid = binrowmap_->gid(lid);
       std::set<int>::iterator iter = ghostbins.find(gid);
       if (iter != ghostbins.end()) ghostbins.erase(iter);
     }
@@ -981,7 +981,7 @@ void PARTICLEENGINE::ParticleEngine::setup_bin_ghosting()
     std::vector<int> ghostbins_vec(ghostbins.begin(), ghostbins.end());
     const int size = static_cast<int>(ghostbins.size());
     std::vector<int> pidlist(size);
-    const int err = binrowmap_->RemoteIDList(size, ghostbins_vec.data(), pidlist.data(), nullptr);
+    const int err = binrowmap_->remote_id_list(size, ghostbins_vec.data(), pidlist.data(), nullptr);
     if (err < 0) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDList returned err={}", err);
 
     for (int i = 0; i < size; ++i)
@@ -1001,7 +1001,7 @@ void PARTICLEENGINE::ParticleEngine::setup_bin_ghosting()
   bincolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, static_cast<int>(bincolmapvec.size()), bincolmapvec.data(), 0, comm_);
 
-  if (bincolmap_->NumGlobalElements() == 1 && Core::Communication::num_mpi_ranks(comm_) > 1)
+  if (bincolmap_->num_global_elements() == 1 && Core::Communication::num_mpi_ranks(comm_) > 1)
     FOUR_C_THROW("one bin cannot be run in parallel -> reduce BIN_SIZE_LOWER_BOUND");
 
   // make sure that all processors are either filled or unfilled
@@ -1098,9 +1098,9 @@ void PARTICLEENGINE::ParticleEngine::determine_bin_dis_dependent_maps_and_sets()
     FOUR_C_THROW("construction of binning discretization not finalized!");
 
   // loop over row bins
-  for (int rowlidofbin = 0; rowlidofbin < binrowmap_->NumMyElements(); ++rowlidofbin)
+  for (int rowlidofbin = 0; rowlidofbin < binrowmap_->num_my_elements(); ++rowlidofbin)
   {
-    int currbin = binrowmap_->GID(rowlidofbin);
+    int currbin = binrowmap_->gid(rowlidofbin);
 
     // first insert all owned bins
     boundarybins_.insert(currbin);
@@ -1113,7 +1113,7 @@ void PARTICLEENGINE::ParticleEngine::determine_bin_dis_dependent_maps_and_sets()
     for (int neighbin : binvec)
     {
       // neighboring bin not owned by this processor
-      if (binrowmap_->LID(neighbin) < 0)
+      if (binrowmap_->lid(neighbin) < 0)
       {
         // insert owned bin
         touchedbins_.insert(currbin);
@@ -1167,12 +1167,12 @@ void PARTICLEENGINE::ParticleEngine::determine_ghosting_dependent_maps_and_sets(
     FOUR_C_THROW("construction of binning discretization not finalized!");
 
   // loop over col bins
-  for (int collidofbin = 0; collidofbin < bincolmap_->NumMyElements(); ++collidofbin)
+  for (int collidofbin = 0; collidofbin < bincolmap_->num_my_elements(); ++collidofbin)
   {
-    int currbin = bincolmap_->GID(collidofbin);
+    int currbin = bincolmap_->gid(collidofbin);
 
     // current bin not owned by this processor
-    if (binrowmap_->LID(currbin) < 0) ghostedbins_.insert(currbin);
+    if (binrowmap_->lid(currbin) < 0) ghostedbins_.insert(currbin);
   }
 
   // prepare buffer for sending and receiving
@@ -1214,7 +1214,7 @@ void PARTICLEENGINE::ParticleEngine::determine_ghosting_dependent_maps_and_sets(
       for (int receivedbin : receivedbins)
       {
         // received bin is owned by this processor
-        if (binrowmap_->LID(receivedbin) >= 0) (thisbinsghostedby_[receivedbin]).insert(msgsource);
+        if (binrowmap_->lid(receivedbin) >= 0) (thisbinsghostedby_[receivedbin]).insert(msgsource);
       }
     }
   }
@@ -1223,13 +1223,13 @@ void PARTICLEENGINE::ParticleEngine::determine_ghosting_dependent_maps_and_sets(
 void PARTICLEENGINE::ParticleEngine::relate_half_neighboring_bins_to_owned_bins()
 {
   // allocate memory for neighbors of owned bins
-  halfneighboringbinstobins_.assign(binrowmap_->NumMyElements(), std::set<int>());
+  halfneighboringbinstobins_.assign(binrowmap_->num_my_elements(), std::set<int>());
 
   // loop over row bins
-  for (int rowlidofbin = 0; rowlidofbin < binrowmap_->NumMyElements(); ++rowlidofbin)
+  for (int rowlidofbin = 0; rowlidofbin < binrowmap_->num_my_elements(); ++rowlidofbin)
   {
     // get global id of bin
-    const int gidofbin = binrowmap_->GID(rowlidofbin);
+    const int gidofbin = binrowmap_->gid(rowlidofbin);
 
     // get ijk of current bin
     int ijk[3];
@@ -1263,7 +1263,7 @@ void PARTICLEENGINE::ParticleEngine::relate_half_neighboring_bins_to_owned_bins(
     for (int neighbin : binvec)
     {
       // get local id of bin
-      const int rowlidofbin = binrowmap_->LID(neighbin);
+      const int rowlidofbin = binrowmap_->lid(neighbin);
 
       // neighboring bin not owned by this processor
       if (rowlidofbin < 0) continue;
@@ -1293,7 +1293,7 @@ void PARTICLEENGINE::ParticleEngine::check_particles_at_boundaries(
   for (int bdrybin : boundarybins_)
   {
     // get local id of bin
-    const int collidofbin = bincolmap_->LID(bdrybin);
+    const int collidofbin = bincolmap_->lid(bdrybin);
 
     // check if current bin contains owned particles
     if (particlestobins_[collidofbin].empty()) continue;
@@ -1414,7 +1414,7 @@ void PARTICLEENGINE::ParticleEngine::determine_particles_to_be_distributed(
 
     // 2) communication
     std::vector<int> unique_pidlist(uniquesize);
-    int err = binrowmap_->RemoteIDList(
+    int err = binrowmap_->remote_id_list(
         uniquesize, uniquevec_bingidlist.data(), unique_pidlist.data(), nullptr);
     if (err < 0) FOUR_C_THROW("RemoteIDList returned err={}", err);
 
@@ -1491,7 +1491,7 @@ void PARTICLEENGINE::ParticleEngine::determine_particles_to_be_transferred(
   for (int touchedbin : touchedbins_)
   {
     // get local id of bin
-    const int collidofbin = bincolmap_->LID(touchedbin);
+    const int collidofbin = bincolmap_->lid(touchedbin);
 
     // check if current bin contains owned particles
     if (particlestobins_[collidofbin].empty()) continue;
@@ -1527,7 +1527,7 @@ void PARTICLEENGINE::ParticleEngine::determine_particles_to_be_transferred(
       }
 
       // particle remains owned on this processor
-      if (binrowmap_->LID(gidofbin) >= 0) continue;
+      if (binrowmap_->lid(gidofbin) >= 0) continue;
 
       // get owning processor
       auto targetIt = firstlayerbinsownedby_.find(gidofbin);
@@ -1565,7 +1565,7 @@ void PARTICLEENGINE::ParticleEngine::determine_particles_to_be_ghosted(
     const int ghostedbin = targetIt.first;
 
     // get local id of bin
-    const int collidofbin = bincolmap_->LID(ghostedbin);
+    const int collidofbin = bincolmap_->lid(ghostedbin);
 
     // check if current bin contains owned particles
     if (particlestobins_[collidofbin].empty()) continue;
@@ -1857,7 +1857,7 @@ void PARTICLEENGINE::ParticleEngine::insert_owned_particles(
       }
 
       // particle not owned by this processor
-      if (binrowmap_->LID(gidofbin) < 0) FOUR_C_THROW("particle received not owned on this proc!");
+      if (binrowmap_->lid(gidofbin) < 0) FOUR_C_THROW("particle received not owned on this proc!");
 #endif
 
       // add particle to container of owned particles
@@ -1911,7 +1911,7 @@ void PARTICLEENGINE::ParticleEngine::insert_ghosted_particles(
       container->add_particle(ghostedindex, globalid, states);
 
       // add index relating (owned and ghosted) particles to col bins
-      particlestobins_[bincolmap_->LID(gidofbin)].push_back(std::make_pair(type, ghostedindex));
+      particlestobins_[bincolmap_->lid(gidofbin)].push_back(std::make_pair(type, ghostedindex));
 
       // get local index of particle in container of owned particles of sending processor
       int ownedindex = particleobject->return_container_index();
@@ -2020,7 +2020,7 @@ void PARTICLEENGINE::ParticleEngine::store_positions_after_particle_transfer()
 void PARTICLEENGINE::ParticleEngine::relate_owned_particles_to_bins()
 {
   // clear vector relating (owned and ghosted) particles to col bins
-  particlestobins_.resize(bincolmap_->NumMyElements());
+  particlestobins_.resize(bincolmap_->num_my_elements());
   for (auto& binIt : particlestobins_) binIt.clear();
 
   // invalidate particle safety flags
@@ -2054,12 +2054,12 @@ void PARTICLEENGINE::ParticleEngine::relate_owned_particles_to_bins()
       if (gidofbin < 0)
         FOUR_C_THROW("particle out of bounding box but not removed from container!");
 
-      if (binrowmap_->LID(gidofbin) < 0)
+      if (binrowmap_->lid(gidofbin) < 0)
         FOUR_C_THROW("particle not owned by this proc but not removed from container!");
 #endif
 
       // add index relating (owned and ghosted) particles to col bins
-      particlestobins_[bincolmap_->LID(gidofbin)].push_back(std::make_pair(type, index));
+      particlestobins_[bincolmap_->lid(gidofbin)].push_back(std::make_pair(type, index));
     }
   }
 
@@ -2092,13 +2092,13 @@ void PARTICLEENGINE::ParticleEngine::determine_bin_weights()
   binweights_->PutScalar(1.0e-05);
 
   // loop over row bins
-  for (int rowlidofbin = 0; rowlidofbin < binrowmap_->NumMyElements(); ++rowlidofbin)
+  for (int rowlidofbin = 0; rowlidofbin < binrowmap_->num_my_elements(); ++rowlidofbin)
   {
     // get global id of bin
-    const int gidofbin = binrowmap_->GID(rowlidofbin);
+    const int gidofbin = binrowmap_->gid(rowlidofbin);
 
     // iterate over owned particles in current bin
-    for (const auto& particleIt : particlestobins_[bincolmap_->LID(gidofbin)])
+    for (const auto& particleIt : particlestobins_[bincolmap_->lid(gidofbin)])
     {
       // add weight of particle of specific type
       (*binweights_)(0)[rowlidofbin] += typeweights_[particleIt.first];

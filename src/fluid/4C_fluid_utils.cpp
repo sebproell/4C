@@ -653,8 +653,8 @@ void FLD::Utils::lift_drag(const std::shared_ptr<const Core::FE::Discretization>
         Core::LinAlg::Matrix<3, 1> actforces(Core::LinAlg::Initialization::zero);
         for (int idim = 0; idim < ndim; idim++)
         {
-          actforces(idim, 0) = (trueresidual)[rowdofmap.LID(dof[idim])];
-          myforces[idim] += (trueresidual)[rowdofmap.LID(dof[idim])];
+          actforces(idim, 0) = (trueresidual)[rowdofmap.lid(dof[idim])];
+          myforces[idim] += (trueresidual)[rowdofmap.lid(dof[idim])];
         }
         // z-component remains zero for ndim=2
 
@@ -670,7 +670,7 @@ void FLD::Utils::lift_drag(const std::shared_ptr<const Core::FE::Discretization>
           if (dispnp == nullptr) FOUR_C_THROW("Displacement expected for ale fluid!");
           for (int idim = 0; idim < ndim; idim++)
           {
-            distances(idim, 0) += (*dispnp)[rowdofmap.LID(dof[idim])];
+            distances(idim, 0) += (*dispnp)[rowdofmap.lid(dof[idim])];
           }
         }
 
@@ -852,13 +852,13 @@ std::map<int, double> FLD::Utils::compute_flow_rates(Core::FE::Discretization& d
     dis.clear_state();
 
     double local_flowrate = 0.0;
-    for (int i = 0; i < dofrowmap->NumMyElements(); i++)
+    for (int i = 0; i < dofrowmap->num_my_elements(); i++)
     {
       local_flowrate += ((*flowrates)[i]);
     }
 
     double flowrate = 0.0;
-    Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->Comm());
+    Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->get_comm());
 
     // if(dofrowmap->Comm().MyPID()==0)
     // std::cout << "global flow rate = " << flowrate << "\t condition ID = " << condID <<
@@ -975,7 +975,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> FLD::Utils::project_gradient(
   std::shared_ptr<Core::LinAlg::MultiVector<double>> projected_velgrad = nullptr;
 
   // dependent on the desired projection, just remove this line
-  if (not vel->get_map().SameAs(*discret.dof_row_map()))
+  if (not vel->get_map().same_as(*discret.dof_row_map()))
     FOUR_C_THROW("input map is not a dof row map of the fluid");
 
   switch (recomethod)

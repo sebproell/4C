@@ -57,21 +57,21 @@ namespace ReducedLung
     // Intermediate maps for the different equation types
     const Core::LinAlg::Map state_equations(-1, n_local_state_equations, 0, comm);
     const Core::LinAlg::Map couplings(-1, connections.size() * 2 + bifurcations.size() * 3,
-        state_equations.NumGlobalElements(), comm);
+        state_equations.num_global_elements(), comm);
     const Core::LinAlg::Map boundaries(-1, boundary_conditions.size(),
-        couplings.NumGlobalElements() + state_equations.NumGlobalElements(), comm);
+        couplings.num_global_elements() + state_equations.num_global_elements(), comm);
 
     //  Merge all maps to the full local matrix row map
     std::vector<int> global_row_indices;
-    int n_local_indices =
-        state_equations.NumMyElements() + couplings.NumMyElements() + boundaries.NumMyElements();
+    int n_local_indices = state_equations.num_my_elements() + couplings.num_my_elements() +
+                          boundaries.num_my_elements();
     global_row_indices.reserve(n_local_indices);
-    global_row_indices.insert(global_row_indices.end(), state_equations.MyGlobalElements(),
-        state_equations.MyGlobalElements() + state_equations.NumMyElements());
-    global_row_indices.insert(global_row_indices.end(), couplings.MyGlobalElements(),
-        couplings.MyGlobalElements() + couplings.NumMyElements());
-    global_row_indices.insert(global_row_indices.end(), boundaries.MyGlobalElements(),
-        boundaries.MyGlobalElements() + boundaries.NumMyElements());
+    global_row_indices.insert(global_row_indices.end(), state_equations.my_global_elements(),
+        state_equations.my_global_elements() + state_equations.num_my_elements());
+    global_row_indices.insert(global_row_indices.end(), couplings.my_global_elements(),
+        couplings.my_global_elements() + couplings.num_my_elements());
+    global_row_indices.insert(global_row_indices.end(), boundaries.my_global_elements(),
+        boundaries.my_global_elements() + boundaries.num_my_elements());
 
     const Core::LinAlg::Map row_map(-1, n_local_indices, global_row_indices.data(), 0, comm);
 

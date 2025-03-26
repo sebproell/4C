@@ -273,8 +273,8 @@ bool Core::LinAlg::SparseMatrixBase::is_dbc_applied(const Core::LinAlg::Map& dbc
 {
   if (not filled()) FOUR_C_THROW("The matrix must be filled!");
 
-  const int numdbcrows = dbcmap.NumMyElements();
-  const int* dbcrows = dbcmap.MyGlobalElements();
+  const int numdbcrows = dbcmap.num_my_elements();
+  const int* dbcrows = dbcmap.my_global_elements();
 
   std::vector<int> gIndices(sysmat_->MaxNumEntries(), 0);
   std::vector<int> gtIndices((trafo ? trafo->max_num_entries() : 0), 0);
@@ -310,12 +310,12 @@ bool Core::LinAlg::SparseMatrixBase::is_dbc_applied(const Core::LinAlg::Map& dbc
         double* tValues = nullptr;
         int* tIndices = nullptr;
 
-        const int trafo_rlid = trafo->row_map().LID(row);
+        const int trafo_rlid = trafo->row_map().lid(row);
         trafo->epetra_matrix()->ExtractMyRowView(trafo_rlid, tNumEntries, tValues, tIndices);
 
         // get the global indices corresponding to the extracted local indices
         std::fill(gtIndices.begin(), gtIndices.end(), 0.0);
-        for (int c = 0; c < tNumEntries; ++c) gtIndices[c] = trafo->col_map().GID(tIndices[c]);
+        for (int c = 0; c < tNumEntries; ++c) gtIndices[c] = trafo->col_map().gid(tIndices[c]);
 
         for (int j = 0; j < tNumEntries; ++j)
         {

@@ -189,9 +189,9 @@ void SSI::SSIBase::setup()
   }
 
   // check maps from scalar transport and structure discretizations
-  if (scatra_field()->dof_row_map()->NumGlobalElements() == 0)
+  if (scatra_field()->dof_row_map()->num_global_elements() == 0)
     FOUR_C_THROW("Scalar transport discretization does not have any degrees of freedom!");
-  if (structure_->dof_row_map()->NumGlobalElements() == 0)
+  if (structure_->dof_row_map()->num_global_elements() == 0)
     FOUR_C_THROW("Structure discretization does not have any degrees of freedom!");
 
   // set up materials
@@ -318,10 +318,10 @@ void SSI::SSIBase::init_discretizations(MPI_Comm comm, const std::string& struct
       if (is_manifold_meshtying_)
       {
         // create vector of all node GIDs (all procs) of manifold dis
-        int num_my_nodes = scatra_manifold_dis->node_row_map()->NumMyElements();
+        int num_my_nodes = scatra_manifold_dis->node_row_map()->num_my_elements();
         std::vector<int> my_node_ids(num_my_nodes);
         for (int lid = 0; lid < num_my_nodes; ++lid)
-          my_node_ids[lid] = scatra_manifold_dis->node_row_map()->GID(lid);
+          my_node_ids[lid] = scatra_manifold_dis->node_row_map()->gid(lid);
 
         int max_num_nodes = 0;
         Core::Communication::max_all(&num_my_nodes, &max_num_nodes, 1, get_comm());

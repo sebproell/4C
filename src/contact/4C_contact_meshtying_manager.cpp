@@ -76,7 +76,7 @@ CONTACT::MtManager::MtManager(Core::FE::Discretization& discret, double alphaf)
   // maximum dof number in discretization
   // later we want to create NEW Lagrange multiplier degrees of
   // freedom, which of course must not overlap with displacement dofs
-  const int maxdof = discret.dof_row_map()->MaxAllGID();
+  const int maxdof = discret.dof_row_map()->max_all_gid();
 
   for (unsigned i = 0; i < contactconditions.size(); ++i)
   {
@@ -207,7 +207,7 @@ CONTACT::MtManager::MtManager(Core::FE::Discretization& discret, double alphaf)
       {
         int gid = (*nodeids)[k];
         // do only nodes that I have in my discretization
-        if (!discret.node_col_map()->MyGID(gid)) continue;
+        if (!discret.node_col_map()->my_gid(gid)) continue;
         Core::Nodes::Node* node = discret.g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
 

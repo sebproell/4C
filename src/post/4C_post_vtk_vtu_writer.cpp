@@ -248,11 +248,11 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
   const Core::LinAlg::Map& vecmap = data->get_map();
   const Core::LinAlg::Map* colmap = dis->dof_col_map(0);
 
-  int offset = vecmap.MinAllGID() - dis->dof_row_map()->MinAllGID();
+  int offset = vecmap.min_all_gid() - dis->dof_row_map()->min_all_gid();
   if (fillzeros) offset = 0;
 
   std::shared_ptr<Core::LinAlg::Vector<double>> ghostedData;
-  if (colmap->SameAs(vecmap))
+  if (colmap->same_as(vecmap))
     ghostedData = data;
   else
   {
@@ -260,14 +260,14 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
     // degrees of freedom in the discretization might be offset (e.g. pressure for fluid).
     // Therefore, we need to adjust the numbering in the vector to the numbering in the
     // discretization by the variable 'offset'.
-    std::vector<int> gids(vecmap.NumMyElements());
-    for (int i = 0; i < vecmap.NumMyElements(); ++i)
-      gids[i] = vecmap.MyGlobalElements()[i] - offset;
+    std::vector<int> gids(vecmap.num_my_elements());
+    for (int i = 0; i < vecmap.num_my_elements(); ++i)
+      gids[i] = vecmap.my_global_elements()[i] - offset;
     Core::LinAlg::Map rowmap(
-        vecmap.NumGlobalElements(), vecmap.NumMyElements(), gids.data(), 0, vecmap.Comm());
+        vecmap.num_global_elements(), vecmap.num_my_elements(), gids.data(), 0, vecmap.get_comm());
     std::shared_ptr<Core::LinAlg::Vector<double>> dofvec =
         Core::LinAlg::create_vector(rowmap, false);
-    for (int i = 0; i < vecmap.NumMyElements(); ++i) (*dofvec)[i] = (*data)[i];
+    for (int i = 0; i < vecmap.num_my_elements(); ++i) (*dofvec)[i] = (*data)[i];
 
     ghostedData = Core::LinAlg::create_vector(*colmap, true);
     Core::LinAlg::export_to(*dofvec, *ghostedData);
@@ -315,7 +315,7 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
 
         for (int d = 0; d < numdf; ++d)
         {
-          const int lid = ghostedData->get_map().LID(nodedofs[d + from]);
+          const int lid = ghostedData->get_map().lid(nodedofs[d + from]);
           if (lid > -1)
             solution.push_back((*ghostedData)[lid]);
           else
@@ -369,12 +369,12 @@ void PostVtuWriter::write_nodal_result_step(std::ofstream& file,
   const Core::LinAlg::Map* colmap = dis->node_col_map();
   const Core::LinAlg::Map& vecmap = data->get_map();
 
-  FOUR_C_ASSERT(
-      colmap->MaxAllGID() == vecmap.MaxAllGID() && colmap->MinAllGID() == vecmap.MinAllGID(),
+  FOUR_C_ASSERT(colmap->max_all_gid() == vecmap.max_all_gid() &&
+                    colmap->min_all_gid() == vecmap.min_all_gid(),
       "Given data vector does not seem to match discretization node map");
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> ghostedData;
-  if (colmap->SameAs(vecmap))
+  if (colmap->same_as(vecmap))
     ghostedData = data;
   else
   {
@@ -412,7 +412,7 @@ void PostVtuWriter::write_nodal_result_step(std::ofstream& file,
         {
           // Core::LinAlg::Vector<double>* column = (*ghostedData)(idf);
           Core::LinAlg::Vector<double> column((*ghostedData)(idf));
-          int lid = ghostedData->get_map().LID(ele->nodes()[numbering[n]]->id());
+          int lid = ghostedData->get_map().lid(ele->nodes()[numbering[n]]->id());
 
           if (lid > -1)
             solution.push_back((column)[lid]);
@@ -472,7 +472,7 @@ void PostVtuWriter::write_element_result_step(std::ofstream& file,
     FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: {}", numcol);
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> importedData;
-  if (dis->element_row_map()->SameAs(data->get_map()))
+  if (dis->element_row_map()->same_as(data->get_map()))
     importedData = data;
   else
   {
@@ -799,7 +799,7 @@ void PostVtuWriter::write_dof_result_step_nurbs_ele(const Core::Elements::Elemen
       dis->dof(ele->nodes()[m], nodedofs);
       for (int d = 0; d < numdf; ++d)
       {
-        const int lid = ghostedData.get_map().LID(nodedofs[d + from]);
+        const int lid = ghostedData.get_map().lid(nodedofs[d + from]);
         if (lid > -1)
           val[d] += funct(m) * ((ghostedData)[lid]);
         else
@@ -846,7 +846,7 @@ void PostVtuWriter::write_dof_result_step_beam_ele(const Discret::Elements::Beam
 
     for (std::vector<int>::const_iterator it = nodedofs.begin(); it != nodedofs.end(); ++it)
     {
-      const int lid = ghostedData->get_map().LID(*it);
+      const int lid = ghostedData->get_map().lid(*it);
       if (lid > -1)
         elementdofvals.push_back((*ghostedData)[lid]);
       else
@@ -988,7 +988,7 @@ void PostVtuWriter::write_nodal_result_step_nurbs_ele(const Core::Elements::Elem
       Core::LinAlg::Vector<double> column((ghostedData)(idf));
       for (unsigned m = 0; m < NUMNODES; ++m)
       {
-        int lid = ghostedData.get_map().LID(ele->nodes()[m]->id());
+        int lid = ghostedData.get_map().lid(ele->nodes()[m]->id());
         if (lid > -1)
           val[idf] += funct(m) * (column)[lid];
         else

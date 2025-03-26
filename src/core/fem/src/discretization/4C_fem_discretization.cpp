@@ -181,7 +181,7 @@ const Core::LinAlg::Map* Core::FE::Discretization::element_col_map() const
 int Core::FE::Discretization::num_global_elements() const
 {
   FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
-  return element_row_map()->NumGlobalElements();
+  return element_row_map()->num_global_elements();
 }
 
 /*----------------------------------------------------------------------*
@@ -189,7 +189,7 @@ int Core::FE::Discretization::num_global_elements() const
 int Core::FE::Discretization::num_my_row_elements() const
 {
   FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
-  return element_row_map()->NumMyElements();
+  return element_row_map()->num_my_elements();
 }
 
 /*----------------------------------------------------------------------*
@@ -197,7 +197,7 @@ int Core::FE::Discretization::num_my_row_elements() const
 int Core::FE::Discretization::num_my_col_elements() const
 {
   if (filled())
-    return element_col_map()->NumMyElements();
+    return element_col_map()->num_my_elements();
   else
     return (int)element_.size();
 }
@@ -207,7 +207,7 @@ int Core::FE::Discretization::num_my_col_elements() const
 int Core::FE::Discretization::num_global_nodes() const
 {
   FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
-  return node_row_map()->NumGlobalElements();
+  return node_row_map()->num_global_elements();
 }
 
 /*----------------------------------------------------------------------*
@@ -215,7 +215,7 @@ int Core::FE::Discretization::num_global_nodes() const
 int Core::FE::Discretization::num_my_row_nodes() const
 {
   FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
-  return node_row_map()->NumMyElements();
+  return node_row_map()->num_my_elements();
 }
 
 /*----------------------------------------------------------------------*
@@ -223,7 +223,7 @@ int Core::FE::Discretization::num_my_row_nodes() const
 int Core::FE::Discretization::num_my_col_nodes() const
 {
   if (filled())
-    return node_col_map()->NumMyElements();
+    return node_col_map()->num_my_elements();
   else
     return (int)node_.size();
 }
@@ -515,9 +515,9 @@ void Core::FE::Discretization::set_state(
   // This is a rough test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(colmap->get_epetra_block_map()))
+  if (vecmap.point_same_as(colmap->get_epetra_block_map()))
   {
-    FOUR_C_ASSERT(colmap->SameAs(vecmap),
+    FOUR_C_ASSERT(colmap->same_as(vecmap),
         "col map of discretization {} and state vector {} are different. This is a fatal bug!",
         name_.c_str(), name.c_str());
     // make a copy as in parallel such that no additional RCP points to the state vector
@@ -527,7 +527,7 @@ void Core::FE::Discretization::set_state(
   }
   else  // if it's not in column map export and allocate
   {
-    FOUR_C_ASSERT(dof_row_map(nds)->SameAs(state.get_map()),
+    FOUR_C_ASSERT(dof_row_map(nds)->same_as(state.get_map()),
         "row map of discretization {} and state vector {} are different. This is a fatal bug!",
         name_.c_str(), name.c_str());
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp = Core::LinAlg::create_vector(*colmap, false);
@@ -785,7 +785,7 @@ void Core::FE::Discretization::add_multi_vector_to_parameter_list(Teuchos::Param
 
     // if it's already in column map just copy it
     // This is a rough test, but it might be ok at this place.
-    if (vec->get_map().PointSameAs(nodecolmap->get_epetra_block_map()))
+    if (vec->get_map().point_same_as(nodecolmap->get_epetra_block_map()))
     {
       // make a copy as in parallel such that no additional RCP points to the state vector
       std::shared_ptr<Core::LinAlg::MultiVector<double>> tmp =

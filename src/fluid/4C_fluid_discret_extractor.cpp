@@ -157,7 +157,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
         {
           int gid = nodeids[rr];
 
-          if ((parentdiscret_->node_row_map())->LID(gid) > -1)
+          if ((parentdiscret_->node_row_map())->lid(gid) > -1)
           {
             sepcondelenodes_row.insert(gid);
           }
@@ -298,7 +298,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
           // check if node is also contained in child discretization
           for (unsigned rr = 0; rr < candidates->size(); ++rr)
           {
-            if (newrownodemap->LID((*candidates)[rr]) > -1)
+            if (newrownodemap->lid((*candidates)[rr]) > -1)
             {
               mytoggle[rr] = 1;
             }
@@ -461,11 +461,11 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
 
       int myrank = Core::Communication::my_mpi_rank(childdiscret_->get_comm());
 
-      my_n_nodes[myrank] = childdiscret_->node_row_map()->NumMyElements();
+      my_n_nodes[myrank] = childdiscret_->node_row_map()->num_my_elements();
       my_n_elements[myrank] = childdiscret_->num_my_col_elements();
       my_n_ghostele[myrank] =
           childdiscret_->num_my_col_elements() - childdiscret_->num_my_row_elements();
-      my_n_dof[myrank] = childdiscret_->dof_row_map()->NumMyElements();
+      my_n_dof[myrank] = childdiscret_->dof_row_map()->num_my_elements();
 
       Core::Communication::sum_all(
           my_n_nodes.data(), n_nodes.data(), numproc, childdiscret_->get_comm());
@@ -517,7 +517,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
           {
             int gid = nodedofset[index];
 
-            if (childdiscret_->dof_col_map()->LID(gid) < 0)
+            if (childdiscret_->dof_col_map()->lid(gid) < 0)
             {
               insane = true;
               printf("myrank %d dof %d not in colmap\n",
@@ -530,9 +530,9 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
 
       {
         std::set<int> testset;
-        for (int rr = 0; rr < childdiscret_->dof_row_map()->NumMyElements(); ++rr)
+        for (int rr = 0; rr < childdiscret_->dof_row_map()->num_my_elements(); ++rr)
         {
-          int id = childdiscret_->dof_row_map()->MyGlobalElements()[rr];
+          int id = childdiscret_->dof_row_map()->my_global_elements()[rr];
 
           std::set<int>::iterator curr = testset.find(id);
           if (curr != testset.end())
@@ -542,7 +542,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
           testset.insert(id);
         }
 
-        if (!childdiscret_->dof_row_map()->UniqueGIDs())
+        if (!childdiscret_->dof_row_map()->unique_gids())
         {
           std::cout << *childdiscret_->dof_row_map();
 

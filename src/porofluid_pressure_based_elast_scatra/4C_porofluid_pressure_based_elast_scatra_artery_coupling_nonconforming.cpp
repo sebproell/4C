@@ -648,9 +648,9 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::invert_kappa(
     FOUR_C_THROW("GlobalAssemble of kappaInv_ failed");
 
   // invert (pay attention to protruding elements)
-  for (int i = 0; i < arterydis_->dof_row_map()->NumMyElements(); ++i)
+  for (int i = 0; i < arterydis_->dof_row_map()->num_my_elements(); ++i)
   {
-    const int artdofgid = arterydis_->dof_row_map()->GID(i);
+    const int artdofgid = arterydis_->dof_row_map()->gid(i);
     const double kappaVal = (*kappa_inv_)[0][kappa_inv_->Map().LID(artdofgid)];
     if (fabs(kappaVal) > KAPPAINVTOL)
       kappa_inv_->ReplaceGlobalValue(artdofgid, 0, 1.0 / kappaVal);

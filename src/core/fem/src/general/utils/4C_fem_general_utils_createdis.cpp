@@ -48,9 +48,9 @@ void Core::FE::DiscretizationCreatorBase::create_nodes(const Core::FE::Discretiz
   // construct nodes / control points in the new discretization
   if (isnurbsdis == false)
   {
-    for (int i = 0; i < sourcenoderowmap->NumMyElements(); ++i)
+    for (int i = 0; i < sourcenoderowmap->num_my_elements(); ++i)
     {
-      int gid = sourcenoderowmap->GID(i);
+      int gid = sourcenoderowmap->gid(i);
       if (rownodeset.find(gid) != rownodeset.end())
       {
         Core::Nodes::Node* node_to_create = sourcedis.l_row_node(i);
@@ -60,9 +60,9 @@ void Core::FE::DiscretizationCreatorBase::create_nodes(const Core::FE::Discretiz
   }
   else
   {
-    for (int i = 0; i < sourcenoderowmap->NumMyElements(); ++i)
+    for (int i = 0; i < sourcenoderowmap->num_my_elements(); ++i)
     {
-      const int gid = sourcenoderowmap->GID(i);
+      const int gid = sourcenoderowmap->gid(i);
       if (rownodeset.find(gid) != rownodeset.end())
       {
         Core::FE::Nurbs::ControlPoint* node_to_create =
@@ -129,7 +129,7 @@ Core::FE::DiscretizationCreatorBase::create_matching_discretization(
       targetdisname, sourcedis.get_comm(), sourcedis.n_dim());
 
   // clone nodes
-  for (int i = 0; i < sourcedis.node_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < sourcedis.node_col_map()->num_my_elements(); ++i)
   {
     Core::Nodes::Node* node = sourcedis.l_col_node(i);
     if (!node) FOUR_C_THROW("Cannot find node with lid %", i);
@@ -138,7 +138,7 @@ Core::FE::DiscretizationCreatorBase::create_matching_discretization(
   }
 
   // clone elements
-  for (int i = 0; i < sourcedis.element_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < sourcedis.element_col_map()->num_my_elements(); ++i)
   {
     Core::Elements::Element* ele = sourcedis.l_col_element(i);
     if (!ele) FOUR_C_THROW("Cannot find element with lid %", i);
@@ -168,19 +168,19 @@ Core::FE::DiscretizationCreatorBase::create_matching_discretization(
 
   // at the end, we do several checks to ensure that we really have generated
   // an identical discretization
-  if (not sourcedis.node_row_map()->SameAs(*(targetdis->node_row_map())))
+  if (not sourcedis.node_row_map()->same_as(*(targetdis->node_row_map())))
     FOUR_C_THROW("NodeRowMaps of source and target discretization are different!");
-  if (not sourcedis.node_col_map()->SameAs(*(targetdis->node_col_map())))
+  if (not sourcedis.node_col_map()->same_as(*(targetdis->node_col_map())))
     FOUR_C_THROW("NodeColMaps of source and target discretization are different!");
-  if (not sourcedis.element_row_map()->SameAs(*(targetdis->element_row_map())))
+  if (not sourcedis.element_row_map()->same_as(*(targetdis->element_row_map())))
     FOUR_C_THROW("ElementRowMaps of source and target discretization are different!");
-  if (not sourcedis.element_col_map()->SameAs(*(targetdis->element_col_map())))
+  if (not sourcedis.element_col_map()->same_as(*(targetdis->element_col_map())))
     FOUR_C_THROW("ElementColMaps of source and target discretization are different!");
   if (clonedofs)
   {
-    if (not sourcedis.dof_row_map()->SameAs(*(targetdis->dof_row_map())))
+    if (not sourcedis.dof_row_map()->same_as(*(targetdis->dof_row_map())))
       FOUR_C_THROW("DofRowMaps of source and target discretization are different!");
-    if (not sourcedis.dof_col_map()->SameAs(*(targetdis->dof_col_map())))
+    if (not sourcedis.dof_col_map()->same_as(*(targetdis->dof_col_map())))
       FOUR_C_THROW("DofColMaps of source and target discretization are different!");
   }
 
@@ -221,7 +221,7 @@ void Core::FE::DiscretizationCreatorBase::finalize(
         std::make_shared<Core::FE::Nurbs::Knotvector>(*(nurbsdis_ptr->get_knot_vector()));
 
     // reset offsets
-    int smallest_gid_in_dis = targetnurbsdis_ptr->element_row_map()->MinAllGID();
+    int smallest_gid_in_dis = targetnurbsdis_ptr->element_row_map()->min_all_gid();
     knots->finish_knots(smallest_gid_in_dis);
 
     targetnurbsdis_ptr->set_knot_vector(knots);
@@ -238,13 +238,13 @@ void Core::FE::DiscretizationCreatorBase::finalize(
 
   if (sumeleskips == 0)
   {
-    if (not sourcedis.node_row_map()->SameAs(*(targetdis.node_row_map())))
+    if (not sourcedis.node_row_map()->same_as(*(targetdis.node_row_map())))
       FOUR_C_THROW("NodeRowMaps of source and target discretization are different!");
-    if (not sourcedis.node_col_map()->SameAs(*(targetdis.node_col_map())))
+    if (not sourcedis.node_col_map()->same_as(*(targetdis.node_col_map())))
       FOUR_C_THROW("NodeColMaps of source and target discretization are different!");
-    if (not sourcedis.element_row_map()->SameAs(*(targetdis.element_row_map())))
+    if (not sourcedis.element_row_map()->same_as(*(targetdis.element_row_map())))
       FOUR_C_THROW("ElementRowMaps of source and target discretization are different!");
-    if (not sourcedis.element_col_map()->SameAs(*(targetdis.element_col_map())))
+    if (not sourcedis.element_col_map()->same_as(*(targetdis.element_col_map())))
       FOUR_C_THROW("ElementColMaps of source and target discretization are different!");
   }
 }  // Core::FE::DiscretizationCreatorBase::Finalize

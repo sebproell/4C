@@ -400,12 +400,12 @@ void FLD::XFluidFluid::assemble_mat_and_rhs(int itnum  ///< iteration number
     // adding rhC_s_ (coupling contribution) to residual of embedded fluid
     for (int iter = 0; iter < coup_state->rhC_s_->local_length(); ++iter)
     {
-      const int rhsgid = coup_state->rhC_s_->get_map().GID(iter);
-      if (coup_state->rhC_s_->get_map().MyGID(rhsgid) == false)
+      const int rhsgid = coup_state->rhC_s_->get_map().gid(iter);
+      if (coup_state->rhC_s_->get_map().my_gid(rhsgid) == false)
         FOUR_C_THROW("rhC_s_ should be on all processors");
-      if (embedded_fluid_->residual()->get_map().MyGID(rhsgid))
-        (*embedded_fluid_->residual())[embedded_fluid_->residual()->get_map().LID(rhsgid)] +=
-            (*coup_state->rhC_s_)[coup_state->rhC_s_->get_map().LID(rhsgid)];
+      if (embedded_fluid_->residual()->get_map().my_gid(rhsgid))
+        (*embedded_fluid_->residual())[embedded_fluid_->residual()->get_map().lid(rhsgid)] +=
+            (*coup_state->rhC_s_)[coup_state->rhC_s_->get_map().lid(rhsgid)];
       else
         FOUR_C_THROW("Interface dof {} does not belong to embedded discretization!", rhsgid);
     }

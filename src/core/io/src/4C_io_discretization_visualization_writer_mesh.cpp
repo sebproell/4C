@@ -115,8 +115,8 @@ namespace Core::IO
   {
     // check if parallel distribution of discretization changed
     int map_changed =
-        ((not noderowmap_last_geometry_set_->SameAs(*discretization_->node_row_map())) or
-            (not nodecolmap_last_geometry_set_->SameAs(*discretization_->node_col_map())));
+        ((not noderowmap_last_geometry_set_->same_as(*discretization_->node_row_map())) or
+            (not nodecolmap_last_geometry_set_->same_as(*discretization_->node_col_map())));
     int map_changed_allproc(0);
     Core::Communication::max_all(
         &map_changed, &map_changed_allproc, 1, discretization_->get_comm());
@@ -203,11 +203,11 @@ namespace Core::IO
 
     auto convert_to_col_map_if_necessary = [&](const Core::LinAlg::Vector<double>& vector)
     {
-      if (discretization_->dof_col_map()->SameAs(vector.get_map()))
+      if (discretization_->dof_col_map()->same_as(vector.get_map()))
       {
         return vector;
       }
-      else if (discretization_->dof_row_map()->SameAs(vector.get_map()))
+      else if (discretization_->dof_row_map()->same_as(vector.get_map()))
       {
         auto vector_col_map = Core::LinAlg::Vector<double>(*discretization_->dof_col_map(), true);
         Core::LinAlg::export_to(vector, vector_col_map);
@@ -219,7 +219,7 @@ namespace Core::IO
     auto result_data_dofbased_col_map = convert_to_col_map_if_necessary(result_data_dofbased);
 
     // safety checks
-    FOUR_C_ASSERT(discretization_->dof_col_map()->SameAs(result_data_dofbased_col_map.get_map()),
+    FOUR_C_ASSERT(discretization_->dof_col_map()->same_as(result_data_dofbased_col_map.get_map()),
         "Received map of dof-based result data vector does not match the discretization's dof "
         "col map.");
 
@@ -266,11 +266,11 @@ namespace Core::IO
 
     auto convert_to_col_map_if_necessary = [&](const Core::LinAlg::MultiVector<double>& vector)
     {
-      if (discretization_->node_col_map()->SameAs(vector.get_map()))
+      if (discretization_->node_col_map()->same_as(vector.get_map()))
       {
         return vector;
       }
-      else if (discretization_->node_row_map()->SameAs(vector.get_map()))
+      else if (discretization_->node_row_map()->same_as(vector.get_map()))
       {
         auto vector_col_map = Core::LinAlg::MultiVector<double>(
             *discretization_->node_col_map(), result_num_components_per_node, true);
@@ -288,7 +288,7 @@ namespace Core::IO
         "Expected Core::LinAlg::MultiVector<double> with {} columns but got {}.",
         result_num_components_per_node, result_data_nodebased_col_map.NumVectors());
 
-    FOUR_C_ASSERT(discretization_->node_col_map()->SameAs(result_data_nodebased_col_map.get_map()),
+    FOUR_C_ASSERT(discretization_->node_col_map()->same_as(result_data_nodebased_col_map.get_map()),
         "Received map of node-based result data vector does not match the discretization's node "
         "col map.");
 
@@ -338,7 +338,7 @@ namespace Core::IO
         "Expected Core::LinAlg::MultiVector<double> with {} columns but got {}.",
         result_num_components_per_element, result_data_elementbased.NumVectors());
 
-    FOUR_C_ASSERT(discretization_->element_row_map()->SameAs(result_data_elementbased.get_map()),
+    FOUR_C_ASSERT(discretization_->element_row_map()->same_as(result_data_elementbased.get_map()),
         "Received map of element-based result data vector does not match the discretization's "
         "element row map.");
 
@@ -487,7 +487,7 @@ namespace Core::IO
       const std::function<bool(const Core::Elements::Element* ele)>& element_predicate)
   {
     // Set up a multivector which will be populated with all ghosting information.
-    MPI_Comm comm = discretization.element_col_map()->Comm();
+    MPI_Comm comm = discretization.element_col_map()->get_comm();
     const int n_proc = Core::Communication::num_mpi_ranks(comm);
     const int my_proc = Core::Communication::my_mpi_rank(comm);
 

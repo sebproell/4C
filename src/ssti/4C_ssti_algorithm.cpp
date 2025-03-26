@@ -173,11 +173,11 @@ void SSTI::SSTIAlgorithm::setup()
   if (structure_ == nullptr) FOUR_C_THROW("No valid pointer to Adapter::SSIStructureWrapper !");
 
   // check maps from subproblems
-  if (scatra_->scatra_field()->dof_row_map()->NumGlobalElements() == 0)
+  if (scatra_->scatra_field()->dof_row_map()->num_global_elements() == 0)
     FOUR_C_THROW("Scalar transport discretization does not have any degrees of freedom!");
-  if (thermo_->scatra_field()->dof_row_map()->NumGlobalElements() == 0)
+  if (thermo_->scatra_field()->dof_row_map()->num_global_elements() == 0)
     FOUR_C_THROW("Scalar transport discretization does not have any degrees of freedom!");
-  if (structure_->dof_row_map()->NumGlobalElements() == 0)
+  if (structure_->dof_row_map()->num_global_elements() == 0)
     FOUR_C_THROW("Structure discretization does not have any degrees of freedom!");
 
   // set up materials

@@ -144,7 +144,7 @@ namespace BeamInteraction
 
         for (int dim = 0; dim < 3; ++dim)
         {
-          doflid[dim] = dis.get_map().LID(dofnode[dim]);
+          doflid[dim] = dis.get_map().lid(dofnode[dim]);
           d(dim) = (dis)[doflid[dim]];
           X(dim) = node->x()[dim];
         }
@@ -354,7 +354,7 @@ namespace BeamInteraction
         for (int i = 0; i < numnodes; ++i)
         {
           // only if myrank is owner of requested node
-          if (discret.node_row_map()->LID(requirednodes[i]) < 0) continue;
+          if (discret.node_row_map()->lid(requirednodes[i]) < 0) continue;
 
           // insert element cloud of current node
           Core::Nodes::Node* currnode = discret.g_node(requirednodes[i]);
@@ -369,7 +369,7 @@ namespace BeamInteraction
 
       // insert previous ghosting
       for (int lid = 0; lid < discret.num_my_col_elements(); ++lid)
-        coleleset.insert(discret.element_col_map()->GID(lid));
+        coleleset.insert(discret.element_col_map()->gid(lid));
       std::vector<int> colgids(coleleset.begin(), coleleset.end());
 
       // create new ele col map
@@ -410,7 +410,7 @@ namespace BeamInteraction
         // loop over all nodes of current filament and store gids of nodes not owned by myrank
         std::vector<int> const* nodeids = cond->get_nodes();
         for (int i = 0; i < static_cast<int>(nodeids->size()); ++i)
-          if (discret.node_row_map()->LID((*nodeids)[i]) < 0)
+          if (discret.node_row_map()->lid((*nodeids)[i]) < 0)
             setofrequirednodes.insert((*nodeids)[i]);
       }
     }

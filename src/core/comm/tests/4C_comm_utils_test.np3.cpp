@@ -52,13 +52,13 @@ namespace
       vector_ = std::make_shared<Core::LinAlg::Vector<double>>(*map, false);
 
       // fill test Core::LinAlg::Vector<double> with entry equals gid
-      int numMyEles = map->NumMyElements();
+      int numMyEles = map->num_my_elements();
       double* values = new double[numMyEles];
       int* indices = new int[numMyEles];
       for (int lid = 0; lid < numMyEles; ++lid)
       {
         indices[lid] = lid;
-        values[lid] = map->GID(lid);
+        values[lid] = map->gid(lid);
       }
       vector_->replace_local_values(numMyEles, values, indices);
     }
@@ -97,10 +97,10 @@ namespace
       // fill tri-diagonal matrix
       double* values = new double[3];
       int* columnIndices = new int[3];
-      int numMyEles = rowmap->NumMyElements();
+      int numMyEles = rowmap->num_my_elements();
       for (int lid = 0; lid < numMyEles; ++lid)
       {
-        int rowgid = rowmap->GID(lid);
+        int rowgid = rowmap->gid(lid);
         if (rowgid == 0)  // first global row
         {
           int colIndicesFirstRow[2] = {0, 1};
@@ -110,7 +110,7 @@ namespace
         }
         else if (rowgid == numberOfElementsToDistribute_ - 1)  // last global row
         {
-          rowgid = rowmap->GID(numMyEles - 1);
+          rowgid = rowmap->gid(numMyEles - 1);
           int colIndicesLastRow[2] = {rowgid - 1, rowgid};
           double valuesLastRow[2] = {static_cast<double>(rowgid) + colIndicesLastRow[0],
               static_cast<double>(rowgid) + colIndicesLastRow[1]};
@@ -167,10 +167,10 @@ namespace
       // fill rectangular matrix
       double* values = new double[6];
       int* columnIndices = new int[6];
-      int numMyEles = rowmap.NumMyElements();
+      int numMyEles = rowmap.num_my_elements();
       for (int lid = 0; lid < numMyEles; ++lid)
       {
-        int rowgid = rowmap.GID(lid);
+        int rowgid = rowmap.gid(lid);
         if (rowgid == 0)  // first global row
         {
           int colIndicesFirstRow[4] = {
@@ -183,7 +183,7 @@ namespace
         }
         else if (rowgid == numberOfElementsToDistribute_ - 1)  // last global row
         {
-          rowgid = rowmap.GID(numMyEles - 1);
+          rowgid = rowmap.gid(numMyEles - 1);
           int colIndicesLastRow[4] = {rowgid - 1, rowgid,
               rowgid - 1 + numberOfElementsToDistribute_, rowgid + numberOfElementsToDistribute_};
           double valuesLastRow[4] = {static_cast<double>(rowgid) + colIndicesLastRow[0],
@@ -249,7 +249,7 @@ namespace
   TEST_F(SetupCompareParallelMatricesTest, NegativeTestCompareMatrices)
   {
     // disturb one value on each proc which leads to a failure of the comparison
-    const int myLastLid[1] = {matrix_->row_map().NumMyElements() - 1};
+    const int myLastLid[1] = {matrix_->row_map().num_my_elements() - 1};
     const double value[1] = {static_cast<double>(myLastLid[0])};
 
     matrix_->insert_my_values(myLastLid[0], 1, &value[0], &myLastLid[0]);

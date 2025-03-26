@@ -36,34 +36,34 @@ void CONTACT::Interface::fd_check_normal_deriv()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for normals / tangents
-  std::vector<double> refnx(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> refny(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> refnz(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newnx(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newny(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newnz(int(snodecolmapbound_->NumMyElements()));
+  std::vector<double> refnx(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> refny(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> refnz(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newnx(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newny(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newnz(int(snodecolmapbound_->num_my_elements()));
 
-  std::vector<double> reftxix(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> reftxiy(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> reftxiz(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtxix(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtxiy(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtxiz(int(snodecolmapbound_->NumMyElements()));
+  std::vector<double> reftxix(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> reftxiy(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> reftxiz(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtxix(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtxiy(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtxiz(int(snodecolmapbound_->num_my_elements()));
 
-  std::vector<double> reftetax(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> reftetay(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> reftetaz(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtetax(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtetay(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtetaz(int(snodecolmapbound_->NumMyElements()));
+  std::vector<double> reftetax(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> reftetay(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> reftetaz(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtetax(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtetay(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtetaz(int(snodecolmapbound_->num_my_elements()));
 
   // problem dimension (2D or 3D)
   int dim = n_dim();
 
   // store all nodal normals / derivatives (reference)
-  for (int j = 0; j < snodecolmapbound_->NumMyElements(); ++j)
+  for (int j = 0; j < snodecolmapbound_->num_my_elements(); ++j)
   {
-    int jgid = snodecolmapbound_->GID(j);
+    int jgid = snodecolmapbound_->gid(j);
     Core::Nodes::Node* jnode = idiscret_->g_node(jgid);
     if (!jnode) FOUR_C_THROW("Cannot find node with gid %", jgid);
     Node* jcnode = dynamic_cast<Node*>(jnode);
@@ -81,7 +81,7 @@ void CONTACT::Interface::fd_check_normal_deriv()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int i = 0; i < dim * snodefullmap->NumMyElements(); ++i)
+  for (int i = 0; i < dim * snodefullmap->num_my_elements(); ++i)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -93,7 +93,7 @@ void CONTACT::Interface::fd_check_normal_deriv()
     set_element_areas();
 
     // now finally get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(i / dim);
+    int gid = snodefullmap->gid(i / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -121,9 +121,9 @@ void CONTACT::Interface::fd_check_normal_deriv()
     set_element_areas();
 
     // compute finite difference derivative
-    for (int k = 0; k < snodecolmapbound_->NumMyElements(); ++k)
+    for (int k = 0; k < snodecolmapbound_->num_my_elements(); ++k)
     {
-      int kgid = snodecolmapbound_->GID(k);
+      int kgid = snodecolmapbound_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -302,34 +302,34 @@ void CONTACT::Interface::fd_check_normal_cpp_deriv()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for normals / tangents
-  std::vector<double> refnx(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> refny(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> refnz(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newnx(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newny(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newnz(int(snodecolmapbound_->NumMyElements()));
+  std::vector<double> refnx(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> refny(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> refnz(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newnx(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newny(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newnz(int(snodecolmapbound_->num_my_elements()));
 
-  std::vector<double> reftxix(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> reftxiy(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> reftxiz(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtxix(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtxiy(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtxiz(int(snodecolmapbound_->NumMyElements()));
+  std::vector<double> reftxix(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> reftxiy(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> reftxiz(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtxix(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtxiy(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtxiz(int(snodecolmapbound_->num_my_elements()));
 
-  std::vector<double> reftetax(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> reftetay(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> reftetaz(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtetax(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtetay(int(snodecolmapbound_->NumMyElements()));
-  std::vector<double> newtetaz(int(snodecolmapbound_->NumMyElements()));
+  std::vector<double> reftetax(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> reftetay(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> reftetaz(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtetax(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtetay(int(snodecolmapbound_->num_my_elements()));
+  std::vector<double> newtetaz(int(snodecolmapbound_->num_my_elements()));
 
   // problem dimension (2D or 3D)
   int dim = n_dim();
 
   // store all nodal normals / derivatives (reference)
-  for (int j = 0; j < snodecolmapbound_->NumMyElements(); ++j)
+  for (int j = 0; j < snodecolmapbound_->num_my_elements(); ++j)
   {
-    int jgid = snodecolmapbound_->GID(j);
+    int jgid = snodecolmapbound_->gid(j);
     Core::Nodes::Node* jnode = idiscret_->g_node(jgid);
     if (!jnode) FOUR_C_THROW("Cannot find node with gid %", jgid);
     Node* jcnode = dynamic_cast<Node*>(jnode);
@@ -349,7 +349,7 @@ void CONTACT::Interface::fd_check_normal_cpp_deriv()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int i = 0; i < dim * snodefullmap->NumMyElements(); ++i)
+  for (int i = 0; i < dim * snodefullmap->num_my_elements(); ++i)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -363,7 +363,7 @@ void CONTACT::Interface::fd_check_normal_cpp_deriv()
     evaluate_search_binarytree();
 
     // now finally get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(i / dim);
+    int gid = snodefullmap->gid(i / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -393,9 +393,9 @@ void CONTACT::Interface::fd_check_normal_cpp_deriv()
     evaluate_cpp_normals();
 
     // compute finite difference derivative
-    for (int k = 0; k < snodecolmapbound_->NumMyElements(); ++k)
+    for (int k = 0; k < snodecolmapbound_->num_my_elements(); ++k)
     {
-      int kgid = snodecolmapbound_->GID(k);
+      int kgid = snodecolmapbound_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -560,7 +560,7 @@ void CONTACT::Interface::fd_check_normal_cpp_deriv()
 
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int i = 0; i < dim * mnodefullmap->NumMyElements(); ++i)
+  for (int i = 0; i < dim * mnodefullmap->num_my_elements(); ++i)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -574,7 +574,7 @@ void CONTACT::Interface::fd_check_normal_cpp_deriv()
     evaluate_search_binarytree();
 
     // now finally get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(i / dim);
+    int gid = mnodefullmap->gid(i / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -604,9 +604,9 @@ void CONTACT::Interface::fd_check_normal_cpp_deriv()
     evaluate_cpp_normals();
 
     // compute finite difference derivative
-    for (int k = 0; k < snodecolmapbound_->NumMyElements(); ++k)
+    for (int k = 0; k < snodecolmapbound_->num_my_elements(); ++k)
     {
-      int kgid = snodecolmapbound_->GID(k);
+      int kgid = snodecolmapbound_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -803,9 +803,9 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
 
   // print reference to screen (D-derivative-maps) and store them for later comparison
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -822,7 +822,7 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
   }
 
   // global loop to apply FD scheme to all SLAVE dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -831,7 +831,7 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -864,9 +864,9 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -929,7 +929,7 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
   }
 
   // global loop to apply FD scheme to all MASTER dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -938,7 +938,7 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -971,9 +971,9 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -1074,9 +1074,9 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
 
   // print reference to screen (M-derivative-maps) and store them for later comparison
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1089,7 +1089,7 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -1098,7 +1098,7 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -1131,9 +1131,9 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -1195,7 +1195,7 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
   }
 
   // global loop to apply FD scheme to all MASTER dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -1204,7 +1204,7 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -1237,9 +1237,9 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -1329,7 +1329,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for gap values
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> refU(nrow);
   std::vector<double> newU(nrow);
 
@@ -1338,9 +1338,9 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -1349,7 +1349,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -1358,7 +1358,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -1390,9 +1390,9 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -1445,7 +1445,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
   }
 
   // global loop to apply FD scheme to all master dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -1456,7 +1456,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -1488,9 +1488,9 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_txi()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -1563,7 +1563,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for gap values
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> refU(nrow);
   std::vector<double> newU(nrow);
 
@@ -1572,9 +1572,9 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -1584,7 +1584,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -1593,7 +1593,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -1625,9 +1625,9 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -1680,7 +1680,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
   }
 
   // global loop to apply FD scheme to all master dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -1691,7 +1691,7 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -1723,9 +1723,9 @@ void CONTACT::Interface::fd_check_slip_incr_deriv_teta()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -1798,7 +1798,7 @@ void CONTACT::Interface::fd_check_alpha_deriv()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for gap values
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> refG(nrow);
   std::vector<double> newG(nrow);
   std::vector<double> refa(nrow);
@@ -1809,9 +1809,9 @@ void CONTACT::Interface::fd_check_alpha_deriv()
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1866,7 +1866,7 @@ void CONTACT::Interface::fd_check_alpha_deriv()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -1875,7 +1875,7 @@ void CONTACT::Interface::fd_check_alpha_deriv()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -1914,9 +1914,9 @@ void CONTACT::Interface::fd_check_alpha_deriv()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -2016,7 +2016,7 @@ void CONTACT::Interface::fd_check_alpha_deriv()
   }
 
   // global loop to apply FD scheme to all master dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -2027,7 +2027,7 @@ void CONTACT::Interface::fd_check_alpha_deriv()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -2066,9 +2066,9 @@ void CONTACT::Interface::fd_check_alpha_deriv()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -2081,9 +2081,9 @@ void CONTACT::Interface::fd_check_alpha_deriv()
         std::map<int, double>& mmap = kcnode->mo_data().get_m();
         std::map<int, double>::const_iterator mcurr;
 
-        for (int m = 0; m < mnodefullmap->NumMyElements(); ++m)
+        for (int m = 0; m < mnodefullmap->num_my_elements(); ++m)
         {
-          int gid = mnodefullmap->GID(m);
+          int gid = mnodefullmap->gid(m);
           Core::Nodes::Node* mnode = idiscret_->g_node(gid);
           if (!mnode) FOUR_C_THROW("Cannot find node with gid %", gid);
           Node* cmnode = dynamic_cast<Node*>(mnode);
@@ -2172,7 +2172,7 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for gap values
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> refG0(nrow);
   std::vector<double> newG0(nrow);
   std::vector<double> refG1(nrow);
@@ -2184,9 +2184,9 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -2198,7 +2198,7 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -2207,7 +2207,7 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -2246,9 +2246,9 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -2351,7 +2351,7 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
   }
 
   // global loop to apply FD scheme to all master dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -2362,7 +2362,7 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -2401,9 +2401,9 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -2415,9 +2415,9 @@ void CONTACT::Interface::fd_check_gap_deriv_ltl()
         std::map<int, double>& mmap = kcnode->mo_data().get_m();
         std::map<int, double>::const_iterator mcurr;
 
-        for (int m = 0; m < mnodefullmap->NumMyElements(); ++m)
+        for (int m = 0; m < mnodefullmap->num_my_elements(); ++m)
         {
-          int gid = mnodefullmap->GID(m);
+          int gid = mnodefullmap->gid(m);
           Core::Nodes::Node* mnode = idiscret_->g_node(gid);
           if (!mnode) FOUR_C_THROW("Cannot find node with gid %", gid);
           Node* cmnode = dynamic_cast<Node*>(mnode);
@@ -2555,7 +2555,7 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for gap values
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> refG0(nrow);
   std::vector<double> newG0(nrow);
   std::vector<double> refG1(nrow);
@@ -2567,9 +2567,9 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -2581,7 +2581,7 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -2590,7 +2590,7 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -2629,9 +2629,9 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -2734,7 +2734,7 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
   }
 
   // global loop to apply FD scheme to all master dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -2745,7 +2745,7 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -2784,9 +2784,9 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -2797,9 +2797,9 @@ void CONTACT::Interface::fd_check_jump_deriv_ltl()
         std::map<int, double>& mmap = kcnode->mo_data().get_m();
         std::map<int, double>::const_iterator mcurr;
 
-        for (int m = 0; m < mnodefullmap->NumMyElements(); ++m)
+        for (int m = 0; m < mnodefullmap->num_my_elements(); ++m)
         {
-          int gid = mnodefullmap->GID(m);
+          int gid = mnodefullmap->gid(m);
           Core::Nodes::Node* mnode = idiscret_->g_node(gid);
           if (!mnode) FOUR_C_THROW("Cannot find node with gid %", gid);
           Node* cmnode = dynamic_cast<Node*>(mnode);
@@ -2937,7 +2937,7 @@ void CONTACT::Interface::fd_check_gap_deriv()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for gap values
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> refG(nrow);
   std::vector<double> newG(nrow);
 
@@ -2946,9 +2946,9 @@ void CONTACT::Interface::fd_check_gap_deriv()
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -3004,7 +3004,7 @@ void CONTACT::Interface::fd_check_gap_deriv()
   }
 
   // global loop to apply FD scheme to all slave dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -3013,7 +3013,7 @@ void CONTACT::Interface::fd_check_gap_deriv()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -3052,9 +3052,9 @@ void CONTACT::Interface::fd_check_gap_deriv()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -3153,7 +3153,7 @@ void CONTACT::Interface::fd_check_gap_deriv()
   }
 
   // global loop to apply FD scheme to all master dofs (=dim*nodes)
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // store warnings for this finite difference
     int w = 0;
@@ -3164,7 +3164,7 @@ void CONTACT::Interface::fd_check_gap_deriv()
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -3203,9 +3203,9 @@ void CONTACT::Interface::fd_check_gap_deriv()
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -3218,9 +3218,9 @@ void CONTACT::Interface::fd_check_gap_deriv()
         std::map<int, double>& mmap = kcnode->mo_data().get_m();
         std::map<int, double>::const_iterator mcurr;
 
-        for (int m = 0; m < mnodefullmap->NumMyElements(); ++m)
+        for (int m = 0; m < mnodefullmap->num_my_elements(); ++m)
         {
-          int gid = mnodefullmap->GID(m);
+          int gid = mnodefullmap->gid(m);
           Core::Nodes::Node* mnode = idiscret_->g_node(gid);
           if (!mnode) FOUR_C_THROW("Cannot find node with gid %", gid);
           Node* cmnode = dynamic_cast<Node*>(mnode);
@@ -3308,7 +3308,7 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for tangential LM values
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> refTLMxi(nrow);
   std::vector<double> newTLMxi(nrow);
   std::vector<double> refTLMeta(nrow);
@@ -3316,9 +3316,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -3337,7 +3337,7 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
   }
 
   // global loop to apply FD scheme to all slave dofs (=3*nodes)
-  for (int fd = 0; fd < 3 * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < 3 * snodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     // loop over all nodes to reset normals, closestnode and Mortar maps
@@ -3387,9 +3387,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
 
     // loop over all elements to reset candidates / search lists
     // (use standard slave column map)
-    for (int i = 0; i < slave_col_elements()->NumMyElements(); ++i)
+    for (int i = 0; i < slave_col_elements()->num_my_elements(); ++i)
     {
-      int gid = slave_col_elements()->GID(i);
+      int gid = slave_col_elements()->gid(i);
       Core::Elements::Element* ele = discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -3401,7 +3401,7 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     // CSegs().Shape(0,0);
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / 3);
+    int gid = snodefullmap->gid(fd / 3);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -3437,9 +3437,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     // loop over proc's slave nodes of the interface
     // use standard column map to include processor's ghosted nodes
     // use boundary map to include slave side boundary nodes
-    for (int i = 0; i < snodecolmapbound_->NumMyElements(); ++i)
+    for (int i = 0; i < snodecolmapbound_->num_my_elements(); ++i)
     {
-      int gid1 = snodecolmapbound_->GID(i);
+      int gid1 = snodecolmapbound_->gid(i);
       Core::Nodes::Node* node = idiscret_->g_node(gid1);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid1);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -3453,9 +3453,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
 
     // loop over proc's slave elements of the interface for integration
     // use standard column map to include processor's ghosted elements
-    for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+    for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
     {
-      int gid1 = selecolmap_->GID(i);
+      int gid1 = selecolmap_->gid(i);
       Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
       if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
       Mortar::Element* selement = dynamic_cast<Mortar::Element*>(ele1);
@@ -3484,9 +3484,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     // *******************************************************************
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -3539,7 +3539,7 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
   }
 
   // global loop to apply FD scheme to all master dofs (=3*nodes)
-  for (int fd = 0; fd < 3 * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < 3 * mnodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     // loop over all nodes to reset normals, closestnode and Mortar maps
@@ -3589,9 +3589,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
 
     // loop over all elements to reset candidates / search lists
     // (use standard slave column map)
-    for (int i = 0; i < slave_col_elements()->NumMyElements(); ++i)
+    for (int i = 0; i < slave_col_elements()->num_my_elements(); ++i)
     {
-      int gid = slave_col_elements()->GID(i);
+      int gid = slave_col_elements()->gid(i);
       Core::Elements::Element* ele = discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -3603,7 +3603,7 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     // CSegs().Shape(0,0);
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / 3);
+    int gid = mnodefullmap->gid(fd / 3);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -3639,9 +3639,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     // loop over proc's slave nodes of the interface
     // use standard column map to include processor's ghosted nodes
     // use boundary map to include slave side boundary nodes
-    for (int i = 0; i < snodecolmapbound_->NumMyElements(); ++i)
+    for (int i = 0; i < snodecolmapbound_->num_my_elements(); ++i)
     {
-      int gid1 = snodecolmapbound_->GID(i);
+      int gid1 = snodecolmapbound_->gid(i);
       Core::Nodes::Node* node = idiscret_->g_node(gid1);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid1);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -3655,9 +3655,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
 
     // loop over proc's slave elements of the interface for integration
     // use standard column map to include processor's ghosted elements
-    for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+    for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
     {
-      int gid1 = selecolmap_->GID(i);
+      int gid1 = selecolmap_->gid(i);
       Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
       if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
       Mortar::Element* selement = dynamic_cast<Mortar::Element*>(ele1);
@@ -3686,9 +3686,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
     // *******************************************************************
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -3790,9 +3790,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
 
   // loop over all elements to reset candidates / search lists
   // (use standard slave column map)
-  for (int i = 0; i < slave_col_elements()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_col_elements()->num_my_elements(); ++i)
   {
-    int gid = slave_col_elements()->GID(i);
+    int gid = slave_col_elements()->gid(i);
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     Mortar::Element* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -3812,9 +3812,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
   // loop over proc's slave nodes of the interface
   // use standard column map to include processor's ghosted nodes
   // use boundary map to include slave side boundary nodes
-  for (int i = 0; i < snodecolmapbound_->NumMyElements(); ++i)
+  for (int i = 0; i < snodecolmapbound_->num_my_elements(); ++i)
   {
-    int gid1 = snodecolmapbound_->GID(i);
+    int gid1 = snodecolmapbound_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid1);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid1);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -3828,9 +3828,9 @@ void CONTACT::Interface::fd_check_tang_lm_deriv()
 
   // loop over proc's slave elements of the interface for integration
   // use standard column map to include processor's ghosted elements
-  for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
   {
-    int gid1 = selecolmap_->GID(i);
+    int gid1 = selecolmap_->gid(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
     Mortar::Element* selement = dynamic_cast<Mortar::Element*>(ele1);
@@ -3879,7 +3879,7 @@ void CONTACT::Interface::fd_check_stick_deriv(
     FOUR_C_THROW("FD checks only for serial case");
 
   // create storage for values of complementary function C
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   int dim = n_dim();
   std::vector<double> refCtxi(nrow);
   std::vector<double> refCteta(nrow);
@@ -3888,9 +3888,9 @@ void CONTACT::Interface::fd_check_stick_deriv(
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -3961,7 +3961,7 @@ void CONTACT::Interface::fd_check_stick_deriv(
   // **************************************************************************
   // global loop to apply FD scheme to all slave dofs (=3*nodes)
   // **************************************************************************
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     // loop over all nodes to reset normals, closestnode and Mortar maps
@@ -3969,7 +3969,7 @@ void CONTACT::Interface::fd_check_stick_deriv(
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     int coldof = 0;
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
@@ -4009,9 +4009,9 @@ void CONTACT::Interface::fd_check_stick_deriv(
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -4175,7 +4175,7 @@ void CONTACT::Interface::fd_check_stick_deriv(
   // **************************************************************************
   // global loop to apply FD scheme to all master dofs (=3*nodes)
   // **************************************************************************
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     // loop over all nodes to reset normals, closestnode and Mortar maps
@@ -4183,7 +4183,7 @@ void CONTACT::Interface::fd_check_stick_deriv(
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     int coldof = 0;
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
@@ -4223,9 +4223,9 @@ void CONTACT::Interface::fd_check_stick_deriv(
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -4418,7 +4418,7 @@ void CONTACT::Interface::fd_check_slip_deriv(
   double cn = interface_params().get<double>("SEMI_SMOOTH_CN");
 
   // create storage for values of complementary function C
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> refCtxi(nrow);
   std::vector<double> refCteta(nrow);
   std::vector<double> newCtxi(nrow);
@@ -4428,9 +4428,9 @@ void CONTACT::Interface::fd_check_slip_deriv(
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -4531,10 +4531,10 @@ void CONTACT::Interface::fd_check_slip_deriv(
   // **********************************************************************************
   // global loop to apply FD scheme for LM to all slave dofs (=3*nodes)
   // **********************************************************************************
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     int coldof = 0;
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
@@ -4559,9 +4559,9 @@ void CONTACT::Interface::fd_check_slip_deriv(
     }
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -4754,13 +4754,13 @@ void CONTACT::Interface::fd_check_slip_deriv(
   // ********************************************************************************************
   // global loop to apply FD scheme to all slave dofs (=3*nodes)
   // ********************************************************************************************
-  for (int fd = 0; fd < dim * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * snodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / dim);
+    int gid = snodefullmap->gid(fd / dim);
     int coldof = 0;
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
@@ -4793,9 +4793,9 @@ void CONTACT::Interface::fd_check_slip_deriv(
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -4993,13 +4993,13 @@ void CONTACT::Interface::fd_check_slip_deriv(
   // ********************************************************************************************
   // global loop to apply FD scheme to all master dofs (=3*nodes)
   // ********************************************************************************************
-  for (int fd = 0; fd < dim * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < dim * mnodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / dim);
+    int gid = mnodefullmap->gid(fd / dim);
     int coldof = 0;
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
@@ -5032,9 +5032,9 @@ void CONTACT::Interface::fd_check_slip_deriv(
     evaluate();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -5256,9 +5256,9 @@ void CONTACT::Interface::fd_check_penalty_trac_nor()
   std::map<int, std::map<int, double>> deltastorage;
 
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -5293,13 +5293,13 @@ void CONTACT::Interface::fd_check_penalty_trac_nor()
   int w = 0;
 
   // global loop to apply FD scheme to all SLAVE dofs (=3*nodes)
-  for (int fd = 0; fd < 3 * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < 3 * snodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / 3);
+    int gid = snodefullmap->gid(fd / 3);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -5332,9 +5332,9 @@ void CONTACT::Interface::fd_check_penalty_trac_nor()
     assemble_reg_normal_forces(isincontact, activesetchange);
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -5400,13 +5400,13 @@ void CONTACT::Interface::fd_check_penalty_trac_nor()
   w = 0;
 
   // global loop to apply FD scheme to all MASTER dofs (=3*nodes)
-  for (int fd = 0; fd < 3 * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < 3 * mnodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / 3);
+    int gid = mnodefullmap->gid(fd / 3);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -5439,9 +5439,9 @@ void CONTACT::Interface::fd_check_penalty_trac_nor()
     assemble_reg_normal_forces(isincontact, activesetchange);
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!knode) FOUR_C_THROW("Cannot find node with gid %", kgid);
       Node* kcnode = dynamic_cast<Node*>(knode);
@@ -5540,7 +5540,7 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
   double pptan = interface_params().get<double>("PENALTYPARAMTAN");
 
   // create storage for values of complementary function C
-  int nrow = snoderowmap_->NumMyElements();
+  int nrow = snoderowmap_->num_my_elements();
   std::vector<double> reftrac1(nrow);
   std::vector<double> newtrac1(nrow);
   std::vector<double> reftrac2(nrow);
@@ -5550,9 +5550,9 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
 
   // store reference
   // loop over proc's slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -5663,13 +5663,13 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
   }  // loop over procs slave nodes
 
   // global loop to apply FD scheme to all slave dofs (=3*nodes)
-  for (int fd = 0; fd < 3 * snodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < 3 * snodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = snodefullmap->GID(fd / 3);
+    int gid = snodefullmap->gid(fd / 3);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find slave node with gid %", gid);
     Node* snode = dynamic_cast<Node*>(node);
@@ -5706,9 +5706,9 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
     // evaluate_relative_movement();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -5883,13 +5883,13 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
   }  // loop over procs slave nodes
 
   // global loop to apply FD scheme to all master dofs (=3*nodes)
-  for (int fd = 0; fd < 3 * mnodefullmap->NumMyElements(); ++fd)
+  for (int fd = 0; fd < 3 * mnodefullmap->num_my_elements(); ++fd)
   {
     // Initialize
     initialize();
 
     // now get the node we want to apply the FD scheme to
-    int gid = mnodefullmap->GID(fd / 3);
+    int gid = mnodefullmap->gid(fd / 3);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find master node with gid %", gid);
     Node* mnode = dynamic_cast<Node*>(node);
@@ -5926,9 +5926,9 @@ void CONTACT::Interface::fd_check_penalty_trac_fric()
     // evaluate_relative_movement();
 
     // compute finite difference derivative
-    for (int k = 0; k < snoderowmap_->NumMyElements(); ++k)
+    for (int k = 0; k < snoderowmap_->num_my_elements(); ++k)
     {
-      int kgid = snoderowmap_->GID(k);
+      int kgid = snoderowmap_->gid(k);
       Core::Nodes::Node* knode = idiscret_->g_node(kgid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", kgid);
       FriNode* kcnode = dynamic_cast<FriNode*>(knode);
@@ -6131,13 +6131,13 @@ void CONTACT::Interface::write_nodal_coordinates_to_file(
       // open the output stream again on all procs
       std::ofstream of(full_path, std::ios_base::out | std::ios_base::app);
 
-      const int* nodal_map_gids = nodal_map.MyGlobalElements();
-      const unsigned nummyeles = nodal_map.NumMyElements();
+      const int* nodal_map_gids = nodal_map.my_global_elements();
+      const unsigned nummyeles = nodal_map.num_my_elements();
       for (unsigned lid = 0; lid < nummyeles; ++lid)
       {
         const int gid = nodal_map_gids[lid];
 
-        if (not idiscret_->node_row_map()->MyGID(gid)) continue;
+        if (not idiscret_->node_row_map()->my_gid(gid)) continue;
 
         const Node& cnode = dynamic_cast<const Node&>(*idiscret_->g_node(gid));
 

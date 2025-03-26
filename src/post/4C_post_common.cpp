@@ -554,7 +554,7 @@ void PostProblem::read_meshes()
             FOUR_C_THROW("nurbsdis was not fc\n");
           }
 
-          int smallest_gid_in_dis = nurbsdis->element_row_map()->MinAllGID();
+          int smallest_gid_in_dis = nurbsdis->element_row_map()->min_all_gid();
 
           knots->finish_knots(smallest_gid_in_dis);
 
@@ -901,12 +901,12 @@ PostResult::read_result_serialdensematrix(const std::string name)
       std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
 
   Core::Communication::UnpackBuffer data_buffer(*data);
-  for (int i = 0; i < elemap->NumMyElements(); ++i)
+  for (int i = 0; i < elemap->num_my_elements(); ++i)
   {
     std::shared_ptr<Core::LinAlg::SerialDenseMatrix> gpstress =
         std::make_shared<Core::LinAlg::SerialDenseMatrix>();
     extract_from_pack(data_buffer, *gpstress);
-    (*mapdata)[elemap->GID(i)] = gpstress;
+    (*mapdata)[elemap->gid(i)] = gpstress;
   }
 
   const Core::LinAlg::Map& elecolmap = *field_->discretization()->element_col_map();
@@ -944,6 +944,6 @@ int PostResult::step() const { return map_read_int(group_, "step"); }
 
 
 //! returns the number of global Dof-Ids
-int PostField::global_id_num() const { return dis_->dof_row_map()->NumGlobalElements(); }
+int PostField::global_id_num() const { return dis_->dof_row_map()->num_global_elements(); }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -42,8 +42,8 @@ bool FSI::Utils::fluid_ale_nodes_disjoint(
   bool isdisjoint = false;
 
   // try a simple check that should work for most cases
-  if (fluiddis.node_row_map()->MaxAllGID() < aledis.node_row_map()->MinAllGID() or
-      fluiddis.node_row_map()->MinAllGID() > aledis.node_row_map()->MaxAllGID())
+  if (fluiddis.node_row_map()->max_all_gid() < aledis.node_row_map()->min_all_gid() or
+      fluiddis.node_row_map()->min_all_gid() > aledis.node_row_map()->max_all_gid())
   {
     // no overlap of node numbers
     isdisjoint = true;
@@ -63,7 +63,7 @@ bool FSI::Utils::fluid_ale_nodes_disjoint(
     std::shared_ptr<Core::LinAlg::Map> intersectionmap =
         Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
-    if (intersectionmap->NumGlobalElements() == 0) isdisjoint = true;
+    if (intersectionmap->num_global_elements() == 0) isdisjoint = true;
   }
 
   return isdisjoint;
@@ -233,7 +233,7 @@ void FSI::Utils::SlideAleUtils::remeshing(Adapter::FSIStructureWrapper& structur
     std::vector<int> lids(dim);
     for (int p = 0; p < dim; p++)
       // lids of gids of node
-      lids[p] = fluiddofrowmap_->LID((fluiddis.dof(node))[p]);
+      lids[p] = fluiddofrowmap_->lid((fluiddis.dof(node))[p]);
 
     // current coord of ale node = ref coord + ifluid_
     std::vector<double> finaldxyz(dim);
@@ -497,7 +497,7 @@ void FSI::Utils::SlideAleUtils::slide_projection(
       std::vector<int> lids(dim);
       for (int p = 0; p < dim; p++)
         // lids of gids of node
-        lids[p] = (fluiddofrowmap_)->LID((fluiddis.dof(node))[p]);
+        lids[p] = (fluiddofrowmap_)->lid((fluiddis.dof(node))[p]);
 
       // current coord of ale node.
       // Initialize as coordinates of current node, which is extremely important for 2D!
@@ -590,7 +590,7 @@ void FSI::Utils::SlideAleUtils::redundant_elements(
     fluidfullnodemap_ = Core::LinAlg::allreduce_e_map(*(coupsf.interface()->slave_row_dofs()));
     fluidfullelemap_ = Core::LinAlg::allreduce_e_map(*(coupsf.interface()->slave_row_elements()));
     soffset = 0;
-    foffset = fluidfullelemap_->MinMyGID();
+    foffset = fluidfullelemap_->min_my_gid();
   }
   else
   {
@@ -598,7 +598,7 @@ void FSI::Utils::SlideAleUtils::redundant_elements(
     fluidfullelemap_ = Core::LinAlg::allreduce_e_map(*(coupsf.interface()->master_row_elements()));
     structfullnodemap_ = Core::LinAlg::allreduce_e_map(*(coupsf.interface()->slave_row_dofs()));
     structfullelemap_ = Core::LinAlg::allreduce_e_map(*(coupsf.interface()->slave_row_elements()));
-    soffset = structfullelemap_->MinMyGID();
+    soffset = structfullelemap_->min_my_gid();
     foffset = 0;
   }
 
@@ -630,11 +630,11 @@ void FSI::Utils::SlideAleUtils::redundant_elements(
     // redundant version of it
     Core::LinAlg::Map redmstruslideleids(*Core::LinAlg::allreduce_e_map(mstruslideleids));
 
-    for (int eleind = 0; eleind < redmstruslideleids.NumMyElements(); eleind++)
+    for (int eleind = 0; eleind < redmstruslideleids.num_my_elements(); eleind++)
     {
       {
         Core::Elements::Element* tmpele =
-            interfacedis.g_element(redmstruslideleids.GID(eleind) + soffset);
+            interfacedis.g_element(redmstruslideleids.gid(eleind) + soffset);
         if (dim == 3)
         {
           structreduelements_[i][tmpele->id()] =

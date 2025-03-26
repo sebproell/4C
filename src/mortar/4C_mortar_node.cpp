@@ -471,9 +471,9 @@ Mortar::Node* Mortar::Node::find_closest_node(
 
   // loop over all nodes of the Core::FE::Discretization that are
   // included in the given Core::LinAlg::Map ("brute force" search)
-  for (int i = 0; i < nodesearchmap->NumMyElements(); ++i)
+  for (int i = 0; i < nodesearchmap->num_my_elements(); ++i)
   {
-    int gid = nodesearchmap->GID(i);
+    int gid = nodesearchmap->gid(i);
     Core::Nodes::Node* node = intdis->g_node(gid);
     if (!node) FOUR_C_THROW("FindClosestNode: Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);

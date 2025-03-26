@@ -188,8 +188,8 @@ const Core::LinAlg::Map* XFEM::DiscretizationXFEM::initial_dof_col_map(unsigned 
 std::shared_ptr<Core::LinAlg::Map> XFEM::DiscretizationXFEM::extend_map(
     const Core::LinAlg::Map* srcmap, int numdofspernodedofset, int numdofsets, bool uniquenumbering)
 {
-  int numsrcelements = srcmap->NumMyElements();
-  const int* srcgids = srcmap->MyGlobalElements();
+  int numsrcelements = srcmap->num_my_elements();
+  const int* srcgids = srcmap->my_global_elements();
   std::vector<int> dstgids;
   for (int i = 0; i < numsrcelements; i += numdofspernodedofset)
   {
@@ -203,7 +203,8 @@ std::shared_ptr<Core::LinAlg::Map> XFEM::DiscretizationXFEM::extend_map(
     }
   }
 
-  return std::make_shared<Core::LinAlg::Map>(-1, dstgids.size(), dstgids.data(), 0, srcmap->Comm());
+  return std::make_shared<Core::LinAlg::Map>(
+      -1, dstgids.size(), dstgids.data(), 0, srcmap->get_comm());
 }
 
 /*----------------------------------------------------------------------*
@@ -224,14 +225,14 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
   // This is a rough test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(colmap->get_epetra_block_map()))
+  if (vecmap.point_same_as(colmap->get_epetra_block_map()))
   {
     state_[nds][name] = state;
   }
   else  // if it's not in column map export and allocate
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (not initial_dof_row_map(nds)->SameAs(state->get_map()))
+    if (not initial_dof_row_map(nds)->same_as(state->get_map()))
     {
       FOUR_C_THROW(
           "row map of discretization and state vector {} are different. This is a fatal bug!",

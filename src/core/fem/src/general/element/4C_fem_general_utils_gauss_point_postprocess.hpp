@@ -91,7 +91,7 @@ namespace Core::FE
   {
     const Core::LinAlg::Map& elemap = global_data.get_map();
 
-    int lid = elemap.LID(ele.id());
+    int lid = elemap.lid(ele.id());
     if (lid != -1)
     {
       for (decltype(gp_data.numCols()) i = 0; i < gp_data.numCols(); ++i)

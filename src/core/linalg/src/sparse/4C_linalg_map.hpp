@@ -22,11 +22,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-// Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
-// naming of the Epetra_Map
-
-// NOLINTBEGIN(readability-identifier-naming)
-
 
 
 namespace Core::LinAlg
@@ -54,7 +49,7 @@ namespace Core::LinAlg
     Map& operator=(const Map& other);
 
     //! Print object to the output stream
-    void Print(std::ostream& os) const { wrapped().Print(os); }
+    void print(std::ostream& os) const { wrapped().Print(os); }
 
     //! Returns a reference of the Epetra_Map if available.
     const Epetra_Map& get_epetra_map() const
@@ -91,106 +86,109 @@ namespace Core::LinAlg
     Epetra_BlockMap& get_epetra_block_map() { return wrapped(); }
 
     //! Returns true if this and Map are identical maps
-    bool SameAs(const Map& other) const { return wrapped().SameAs((other.wrapped())); }
+    bool same_as(const Map& other) const { return wrapped().SameAs((other.wrapped())); }
 
     //! Returns true if this and Map have identical point-wise structure
-    bool PointSameAs(const Map& Map) const
+    bool point_same_as(const Map& Map) const
     {
       return wrapped().PointSameAs(Map.get_epetra_block_map());
     }
 
     //! Number of elements across all processors.
-    int NumGlobalElements() const { return wrapped().NumGlobalElements(); }
+    int num_global_elements() const { return wrapped().NumGlobalElements(); }
 
     //! Number of elements on the calling processor.
-    int NumMyElements() const { return wrapped().NumMyElements(); }
+    int num_my_elements() const { return wrapped().NumMyElements(); }
 
     //! returns the index base for this map.
-    int IndexBase() const { return wrapped().IndexBase(); }
+    int index_base() const { return wrapped().IndexBase(); }
 
     //! Pointer to internal array containing a mapping between the local elements and the first
     //! local point number in each element.
-    int FirstPointInElementList(int* LID) const { return wrapped().FirstPointInElementList(LID); }
+    int first_point_in_element_list(int* LID) const
+    {
+      return wrapped().FirstPointInElementList(LID);
+    }
 
     //! Returns true if map is defined across more than one processor.
-    bool DistributedGlobal() const { return wrapped().DistributedGlobal(); }
+    bool distributed_global() const { return wrapped().DistributedGlobal(); }
 
     //! Returns true if this and Map are identical maps
-    bool SameAs(const Epetra_Map& other) const { return wrapped().SameAs(other); }
+    bool same_as(const Epetra_Map& other) const { return wrapped().SameAs(other); }
 
     //! Returns true if this and Map are identical maps
-    bool SameAs(const Epetra_BlockMap& other) const { return wrapped().SameAs(other); }
+    bool same_as(const Epetra_BlockMap& other) const { return wrapped().SameAs(other); }
 
     //! Returns true if the GID passed in belongs to the calling processor in this map, otherwise
     //! returns false.
-    bool MyGID(int GID_in) const { return wrapped().MyGID(GID_in); }
+    bool my_gid(int GID_in) const { return wrapped().MyGID(GID_in); }
 
     //! Returns global ID of local ID, return IndexBase-1 if not found on this processor.
-    int GID(int LID) const { return wrapped().GID(LID); }
+    int gid(int LID) const { return wrapped().GID(LID); }
 
     //! Returns the size of elements in the map; only valid if map has constant element size.
-    int ElementSize() const { return wrapped().ElementSize(); }
+    int element_size() const { return wrapped().ElementSize(); }
 
     //! Returns the size of elements in the map; only valid if map has constant element size.
-    int ElementSize(int LID) const { return wrapped().ElementSize(LID); }
+    int element_size(int LID) const { return wrapped().ElementSize(LID); }
 
     //! Returns the maximum global ID across the entire map.
-    int MaxAllGID() const { return wrapped().MaxAllGID(); }
+    int max_all_gid() const { return wrapped().MaxAllGID(); }
 
     //! Returns the minimum global ID across the entire map.
-    int MinAllGID() const { return wrapped().MinAllGID(); }
+    int min_all_gid() const { return wrapped().MinAllGID(); }
 
     //! Returns local ID of global ID, return -1 if not found on this processor.
-    int LID(int GID) const { return wrapped().LID(GID); }
+    int lid(int GID) const { return wrapped().LID(GID); }
 
     //! Returns true if this and Map have identical point-wise structure
-    bool PointSameAs(const Epetra_Map& Map) const { return wrapped().PointSameAs(Map); }
+    bool point_same_as(const Epetra_Map& Map) const { return wrapped().PointSameAs(Map); }
 
     //! Returns true if this and Map have identical point-wise structure
-    bool PointSameAs(const Epetra_BlockMap& Map) const { return wrapped().PointSameAs(Map); }
+    bool point_same_as(const Epetra_BlockMap& Map) const { return wrapped().PointSameAs(Map); }
 
     //! Returns the processor IDs and corresponding local index value for a given list of global
     //! indices
-    int RemoteIDList(int NumIDs, int* GIDList, int* PIDList, int* LIDList) const
+    int remote_id_list(int NumIDs, int* GIDList, int* PIDList, int* LIDList) const
     {
       return wrapped().RemoteIDList(NumIDs, GIDList, PIDList, LIDList);
     }
 
     //! Returns the processor IDs and corresponding local index value for a given list of global
     //! indices
-    int RemoteIDList(
+    int remote_id_list(
         int NumIDs, const int* GIDList, int* PIDList, int* LIDList, int* SizeList) const
     {
       return wrapped().RemoteIDList(NumIDs, GIDList, PIDList, LIDList, SizeList);
     }
 
     //! Returns the minimum global ID owned by this processor.
-    int MinMyGID(void) const { return wrapped().MinMyGID(); }
+    int min_my_gid(void) const { return wrapped().MinMyGID(); }
 
     //! Access function for Epetra_Comm communicator.
-    MPI_Comm Comm() const;
+    MPI_Comm get_comm() const;
 
     //! Returns true if map GIDs are 1-to-1.
-    bool UniqueGIDs(void) const { return wrapped().UniqueGIDs(); }
+    bool unique_gids(void) const { return wrapped().UniqueGIDs(); }
 
     //! Pointer to internal array containing list of global IDs assigned to the calling processor.
-    int* MyGlobalElements(void) const { return wrapped().MyGlobalElements(); }
+    int* my_global_elements(void) const { return wrapped().MyGlobalElements(); }
 
     //! Maximum element size across all processors.
-    int MaxElementSize(void) const { return wrapped().MaxElementSize(); }
+    int max_element_size(void) const { return wrapped().MaxElementSize(); }
 
     //! Puts list of global elements on this processor into the user-provided array.
-    int MyGlobalElements(int* MyGlobalElementList) const
+    int my_global_elements(int* MyGlobalElementList) const
     {
       return wrapped().MyGlobalElements(MyGlobalElementList);
     }
 
     //! Number of local points for this map; equals the sum of all element sizes on the calling
     //! processor.
-    int NumMyPoints() const { return wrapped().NumMyPoints(); }
+    int num_my_points() const { return wrapped().NumMyPoints(); }
 
     //! Returns a pointer to the BlockMapData instance this BlockMap uses.
-    const Epetra_BlockMapData* DataPtr() const { return wrapped().DataPtr(); }
+    const Epetra_BlockMapData* get_data_ptr() const { return wrapped().DataPtr(); }
 
 
     [[nodiscard]] static std::unique_ptr<Map> create_view(Epetra_Map& view);
@@ -243,7 +241,6 @@ namespace Core::LinAlg
 
 }  // namespace Core::LinAlg
 
-// NOLINTEND(readability-identifier-naming)
 
 FOUR_C_NAMESPACE_CLOSE
 

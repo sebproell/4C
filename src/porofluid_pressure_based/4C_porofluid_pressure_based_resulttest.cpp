@@ -140,7 +140,7 @@ double PoroPressureBased::ResultTest::result_node(
   // test result value of phi field
   if (quantity == "phi")
     result = (*porofluid_algorithm_
-            .phinp())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, 0))];
+            .phinp())[phinpmap.lid(porofluid_algorithm_.discretization()->dof(0, node, 0))];
 
   // test result value for a system of scalars
   else if (!quantity.compare(0, 3, "phi"))
@@ -156,13 +156,13 @@ double PoroPressureBased::ResultTest::result_node(
 
     // extract result
     result = (*porofluid_algorithm_
-            .phinp())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, k))];
+            .phinp())[phinpmap.lid(porofluid_algorithm_.discretization()->dof(0, node, k))];
   }
 
   // test result value of phi field
   else if (quantity == "pressure")
     result = (*porofluid_algorithm_
-            .pressure())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, 0))];
+            .pressure())[phinpmap.lid(porofluid_algorithm_.discretization()->dof(0, node, 0))];
 
   // test result value for a system of scalars
   else if (!quantity.compare(0, 8, "pressure"))
@@ -178,13 +178,13 @@ double PoroPressureBased::ResultTest::result_node(
 
     // extract result
     result = (*porofluid_algorithm_
-            .pressure())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, k))];
+            .pressure())[phinpmap.lid(porofluid_algorithm_.discretization()->dof(0, node, k))];
   }
 
   // test result value of phi field
   else if (quantity == "saturation")
     result = (*porofluid_algorithm_
-            .saturation())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, 0))];
+            .saturation())[phinpmap.lid(porofluid_algorithm_.discretization()->dof(0, node, 0))];
 
   // test result value for a system of scalars
   else if (!quantity.compare(0, 10, "saturation"))
@@ -200,7 +200,7 @@ double PoroPressureBased::ResultTest::result_node(
 
     // extract result
     result = (*porofluid_algorithm_
-            .saturation())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, k))];
+            .saturation())[phinpmap.lid(porofluid_algorithm_.discretization()->dof(0, node, k))];
   }
 
   // catch unknown quantity strings
@@ -222,7 +222,7 @@ double PoroPressureBased::ResultTest::result_element(
   if (quantity == "bloodvesselvolfrac")
   {
     result = (*porofluid_algorithm_.mesh_tying_strategy()->blood_vessel_volume_fraction())
-        [porofluid_algorithm_.discretization()->element_row_map()->LID(element->id())];
+        [porofluid_algorithm_.discretization()->element_row_map()->lid(element->id())];
   }
   else if (!quantity.compare(0, 13, "phasevelocity"))
   {
@@ -245,7 +245,7 @@ double PoroPressureBased::ResultTest::result_element(
 
     result = ((*porofluid_algorithm_.phase_velocity())(
         idx_poro_dof * num_dim +
-        idx_dim))[porofluid_algorithm_.discretization()->element_row_map()->LID(element->id())];
+        idx_dim))[porofluid_algorithm_.discretization()->element_row_map()->lid(element->id())];
   }
   // catch unknown quantity strings
   else

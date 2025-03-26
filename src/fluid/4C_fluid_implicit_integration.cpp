@@ -175,7 +175,7 @@ void FLD::FluidImplicitTimeInt::init()
     Core::LinAlg::create_map_extractor_from_discretization(*discret_, numdim_, *velpressplitter_);
   // if the pressure map is empty, the user obviously specified a wrong
   // number of space dimensions in the input file
-  if (velpressplitter_->cond_map()->NumGlobalElements() < 1)
+  if (velpressplitter_->cond_map()->num_global_elements() < 1)
     FOUR_C_THROW("Pressure map empty. Wrong DIM value in input file?");
 
   // -------------------------------------------------------------------
@@ -1055,7 +1055,7 @@ void FLD::FluidImplicitTimeInt::assemble_mat_and_rhs()
   if (forcing_ != nullptr)
   {
     eleparams.set("forcing", true);
-    if (forcing_->get_map().SameAs(*discret_->dof_row_map()))
+    if (forcing_->get_map().same_as(*discret_->dof_row_map()))
       discret_->set_state("forcing", *forcing_);
     else
       discret_->set_state(1, "forcing", *forcing_);
@@ -1452,14 +1452,14 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
 
       // sum up local flow rate on this processor
       double local_flowrate = 0.0;
-      for (int i = 0; i < dofrowmap->NumMyElements(); i++)
+      for (int i = 0; i < dofrowmap->num_my_elements(); i++)
       {
         local_flowrate += ((*flowrates)[i]);
       }
 
       // sum up global flow rate over all processors and set to global value
       double flowrate = 0.0;
-      Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->Comm());
+      Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->get_comm());
 
       // set current flow rate
       flowratenp_[fdpcondid] = flowrate;
@@ -2778,11 +2778,11 @@ void FLD::FluidImplicitTimeInt::ale_update(std::string condName)
         // Sum variables over all processors to obtain global value
         double globalSumVelnpDotNodeTangent = 0.0;
         Core::Communication::sum_all(
-            &localSumVelnpDotNodeTangent, &globalSumVelnpDotNodeTangent, 1, dofrowmap->Comm());
+            &localSumVelnpDotNodeTangent, &globalSumVelnpDotNodeTangent, 1, dofrowmap->get_comm());
 
         int globalNumOfCondNodes = 0;
         Core::Communication::sum_all(
-            &localNumOfCondNodes, &globalNumOfCondNodes, 1, dofrowmap->Comm());
+            &localNumOfCondNodes, &globalNumOfCondNodes, 1, dofrowmap->get_comm());
 
         // Finalize calculation of mean tangent velocity
         double lambda = 0.0;
@@ -2963,7 +2963,7 @@ void FLD::FluidImplicitTimeInt::get_dofs_vector_local_indicesfor_node(int nodeGi
   if (withPressure) dim += 1;
 
   // Get local id for this node
-  int nodeLid = (discret_->node_row_map())->LID(nodeGid);
+  int nodeLid = (discret_->node_row_map())->lid(nodeGid);
   if (nodeLid == -1) FOUR_C_THROW("No LID for node!");
 
   // Get vector of global ids for this node's degrees of freedom
@@ -2978,9 +2978,9 @@ void FLD::FluidImplicitTimeInt::get_dofs_vector_local_indicesfor_node(int nodeGi
   for (int i = 0; i < dim; i++)
   {
     int dofGid = dofsGid[i];
-    if (!vec.get_map().MyGID(dofGid))
+    if (!vec.get_map().my_gid(dofGid))
       FOUR_C_THROW("Sparse vector does not have global row  {} or vectors don't match", dofGid);
-    (*dofsLocalInd)[i] = vec.get_map().LID(dofGid);
+    (*dofsLocalInd)[i] = vec.get_map().lid(dofGid);
   }
 }
 
@@ -3854,11 +3854,11 @@ void FLD::FluidImplicitTimeInt::read_restart(int step)
   // that was used when the restart data was written. Especially
   // in case of multiphysics problems & periodic boundary conditions
   // it is better to check the consistency of the maps here:
-  if (not(discret_->dof_row_map())->SameAs(velnp_->get_map()))
+  if (not(discret_->dof_row_map())->same_as(velnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(veln_->get_map()))
+  if (not(discret_->dof_row_map())->same_as(veln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(accn_->get_map()))
+  if (not(discret_->dof_row_map())->same_as(accn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 
@@ -4098,9 +4098,9 @@ void FLD::FluidImplicitTimeInt::avm3_get_scale_separation_matrix()
 
   // complete scale-separation matrix and check maps
   Sep_->complete(Sep_->domain_map(), Sep_->range_map());
-  if (!Sep_->row_map().SameAs(system_matrix()->row_map())) FOUR_C_THROW("rowmap not equal");
-  if (!Sep_->range_map().SameAs(system_matrix()->range_map())) FOUR_C_THROW("rangemap not equal");
-  if (!Sep_->domain_map().SameAs(system_matrix()->domain_map()))
+  if (!Sep_->row_map().same_as(system_matrix()->row_map())) FOUR_C_THROW("rowmap not equal");
+  if (!Sep_->range_map().same_as(system_matrix()->range_map())) FOUR_C_THROW("rangemap not equal");
+  if (!Sep_->domain_map().same_as(system_matrix()->domain_map()))
     FOUR_C_THROW("domainmap not equal");
 }
 
@@ -4216,7 +4216,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
         for (int index = 0; index < numdim_; ++index)
         {
           int gid = nodedofset[index];
-          int lid = dofrowmap->LID(gid);
+          int lid = dofrowmap->lid(gid);
 
           thisvel = (*velnp_)[lid];
           if (mybmvel * mybmvel < thisvel * thisvel) mybmvel = thisvel;
@@ -4393,7 +4393,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
       for (int nveldof = 0; nveldof < numdim_; nveldof++)
       {
         const int gid = nodedofset[nveldof];
-        int lid = dofrowmap->LID(gid);
+        int lid = dofrowmap->lid(gid);
         err += velnp_->replace_local_values(1, &(u[nveldof]), &lid);
         err += veln_->replace_local_values(1, &(u[nveldof]), &lid);
         err += velnm_->replace_local_values(1, &(u[nveldof]), &lid);
@@ -4473,7 +4473,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
       for (int nveldof = 0; nveldof < numdim_; nveldof++)
       {
         const int gid = nodedofset[nveldof];
-        int lid = dofrowmap->LID(gid);
+        int lid = dofrowmap->lid(gid);
         err += velnp_->replace_local_values(1, &(u[nveldof]), &lid);
         err += veln_->replace_local_values(1, &(u[nveldof]), &lid);
         err += velnm_->replace_local_values(1, &(u[nveldof]), &lid);
@@ -4487,7 +4487,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
 
       // set initial pressure
       const int gid = nodedofset[npredof];
-      int lid = dofrowmap->LID(gid);
+      int lid = dofrowmap->lid(gid);
       err += velnp_->replace_local_values(1, &p, &lid);
       err += veln_->replace_local_values(1, &p, &lid);
       err += velnm_->replace_local_values(1, &p, &lid);
@@ -4561,7 +4561,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // find out the global dof id of the last(!) dof at the scatra node
       const int numscatradof = scatradis->num_dof(dofset, lscatranode);
       const int globalscatradofid = scatradis->dof(dofset, lscatranode, numscatradof - 1);
-      const int localscatradofid = scalaraf->get_map().LID(globalscatradofid);
+      const int localscatradofid = scalaraf->get_map().lid(globalscatradofid);
       if (localscatradofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // get the processor's local fluid node
@@ -4569,7 +4569,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // get global and processor's local pressure dof id (using the map!)
       const int numdof = discret_->num_dof(0, lnode);
       const int globaldofid = discret_->dof(0, lnode, numdof - 1);
-      const int localdofid = scaam_->get_map().LID(globaldofid);
+      const int localdofid = scaam_->get_map().lid(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // now copy the values
@@ -4597,8 +4597,8 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
   {
     // given vectors are already in dofrowmap layout of fluid and values can
     // be copied directly
-    if (not scalaraf->get_map().SameAs(scaaf_->get_map()) or
-        not scalaram->get_map().SameAs(scaam_->get_map()))
+    if (not scalaraf->get_map().same_as(scaaf_->get_map()) or
+        not scalaram->get_map().same_as(scaam_->get_map()))
       FOUR_C_THROW("fluid dofrowmap layout expected");
 
     // loop all nodes on the processor
@@ -4609,7 +4609,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // get global and processor's local pressure dof id (using the map!)
       const int numdof = discret_->num_dof(0, lnode);
       const int globaldofid = discret_->dof(0, lnode, numdof - 1);
-      const int localdofid = scaam_->get_map().LID(globaldofid);
+      const int localdofid = scaam_->get_map().lid(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // now copy the values
@@ -4674,7 +4674,7 @@ void FLD::FluidImplicitTimeInt::set_scalar_fields(
       // respect the explicit wish of the user
       globalscatradofid = scatradis->dof(0, lscatranode, whichscalar);
     }
-    const int localscatradofid = scalarnp->get_map().LID(globalscatradofid);
+    const int localscatradofid = scalarnp->get_map().lid(globalscatradofid);
     if (localscatradofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     // get the processor's local fluid node
@@ -4683,7 +4683,7 @@ void FLD::FluidImplicitTimeInt::set_scalar_fields(
     nodedofs = discret_->dof(0, lnode);
     // get global and processor's local pressure dof id (using the map!)
     const int globaldofid = nodedofs[numdim_];
-    const int localdofid = scaam_->get_map().LID(globaldofid);
+    const int localdofid = scaam_->get_map().lid(globaldofid);
     if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     value = (*scalarnp)[localscatradofid];

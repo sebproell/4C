@@ -497,7 +497,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
       std::shared_ptr<Core::LinAlg::MultiVector<double>> eleheatflux =
           params.get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("eleheatflux");
       const Core::LinAlg::Map& elemap = eleheatflux->get_map();
-      int lid = elemap.LID(gid);
+      int lid = elemap.lid(gid);
       if (lid != -1)
       {
         for (int idim = 0; idim < nsd_; ++idim)

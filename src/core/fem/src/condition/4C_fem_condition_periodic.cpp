@@ -165,12 +165,12 @@ void Core::Conditions::PeriodicBoundaryConditions::update_dofs_for_periodic_boun
       std::vector<int> my_n_dof(numprocs, 0);
       std::vector<int> n_dof(numprocs, 0);
 
-      my_n_nodes[mypid] = noderowmap->NumMyElements();
+      my_n_nodes[mypid] = noderowmap->num_my_elements();
       my_n_master[mypid] = allcoupledcolnodes_->size();
       my_n_slave[mypid] = countslave;
       my_n_elements[mypid] = discret_->num_my_col_elements();
       my_n_ghostele[mypid] = discret_->num_my_col_elements() - discret_->num_my_row_elements();
-      my_n_dof[mypid] = dofrowmap->NumMyElements();
+      my_n_dof[mypid] = dofrowmap->num_my_elements();
 
       Core::Communication::sum_all(
           my_n_nodes.data(), n_nodes.data(), numprocs, discret_->get_comm());
@@ -938,10 +938,10 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     }
 
     // a list of all nodes on this proc
-    std::vector<int> nodesonthisproc(discret_->node_row_map()->NumMyElements());
+    std::vector<int> nodesonthisproc(discret_->node_row_map()->num_my_elements());
 
     // get all node gids of nodes on this proc
-    discret_->node_row_map()->MyGlobalElements(nodesonthisproc.data());
+    discret_->node_row_map()->my_global_elements(nodesonthisproc.data());
 
     std::set<int> nodeset;
 
@@ -1139,7 +1139,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     std::shared_ptr<Core::LinAlg::Map> newcolnodemap;
 
     newcolnodemap = std::make_shared<Core::LinAlg::Map>(
-        -1, cntmp.NumMyElements(), cntmp.MyGlobalElements(), 0, discret_->get_comm());
+        -1, cntmp.num_my_elements(), cntmp.my_global_elements(), 0, discret_->get_comm());
 
     // time measurement --- this causes the TimeMonitor tm6 to stop here
     tm6_ref_ = nullptr;
@@ -1183,8 +1183,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     {
       // mycolnodes contains all nodes which will be stored on this proc
       // according to the colmap constructed
-      std::vector<int> mycolnodes(newcolnodemap->NumMyElements());
-      newcolnodemap->MyGlobalElements(mycolnodes.data());
+      std::vector<int> mycolnodes(newcolnodemap->num_my_elements());
+      newcolnodemap->my_global_elements(mycolnodes.data());
 
       // determine all ghosted slave nodes in this vector which do not have
       // a ghosted master on this proc --- we have to fetch it to be able
@@ -1197,7 +1197,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
           FOUR_C_THROW("inverse slave-master matching incomplete");
         }
         int mymaster = curr->second[0];
-        if (newcolnodemap->LID(mymaster) < 0)
+        if (newcolnodemap->lid(mymaster) < 0)
         {
           // was master already added to the list of (ghosted) nodes?
           std::vector<int>::iterator found;
@@ -1240,7 +1240,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
         }
         for (size_t i = 0; i < curr->second.size(); ++i)
         {
-          if (newcolnodemap->LID(curr->second[i]) < 0)
+          if (newcolnodemap->lid(curr->second[i]) < 0)
           {
             // was slave already added to the list of (ghosted) nodes?
             std::vector<int>::iterator found;
@@ -1355,9 +1355,9 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
     node_weights->put_scalar(1.0);
 
     // apply weight of special elements
-    for (int node_lid = 0; node_lid < noderowmap->NumMyElements(); ++node_lid)
+    for (int node_lid = 0; node_lid < noderowmap->num_my_elements(); ++node_lid)
     {
-      const int node_gid = noderowmap->GID(node_lid);
+      const int node_gid = noderowmap->gid(node_lid);
       Core::Nodes::Node* node = discret_->g_node(node_gid);
       if (!node) FOUR_C_THROW("cant find node");
       double weight = 0.0;
@@ -1418,7 +1418,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
         const int node_gid = node_gids_per_ele[row];
 
         // insert into line of graph only when this proc owns the node
-        if (!noderowmap->MyGID(node_gid)) continue;
+        if (!noderowmap->my_gid(node_gid)) continue;
 
         // insert all neighbours from element in the graph
         for (int col = 0; col < num_nodes_per_ele; ++col)
@@ -1450,7 +1450,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
         const int node_gid = node_gids_per_ele[row];
 
         // insert into line of graph only when this proc owns the node
-        if (!noderowmap->MyGID(node_gid)) continue;
+        if (!noderowmap->my_gid(node_gid)) continue;
 
         // only, if this node is a coupled node
         if (allcoupledcolnodes_->find(node_gid) != allcoupledcolnodes_->end())
@@ -1470,7 +1470,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
                 int err = nodegraph->insert_global_indices(node_gid, 1, &other_slave_gid);
                 if (err < 0) FOUR_C_THROW("nodegraph->InsertGlobalIndices returned err={}", err);
 
-                if (noderowmap->MyGID(other_slave_gid))
+                if (noderowmap->my_gid(other_slave_gid))
                 {
                   int masterindex = node_gid;
                   err = nodegraph->insert_global_indices(other_slave_gid, 1, &masterindex);
@@ -1500,15 +1500,15 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
     {
       // get rowmap of the graph  (from blockmap -> map)
       const Core::LinAlg::Map& graph_row_map = nodegraph->row_map();
-      const Core::LinAlg::Map graph_rowmap(graph_row_map.NumGlobalElements(),
-          graph_row_map.NumMyElements(), graph_row_map.MyGlobalElements(), 0,
+      const Core::LinAlg::Map graph_rowmap(graph_row_map.num_global_elements(),
+          graph_row_map.num_my_elements(), graph_row_map.my_global_elements(), 0,
           Core::Communication::unpack_epetra_comm(nodegraph->get_comm()));
 
       // set standard value of edge weight to 1.0
       auto edge_weights = std::make_shared<Core::LinAlg::SparseMatrix>(graph_rowmap, 15);
       for (int i = 0; i < nodegraph->num_local_rows(); ++i)
       {
-        const int grow = nodegraph->row_map().GID(i);
+        const int grow = nodegraph->row_map().gid(i);
 
         const int glob_length = nodegraph->num_global_indices(grow);
         int numentries = 0;
@@ -1565,12 +1565,12 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
       newnodegraph->optimize_storage();
 
       // the rowmap will become the new distribution of nodes
-      const Core::LinAlg::Map newnoderowmap(-1, newnodegraph->row_map().NumMyElements(),
-          newnodegraph->row_map().MyGlobalElements(), 0, discret_->get_comm());
+      const Core::LinAlg::Map newnoderowmap(-1, newnodegraph->row_map().num_my_elements(),
+          newnodegraph->row_map().my_global_elements(), 0, discret_->get_comm());
 
       // the column map will become the new ghosted distribution of nodes
-      const Core::LinAlg::Map newnodecolmap(-1, newnodegraph->col_map().NumMyElements(),
-          newnodegraph->col_map().MyGlobalElements(), 0, discret_->get_comm());
+      const Core::LinAlg::Map newnodecolmap(-1, newnodegraph->col_map().num_my_elements(),
+          newnodegraph->col_map().my_global_elements(), 0, discret_->get_comm());
 
       // do the redistribution without assigning dofs
       discret_->redistribute(newnoderowmap, newnodecolmap, {.assign_degrees_of_freedom = false});

@@ -207,7 +207,7 @@ bool NOX::Nln::LinearSystem::apply_jacobian_block(const ::NOX::Epetra::Vector& i
   Core::LinAlg::Vector<double> input_v = Core::LinAlg::Vector<double>(input.getEpetraVector());
   std::shared_ptr<const Core::LinAlg::Vector<double>> input_apply = nullptr;
 
-  if (not input_v.get_map().SameAs(domainmap))
+  if (not input_v.get_map().same_as(domainmap))
   {
     input_apply = Core::LinAlg::extract_my_vector(input_v, domainmap);
   }
@@ -816,8 +816,8 @@ void NOX::Nln::LinearSystem::prepare_block_dense_matrix(
     const Core::LinAlg::BlockSparseMatrixBase& block_sparse,
     Core::LinAlg::SerialDenseMatrix& block_dense) const
 {
-  const int grows = block_sparse.full_range_map().NumGlobalElements();
-  const int gcols = block_sparse.full_domain_map().NumGlobalElements();
+  const int grows = block_sparse.full_range_map().num_global_elements();
+  const int gcols = block_sparse.full_domain_map().num_global_elements();
 
   block_dense.reshape(grows, gcols);
   if (block_dense.numCols() != block_dense.numRows())
@@ -895,14 +895,14 @@ void NOX::Nln::LinearSystem::convert_sparse_to_dense_matrix(
 
   if (dense.numCols() == 0 or dense.numRows() == 0)
   {
-    const int numgrows = sparse.row_map().NumGlobalElements();
-    const int numgcols = sparse.col_map().NumGlobalElements();
+    const int numgrows = sparse.row_map().num_global_elements();
+    const int numgcols = sparse.col_map().num_global_elements();
     dense.reshape(numgrows, numgcols);
     dense.putScalar(0.0);
   }
 
-  const int num_myrows = sparse.row_map().NumMyElements();
-  const int* rgids = sparse.row_map().MyGlobalElements();
+  const int num_myrows = sparse.row_map().num_my_elements();
+  const int* rgids = sparse.row_map().my_global_elements();
 
   for (int rlid = 0; rlid < num_myrows; ++rlid)
   {
@@ -916,17 +916,17 @@ void NOX::Nln::LinearSystem::convert_sparse_to_dense_matrix(
     crs_mat->ExtractMyRowView(rlid, numentries, rvals, indices);
 
     const int rgid = rgids[rlid];
-    const int full_rlid = full_rangemap.LID(rgid);
+    const int full_rlid = full_rangemap.lid(rgid);
     if (full_rlid == -1)
       FOUR_C_THROW("Row/Range: Couldn't find the corresponding LID to GID {}", rgid);
 
     for (int i = 0; i < numentries; ++i)
     {
-      const int cgid = sparse.col_map().GID(indices[i]);
+      const int cgid = sparse.col_map().gid(indices[i]);
       if (cgid == -1)
         FOUR_C_THROW("Column/Domain: Couldn't find the corresponding GID to LID {}", indices[i]);
 
-      const int full_clid = full_domainmap.LID(cgid);
+      const int full_clid = full_domainmap.lid(cgid);
       if (full_clid == -1)
         FOUR_C_THROW("Column/Domain: Couldn't find the corresponding LID to GID {}", cgid);
 

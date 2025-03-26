@@ -170,8 +170,8 @@ void CONTACT::MonoCoupledLagrangeStrategy::evaluate_off_diag_contact(
     Core::LinAlg::split_matrix2x2(ks, gactivedofs_, gidofs, domainmap, tempmap1, ka, ka0, ki, ki0);
 
     // abbreviations for master, active and inactive set
-    int aset = gactivedofs_->NumGlobalElements();
-    int iset = gidofs->NumGlobalElements();
+    int aset = gactivedofs_->num_global_elements();
+    int iset = gidofs->num_global_elements();
 
     /**********************************************************************/
     /* (7) Build the final K blocks                                       */

@@ -428,7 +428,7 @@ namespace ScaTra
       const int pos = loc[2] + nummodes_ * (loc[1] + nummodes_ * loc[0]);
 
       // get local dof id corresponding to the global id
-      int lid = discret_->dof_row_map()->LID(dofs[0]);
+      int lid = discret_->dof_row_map()->lid(dofs[0]);
       // set value
       int err = phinp_->replace_local_values(1, &((phi)[pos]), &lid);
 

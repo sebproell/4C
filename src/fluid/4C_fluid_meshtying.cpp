@@ -119,8 +119,8 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
 
   if (myrank_ == 0)
   {
-    int numdofmaster = (adaptermeshtying_->master_dof_map())->NumGlobalElements();
-    int numdofslave = (adaptermeshtying_->slave_dof_map())->NumGlobalElements();
+    int numdofmaster = (adaptermeshtying_->master_dof_map())->num_global_elements();
+    int numdofslave = (adaptermeshtying_->slave_dof_map())->num_global_elements();
 
     std::cout << std::endl << "number of master dof's:   " << numdofmaster << std::endl;
     std::cout << "number of slave dof's:   " << numdofslave << std::endl << std::endl;
@@ -331,9 +331,9 @@ void FLD::Meshtying::check_overlapping_bc(Core::LinAlg::Map& map)
   bool overlap = false;
 
   // loop over all slave row nodes of the interface
-  for (int j = 0; j < adaptermeshtying_->interface()->slave_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < adaptermeshtying_->interface()->slave_row_nodes()->num_my_elements(); ++j)
   {
-    int gid = adaptermeshtying_->interface()->slave_row_nodes()->GID(j);
+    int gid = adaptermeshtying_->interface()->slave_row_nodes()->gid(j);
     Core::Nodes::Node* node = adaptermeshtying_->interface()->discret().g_node(gid);
     if (!node) FOUR_C_THROW("ERROR: Cannot find node with gid %", gid);
     auto* mtnode = static_cast<Mortar::Node*>(node);
@@ -342,7 +342,7 @@ void FLD::Meshtying::check_overlapping_bc(Core::LinAlg::Map& map)
     for (int k = 0; k < mtnode->num_dof(); ++k)
     {
       int currdof = mtnode->dofs()[k];
-      int lid = map.LID(currdof);
+      int lid = map.lid(currdof);
 
       // found slave node intersecting with given map
       if (lid >= 0)
@@ -378,11 +378,11 @@ void FLD::Meshtying::project_master_to_slave_for_overlapping_bc(
   std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
   {
     if (myrank_ == 0)
     {
-      std::cout << "number of intersecting elements:  " << intersectionmap->NumGlobalElements()
+      std::cout << "number of intersecting elements:  " << intersectionmap->num_global_elements()
                 << std::endl;
       std::cout << "Overlapping boundary conditions are projected from the master to the slave side"
                 << std::endl
@@ -431,7 +431,7 @@ void FLD::Meshtying::dirichlet_on_master(std::shared_ptr<const Core::LinAlg::Map
   std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
   {
     dconmaster_ = true;
     if (myrank_ == 0)
@@ -1455,7 +1455,7 @@ void FLD::Meshtying::analyze_matrix(Core::LinAlg::SparseMatrix& sparsematrix)
   double parmatrixentries = 0.0;
   {
     // number of row elements
-    const int numdofrows = sparsematrix.row_map().NumMyElements();
+    const int numdofrows = sparsematrix.row_map().num_my_elements();
 
     for (int i = 0; i < numdofrows; ++i)
     {

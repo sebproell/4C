@@ -189,8 +189,8 @@ void XFEM::Utils::XFEMDiscretizationBuilder::setup_xfem_discretization(
   if (noderowmap == nullptr) FOUR_C_THROW("we expect a fill-complete call before!");
 
   // now we can reserve dofs for xfem discretization
-  int nodeindexrange =
-      noderowmap->MaxAllGID() - noderowmap->MinAllGID() + 1;  // if id's are not continuous numbered
+  int nodeindexrange = noderowmap->max_all_gid() - noderowmap->min_all_gid() +
+                       1;  // if id's are not continuous numbered
   int maxNumMyReservedDofsperNode = (xgen_params.get<int>("MAX_NUM_DOFSETS")) * numdof;
   std::shared_ptr<Core::DOFSets::FixedSizeDofSet> maxdofset =
       std::make_shared<Core::DOFSets::FixedSizeDofSet>(maxNumMyReservedDofsperNode, nodeindexrange);
@@ -340,7 +340,7 @@ void XFEM::Utils::XFEMDiscretizationBuilder::split_discretization(
   // ------------------------------------------------------------------------
   for (unsigned j = 0; j < static_cast<unsigned>(sourcedis.num_my_col_elements()); ++j)
   {
-    int source_ele_gid = sourcedis.element_col_map()->GID(j);
+    int source_ele_gid = sourcedis.element_col_map()->gid(j);
     // continue, if we are going to delete this element
     if (sourceelements.find(source_ele_gid) != sourceelements.end()) continue;
     Core::Elements::Element* source_ele = sourcedis.g_element(source_ele_gid);
@@ -364,16 +364,16 @@ void XFEM::Utils::XFEMDiscretizationBuilder::split_discretization(
   othernodecolvec.reserve(numothernodecol - condnodecolset.size());
 
   // determine non-conditioned nodes
-  for (int lid = 0; lid < sourcedis.node_col_map()->NumMyElements(); ++lid)
+  for (int lid = 0; lid < sourcedis.node_col_map()->num_my_elements(); ++lid)
   {
-    const int nid = sourcedis.node_col_map()->GID(lid);
+    const int nid = sourcedis.node_col_map()->gid(lid);
 
     // if we erase this node, we do not add it and just go on
     if (condnodecolset.find(nid) != condnodecolset.end()) continue;
 
     othernodecolvec.push_back(nid);
 
-    if (sourcedis.node_row_map()->LID(nid) > -1) othernoderowvec.push_back(nid);
+    if (sourcedis.node_row_map()->lid(nid) > -1) othernoderowvec.push_back(nid);
   }
   // delete conditioned nodes, which are not connected to any unconditioned elements
   for (std::set<int>::iterator it = condnodecolset.begin(); it != condnodecolset.end(); ++it)

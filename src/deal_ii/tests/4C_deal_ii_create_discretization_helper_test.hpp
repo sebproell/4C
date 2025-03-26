@@ -170,7 +170,7 @@ namespace TESTING
         {
           const int ele_id = i * subdivisions * subdivisions + j * subdivisions + k;
 
-          if (row_elements->LID(ele_id) != -1)
+          if (row_elements->lid(ele_id) != -1)
           {
             const std::array nodeids = {lid(i, j, k), lid(i + 1, j, k), lid(i + 1, j + 1, k),
                 lid(i, j + 1, k), lid(i, j, k + 1), lid(i + 1, j, k + 1), lid(i + 1, j + 1, k + 1),
@@ -217,7 +217,7 @@ namespace TESTING
           for (int k = 0; k < subdivisions + 1; ++k)
           {
             const int node_lid = lid(i, j, k);
-            if (row_nodes->LID(node_lid) != -1)
+            if (row_nodes->lid(node_lid) != -1)
             {
               const std::vector<double> coords = {i * increment, j * increment, k * increment};
               discretization.add_node(
@@ -257,7 +257,7 @@ namespace TESTING
     { return std::pow(2, level) + ele_on_level; };
 
     // Add the root element
-    if (row_elements->LID(0) != -1)
+    if (row_elements->lid(0) != -1)
     {
       PureGeometryElementType::instance();
       auto ele = std::make_unique<PureGeometryElement>(0, my_rank,
@@ -273,7 +273,7 @@ namespace TESTING
       const unsigned n_elements = std::pow(2, level);
       for (unsigned ele_on_level = 0; ele_on_level < n_elements; ++ele_on_level)
       {
-        if (row_elements->LID(ele_id) != -1)
+        if (row_elements->lid(ele_id) != -1)
         {
           const unsigned parent_ele = ele_on_level / 2;
           const std::array nodeids{
@@ -309,7 +309,7 @@ namespace TESTING
 
     // Now create the nodes on the owning ranks
     {
-      if (row_nodes->LID(0) != -1)
+      if (row_nodes->lid(0) != -1)
       {
         const std::vector<double> coords = {0.0, 0.0, 0.0};
         discretization.add_node(std::make_shared<Core::Nodes::Node>(0, coords, my_rank));
@@ -323,7 +323,7 @@ namespace TESTING
         for (unsigned ele_on_level = 0; ele_on_level < n_elements; ++ele_on_level)
         {
           const int node_id = leaf_on_level(level, ele_on_level);
-          if (row_nodes->LID(node_id) != -1)
+          if (row_nodes->lid(node_id) != -1)
           {
             const std::vector<double> coords = {ele_on_level * x_inc, level * y_inc, 0.0};
             discretization.add_node(std::make_shared<Core::Nodes::Node>(node_id, coords, my_rank));
@@ -467,7 +467,7 @@ namespace TESTING
   {
     if (Core::Communication::my_mpi_rank(comm) == 0)
     {
-      const std::string elementType = "SOLIDH27";
+      const std::string elementType = "SOlidH27";
       const std::string disType = "HEX27";
       std::array<int, 27> nodeids{};
       std::iota(nodeids.begin(), nodeids.end(), 0);

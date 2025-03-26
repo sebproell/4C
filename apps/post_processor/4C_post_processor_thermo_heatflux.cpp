@@ -144,11 +144,11 @@ struct WriteNodalHeatfluxStep : SpecialFieldInterface
         const int adjele = lnode->num_element();
         // build three scalar valued vectors for the heatflux output
         (((*nodal_heatfluxes)(0)))[i] =
-            (*heatfluxx)[dis->dof_row_map()->LID(lnodedofs[0])] / adjele;
+            (*heatfluxx)[dis->dof_row_map()->lid(lnodedofs[0])] / adjele;
         (((*nodal_heatfluxes)(1)))[i] =
-            (*heatfluxy)[dis->dof_row_map()->LID(lnodedofs[0])] / adjele;
+            (*heatfluxy)[dis->dof_row_map()->lid(lnodedofs[0])] / adjele;
         (((*nodal_heatfluxes)(2)))[i] =
-            (*heatfluxz)[dis->dof_row_map()->LID(lnodedofs[0])] / adjele;
+            (*heatfluxz)[dis->dof_row_map()->lid(lnodedofs[0])] / adjele;
       }
     }
     else if (numdf == 2)  // 2 heatflux entries per node  in 2D
@@ -162,9 +162,9 @@ struct WriteNodalHeatfluxStep : SpecialFieldInterface
         const int adjele = lnode->num_element();
         // build two scalar valued vectors for the heatflux output
         (((*nodal_heatfluxes)(0)))[i] =
-            (*heatfluxx)[dis->dof_row_map()->LID(lnodedofs[0])] / adjele;
+            (*heatfluxx)[dis->dof_row_map()->lid(lnodedofs[0])] / adjele;
         (((*nodal_heatfluxes)(1)))[i] =
-            (*heatfluxy)[dis->dof_row_map()->LID(lnodedofs[0])] / adjele;
+            (*heatfluxy)[dis->dof_row_map()->lid(lnodedofs[0])] / adjele;
       }
     }
     else if (numdf == 1)  // 1 heatflux entry per node  in 1D
@@ -178,7 +178,7 @@ struct WriteNodalHeatfluxStep : SpecialFieldInterface
         const int adjele = lnode->num_element();
         // build one scalar valued vectors for the heatflux output
         (((*nodal_heatfluxes)(0)))[i] =
-            (*heatfluxx)[dis->dof_row_map()->LID(lnodedofs[0])] / adjele;
+            (*heatfluxx)[dis->dof_row_map()->lid(lnodedofs[0])] / adjele;
       }
     }
     else

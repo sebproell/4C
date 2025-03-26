@@ -943,13 +943,13 @@ SSI::ManifoldMeshTyingStrategyBlock::intersect_coupling_maps_block_map(
     const Core::LinAlg::Map& permuted_map, MPI_Comm comm)
 {
   std::vector<int> intersecting_map_vec, permuted_intersecting_map_vec;
-  for (int slave_lid = 0; slave_lid < intersecting_map.NumMyElements(); ++slave_lid)
+  for (int slave_lid = 0; slave_lid < intersecting_map.num_my_elements(); ++slave_lid)
   {
-    const int slave_gid = intersecting_map.GID(slave_lid);
-    if (block_map.LID(slave_gid) != -1)
+    const int slave_gid = intersecting_map.gid(slave_lid);
+    if (block_map.lid(slave_gid) != -1)
     {
       intersecting_map_vec.emplace_back(slave_gid);
-      permuted_intersecting_map_vec.emplace_back(permuted_map.GID(slave_lid));
+      permuted_intersecting_map_vec.emplace_back(permuted_map.gid(slave_lid));
     }
   }
 
@@ -1025,16 +1025,16 @@ void SSI::ManifoldMeshTyingStrategySparse::apply_meshtying_to_manifold_matrix(
       auto coupling_adapter = meshtying->slave_master_coupling();
 
       auto slave_dof_map = coupling_adapter->slave_dof_map();
-      for (int doflid_slave = 0; doflid_slave < slave_dof_map->NumMyElements(); ++doflid_slave)
+      for (int doflid_slave = 0; doflid_slave < slave_dof_map->num_my_elements(); ++doflid_slave)
       {
         // extract global ID of current slave-side row
-        const int dofgid_slave = slave_dof_map->GID(doflid_slave);
+        const int dofgid_slave = slave_dof_map->gid(doflid_slave);
         if (dofgid_slave < 0) FOUR_C_THROW("Local ID not found!");
 
         // apply pseudo Dirichlet conditions to filled matrix, i.e., to local row and column indices
         if (ssi_manifold_sparse->filled())
         {
-          const int rowlid_slave = ssi_manifold_sparse->row_map().LID(dofgid_slave);
+          const int rowlid_slave = ssi_manifold_sparse->row_map().lid(dofgid_slave);
           if (rowlid_slave < 0) FOUR_C_THROW("Global ID not found!");
           if (ssi_manifold_sparse->replace_my_values(rowlid_slave, 1, &one, &rowlid_slave))
             FOUR_C_THROW("replace_my_values() failed!");
@@ -1102,11 +1102,11 @@ void SSI::ManifoldMeshTyingStrategyBlock::apply_meshtying_to_manifold_matrix(
           {
             auto coupling_adapter = block_meshtying.first[row];
             auto slave_dof_map = coupling_adapter->slave_dof_map();
-            for (int doflid_slave = 0; doflid_slave < slave_dof_map->NumMyElements();
+            for (int doflid_slave = 0; doflid_slave < slave_dof_map->num_my_elements();
                 ++doflid_slave)
             {
               // extract global ID of current slave-side row
-              const int dofgid_slave = slave_dof_map->GID(doflid_slave);
+              const int dofgid_slave = slave_dof_map->gid(doflid_slave);
               if (dofgid_slave < 0) FOUR_C_THROW("Local ID not found!");
 
               // apply pseudo Dirichlet conditions to filled matrix, i.e., to local row and column
@@ -1114,7 +1114,7 @@ void SSI::ManifoldMeshTyingStrategyBlock::apply_meshtying_to_manifold_matrix(
               if (ssi_manifold_block->matrix(row, row).filled())
               {
                 const int rowlid_slave =
-                    ssi_manifold_block->matrix(row, row).row_map().LID(dofgid_slave);
+                    ssi_manifold_block->matrix(row, row).row_map().lid(dofgid_slave);
                 if (rowlid_slave < 0) FOUR_C_THROW("Global ID not found!");
                 if (ssi_manifold_block->matrix(row, row).replace_my_values(
                         rowlid_slave, 1, &one, &rowlid_slave))

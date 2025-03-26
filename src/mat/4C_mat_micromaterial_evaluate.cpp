@@ -91,7 +91,7 @@ void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // avoid writing output also for ghosted elements
   const bool eleowner =
-      Global::Problem::instance(0)->get_dis("structure")->element_row_map()->MyGID(eleGID);
+      Global::Problem::instance(0)->get_dis("structure")->element_row_map()->my_gid(eleGID);
 
   // get sub communicator including the supporting procs
   MPI_Comm subcomm = Global::Problem::instance(0)->get_communicators()->sub_comm();

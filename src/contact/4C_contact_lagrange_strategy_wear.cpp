@@ -106,7 +106,7 @@ void Wear::LagrangeStrategyWear::setup(bool redistributed, bool init)
 void Wear::LagrangeStrategyWear::setup_wear(bool redistributed, bool init)
 {
   // max dof number -- disp dofs and lm dofs considered
-  maxdofwear_ = maxdof_ + glmdofrowmap_->NumGlobalElements();
+  maxdofwear_ = maxdof_ + glmdofrowmap_->num_global_elements();
 
   // ------------------------------------------------------------------------
   // setup global accessible Core::LinAlg::Maps
@@ -145,14 +145,14 @@ void Wear::LagrangeStrategyWear::setup_wear(bool redistributed, bool init)
 
       // merge interface slave wear dof maps to global slave wear dof map
       gwdofrowmap_ = Core::LinAlg::merge_map(gwdofrowmap_, interface_[i]->w_dofs());
-      offset_if = gwdofrowmap_->NumGlobalElements();
+      offset_if = gwdofrowmap_->num_global_elements();
       if (offset_if < 0) offset_if = 0;
 
       // merge interface master wear dof maps to global slave wear dof map
       if (wearbothpv_)
       {
         gwmdofrowmap_ = Core::LinAlg::merge_map(gwmdofrowmap_, interface_[i]->wm_dofs());
-        offset_if = gwmdofrowmap_->NumGlobalElements();
+        offset_if = gwmdofrowmap_->num_global_elements();
         if (offset_if < 0) offset_if = 0;
       }
 
@@ -171,9 +171,9 @@ void Wear::LagrangeStrategyWear::setup_wear(bool redistributed, bool init)
       }
 
       // initialize nodal wcurr for integrator (mod. gap)
-      for (int j = 0; j < (int)interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+      for (int j = 0; j < (int)interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
       {
-        int gid = interface_[i]->slave_row_nodes()->GID(j);
+        int gid = interface_[i]->slave_row_nodes()->gid(j);
         Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
@@ -183,9 +183,9 @@ void Wear::LagrangeStrategyWear::setup_wear(bool redistributed, bool init)
 
       if (wearbothpv_)
       {
-        for (int j = 0; j < (int)interface_[i]->master_col_nodes()->NumMyElements(); ++j)
+        for (int j = 0; j < (int)interface_[i]->master_col_nodes()->num_my_elements(); ++j)
         {
-          int gid = interface_[i]->master_col_nodes()->GID(j);
+          int gid = interface_[i]->master_col_nodes()->gid(j);
           Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
           if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
           CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
@@ -438,9 +438,9 @@ void Wear::LagrangeStrategyWear::assemble_mortar()
       // update all gap function entries for slave nodes!
       for (int i = 0; i < (int)interface_.size(); ++i)
       {
-        for (int j = 0; j < (int)interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+        for (int j = 0; j < (int)interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
         {
-          int gid = interface_[i]->slave_row_nodes()->GID(j);
+          int gid = interface_[i]->slave_row_nodes()->gid(j);
           Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
           if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
           CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
@@ -687,8 +687,8 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
   }
 
   // abbreviations for slave and master set
-  int sset = gsdofrowmap_->NumGlobalElements();
-  int mset = gmdofrowmap_->NumGlobalElements();
+  int sset = gsdofrowmap_->num_global_elements();
+  int mset = gmdofrowmap_->num_global_elements();
 
   // we want to split fsm into 2 groups s,m
   fs = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
@@ -765,10 +765,10 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
       kaa, gactivedofs_, gidofs, gstdofs, gslipdofs_, kast, kasl, temp1mtx4, temp1mtx5);
 
   // abbreviations for active and inactive set, stick and slip set
-  const int aset = gactivedofs_->NumGlobalElements();
-  const int iset = gidofs->NumGlobalElements();
-  const int stickset = gstdofs->NumGlobalElements();
-  const int slipset = gslipdofs_->NumGlobalElements();
+  const int aset = gactivedofs_->num_global_elements();
+  const int iset = gidofs->num_global_elements();
+  const int stickset = gstdofs->num_global_elements();
+  const int slipset = gslipdofs_->num_global_elements();
 
   // we want to split fs into 2 groups a,i
   std::shared_ptr<Core::LinAlg::Vector<double>> fa =
@@ -1151,7 +1151,7 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
     Core::LinAlg::Vector<double> tempvecm(*gmdofrowmap_);
     Core::LinAlg::Vector<double> tempvecm2(mold_->domain_map());
     Core::LinAlg::Vector<double> zoldexp(mold_->row_map());
-    if (mold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+    if (mold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
     mold_->multiply(true, zoldexp, tempvecm2);
     if (mset) Core::LinAlg::export_to(tempvecm2, tempvecm);
     fm->update(alphaf_, tempvecm, 1.0);
@@ -1173,7 +1173,7 @@ void Wear::LagrangeStrategyWear::condense_wear_impl_expl(
   {
     Core::LinAlg::Vector<double> tempvec(dold_->domain_map());
     Core::LinAlg::Vector<double> zoldexp(dold_->row_map());
-    if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+    if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
     dold_->multiply(true, zoldexp, tempvec);
     if (sset) Core::LinAlg::export_to(tempvec, fsadd);
   }
@@ -1691,8 +1691,8 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
   }
 
   // abbreviations for slave and master set
-  const int sset = gsdofrowmap_->NumGlobalElements();
-  const int mset = gmdofrowmap_->NumGlobalElements();
+  const int sset = gsdofrowmap_->num_global_elements();
+  const int mset = gmdofrowmap_->num_global_elements();
 
   // we want to split fsm into 2 groups s,m
   fs = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
@@ -1769,10 +1769,10 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
       kaa, gactivedofs_, gidofs, gstdofs, gslipdofs_, kast, kasl, temp1mtx4, temp1mtx5);
 
   // abbreviations for active and inactive set, stick and slip set
-  const int aset = gactivedofs_->NumGlobalElements();
-  const int iset = gidofs->NumGlobalElements();
-  const int stickset = gstdofs->NumGlobalElements();
-  const int slipset = gslipdofs_->NumGlobalElements();
+  const int aset = gactivedofs_->num_global_elements();
+  const int iset = gidofs->num_global_elements();
+  const int stickset = gstdofs->num_global_elements();
+  const int slipset = gslipdofs_->num_global_elements();
   gidofs_ = gidofs;
 
   // we want to split fs into 2 groups a,i
@@ -2270,7 +2270,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
     Core::LinAlg::Vector<double> tempvecm(*gmdofrowmap_);
     Core::LinAlg::Vector<double> tempvecm2(mold_->domain_map());
     Core::LinAlg::Vector<double> zoldexp(mold_->row_map());
-    if (mold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+    if (mold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
     mold_->multiply(true, zoldexp, tempvecm2);
     if (mset) Core::LinAlg::export_to(tempvecm2, tempvecm);
     fm->update(alphaf_, tempvecm, 1.0);
@@ -2292,7 +2292,7 @@ void Wear::LagrangeStrategyWear::condense_wear_discr(
   {
     Core::LinAlg::Vector<double> tempvec(dold_->domain_map());
     Core::LinAlg::Vector<double> zoldexp(dold_->row_map());
-    if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+    if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
     dold_->multiply(true, zoldexp, tempvec);
     if (sset) Core::LinAlg::export_to(tempvec, fsadd);
   }
@@ -3099,7 +3099,7 @@ void Wear::LagrangeStrategyWear::prepare_saddle_point_system(
     Core::LinAlg::Vector<double> fsexp(*problem_dofs());
     Core::LinAlg::Vector<double> tempvecd(dmatrix_->domain_map());
     Core::LinAlg::Vector<double> zexp(dmatrix_->row_map());
-    if (dmatrix_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*z_, zexp);
+    if (dmatrix_->row_map().num_global_elements()) Core::LinAlg::export_to(*z_, zexp);
     dmatrix_->multiply(true, zexp, tempvecd);
     Core::LinAlg::export_to(tempvecd, fsexp);
     feff.update(-(1.0 - alphaf_), fsexp, 1.0);
@@ -3114,7 +3114,7 @@ void Wear::LagrangeStrategyWear::prepare_saddle_point_system(
     Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
     Core::LinAlg::Vector<double> tempvecdold(dold_->domain_map());
     Core::LinAlg::Vector<double> zoldexp(dold_->row_map());
-    if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+    if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
     dold_->multiply(true, zoldexp, tempvecdold);
     Core::LinAlg::export_to(tempvecdold, fsoldexp);
     feff.update(-alphaf_, fsoldexp, 1.0);
@@ -3269,9 +3269,9 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
 
     // build constraint matrix kzd
     Core::LinAlg::SparseMatrix kzd(*gsdofrowmap_, 100, false, true);
-    if (gactiven_->NumGlobalElements()) kzd.add(*smatrix_, false, 1.0, 1.0);
-    if (gstickt->NumGlobalElements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
-    if (gslipt_->NumGlobalElements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
+    if (gactiven_->num_global_elements()) kzd.add(*smatrix_, false, 1.0, 1.0);
+    if (gstickt->num_global_elements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
+    if (gslipt_->num_global_elements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
     kzd.complete(*gdisprowmap_, *gsdofrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
@@ -3292,15 +3292,15 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
 
     // build constraint matrix kzz
     Core::LinAlg::SparseMatrix kzz(*gsdofrowmap_, 100, false, true);
-    if (gidofs->NumGlobalElements()) kzz.add(onesdiag, false, 1.0, 1.0);
-    if (gstickt->NumGlobalElements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
-    if (gslipt_->NumGlobalElements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
+    if (gidofs->num_global_elements()) kzz.add(onesdiag, false, 1.0, 1.0);
+    if (gstickt->num_global_elements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
+    if (gslipt_->num_global_elements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
 
     if (wearimpl_)
     {
       // add C-fnc. derivatives w.r.t. lm-values to kzz
-      if (gactiven_->NumGlobalElements()) kzz.add(*wlinmatrix_, false, 1.0, 1.0);
-      if (gslipt_->NumGlobalElements()) kzz.add(*wlinmatrixsl_, false, 1.0, 1.0);
+      if (gactiven_->num_global_elements()) kzz.add(*wlinmatrix_, false, 1.0, 1.0);
+      if (gslipt_->num_global_elements()) kzz.add(*wlinmatrixsl_, false, 1.0, 1.0);
 
 #ifdef CONSISTENTSTICK
       if (gstickt->NumGlobalElements()) kzz->Add(*wlinmatrixst_, false, 1.0, 1.0);
@@ -3325,7 +3325,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // export weighted gap vector
     std::shared_ptr<Core::LinAlg::Vector<double>> gact =
         Core::LinAlg::create_vector(*gactivenodes_, true);
-    if (gactiven_->NumGlobalElements())
+    if (gactiven_->num_global_elements())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
       gact->replace_map(*gactiven_);
@@ -3379,9 +3379,9 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
 
     // build constraint matrix kzd
     Core::LinAlg::SparseMatrix kzd(*gsdofrowmap_, 100, false, true);
-    if (gactiven_->NumGlobalElements()) kzd.add(*smatrix_, false, 1.0, 1.0);
-    if (gstickt->NumGlobalElements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
-    if (gslipt_->NumGlobalElements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
+    if (gactiven_->num_global_elements()) kzd.add(*smatrix_, false, 1.0, 1.0);
+    if (gstickt->num_global_elements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
+    if (gslipt_->num_global_elements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
     kzd.complete(*gdisprowmap_, *gsdofrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
@@ -3402,9 +3402,9 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
 
     // build constraint matrix kzz
     Core::LinAlg::SparseMatrix kzz(*gsdofrowmap_, 100, false, true);
-    if (gidofs->NumGlobalElements()) kzz.add(onesdiag, false, 1.0, 1.0);
-    if (gstickt->NumGlobalElements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
-    if (gslipt_->NumGlobalElements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
+    if (gidofs->num_global_elements()) kzz.add(onesdiag, false, 1.0, 1.0);
+    if (gstickt->num_global_elements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
+    if (gslipt_->num_global_elements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
 
     kzz.complete(*gsdofrowmap_, *gsdofrowmap_);
 
@@ -3419,15 +3419,15 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     Core::LinAlg::SparseMatrix kwd(*gsdofnrowmap_, 100, false, true);
     if (sswear_)
     {
-      if (gactiven_->NumGlobalElements()) kwd.add(*lintdis_, false, -wcoeff, 1.0);
-      if (gactiven_->NumGlobalElements()) kwd.add(*linedis_, false, 1.0, 1.0);
-      if (gactiven_->NumGlobalElements()) kwd.complete(*gdisprowmap_, *gsdofnrowmap_);
+      if (gactiven_->num_global_elements()) kwd.add(*lintdis_, false, -wcoeff, 1.0);
+      if (gactiven_->num_global_elements()) kwd.add(*linedis_, false, 1.0, 1.0);
+      if (gactiven_->num_global_elements()) kwd.complete(*gdisprowmap_, *gsdofnrowmap_);
     }
     else
     {
-      if (gslipn_->NumGlobalElements()) kwd.add(*lintdis_, false, -wcoeff, 1.0);
-      if (gslipn_->NumGlobalElements()) kwd.add(*linedis_, false, 1.0, 1.0);
-      if (gslipn_->NumGlobalElements()) kwd.complete(*gdisprowmap_, *gsdofnrowmap_);
+      if (gslipn_->num_global_elements()) kwd.add(*lintdis_, false, -wcoeff, 1.0);
+      if (gslipn_->num_global_elements()) kwd.add(*linedis_, false, 1.0, 1.0);
+      if (gslipn_->num_global_elements()) kwd.complete(*gdisprowmap_, *gsdofnrowmap_);
     }
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
@@ -3443,11 +3443,11 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     Core::LinAlg::SparseMatrix kwz(*gsdofnrowmap_, 100, false, true);
     if (sswear_)
     {
-      if (gactiven_->NumGlobalElements()) kwz.add(*lintlm_, false, -wcoeff, 1.0);
+      if (gactiven_->num_global_elements()) kwz.add(*lintlm_, false, -wcoeff, 1.0);
     }
     else
     {
-      if (gslipn_->NumGlobalElements()) kwz.add(*lintlm_, false, -wcoeff, 1.0);
+      if (gslipn_->num_global_elements()) kwz.add(*lintlm_, false, -wcoeff, 1.0);
     }
 
     kwz.complete(*gsdofrowmap_, *gsdofnrowmap_);
@@ -3460,11 +3460,11 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     Core::LinAlg::SparseMatrix kww(*gsdofnrowmap_, 100, false, true);
     if (sswear_)
     {
-      if (gactiven_->NumGlobalElements()) kww.add(*ematrix_, false, 1.0, 1.0);
+      if (gactiven_->num_global_elements()) kww.add(*ematrix_, false, 1.0, 1.0);
     }
     else
     {
-      if (gslipn_->NumGlobalElements()) kww.add(*ematrix_, false, 1.0, 1.0);
+      if (gslipn_->num_global_elements()) kww.add(*ematrix_, false, 1.0, 1.0);
     }
 
     // build unity matrix for inactive dofs
@@ -3473,7 +3473,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     Core::LinAlg::SparseMatrix onesdiagw(onesw);
     onesdiagw.complete();
     // build constraint matrix kzz
-    if (gwinact_->NumGlobalElements()) kww.add(onesdiagw, false, 1.0, 1.0);
+    if (gwinact_->num_global_elements()) kww.add(onesdiagw, false, 1.0, 1.0);
 
     kww.complete(*gsdofnrowmap_, *gsdofnrowmap_);
 
@@ -3483,8 +3483,8 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // *********************************
     // build wear matrix kzw
     Core::LinAlg::SparseMatrix kzw(*gsdofrowmap_, 100, false, true);
-    if (gactiven_->NumGlobalElements()) kzw.add(*smatrixW_, false, 1.0, 1.0);
-    if (gslipt_->NumGlobalElements()) kzw.add(*linslip_w_, false, 1.0, 1.0);
+    if (gactiven_->num_global_elements()) kzw.add(*smatrixW_, false, 1.0, 1.0);
+    if (gslipt_->num_global_elements()) kzw.add(*linslip_w_, false, 1.0, 1.0);
     kzw.complete(*gsdofnrowmap_, *gsdofrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
@@ -3504,7 +3504,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // export weighted gap vector
     std::shared_ptr<Core::LinAlg::Vector<double>> gact =
         Core::LinAlg::create_vector(*gactivenodes_, true);
-    if (gactiven_->NumGlobalElements())
+    if (gactiven_->num_global_elements())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
       gact->replace_map(*gactiven_);
@@ -3576,9 +3576,9 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
 
     // build constraint matrix kzd
     Core::LinAlg::SparseMatrix kzd(*gsdofrowmap_, 100, false, true);
-    if (gactiven_->NumGlobalElements()) kzd.add(*smatrix_, false, 1.0, 1.0);
-    if (gstickt->NumGlobalElements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
-    if (gslipt_->NumGlobalElements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
+    if (gactiven_->num_global_elements()) kzd.add(*smatrix_, false, 1.0, 1.0);
+    if (gstickt->num_global_elements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
+    if (gslipt_->num_global_elements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
     kzd.complete(*gdisprowmap_, *gsdofrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
@@ -3599,9 +3599,9 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
 
     // build constraint matrix kzz
     Core::LinAlg::SparseMatrix kzz(*gsdofrowmap_, 100, false, true);
-    if (gidofs->NumGlobalElements()) kzz.add(onesdiag, false, 1.0, 1.0);
-    if (gstickt->NumGlobalElements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
-    if (gslipt_->NumGlobalElements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
+    if (gidofs->num_global_elements()) kzz.add(onesdiag, false, 1.0, 1.0);
+    if (gstickt->num_global_elements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
+    if (gslipt_->num_global_elements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
 
     kzz.complete(*gsdofrowmap_, *gsdofrowmap_);
 
@@ -3614,9 +3614,9 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // ***************************************************************************************************
     // build wear matrix kwd
     Core::LinAlg::SparseMatrix kwd(*gsdofnrowmap_, 100, false, true);
-    if (gslipn_->NumGlobalElements()) kwd.add(*lintdis_, false, -wcoeff, 1.0);
-    if (gslipn_->NumGlobalElements()) kwd.add(*linedis_, false, 1.0, 1.0);
-    if (gslipn_->NumGlobalElements()) kwd.complete(*gdisprowmap_, *gsdofnrowmap_);
+    if (gslipn_->num_global_elements()) kwd.add(*lintdis_, false, -wcoeff, 1.0);
+    if (gslipn_->num_global_elements()) kwd.add(*linedis_, false, 1.0, 1.0);
+    if (gslipn_->num_global_elements()) kwd.complete(*gdisprowmap_, *gsdofnrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
     trkwd = Mortar::matrix_row_transform_gids(kwd, *gwdofrowmap_);
@@ -3629,7 +3629,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // *********************************
     // build wear matrix kwz
     Core::LinAlg::SparseMatrix kwz(*gsdofnrowmap_, 100, false, true);
-    if (gslipn_->NumGlobalElements()) kwz.add(*lintlm_, false, -wcoeff, 1.0);
+    if (gslipn_->num_global_elements()) kwz.add(*lintlm_, false, -wcoeff, 1.0);
     kwz.complete(*gsdofrowmap_, *gsdofnrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
@@ -3638,7 +3638,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // *********************************
     // build wear matrix kww
     Core::LinAlg::SparseMatrix kww(*gsdofnrowmap_, 100, false, true);
-    if (gslipn_->NumGlobalElements()) kww.add(*ematrix_, false, 1.0, 1.0);
+    if (gslipn_->num_global_elements()) kww.add(*ematrix_, false, 1.0, 1.0);
 
     // build unity matrix for inactive dofs
     Core::LinAlg::Vector<double> onesw(*gwinact_);
@@ -3646,7 +3646,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     Core::LinAlg::SparseMatrix onesdiagw(onesw);
     onesdiagw.complete();
     // build constraint matrix kzz
-    if (gwinact_->NumGlobalElements()) kww.add(onesdiagw, false, 1.0, 1.0);
+    if (gwinact_->num_global_elements()) kww.add(onesdiagw, false, 1.0, 1.0);
 
     kww.complete(*gsdofnrowmap_, *gsdofnrowmap_);
 
@@ -3657,8 +3657,8 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // ********************************* S+M
     // build wear matrix kzw
     Core::LinAlg::SparseMatrix kzw(*gsdofrowmap_, 100, false, true);
-    if (gactiven_->NumGlobalElements()) kzw.add(*smatrixW_, false, 1.0, 1.0);
-    if (gslipt_->NumGlobalElements()) kzw.add(*linslip_w_, false, 1.0, 1.0);
+    if (gactiven_->num_global_elements()) kzw.add(*smatrixW_, false, 1.0, 1.0);
+    if (gslipt_->num_global_elements()) kzw.add(*linslip_w_, false, 1.0, 1.0);
     kzw.complete(*galldofnrowmap_, *gsdofrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
@@ -3669,9 +3669,9 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // ***************************************************************************************************
     // build wear matrix kwmd
     Core::LinAlg::SparseMatrix kwmd(*gmdofnrowmap_, 100, false, true);
-    if (gmslipn_->NumGlobalElements()) kwmd.add(*lintdis_m_, false, -wcoeffM, 1.0);
-    if (gmslipn_->NumGlobalElements()) kwmd.add(*linedis_m_, false, 1.0, 1.0);
-    if (gmslipn_->NumGlobalElements()) kwmd.complete(*gdisprowmap_, *gmdofnrowmap_);
+    if (gmslipn_->num_global_elements()) kwmd.add(*lintdis_m_, false, -wcoeffM, 1.0);
+    if (gmslipn_->num_global_elements()) kwmd.add(*linedis_m_, false, 1.0, 1.0);
+    if (gmslipn_->num_global_elements()) kwmd.complete(*gdisprowmap_, *gmdofnrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
     trkwmd = Mortar::matrix_row_transform_gids(kwmd, *gwmdofrowmap_);
@@ -3684,7 +3684,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // *********************************
     // build wear matrix kwmz
     Core::LinAlg::SparseMatrix kwmz(*gmdofnrowmap_, 100, false, true);
-    if (gmslipn_->NumGlobalElements()) kwmz.add(*lintlm_m_, false, -wcoeffM, 1.0);
+    if (gmslipn_->num_global_elements()) kwmz.add(*lintlm_m_, false, -wcoeffM, 1.0);
     kwmz.complete(*gsdofrowmap_, *gmdofnrowmap_);
 
     // transform constraint matrix kzd to lmdofmap (MatrixRowTransform)
@@ -3693,7 +3693,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // *********************************
     // build wear matrix kwmwm
     Core::LinAlg::SparseMatrix kwmwm(*gmdofnrowmap_, 100, false, true);
-    if (gmslipn_->NumGlobalElements()) kwmwm.add(*ematrix_m_, false, 1.0, 1.0);
+    if (gmslipn_->num_global_elements()) kwmwm.add(*ematrix_m_, false, 1.0, 1.0);
 
     // build unity matrix for inactive dofs
     Core::LinAlg::Vector<double> oneswm(*gwminact_);
@@ -3701,7 +3701,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     Core::LinAlg::SparseMatrix onesdiagwm(oneswm);
     onesdiagwm.complete();
     // build constraint matrix kzz
-    if (gwminact_->NumGlobalElements()) kwmwm.add(onesdiagwm, false, 1.0, 1.0);
+    if (gwminact_->num_global_elements()) kwmwm.add(onesdiagwm, false, 1.0, 1.0);
 
     kwmwm.complete(*gmdofnrowmap_, *gmdofnrowmap_);
 
@@ -3722,7 +3722,7 @@ void Wear::LagrangeStrategyWear::build_saddle_point_system(
     // export weighted gap vector
     std::shared_ptr<Core::LinAlg::Vector<double>> gact =
         Core::LinAlg::create_vector(*gactivenodes_, true);
-    if (gactiven_->NumGlobalElements())
+    if (gactiven_->num_global_elements())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
       gact->replace_map(*gactiven_);
@@ -4102,9 +4102,9 @@ void Wear::LagrangeStrategyWear::output_wear()
     {
       // FIRST: get the wear values and the normal directions for the interface
       // loop over all slave row nodes on the current interface
-      for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+      for (int j = 0; j < interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
       {
-        int gid = interface_[i]->slave_row_nodes()->GID(j);
+        int gid = interface_[i]->slave_row_nodes()->gid(j);
         Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         CONTACT::FriNode* frinode = dynamic_cast<CONTACT::FriNode*>(node);
@@ -4127,7 +4127,7 @@ void Wear::LagrangeStrategyWear::output_wear()
 
         for (int dof = 0; dof < dim; ++dof)
         {
-          locindex[dof] = (wear_vector.get_map()).LID(frinode->dofs()[dof]);
+          locindex[dof] = (wear_vector.get_map()).lid(frinode->dofs()[dof]);
           (wear_vector)[locindex[dof]] = wear * nn[dof];
         }
       }
@@ -4161,7 +4161,7 @@ void Wear::LagrangeStrategyWear::output_wear()
      * Note: Due to dual shape functions, data is diagonal. So we don't need an actual solver.
      *       We rather divide by the diagonal element of data.
      */
-    if (gactivedofs_->NumGlobalElements())
+    if (gactivedofs_->num_global_elements())
     {
       // number of active DOFs on this proc
       const int lNumActiveDOFs = wear_vectora->local_length();
@@ -4187,11 +4187,11 @@ void Wear::LagrangeStrategyWear::output_wear()
     const double fac = wearcoeff_s / (wearcoeff_s + wearcoeff_m);
 
     // copy the local part of real_wear into wearoutput_
-    for (int i = 0; i < (int)gsdofrowmap_->NumMyElements(); ++i)
+    for (int i = 0; i < (int)gsdofrowmap_->num_my_elements(); ++i)
     {
-      const int gid = gsdofrowmap_->MyGlobalElements()[i];
-      const double tmp = (real_wear)[real_wear.get_map().LID(gid)];
-      (*wearoutput_)[wearoutput_->get_map().LID(gid)] = tmp * fac;
+      const int gid = gsdofrowmap_->my_global_elements()[i];
+      const double tmp = (real_wear)[real_wear.get_map().lid(gid)];
+      (*wearoutput_)[wearoutput_->get_map().lid(gid)] = tmp * fac;
     }
 
     /**********************************************************************
@@ -4239,7 +4239,7 @@ void Wear::LagrangeStrategyWear::output_wear()
       /* Note: Due to dual shape functions, d2ii is diagonal. So we don't need an actual solver.
        *       We rather divide by the diagonal element of d2ii.
        */
-      if (gminvolveddofs_->NumGlobalElements())
+      if (gminvolveddofs_->num_global_elements())
       {
         // number of active DOFs on this proc
         const int lNumActiveDOFs = wear2_vectori->local_length();
@@ -4258,11 +4258,11 @@ void Wear::LagrangeStrategyWear::output_wear()
       real_wear2.update(1.0, real_wear2exp, 0.0);
 
       // copy the local part of real_wear into wearoutput_
-      for (int i = 0; i < (int)gmdofrowmap_->NumMyElements(); ++i)
+      for (int i = 0; i < (int)gmdofrowmap_->num_my_elements(); ++i)
       {
-        int gid = gmdofrowmap_->MyGlobalElements()[i];
-        double tmp = (real_wear2)[real_wear2.get_map().LID(gid)];
-        (*wearoutput2_)[wearoutput2_->get_map().LID(gid)] =
+        int gid = gmdofrowmap_->my_global_elements()[i];
+        double tmp = (real_wear2)[real_wear2.get_map().lid(gid)];
+        (*wearoutput2_)[wearoutput2_->get_map().lid(gid)] =
             -(tmp * fac);  // negative sign because on other interface side
         //--> this Wear-vector (defined on master side) is along slave-side normal field!
       }
@@ -4307,13 +4307,13 @@ void Wear::LagrangeStrategyWear::do_write_restart(
   for (int i = 0; i < (int)interface_.size(); ++i)
   {
     // loop over all slave nodes on the current interface
-    for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interface_[i]->slave_row_nodes()->GID(j);
+      int gid = interface_[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(node);
-      int dof = (activetoggle->get_map()).LID(gid);
+      int dof = (activetoggle->get_map()).lid(gid);
 
       // set value active / inactive in toggle vector
       if (cnode->active()) (*activetoggle)[dof] = 1;
@@ -4364,15 +4364,15 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
     // LAGR MULT RECOVERING
     // extract slave displacements from disi
     Core::LinAlg::Vector<double> disis(*gsdofrowmap_);
-    if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disis);
+    if (gsdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disis);
 
     // extract master displacements from disi
     Core::LinAlg::Vector<double> disim(*gmdofrowmap_);
-    if (gmdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disim);
+    if (gmdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disim);
 
     // extract other displacements from disi
     Core::LinAlg::Vector<double> disin(*gndofrowmap_);
-    if (gndofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disin);
+    if (gndofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disin);
 
     // condensation has been performed for active LM only,
     // thus we construct a modified invd matrix here which
@@ -4414,14 +4414,14 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
     // wincr_ up to w_
     // extract active slave displacements from disi
     Core::LinAlg::Vector<double> disia(*gactivedofs_);
-    if (gactivedofs_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disia);
+    if (gactivedofs_->num_global_elements()) Core::LinAlg::export_to(*disi, disia);
 
     // extract inactive slave displacements from disi
     Core::LinAlg::Vector<double> disii(*gidofs_);
-    if (gidofs_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disii);
+    if (gidofs_->num_global_elements()) Core::LinAlg::export_to(*disi, disii);
 
     // recovering just for slipnodes!
-    if (gslipnodes_->NumGlobalElements() > 0)
+    if (gslipnodes_->num_global_elements() > 0)
     {
       // rhs
       Core::LinAlg::Vector<double> fwexp(*gsdofnrowmap_);
@@ -4446,7 +4446,7 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
       wincr_->update(1.0, modw, 1.0);
 
       // inactive part
-      if (gidofs_->NumGlobalElements() > 0)
+      if (gidofs_->num_global_elements() > 0)
       {
         diblock_ = Mortar::matrix_row_transform_gids(*diblock_, *gsdofnrowmap_);
         diblock_->multiply(false, disii, modw);
@@ -4476,15 +4476,15 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
 
     // extract slave displacements from disi
     Core::LinAlg::Vector<double> disis(*gsdofrowmap_);
-    if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disis);
+    if (gsdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disis);
 
     // extract master displacements from disi
     Core::LinAlg::Vector<double> disim(*gmdofrowmap_);
-    if (gmdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disim);
+    if (gmdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disim);
 
     // extract other displacements from disi
     Core::LinAlg::Vector<double> disin(*gndofrowmap_);
-    if (gndofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disin);
+    if (gndofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disin);
 
     // condensation has been performed for active LM only,
     // thus we construct a modified invd matrix here which
@@ -4522,11 +4522,11 @@ void Wear::LagrangeStrategyWear::recover(std::shared_ptr<Core::LinAlg::Vector<do
       ksn_->multiply(false, disin, mod);
       z_->update(-1.0, mod, 1.0);
       Core::LinAlg::Vector<double> mod2((dold_->row_map()));
-      if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, mod2);
+      if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, mod2);
       Core::LinAlg::Vector<double> mod3((dold_->row_map()));
       dold_->multiply(true, mod2, mod3);
       Core::LinAlg::Vector<double> mod4(*gsdofrowmap_);
-      if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(mod3, mod4);
+      if (gsdofrowmap_->num_global_elements()) Core::LinAlg::export_to(mod3, mod4);
       z_->update(-alphaf_, mod4, 1.0);
       Core::LinAlg::Vector<double> zcopy(*z_);
       invdmod.multiply(true, zcopy, *z_);
@@ -4811,10 +4811,10 @@ void Wear::LagrangeStrategyWear::do_read_restart(
   for (int i = 0; i < (int)interface_.size(); ++i)
   {
     // loop over all slave nodes on the current interface
-    for (int j = 0; j < (interface_[i]->slave_row_nodes())->NumMyElements(); ++j)
+    for (int j = 0; j < (interface_[i]->slave_row_nodes())->num_my_elements(); ++j)
     {
-      int gid = (interface_[i]->slave_row_nodes())->GID(j);
-      int dof = (activetoggle->get_map()).LID(gid);
+      int gid = (interface_[i]->slave_row_nodes())->gid(j);
+      int dof = (activetoggle->get_map()).lid(gid);
 
       if ((*activetoggle)[dof] == 1)
       {
@@ -4903,7 +4903,7 @@ void Wear::LagrangeStrategyWear::do_read_restart(
   }
 
   // update flags for global contact status
-  if (gactivenodes_->NumGlobalElements())
+  if (gactivenodes_->num_global_elements())
   {
     isincontact_ = true;
     wasincontact_ = true;
@@ -4998,9 +4998,9 @@ void Wear::LagrangeStrategyWear::update_wear_discret_iterate(bool store)
     // loop over all interfaces
     for (int i = 0; i < (int)interface_.size(); ++i)
     {
-      for (int j = 0; j < (int)interface_[i]->slave_col_nodes()->NumMyElements(); ++j)
+      for (int j = 0; j < (int)interface_[i]->slave_col_nodes()->num_my_elements(); ++j)
       {
-        int gid = interface_[i]->slave_col_nodes()->GID(j);
+        int gid = interface_[i]->slave_col_nodes()->gid(j);
         Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
@@ -5015,9 +5015,9 @@ void Wear::LagrangeStrategyWear::update_wear_discret_iterate(bool store)
         const std::shared_ptr<Core::LinAlg::Map> masternodes =
             Core::LinAlg::allreduce_e_map(*(interface_[i]->master_row_nodes()));
 
-        for (int j = 0; j < (int)masternodes->NumMyElements(); ++j)
+        for (int j = 0; j < (int)masternodes->num_my_elements(); ++j)
         {
-          int gid = masternodes->GID(j);
+          int gid = masternodes->gid(j);
           Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
           if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
           CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
@@ -5137,38 +5137,38 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
         Core::LinAlg::allreduce_e_map(*(interface_[i]->master_row_nodes()));
     if (type == Mortar::StrategyBase::wmupdate)
     {
-      for (int j = 0; j < masternodes->NumMyElements(); ++j)
+      for (int j = 0; j < masternodes->num_my_elements(); ++j)
       {
-        int gid = masternodes->GID(j);
+        int gid = masternodes->gid(j);
         Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         CONTACT::FriNode* fnode = dynamic_cast<CONTACT::FriNode*>(node);
 
         // store updated wcurr into node
         fnode->wear_data().wcurr()[0] =
-            (*vectorinterface)[vectorinterface->get_map().LID(fnode->dofs()[0])];
+            (*vectorinterface)[vectorinterface->get_map().lid(fnode->dofs()[0])];
       }
     }
     else if (type == Mortar::StrategyBase::wmold)
     {
-      for (int j = 0; j < masternodes->NumMyElements(); ++j)
+      for (int j = 0; j < masternodes->num_my_elements(); ++j)
       {
-        int gid = masternodes->GID(j);
+        int gid = masternodes->gid(j);
         Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         CONTACT::FriNode* fnode = dynamic_cast<CONTACT::FriNode*>(node);
 
         // store updated wcurr into node
         fnode->wear_data().wold()[0] +=
-            (*vectorinterface)[vectorinterface->get_map().LID(fnode->dofs()[0])];
+            (*vectorinterface)[vectorinterface->get_map().lid(fnode->dofs()[0])];
       }
     }
     else
     {
       // loop over all slave nodes (column or row) on the current interface
-      for (int j = 0; j < snodemap->NumMyElements(); ++j)
+      for (int j = 0; j < snodemap->num_my_elements(); ++j)
       {
-        int gid = snodemap->GID(j);
+        int gid = snodemap->gid(j);
         Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(node);
@@ -5184,7 +5184,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
 
         for (int dof = 0; dof < dim; ++dof)
         {
-          locindex[dof] = (vectorinterface->get_map()).LID(cnode->dofs()[dof]);
+          locindex[dof] = (vectorinterface->get_map()).lid(cnode->dofs()[dof]);
           if (locindex[dof] < 0) FOUR_C_THROW("StoreNodalQuantities: Did not find dof in map");
 
           switch (type)
@@ -5231,7 +5231,7 @@ void Wear::LagrangeStrategyWear::store_nodal_quantities(Mortar::StrategyBase::Qu
               // store updated wcurr into node
               CONTACT::FriNode* fnode = dynamic_cast<CONTACT::FriNode*>(cnode);
               fnode->wear_data().wold()[0] +=
-                  (*vectorinterface)[vectorinterface->get_map().LID(fnode->dofs()[0])];
+                  (*vectorinterface)[vectorinterface->get_map().lid(fnode->dofs()[0])];
               dof = dof + n_dim() - 1;
 
               break;

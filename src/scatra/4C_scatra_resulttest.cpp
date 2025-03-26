@@ -87,7 +87,7 @@ double ScaTra::ScaTraResultTest::result_node(
   // test result value of single scalar field
   if (quantity == "phi")
     result =
-        (*scatratimint_->phinp())[phinpmap.LID(scatratimint_->discretization()->dof(0, node, 0))];
+        (*scatratimint_->phinp())[phinpmap.lid(scatratimint_->discretization()->dof(0, node, 0))];
 
   // test result value for a system of scalars
   else if (!quantity.compare(0, 3, "phi"))
@@ -104,7 +104,7 @@ double ScaTra::ScaTraResultTest::result_node(
 
     // extract result
     result =
-        (*scatratimint_->phinp())[phinpmap.LID(scatratimint_->discretization()->dof(0, node, k))];
+        (*scatratimint_->phinp())[phinpmap.lid(scatratimint_->discretization()->dof(0, node, k))];
   }
 
   // test domain or boundary flux
@@ -142,31 +142,31 @@ double ScaTra::ScaTraResultTest::result_node(
     // extract result
     if (!quantity.compare(0, 12, "flux_domain_"))
       result = ((*scatratimint_->flux_domain())(
-          dim))[phinpmap.LID(scatratimint_->discretization()->dof(0, node, k))];
+          dim))[phinpmap.lid(scatratimint_->discretization()->dof(0, node, k))];
     else
       result = ((*scatratimint_->flux_boundary())(
-          dim))[phinpmap.LID(scatratimint_->discretization()->dof(0, node, k))];
+          dim))[phinpmap.lid(scatratimint_->discretization()->dof(0, node, k))];
   }
 
   // test result values for biofilm growth (scatra structure and scatra fluid)
   else if (quantity == "scstr_growth_displ_x")
     result = ((*scatratimint_->str_growth())(
-        0))[phinpmap.LID(scatratimint_->discretization()->dof(0, node, 0))];
+        0))[phinpmap.lid(scatratimint_->discretization()->dof(0, node, 0))];
   else if (quantity == "scstr_growth_displ_y")
     result = ((*scatratimint_->str_growth())(
-        1))[phinpmap.LID(scatratimint_->discretization()->dof(0, node, 0))];
+        1))[phinpmap.lid(scatratimint_->discretization()->dof(0, node, 0))];
   else if (quantity == "scstr_growth_displ_z")
     result = ((*scatratimint_->str_growth())(
-        2))[phinpmap.LID(scatratimint_->discretization()->dof(0, node, 0))];
+        2))[phinpmap.lid(scatratimint_->discretization()->dof(0, node, 0))];
   else if (quantity == "scfld_growth_displ_x")
     result = ((*scatratimint_->fld_growth())(
-        0))[phinpmap.LID(scatratimint_->discretization()->dof(0, node, 0))];
+        0))[phinpmap.lid(scatratimint_->discretization()->dof(0, node, 0))];
   else if (quantity == "scfld_growth_displ_y")
     result = ((*scatratimint_->fld_growth())(
-        1))[phinpmap.LID(scatratimint_->discretization()->dof(0, node, 0))];
+        1))[phinpmap.lid(scatratimint_->discretization()->dof(0, node, 0))];
   else if (quantity == "scfld_growth_displ_z")
     result = ((*scatratimint_->fld_growth())(
-        2))[phinpmap.LID(scatratimint_->discretization()->dof(0, node, 0))];
+        2))[phinpmap.lid(scatratimint_->discretization()->dof(0, node, 0))];
 
   // test scatra-scatra interface layer thickness
   else if (quantity == "s2ilayerthickness")
@@ -207,7 +207,7 @@ double ScaTra::ScaTraResultTest::result_node(
           "Couldn't extract state vector of discrete scatra-scatra interface layer thicknesses!");
 
     // extract result
-    result = (*s2igrowthvec)[scatratimint_->discretization()->dof_row_map(2)->LID(
+    result = (*s2igrowthvec)[scatratimint_->discretization()->dof_row_map(2)->lid(
         scatratimint_->discretization()->dof(2, node, 0))];
   }
 
@@ -408,7 +408,7 @@ double ScaTra::ScaTraResultTest::result_special(
 
     // extract number of degrees of freedom owned by specified processor at specified
     // scatra-scatra coupling interface
-    result = strategy->mortar_discretization(interface_num).dof_row_map()->NumMyElements();
+    result = strategy->mortar_discretization(interface_num).dof_row_map()->num_my_elements();
     Core::Communication::broadcast(
         &result, 1, proc_num, scatratimint_->discretization()->get_comm());
   }

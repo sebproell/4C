@@ -250,7 +250,7 @@ void FLD::TransferTurbulentInflowCondition::transfer(
 
         for (int rr = 0; rr < 3; ++rr)
         {
-          int lid = dofrowmap->LID(masterdofs[rr]);
+          int lid = dofrowmap->lid(masterdofs[rr]);
 
           (mymasters_vel[rr]).push_back(((*veln)[lid]) * curvefac);
         }
@@ -633,7 +633,7 @@ void FLD::TransferTurbulentInflowCondition::set_values_available_on_this_proc(
       for (std::vector<int>::iterator sid = myslaves.begin(); sid != myslaves.end(); ++sid)
       {
         // is this slave id on this proc?
-        if (dis_->node_row_map()->MyGID(*sid))
+        if (dis_->node_row_map()->my_gid(*sid))
         {
           Core::Nodes::Node* slave = dis_->g_node(*sid);
 
@@ -645,7 +645,7 @@ void FLD::TransferTurbulentInflowCondition::set_values_available_on_this_proc(
             int gid = slavedofs[rr];
 
             // only set if DBC is active, otherwise throw error
-            if (activedbcdofs->MyGID(gid))
+            if (activedbcdofs->my_gid(gid))
             {
               double value = (mymasters_vel[rr])[nn];
 
@@ -753,7 +753,7 @@ void FLD::TransferTurbulentInflowConditionXW::transfer(
 
         for (int rr = 0; rr < 3; ++rr)
         {
-          int lid = dofrowmap->LID(masterdofs[rr]);
+          int lid = dofrowmap->lid(masterdofs[rr]);
 
           (mymasters_vel[rr]).push_back(((*veln)[lid]) * curvefac);
         }
@@ -763,7 +763,7 @@ void FLD::TransferTurbulentInflowConditionXW::transfer(
         {
           for (int rr = 4; rr < 7; ++rr)
           {
-            int lid = dofrowmap->LID(masterdofs[rr]);
+            int lid = dofrowmap->lid(masterdofs[rr]);
 
             (mymasters_vel[rr - 1]).push_back(((*veln)[lid]) * curvefac);
           }
@@ -853,7 +853,7 @@ void FLD::TransferTurbulentInflowConditionXW::set_values_available_on_this_proc(
       for (std::vector<int>::iterator sid = myslaves.begin(); sid != myslaves.end(); ++sid)
       {
         // is this slave id on this proc?
-        if (dis_->node_row_map()->MyGID(*sid))
+        if (dis_->node_row_map()->my_gid(*sid))
         {
           Core::Nodes::Node* slave = dis_->g_node(*sid);
 
@@ -865,7 +865,7 @@ void FLD::TransferTurbulentInflowConditionXW::set_values_available_on_this_proc(
             int gid = slavedofs[rr];
 
             // only set if DBC is active, otherwise throw error
-            if (activedbcdofs->MyGID(gid))
+            if (activedbcdofs->my_gid(gid))
             {
               double value = (mymasters_vel[rr])[nn];
 
@@ -894,7 +894,7 @@ void FLD::TransferTurbulentInflowConditionXW::set_values_available_on_this_proc(
               int gid = slavedofs[rr];
 
               // only set if DBC is active, otherwise throw error
-              if (activedbcdofs->MyGID(gid))
+              if (activedbcdofs->my_gid(gid))
               {
                 double value = (mymasters_vel[rr - 1])[nn];
 
@@ -962,7 +962,7 @@ void FLD::TransferTurbulentInflowConditionNodal::transfer(
         std::vector<int> masterdofs = dis_->dof(master);
 
         // and the 7th value is filled with the wall shear stress
-        int lnodeid = dis_->node_row_map()->LID(gid);
+        int lnodeid = dis_->node_row_map()->lid(gid);
         (mymasters_vec[0]).push_back((*invec)[lnodeid]);
       }
       else
@@ -1042,7 +1042,7 @@ void FLD::TransferTurbulentInflowConditionNodal::set_values_available_on_this_pr
       for (std::vector<int>::iterator sid = myslaves.begin(); sid != myslaves.end(); ++sid)
       {
         // is this slave id on this proc?
-        if (dis_->node_row_map()->MyGID(*sid))
+        if (dis_->node_row_map()->my_gid(*sid))
           outvec->replace_global_value(*sid, 0, (mymasters_vec[0])[nn]);
       }
     }

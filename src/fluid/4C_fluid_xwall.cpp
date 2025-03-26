@@ -290,9 +290,9 @@ void FLD::XWall::init_x_wall_maps()
   // build row vector of all xwall nodes
   {
     std::vector<int> rowvec;  // node row map
-    for (int i = 0; i < discret_->node_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < discret_->node_row_map()->num_my_elements(); ++i)
     {
-      int xwallgid = discret_->node_row_map()->GID(i);
+      int xwallgid = discret_->node_row_map()->gid(i);
       Core::Nodes::Node* xwallnode = discret_->g_node(xwallgid);
       if (!xwallnode) FOUR_C_THROW("Cannot find node");
 
@@ -350,8 +350,9 @@ void FLD::XWall::init_x_wall_maps()
   //    probably node specified on two conditions?");
 
   if (myrank_ == 0)
-    std::cout << xwallrownodemap_->NumGlobalElements() << " XWall nodes initialized!" << std::endl;
-  if (xwallrownodemap_->NumGlobalElements() == 0) FOUR_C_THROW("No XWall elements found");
+    std::cout << xwallrownodemap_->num_global_elements() << " XWall nodes initialized!"
+              << std::endl;
+  if (xwallrownodemap_->num_global_elements() == 0) FOUR_C_THROW("No XWall elements found");
   return;
 }
 
@@ -377,7 +378,7 @@ void FLD::XWall::init_wall_dist()
       (std::string) "Commondis", newcomm, Global::Problem::instance()->n_dim());
 
   // loop over all column nodes of underlying problem discret and add
-  for (int i = 0; i < (discret_->node_col_map())->NumMyElements(); ++i)
+  for (int i = 0; i < (discret_->node_col_map())->num_my_elements(); ++i)
   {
     Core::Nodes::Node* node = discret_->l_col_node(i);
     if (!node) FOUR_C_THROW("Cannot find node with lid %", i);
@@ -385,7 +386,7 @@ void FLD::XWall::init_wall_dist()
     commondis->add_node(newnode);
   }
   // loop over all column elements of underlying problem discret and add
-  for (int i = 0; i < (discret_->element_col_map())->NumMyElements(); ++i)
+  for (int i = 0; i < (discret_->element_col_map())->num_my_elements(); ++i)
   {
     Core::Elements::Element* node = discret_->l_col_element(i);
     if (!node) FOUR_C_THROW("Cannot find ele with lid %", i);
@@ -403,9 +404,9 @@ void FLD::XWall::init_wall_dist()
 
   // also build a fully overlapping map of enriched nodes here:
   std::vector<int> colvec;  // node col map
-  for (int i = 0; i < (commondis->node_col_map())->NumMyElements(); ++i)
+  for (int i = 0; i < (commondis->node_col_map())->num_my_elements(); ++i)
   {
-    int gid = commondis->node_col_map()->GID(i);
+    int gid = commondis->node_col_map()->gid(i);
     Core::Nodes::Node* xwallnode = commondis->l_col_node(i);
     if (!xwallnode) FOUR_C_THROW("Cannot find node with lid %", i);
     int enriched = 0;
@@ -427,9 +428,9 @@ void FLD::XWall::init_wall_dist()
   xwallcolnodemap_ =
       std::make_shared<Core::LinAlg::Map>(count, count, colvec.data(), 0, discret_->get_comm());
 
-  for (int j = 0; j < xwallcolnodemap_->NumMyElements(); ++j)
+  for (int j = 0; j < xwallcolnodemap_->num_my_elements(); ++j)
   {
-    int xwallgid = xwallcolnodemap_->GID(j);
+    int xwallgid = xwallcolnodemap_->gid(j);
 
     Core::Nodes::Node* xwallnode = commondis->g_node(xwallgid);
     if (!xwallnode) FOUR_C_THROW("Cannot find node");
@@ -439,11 +440,11 @@ void FLD::XWall::init_wall_dist()
     int mygid = 0;
 
 
-    for (int i = 0; i < dircolnodemap_->NumMyElements(); ++i)
+    for (int i = 0; i < dircolnodemap_->num_my_elements(); ++i)
     {
-      int gid = dircolnodemap_->GID(i);
+      int gid = dircolnodemap_->gid(i);
 
-      if (discret_->node_row_map()->MyGID(gid))
+      if (discret_->node_row_map()->my_gid(gid))
       {
         Core::Nodes::Node* node = discret_->g_node(gid);
 
@@ -464,7 +465,7 @@ void FLD::XWall::init_wall_dist()
     Core::Communication::min_all(&mydist, &gdist, 1, discret_->get_comm());
 
     // now write this value in the node based vector
-    if (xwallrownodemap_->MyGID(xwallgid))
+    if (xwallrownodemap_->my_gid(xwallgid))
     {
       int err = walldist_->replace_global_values(1, &gdist, &xwallgid);
       if (err > 0)
@@ -507,11 +508,11 @@ void FLD::XWall::init_toggle_vector()
       std::make_shared<Core::LinAlg::Vector<double>>(*(xwdiscret_->node_col_map()), true);
   xtoggleloc_ = std::make_shared<Core::LinAlg::Vector<double>>(*xwallrownodemap_, true);
   int count = 0;
-  for (int j = 0; j < xwallrownodemap_->NumMyElements(); ++j)
+  for (int j = 0; j < xwallrownodemap_->num_my_elements(); ++j)
   {
-    int xwallgid = xwallrownodemap_->GID(j);
+    int xwallgid = xwallrownodemap_->gid(j);
 
-    if (discret_->node_row_map()->MyGID(xwallgid))  // just in case
+    if (discret_->node_row_map()->my_gid(xwallgid))  // just in case
     {
       Core::Nodes::Node* xwallnode = discret_->g_node(xwallgid);
       if (!xwallnode) FOUR_C_THROW("Cannot find node");
@@ -575,11 +576,11 @@ void FLD::XWall::setup_x_wall_dis()
       (std::string) "xwalldis", newcomm, Global::Problem::instance()->n_dim());
 
   // loop over all xwall row nodes and add
-  for (int i = 0; i < (discret_->node_col_map())->NumMyElements(); ++i)
+  for (int i = 0; i < (discret_->node_col_map())->num_my_elements(); ++i)
   {
-    int gid = (discret_->node_col_map())->GID(i);
+    int gid = (discret_->node_col_map())->gid(i);
 
-    if (xwallcolnodemap_->MyGID(gid))
+    if (xwallcolnodemap_->my_gid(gid))
     {
       Core::Nodes::Node* node = discret_->l_col_node(i);
       if (!node) FOUR_C_THROW("Cannot find node with lid %", i);
@@ -675,11 +676,11 @@ void FLD::XWall::setup_l2_projection()
 
     std::vector<int> enrdf;  // enriched dofs
 
-    for (int i = 0; i < xwdiscret_->node_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < xwdiscret_->node_row_map()->num_my_elements(); ++i)
     {
-      int gid = xwdiscret_->node_row_map()->GID(i);
+      int gid = xwdiscret_->node_row_map()->gid(i);
       // continue only if on this proc
-      if (xwdiscret_->node_row_map()->MyGID(gid))
+      if (xwdiscret_->node_row_map()->my_gid(gid))
       {
         Core::Nodes::Node* node = xwdiscret_->g_node(gid);
         if (!node) FOUR_C_THROW("ERROR: Cannot find off wall node with gid %", gid);
@@ -803,7 +804,7 @@ void FLD::XWall::setup_l2_projection()
             mllist.set("null space: add default vectors", false);
 
             // allocate dimns times the local length of the rowmap
-            const int lrows = enrdofrowmap_->NumMyElements();
+            const int lrows = enrdofrowmap_->num_my_elements();
             ns = std::make_shared<std::vector<double>>(3 * lrows);
             double* nullsp = ns->data();
             mllist.set<std::shared_ptr<std::vector<double>>>("nullspace", ns);
@@ -829,7 +830,7 @@ void FLD::XWall::setup_l2_projection()
               {
                 const int dof = actdofs.at(j);
 
-                const int lid = enrdofrowmap_->LID(dof);
+                const int lid = enrdofrowmap_->lid(dof);
                 if (lid < 0) FOUR_C_THROW("Cannot find dof {}", dof);
 
                 for (unsigned k = 0; k < ndof; ++k)
@@ -975,17 +976,17 @@ void FLD::XWall::calc_tau_w(
   if (tauwcalctype_ == Inpar::FLUID::residual ||
       (tauwcalctype_ == Inpar::FLUID::gradient_to_residual && step >= switch_step_))
   {
-    for (int lnodeid = 0; lnodeid < dircolnodemap_->NumMyElements(); lnodeid++)
+    for (int lnodeid = 0; lnodeid < dircolnodemap_->num_my_elements(); lnodeid++)
     {
-      int gid = dircolnodemap_->GID(lnodeid);
+      int gid = dircolnodemap_->gid(lnodeid);
       // continue only if on this proc
-      if (discret_->node_row_map()->MyGID(gid))
+      if (discret_->node_row_map()->my_gid(gid))
       {
         Core::Nodes::Node* node = discret_->g_node(gid);
         if (!node) FOUR_C_THROW("ERROR: Cannot find off wall node with gid %", gid);
 
         int firstglobaldofid = discret_->dof(0, node, 0);
-        int firstlocaldofid = wss.get_map().LID(firstglobaldofid);
+        int firstlocaldofid = wss.get_map().lid(firstglobaldofid);
 
         if (firstlocaldofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
         double forcex = (wss)[firstlocaldofid];
@@ -1074,7 +1075,7 @@ void FLD::XWall::calc_tau_w(
     xwdiscret_->clear_state();
 
     // scale with times:
-    for (int l = 0; l < (xwdiscret_->node_row_map())->NumMyElements(); l++)
+    for (int l = 0; l < (xwdiscret_->node_row_map())->num_my_elements(); l++)
     {
       double sumnewtauw = (newtauwxwdis)[l];
       double timesfac = (timesvec)[l];
@@ -1134,7 +1135,7 @@ void FLD::XWall::l2_project_vector(Core::LinAlg::Vector<double>& veln,
     std::shared_ptr<Core::LinAlg::Vector<double>> velnp,
     std::shared_ptr<Core::LinAlg::Vector<double>> accn)
 {
-  if (not veln.get_map().SameAs(*discret_->dof_row_map()))
+  if (not veln.get_map().same_as(*discret_->dof_row_map()))
     FOUR_C_THROW("input map is not the dof row map of the fluid discretization");
 
   massmatrix_->zero();
@@ -1278,21 +1279,21 @@ void FLD::XWall::adapt_ml_nullspace(Core::LinAlg::Solver& solver)
   if (!nullspace) FOUR_C_THROW("No nullspace supplied in parameter list");
   int nsdim = mlparams.get("null space: dimension", 1);
   if (nsdim != 4) FOUR_C_THROW("Wrong Nullspace dimension for XWall");
-  int lrowdofs = discret_->dof_row_map()->NumMyElements();
+  int lrowdofs = discret_->dof_row_map()->num_my_elements();
   //  std::cout << "lrowdofs  " << lrowdofs << std::endl;
   // std::cout << "check the nullspace for mfs" << std::endl;
-  for (int j = 0; j < xwallrownodemap_->NumMyElements(); ++j)
+  for (int j = 0; j < xwallrownodemap_->num_my_elements(); ++j)
   {
-    int xwallgid = xwallrownodemap_->GID(j);
+    int xwallgid = xwallrownodemap_->gid(j);
 
-    if (not discret_->node_row_map()->MyGID(xwallgid))  // just in case
+    if (not discret_->node_row_map()->my_gid(xwallgid))  // just in case
       FOUR_C_THROW("not on proc");
     {
       Core::Nodes::Node* xwallnode = discret_->g_node(xwallgid);
       if (!xwallnode) FOUR_C_THROW("Cannot find node");
 
       int firstglobaldofid = discret_->dof(xwallnode, 0);
-      int firstlocaldofid = discret_->dof_row_map()->LID(firstglobaldofid);
+      int firstlocaldofid = discret_->dof_row_map()->lid(firstglobaldofid);
 
       nullspace[firstlocaldofid + 4] = 0.0;
       nullspace[lrowdofs + firstlocaldofid + 5] = 0.0;
@@ -1343,14 +1344,14 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::XWall::get_output_vector(
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> velenr =
       std::make_shared<Core::LinAlg::Vector<double>>(*(discret_->dof_row_map()), true);
-  for (int i = 0; i < xwallrownodemap_->NumMyElements(); ++i)
+  for (int i = 0; i < xwallrownodemap_->num_my_elements(); ++i)
   {
-    int xwallgid = xwallrownodemap_->GID(i);
+    int xwallgid = xwallrownodemap_->gid(i);
     Core::Nodes::Node* xwallnode = discret_->g_node(xwallgid);
     if (!xwallnode) FOUR_C_THROW("Cannot find node");
 
     int firstglobaldofid = discret_->dof(xwallnode, 0);
-    int firstlocaldofid = discret_->dof_row_map()->LID(firstglobaldofid);
+    int firstlocaldofid = discret_->dof_row_map()->lid(firstglobaldofid);
 
     int err = velenr->replace_local_value(firstlocaldofid, 0, (vel)[firstlocaldofid + 4]);
     err += velenr->replace_local_value(firstlocaldofid + 1, 0, (vel)[firstlocaldofid + 5]);
@@ -1393,9 +1394,9 @@ void FLD::XWall::overwrite_transferred_values()
     Core::LinAlg::Vector<double> tauwtmp(*(discret_->node_row_map()), true);
     Core::LinAlg::export_to(*tauw_, tauwtmp);
 
-    for (int i = 0; i < discret_->node_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < discret_->node_row_map()->num_my_elements(); ++i)
     {
-      int xwallgid = discret_->node_row_map()->GID(i);
+      int xwallgid = discret_->node_row_map()->gid(i);
       Core::Nodes::Node* xwallnode = discret_->g_node(xwallgid);
       if (!xwallnode) FOUR_C_THROW("Cannot find node");
       std::vector<Core::Conditions::Condition*> nodecloudstocouple;
@@ -1456,9 +1457,9 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::XWall::fix_dirichlet_inflow(
   {
     Core::LinAlg::Vector<double> res(*(discret_->dof_col_map()), true);
     Core::LinAlg::export_to(trueresidual, res);
-    for (int j = 0; j < xwallrownodemap_->NumMyElements(); ++j)
+    for (int j = 0; j < xwallrownodemap_->num_my_elements(); ++j)
     {
-      int xwallgid = xwallrownodemap_->GID(j);
+      int xwallgid = xwallrownodemap_->gid(j);
 
       Core::Nodes::Node* xwallnode = discret_->g_node(xwallgid);
       if (!xwallnode) FOUR_C_THROW("Cannot find node");
@@ -1480,7 +1481,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::XWall::fix_dirichlet_inflow(
       }
       if (includedofs)
       {
-        if (discret_->node_row_map()->MyGID(xwallgid))
+        if (discret_->node_row_map()->my_gid(xwallgid))
         {
           std::vector<Core::Conditions::Condition*> dircond;
           xwallnode->get_condition("Dirichlet", dircond);
@@ -1569,7 +1570,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::XWall::fix_dirichlet_inflow(
               int thirdglobaldofidtoreplace = discret_->dof(xwallnode, 0) + 2;
               int firstglobaldofidnewvalue = discret_->dof(test[foundl], 0);
 
-              int firstlocaldofidnewvalue = discret_->dof_col_map()->LID(firstglobaldofidnewvalue);
+              int firstlocaldofidnewvalue = discret_->dof_col_map()->lid(firstglobaldofidnewvalue);
               // half because the area is half on a boundary node compared to an inner node
               double newvalue1 = 0.5 * (res)[firstlocaldofidnewvalue];
               double newvalue2 = 0.5 * (res)[firstlocaldofidnewvalue + 1];
@@ -1618,17 +1619,17 @@ void FLD::XWallAleFSI::update_w_dist_wale()
   Core::LinAlg::Vector<double> z(*xwallrownodemap_, true);
 
   // fill vectors with coords
-  for (int j = 0; j < xwallrownodemap_->NumMyElements(); ++j)
+  for (int j = 0; j < xwallrownodemap_->num_my_elements(); ++j)
   {
-    int xwallgid = xwallrownodemap_->GID(j);
+    int xwallgid = xwallrownodemap_->gid(j);
 
-    if (not discret_->node_row_map()->MyGID(xwallgid))  // just in case
+    if (not discret_->node_row_map()->my_gid(xwallgid))  // just in case
       FOUR_C_THROW("not on proc");
     Core::Nodes::Node* xwallnode = discret_->g_node(xwallgid);
     if (!xwallnode) FOUR_C_THROW("Cannot find node");
 
     int firstglobaldofid = discret_->dof(xwallnode, 0);
-    int firstlocaldofid = discret_->dof_row_map()->LID(firstglobaldofid);
+    int firstlocaldofid = discret_->dof_row_map()->lid(firstglobaldofid);
 
     int err = x.replace_local_value(j, 0, (xwallnode->x())[0] + (*mydispnp_)[firstlocaldofid]);
     err += y.replace_local_value(j, 0, (xwallnode->x())[1] + (*mydispnp_)[firstlocaldofid + 1]);
@@ -1651,11 +1652,11 @@ void FLD::XWallAleFSI::update_w_dist_wale()
   wdistz.update(-1.0, z, 1.0);
 
   // fill vectors with coords
-  for (int j = 0; j < xwallrownodemap_->NumMyElements(); ++j)
+  for (int j = 0; j < xwallrownodemap_->num_my_elements(); ++j)
   {
-    int xwallgid = xwallrownodemap_->GID(j);
+    int xwallgid = xwallrownodemap_->gid(j);
 
-    if (not discret_->node_row_map()->MyGID(xwallgid))  // just in case
+    if (not discret_->node_row_map()->my_gid(xwallgid))  // just in case
       FOUR_C_THROW("not on proc");
     Core::Nodes::Node* xwallnode = discret_->g_node(xwallgid);
     if (!xwallnode) FOUR_C_THROW("Cannot find node");

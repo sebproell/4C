@@ -63,9 +63,9 @@ STI::Algorithm::Algorithm(MPI_Comm comm, const Teuchos::ParameterList& stidyn,
   thermo_->setup();
 
   // check maps from scatra and thermo discretizations
-  if (scatra_->scatra_field()->discretization()->dof_row_map()->NumGlobalElements() == 0)
+  if (scatra_->scatra_field()->discretization()->dof_row_map()->num_global_elements() == 0)
     FOUR_C_THROW("Scatra discretization does not have any degrees of freedom!");
-  if (thermo_->scatra_field()->discretization()->dof_row_map()->NumGlobalElements() == 0)
+  if (thermo_->scatra_field()->discretization()->dof_row_map()->num_global_elements() == 0)
     FOUR_C_THROW("Thermo discretization does not have any degrees of freedom!");
 
   // additional safety check

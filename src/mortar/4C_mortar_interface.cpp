@@ -365,28 +365,28 @@ void Mortar::Interface::print_parallel_distribution() const
     my_n_elements[myrank] = discret().num_my_row_elements();
     my_n_ghostele[myrank] = discret().num_my_col_elements() - my_n_elements[myrank];
 
-    my_s_nodes[myrank] = snoderowmap_->NumMyElements();
-    my_s_ghostnodes[myrank] = snodecolmap_->NumMyElements() - my_s_nodes[myrank];
-    my_s_elements[myrank] = selerowmap_->NumMyElements();
-    my_s_ghostele[myrank] = selecolmap_->NumMyElements() - my_s_elements[myrank];
+    my_s_nodes[myrank] = snoderowmap_->num_my_elements();
+    my_s_ghostnodes[myrank] = snodecolmap_->num_my_elements() - my_s_nodes[myrank];
+    my_s_elements[myrank] = selerowmap_->num_my_elements();
+    my_s_ghostele[myrank] = selecolmap_->num_my_elements() - my_s_elements[myrank];
 
-    my_m_nodes[myrank] = mnoderowmap_->NumMyElements();
-    my_m_ghostnodes[myrank] = mnodecolmap_->NumMyElements() - my_m_nodes[myrank];
-    my_m_elements[myrank] = melerowmap_->NumMyElements();
-    my_m_ghostele[myrank] = melecolmap_->NumMyElements() - my_m_elements[myrank];
+    my_m_nodes[myrank] = mnoderowmap_->num_my_elements();
+    my_m_ghostnodes[myrank] = mnodecolmap_->num_my_elements() - my_m_nodes[myrank];
+    my_m_elements[myrank] = melerowmap_->num_my_elements();
+    my_m_ghostele[myrank] = melecolmap_->num_my_elements() - my_m_elements[myrank];
 
     // adapt output for redundant master or all redundant case
     if (interface_data_->get_extend_ghosting() == Inpar::Mortar::ExtendGhosting::redundant_master)
     {
-      my_m_ghostnodes[myrank] = mnoderowmap_->NumGlobalElements() - my_m_nodes[myrank];
-      my_m_ghostele[myrank] = melerowmap_->NumGlobalElements() - my_m_elements[myrank];
+      my_m_ghostnodes[myrank] = mnoderowmap_->num_global_elements() - my_m_nodes[myrank];
+      my_m_ghostele[myrank] = melerowmap_->num_global_elements() - my_m_elements[myrank];
     }
     else if (interface_data_->get_extend_ghosting() == Inpar::Mortar::ExtendGhosting::redundant_all)
     {
-      my_m_ghostnodes[myrank] = mnoderowmap_->NumGlobalElements() - my_m_nodes[myrank];
-      my_m_ghostele[myrank] = melerowmap_->NumGlobalElements() - my_m_elements[myrank];
-      my_s_ghostnodes[myrank] = snoderowmap_->NumGlobalElements() - my_s_nodes[myrank];
-      my_s_ghostele[myrank] = selerowmap_->NumGlobalElements() - my_s_elements[myrank];
+      my_m_ghostnodes[myrank] = mnoderowmap_->num_global_elements() - my_m_nodes[myrank];
+      my_m_ghostele[myrank] = melerowmap_->num_global_elements() - my_m_elements[myrank];
+      my_s_ghostnodes[myrank] = snoderowmap_->num_global_elements() - my_s_nodes[myrank];
+      my_s_ghostele[myrank] = selerowmap_->num_global_elements() - my_s_elements[myrank];
     }
 
     Core::Communication::sum_all(my_n_nodes.data(), n_nodes.data(), numproc, discret().get_comm());
@@ -638,7 +638,7 @@ void Mortar::Interface::initialize_corner_edge()
 
   if (lagmultlin) return;
 
-  for (int i = 0; i < (discret().node_row_map())->NumMyElements(); ++i)
+  for (int i = 0; i < (discret().node_row_map())->num_my_elements(); ++i)
   {
     // static_cast to the corresponding mortar/contact/friction/... node
     // or element would be enough in all places
@@ -675,7 +675,7 @@ void Mortar::Interface::initialize_cross_points()
       FOUR_C_THROW("Crosspoint / edge node modification not yet implemented for 3D problems.");
 
     // Detect relevant nodes on slave side
-    const int numRowNodes = discret().node_row_map()->NumMyElements();
+    const int numRowNodes = discret().node_row_map()->num_my_elements();
     for (int i = 0; i < numRowNodes; ++i)
     {
       // static_cast to the corresponding mortar/contact/friction/... node
@@ -723,7 +723,7 @@ void Mortar::Interface::initialize_lag_mult_lin()
     // set status of vertex nodes -> SLAVE
 
     // loop over all elements
-    for (int i = 0; i < discret().node_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < discret().node_row_map()->num_my_elements(); ++i)
     {
       // get node and cast to cnode
       auto* node = dynamic_cast<Mortar::Node*>(idiscret_->l_row_node(i));
@@ -828,7 +828,7 @@ void Mortar::Interface::initialize_lag_mult_const()
     // only the center-node carries LM
 
     // loop over all elements
-    for (int i = 0; i < discret().node_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < discret().node_row_map()->num_my_elements(); ++i)
     {
       // get node and cast to cnode
       auto* node = dynamic_cast<Mortar::Node*>(idiscret_->l_row_node(i));
@@ -894,10 +894,10 @@ void Mortar::Interface::initialize_data_container()
 {
   // initialize node data container
   // (include slave side boundary nodes / crosspoints)
-  const int numMySlaveColumnNodes = slave_col_nodes_bound()->NumMyElements();
+  const int numMySlaveColumnNodes = slave_col_nodes_bound()->num_my_elements();
   for (int i = 0; i < numMySlaveColumnNodes; ++i)
   {
-    int gid = slave_col_nodes_bound()->GID(i);
+    int gid = slave_col_nodes_bound()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
     auto* mnode = dynamic_cast<Node*>(node);
@@ -921,9 +921,9 @@ void Mortar::Interface::initialize_data_container()
     const std::shared_ptr<Core::LinAlg::Map> masternodes =
         Core::LinAlg::allreduce_e_map(*(master_row_nodes()));
     // initialize poro node data container for master nodes!!!
-    for (int i = 0; i < masternodes->NumMyElements(); ++i)
+    for (int i = 0; i < masternodes->num_my_elements(); ++i)
     {
-      int gid = masternodes->GID(i);
+      int gid = masternodes->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
       auto* mnode = dynamic_cast<Node*>(node);
@@ -936,10 +936,10 @@ void Mortar::Interface::initialize_data_container()
   }
 
   // initialize element data container
-  const int numMySlaveColumnElements = slave_col_elements()->NumMyElements();
+  const int numMySlaveColumnElements = slave_col_elements()->num_my_elements();
   for (int i = 0; i < numMySlaveColumnElements; ++i)
   {
-    int gid = slave_col_elements()->GID(i);
+    int gid = slave_col_elements()->gid(i);
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     auto* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -951,9 +951,9 @@ void Mortar::Interface::initialize_data_container()
   if (interface_data_->is_poro())
   {
     // initialize master element data container
-    for (int i = 0; i < master_col_elements()->NumMyElements(); ++i)
+    for (int i = 0; i < master_col_elements()->num_my_elements(); ++i)
     {
-      int gid = master_col_elements()->GID(i);
+      int gid = master_col_elements()->gid(i);
       Core::Elements::Element* ele = discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       auto* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -968,9 +968,9 @@ void Mortar::Interface::initialize_data_container()
     if (Teuchos::getIntegralValue<Inpar::Mortar::AlgorithmType>(interface_params(), "ALGORITHM") ==
         Inpar::Mortar::algorithm_gpts)
     {
-      const int numMyMasterColumnElements = master_col_elements()->NumMyElements();
+      const int numMyMasterColumnElements = master_col_elements()->num_my_elements();
       for (int i = 0; i < numMyMasterColumnElements; ++i)
-        dynamic_cast<Mortar::Element*>(discret().g_element(master_col_elements()->GID(i)))
+        dynamic_cast<Mortar::Element*>(discret().g_element(master_col_elements()->gid(i)))
             ->initialize_data_container();
     }
   }
@@ -993,9 +993,9 @@ std::shared_ptr<Core::Binstrategy::BinningStrategy> Mortar::Interface::setup_bin
   }
 
   // loop all slave nodes and merge XAABB with their eXtendedAxisAlignedBoundingBox
-  for (int lid = 0; lid < slave_col_nodes()->NumMyElements(); ++lid)
+  for (int lid = 0; lid < slave_col_nodes()->num_my_elements(); ++lid)
   {
-    int gid = slave_col_nodes()->GID(lid);
+    int gid = slave_col_nodes()->gid(lid);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node)
       FOUR_C_THROW("Cannot find node with gid {} in discretization '{}'.", gid, discret().name());
@@ -1022,9 +1022,9 @@ std::shared_ptr<Core::Binstrategy::BinningStrategy> Mortar::Interface::setup_bin
 
   // compute cutoff radius:
   double global_slave_max_edge_size = -1.0;
-  for (int lid = 0; lid < slave_col_elements()->NumMyElements(); ++lid)
+  for (int lid = 0; lid < slave_col_elements()->num_my_elements(); ++lid)
   {
-    int gid = slave_col_elements()->GID(lid);
+    int gid = slave_col_elements()->gid(lid);
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele)
       FOUR_C_THROW(
@@ -1136,10 +1136,10 @@ void Mortar::Interface::redistribute()
   // calculate real number of procs to be used
   if (minele > 0)
   {
-    sproc = static_cast<int>((sroweles.NumGlobalElements()) / minele);
-    mproc = static_cast<int>((mroweles.NumGlobalElements()) / minele);
-    if (sroweles.NumGlobalElements() < 2 * minele) sproc = 1;
-    if (mroweles.NumGlobalElements() < 2 * minele) mproc = 1;
+    sproc = static_cast<int>((sroweles.num_global_elements()) / minele);
+    mproc = static_cast<int>((mroweles.num_global_elements()) / minele);
+    if (sroweles.num_global_elements() < 2 * minele) sproc = 1;
+    if (mroweles.num_global_elements() < 2 * minele) mproc = 1;
     if (sproc > numproc) sproc = numproc;
     if (mproc > numproc) mproc = numproc;
   }
@@ -1290,8 +1290,8 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
 
     // fill my own row node ids
     const Core::LinAlg::Map* noderowmap = discret().node_row_map();
-    std::vector<int> sdata(noderowmap->NumMyElements());
-    for (int i = 0; i < noderowmap->NumMyElements(); ++i) sdata[i] = noderowmap->GID(i);
+    std::vector<int> sdata(noderowmap->num_my_elements());
+    for (int i = 0; i < noderowmap->num_my_elements(); ++i) sdata[i] = noderowmap->gid(i);
 
     // gather all gids of nodes redundantly
     std::vector<int> rdata;
@@ -1304,8 +1304,8 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
 
     // fill my own row element ids
     const Core::LinAlg::Map* elerowmap = discret().element_row_map();
-    sdata.resize(elerowmap->NumMyElements());
-    for (int i = 0; i < elerowmap->NumMyElements(); ++i) sdata[i] = elerowmap->GID(i);
+    sdata.resize(elerowmap->num_my_elements());
+    for (int i = 0; i < elerowmap->num_my_elements(); ++i) sdata[i] = elerowmap->gid(i);
 
     // gather all gids of elements redundantly
     rdata.resize(0);
@@ -1358,9 +1358,9 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     // fill my own master row node ids
     const Core::LinAlg::Map* noderowmap = discret().node_row_map();
     std::vector<int> sdata;
-    for (int i = 0; i < noderowmap->NumMyElements(); ++i)
+    for (int i = 0; i < noderowmap->num_my_elements(); ++i)
     {
-      int gid = noderowmap->GID(i);
+      int gid = noderowmap->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -1373,9 +1373,9 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
 
     // add my own slave column node ids (non-redundant, standard overlap)
     const Core::LinAlg::Map* nodecolmap = discret().node_col_map();
-    for (int i = 0; i < nodecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < nodecolmap->num_my_elements(); ++i)
     {
-      int gid = nodecolmap->GID(i);
+      int gid = nodecolmap->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -1390,9 +1390,9 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     // fill my own master row element ids
     const Core::LinAlg::Map* elerowmap = discret().element_row_map();
     sdata.resize(0);
-    for (int i = 0; i < elerowmap->NumMyElements(); ++i)
+    for (int i = 0; i < elerowmap->num_my_elements(); ++i)
     {
-      int gid = elerowmap->GID(i);
+      int gid = elerowmap->gid(i);
       Core::Elements::Element* ele = discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
       auto* mrtrele = dynamic_cast<Mortar::Element*>(ele);
@@ -1405,9 +1405,9 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
 
     // add my own slave column node ids (non-redundant, standard overlap)
     const Core::LinAlg::Map* elecolmap = discret().element_col_map();
-    for (int i = 0; i < elecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < elecolmap->num_my_elements(); ++i)
     {
-      int gid = elecolmap->GID(i);
+      int gid = elecolmap->gid(i);
       Core::Elements::Element* ele = discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
       auto* mrtrele = dynamic_cast<Mortar::Element*>(ele);
@@ -1459,9 +1459,9 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
 
     // fill my own slave and master column node ids (non-redundant)
     const Core::LinAlg::Map* nodecolmap = discret().node_col_map();
-    for (int i = 0; i < nodecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < nodecolmap->num_my_elements(); ++i)
     {
-      int gid = nodecolmap->GID(i);
+      int gid = nodecolmap->gid(i);
       rdata.push_back(gid);
     }
 
@@ -1471,9 +1471,9 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
 
     // fill my own slave and master column element ids (non-redundant)
     const Core::LinAlg::Map* elecolmap = discret().element_col_map();
-    for (int i = 0; i < elecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < elecolmap->num_my_elements(); ++i)
     {
-      int gid = elecolmap->GID(i);
+      int gid = elecolmap->gid(i);
       rdata.push_back(gid);
     }
 
@@ -1534,9 +1534,9 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
       // get the node ids of the elements that are to be ghosted and create a proper node column map
       // for their export
       std::set<int> nodes;
-      for (int lid = 0; lid < extendedmastercolmap->NumMyElements(); ++lid)
+      for (int lid = 0; lid < extendedmastercolmap->num_my_elements(); ++lid)
       {
-        Core::Elements::Element* ele = discret().g_element(extendedmastercolmap->GID(lid));
+        Core::Elements::Element* ele = discret().g_element(extendedmastercolmap->gid(lid));
         const int* nodeids = ele->node_ids();
         for (int inode = 0; inode < ele->num_node(); ++inode) nodes.insert(nodeids[inode]);
       }
@@ -1624,10 +1624,10 @@ void Mortar::Interface::update_master_slave_dof_maps()
   std::vector<int> mc;  // master column map
   std::vector<int> mr;  // master row map
 
-  const int numMyColumnDofs = discret().node_col_map()->NumMyElements();
+  const int numMyColumnDofs = discret().node_col_map()->num_my_elements();
   for (int i = 0; i < numMyColumnDofs; ++i)
   {
-    int gid = discret().node_col_map()->GID(i);
+    int gid = discret().node_col_map()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -1639,7 +1639,7 @@ void Mortar::Interface::update_master_slave_dof_maps()
     else
       for (int j = 0; j < numdof; ++j) mc.push_back(mrtrnode->dofs()[j]);
 
-    if (discret().node_row_map()->MyGID(gid))
+    if (discret().node_row_map()->my_gid(gid))
     {
       if (isslave)
         for (int j = 0; j < numdof; ++j) sr.push_back(mrtrnode->dofs()[j]);
@@ -1672,10 +1672,10 @@ void Mortar::Interface::update_master_slave_element_maps(
   std::vector<int> mc;  // master column map
   std::vector<int> mr;  // master row map
 
-  const int numMyColumnElements = elementColumnMap.NumMyElements();
+  const int numMyColumnElements = elementColumnMap.num_my_elements();
   for (int i = 0; i < numMyColumnElements; ++i)
   {
-    int gid = elementColumnMap.GID(i);
+    int gid = elementColumnMap.gid(i);
     bool isslave = dynamic_cast<Mortar::Element*>(discret().g_element(gid))->is_slave();
 
     if (isslave)
@@ -1683,7 +1683,7 @@ void Mortar::Interface::update_master_slave_element_maps(
     else
       mc.push_back(gid);
 
-    if (elementRowMap.MyGID(gid))
+    if (elementRowMap.my_gid(gid))
     {
       if (isslave)
         sr.push_back(gid);
@@ -1720,10 +1720,10 @@ void Mortar::Interface::update_master_slave_node_maps(
   std::vector<int> mrb;  // master row map - boundary nodes
   std::vector<int> mcb;  // master column map - boundary nodes
 
-  const int numMyColumnNodes = nodeColumnMap.NumMyElements();
+  const int numMyColumnNodes = nodeColumnMap.num_my_elements();
   for (int i = 0; i < numMyColumnNodes; ++i)
   {
-    int gid = nodeColumnMap.GID(i);
+    int gid = nodeColumnMap.gid(i);
     bool isslave = dynamic_cast<Mortar::Node*>(discret().g_node(gid))->is_slave();
     bool isonbound = dynamic_cast<Mortar::Node*>(discret().g_node(gid))->is_on_boundor_ce();
 
@@ -1736,7 +1736,7 @@ void Mortar::Interface::update_master_slave_node_maps(
     else
       mc.push_back(gid);
 
-    if (nodeRowMap.MyGID(gid))
+    if (nodeRowMap.my_gid(gid))
     {
       if (isslave || isonbound)
         srb.push_back(gid);
@@ -1781,16 +1781,16 @@ void Mortar::Interface::restrict_slave_sets()
     std::vector<int> sr;      // slave row map
     std::vector<int> scfull;  // slave full map
 
-    for (int i = 0; i < snodecolmap_->NumMyElements(); ++i)
+    for (int i = 0; i < snodecolmap_->num_my_elements(); ++i)
     {
-      int gid = snodecolmap_->GID(i);
+      int gid = snodecolmap_->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       auto* mrtrnode = dynamic_cast<Node*>(node);
       int istied = (int)mrtrnode->is_tied_slave();
 
-      if (istied && snodecolmap_->MyGID(gid)) sc.push_back(gid);
-      if (istied && snoderowmap_->MyGID(gid)) sr.push_back(gid);
+      if (istied && snodecolmap_->my_gid(gid)) sc.push_back(gid);
+      if (istied && snoderowmap_->my_gid(gid)) sr.push_back(gid);
     }
 
     snoderowmap_ =
@@ -1815,19 +1815,19 @@ void Mortar::Interface::restrict_slave_sets()
     std::vector<int> sr;      // slave row map
     std::vector<int> scfull;  // slave full map
 
-    for (int i = 0; i < snodecolmap_->NumMyElements(); ++i)
+    for (int i = 0; i < snodecolmap_->num_my_elements(); ++i)
     {
-      int gid = snodecolmap_->GID(i);
+      int gid = snodecolmap_->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       auto* mrtrnode = dynamic_cast<Node*>(node);
       const bool istied = mrtrnode->is_tied_slave();
       const int numdof = mrtrnode->num_dof();
 
-      if (istied && snodecolmap_->MyGID(gid))
+      if (istied && snodecolmap_->my_gid(gid))
         for (int j = 0; j < numdof; ++j) sc.push_back(mrtrnode->dofs()[j]);
 
-      if (istied && snoderowmap_->MyGID(gid))
+      if (istied && snoderowmap_->my_gid(gid))
         for (int j = 0; j < numdof; ++j) sr.push_back(mrtrnode->dofs()[j]);
     }
 
@@ -1866,7 +1866,7 @@ std::shared_ptr<Core::LinAlg::Map> Mortar::Interface::update_lag_mult_sets(
   // gather information over all procs
   std::vector<int> localnumlmdof(Core::Communication::num_mpi_ranks(get_comm()));
   std::vector<int> globalnumlmdof(Core::Communication::num_mpi_ranks(get_comm()));
-  localnumlmdof[Core::Communication::my_mpi_rank(get_comm())] = ref_map.NumMyElements();
+  localnumlmdof[Core::Communication::my_mpi_rank(get_comm())] = ref_map.num_my_elements();
   Core::Communication::sum_all(localnumlmdof.data(), globalnumlmdof.data(),
       Core::Communication::num_mpi_ranks(get_comm()), get_comm());
 
@@ -1876,8 +1876,8 @@ std::shared_ptr<Core::LinAlg::Map> Mortar::Interface::update_lag_mult_sets(
     offset += globalnumlmdof[k];
 
   // loop over all slave dofs and initialize LM dofs
-  lmdof.reserve(ref_map.NumMyElements());
-  for (int i = 0; i < ref_map.NumMyElements(); ++i)
+  lmdof.reserve(ref_map.num_my_elements());
+  for (int i = 0; i < ref_map.num_my_elements(); ++i)
     lmdof.push_back(max_dof_global() + 1 + offset_if + offset + i);
 
   // create interface LM map
@@ -1911,7 +1911,7 @@ std::shared_ptr<Core::LinAlg::Map> Mortar::Interface::redistribute_lag_mult_sets
   if (!psdofrowmap_) FOUR_C_THROW("The psdofrowmap_ is not yet initialized!");
 
   // new lm dofs
-  std::vector<int> lmdof(sdofrowmap_->NumMyElements());
+  std::vector<int> lmdof(sdofrowmap_->num_my_elements());
 
   /* get the initial correlation between the slave dofs
    * and the lagrange multiplier dofs
@@ -1919,18 +1919,18 @@ std::shared_ptr<Core::LinAlg::Map> Mortar::Interface::redistribute_lag_mult_sets
    * There is always a tuple of two values which correlate
    * with each other. The first one is the lm-dof, the second
    * one is the slave dof. */
-  std::vector<int> my_related_gids(2 * plmdofmap_->NumMyElements(), -1);
-  for (int i = 0; i < plmdofmap_->NumMyElements(); ++i)
+  std::vector<int> my_related_gids(2 * plmdofmap_->num_my_elements(), -1);
+  for (int i = 0; i < plmdofmap_->num_my_elements(); ++i)
   {
-    my_related_gids[2 * i] = plmdofmap_->GID(i);
-    my_related_gids[2 * i + 1] = psdofrowmap_->GID(i);
+    my_related_gids[2 * i] = plmdofmap_->gid(i);
+    my_related_gids[2 * i + 1] = psdofrowmap_->gid(i);
   }
 
   std::vector<int> g_related_gids;
   Core::Communication::barrier(get_comm());
   for (int p = 0; p < Core::Communication::num_mpi_ranks(get_comm()); ++p)
   {
-    int num_mygids = plmdofmap_->NumMyElements();
+    int num_mygids = plmdofmap_->num_my_elements();
 
     Core::Communication::broadcast(&num_mygids, 1, p, get_comm());
     // skip processors which hold no correlation info
@@ -1948,7 +1948,7 @@ std::shared_ptr<Core::LinAlg::Map> Mortar::Interface::redistribute_lag_mult_sets
     {
       /* check in the already redistributed sdofrowmap on
        * each processor which one holds the current gid */
-      int my_sllid = sdofrowmap_->LID(g_related_gids[2 * i + 1]);
+      int my_sllid = sdofrowmap_->lid(g_related_gids[2 * i + 1]);
       /* on the proc holding the gid, we store the corresponding
        * lm-dof-gid as well at the same lid. */
       if (my_sllid != -1) lmdof[my_sllid] = g_related_gids[2 * i];
@@ -1978,9 +1978,9 @@ void Mortar::Interface::initialize()
 
   // loop over all slave nodes to reset stuff (standard column map)
   // (include slave side boundary nodes / crosspoints)
-  for (int i = 0; i < slave_col_nodes_bound()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_col_nodes_bound()->num_my_elements(); ++i)
   {
-    int gid = slave_col_nodes_bound()->GID(i);
+    int gid = slave_col_nodes_bound()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* monode = dynamic_cast<Mortar::Node*>(node);
@@ -1996,9 +1996,9 @@ void Mortar::Interface::initialize()
 
   // loop over all elements to reset candidates / search lists
   // (use standard slave column map)
-  for (int i = 0; i < slave_col_elements()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_col_elements()->num_my_elements(); ++i)
   {
-    int gid = slave_col_elements()->GID(i);
+    int gid = slave_col_elements()->gid(i);
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     auto* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -2057,9 +2057,9 @@ void Mortar::Interface::set_state(
 
       // loop over all nodes to set current displacement
       // (use fully overlapping column map)
-      for (int i = 0; i < slave_col_nodes()->NumMyElements(); ++i)
+      for (int i = 0; i < slave_col_nodes()->num_my_elements(); ++i)
       {
-        auto* node = dynamic_cast<Mortar::Node*>(idiscret_->g_node(slave_col_nodes()->GID(i)));
+        auto* node = dynamic_cast<Mortar::Node*>(idiscret_->g_node(slave_col_nodes()->gid(i)));
         const int numdof = node->num_dof();
         std::vector<int> lm(numdof);
 
@@ -2123,9 +2123,9 @@ void Mortar::Interface::set_element_areas()
 {
   // loop over all elements to set current element length / area
   // (use standard slave column map)
-  for (int i = 0; i < slave_col_elements()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_col_elements()->num_my_elements(); ++i)
   {
-    int gid = slave_col_elements()->GID(i);
+    int gid = slave_col_elements()->gid(i);
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     auto* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -2179,9 +2179,9 @@ void Mortar::Interface::evaluate_geometry(std::vector<std::shared_ptr<Mortar::In
 
   // loop over proc's slave elements of the interface for integration
   // use standard column map to include processor's ghosted elements
-  for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
   {
-    int gid1 = selecolmap_->GID(i);
+    int gid1 = selecolmap_->gid(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
     auto* selement = dynamic_cast<Mortar::Element*>(ele1);
@@ -2388,9 +2388,9 @@ void Mortar::Interface::evaluate_sts(const Core::LinAlg::Map& selecolmap,
   TEUCHOS_FUNC_TIME_MONITOR("Mortar::Interface::EvaluateSTS");
 
   // loop over all slave col elements
-  for (int i = 0; i < selecolmap.NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap.num_my_elements(); ++i)
   {
-    const int gid1 = selecolmap.GID(i);
+    const int gid1 = selecolmap.gid(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find slave element with gid {}", gid1);
 
@@ -2429,9 +2429,9 @@ void Mortar::Interface::evaluate_sts(const Core::LinAlg::Map& selecolmap,
 void Mortar::Interface::evaluate_nts()
 {
   // loop over slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Mortar::Node*>(node);
@@ -2486,9 +2486,9 @@ void Mortar::Interface::evaluate_nodal_normals() const
   // loop over proc's slave nodes of the interface
   // use row map and export to column map later
   // (use boundary map to include slave side boundary nodes)
-  for (int i = 0; i < snoderowmapbound_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmapbound_->num_my_elements(); ++i)
   {
-    int gid = snoderowmapbound_->GID(i);
+    int gid = snoderowmapbound_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -2628,9 +2628,9 @@ void Mortar::Interface::evaluate_nodal_normals(std::map<int, std::vector<double>
   // loop over proc's slave nodes of the interface
   // use row map and export to column map later
   // (use boundary map to include slave side boundary nodes)
-  for (int i = 0; i < snoderowmapbound_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmapbound_->num_my_elements(); ++i)
   {
-    int gid = snoderowmapbound_->GID(i);
+    int gid = snoderowmapbound_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -2657,9 +2657,9 @@ void Mortar::Interface::export_nodal_normals() const
   std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>> triad;
 
   // build info on row map
-  for (int i = 0; i < snoderowmapbound_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmapbound_->num_my_elements(); ++i)
   {
-    int gid = snoderowmapbound_->GID(i);
+    int gid = snoderowmapbound_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -2679,11 +2679,11 @@ void Mortar::Interface::export_nodal_normals() const
   interface_data_->exporter().do_export(triad);
 
   // extract info on column map
-  for (int i = 0; i < snodecolmapbound_->NumMyElements(); ++i)
+  for (int i = 0; i < snodecolmapbound_->num_my_elements(); ++i)
   {
     // only do something for ghosted nodes
-    int gid = snodecolmapbound_->GID(i);
-    if (snoderowmapbound_->MyGID(gid)) continue;
+    int gid = snodecolmapbound_->gid(i);
+    if (snoderowmapbound_->my_gid(gid)) continue;
 
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
@@ -2749,19 +2749,19 @@ void Mortar::Interface::evaluate_search_brute_force(const double& eps)
   }
 
   // loop over all slave elements on this proc.
-  for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
   {
-    Core::Elements::Element* element = idiscret_->g_element(selecolmap_->GID(i));
-    if (!element) FOUR_C_THROW("Cannot find element with gid {}", selecolmap_->GID(i));
+    Core::Elements::Element* element = idiscret_->g_element(selecolmap_->gid(i));
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", selecolmap_->gid(i));
     auto* mrtrelement = dynamic_cast<Mortar::Element*>(element);
     if (mrtrelement->min_edge_size() < lmin) lmin = mrtrelement->min_edge_size();
   }
 
   // loop over all master elements on this proc.
-  for (int i = 0; i < melefullmap->NumMyElements(); ++i)
+  for (int i = 0; i < melefullmap->num_my_elements(); ++i)
   {
-    Core::Elements::Element* element = idiscret_->g_element(melefullmap->GID(i));
-    if (!element) FOUR_C_THROW("Cannot find element with gid {}", melefullmap->GID(i));
+    Core::Elements::Element* element = idiscret_->g_element(melefullmap->gid(i));
+    if (!element) FOUR_C_THROW("Cannot find element with gid {}", melefullmap->gid(i));
     auto* mrtrelement = dynamic_cast<Mortar::Element*>(element);
     if (mrtrelement->min_edge_size() < lmin) lmin = mrtrelement->min_edge_size();
   }
@@ -2840,13 +2840,13 @@ void Mortar::Interface::evaluate_search_brute_force(const double& eps)
   // perform brute-force search (element-based)
   //**********************************************************************
   // for every slave element
-  for (int i = 0; i < selecolmap_->NumMyElements(); i++)
+  for (int i = 0; i < selecolmap_->num_my_elements(); i++)
   {
     // calculate slabs
     double dcurrent = 0.0;
 
     // initialize slabs with first node
-    int sgid = selecolmap_->GID(i);
+    int sgid = selecolmap_->gid(i);
     Core::Elements::Element* element = idiscret_->g_element(sgid);
     if (!element) FOUR_C_THROW("Cannot find element with gid {}", sgid);
     Core::Nodes::Node** node = element->nodes();
@@ -2922,13 +2922,13 @@ void Mortar::Interface::evaluate_search_brute_force(const double& eps)
     }
 
     // for every master element
-    for (int j = 0; j < melefullmap->NumMyElements(); j++)
+    for (int j = 0; j < melefullmap->num_my_elements(); j++)
     {
       // calculate slabs
       double dcurrent = 0.0;
 
       // initialize slabs with first node
-      int mgid = melefullmap->GID(j);
+      int mgid = melefullmap->gid(j);
       Core::Elements::Element* element = idiscret_->g_element(mgid);
       if (!element) FOUR_C_THROW("Cannot find element with gid {}", mgid);
       Core::Nodes::Node** node = element->nodes();
@@ -3333,9 +3333,9 @@ bool Mortar::Interface::split_int_elements(
 void Mortar::Interface::assemble_lm(Core::LinAlg::Vector<double>& zglobal)
 {
   // loop over all slave nodes
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -3371,9 +3371,9 @@ void Mortar::Interface::assemble_d(Core::LinAlg::SparseMatrix& dglobal)
 
   // loop over proc's slave nodes of the interface for assembly
   // use standard row map to assemble each node only once
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -3445,9 +3445,9 @@ void Mortar::Interface::assemble_m(Core::LinAlg::SparseMatrix& mglobal)
 {
   // loop over proc's slave nodes of the interface for assembly
   // use standard row map to assemble each node only once
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -3549,9 +3549,9 @@ void Mortar::Interface::assemble_normals(Core::LinAlg::SparseMatrix& nglobal)
 {
   // loop over proc's slave nodes of the interface for assembly
   // use standard row map to assemble each node only once
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -3589,9 +3589,9 @@ void Mortar::Interface::assemble_trafo(Core::LinAlg::SparseMatrix& trafo,
   //********************************************************************
   // loop over proc's slave nodes of the interface for assembly
   // use standard row map to assemble each node only once
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -3833,9 +3833,9 @@ void Mortar::Interface::assemble_trafo(Core::LinAlg::SparseMatrix& trafo,
     //********************************************************************
     // loop over proc's master nodes of the interface for assembly
     // use standard row map to assemble each node only once
-    for (int i = 0; i < mnoderowmap_->NumMyElements(); ++i)
+    for (int i = 0; i < mnoderowmap_->num_my_elements(); ++i)
     {
-      int gid = mnoderowmap_->GID(i);
+      int gid = mnoderowmap_->gid(i);
       Core::Nodes::Node* node = idiscret_->g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -4077,9 +4077,9 @@ void Mortar::Interface::detect_tied_slave_nodes(int& founduntied)
   Core::LinAlg::Vector<double> rowtied(*snoderowmap_);
 
   // loop over proc's slave row nodes of the interface for detection
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -4127,9 +4127,9 @@ void Mortar::Interface::detect_tied_slave_nodes(int& founduntied)
   // STEP 3: Extract tying info for slave node column map (locally)
   //**********************************************************************
   // loop over proc's slave col nodes of the interface for storage
-  for (int i = 0; i < snodecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snodecolmap_->num_my_elements(); ++i)
   {
-    int gid = snodecolmap_->GID(i);
+    int gid = snodecolmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -4249,8 +4249,8 @@ void Mortar::Interface::add_ma_sharing_ref_interface(const Interface* ref_interf
   if (has_ma_sharing_ref_interface())
   {
     const int size_curr_ref_interface =
-        get_ma_sharing_ref_interface_ptr()->master_row_elements()->NumGlobalElements();
-    const int size_new_ref_interface = ref_interface->master_row_elements()->NumGlobalElements();
+        get_ma_sharing_ref_interface_ptr()->master_row_elements()->num_global_elements();
+    const int size_new_ref_interface = ref_interface->master_row_elements()->num_global_elements();
 
     if (size_curr_ref_interface >= size_new_ref_interface) return;
   }
@@ -4385,7 +4385,7 @@ void Mortar::Interface::postprocess_quantities(const Teuchos::ParameterList& out
         Core::LinAlg::merge_map(selerowmap_, melerowmap_, false);
     std::shared_ptr<Core::LinAlg::Vector<double>> owner = Core::LinAlg::create_vector(*eleRowMap);
 
-    for (int i = 0; i < idiscret_->element_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < idiscret_->element_row_map()->num_my_elements(); ++i)
       (*owner)[i] = idiscret_->l_row_element(i)->owner();
 
     writer->write_vector("Owner", owner, Core::IO::VectorType::elementvector);

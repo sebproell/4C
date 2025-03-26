@@ -478,25 +478,25 @@ void FS3I::BiofilmFSI::inner_timeloop()
         // get global id of the dof
         int gid = nodedofset[index];
         // get local id of the dof
-        int lid = dofrowmap->LID(gid);
+        int lid = dofrowmap->lid(gid);
 
         //        int lnodeid=lnode->LID();
 
         double lambdai = (*lambdafull)[lid];
-        int lnodeid = noderowmap->LID(lnode->id());
+        int lnodeid = noderowmap->lid(lnode->id());
         (lambdanode)(index).replace_local_values(1, &lambdai, &lnodeid);
       }
     }
     // loop over all local interface nodes of structure discretization
     std::shared_ptr<Core::LinAlg::Map> condnodemap =
         Core::Conditions::condition_node_row_map(*strudis, "FSICoupling");
-    for (int nodei = 0; nodei < condnodemap->NumMyElements(); nodei++)
+    for (int nodei = 0; nodei < condnodemap->num_my_elements(); nodei++)
     {
       // Here we rely on the fact that the structure scatra discretization is a clone of the
       // structure mesh
 
       // get the processor's local node with the same lnodeid
-      int gnodeid = condnodemap->GID(nodei);
+      int gnodeid = condnodemap->gid(nodei);
       Core::Nodes::Node* strulnode = strudis->g_node(gnodeid);
       // get the degrees of freedom associated with this node
       std::vector<int> strunodedofs = strudis->dof(0, strulnode);
@@ -508,12 +508,12 @@ void FS3I::BiofilmFSI::inner_timeloop()
       std::vector<double> unitnormal(3);
       for (int i = 0; i < numdim; ++i)
       {
-        doflids[i] = strudis->dof_row_map()->LID(strunodedofs[i]);
+        doflids[i] = strudis->dof_row_map()->lid(strunodedofs[i]);
         unitnormal[i] = (*nodalnormals)[doflids[i]];
         temp += unitnormal[i] * unitnormal[i];
       }
       double unitnormalabsval = sqrt(temp);
-      int lnodeid = strudis->node_row_map()->LID(gnodeid);
+      int lnodeid = strudis->node_row_map()->lid(gnodeid);
 
       // compute average unit nodal normal
       std::vector<double> Values(numdim);
@@ -615,11 +615,11 @@ void FS3I::BiofilmFSI::inner_timeloop()
     // loop over all local interface nodes of structure discretization
     std::shared_ptr<Core::LinAlg::Map> condnodemap =
         Core::Conditions::condition_node_row_map(*strudis, "FSICoupling");
-    for (int i = 0; i < condnodemap->NumMyElements(); i++)
+    for (int i = 0; i < condnodemap->num_my_elements(); i++)
     {
       // get the processor's local node with the same lnodeid
-      int gnodeid = condnodemap->GID(i);
-      int lnodeid = strudis->node_row_map()->LID(gnodeid);
+      int gnodeid = condnodemap->gid(i);
+      int lnodeid = strudis->node_row_map()->lid(gnodeid);
 
       // Fix this.
       (*((*norminflux_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
@@ -672,9 +672,9 @@ void FS3I::BiofilmFSI::compute_interface_vectors(Core::LinAlg::Vector<double>& i
       Core::Conditions::condition_node_row_map(*strudis, biogrcondname);
 
   // loop all conditioned nodes
-  for (int i = 0; i < condnodemap->NumMyElements(); ++i)
+  for (int i = 0; i < condnodemap->num_my_elements(); ++i)
   {
-    int nodegid = condnodemap->GID(i);
+    int nodegid = condnodemap->gid(i);
     if (strudis->have_global_node(nodegid) == false) FOUR_C_THROW("node not found on this proc");
     Core::Nodes::Node* actnode = strudis->g_node(nodegid);
     std::vector<int> globaldofs = strudis->dof(0, actnode);
@@ -685,11 +685,11 @@ void FS3I::BiofilmFSI::compute_interface_vectors(Core::LinAlg::Vector<double>& i
     double temp = 0.;
     for (int j = 0; j < numdim; ++j)
     {
-      unitnormal[j] = (*nodalnormals)[strudis->dof_row_map()->LID(globaldofs[j])];
+      unitnormal[j] = (*nodalnormals)[strudis->dof_row_map()->lid(globaldofs[j])];
       temp += unitnormal[j] * unitnormal[j];
     }
     double unitnormalabsval = sqrt(temp);
-    int lnodeid = strudis->node_row_map()->LID(nodegid);
+    int lnodeid = strudis->node_row_map()->lid(nodegid);
     double influx = (*norminflux_)[lnodeid];
     double normforces = (*normtraction_)[lnodeid];
     double tangoneforce = (*tangtractionone_)[lnodeid];

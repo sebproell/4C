@@ -270,7 +270,7 @@ namespace
   {
     for (decltype(nodal_data.numRows()) i = 0; i < nodal_data.numRows(); ++i)
     {
-      const int lid = global_data.get_map().LID(ele.node_ids()[i]);
+      const int lid = global_data.get_map().lid(ele.node_ids()[i]);
       if (lid >= 0)  // rownode
       {
         const double invmyadjele = (nodal_average) ? 1.0 / ele.nodes()[i]->num_element() : 1.0;

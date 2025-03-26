@@ -668,10 +668,10 @@ void BeamInteraction::SubmodelEvaluator::BeamPotential::find_and_store_neighbori
       "BeamInteraction::SubmodelEvaluator::BeamPotential::find_and_store_neighboring_elements");
 
   // loop over all row elements
-  int const numroweles = ele_type_map_extractor_ptr()->beam_map()->NumMyElements();
+  int const numroweles = ele_type_map_extractor_ptr()->beam_map()->num_my_elements();
   for (int rowele_i = 0; rowele_i < numroweles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->beam_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor_ptr()->beam_map()->gid(rowele_i);
     Core::Elements::Element* currele = discret_ptr()->g_element(elegid);
 
     // (unique) set of neighboring bins for all col bins assigned to current element
@@ -800,10 +800,10 @@ void BeamInteraction::SubmodelEvaluator::BeamPotential::setup_potential_reductio
   LengthToEdgeImplementation::DataMaps data_maps;
 
   // get element data on current proc
-  for (int rowele_i = 0; rowele_i < ele_type_map_extractor_ptr()->beam_map()->NumMyElements();
+  for (int rowele_i = 0; rowele_i < ele_type_map_extractor_ptr()->beam_map()->num_my_elements();
       ++rowele_i)
   {
-    const int ele_gid = ele_type_map_extractor_ptr()->beam_map()->GID(rowele_i);
+    const int ele_gid = ele_type_map_extractor_ptr()->beam_map()->gid(rowele_i);
     Core::Elements::Element* ele_ptr = discret_ptr()->g_element(ele_gid);
 
     data_maps.ele_gid_length_map.insert(std::make_pair(

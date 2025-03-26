@@ -248,7 +248,7 @@ bool XFEM::XfluidTimeintBase::changed_side_same_time(
     // add all sides of cut_discret to check
     for (int i = 0; i < boundarydis_->num_my_col_elements(); i++)
     {
-      cut_sides.insert(boundarydis_->element_col_map()->GID(i));
+      cut_sides.insert(boundarydis_->element_col_map()->gid(i));
     }
   }
   else
@@ -3208,11 +3208,11 @@ void XFEM::XfluidStd::set_final_data()
     for (int i = 0; i < nsd; i++)
     {
       for (size_t index = 0; index < vector_size(data->type_); index++)
-        (*newVectors_[index])[newdofrowmap_.LID(dofs[i])] =
+        (*newVectors_[index])[newdofrowmap_.lid(dofs[i])] =
             velValues[index](i, 0);  // set the value
     }
     for (size_t index = 0; index < vector_size(data->type_); index++)
-      (*newVectors_[index])[newdofrowmap_.LID(dofs[nsd])] = presValues[index];  // set the value
+      (*newVectors_[index])[newdofrowmap_.lid(dofs[nsd])] = presValues[index];  // set the value
 
     data->type_ = TimeIntData::standard_;  // predictor is done, so next time standard
   }  // end loop over nodes

@@ -35,7 +35,7 @@ namespace XFEM
     /// constructor
     XFEMDofSet(Cut::CutWizard& wizard, int numMyReservedDofsperNode, Core::FE::Discretization& dis)
         : FixedSizeDofSet(numMyReservedDofsperNode,
-              dis.node_row_map()->MaxAllGID() - dis.node_row_map()->MinAllGID() + 1),
+              dis.node_row_map()->max_all_gid() - dis.node_row_map()->min_all_gid() + 1),
           wizard_(wizard),
           dis_(dis)
     {
@@ -48,7 +48,7 @@ namespace XFEM
       const int numnode = dis_.num_my_row_nodes();
       for (int lid = 0; lid < numnode; lid++)
       {
-        int gid = dis_.node_row_map()->GID(lid);
+        int gid = dis_.node_row_map()->gid(lid);
         Core::Nodes::Node* node = dis_.g_node(gid);
         if (num_dof_per_node(*node) != other.num_dof_per_node(*node))
           return false;  // dofsets not equal if at least one node has a different number of nodal

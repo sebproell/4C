@@ -935,11 +935,11 @@ void PoroPressureBased::PorofluidAlgorithm::apply_additional_dbc_for_vol_frac_pr
 
   // we identify the volume fraction pressure dofs which do not have a physical meaning and set
   // a DBC on them
-  for (int i = 0; i < elecolmap->NumMyElements(); ++i)
+  for (int i = 0; i < elecolmap->num_my_elements(); ++i)
   {
     // dynamic_cast necessary because virtual inheritance needs runtime information
     auto* myele = dynamic_cast<Discret::Elements::PoroFluidMultiPhase*>(
-        discret_->g_element(elecolmap->GID(i)));
+        discret_->g_element(elecolmap->gid(i)));
 
     const Core::Mat::Material& material = *(myele->material());
 
@@ -969,8 +969,8 @@ void PoroPressureBased::PorofluidAlgorithm::apply_additional_dbc_for_vol_frac_pr
         {
           // if not already in original dirich map     &&   if it is not a valid volume fraction
           // pressure dof identified with < 1
-          if (dbcmaps_->cond_map()->LID(dofs[idof]) == -1 &&
-              (int)(*valid_volfracpress_dofs_)[discret_->dof_row_map()->LID(dofs[idof])] < 1)
+          if (dbcmaps_->cond_map()->lid(dofs[idof]) == -1 &&
+              (int)(*valid_volfracpress_dofs_)[discret_->dof_row_map()->lid(dofs[idof])] < 1)
             if (not(std::find(mydirichdofs.begin(), mydirichdofs.end(), dofs[idof]) !=
                     mydirichdofs.end()))
             {
@@ -1005,9 +1005,9 @@ void PoroPressureBased::PorofluidAlgorithm::apply_starting_dbc()
   std::vector<int> dirichlet_dofs;
   const int num_poro_dofs = discret_->num_dof(0, discret_->l_row_node(0));
 
-  for (int ele_idx = 0; ele_idx < elecolmap.NumMyElements(); ++ele_idx)
+  for (int ele_idx = 0; ele_idx < elecolmap.num_my_elements(); ++ele_idx)
   {
-    const auto& current_element = *discret_->g_element(elecolmap.GID(ele_idx));
+    const auto& current_element = *discret_->g_element(elecolmap.gid(ele_idx));
     const auto* const nodes = current_element.nodes();
 
     for (int node_idx = 0; node_idx < (current_element.num_node()); node_idx++)
@@ -1026,7 +1026,7 @@ void PoroPressureBased::PorofluidAlgorithm::apply_starting_dbc()
                 dirichlet_dofs.end())
             {
               // LID returns -1 if not found in this map/on this processor
-              if (dbcmaps_with_volfracpress_->cond_map()->LID(gid) == -1)
+              if (dbcmaps_with_volfracpress_->cond_map()->lid(gid) == -1)
               {
                 dirichlet_dofs.push_back(gid);
               }
@@ -1392,7 +1392,7 @@ void PoroPressureBased::PorofluidAlgorithm::reconstruct_pressures_and_saturation
 
     // dummy way: the values have been assembled too many times -> just divide by number of
     // evaluations
-    for (int i = 0; i < discret_->dof_row_map()->NumMyElements(); i++)
+    for (int i = 0; i < discret_->dof_row_map()->num_my_elements(); i++)
     {
       (*pressure_)[i] *= 1.0 / (*counter)[i];
       (*saturation_)[i] *= 1.0 / (*counter)[i];
@@ -1436,7 +1436,7 @@ void PoroPressureBased::PorofluidAlgorithm::reconstruct_solid_pressures()
 
   // dummy way: the values have been assembled too many times -> just divide by number of
   // evaluations
-  for (int i = 0; i < discret_->dof_row_map(nds_solidpressure_)->NumMyElements(); i++)
+  for (int i = 0; i < discret_->dof_row_map(nds_solidpressure_)->num_my_elements(); i++)
   {
     (*solidpressure_)[i] *= 1.0 / (*counter)[i];
   }
@@ -1526,7 +1526,7 @@ void PoroPressureBased::PorofluidAlgorithm::reconstruct_porosity()
 
   // dummy way: the values have been assembled too many times -> just divide by number of
   // evaluations
-  for (int i = 0; i < discret_->dof_row_map(nds_solidpressure_)->NumMyElements(); i++)
+  for (int i = 0; i < discret_->dof_row_map(nds_solidpressure_)->num_my_elements(); i++)
   {
     (*porosity_)[i] *= 1.0 / (*counter)[i];
   }
@@ -1872,7 +1872,7 @@ void PoroPressureBased::PorofluidAlgorithm::set_velocity_field(
   if (nds_vel_ >= discret_->num_dof_sets())
     FOUR_C_THROW("Too few dofsets on poro fluid discretization!");
 
-  if (not vel->get_map().SameAs(discret_->dof_row_map(nds_vel_)->get_epetra_block_map()))
+  if (not vel->get_map().same_as(discret_->dof_row_map(nds_vel_)->get_epetra_block_map()))
     FOUR_C_THROW(
         "Map of given velocity and associated dof row map in poro fluid discretization"
         " do not match!");
@@ -1917,7 +1917,7 @@ void PoroPressureBased::PorofluidAlgorithm::set_initial_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
           // evaluate component k of spatial function
           double initialval = Global::Problem::instance()
                                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
@@ -2141,10 +2141,10 @@ void PoroPressureBased::PorofluidAlgorithm::fd_check()
   double maxabserr(0.);
   double maxrelerr(0.);
 
-  for (int colgid = 0; colgid <= sysmat_original->col_map().MaxAllGID(); ++colgid)
+  for (int colgid = 0; colgid <= sysmat_original->col_map().max_all_gid(); ++colgid)
   {
     // check whether current column index is a valid global column index and continue loop if not
-    int collid(sysmat_original->col_map().LID(colgid));
+    int collid(sysmat_original->col_map().lid(colgid));
     int maxcollid(-1);
     Core::Communication::max_all(&collid, &maxcollid, 1, discret_->get_comm());
     if (maxcollid < 0) continue;
@@ -2153,7 +2153,7 @@ void PoroPressureBased::PorofluidAlgorithm::fd_check()
     phinp_->update(1., phinp_original, 0.);
 
     // impose perturbation
-    if (phinp_->get_map().MyGID(colgid))
+    if (phinp_->get_map().my_gid(colgid))
       if (phinp_->sum_into_global_value(colgid, 0, fdcheckeps_))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
@@ -2175,10 +2175,10 @@ void PoroPressureBased::PorofluidAlgorithm::fd_check()
     // Note that we still need to evaluate the first comparison as well. For small entries in the
     // system matrix, the second comparison might yield good agreement in spite of the entries being
     // wrong!
-    for (int rowlid = 0; rowlid < discret_->dof_row_map()->NumMyElements(); ++rowlid)
+    for (int rowlid = 0; rowlid < discret_->dof_row_map()->num_my_elements(); ++rowlid)
     {
       // get global index of current matrix row
-      const int rowgid = sysmat_original->row_map().GID(rowlid);
+      const int rowgid = sysmat_original->row_map().gid(rowlid);
       if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
       // get relevant entry in current row of original system matrix
@@ -2191,7 +2191,7 @@ void PoroPressureBased::PorofluidAlgorithm::fd_check()
           rowlid, length, numentries, values.data(), indices.data());
       for (int ientry = 0; ientry < length; ++ientry)
       {
-        if (sysmat_original->col_map().GID(indices[ientry]) == colgid)
+        if (sysmat_original->col_map().gid(indices[ientry]) == colgid)
         {
           entry = values[ientry];
           break;

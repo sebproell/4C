@@ -66,10 +66,10 @@ namespace Core::DOFSets
     {
       int mymindof;
       if (minGID_ == -1)
-        mymindof = dofrowmap_->MinAllGID();
+        mymindof = dofrowmap_->min_all_gid();
       else
       {
-        int minall = dofrowmap_->MinAllGID();
+        int minall = dofrowmap_->min_all_gid();
         mymindof = (minGID_ <= minall) ? minGID_ : minall;
       }
       return mymindof;

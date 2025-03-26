@@ -45,9 +45,9 @@ void BeamInteraction::BeamCrosslinkerHandler::distribute_linker_to_bins(
     std::shared_ptr<Core::LinAlg::Map> const& linkerrowmap)
 {
   std::list<std::shared_ptr<Core::Nodes::Node>> homelesslinker;
-  for (int lid = 0; lid < linkerrowmap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < linkerrowmap->num_my_elements(); ++lid)
   {
-    Core::Nodes::Node* node = binstrategy_->bin_discret()->g_node(linkerrowmap->GID(lid));
+    Core::Nodes::Node* node = binstrategy_->bin_discret()->g_node(linkerrowmap->gid(lid));
     const double* currpos = node->x().data();
     place_node_correctly(Core::Utils::shared_ptr_from_ref(*node), currpos, homelesslinker);
   }
@@ -193,7 +193,7 @@ BeamInteraction::BeamCrosslinkerHandler::fill_linker_into_bins_remote_id_list(
 
     // 2) communication
     std::vector<int> unique_pidlist(uniquesize);
-    int err = binstrategy_->bin_discret()->element_row_map()->RemoteIDList(
+    int err = binstrategy_->bin_discret()->element_row_map()->remote_id_list(
         uniquesize, uniquevec_targetbinIdlist.data(), unique_pidlist.data(), nullptr);
     if (err < 0) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDList returned err={}", err);
 
@@ -541,7 +541,7 @@ std::shared_ptr<std::list<int>> BeamInteraction::BeamCrosslinkerHandler::transfe
         dynamic_cast<Core::FE::MeshFree::MeshfreeMultiBin*>(currlinker->elements()[0]);
     // as checked above, there is only one element in currele array
     const int binId = currbin->id();
-    const int rlid = binstrategy_->bin_discret()->element_row_map()->LID(binId);
+    const int rlid = binstrategy_->bin_discret()->element_row_map()->lid(binId);
 
     // if a bin has already been examined --> continue with next linker
     if (examinedbins[rlid]) continue;

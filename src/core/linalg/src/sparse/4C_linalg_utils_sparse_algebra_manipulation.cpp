@@ -24,8 +24,8 @@ void Core::LinAlg::export_to(
 {
   try
   {
-    const bool sourceunique = source.get_map().UniqueGIDs();
-    const bool targetunique = target.get_map().UniqueGIDs();
+    const bool sourceunique = source.get_map().unique_gids();
+    const bool targetunique = target.get_map().unique_gids();
 
     // both are unique, does not matter whether ex- or import
     if (sourceunique && targetunique && Core::Communication::num_mpi_ranks(source.Comm()) == 1 &&
@@ -34,11 +34,11 @@ void Core::LinAlg::export_to(
       if (source.NumVectors() != target.NumVectors())
         FOUR_C_THROW("number of vectors in source and target not the same!");
       for (int k = 0; k < source.NumVectors(); ++k)
-        for (int i = 0; i < target.get_map().NumMyElements(); ++i)
+        for (int i = 0; i < target.get_map().num_my_elements(); ++i)
         {
-          const int gid = target.get_map().GID(i);
+          const int gid = target.get_map().gid(i);
           if (gid < 0) FOUR_C_THROW("No gid for i");
-          const int lid = source.get_map().LID(gid);
+          const int lid = source.get_map().lid(gid);
           if (lid < 0) continue;
           // FOUR_C_THROW("No source for target");
           target(k)[i] = source(k)[lid];
@@ -68,9 +68,9 @@ void Core::LinAlg::export_to(
       // as this may give a non-unique answer depending on the proc which is asked
       const Core::LinAlg::Map& sourcemap = source.get_map();
       const Core::LinAlg::Map& targetmap = target.get_map();
-      for (int targetlid = 0; targetlid < targetmap.NumMyElements(); ++targetlid)
+      for (int targetlid = 0; targetlid < targetmap.num_my_elements(); ++targetlid)
       {
-        const int sourcelid = sourcemap.LID(targetmap.GID(targetlid));
+        const int sourcelid = sourcemap.lid(targetmap.gid(targetlid));
         if (sourcelid < 0)
           FOUR_C_THROW(
               "Export of non-unique source failed. Source data not available on target proc");
@@ -105,19 +105,19 @@ void Core::LinAlg::export_to(
 {
   try
   {
-    const bool sourceunique = source.get_map().UniqueGIDs();
-    const bool targetunique = target.get_map().UniqueGIDs();
+    const bool sourceunique = source.get_map().unique_gids();
+    const bool targetunique = target.get_map().unique_gids();
 
     // both are unique, does not matter whether ex- or import
     if (sourceunique && targetunique &&
         Core::Communication::num_mpi_ranks(source.get_comm()) == 1 &&
         Core::Communication::num_mpi_ranks(target.get_comm()) == 1)
     {
-      for (int i = 0; i < target.get_map().NumMyElements(); ++i)
+      for (int i = 0; i < target.get_map().num_my_elements(); ++i)
       {
-        const int gid = target.get_map().GID(i);
+        const int gid = target.get_map().gid(i);
         if (gid < 0) FOUR_C_THROW("No gid for i");
-        const int lid = source.get_map().LID(gid);
+        const int lid = source.get_map().lid(gid);
         if (lid < 0) continue;
         target[i] = source[lid];
       }
@@ -184,8 +184,8 @@ std::unique_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::extract_my_vector(
 void Core::LinAlg::extract_my_vector(
     const Core::LinAlg::Vector<double>& source, Core::LinAlg::Vector<double>& target)
 {
-  const int my_num_target_gids = target.get_map().NumMyElements();
-  const int* my_target_gids = target.get_map().MyGlobalElements();
+  const int my_num_target_gids = target.get_map().num_my_elements();
+  const int* my_target_gids = target.get_map().my_global_elements();
 
   double* target_values = target.get_values();
 
@@ -195,7 +195,7 @@ void Core::LinAlg::extract_my_vector(
   {
     const int target_gid = my_target_gids[tar_lid];
 
-    const int src_lid = source.get_map().LID(target_gid);
+    const int src_lid = source.get_map().lid(target_gid);
     // check if the target_map is a local sub-set of the source map on each proc
     if (src_lid == -1)
       FOUR_C_THROW("Couldn't find the target GID {} in the source map on proc {}.", target_gid,
@@ -225,12 +225,12 @@ std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::threshold_matrix(
 
     for (int i = 0; i < nnz_of_row; i++)
     {
-      const int global_row = A.row_map().GID(row);
-      const int col = A.col_map().LID(global_row);
+      const int global_row = A.row_map().gid(row);
+      const int col = A.col_map().lid(global_row);
 
       if (col == indices[i] || std::abs(values[i]) > std::abs(threshold))
       {
-        indices_thresh[nnz_thresh] = A.col_map().GID(indices[i]);
+        indices_thresh[nnz_thresh] = A.col_map().gid(indices[i]);
         values_thresh[nnz_thresh] = values[i];
         nnz_thresh++;
       }
@@ -240,7 +240,7 @@ std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::threshold_matrix(
     values_thresh.resize(nnz_thresh);
 
     A_thresh->insert_global_values(
-        A.row_map().GID(row), nnz_thresh, values_thresh.data(), indices_thresh.data());
+        A.row_map().gid(row), nnz_thresh, values_thresh.data(), indices_thresh.data());
   }
 
   A_thresh->complete(Map(A.domain_map()), A.range_map());
@@ -274,8 +274,8 @@ std::shared_ptr<Core::LinAlg::Graph> Core::LinAlg::threshold_matrix_graph(
     int* indices;
     A.extract_my_row_view(row, nnz_of_row, values, indices);
 
-    const int global_row = A.row_map().GID(row);
-    const int col = A.col_map().LID(global_row);
+    const int global_row = A.row_map().gid(row);
+    const int col = A.col_map().lid(global_row);
 
     const double Dk = D[col] > 0.0 ? D[col] : 1.0;
     std::vector<int> indices_new;
@@ -284,7 +284,7 @@ std::shared_ptr<Core::LinAlg::Graph> Core::LinAlg::threshold_matrix_graph(
     {
       if (col == indices[i] ||
           std::abs(std::sqrt(Dk) * values[i] * std::sqrt(Dk)) > std::abs(threshold))
-        indices_new.emplace_back(A.col_map().GID(indices[i]));
+        indices_new.emplace_back(A.col_map().gid(indices[i]));
     }
 
     sparsity_pattern->insert_global_indices(global_row, indices_new.size(), indices_new.data());
@@ -393,10 +393,10 @@ void Core::LinAlg::split_matrix2x2(
   Core::LinAlg::Vector<double> dselector(Map(ASparse.domain_map()));
   for (int i = 0; i < dselector.local_length(); ++i)
   {
-    const int gid = ASparse.domain_map().GID(i);
-    if (A11dmap.MyGID(gid))
+    const int gid = ASparse.domain_map().gid(i);
+    if (A11dmap.my_gid(gid))
       dselector[i] = 0.;
-    else if (A22dmap.MyGID(gid))
+    else if (A22dmap.my_gid(gid))
       dselector[i] = 1.;
     else
       dselector[i] = -1.;
@@ -417,7 +417,7 @@ void Core::LinAlg::split_matrix2x2(
     int count1 = 0;
     int count2 = 0;
     const int grid = ASparse.global_row_index(i);
-    if (!A11rmap.MyGID(grid) && !A22rmap.MyGID(grid)) continue;
+    if (!A11rmap.my_gid(grid) && !A22rmap.my_gid(grid)) continue;
     int numentries;
     double* values;
     int* cindices;
@@ -425,7 +425,7 @@ void Core::LinAlg::split_matrix2x2(
     if (err) FOUR_C_THROW("ExtractMyRowView returned {}", err);
     for (int j = 0; j < numentries; ++j)
     {
-      const int gcid = ASparse.col_map().GID(cindices[j]);
+      const int gcid = ASparse.col_map().gid(cindices[j]);
       FOUR_C_ASSERT(cindices[j] < selector.local_length(), "Internal error");
       // column is in A*1
       if (selector[cindices[j]] == 0.)
@@ -442,7 +442,7 @@ void Core::LinAlg::split_matrix2x2(
       else
         FOUR_C_THROW("Could not identify column index with block, internal error.");
     }
-    if (A11rmap.MyGID(grid))
+    if (A11rmap.my_gid(grid))
     {
       if (count1) err1 = A11.insert_global_values(grid, count1, gvalues1.data(), gcindices1.data());
       if (count2) err2 = A12.insert_global_values(grid, count2, gvalues2.data(), gcindices2.data());
@@ -482,12 +482,12 @@ void Core::LinAlg::split_matrixmxn(
   Core::LinAlg::Vector<double> dselector(Core::LinAlg::Map(ASparse.domain_map()));
   for (int collid = 0; collid < dselector.local_length(); ++collid)
   {
-    const int colgid = ASparse.domain_map().GID(collid);
+    const int colgid = ASparse.domain_map().gid(collid);
     if (colgid < 0) FOUR_C_THROW("Couldn't find local column ID {} in domain map!", collid);
 
     for (int n = 0; n < N; ++n)
     {
-      if (ABlock.domain_map(n).MyGID(colgid))
+      if (ABlock.domain_map(n).my_gid(colgid))
       {
         dselector[collid] = n;
         break;
@@ -519,7 +519,7 @@ void Core::LinAlg::split_matrixmxn(
       if (collid >= selector.local_length()) FOUR_C_THROW("Invalid local column ID {}!", collid);
 
       const int blockid = static_cast<int>(selector[collid]);
-      colgids[blockid][counters[blockid]] = ASparse.col_map().GID(collid);
+      colgids[blockid][counters[blockid]] = ASparse.col_map().gid(collid);
       rowvalues[blockid][counters[blockid]++] = values[j];
     }
 
@@ -528,7 +528,7 @@ void Core::LinAlg::split_matrixmxn(
 
     for (m = 0; m < M; ++m)
     {
-      if (ABlock.range_map(m).MyGID(rowgid))
+      if (ABlock.range_map(m).my_gid(rowgid))
       {
         for (int n = 0; n < N; ++n)
         {
@@ -553,8 +553,8 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
 {
   if (mat.filled()) return -1;
 
-  const int my_num_entries = diag.get_map().NumMyElements();
-  const int* my_gids = diag.get_map().MyGlobalElements();
+  const int my_num_entries = diag.get_map().num_my_elements();
+  const int* my_gids = diag.get_map().my_global_elements();
 
   double* diag_values = diag.get_values();
 
@@ -563,7 +563,7 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
     const int rgid = my_gids[lid];
 
     // skip rows which are not part of the matrix
-    if (not mat.range_map().MyGID(rgid))
+    if (not mat.range_map().my_gid(rgid))
       FOUR_C_THROW(
           "Could not find the row GID {} in the destination matrix RowMap"
           " on proc {}.",
@@ -598,15 +598,15 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
 std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::split_map(
     const Core::LinAlg::Map& Amap, const Core::LinAlg::Map& Agiven)
 {
-  MPI_Comm Comm = Amap.Comm();
+  MPI_Comm Comm = Amap.get_comm();
   const Core::LinAlg::Map& Ag = Agiven;
 
   int count = 0;
-  std::vector<int> myaugids(Amap.NumMyElements());
-  for (int i = 0; i < Amap.NumMyElements(); ++i)
+  std::vector<int> myaugids(Amap.num_my_elements());
+  for (int i = 0; i < Amap.num_my_elements(); ++i)
   {
-    const int gid = Amap.GID(i);
-    if (Ag.MyGID(gid)) continue;
+    const int gid = Amap.gid(i);
+    if (Ag.my_gid(gid)) continue;
     myaugids[count] = gid;
     ++count;
   }
@@ -628,32 +628,32 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::merge_map(
   // check for unique GIDs and for identity
   // if ((!map1.UniqueGIDs()) || (!map2.UniqueGIDs()))
   //  FOUR_C_THROW("Core::LinAlg::merge_map: One or both input maps are not unique");
-  if (map1.SameAs(map2))
+  if (map1.same_as(map2))
   {
-    if ((overlap == false) && map1.NumGlobalElements() > 0)
+    if ((overlap == false) && map1.num_global_elements() > 0)
       FOUR_C_THROW("Core::LinAlg::merge_map: Result map is overlapping");
     else
       return std::make_shared<Core::LinAlg::Map>(map1);
   }
 
-  std::vector<int> mygids(map1.NumMyElements() + map2.NumMyElements());
-  int count = map1.NumMyElements();
+  std::vector<int> mygids(map1.num_my_elements() + map2.num_my_elements());
+  int count = map1.num_my_elements();
 
   // get GIDs of input map1
-  for (int i = 0; i < count; ++i) mygids[i] = map1.GID(i);
+  for (int i = 0; i < count; ++i) mygids[i] = map1.gid(i);
 
   // add GIDs of input map2 (only new ones)
-  for (int i = 0; i < map2.NumMyElements(); ++i)
+  for (int i = 0; i < map2.num_my_elements(); ++i)
   {
     // check for overlap
-    if (map1.MyGID(map2.GID(i)))
+    if (map1.my_gid(map2.gid(i)))
     {
       if (overlap == false) FOUR_C_THROW("Core::LinAlg::merge_map: Result map is overlapping");
     }
     // add new GIDs to mygids
     else
     {
-      mygids[count] = map2.GID(i);
+      mygids[count] = map2.gid(i);
       ++count;
     }
   }
@@ -662,7 +662,8 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::merge_map(
   // sort merged map
   sort(mygids.begin(), mygids.end());
 
-  return std::make_shared<Core::LinAlg::Map>(-1, (int)mygids.size(), mygids.data(), 0, map1.Comm());
+  return std::make_shared<Core::LinAlg::Map>(
+      -1, (int)mygids.size(), mygids.data(), 0, map1.get_comm());
 }
 
 /*----------------------------------------------------------------------*
@@ -691,20 +692,20 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::intersect_map(
     const Core::LinAlg::Map& map1, const Core::LinAlg::Map& map2)
 {
   // check if the maps are identical
-  if (map1.SameAs(map2))
+  if (map1.same_as(map2))
   {
     return std::make_shared<Core::LinAlg::Map>(map1);
   }
 
-  std::vector<int> mygids(std::min(map1.NumMyElements(), map2.NumMyElements()), -1);
+  std::vector<int> mygids(std::min(map1.num_my_elements(), map2.num_my_elements()), -1);
   int count = 0;
 
-  for (int i = 0; i < map1.NumMyElements(); ++i)
+  for (int i = 0; i < map1.num_my_elements(); ++i)
   {
     // check for intersecting gids
-    if (map2.MyGID(map1.GID(i)))
+    if (map2.my_gid(map1.gid(i)))
     {
-      mygids[count] = map1.GID(i);
+      mygids[count] = map1.gid(i);
       ++count;
     }
   }
@@ -713,7 +714,8 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::intersect_map(
   // sort merged map
   sort(mygids.begin(), mygids.end());
 
-  return std::make_shared<Core::LinAlg::Map>(-1, (int)mygids.size(), mygids.data(), 0, map1.Comm());
+  return std::make_shared<Core::LinAlg::Map>(
+      -1, (int)mygids.size(), mygids.data(), 0, map1.get_comm());
 }
 
 /*----------------------------------------------------------------------*

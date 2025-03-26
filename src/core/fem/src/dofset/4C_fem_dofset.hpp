@@ -132,7 +132,7 @@ namespace Core::DOFSets
       int lid = node->lid();
       if (lid == -1) return -1;
       if (pccdofhandling_)
-        return dofscolnodes_->GID((*shiftcolnodes_)[lid] + dof);
+        return dofscolnodes_->gid((*shiftcolnodes_)[lid] + dof);
       else
         return (*idxcolnodes_)[lid] + dof;
     }
@@ -158,7 +158,7 @@ namespace Core::DOFSets
       for (unsigned i = 0; i < dof.size(); ++i)
       {
         if (pccdofhandling_)
-          dof[i] = dofscolnodes_->GID((*shiftcolnodes_)[lid] + i);
+          dof[i] = dofscolnodes_->gid((*shiftcolnodes_)[lid] + i);
         else
           dof[i] = idx + i;
       }
@@ -200,7 +200,7 @@ namespace Core::DOFSets
       for (int i = 0; i < size; ++i)
       {
         if (pccdofhandling_)
-          lm.push_back(dofscolnodes_->GID((*shiftcolnodes_)[lid] + i));
+          lm.push_back(dofscolnodes_->gid((*shiftcolnodes_)[lid] + i));
         else
           lm.push_back(idx + i);
       }
@@ -220,7 +220,7 @@ namespace Core::DOFSets
       for (int i = 0; i < size; ++i)
       {
         if (pccdofhandling_)
-          lm[startindex + i] = dofscolnodes_->GID((*shiftcolnodes_)[lid] + i);
+          lm[startindex + i] = dofscolnodes_->gid((*shiftcolnodes_)[lid] + i);
         else
           lm[startindex + i] = idx + i;
       }
@@ -255,7 +255,7 @@ namespace Core::DOFSets
       for (int i = 0; i < size; ++i)
       {
         if (pccdofhandling_)
-          lm.push_back(dofscolnodes_->GID((*shiftcolnodes_)[lid] + i));
+          lm.push_back(dofscolnodes_->gid((*shiftcolnodes_)[lid] + i));
         else
           lm.push_back(idx + i);
       }

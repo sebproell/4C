@@ -241,7 +241,7 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
     // do only nodes in my row map
     Core::Nodes::Node* actnode = nullptr;
     bool isrow = true;
-    int nlid = discret.node_row_map()->LID((*nodeids)[i]);
+    int nlid = discret.node_row_map()->lid((*nodeids)[i]);
     if (nlid < 0)
     {
       // just skip this node, if we are not interested in column information
@@ -256,7 +256,7 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
             "Sorry! The given discretization is of wrong type. There is "
             "probably no column information available!");
 
-      nlid = dis_ptr->node_col_map()->LID((*nodeids)[i]);
+      nlid = dis_ptr->node_col_map()->lid((*nodeids)[i]);
 
       // node not on this processor -> next node
       if (nlid < 0) continue;
@@ -299,7 +299,7 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
       const int gid = dofs[j];
 
       // get corresponding lid
-      const int lid = info.toggle.get_map().LID(gid);
+      const int lid = info.toggle.get_map().lid(gid);
       if (lid < 0)
         FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
             Core::Communication::my_mpi_rank(discret.get_comm()));
@@ -485,7 +485,7 @@ void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& 
   for (unsigned i = 0; i < nnode; ++i)
   {
     // do only nodes in my row map
-    const int nlid = discret.node_row_map()->LID((*nodeids)[i]);
+    const int nlid = discret.node_row_map()->lid((*nodeids)[i]);
     if (nlid < 0) continue;
     Core::Nodes::Node* actnode = discret.l_row_node(nlid);
 
@@ -514,7 +514,7 @@ void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& 
       // get dof gid
       const int gid = dofs[j];
       // get corresponding lid
-      const int lid = toggle.get_map().LID(gid);
+      const int lid = toggle.get_map().lid(gid);
       if (lid < 0)
         FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
             Core::Communication::my_mpi_rank(discret.get_comm()));
@@ -582,7 +582,7 @@ void Core::FE::Utils::Dbc::build_dbc_map_extractor(const Core::FE::Discretizatio
     myglobalelements = dbcgidsv.data();
   }
   std::shared_ptr<Core::LinAlg::Map> dbcmap = std::make_shared<Core::LinAlg::Map>(-1, nummyelements,
-      myglobalelements, discret.dof_row_map()->IndexBase(), discret.dof_row_map()->Comm());
+      myglobalelements, discret.dof_row_map()->index_base(), discret.dof_row_map()->get_comm());
   // build the map extractor of Dirichlet-conditioned and free DOFs
   dbcmapextractor->setup(*(discret.dof_row_map()), dbcmap);
 }

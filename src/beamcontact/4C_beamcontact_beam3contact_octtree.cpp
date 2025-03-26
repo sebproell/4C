@@ -219,7 +219,7 @@ std::vector<int> Beam3ContactOctTree::in_which_octant_lies(const int& thisBBoxID
 {
   std::vector<int> octants;
   octants.clear();
-  int bboxcolid = searchdis_.element_col_map()->LID(thisBBoxID);
+  int bboxcolid = searchdis_.element_col_map()->lid(thisBBoxID);
   int i = 0;
   while ((*bbox2octant_)(i)[bboxcolid] >= 0.0)
   {
@@ -302,7 +302,7 @@ bool Beam3ContactOctTree::intersect_b_boxes_with(
             {
               for (int k = 0; k < (int)nodeLID.numRows(); k++)
               {
-                if (searchdis_.node_col_map()->LID(
+                if (searchdis_.node_col_map()->lid(
                         searchdis_.g_element(bboxinoct[0])->node_ids()[j]) == (int)nodeLID(k, 0))
                 {
                   sharednode = true;
@@ -431,7 +431,7 @@ void Beam3ContactOctTree::initialize_octree_search()
       break;
     default:
     {
-      for (int i = 0; i < searchdis_.element_col_map()->NumMyElements(); i++)
+      for (int i = 0; i < searchdis_.element_col_map()->num_my_elements(); i++)
       {
         Core::Elements::Element* element = searchdis_.l_col_element(i);
         const Core::Elements::ElementType& eot = element->element_type();
@@ -487,11 +487,11 @@ void Beam3ContactOctTree::create_bounding_boxes(
 #endif
   // Get Nodes from discretization....................
   // build bounding boxes according to input parameter
-  for (int elecolid = 0; elecolid < searchdis_.element_col_map()->NumMyElements(); elecolid++)
+  for (int elecolid = 0; elecolid < searchdis_.element_col_map()->num_my_elements(); elecolid++)
   {
-    int elegid = searchdis_.element_col_map()->GID(elecolid);
+    int elegid = searchdis_.element_col_map()->gid(elecolid);
     // only do stuff for Row Elements
-    if (searchdis_.element_row_map()->LID(elegid) > -1)
+    if (searchdis_.element_row_map()->lid(elegid) > -1)
     {
       // get the element with local ID (LID) elecolid
       Core::Elements::Element* element = searchdis_.l_col_element(elecolid);
@@ -610,10 +610,10 @@ void Beam3ContactOctTree::create_aabb(Core::LinAlg::SerialDenseMatrix& coord, co
   // factor by which the box is extruded in each dimension
   double extrusionvalue = get_bounding_box_extrusion_value();
 
-  if (elecolid < 0 || elecolid >= searchdis_.element_col_map()->NumMyElements())
+  if (elecolid < 0 || elecolid >= searchdis_.element_col_map()->num_my_elements())
     FOUR_C_THROW("Given Element Column Map ID is {} !", elecolid);
 
-  int elegid = searchdis_.element_col_map()->GID(elecolid);
+  int elegid = searchdis_.element_col_map()->gid(elecolid);
 
   // make the bounding box continuous
   std::vector<int> cut(3, 0);
@@ -722,7 +722,7 @@ void Beam3ContactOctTree::create_cobb(Core::LinAlg::SerialDenseMatrix& coord, co
   double extrusionvalue = get_bounding_box_extrusion_value();
 
 
-  int elegid = searchdis_.element_col_map()->GID(elecolid);
+  int elegid = searchdis_.element_col_map()->gid(elecolid);
 
   // directional vector (of the non-interrupted bounding box/ beam element
   Core::LinAlg::Matrix<3, 1> dir;
@@ -826,7 +826,7 @@ void Beam3ContactOctTree::create_spbb(Core::LinAlg::SerialDenseMatrix& coord, co
   // Note: diameter_ is used as the sphere diameter in the context of SPBBs
   double extrusionvalue = get_bounding_box_extrusion_value();
 
-  int elegid = searchdis_.element_col_map()->GID(elecolid);
+  int elegid = searchdis_.element_col_map()->gid(elecolid);
 
   // get the element with local ID (LID) elecolid
   Core::Elements::Element* element = searchdis_.l_col_element(elecolid);
@@ -1115,7 +1115,7 @@ void Beam3ContactOctTree::locate_box(std::vector<std::vector<double>>& allbboxes
     for (int i = 0; i < (int)allbboxesstdvec.size(); i++)
     {
       int lid =
-          searchdis_.element_col_map()->LID((int)allbboxesstdvec[i][allbboxesstdvec[i].size() - 1]);
+          searchdis_.element_col_map()->lid((int)allbboxesstdvec[i][allbboxesstdvec[i].size() - 1]);
       if (periodic_bc_) numshifts = (*numshifts_)[lid];
 
       for (int shift = 0; shift < numshifts + 1; shift++)
@@ -1186,7 +1186,7 @@ void Beam3ContactOctTree::locate_box(std::vector<std::vector<double>>& allbboxes
           int bboxgid = (int)bboxsubset[m][(int)bboxsubset[m].size() - 1];
           boxids.push_back(bboxgid);
           // assign current octant number to the bounding box
-          int collid = searchdis_.element_col_map()->LID(bboxgid);
+          int collid = searchdis_.element_col_map()->lid(bboxgid);
           // std::cout<<"Collid = "<<collid<<std::endl;
           bbox2octant[collid].push_back((int)bboxesinoctants.size());
         }
@@ -1530,8 +1530,8 @@ void Beam3ContactOctTree::bounding_box_intersection(
     // if(!Core::Communication::my_mpi_rank(discret_.Comm()))
     // std::cout << std::scientific << (*it).first <<"  "<< ((*it).second)[0]<<" "<<
     // ((*it).second)[1]<<std::endl;
-    int collid1 = searchdis_.element_col_map()->LID(((*it).second)[0]);
-    int collid2 = searchdis_.element_col_map()->LID(((*it).second)[1]);
+    int collid1 = searchdis_.element_col_map()->lid(((*it).second)[0]);
+    int collid2 = searchdis_.element_col_map()->lid(((*it).second)[1]);
     Core::Elements::Element* tempele1 = searchdis_.l_col_element(collid1);
     Core::Elements::Element* tempele2 = searchdis_.l_col_element(collid2);
     // matrices to store nodal coordinates
@@ -1590,8 +1590,8 @@ bool Beam3ContactOctTree::intersection_aabb(
   // translate box / element GIDs to ElementColMap()-LIDs
   // note: GID and ColumnMap LID are usually the same except for crosslinker elements from
   // statistical mechanics
-  int entry1 = searchdis_.element_col_map()->LID(bboxIDs[0]);
-  int entry2 = searchdis_.element_col_map()->LID(bboxIDs[1]);
+  int entry1 = searchdis_.element_col_map()->lid(bboxIDs[0]);
+  int entry2 = searchdis_.element_col_map()->lid(bboxIDs[1]);
 
   // Initialization....................
   double a_xmin, a_xmax, a_ymin, a_ymax, a_zmin, a_zmax;
@@ -1653,8 +1653,8 @@ bool Beam3ContactOctTree::intersection_cobb(
   bool intersection = false;
 
 
-  int bboxid0 = searchdis_.element_col_map()->LID(bboxIDs[0]);
-  int bboxid1 = searchdis_.element_col_map()->LID(bboxIDs[1]);
+  int bboxid0 = searchdis_.element_col_map()->lid(bboxIDs[0]);
+  int bboxid1 = searchdis_.element_col_map()->lid(bboxIDs[1]);
 
   // In case of a hypothetical BB, simply take the last beam element's diameter (does the job for
   // now)
@@ -1765,8 +1765,8 @@ bool Beam3ContactOctTree::intersection_spbb(
   // element
   if (bboxlimits != nullptr) FOUR_C_THROW("Not in use!");
 
-  int bboxid0 = searchdis_.element_col_map()->LID(bboxIDs[0]);
-  int bboxid1 = searchdis_.element_col_map()->LID(bboxIDs[1]);
+  int bboxid0 = searchdis_.element_col_map()->lid(bboxIDs[0]);
+  int bboxid1 = searchdis_.element_col_map()->lid(bboxIDs[1]);
 
   int numshifts_bbox0 = 0;
   int numshifts_bbox1 = 0;
@@ -1810,10 +1810,8 @@ void Beam3ContactOctTree::communicate_vector(Core::LinAlg::Vector<double>& InVec
    * on all processors. */
 
   // first, export the values of OutVec on Proc 0 to InVecs of all participating processors
-  Epetra_Export exporter(
-      OutVec.get_map().get_epetra_block_map(), InVec.get_map().get_epetra_block_map());
-  Epetra_Import importer(
-      OutVec.get_map().get_epetra_block_map(), InVec.get_map().get_epetra_block_map());
+  Epetra_Export exporter(OutVec.get_map().get_epetra_map(), InVec.get_map().get_epetra_block_map());
+  Epetra_Import importer(OutVec.get_map().get_epetra_map(), InVec.get_map().get_epetra_block_map());
   if (doexport)
   {
     // zero out all vectors which are not Proc 0. Then, export Proc 0 data to InVec map.

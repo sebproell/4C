@@ -965,8 +965,8 @@ void TSI::Monolithic::set_dof_row_maps()
   vecSpaces.push_back(structure_field()->dof_row_map(0));
   vecSpaces.push_back(thermo_field()->dof_row_map(0));
 
-  if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No structure equation. Panic.");
-  if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No temperature equation. Panic.");
+  if (vecSpaces[0]->num_global_elements() == 0) FOUR_C_THROW("No structure equation. Panic.");
+  if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No temperature equation. Panic.");
 
   std::shared_ptr<Core::LinAlg::Map> fullmap =
       Core::LinAlg::MultiMapExtractor::merge_maps(vecSpaces);
@@ -2351,7 +2351,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
     {
       int gid = (*nodeids_withdbc)[k];
       // do only nodes which are in my discretisation
-      if (structure_field()->discretization()->node_row_map()->MyGID(gid) == false) continue;
+      if (structure_field()->discretization()->node_row_map()->my_gid(gid) == false) continue;
 
       // -------------------- evaluation in special direction, here z-direction
       // get node with global id gid
@@ -2421,7 +2421,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
       structure_field()->discretization()->get_comm());
 
   // extract axial displacements (here z-displacements) of top surface
-  if (structure_field()->discretization()->dof_row_map()->MyGID(one_dof_in_dbc_global.at(0)))
+  if (structure_field()->discretization()->dof_row_map()->my_gid(one_dof_in_dbc_global.at(0)))
   {
     top_disp_local =
         Core::FE::extract_values(*(structure_field()->dispnp()), one_dof_in_dbc_global);
@@ -2440,7 +2440,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   // i.e. displacement-DOFs of the xy-plane in the middle of the body
   std::vector<int> necking_radius_dof(1);
   necking_radius_dof.at(0) = -1.;
-  for (int k = 0; k < (int)structure_field()->discretization()->node_row_map()->NumMyElements();
+  for (int k = 0; k < (int)structure_field()->discretization()->node_row_map()->num_my_elements();
       k++)
   {
     Core::Nodes::Node* node = structure_field()->discretization()->l_row_node(k);
@@ -2478,7 +2478,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   // A (6.413mm / 0.0mm / 13.3335mm)
   std::vector<int> neck_temperature_dof(1);
   neck_temperature_dof.at(0) = -1.0;
-  for (int k = 0; k < (int)thermo_field()->discretization()->node_row_map()->NumMyElements(); k++)
+  for (int k = 0; k < (int)thermo_field()->discretization()->node_row_map()->num_my_elements(); k++)
   {
     Core::Nodes::Node* node = thermo_field()->discretization()->l_row_node(k);
     // change here value for different geometries
@@ -2510,7 +2510,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   // B (6.413mm / 0.0mm / -13.3335mm)
   std::vector<int> top_temperature_dof(1);
   top_temperature_dof.at(0) = -1.0;
-  for (int k = 0; k < (int)thermo_field()->discretization()->node_row_map()->NumMyElements(); k++)
+  for (int k = 0; k < (int)thermo_field()->discretization()->node_row_map()->num_my_elements(); k++)
   {
     Core::Nodes::Node* node = thermo_field()->discretization()->l_row_node(k);
     // change here value for different geometries

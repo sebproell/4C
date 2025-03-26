@@ -475,25 +475,25 @@ namespace FLD
         const int pos = loc[2] + nummodes_ * (loc[1] + nummodes_ * loc[0]);
 
         // get local dof id corresponding to the global id
-        int lid = discret_->dof_row_map()->LID(dofs[0]);
+        int lid = discret_->dof_row_map()->lid(dofs[0]);
         // set value
         if (forcing_type_ == Inpar::FLUID::linear_compensation_from_intermediate_spectrum or
             (forcing_type_ == Inpar::FLUID::fixed_power_input and (not is_genalpha_)))
         {
           (local_u1)[pos] = (*velnp_)[lid];
           // analogously for remaining directions
-          lid = discret_->dof_row_map()->LID(dofs[1]);
+          lid = discret_->dof_row_map()->lid(dofs[1]);
           (local_u2)[pos] = (*velnp_)[lid];
-          lid = discret_->dof_row_map()->LID(dofs[2]);
+          lid = discret_->dof_row_map()->lid(dofs[2]);
           (local_u3)[pos] = (*velnp_)[lid];
         }
         else
         {
           (local_u1)[pos] = (*velaf_)[lid];
           // analogously for remaining directions
-          lid = discret_->dof_row_map()->LID(dofs[1]);
+          lid = discret_->dof_row_map()->lid(dofs[1]);
           (local_u2)[pos] = (*velaf_)[lid];
-          lid = discret_->dof_row_map()->LID(dofs[2]);
+          lid = discret_->dof_row_map()->lid(dofs[2]);
           (local_u3)[pos] = (*velaf_)[lid];
         }
       }
@@ -904,24 +904,24 @@ namespace FLD
         const int pos = loc[2] + nummodes_ * (loc[1] + nummodes_ * loc[0]);
 
         // get local dof id corresponding to the global id
-        int lid = discret_->dof_row_map()->LID(dofs[0]);
+        int lid = discret_->dof_row_map()->lid(dofs[0]);
         // set value
         if (not is_genalpha_)
         {
           (local_u1)[pos] = (*velnp_)[lid];
           // analogously for remaining directions
-          lid = discret_->dof_row_map()->LID(dofs[1]);
+          lid = discret_->dof_row_map()->lid(dofs[1]);
           (local_u2)[pos] = (*velnp_)[lid];
-          lid = discret_->dof_row_map()->LID(dofs[2]);
+          lid = discret_->dof_row_map()->lid(dofs[2]);
           (local_u3)[pos] = (*velnp_)[lid];
         }
         else
         {
           (local_u1)[pos] = (*velaf_)[lid];
           // analogously for remaining directions
-          lid = discret_->dof_row_map()->LID(dofs[1]);
+          lid = discret_->dof_row_map()->lid(dofs[1]);
           (local_u2)[pos] = (*velaf_)[lid];
-          lid = discret_->dof_row_map()->LID(dofs[2]);
+          lid = discret_->dof_row_map()->lid(dofs[2]);
           (local_u3)[pos] = (*velaf_)[lid];
         }
       }
@@ -1072,13 +1072,13 @@ namespace FLD
         const int pos = loc[2] + nummodes_ * (loc[1] + nummodes_ * loc[0]);
 
         // get local dof id corresponding to the global id
-        int lid = discret_->dof_row_map()->LID(dofs[0]);
+        int lid = discret_->dof_row_map()->lid(dofs[0]);
         // set value
         int err = forcing_->replace_local_values(1, &((f1)[pos]), &lid);
         // analogous for remaining directions
-        lid = discret_->dof_row_map()->LID(dofs[1]);
+        lid = discret_->dof_row_map()->lid(dofs[1]);
         err = forcing_->replace_local_values(1, &((f2)[pos]), &lid);
-        lid = discret_->dof_row_map()->LID(dofs[2]);
+        lid = discret_->dof_row_map()->lid(dofs[2]);
         err = forcing_->replace_local_values(1, &((f3)[pos]), &lid);
         if (err > 0) FOUR_C_THROW("Could not set forcing!");
       }
@@ -1952,7 +1952,7 @@ namespace FLD
           FOUR_C_ASSERT(
               localDofs.size() == static_cast<std::size_t>(elevec1.numRows()), "Internal error");
           for (unsigned int i = 0; i < localDofs.size(); ++i)
-            localDofs[i] = intdofrowmap->LID(localDofs[i]);
+            localDofs[i] = intdofrowmap->lid(localDofs[i]);
           forcing_->replace_local_values(localDofs.size(), elevec1.values(), localDofs.data());
         }
       }
@@ -2034,7 +2034,7 @@ namespace FLD
     Core::LinAlg::MultiVector<double> massflvecneg(*elementrowmap, 1, true);
 
     // take into account negative mass flux at the inflow
-    for (int i = 0; i < discret_->element_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < discret_->element_row_map()->num_my_elements(); ++i)
     {
       double locflow = ((massflvec)(0))[i];
       if (locflow < -1.0e-9)
@@ -2067,15 +2067,15 @@ namespace FLD
     // now insert values in vector
     forcing_->put_scalar(0.0);
 
-    for (int i = 0; i < discret_->node_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < discret_->node_row_map()->num_my_elements(); ++i)
     {
-      int gid = discret_->node_row_map()->GID(i);
+      int gid = discret_->node_row_map()->gid(i);
       Core::Nodes::Node* node = discret_->g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node");
 
       int firstgdofid = discret_->dof(0, node, 0);
 
-      int firstldofid = forcing_->get_map().LID(firstgdofid);
+      int firstldofid = forcing_->get_map().lid(firstgdofid);
 
       int err = forcing_->replace_local_value(firstldofid, 0, newforce);
       if (err != 0) FOUR_C_THROW("something went wrong during replacemyvalue");

@@ -392,15 +392,15 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
             systemmatrix->un_complete();
 
             // loop over all slave-side rows of system matrix
-            for (int slavedoflid = 0; slavedoflid < icoup_->slave_dof_map()->NumMyElements();
+            for (int slavedoflid = 0; slavedoflid < icoup_->slave_dof_map()->num_my_elements();
                 ++slavedoflid)
             {
               // determine global ID of current matrix row
-              const int slavedofgid = icoup_->slave_dof_map()->GID(slavedoflid);
+              const int slavedofgid = icoup_->slave_dof_map()->gid(slavedoflid);
               if (slavedofgid < 0) FOUR_C_THROW("Couldn't find local ID {} in map!", slavedoflid);
 
               // determine global ID of associated master-side matrix column
-              const int masterdofgid = icoup_->perm_master_dof_map()->GID(slavedoflid);
+              const int masterdofgid = icoup_->perm_master_dof_map()->gid(slavedoflid);
               if (masterdofgid < 0)
                 FOUR_C_THROW("Couldn't find local ID {} in permuted map!", slavedoflid);
 
@@ -537,16 +537,16 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
         Core::LinAlg::Vector<double> residualslave(*icoup_->slave_dof_map());
 
         // loop over all slave-side entries of residual vector
-        for (int slavedoflid = 0; slavedoflid < icoup_->slave_dof_map()->NumMyElements();
+        for (int slavedoflid = 0; slavedoflid < icoup_->slave_dof_map()->num_my_elements();
             ++slavedoflid)
         {
           // determine global ID of current vector entry
-          const int slavedofgid = icoup_->slave_dof_map()->GID(slavedoflid);
+          const int slavedofgid = icoup_->slave_dof_map()->gid(slavedoflid);
           if (slavedofgid < 0) FOUR_C_THROW("Couldn't find local ID {} in map!", slavedoflid);
 
           // copy current vector entry into temporary vector
           if (residualslave.replace_global_value(slavedofgid, 0,
-                  (*scatratimint_->residual())[scatratimint_->dof_row_map()->LID(slavedofgid)]))
+                  (*scatratimint_->residual())[scatratimint_->dof_row_map()->lid(slavedofgid)]))
             FOUR_C_THROW(
                 "Cannot insert residual vector entry with global ID {} into temporary vector!",
                 slavedofgid);
@@ -1686,11 +1686,11 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_nts(
   const Core::LinAlg::Map& noderowmap_slave = islavenodestomasterelements.get_map();
 
   // loop over all slave-side nodes
-  for (int inode = 0; inode < noderowmap_slave.NumMyElements(); ++inode)
+  for (int inode = 0; inode < noderowmap_slave.num_my_elements(); ++inode)
   {
     // extract slave-side node
     auto* const slavenode =
-        dynamic_cast<Mortar::Node* const>(idiscret.g_node(noderowmap_slave.GID(inode)));
+        dynamic_cast<Mortar::Node* const>(idiscret.g_node(noderowmap_slave.gid(inode)));
     if (slavenode == nullptr) FOUR_C_THROW("Couldn't extract slave-side node from discretization!");
 
     // extract first slave-side element associated with current slave-side node
@@ -1757,11 +1757,11 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_mortar_elements(const Core::LinAlg::
       vector1_side, systemvector2, vector2_side);
 
   // loop over all mortar elements
-  for (int ielement = 0; ielement < ielecolmap.NumMyElements(); ++ielement)
+  for (int ielement = 0; ielement < ielecolmap.num_my_elements(); ++ielement)
   {
     // extract current mortar element
     auto* const element =
-        dynamic_cast<Mortar::Element* const>(idiscret.g_element(ielecolmap.GID(ielement)));
+        dynamic_cast<Mortar::Element* const>(idiscret.g_element(ielecolmap.gid(ielement)));
     if (!element) FOUR_C_THROW("Couldn't extract mortar element from mortar discretization!");
 
     // construct location array for current mortar element
@@ -2264,10 +2264,10 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
         if (couplingtype_ != Inpar::S2I::coupling_nts_standard)
         {
           // provide each slave-side mortar element with material of corresponding parent element
-          for (int iele = 0; iele < interface.slave_col_elements()->NumMyElements(); ++iele)
+          for (int iele = 0; iele < interface.slave_col_elements()->num_my_elements(); ++iele)
           {
             // determine global ID of current slave-side mortar element
-            const int elegid = interface.slave_col_elements()->GID(iele);
+            const int elegid = interface.slave_col_elements()->gid(iele);
 
             // add material
             idiscret.g_element(elegid)->set_material(
@@ -2282,12 +2282,12 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           // assign physical implementation type to each slave-side mortar element by copying the
           // physical implementation type of the corresponding parent volume element
           Core::LinAlg::Vector<int> impltypes_row(*interface.slave_row_elements());
-          for (int iele = 0; iele < interface.slave_row_elements()->NumMyElements(); ++iele)
+          for (int iele = 0; iele < interface.slave_row_elements()->num_my_elements(); ++iele)
           {
             impltypes_row[iele] = dynamic_cast<const Discret::Elements::Transport*>(
                 std::dynamic_pointer_cast<const Core::Elements::FaceElement>(
                     kinetics_slave_cond.second->geometry().at(
-                        interface.slave_row_elements()->GID(iele)))
+                        interface.slave_row_elements()->gid(iele)))
                     ->parent_element())
                                       ->impl_type();
           }
@@ -2325,7 +2325,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
             imortarcells_[condid][icell] =
                 std::pair<std::shared_ptr<Mortar::IntCell>, Inpar::ScaTra::ImplType>(
                     imortarcells[icell], static_cast<Inpar::ScaTra::ImplType>(
-                                             impltypes_col[interface.slave_col_elements()->LID(
+                                             impltypes_col[interface.slave_col_elements()->lid(
                                                  imortarcells[icell]->get_slave_id())]));
           }
         }
@@ -2376,11 +2376,11 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           islavenodesimpltypes->put_value(Inpar::ScaTra::impltype_undefined);
 
           // loop over all slave-side nodes
-          for (int inode = 0; inode < noderowmap_slave.NumMyElements(); ++inode)
+          for (int inode = 0; inode < noderowmap_slave.num_my_elements(); ++inode)
           {
             // extract slave-side node
             auto* const slavenode =
-                dynamic_cast<Mortar::Node*>(idiscret.g_node(noderowmap_slave.GID(inode)));
+                dynamic_cast<Mortar::Node*>(idiscret.g_node(noderowmap_slave.gid(inode)));
             if (!slavenode)
               FOUR_C_THROW("Couldn't extract slave-side mortar node from mortar discretization!");
 
@@ -2447,12 +2447,12 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           islaveelementsimpltypes.put_value(Inpar::ScaTra::impltype_undefined);
 
           // loop over all slave-side elements
-          for (int ielement = 0; ielement < elecolmap_slave.NumMyElements(); ++ielement)
+          for (int ielement = 0; ielement < elecolmap_slave.num_my_elements(); ++ielement)
           {
             // determine physical implementation type of current slave-side element
             islaveelementsimpltypes[ielement] = dynamic_cast<Discret::Elements::Transport*>(
                 std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-                    kinetics_slave_cond.second->geometry().at(elecolmap_slave.GID(ielement)))
+                    kinetics_slave_cond.second->geometry().at(elecolmap_slave.gid(ielement)))
                     ->parent_element())
                                                     ->impl_type();
           }
@@ -2482,11 +2482,11 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           std::shared_ptr<Core::LinAlg::Vector<double>>& islavenodeslumpedareas =
               islavenodeslumpedareas_[condid];
           islavenodeslumpedareas = Core::LinAlg::create_vector(noderowmap_slave);
-          for (int inode = 0; inode < noderowmap_slave.NumMyElements(); ++inode)
+          for (int inode = 0; inode < noderowmap_slave.num_my_elements(); ++inode)
           {
             (*islavenodeslumpedareas)[inode] =
-                (*islavenodeslumpedareas_dofvector)[dofrowmap_slave.LID(
-                    idiscret.dof(idiscret.g_node(noderowmap_slave.GID(inode)), 0))];
+                (*islavenodeslumpedareas_dofvector)[dofrowmap_slave.lid(
+                    idiscret.dof(idiscret.g_node(noderowmap_slave.gid(inode)), 0))];
           }
         }
 
@@ -2657,9 +2657,9 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               std::vector<int> localnumlmdof(numproc, 0);
               std::vector<int> globalnumlmdof(numproc, 0);
               if (lmside_ == Inpar::S2I::side_slave)
-                localnumlmdof[mypid] = interfacemaps_->map(1)->NumMyElements();
+                localnumlmdof[mypid] = interfacemaps_->map(1)->num_my_elements();
               else
-                localnumlmdof[mypid] = interfacemaps_->map(2)->NumMyElements();
+                localnumlmdof[mypid] = interfacemaps_->map(2)->num_my_elements();
               Core::Communication::sum_all(
                   localnumlmdof.data(), globalnumlmdof.data(), numproc, comm);
 
@@ -2673,7 +2673,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               std::vector<int> lmdofgids(globalnumlmdof[mypid], 0);
               for (int lmdoflid = 0; lmdoflid < globalnumlmdof[mypid]; ++lmdoflid)
                 lmdofgids[lmdoflid] =
-                    scatratimint_->dof_row_map()->MaxAllGID() + 1 + offset + lmdoflid;
+                    scatratimint_->dof_row_map()->max_all_gid() + 1 + offset + lmdoflid;
 
               // build Lagrange multiplier dofrowmap
               const std::shared_ptr<Core::LinAlg::Map> lmdofrowmap =
@@ -2915,7 +2915,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
             {
               // extract local ID of scatra-scatra interface layer thickness variable associated
               // with current node
-              const int doflid_growth = scatratimint_->discretization()->dof_row_map(2)->LID(
+              const int doflid_growth = scatratimint_->discretization()->dof_row_map(2)->lid(
                   scatratimint_->discretization()->dof(2, node, 0));
               if (doflid_growth < 0)
               {
@@ -3305,12 +3305,12 @@ void ScaTra::MeshtyingStrategyS2I::collect_output_data() const
             Core::Communication::my_mpi_rank(scatratimint_->discretization()->get_comm()))
         {
           // extract local ID of current node
-          const int nodelid = scatratimint_->discretization()->node_row_map()->LID(nodegid);
+          const int nodelid = scatratimint_->discretization()->node_row_map()->lid(nodegid);
           if (nodelid < 0) FOUR_C_THROW("Couldn't extract local node ID!");
 
           // extract local ID of scatra-scatra interface layer thickness variable associated with
           // current node
-          const int doflid_growth = scatratimint_->discretization()->dof_row_map(2)->LID(
+          const int doflid_growth = scatratimint_->discretization()->dof_row_map(2)->lid(
               scatratimint_->discretization()->dof(2, node, 0));
           if (doflid_growth < 0)
             FOUR_C_THROW(
@@ -3418,10 +3418,10 @@ void ScaTra::MeshtyingStrategyS2I::extract_matrix_rows(
     FOUR_C_THROW("Source matrix rows cannot be extracted into filled destination matrix!");
 
   // loop over all source matrix rows to be extracted
-  for (int doflid = 0; doflid < rowmap.NumMyElements(); ++doflid)
+  for (int doflid = 0; doflid < rowmap.num_my_elements(); ++doflid)
   {
     // determine global ID of current matrix row
-    const int dofgid = rowmap.GID(doflid);
+    const int dofgid = rowmap.gid(doflid);
     if (dofgid < 0) FOUR_C_THROW("Couldn't find local ID {} in map!", doflid);
 
     // extract current matrix row from source matrix
@@ -3995,10 +3995,10 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
   double maxrelerr(0.);
 
   // loop over all columns of system matrix
-  for (int colgid = 0; colgid <= sysmat_original.col_map().MaxAllGID(); ++colgid)
+  for (int colgid = 0; colgid <= sysmat_original.col_map().max_all_gid(); ++colgid)
   {
     // check whether current column index is a valid global column index and continue loop if not
-    int collid(sysmat_original.col_map().LID(colgid));
+    int collid(sysmat_original.col_map().lid(colgid));
     int maxcollid(-1);
     Core::Communication::max_all(
         &collid, &maxcollid, 1, scatratimint_->discretization()->get_comm());
@@ -4008,7 +4008,7 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
     statenp.update(1., statenp_original, 0.);
 
     // impose perturbation
-    if (statenp.get_map().MyGID(colgid))
+    if (statenp.get_map().my_gid(colgid))
       if (statenp.sum_into_global_value(colgid, 0, fdcheckeps))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
@@ -4034,10 +4034,10 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
     // Note that we still need to evaluate the first comparison as well. For small entries in the
     // system matrix, the second comparison might yield good agreement in spite of the entries being
     // wrong!
-    for (int rowlid = 0; rowlid < extendedmaps_->full_map()->NumMyElements(); ++rowlid)
+    for (int rowlid = 0; rowlid < extendedmaps_->full_map()->num_my_elements(); ++rowlid)
     {
       // get global index of current matrix row
-      const int rowgid = sysmat_original.row_map().GID(rowlid);
+      const int rowgid = sysmat_original.row_map().gid(rowlid);
       if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
       // get relevant entry in current row of original system matrix
@@ -4050,7 +4050,7 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
           rowlid, length, numentries, values.data(), indices.data());
       for (int ientry = 0; ientry < length; ++ientry)
       {
-        if (sysmat_original.col_map().GID(indices[ientry]) == colgid)
+        if (sysmat_original.col_map().gid(indices[ientry]) == colgid)
         {
           entry = values[ientry];
           break;

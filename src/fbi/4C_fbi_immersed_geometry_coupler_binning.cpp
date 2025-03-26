@@ -66,7 +66,7 @@ void FBI::FBIBinningGeometryCoupler::partition_geometry(
   // first, add default one layer ghosting
 
   std::vector<int> binvec(27);
-  for (auto i = 0; i < binstrategy_->bin_discret()->element_row_map()->NumMyElements(); ++i)
+  for (auto i = 0; i < binstrategy_->bin_discret()->element_row_map()->num_my_elements(); ++i)
   {
     auto currbin = binstrategy_->bin_discret()->l_row_element(i);
     int it = currbin->id();
@@ -144,9 +144,9 @@ void FBI::FBIBinningGeometryCoupler::compute_current_positions(Core::FE::Discret
 
   const Core::LinAlg::Map* bincolmap = binstrategy_->bin_discret()->element_col_map();
   std::vector<int> colbinvec;
-  colbinvec.reserve(bincolmap->NumMyElements());
+  colbinvec.reserve(bincolmap->num_my_elements());
 
-  for (int lid = 0; lid < bincolmap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < bincolmap->num_my_elements(); ++lid)
   {
     Core::Elements::Element* currbin = binstrategy_->bin_discret()->l_col_element(lid);
     colbinvec.push_back(currbin->id());

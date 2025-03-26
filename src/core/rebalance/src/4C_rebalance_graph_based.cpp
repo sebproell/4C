@@ -44,11 +44,11 @@ Core::Rebalance::rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
 
   // extract repartitioned maps
   std::shared_ptr<Core::LinAlg::Map> rownodes = std::make_shared<Core::LinAlg::Map>(-1,
-      balanced_graph->row_map().NumMyElements(), balanced_graph->row_map().MyGlobalElements(), 0,
-      Core::Communication::unpack_epetra_comm(initialGraph.get_comm()));
+      balanced_graph->row_map().num_my_elements(), balanced_graph->row_map().my_global_elements(),
+      0, Core::Communication::unpack_epetra_comm(initialGraph.get_comm()));
   std::shared_ptr<Core::LinAlg::Map> colnodes = std::make_shared<Core::LinAlg::Map>(-1,
-      balanced_graph->col_map().NumMyElements(), balanced_graph->col_map().MyGlobalElements(), 0,
-      Core::Communication::unpack_epetra_comm(initialGraph.get_comm()));
+      balanced_graph->col_map().num_my_elements(), balanced_graph->col_map().my_global_elements(),
+      0, Core::Communication::unpack_epetra_comm(initialGraph.get_comm()));
 
   return {rownodes, colnodes};
 }
@@ -127,7 +127,7 @@ Core::Rebalance::build_weights(const Core::FE::Discretization& dis)
       Core::LinAlg::create_vector(*noderowmap, true);
 
   // loop all row elements and get their cost of evaluation
-  for (int i = 0; i < dis.element_row_map()->NumMyElements(); ++i)
+  for (int i = 0; i < dis.element_row_map()->num_my_elements(); ++i)
   {
     Core::Elements::Element* ele = dis.l_row_element(i);
     Core::Nodes::Node** nodes = ele->nodes();
@@ -164,9 +164,9 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
 
   // create a set of all nodes that I have
   std::set<int> mynodes;
-  for (int lid = 0; lid < roweles.NumMyElements(); ++lid)
+  for (int lid = 0; lid < roweles.num_my_elements(); ++lid)
   {
-    Core::Elements::Element* ele = dis.g_element(roweles.GID(lid));
+    Core::Elements::Element* ele = dis.g_element(roweles.gid(lid));
     const int numnode = ele->num_node();
     const int* nodeids = ele->node_ids();
     copy(nodeids, nodeids + numnode, inserter(mynodes, mynodes.begin()));
@@ -216,14 +216,14 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
   // start building the graph object
   std::map<int, std::set<int>> locals;
   std::map<int, std::set<int>> remotes;
-  for (int lid = 0; lid < roweles.NumMyElements(); ++lid)
+  for (int lid = 0; lid < roweles.num_my_elements(); ++lid)
   {
-    Core::Elements::Element* ele = dis.g_element(roweles.GID(lid));
+    Core::Elements::Element* ele = dis.g_element(roweles.gid(lid));
     const int numnode = ele->num_node();
     const int* nodeids = ele->node_ids();
     for (int i = 0; i < numnode; ++i)
     {
-      const int lid = rownodes->LID(nodeids[i]);  // am I owner of this gid?
+      const int lid = rownodes->lid(nodeids[i]);  // am I owner of this gid?
       std::map<int, std::set<int>>* insertmap = nullptr;
       if (lid != -1)
         insertmap = &locals;
@@ -310,7 +310,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
         int num = *ptr;
         int grid = *(ptr + 1);
         // see whether I have grid in my row map
-        if (rownodes->LID(grid) != -1)  // I have it, put stuff in my graph
+        if (rownodes->lid(grid) != -1)  // I have it, put stuff in my graph
         {
           int err = graph->insert_global_indices(grid, num - 1, (ptr + 2));
           if (err < 0) FOUR_C_THROW("Core::LinAlg::Graph::InsertGlobalIndices returned {}", err);
@@ -417,7 +417,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
   // 5. Fill the graph with the geometric close entries
   for (const auto& [predicate_lid, predicate_gid, primitive_gid, primitive_proc] : result)
   {
-    int predicate_lid_discretization = dis.element_row_map()->LID(predicate_gid);
+    int predicate_lid_discretization = dis.element_row_map()->lid(predicate_gid);
     if (predicate_lid_discretization < 0)
       FOUR_C_THROW("Could not find lid for predicate with gid {} on rank {}", predicate_gid,
           Core::Communication::my_mpi_rank(dis.get_comm()));
@@ -425,7 +425,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
       FOUR_C_THROW("The ids dont match from arborx and the discretization");
     const auto* predicate = dis.g_element(predicate_gid);
 
-    int primitive_lid_in_map = my_colliding_primitives_map.LID(primitive_gid);
+    int primitive_lid_in_map = my_colliding_primitives_map.lid(primitive_gid);
     if (primitive_lid_in_map < 0) FOUR_C_THROW("Could not find lid for gid {}", primitive_gid);
 
     for (int i_node = 0; i_node < predicate->num_node(); ++i_node)

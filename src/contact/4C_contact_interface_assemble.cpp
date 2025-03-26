@@ -23,9 +23,9 @@ FOUR_C_NAMESPACE_OPEN
 void CONTACT::Interface::assemble_slave_coord(std::shared_ptr<Core::LinAlg::Vector<double>>& xsmod)
 {
   // loop over all slave nodes
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -59,9 +59,9 @@ void CONTACT::Interface::assemble_reg_normal_forces(
   double pp = interface_params().get<double>("PENALTYPARAM");
 
   // loop over all slave row nodes on the current interface
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -198,9 +198,9 @@ void CONTACT::Interface::assemble_reg_tangent_forces_penalty()
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
 
   // loop over all slave row nodes on the current interface
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -553,9 +553,9 @@ void CONTACT::Interface::assemble_reg_tangent_forces_uzawa()
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
 
   // loop over all slave row nodes on the current interface
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -911,9 +911,9 @@ void CONTACT::Interface::assemble_reg_tangent_forces_uzawa()
 void CONTACT::Interface::assemble_lin_z(Core::LinAlg::SparseMatrix& linzglobal)
 {
   // loop over all slave nodes (row map)
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -972,9 +972,9 @@ void CONTACT::Interface::assemble_tn(std::shared_ptr<Core::LinAlg::SparseMatrix>
   if (Interface::n_dim() != 2 && n_dim() != 3) FOUR_C_THROW("Dim() must be either 2 or 3!");
 
   // loop over all active slave nodes of the interface
-  for (int i = 0; i < activenodes_->NumMyElements(); ++i)
+  for (int i = 0; i < activenodes_->num_my_elements(); ++i)
   {
-    int gid = activenodes_->GID(i);
+    int gid = activenodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<Node*>(node);
@@ -1041,7 +1041,7 @@ void CONTACT::Interface::assemble_tn(std::shared_ptr<Core::LinAlg::SparseMatrix>
           std::vector<int> lmrowownerT(1);
           std::vector<int> lmcol(colsize);
 
-          lmrowT[0] = activet_->GID(i);
+          lmrowT[0] = activet_->gid(i);
           lmrowownerT[0] = cnode->owner();
 
           /**************************************************** T-matrix ******/
@@ -1065,8 +1065,8 @@ void CONTACT::Interface::assemble_tn(std::shared_ptr<Core::LinAlg::SparseMatrix>
           std::vector<int> lmrowownerT(2);
           std::vector<int> lmcol(colsize);
 
-          lmrowT[0] = activet_->GID(2 * i);
-          lmrowT[1] = activet_->GID(2 * i + 1);
+          lmrowT[0] = activet_->gid(2 * i);
+          lmrowT[1] = activet_->gid(2 * i + 1);
           lmrowownerT[0] = cnode->owner();
           lmrowownerT[1] = cnode->owner();
 
@@ -1093,7 +1093,7 @@ void CONTACT::Interface::assemble_tn(std::shared_ptr<Core::LinAlg::SparseMatrix>
       // nodal normal
       double* nodalnormal = cnode->mo_data().n();
 
-      int row = activen_->GID(i);
+      int row = activen_->gid(i);
 
       // add normal to corresponding row in global matrix
       for (int k = 0; k < numdof; ++k)
@@ -1114,9 +1114,9 @@ void CONTACT::Interface::assemble_s(Core::LinAlg::SparseMatrix& sglobal)
   if (activenodes_ == nullptr) return;
 
   // loop over all active slave nodes of the interface
-  for (int i = 0; i < activenodes_->NumMyElements(); ++i)
+  for (int i = 0; i < activenodes_->num_my_elements(); ++i)
   {
-    int gid = activenodes_->GID(i);
+    int gid = activenodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<Node*>(node);
@@ -1127,7 +1127,7 @@ void CONTACT::Interface::assemble_s(Core::LinAlg::SparseMatrix& sglobal)
     // prepare assembly
     std::map<int, double>& dgmap = cnode->data().get_deriv_g();
     std::map<int, double>::iterator colcurr;
-    int row = activen_->GID(i);
+    int row = activen_->gid(i);
 
     for (colcurr = dgmap.begin(); colcurr != dgmap.end(); ++colcurr)
     {
@@ -1159,9 +1159,9 @@ void CONTACT::Interface::assemble_t_nderiv(std::shared_ptr<Core::LinAlg::SparseM
   if (Interface::n_dim() != 2 && n_dim() != 3) FOUR_C_THROW("Dim() must be either 2 or 3!");
 
   // loop over all active slave nodes of the interface
-  for (int i = 0; i < activenodes_->NumMyElements(); ++i)
+  for (int i = 0; i < activenodes_->num_my_elements(); ++i)
   {
-    int gid = activenodes_->GID(i);
+    int gid = activenodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1182,7 +1182,7 @@ void CONTACT::Interface::assemble_t_nderiv(std::shared_ptr<Core::LinAlg::SparseM
         int colsize = (int)dtmap[0].size();
         int mapsize = (int)dtmap.size();
 
-        int row = activet_->GID((Interface::n_dim() - 1) * i + d);
+        int row = activet_->gid((Interface::n_dim() - 1) * i + d);
 
         if (Interface::n_dim() == 2 && mapsize == 3) mapsize = 2;  //??
 
@@ -1249,7 +1249,7 @@ void CONTACT::Interface::assemble_t_nderiv(std::shared_ptr<Core::LinAlg::SparseM
       int colsize = (int)dnmap[0].size();
       int mapsize = (int)dnmap.size();
 
-      int row = activen_->GID(i);
+      int row = activen_->gid(i);
 
       if (Interface::n_dim() == 2 && mapsize == 3) mapsize = 2;  //??
 
@@ -1309,9 +1309,9 @@ void CONTACT::Interface::assemble_lin_d(Core::LinAlg::SparseMatrix& lindglobal, 
   /**********************************************************************/
 
   // loop over all LM slave nodes (row map)
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1397,9 +1397,9 @@ void CONTACT::Interface::assemble_lin_m(Core::LinAlg::SparseMatrix& linmglobal, 
   /**********************************************************************/
 
   // loop over all LM slave nodes (row map)
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1491,9 +1491,9 @@ void CONTACT::Interface::assemble_g(Core::LinAlg::Vector<double>& gglobal)
 {
   // loop over proc's slave nodes of the interface for assembly
   // use standard row map to assemble each node only once
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1592,9 +1592,9 @@ void CONTACT::Interface::assemble_inactiverhs(Core::LinAlg::Vector<double>& inac
   static std::vector<int> lm_owner(Interface::n_dim());
   static Core::LinAlg::SerialDenseVector lm_i(Interface::n_dim());
 
-  for (int i = 0; i < inactivenodes->NumMyElements(); ++i)
+  for (int i = 0; i < inactivenodes->num_my_elements(); ++i)
   {
-    int gid = inactivenodes->GID(i);
+    int gid = inactivenodes->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1609,8 +1609,8 @@ void CONTACT::Interface::assemble_inactiverhs(Core::LinAlg::Vector<double>& inac
         lm_owner[j] = cnode->owner();
         lm_i[j] = -cnode->mo_data().lm()[j];  // already negative rhs!!!
       }
-      lm_gid[0] = inactivedofs->GID(2 * i);
-      lm_gid[1] = inactivedofs->GID(2 * i + 1);
+      lm_gid[0] = inactivedofs->gid(2 * i);
+      lm_gid[1] = inactivedofs->gid(2 * i + 1);
 
       Core::LinAlg::assemble(inactiverhs, lm_i, lm_gid, lm_owner);
     }
@@ -1622,9 +1622,9 @@ void CONTACT::Interface::assemble_inactiverhs(Core::LinAlg::Vector<double>& inac
         lm_owner[j] = cnode->owner();
         lm_i[j] = -cnode->mo_data().lm()[j];  // already negative rhs!!!
       }
-      lm_gid[0] = inactivedofs->GID(3 * i);
-      lm_gid[1] = inactivedofs->GID(3 * i + 1);
-      lm_gid[2] = inactivedofs->GID(3 * i + 2);
+      lm_gid[0] = inactivedofs->gid(3 * i);
+      lm_gid[1] = inactivedofs->gid(3 * i + 1);
+      lm_gid[2] = inactivedofs->gid(3 * i + 2);
 
       Core::LinAlg::assemble(inactiverhs, lm_i, lm_gid, lm_owner);
     }
@@ -1640,9 +1640,9 @@ void CONTACT::Interface::assemble_tangrhs(Core::LinAlg::Vector<double>& tangrhs)
   static std::vector<int> lm_owner(Interface::n_dim() - 1);
   static Core::LinAlg::SerialDenseVector lm_t(Interface::n_dim() - 1);
 
-  for (int i = 0; i < activenodes_->NumMyElements(); ++i)
+  for (int i = 0; i < activenodes_->num_my_elements(); ++i)
   {
-    int gid = activenodes_->GID(i);
+    int gid = activenodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1692,7 +1692,7 @@ void CONTACT::Interface::assemble_tangrhs(Core::LinAlg::Vector<double>& tangrhs)
     {
       if (Interface::n_dim() == 2)
       {
-        lm_gid[0] = activet_->GID(i);
+        lm_gid[0] = activet_->gid(i);
         lm_owner[0] = cnode->owner();
 
         lm_t[0] = 0.0;
@@ -1703,8 +1703,8 @@ void CONTACT::Interface::assemble_tangrhs(Core::LinAlg::Vector<double>& tangrhs)
       }
       else if (Interface::n_dim() == 3)
       {
-        lm_gid[0] = activet_->GID(2 * i);      // even
-        lm_gid[1] = activet_->GID(2 * i + 1);  // odd
+        lm_gid[0] = activet_->gid(2 * i);      // even
+        lm_gid[1] = activet_->gid(2 * i + 1);  // odd
         lm_owner[0] = cnode->owner();
         lm_owner[1] = cnode->owner();
 
@@ -1739,7 +1739,7 @@ void CONTACT::Interface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstick
   std::shared_ptr<Core::LinAlg::Map> stickt = Core::LinAlg::split_map(*activet_, *slipt_);
 
   // nothing to do if no stick nodes
-  if (sticknodes->NumMyElements() == 0) return;
+  if (sticknodes->num_my_elements() == 0) return;
 
   // information from interface contact parameter list
   const auto ftype =
@@ -1765,9 +1765,9 @@ void CONTACT::Interface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstick
     FOUR_C_THROW("no consistent stick for regularized contact");
 
   // loop over all stick nodes of the interface
-  for (int i = 0; i < sticknodes->NumMyElements(); ++i)
+  for (int i = 0; i < sticknodes->num_my_elements(); ++i)
   {
-    int gid = sticknodes->GID(i);
+    int gid = sticknodes->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -1779,8 +1779,8 @@ void CONTACT::Interface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstick
     // in case of TSI, the nodal temperature influences the local friction coefficient
     frcoeff = cnode->fr_coeff(frcoeff_in);
 
-    double cn_input = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
-    double ct_input = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
+    double cn_input = get_cn_ref()[get_cn_ref().get_map().lid(cnode->id())];
+    double ct_input = get_ct_ref()[get_ct_ref().get_map().lid(cnode->id())];
 
     // more information from node
     double* n = cnode->mo_data().n();
@@ -1814,12 +1814,12 @@ void CONTACT::Interface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstick
     std::vector<int> row(Interface::n_dim() - 1);
     if (Interface::n_dim() == 2)
     {
-      row[0] = stickt->GID(i);
+      row[0] = stickt->gid(i);
     }
     else if (Interface::n_dim() == 3)
     {
-      row[0] = stickt->GID(2 * i);
-      row[1] = stickt->GID(2 * i) + 1;
+      row[0] = stickt->gid(2 * i);
+      row[1] = stickt->gid(2 * i) + 1;
     }
     else
       FOUR_C_THROW("AssemblelinStick: Dimension not correct");
@@ -2562,7 +2562,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
     Core::LinAlg::SparseMatrix& linslipDISglobal, Core::LinAlg::Vector<double>& linslipRHSglobal)
 {
   // nothing to do if no slip nodes
-  if (slipnodes_->NumMyElements() == 0) return;
+  if (slipnodes_->num_my_elements() == 0) return;
 
   // information from interface contact parameter list
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
@@ -2585,9 +2585,9 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
   if (ftype == CONTACT::FrictionType::coulomb)
   {
     // loop over all slip nodes of the interface
-    for (int i = 0; i < slipnodes_->NumMyElements(); ++i)
+    for (int i = 0; i < slipnodes_->num_my_elements(); ++i)
     {
-      int gid = slipnodes_->GID(i);
+      int gid = slipnodes_->gid(i);
       Core::Nodes::Node* node = idiscret_->g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -2599,8 +2599,8 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
       // in case of TSI, the nodal temperature influences the local friction coefficient
       frcoeff = cnode->fr_coeff(frcoeff_in);
 
-      double cn_input = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
-      double ct_input = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
+      double cn_input = get_cn_ref()[get_cn_ref().get_map().lid(cnode->id())];
+      double ct_input = get_ct_ref()[get_ct_ref().get_map().lid(cnode->id())];
 
       // prepare assembly, get information from node
       std::vector<Core::Gen::Pairedvector<int, double>> dnmap = cnode->data().get_deriv_n();
@@ -2641,12 +2641,12 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
       std::vector<int> row(Interface::n_dim() - 1);
       if (Interface::n_dim() == 2)
       {
-        row[0] = slipt_->GID(i);
+        row[0] = slipt_->gid(i);
       }
       else if (Interface::n_dim() == 3)
       {
-        row[0] = slipt_->GID(2 * i);
-        row[1] = slipt_->GID(2 * i) + 1;
+        row[0] = slipt_->gid(2 * i);
+        row[1] = slipt_->gid(2 * i) + 1;
       }
       else
         FOUR_C_THROW("AssemblelinSlip: Dimension not correct");
@@ -3617,9 +3617,9 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
   if (ftype == CONTACT::FrictionType::tresca)
   {
     // loop over all slip nodes of the interface
-    for (int i = 0; i < slipnodes_->NumMyElements(); ++i)
+    for (int i = 0; i < slipnodes_->num_my_elements(); ++i)
     {
-      int gid = slipnodes_->GID(i);
+      int gid = slipnodes_->gid(i);
       Core::Nodes::Node* node = idiscret_->g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -3627,7 +3627,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
       if (cnode->owner() != Core::Communication::my_mpi_rank(get_comm()))
         FOUR_C_THROW("AssembleLinSlip: Node ownership inconsistency!");
 
-      double ct = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
+      double ct = get_ct_ref()[get_ct_ref().get_map().lid(cnode->id())];
 
       // preparation of assembly
       // get Deriv N and calculate DerivD form DerivN
@@ -3656,7 +3656,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
       double* txi = cnode->data().txi();
       double* xi = cnode->xspatial();
       double* z = cnode->mo_data().lm();
-      int row = slipt_->GID(i);
+      int row = slipt_->gid(i);
 
       int colsize = (int)dtmap[0].size();
       int mapsize = (int)dtmap.size();
@@ -4254,9 +4254,9 @@ void CONTACT::Interface::assemble_normal_contact_regularization(Core::LinAlg::Sp
   static const auto constr_direction = Teuchos::getIntegralValue<CONTACT::ConstraintDirection>(
       interface_params(), "CONSTRAINT_DIRECTIONS");
 
-  for (int i = 0; i < active_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < active_nodes()->num_my_elements(); ++i)
   {
-    Core::Nodes::Node* node = discret().g_node(active_nodes()->GID(i));
+    Core::Nodes::Node* node = discret().g_node(active_nodes()->gid(i));
     if (!node) FOUR_C_THROW("node not found");
     CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(node);
     if (!cnode) FOUR_C_THROW("not a contact node");
@@ -4275,9 +4275,9 @@ void CONTACT::Interface::assemble_normal_contact_regularization(Core::LinAlg::Sp
     double dval = cnode->mo_data().get_d().at(cnode->id());
 
     if (constr_direction == CONTACT::ConstraintDirection::xyz)
-      for (int d = 0; d < dim; ++d) f[f.get_map().LID(cnode->dofs()[d])] += n(d) * dval * gLM;
+      for (int d = 0; d < dim; ++d) f[f.get_map().lid(cnode->dofs()[d])] += n(d) * dval * gLM;
     else
-      f[f.get_map().LID(cnode->dofs()[0])] += dval * gLM;
+      f[f.get_map().lid(cnode->dofs()[0])] += dval * gLM;
 
     for (int l = 0; l < dim; ++l)
     {
@@ -4320,7 +4320,7 @@ void CONTACT::Interface::assemble_lin_slip_normal_regularization(
     Core::LinAlg::Vector<double>& linslipRHSglobal)
 {
   // nothing to do if no slip nodes
-  if (slipnodes_->NumMyElements() == 0) return;
+  if (slipnodes_->num_my_elements() == 0) return;
 
   // information from interface contact parameter list
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
@@ -4343,9 +4343,9 @@ void CONTACT::Interface::assemble_lin_slip_normal_regularization(
   if (ftype == CONTACT::FrictionType::coulomb)
   {
     // loop over all slip nodes of the interface
-    for (int i = 0; i < slipnodes_->NumMyElements(); ++i)
+    for (int i = 0; i < slipnodes_->num_my_elements(); ++i)
     {
-      int gid = slipnodes_->GID(i);
+      int gid = slipnodes_->gid(i);
       Core::Nodes::Node* node = idiscret_->g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -4357,8 +4357,8 @@ void CONTACT::Interface::assemble_lin_slip_normal_regularization(
       // in case of TSI, the nodal temperature influences the local friction coefficient
       frcoeff = cnode->fr_coeff(frcoeff_in);
 
-      double cn = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
-      double ct = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
+      double cn = get_cn_ref()[get_cn_ref().get_map().lid(cnode->id())];
+      double ct = get_ct_ref()[get_ct_ref().get_map().lid(cnode->id())];
 
       // prepare assembly, get information from node
       std::vector<Core::Gen::Pairedvector<int, double>> dnmap = cnode->data().get_deriv_n();
@@ -4396,12 +4396,12 @@ void CONTACT::Interface::assemble_lin_slip_normal_regularization(
       std::vector<int> row(Interface::n_dim() - 1);
       if (Interface::n_dim() == 2)
       {
-        row[0] = slipt_->GID(i);
+        row[0] = slipt_->gid(i);
       }
       else if (Interface::n_dim() == 3)
       {
-        row[0] = slipt_->GID(2 * i);
-        row[1] = slipt_->GID(2 * i) + 1;
+        row[0] = slipt_->gid(2 * i);
+        row[1] = slipt_->gid(2 * i) + 1;
       }
       else
         FOUR_C_THROW("AssemblelinSlip: Dimension not correct");
@@ -5129,9 +5129,9 @@ void CONTACT::Interface::assemble_normal_coupling(Core::LinAlg::Vector<double>& 
 {
   // loop over proc's slave nodes of the interface for assembly
   // use standard row map to assemble each node only once
-  for (int i = 0; i < activenodes_->NumMyElements(); ++i)
+  for (int i = 0; i < activenodes_->num_my_elements(); ++i)
   {
-    int gid = activenodes_->GID(i);
+    int gid = activenodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* mrtnode = dynamic_cast<Node*>(node);
@@ -5149,7 +5149,7 @@ void CONTACT::Interface::assemble_normal_coupling(Core::LinAlg::Vector<double>& 
       std::vector<int> lmowner(1);
 
       gnode(0) = nCoup;
-      lm[0] = activen_->GID(i);
+      lm[0] = activen_->gid(i);
 
       lmowner[0] = mrtnode->owner();
 
@@ -5180,9 +5180,9 @@ void CONTACT::Interface::assemble_normal_coupling_linearisation(Core::LinAlg::Sp
     PermSlaveDofMap_full = Core::LinAlg::allreduce_e_map(*coupfs.perm_slave_dof_map());
   }
 
-  for (int i = 0; i < activenodes_->NumMyElements(); ++i)
+  for (int i = 0; i < activenodes_->num_my_elements(); ++i)
   {
-    int gid = activenodes_->GID(i);
+    int gid = activenodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -5191,7 +5191,7 @@ void CONTACT::Interface::assemble_normal_coupling_linearisation(Core::LinAlg::Sp
       FOUR_C_THROW("AssembleS: Node ownership inconsistency!");
 
     std::map<int, double>::iterator colcurr;
-    int row = activen_->GID(i);
+    int row = activen_->gid(i);
 
     std::map<int, double>& dgmap = cnode->poro_data().get_derivn_coup();
     if (AssembleVelocityLin)
@@ -5200,7 +5200,7 @@ void CONTACT::Interface::assemble_normal_coupling_linearisation(Core::LinAlg::Sp
       dgmap = cnode->poro_data().get_vel_derivn_coup();
       for (colcurr = dgmap.begin(); colcurr != dgmap.end(); ++colcurr)
       {
-        int col = PermSlaveDofMap_full->GID(MasterDofMap_full->LID(colcurr->first));
+        int col = PermSlaveDofMap_full->gid(MasterDofMap_full->lid(colcurr->first));
         double val = colcurr->second;
 
         // do not assemble zeros into s matrix
@@ -5211,7 +5211,7 @@ void CONTACT::Interface::assemble_normal_coupling_linearisation(Core::LinAlg::Sp
       for (colcurr = dgmap.begin(); colcurr != dgmap.end(); ++colcurr)
       {
         int col =
-            PermSlaveDofMap_full->GID(MasterDofMap_full->LID(colcurr->first)) + Interface::n_dim();
+            PermSlaveDofMap_full->gid(MasterDofMap_full->lid(colcurr->first)) + Interface::n_dim();
         double val = colcurr->second;
 
         // do not assemble zeros into s matrix
@@ -5244,9 +5244,9 @@ void CONTACT::Interface::assemble_coup_lin_d(
   //                 with c = Displacement slave or master dof
   // we compute (LinD)_kc = D_jk,c * x_j
 
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -5288,7 +5288,7 @@ void CONTACT::Interface::assemble_coup_lin_d(
           int col = scolcurr->first;
           int slavedofgid = cnode->dofs()[prodj];
 
-          int slavedoflid = x->get_map().LID(slavedofgid);
+          int slavedoflid = x->get_map().lid(slavedofgid);
           if (slavedoflid < 0) FOUR_C_THROW("invalid slave dof lid");
           double val = (*x)[slavedoflid] * (scolcurr->second);
 
@@ -5323,9 +5323,9 @@ void CONTACT::Interface::assemble_coup_lin_m(
   // we compute (CoupLin)_lc = M_jl,c * x_j
 
   // loop over all slave nodes (row map)
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -5367,7 +5367,7 @@ void CONTACT::Interface::assemble_coup_lin_m(
           int col = mcolcurr->first;
           int slavedofgid = cnode->dofs()[prodj];
 
-          int slavedoflid = x->get_map().LID(slavedofgid);
+          int slavedoflid = x->get_map().lid(slavedofgid);
           double val = (*x)[slavedoflid] * (mcolcurr->second);
 
           ++mcolcurr;

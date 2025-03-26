@@ -43,7 +43,7 @@ void Core::LinAlg::assemble(Epetra_CrsMatrix& A, const Core::LinAlg::SerialDense
 
       // check whether I have that global row
       int rgid = lmrow[lrow];
-      if (!(rowmap.MyGID(rgid))) FOUR_C_THROW("Sparse matrix A does not have global row {}", rgid);
+      if (!(rowmap.my_gid(rgid))) FOUR_C_THROW("Sparse matrix A does not have global row {}", rgid);
 
       for (int lcol = 0; lcol < lcoldim; ++lcol)
       {
@@ -84,8 +84,9 @@ void Core::LinAlg::assemble(Core::LinAlg::Vector<double>& V,
   {
     if (lmowner[lrow] != myrank) continue;
     int rgid = lm[lrow];
-    if (!V.get_map().MyGID(rgid)) FOUR_C_THROW("Sparse vector V does not have global row {}", rgid);
-    int rlid = V.get_map().LID(rgid);
+    if (!V.get_map().my_gid(rgid))
+      FOUR_C_THROW("Sparse vector V does not have global row {}", rgid);
+    int rlid = V.get_map().lid(rgid);
     V[rlid] += Vele[lrow];
   }  // for (int lrow=0; lrow<ldim; ++lrow)
 }
@@ -95,10 +96,10 @@ void Core::LinAlg::assemble(Core::LinAlg::Vector<double>& V,
 void Core::LinAlg::assemble_my_vector(double scalar_target, Core::LinAlg::Vector<double>& target,
     double scalar_source, const Core::LinAlg::Vector<double>& source)
 {
-  for (int slid = 0; slid < source.get_map().NumMyElements(); ++slid)
+  for (int slid = 0; slid < source.get_map().num_my_elements(); ++slid)
   {
-    const int sgid = source.get_map().GID(slid);
-    const int tlid = target.get_map().LID(sgid);
+    const int sgid = source.get_map().gid(slid);
+    const int tlid = target.get_map().lid(sgid);
     if (tlid == -1)
       FOUR_C_THROW(
           "The target vector has no global row {}"
@@ -144,23 +145,23 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& x,
     Core::LinAlg::Vector<double>& b, const Core::LinAlg::Vector<double>& dbcval,
     const Core::LinAlg::Map& dbcmap)
 {
-  if (not dbcmap.UniqueGIDs()) FOUR_C_THROW("unique map required");
+  if (not dbcmap.unique_gids()) FOUR_C_THROW("unique map required");
 
   // We use two maps since we want to allow dbcv and X to be independent of
   // each other. So we are slow and flexible...
   const Core::LinAlg::Map& xmap = x.get_map();
   const Core::LinAlg::Map& dbcvmap = dbcval.get_map();
 
-  const int mylength = dbcmap.NumMyElements();
-  const int* mygids = dbcmap.MyGlobalElements();
+  const int mylength = dbcmap.num_my_elements();
+  const int* mygids = dbcmap.my_global_elements();
   for (int i = 0; i < mylength; ++i)
   {
     int gid = mygids[i];
 
-    int dbcvlid = dbcvmap.LID(gid);
+    int dbcvlid = dbcvmap.lid(gid);
     if (dbcvlid < 0) FOUR_C_THROW("illegal Dirichlet map");
 
-    int xlid = xmap.LID(gid);
+    int xlid = xmap.lid(gid);
     if (xlid < 0) FOUR_C_THROW("illegal Dirichlet map");
 
     x[xlid] = dbcval[dbcvlid];
@@ -173,17 +174,17 @@ void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& x,
 void Core::LinAlg::apply_dirichlet_to_system(Core::LinAlg::Vector<double>& b,
     const Core::LinAlg::Vector<double>& dbcval, const Core::LinAlg::Map& dbcmap)
 {
-  if (not dbcmap.UniqueGIDs()) FOUR_C_THROW("unique map required");
+  if (not dbcmap.unique_gids()) FOUR_C_THROW("unique map required");
 
-  const int mylength = dbcmap.NumMyElements();
-  const int* mygids = dbcmap.MyGlobalElements();
+  const int mylength = dbcmap.num_my_elements();
+  const int* mygids = dbcmap.my_global_elements();
   for (int i = 0; i < mylength; ++i)
   {
     const int gid = mygids[i];
 
-    const int dbcvlid = dbcval.get_map().LID(gid);
+    const int dbcvlid = dbcval.get_map().lid(gid);
 
-    const int blid = b.get_map().LID(gid);
+    const int blid = b.get_map().lid(gid);
     // Note:
     // if gid is not found in vector b, just continue
     // b might only be a subset of a larger field vector
@@ -237,10 +238,10 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
   // this copy is needed because the constructor of Core::LinAlg::MapExtractor
   // accepts only Core::LinAlg::Map and not Core::LinAlg::Map
   const Core::LinAlg::Map fullmap =
-      Core::LinAlg::Map(fullblockmap.NumGlobalElements(), fullblockmap.NumMyElements(),
-          fullblockmap.MyGlobalElements(), fullblockmap.IndexBase(), fullblockmap.Comm());
+      Core::LinAlg::Map(fullblockmap.num_global_elements(), fullblockmap.num_my_elements(),
+          fullblockmap.my_global_elements(), fullblockmap.index_base(), fullblockmap.get_comm());
   const int mylength = dbctoggle.local_length();
-  const int* fullgids = fullmap.MyGlobalElements();
+  const int* fullgids = fullmap.my_global_elements();
   // build sets containing the DBC or free global IDs, respectively
   std::vector<int> dbcgids;
   std::vector<int> freegids;
@@ -266,7 +267,7 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
       myglobalelements = dbcgids.data();
     }
     dbcmap = std::make_shared<Core::LinAlg::Map>(
-        -1, nummyelements, myglobalelements, fullmap.IndexBase(), fullmap.Comm());
+        -1, nummyelements, myglobalelements, fullmap.index_base(), fullmap.get_comm());
   }
   // build map of free DOFs
   std::shared_ptr<Core::LinAlg::Map> freemap = nullptr;
@@ -279,7 +280,7 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
       myglobalelements = freegids.data();
     }
     freemap = std::make_shared<Core::LinAlg::Map>(
-        -1, nummyelements, myglobalelements, fullmap.IndexBase(), fullmap.Comm());
+        -1, nummyelements, myglobalelements, fullmap.index_base(), fullmap.get_comm());
   }
 
   // build and return the map extractor of Dirichlet-conditioned and free DOFs

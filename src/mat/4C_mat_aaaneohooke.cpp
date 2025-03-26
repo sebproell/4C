@@ -398,7 +398,7 @@ bool Mat::AAAneohooke::vis_data(
   {
     if ((int)data.size() != 1) FOUR_C_THROW("size mismatch");
     // get element lID incase we have element specific material parameters
-    int eleID = Global::Problem::instance()->get_dis("structure")->element_col_map()->LID(eleGID);
+    int eleID = Global::Problem::instance()->get_dis("structure")->element_col_map()->lid(eleGID);
     data[0] = eleID;
   }
   else

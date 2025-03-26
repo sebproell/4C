@@ -59,7 +59,7 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap, const 
       savegraph_(savegraph),
       matrixtype_(matrixtype)
 {
-  if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
+  if (!rowmap.unique_gids()) FOUR_C_THROW("Row map is not unique");
 
   if (matrixtype_ == CRS_MATRIX)
     sysmat_ = std::make_shared<Epetra_CrsMatrix>(::Copy, rowmap.get_epetra_map(), npr, false);
@@ -80,7 +80,7 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap,
       savegraph_(savegraph),
       matrixtype_(matrixtype)
 {
-  if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
+  if (!rowmap.unique_gids()) FOUR_C_THROW("Row map is not unique");
 
   if (matrixtype_ == CRS_MATRIX)
     sysmat_ = std::make_shared<Epetra_CrsMatrix>(
@@ -102,9 +102,9 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap,
       savegraph_(savegraph),
       matrixtype_(matrixtype)
 {
-  if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
+  if (!rowmap.unique_gids()) FOUR_C_THROW("Row map is not unique");
 
-  if ((int)(numentries.size()) != rowmap.NumMyElements())
+  if ((int)(numentries.size()) != rowmap.num_my_elements())
     FOUR_C_THROW("estimate for non zero entries per row does not match the size of row map");
 
   if (matrixtype_ == CRS_MATRIX)
@@ -212,10 +212,10 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Vector<double>& dia
       savegraph_(savegraph),
       matrixtype_(matrixtype)
 {
-  int length = diag.get_map().NumMyElements();
-  Core::LinAlg::Map map(
-      -1, length, diag.get_map().MyGlobalElements(), diag.get_map().IndexBase(), diag.get_comm());
-  if (!map.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
+  int length = diag.get_map().num_my_elements();
+  Core::LinAlg::Map map(-1, length, diag.get_map().my_global_elements(),
+      diag.get_map().index_base(), diag.get_comm());
+  if (!map.unique_gids()) FOUR_C_THROW("Row map is not unique");
 
   if (matrixtype_ == CRS_MATRIX)
     sysmat_ = std::make_shared<Epetra_CrsMatrix>(
@@ -230,7 +230,7 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Vector<double>& dia
 
   for (int i = 0; i < length; ++i)
   {
-    int gid = map.GID(i);
+    int gid = map.gid(i);
     assemble(diag[i], gid, gid);
   }
 }
@@ -383,7 +383,7 @@ void Core::LinAlg::SparseMatrix::zero()
 void Core::LinAlg::SparseMatrix::reset()
 {
   const Core::LinAlg::Map rowmap = Map(sysmat_->RowMap());
-  std::vector<int> numentries(rowmap.NumMyElements());
+  std::vector<int> numentries(rowmap.num_my_elements());
 
   auto graph = std::make_shared<Core::LinAlg::Graph>(sysmat_->Graph());
 
@@ -461,7 +461,7 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const std::vector<int>& lmstr
     for (int lcol = 0; lcol < lcoldim; ++lcol)
     {
       const int cgid = lmcol[lcol];
-      localcol[lcol] = colmap.LID(cgid);
+      localcol[lcol] = colmap.lid(cgid);
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (localcol[lcol] < 0) FOUR_C_THROW("Sparse matrix A does not have global column {}", cgid);
 #endif
@@ -477,9 +477,9 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const std::vector<int>& lmstr
       const int rgid = lmrow[lrow];
 
       // if we have a Dirichlet map check if this row is a Dirichlet row
-      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid)) continue;
+      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->my_gid(rgid)) continue;
 
-      const int rlid = rowmap.LID(rgid);
+      const int rlid = rowmap.lid(rgid);
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (rlid < 0) FOUR_C_THROW("Sparse matrix A does not have global row {}", rgid);
@@ -586,11 +586,11 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const std::vector<int>& lmstr
       // check whether I have that global row
       const int rgid = lmrow[lrow];
       // #ifdef   FOUR_C_ENABLE_ASSERTIONS
-      if (!rowmap.MyGID(rgid)) FOUR_C_THROW("Proc {} does not have global row {}", myrank, rgid);
+      if (!rowmap.my_gid(rgid)) FOUR_C_THROW("Proc {} does not have global row {}", myrank, rgid);
       // #endif
 
       // if we have a Dirichlet map check if this row is a Dirichlet row
-      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid)) continue;
+      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->my_gid(rgid)) continue;
 
       for (int lcol = 0; lcol < lcoldim; ++lcol)
       {
@@ -650,7 +650,7 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const Core::LinAlg::SerialDen
     for (int lcol = 0; lcol < lcoldim; ++lcol)
     {
       const int cgid = lmcol[lcol];
-      localcol[lcol] = colmap.LID(cgid);
+      localcol[lcol] = colmap.lid(cgid);
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (localcol[lcol] < 0) FOUR_C_THROW("Sparse matrix A does not have global column {}", cgid);
 #endif
@@ -666,9 +666,9 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const Core::LinAlg::SerialDen
       const int rgid = lmrow[lrow];
 
       // if we have a Dirichlet map check if this row is a Dirichlet row
-      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid)) continue;
+      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->my_gid(rgid)) continue;
 
-      const int rlid = rowmap.LID(rgid);
+      const int rlid = rowmap.lid(rgid);
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (rlid < 0) FOUR_C_THROW("Sparse matrix A does not have global row {}", rgid);
 #endif
@@ -692,11 +692,11 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const Core::LinAlg::SerialDen
       // check whether I have that global row
       const int rgid = lmrow[lrow];
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (!rowmap.MyGID(rgid)) FOUR_C_THROW("Proc {} does not have global row {}", myrank, rgid);
+      if (!rowmap.my_gid(rgid)) FOUR_C_THROW("Proc {} does not have global row {}", myrank, rgid);
 #endif
 
       // if we have a Dirichlet map check if this row is a Dirichlet row
-      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid)) continue;
+      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->my_gid(rgid)) continue;
 
       for (int lcol = 0; lcol < lcoldim; ++lcol)
       {
@@ -786,7 +786,7 @@ void Core::LinAlg::SparseMatrix::fe_assemble(const Core::LinAlg::SerialDenseMatr
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::assemble(double val, int rgid, int cgid)
 {
-  if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid))
+  if (dbcmaps_ != nullptr and dbcmaps_->map(1)->my_gid(rgid))
     FOUR_C_THROW("no assembling to Dirichlet row");
 
   // SumIntoGlobalValues works for filled matrices as well!
@@ -805,7 +805,7 @@ void Core::LinAlg::SparseMatrix::assemble(double val, int rgid, int cgid)
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::set_value(double val, int rgid, int cgid)
 {
-  if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid))
+  if (dbcmaps_ != nullptr and dbcmaps_->map(1)->my_gid(rgid))
     FOUR_C_THROW("no assembling to Dirichlet row");
 
   int errone = sysmat_->ReplaceGlobalValues(rgid, 1, &val, &cgid);
@@ -935,7 +935,7 @@ void Core::LinAlg::SparseMatrix::un_complete()
 
   const Core::LinAlg::Map& rowmap = Map(sysmat_->RowMap());
   const Core::LinAlg::Map& colmap = Map(sysmat_->ColMap());
-  int elements = rowmap.NumMyElements();
+  int elements = rowmap.num_my_elements();
 
   std::shared_ptr<Epetra_CrsMatrix> mat = nullptr;
   if (matrixtype_ == CRS_MATRIX)
@@ -960,10 +960,10 @@ void Core::LinAlg::SparseMatrix::un_complete()
     std::vector<int> idx(NumEntries);
     for (int c = 0; c < NumEntries; ++c)
     {
-      idx[c] = colmap.GID(Indices[c]);
+      idx[c] = colmap.gid(Indices[c]);
       FOUR_C_ASSERT(idx[c] != -1, "illegal gid");
     }
-    int rowgid = rowmap.GID(i);
+    int rowgid = rowmap.gid(i);
     err = mat->InsertGlobalValues(rowgid, NumEntries, Values, idx.data());
     if (err) FOUR_C_THROW("InsertGlobalValues err={}", err);
   }
@@ -1102,7 +1102,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
   if (dbcmaps_ != nullptr)
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (not dbctoggle.SameAs(*dbcmaps_->map(1)))
+    if (not dbctoggle.same_as(*dbcmaps_->map(1)))
     {
       FOUR_C_THROW("Dirichlet maps mismatch");
     }
@@ -1110,8 +1110,8 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
     if (diagonalblock)
     {
       double v = 1.0;
-      int numdbc = dbctoggle.NumMyElements();
-      int* dbc = dbctoggle.MyGlobalElements();
+      int numdbc = dbctoggle.num_my_elements();
+      int* dbc = dbctoggle.my_global_elements();
       for (int i = 0; i < numdbc; ++i)
       {
         int row = dbc[i];
@@ -1156,7 +1156,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
     for (int i = 0; i < nummyrows; ++i)
     {
       int row = sysmat_->GRID(i);
-      if (not dbctoggle.MyGID(row))
+      if (not dbctoggle.my_gid(row))
       {
         int numentries;
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -1201,7 +1201,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
     for (int i = 0; i < nummyrows; ++i)
     {
       int row = sysmat_->GRID(i);
-      if (dbctoggle.MyGID(row))
+      if (dbctoggle.my_gid(row))
       {
         int* indexOffset;
         int* indices;
@@ -1276,7 +1276,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet_with_trafo(const Core::LinAlg::
     for (int i = 0; i < nummyrows; ++i)
     {
       int row = sysmat_->GRID(i);
-      if (not dbctoggle.MyGID(row))  // dof is not a Dirichlet dof
+      if (not dbctoggle.my_gid(row))  // dof is not a Dirichlet dof
       {
         int numentries;
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -1354,7 +1354,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet_with_trafo(const Core::LinAlg::
     for (int i = 0; i < nummyrows; ++i)
     {
       int row = sysmat_->GRID(i);
-      if (dbctoggle.MyGID(row))
+      if (dbctoggle.my_gid(row))
       {
         int* indexOffset;
         int* indices;
@@ -1420,9 +1420,9 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
 
       int err = sysmat_->ExtractMyRowView(i, NumEntries, Values, Indices);
       if (err) FOUR_C_THROW("ExtractMyRowView: err={}", err);
-      for (int j = 0; j < NumEntries; ++j) idx[j] = colmap.GID(Indices[j]);
+      for (int j = 0; j < NumEntries; ++j) idx[j] = colmap.gid(Indices[j]);
 
-      err = dl->sysmat_->InsertGlobalValues(rowmap.GID(i), NumEntries, Values, idx.data());
+      err = dl->sysmat_->InsertGlobalValues(rowmap.gid(i), NumEntries, Values, idx.data());
       if (err) FOUR_C_THROW("InsertGlobalValues: err={}", err);
     }
   }
@@ -1438,7 +1438,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
     const Core::LinAlg::Map& dbctoggle)
 {
   if (not filled()) FOUR_C_THROW("expect filled matrix to extract dirichlet lines");
-  if (not dbctoggle.UniqueGIDs()) FOUR_C_THROW("unique map required");
+  if (not dbctoggle.unique_gids()) FOUR_C_THROW("unique map required");
 
   std::shared_ptr<SparseMatrix> dl = std::make_shared<SparseMatrix>(
       row_map(), max_num_entries(), explicit_dirichlet(), save_graph());
@@ -1449,12 +1449,12 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
 
   std::vector<int> idx(max_num_entries());
 
-  const int mylength = dbctoggle.NumMyElements();
-  const int* mygids = dbctoggle.MyGlobalElements();
+  const int mylength = dbctoggle.num_my_elements();
+  const int* mygids = dbctoggle.my_global_elements();
   for (int i = 0; i < mylength; ++i)
   {
     int gid = mygids[i];
-    int lid = rowmap.LID(gid);
+    int lid = rowmap.lid(gid);
 
     if (lid < 0) FOUR_C_THROW("illegal Dirichlet map");
 
@@ -1464,7 +1464,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::SparseMatrix::extract_
 
     int err = sysmat_->ExtractMyRowView(lid, NumEntries, Values, Indices);
     if (err) FOUR_C_THROW("ExtractMyRowView: err={}", err);
-    for (int j = 0; j < NumEntries; ++j) idx[j] = colmap.GID(Indices[j]);
+    for (int j = 0; j < NumEntries; ++j) idx[j] = colmap.gid(Indices[j]);
 
     err = dl->sysmat_->InsertGlobalValues(gid, NumEntries, Values, idx.data());
     if (err) FOUR_C_THROW("InsertGlobalValues: err={}", err);

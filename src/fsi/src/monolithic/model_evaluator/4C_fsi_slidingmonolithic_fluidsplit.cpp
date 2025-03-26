@@ -54,7 +54,7 @@ FSI::SlidingMonolithicFluidSplit::SlidingMonolithicFluidSplit(
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   // Check whether the intersection is empty
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
   {
     //    std::cout << "Slave interface nodes with Dirichlet boundary condition "
     //              "(input file numbering):" << std::endl;
@@ -311,7 +311,7 @@ void FSI::SlidingMonolithicFluidSplit::create_combined_dof_row_map()
   vecSpaces.push_back(fluid_field()->dof_row_map());
   vecSpaces.push_back(fsi_ale_field()->fsi_interface()->other_map());
 
-  if (vecSpaces[1]->NumGlobalElements() == 0)
+  if (vecSpaces[1]->num_global_elements() == 0)
     FOUR_C_THROW("No inner fluid equations. Splitting not possible.");
 
   set_dof_row_maps(vecSpaces);
@@ -761,11 +761,11 @@ void FSI::SlidingMonolithicFluidSplit::setup_system_matrix(Core::LinAlg::BlockSp
   }
 
   // some checks whether maps for matrix-matrix-multiplication do really match
-  if (!f->matrix(0, 1).domain_map().PointSameAs(mortarp->range_map()))
+  if (!f->matrix(0, 1).domain_map().point_same_as(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
-  if (!f->matrix(1, 0).range_map().PointSameAs(mortarp->range_map()))
+  if (!f->matrix(1, 0).range_map().point_same_as(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
-  if (!f->matrix(1, 1).domain_map().PointSameAs(mortarp->range_map()))
+  if (!f->matrix(1, 1).domain_map().point_same_as(mortarp->range_map()))
     FOUR_C_THROW("Maps do not match.");
 #endif
 
@@ -1878,7 +1878,7 @@ void FSI::SlidingMonolithicFluidSplit::check_dynamic_equilibrium()
   violation.norm_inf(&violationinf);
 
   // scale L2-Norm with sqrt of length of interface vector
-  violationl2 /= sqrt(fluid_field()->interface()->fsi_cond_map()->NumGlobalElements());
+  violationl2 /= sqrt(fluid_field()->interface()->fsi_cond_map()->num_global_elements());
 
   // output to screen
   std::ios_base::fmtflags flags = utils()->out().flags();

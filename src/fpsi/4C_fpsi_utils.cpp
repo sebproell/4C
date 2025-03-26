@@ -535,15 +535,15 @@ void FPSI::InterfaceUtils::redistribute_interface(Core::FE::Discretization& mast
       // ghost parent master element on master discretization of proc owning the matching slave
       // interface element
       const Core::LinAlg::Map colcopy = *(masterdis.element_col_map());
-      int myglobalelementsize = colcopy.NumMyElements();
+      int myglobalelementsize = colcopy.num_my_elements();
       std::vector<int> myglobalelements(myglobalelementsize);
-      colcopy.MyGlobalElements(myglobalelements.data());
+      colcopy.my_global_elements(myglobalelements.data());
 
       if (Core::Communication::my_mpi_rank(comm) == proc and
           mastereleowner != proc)  // ghost master ele on owner of slave ele, but only if this proc
                                    // doesn't already own the masterele
       {
-        if (colcopy.LID(mastereleid) == -1)  // if element not already in ElementColMap()
+        if (colcopy.lid(mastereleid) == -1)  // if element not already in ElementColMap()
         {
           myglobalelements.push_back(mastereleid);
           myglobalelementsize = myglobalelementsize + 1;
@@ -650,7 +650,7 @@ void FPSI::Utils::MapExtractor::setup(std::shared_ptr<const Core::LinAlg::Map>& 
   othermaps.push_back(additionalothermap);
   othermaps.push_back(extractor.other_map());
 
-  if (Core::LinAlg::MultiMapExtractor::intersect_maps(othermaps)->NumGlobalElements() > 0)
+  if (Core::LinAlg::MultiMapExtractor::intersect_maps(othermaps)->num_global_elements() > 0)
     FOUR_C_THROW("Failed to add dofmap of foreign discretization to other_map. Detected overlap.");
 
   std::shared_ptr<const Core::LinAlg::Map> mergedothermap =

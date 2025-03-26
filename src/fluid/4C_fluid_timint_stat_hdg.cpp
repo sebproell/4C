@@ -102,7 +102,7 @@ void FLD::TimIntStationaryHDG::reset(bool completeReset, int numsteps, int iter)
   intvelnp_ = Core::LinAlg::create_vector(*intdofrowmap, true);
   if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
     std::cout << "Number of degrees of freedom in HDG system: "
-              << discret_->dof_row_map(0)->NumGlobalElements() << std::endl;
+              << discret_->dof_row_map(0)->num_global_elements() << std::endl;
 }
 
 /*----------------------------------------------------------------------*
@@ -160,7 +160,7 @@ void FLD::TimIntStationaryHDG::clear_state_assemble_mat_and_rhs()
     // data back before it disappears when clearing the state (at least for nproc>1)
     const Core::LinAlg::Vector<double>& intvelnpGhosted = *discret_->get_state(1, "intvelnp");
     for (int i = 0; i < intvelnp_->local_length(); ++i)
-      (*intvelnp_)[i] = intvelnpGhosted[intvelnpGhosted.get_map().LID(intvelnp_->get_map().GID(i))];
+      (*intvelnp_)[i] = intvelnpGhosted[intvelnpGhosted.get_map().lid(intvelnp_->get_map().gid(i))];
   }
   first_assembly_ = false;
   FluidImplicitTimeInt::clear_state_assemble_mat_and_rhs();
@@ -197,7 +197,7 @@ void FLD::TimIntStationaryHDG::set_initial_flow_field(
     // now fill the ele vector into the discretization
     for (unsigned int i = 0; i < la[0].lm_.size(); ++i)
     {
-      const int lid = dofrowmap->LID(la[0].lm_[i]);
+      const int lid = dofrowmap->lid(la[0].lm_[i]);
       if (lid >= 0)
       {
         if ((*velnp_)[lid] != 0) error += std::abs((*velnp_)[lid] - elevec1(i));
@@ -213,7 +213,7 @@ void FLD::TimIntStationaryHDG::set_initial_flow_field(
       FOUR_C_ASSERT(
           localDofs.size() == static_cast<std::size_t>(elevec2.numRows()), "Internal error");
       for (unsigned int i = 0; i < localDofs.size(); ++i)
-        localDofs[i] = intdofrowmap->LID(localDofs[i]);
+        localDofs[i] = intdofrowmap->lid(localDofs[i]);
       intvelnp_->replace_local_values(localDofs.size(), elevec2.values(), localDofs.data());
     }
   }

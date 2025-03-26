@@ -73,7 +73,7 @@ namespace XFEM
       // We need to identify cutter dis dofs and pressure dofs on all processors for the whole
       // cutter_dis, as long as we don't have another ghosting strategy for the cutter_dis ...
 
-      if (pfmap.NumMyElements() != psmap.NumMyElements())
+      if (pfmap.num_my_elements() != psmap.num_my_elements())
         FOUR_C_THROW(
             "initialize_struct_pres_map: (pfmap->NumGlobalElements() != "
             "psmap->NumGlobalElements())!");
@@ -81,14 +81,14 @@ namespace XFEM
       std::shared_ptr<Core::LinAlg::Map> fullpfmap = Core::LinAlg::allreduce_e_map(pfmap);
       std::shared_ptr<Core::LinAlg::Map> fullpsmap = Core::LinAlg::allreduce_e_map(psmap);
 
-      if (fullpfmap->NumMyElements() != fullpsmap->NumMyElements())
+      if (fullpfmap->num_my_elements() != fullpsmap->num_my_elements())
         FOUR_C_THROW(
             "initialize_struct_pres_map: (fullpfmap->NumGlobalElements() != "
             "fullpsmap->NumGlobalElements())!");
 
-      for (int lid = 0; lid < fullpfmap->NumMyElements(); ++lid)
-        lm_struct_x_lm_pres_[fullpsmap->GID(lid)] =
-            fullpfmap->GID(lid) + 1;  // z-component of structure --> pressure
+      for (int lid = 0; lid < fullpfmap->num_my_elements(); ++lid)
+        lm_struct_x_lm_pres_[fullpsmap->gid(lid)] =
+            fullpfmap->gid(lid) + 1;  // z-component of structure --> pressure
     }
 
     /*!

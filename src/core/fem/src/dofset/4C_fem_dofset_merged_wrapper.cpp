@@ -108,7 +108,7 @@ int Core::DOFSets::DofSetMergedWrapper::assign_degrees_of_freedom(
     {
       std::pair<int, double>& coupled = coupling[gid];
       int slavegid = coupled.first;
-      int slavelid = dis.node_row_map()->LID(slavegid);
+      int slavelid = dis.node_row_map()->lid(slavegid);
       if (slavelid == -1) FOUR_C_THROW("slave gid {} was not found on this proc", slavegid);
 
       // save master gid at col lid of corresponding slave node
@@ -165,7 +165,7 @@ int Core::DOFSets::DofSetMergedWrapper::assign_degrees_of_freedom(
     {
       std::pair<int, double>& coupled = coupling[gid];
       int slavegid = coupled.first;
-      int slavelid = dis.node_row_map()->LID(slavegid);
+      int slavelid = dis.node_row_map()->lid(slavegid);
       if (slavelid == -1) FOUR_C_THROW("slave gid {} was not found on this proc", slavegid);
 
       // save master gid at col lid of corresponding slave node

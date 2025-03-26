@@ -63,8 +63,8 @@ std::shared_ptr<Core::LinAlg::SparseOperator> ALE::Meshsliding::setup(
 /*-------------------------------------------------------*/
 void ALE::Meshsliding::compare_num_dof()
 {
-  int numdofmaster = (adaptermeshsliding_->master_dof_map())->NumGlobalElements();
-  int numdofslave = (adaptermeshsliding_->slave_dof_map())->NumGlobalElements();
+  int numdofmaster = (adaptermeshsliding_->master_dof_map())->num_global_elements();
+  int numdofslave = (adaptermeshsliding_->slave_dof_map())->num_global_elements();
 
   std::cout << std::endl << "number of master dof's:   " << numdofmaster << std::endl;
   std::cout << "number of slave dof's:   " << numdofslave << std::endl << std::endl;

@@ -87,9 +87,9 @@ void CONTACT::PenaltyStrategy::save_reference_state(
 
     // loop over proc's slave elements of the interface for integration
     // use standard column map to include processor's ghosted elements
-    for (int j = 0; j < interface_[i]->slave_col_elements()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->slave_col_elements()->num_my_elements(); ++j)
     {
-      int gid1 = interface_[i]->slave_col_elements()->GID(j);
+      int gid1 = interface_[i]->slave_col_elements()->gid(j);
       Core::Elements::Element* ele1 = interface_[i]->discret().g_element(gid1);
       if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
       Element* selement = dynamic_cast<Element*>(ele1);
@@ -98,9 +98,9 @@ void CONTACT::PenaltyStrategy::save_reference_state(
     }
 
     // loop over all slave row nodes on the current interface
-    for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interface_[i]->slave_row_nodes()->GID(j);
+      int gid = interface_[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -538,9 +538,9 @@ void CONTACT::PenaltyStrategy::initialize_uzawa(
   // reset nodal derivZ values
   for (int i = 0; i < (int)interface_.size(); ++i)
   {
-    for (int j = 0; j < interface_[i]->slave_col_nodes_bound()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->slave_col_nodes_bound()->num_my_elements(); ++j)
     {
-      int gid = interface_[i]->slave_col_nodes_bound()->GID(j);
+      int gid = interface_[i]->slave_col_nodes_bound()->gid(j);
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -585,7 +585,7 @@ void CONTACT::PenaltyStrategy::update_constraint_norm(int uzawaiter)
   }
 
   // gactivenodes_ has no elements
-  else if (gactivenodes_->NumGlobalElements() == 0)
+  else if (gactivenodes_->num_global_elements() == 0)
   {
     constrnorm_ = 0;
     constrnormtan_ = 0;

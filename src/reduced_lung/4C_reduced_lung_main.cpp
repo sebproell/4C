@@ -69,7 +69,7 @@ namespace ReducedLung
     for (auto* ele : actdis->my_row_element_range())
     {
       int element_id = ele->id();
-      int local_element_id = actdis->element_row_map()->LID(element_id);
+      int local_element_id = actdis->element_row_map()->lid(element_id);
       if (ele->element_type() == Discret::Elements::RedAirwayType::instance())
       {
         // Number of equations still missing! Needs to be changed when compliant airways are
@@ -377,15 +377,15 @@ namespace ReducedLung
     // row map. Maybe not necessary, but helps with debugging.
     for (Connection& conn : connections)
     {
-      conn.first_global_equation_id = row_map.GID(conn.first_local_equation_id);
+      conn.first_global_equation_id = row_map.gid(conn.first_local_equation_id);
     }
     for (Bifurcation& bif : bifurcations)
     {
-      bif.first_global_equation_id = row_map.GID(bif.first_local_equation_id);
+      bif.first_global_equation_id = row_map.gid(bif.first_local_equation_id);
     }
     for (BoundaryCondition& bc : boundary_conditions)
     {
-      bc.global_equation_id = row_map.GID(bc.local_equation_id);
+      bc.global_equation_id = row_map.gid(bc.local_equation_id);
     }
 
     // Save locally relevant dof ids of every entity. Needed for local assembly.
@@ -393,14 +393,14 @@ namespace ReducedLung
     {
       for (const int& gid : airway.global_dof_ids)
       {
-        airway.local_dof_ids.push_back(locally_relevant_dof_map.LID(gid));
+        airway.local_dof_ids.push_back(locally_relevant_dof_map.lid(gid));
       }
     }
     for (TerminalUnit& terminal_unit : terminal_units)
     {
       for (const int& gid : terminal_unit.global_dof_ids)
       {
-        terminal_unit.local_dof_ids.push_back(locally_relevant_dof_map.LID(gid));
+        terminal_unit.local_dof_ids.push_back(locally_relevant_dof_map.lid(gid));
       }
     }
     for (Connection& conn : connections)
@@ -408,7 +408,7 @@ namespace ReducedLung
       int i = 0;
       for (const int& gid : conn.global_dof_ids)
       {
-        conn.local_dof_ids[i] = locally_relevant_dof_map.LID(gid);
+        conn.local_dof_ids[i] = locally_relevant_dof_map.lid(gid);
         i++;
       }
     }
@@ -417,13 +417,13 @@ namespace ReducedLung
       int i = 0;
       for (const int& gid : bif.global_dof_ids)
       {
-        bif.local_dof_ids[i] = locally_relevant_dof_map.LID(gid);
+        bif.local_dof_ids[i] = locally_relevant_dof_map.lid(gid);
         i++;
       }
     }
     for (BoundaryCondition& bc : boundary_conditions)
     {
-      bc.local_dof_id = locally_relevant_dof_map.LID(bc.global_dof_id);
+      bc.local_dof_id = locally_relevant_dof_map.lid(bc.global_dof_id);
     }
 
     // Local airway vectors. Potentially add to airway objects in the future.

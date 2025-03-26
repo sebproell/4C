@@ -564,7 +564,7 @@ bool Coupling::VolMortar::vol_mortar_ele_based_gp(Core::Elements::Element& sele,
       {
         const int row = Adis.dof(dofseta, cnode, jdof);
 
-        if (not PAB_dofrowmap.MyGID(row)) continue;
+        if (not PAB_dofrowmap.my_gid(row)) continue;
 
         // integrate D
         const double prod2 = lmval_A(j) * sval_A(j) * jac * wgt;
@@ -576,7 +576,7 @@ bool Coupling::VolMortar::vol_mortar_ele_based_gp(Core::Elements::Element& sele,
           Core::Nodes::Node* mnode = mele->nodes()[k];
           const int col = Bdis.dof(dofsetb, mnode, jdof);
 
-          if (not PAB_dofcolmap.MyGID(col)) continue;
+          if (not PAB_dofcolmap.my_gid(col)) continue;
 
           // multiply the two shape functions
           const double prod = lmval_A(j) * mval_A(k) * jac * wgt;
@@ -2139,14 +2139,14 @@ bool Coupling::VolMortar::cons_interpolator_eval(Core::Nodes::Node* node,
   {
     const int row = nodediscret.dof(dofset.first, node, jdof);
 
-    if (not P_dofrowmap.MyGID(row)) continue;
+    if (not P_dofrowmap.my_gid(row)) continue;
 
     for (int k = 0; k < ele->num_node(); ++k)
     {
       Core::Nodes::Node* bnode = ele->nodes()[k];
       const int col = elediscret.dof(dofset.second, bnode, jdof);
 
-      if (not P_dofcolmap.MyGID(col)) continue;
+      if (not P_dofcolmap.my_gid(col)) continue;
 
       const double val2 = val(k);
       // if (abs(val2)>VOLMORTARINTTOL)

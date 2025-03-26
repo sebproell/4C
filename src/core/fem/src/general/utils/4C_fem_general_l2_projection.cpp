@@ -151,10 +151,10 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_nodal_l2_pr
   // remove pbc slave nodes from full noderowmap
   std::vector<int> reducednoderowmap;
   // a little more memory than necessary is possibly reserved here
-  reducednoderowmap.reserve(fullnoderowmap->NumMyElements());
-  for (int i = 0; i < fullnoderowmap->NumMyElements(); ++i)
+  reducednoderowmap.reserve(fullnoderowmap->num_my_elements());
+  for (int i = 0; i < fullnoderowmap->num_my_elements(); ++i)
   {
-    const int nodeid = fullnoderowmap->GID(i);
+    const int nodeid = fullnoderowmap->gid(i);
     // do not add slave pbc nodes here
     if (slavetomastercolnodesmap.empty() or slavetomastercolnodesmap.count(nodeid) == 0)
     {
@@ -164,32 +164,32 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_nodal_l2_pr
 
   // build node row map which does not include slave pbc nodes
   Core::LinAlg::Map noderowmap(-1, static_cast<int>(reducednoderowmap.size()),
-      reducednoderowmap.data(), 0, fullnoderowmap->Comm());
+      reducednoderowmap.data(), 0, fullnoderowmap->get_comm());
 
   auto nodevec = evaluate_and_solve_nodal_l2_projection(dis, noderowmap, statename, numvec, params,
       solverparams, get_solver_params, *fullnoderowmap, slavetomastercolnodesmap);
 
   // if no pbc are involved leave here
-  if (slavetomastercolnodesmap.empty() or noderowmap.PointSameAs(*fullnoderowmap)) return nodevec;
+  if (slavetomastercolnodesmap.empty() or noderowmap.point_same_as(*fullnoderowmap)) return nodevec;
 
   // solution vector based on full row map in which the solution of the master node is inserted into
   // slave nodes
   auto fullnodevec = std::make_shared<Core::LinAlg::MultiVector<double>>(*fullnoderowmap, numvec);
 
-  for (int i = 0; i < fullnoderowmap->NumMyElements(); ++i)
+  for (int i = 0; i < fullnoderowmap->num_my_elements(); ++i)
   {
-    const int nodeid = fullnoderowmap->GID(i);
+    const int nodeid = fullnoderowmap->gid(i);
 
     auto slavemasterpair = slavetomastercolnodesmap.find(nodeid);
     if (slavemasterpair != slavetomastercolnodesmap.end())
     {
       const int mastergid = slavemasterpair->second;
-      const int masterlid = noderowmap.LID(mastergid);
+      const int masterlid = noderowmap.lid(mastergid);
       for (int j = 0; j < numvec; ++j) fullnodevec->ReplaceMyValue(i, j, (*nodevec)(j)[masterlid]);
     }
     else
     {
-      const int lid = noderowmap.LID(nodeid);
+      const int lid = noderowmap.lid(nodeid);
       for (int j = 0; j < numvec; ++j) fullnodevec->ReplaceMyValue(i, j, (*nodevec)(j)[lid]);
     }
   }

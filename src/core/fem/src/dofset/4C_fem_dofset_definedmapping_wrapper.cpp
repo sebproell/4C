@@ -117,8 +117,8 @@ int Core::DOFSets::DofSetDefinedMappingWrapper::assign_degrees_of_freedom(
   MPI_Comm com = dis.get_comm();
 
   // extract permutation
-  std::vector<int> targetnodes(dis.node_row_map()->MyGlobalElements(),
-      dis.node_row_map()->MyGlobalElements() + dis.node_row_map()->NumMyElements());
+  std::vector<int> targetnodes(dis.node_row_map()->my_global_elements(),
+      dis.node_row_map()->my_global_elements() + dis.node_row_map()->num_my_elements());
 
   std::vector<int> patchedtargetnodes;
   patchedtargetnodes.reserve(coupling.size());
@@ -146,11 +146,12 @@ int Core::DOFSets::DofSetDefinedMappingWrapper::assign_degrees_of_freedom(
   Core::LinAlg::Map permsourcenodemap(-1, permsourcenodes.size(), permsourcenodes.data(), 0, com);
 
   // we expect to get maps of exactly the same shape
-  if (not targetnodemap.PointSameAs(permsourcenodemap))
+  if (not targetnodemap.point_same_as(permsourcenodemap))
     FOUR_C_THROW("target and permuted source node maps do not match");
 
   // export target nodes to source node distribution
-  Core::LinAlg::Vector<int> permsourcenodevec(targetnodemap, permsourcenodemap.MyGlobalElements());
+  Core::LinAlg::Vector<int> permsourcenodevec(
+      targetnodemap, permsourcenodemap.my_global_elements());
 
   // initialize the final mapping
   targetlidtosourcegidmapping_ = std::make_shared<Core::LinAlg::Vector<int>>(*dis.node_col_map());

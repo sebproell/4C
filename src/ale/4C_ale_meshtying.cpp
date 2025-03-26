@@ -199,7 +199,7 @@ void ALE::Meshtying::dirichlet_on_master(std::shared_ptr<const Core::LinAlg::Map
   std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
   {
     dconmaster_ = true;
     if (myrank_ == 0)
@@ -420,8 +420,8 @@ void ALE::Meshtying::adapter_mortar(std::vector<int> coupleddof)
 /*-------------------------------------------------------*/
 void ALE::Meshtying::compare_num_dof()
 {
-  int numdofmaster = (adaptermeshtying_->master_dof_map())->NumGlobalElements();
-  int numdofslave = (adaptermeshtying_->slave_dof_map())->NumGlobalElements();
+  int numdofmaster = (adaptermeshtying_->master_dof_map())->num_global_elements();
+  int numdofslave = (adaptermeshtying_->slave_dof_map())->num_global_elements();
 
   std::cout << std::endl << "number of master dof's:   " << numdofmaster << std::endl;
   std::cout << "number of slave dof's:   " << numdofslave << std::endl << std::endl;
