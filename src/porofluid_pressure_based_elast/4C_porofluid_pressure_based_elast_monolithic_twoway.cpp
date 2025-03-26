@@ -65,12 +65,12 @@ POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::PoroMultiPhaseMonolithicTwoWay(
       arterypressnorm_(0.0),
       maxinc_(0.0),
       maxres_(0.0),
-      vectornormfres_(Inpar::POROMULTIPHASE::norm_undefined),
-      vectornorminc_(Inpar::POROMULTIPHASE::norm_undefined),
+      vectornormfres_(POROMULTIPHASE::norm_undefined),
+      vectornorminc_(POROMULTIPHASE::norm_undefined),
       timernewton_("", true),
       dtsolve_(0.0),
       dtele_(0.0),
-      fdcheck_(Inpar::POROMULTIPHASE::FdCheck::fdcheck_none)
+      fdcheck_(POROMULTIPHASE::FdCheck::fdcheck_none)
 {
 }
 
@@ -99,7 +99,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::init(
 
   blockrowdofmap_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
 
-  fdcheck_ = Teuchos::getIntegralValue<Inpar::POROMULTIPHASE::FdCheck>(
+  fdcheck_ = Teuchos::getIntegralValue<POROMULTIPHASE::FdCheck>(
       algoparams.sublist("MONOLITHIC"), "FDCHECK");
 
   equilibration_method_ = Teuchos::getIntegralValue<Core::LinAlg::EquilibrationMethod>(
@@ -208,7 +208,7 @@ void POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::time_step()
       evaluate(iterinc_);
 
       // perform FD Check of monolithic system matrix
-      if (fdcheck_ == Inpar::POROMULTIPHASE::fdcheck_global) poro_fd_check();
+      if (fdcheck_ == POROMULTIPHASE::fdcheck_global) poro_fd_check();
     }
     else
     {
@@ -605,9 +605,9 @@ bool POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay::setup_solver()
 
   create_linear_solver(solverparams, solvertype);
 
-  vectornormfres_ = Teuchos::getIntegralValue<Inpar::POROMULTIPHASE::VectorNorm>(
+  vectornormfres_ = Teuchos::getIntegralValue<POROMULTIPHASE::VectorNorm>(
       poromultdyn.sublist("MONOLITHIC"), "VECTORNORM_RESF");
-  vectornorminc_ = Teuchos::getIntegralValue<Inpar::POROMULTIPHASE::VectorNorm>(
+  vectornorminc_ = Teuchos::getIntegralValue<POROMULTIPHASE::VectorNorm>(
       poromultdyn.sublist("MONOLITHIC"), "VECTORNORM_INC");
 
   return true;

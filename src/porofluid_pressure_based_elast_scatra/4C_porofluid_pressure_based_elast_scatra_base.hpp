@@ -11,9 +11,9 @@
 #include "4C_config.hpp"
 
 #include "4C_adapter_algorithmbase.hpp"
-#include "4C_inpar_porofluid_pressure_based_elast_scatra.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_porofluid_pressure_based_elast_adapter.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
 #include <Teuchos_Time.hpp>
@@ -116,7 +116,7 @@ namespace PoroMultiPhaseScaTra
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_;
 
     //! flux-reconstruction method
-    Inpar::POROFLUIDMULTIPHASE::FluxReconstructionMethod fluxreconmethod_;
+    POROFLUIDMULTIPHASE::FluxReconstructionMethod fluxreconmethod_;
 
     //! dofset of scatra field on fluid dis
     //! TODO: find a better way to do this. Perhaps this should be moved to the adapter?
@@ -127,7 +127,7 @@ namespace PoroMultiPhaseScaTra
 
    protected:
     //! what to do when nonlinear solution fails
-    enum Inpar::PoroMultiPhaseScaTra::DivContAct divcontype_;
+    enum PoroMultiPhaseScaTra::DivContAct divcontype_;
     //! do we perform coupling with 1D artery
     const bool artery_coupl_;
 

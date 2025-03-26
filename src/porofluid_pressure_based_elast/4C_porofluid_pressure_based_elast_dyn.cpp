@@ -9,9 +9,8 @@
 
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_porofluid_pressure_based_elast.hpp"
 #include "4C_porofluid_pressure_based_elast_adapter.hpp"
-#include "4C_porofluid_pressure_based_elast_base.hpp"
+#include "4C_porofluid_pressure_based_elast_input.hpp"
 #include "4C_porofluid_pressure_based_elast_utils.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -64,8 +63,8 @@ void poromultiphase_dyn(int restart)
   // algorithm construction depending on
   // coupling scheme
   // -------------------------------------------------------------------
-  auto solscheme = Teuchos::getIntegralValue<Inpar::POROMULTIPHASE::SolutionSchemeOverFields>(
-      poroparams, "COUPALGO");
+  auto solscheme =
+      Teuchos::getIntegralValue<POROMULTIPHASE::SolutionSchemeOverFields>(poroparams, "COUPALGO");
 
   std::shared_ptr<POROMULTIPHASE::PoroMultiPhase> algo =
       POROMULTIPHASE::Utils::create_poro_multi_phase_algorithm(solscheme, poroparams, comm);

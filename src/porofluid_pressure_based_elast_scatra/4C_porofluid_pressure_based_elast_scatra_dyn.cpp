@@ -73,7 +73,7 @@ void poromultiphasescatra_dyn(int restart)
   // algorithm construction depending on
   // coupling scheme
   // -------------------------------------------------------------------
-  auto solscheme = Teuchos::getIntegralValue<Inpar::PoroMultiPhaseScaTra::SolutionSchemeOverFields>(
+  auto solscheme = Teuchos::getIntegralValue<PoroMultiPhaseScaTra::SolutionSchemeOverFields>(
       poroscatraparams, "COUPALGO");
 
   std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase> algo =

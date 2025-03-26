@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_input.hpp"
 #include "4C_porofluid_pressure_based_elast_partitioned.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -113,7 +113,7 @@ namespace POROMULTIPHASE
     bool artery_coupling_active_;
 
     //! relaxation method
-    Inpar::POROMULTIPHASE::RelaxationMethods relaxationmethod_;
+    POROMULTIPHASE::RelaxationMethods relaxationmethod_;
 
   };  // PoroMultiPhasePartitioned
 

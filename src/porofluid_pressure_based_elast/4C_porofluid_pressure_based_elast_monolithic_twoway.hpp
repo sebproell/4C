@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_input.hpp"
 #include "4C_porofluid_pressure_based_elast_monolithic.hpp"
 
 #include <Teuchos_Time.hpp>
@@ -276,8 +276,8 @@ namespace POROMULTIPHASE
     double maxinc_;  //!< maximum increment
     double maxres_;  //!< maximum residual
 
-    enum Inpar::POROMULTIPHASE::VectorNorm vectornormfres_;  //!< type of norm for residual
-    enum Inpar::POROMULTIPHASE::VectorNorm vectornorminc_;   //!< type of norm for increments
+    enum POROMULTIPHASE::VectorNorm vectornormfres_;  //!< type of norm for residual
+    enum POROMULTIPHASE::VectorNorm vectornorminc_;   //!< type of norm for increments
 
     Teuchos::Time timernewton_;  //!< timer for measurement of solution time of newton iterations
     double dtsolve_;             //!< linear solver time
@@ -287,7 +287,7 @@ namespace POROMULTIPHASE
     std::shared_ptr<Core::Conditions::LocsysManager> locsysman_;
 
     //! flag for finite difference check
-    Inpar::POROMULTIPHASE::FdCheck fdcheck_;
+    POROMULTIPHASE::FdCheck fdcheck_;
 
   };  // PoroMultiPhasePartitioned
 

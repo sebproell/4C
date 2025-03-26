@@ -71,12 +71,12 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::PoroMultiPhaseScaTra
       arteryscanorm_(0.0),
       maxinc_(0.0),
       maxres_(0.0),
-      vectornormfres_(Inpar::PoroMultiPhaseScaTra::norm_undefined),
-      vectornorminc_(Inpar::PoroMultiPhaseScaTra::norm_undefined),
+      vectornormfres_(PoroMultiPhaseScaTra::norm_undefined),
+      vectornorminc_(PoroMultiPhaseScaTra::norm_undefined),
       timernewton_("", true),
       dtsolve_(0.0),
       dtele_(0.0),
-      fdcheck_(Inpar::PoroMultiPhaseScaTra::FdCheck::fdcheck_none)
+      fdcheck_(PoroMultiPhaseScaTra::FdCheck::fdcheck_none)
 {
 }
 
@@ -103,7 +103,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::init(
 
   blockrowdofmap_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
 
-  fdcheck_ = Teuchos::getIntegralValue<Inpar::PoroMultiPhaseScaTra::FdCheck>(
+  fdcheck_ = Teuchos::getIntegralValue<PoroMultiPhaseScaTra::FdCheck>(
       algoparams.sublist("MONOLITHIC"), "FDCHECK");
 
   equilibration_method_ = Teuchos::getIntegralValue<Core::LinAlg::EquilibrationMethod>(
@@ -260,9 +260,9 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::setup_solver()
 
   create_linear_solver(solverparams, solvertype);
 
-  vectornormfres_ = Teuchos::getIntegralValue<Inpar::PoroMultiPhaseScaTra::VectorNorm>(
+  vectornormfres_ = Teuchos::getIntegralValue<PoroMultiPhaseScaTra::VectorNorm>(
       poromultscatradyn.sublist("MONOLITHIC"), "VECTORNORM_RESF");
-  vectornorminc_ = Teuchos::getIntegralValue<Inpar::PoroMultiPhaseScaTra::VectorNorm>(
+  vectornorminc_ = Teuchos::getIntegralValue<PoroMultiPhaseScaTra::VectorNorm>(
       poromultscatradyn.sublist("MONOLITHIC"), "VECTORNORM_INC");
 }
 
@@ -341,8 +341,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay::time_step()
     {
       evaluate(iterinc_);
       // perform FD Check of monolithic system matrix
-      if (fdcheck_ == Inpar::PoroMultiPhaseScaTra::fdcheck_global)
-        poro_multi_phase_scatra_fd_check();
+      if (fdcheck_ == PoroMultiPhaseScaTra::fdcheck_global) poro_multi_phase_scatra_fd_check();
     }
     else
     {

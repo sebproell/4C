@@ -154,21 +154,21 @@ void POROMULTIPHASE::Utils::assign_material_pointers(
  *----------------------------------------------------------------------*/
 std::shared_ptr<POROMULTIPHASE::PoroMultiPhase>
 POROMULTIPHASE::Utils::create_poro_multi_phase_algorithm(
-    Inpar::POROMULTIPHASE::SolutionSchemeOverFields solscheme,
-    const Teuchos::ParameterList& timeparams, MPI_Comm comm)
+    POROMULTIPHASE::SolutionSchemeOverFields solscheme, const Teuchos::ParameterList& timeparams,
+    MPI_Comm comm)
 {
   // Creation of Coupled Problem algorithm.
   std::shared_ptr<POROMULTIPHASE::PoroMultiPhase> algo = nullptr;
 
   switch (solscheme)
   {
-    case Inpar::POROMULTIPHASE::solscheme_twoway_partitioned:
+    case POROMULTIPHASE::solscheme_twoway_partitioned:
     {
       // call constructor
       algo = std::make_shared<POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay>(comm, timeparams);
       break;
     }
-    case Inpar::POROMULTIPHASE::solscheme_twoway_monolithic:
+    case POROMULTIPHASE::solscheme_twoway_monolithic:
     {
       const bool artery_coupl = timeparams.get<bool>("ARTERY_COUPLING");
       if (!artery_coupl)
@@ -196,11 +196,11 @@ POROMULTIPHASE::Utils::create_poro_multi_phase_algorithm(
  | calculate vector norm                             kremheller 07/17   |
  *----------------------------------------------------------------------*/
 double POROMULTIPHASE::Utils::calculate_vector_norm(
-    const enum Inpar::POROMULTIPHASE::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
+    const enum POROMULTIPHASE::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
 {
   // L1 norm
   // norm = sum_0^i vect[i]
-  if (norm == Inpar::POROMULTIPHASE::norm_l1)
+  if (norm == POROMULTIPHASE::norm_l1)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);
@@ -208,7 +208,7 @@ double POROMULTIPHASE::Utils::calculate_vector_norm(
   }
   // L2/Euclidian norm
   // norm = sqrt{sum_0^i vect[i]^2 }
-  else if (norm == Inpar::POROMULTIPHASE::norm_l2)
+  else if (norm == POROMULTIPHASE::norm_l2)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -216,7 +216,7 @@ double POROMULTIPHASE::Utils::calculate_vector_norm(
   }
   // RMS norm
   // norm = sqrt{sum_0^i vect[i]^2 }/ sqrt{length_vect}
-  else if (norm == Inpar::POROMULTIPHASE::norm_rms)
+  else if (norm == POROMULTIPHASE::norm_rms)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -224,14 +224,14 @@ double POROMULTIPHASE::Utils::calculate_vector_norm(
   }
   // infinity/maximum norm
   // norm = max( vect[i] )
-  else if (norm == Inpar::POROMULTIPHASE::norm_inf)
+  else if (norm == POROMULTIPHASE::norm_inf)
   {
     double vectnorm;
     vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   // norm = sum_0^i vect[i]/length_vect
-  else if (norm == Inpar::POROMULTIPHASE::norm_l1_scaled)
+  else if (norm == POROMULTIPHASE::norm_l1_scaled)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);

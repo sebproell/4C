@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_porofluid_pressure_based_elast_scatra.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_input_spec_builders.hpp"
@@ -15,8 +15,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
-    std::map<std::string, Core::IO::InputSpec>& list)
+void PoroMultiPhaseScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
@@ -75,25 +74,25 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
 
   poromultiphasescatradynmono.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_RESF",
       {
-          {"L1", Inpar::PoroMultiPhaseScaTra::norm_l1},
-          {"L1_Scaled", Inpar::PoroMultiPhaseScaTra::norm_l1_scaled},
-          {"L2", Inpar::PoroMultiPhaseScaTra::norm_l2},
-          {"Rms", Inpar::PoroMultiPhaseScaTra::norm_rms},
-          {"Inf", Inpar::PoroMultiPhaseScaTra::norm_inf},
+          {"L1", PoroMultiPhaseScaTra::norm_l1},
+          {"L1_Scaled", PoroMultiPhaseScaTra::norm_l1_scaled},
+          {"L2", PoroMultiPhaseScaTra::norm_l2},
+          {"Rms", PoroMultiPhaseScaTra::norm_rms},
+          {"Inf", PoroMultiPhaseScaTra::norm_inf},
       },
       {.description = "type of norm to be applied to residuals",
-          .default_value = Inpar::PoroMultiPhaseScaTra::norm_l2}));
+          .default_value = PoroMultiPhaseScaTra::norm_l2}));
 
   poromultiphasescatradynmono.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_INC",
       {
-          {"L1", Inpar::PoroMultiPhaseScaTra::norm_l1},
-          {"L1_Scaled", Inpar::PoroMultiPhaseScaTra::norm_l1_scaled},
-          {"L2", Inpar::PoroMultiPhaseScaTra::norm_l2},
-          {"Rms", Inpar::PoroMultiPhaseScaTra::norm_rms},
-          {"Inf", Inpar::PoroMultiPhaseScaTra::norm_inf},
+          {"L1", PoroMultiPhaseScaTra::norm_l1},
+          {"L1_Scaled", PoroMultiPhaseScaTra::norm_l1_scaled},
+          {"L2", PoroMultiPhaseScaTra::norm_l2},
+          {"Rms", PoroMultiPhaseScaTra::norm_rms},
+          {"Inf", PoroMultiPhaseScaTra::norm_inf},
       },
       {.description = "type of norm to be applied to residuals",
-          .default_value = Inpar::PoroMultiPhaseScaTra::norm_l2}));
+          .default_value = PoroMultiPhaseScaTra::norm_l2}));
 
   // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
   poromultiphasescatradynmono.specs.emplace_back(parameter<bool>("ADAPTCONV",
@@ -146,7 +145,7 @@ void Inpar::PoroMultiPhaseScaTra::set_valid_parameters(
   poromultiphasescatradynpart.move_into_collection(list);
 }
 
-void Inpar::PoroMultiPhaseScaTra::set_valid_conditions(
+void PoroMultiPhaseScaTra::set_valid_conditions(
     std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   using namespace Core::IO::InputSpecBuilders;

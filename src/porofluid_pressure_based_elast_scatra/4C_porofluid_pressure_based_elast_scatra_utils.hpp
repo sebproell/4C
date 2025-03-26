@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_porofluid_pressure_based_elast_scatra.hpp"
 #include "4C_linalg_vector.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 
 #include <Sacado.hpp>
 
@@ -51,10 +51,10 @@ namespace PoroMultiPhaseScaTra
 
     //! create solution algorithm depending on input file
     std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase>
-    create_poro_multi_phase_scatra_algorithm(Inpar::PoroMultiPhaseScaTra::SolutionSchemeOverFields
-                                                 solscheme,  //!< solution scheme to build (i)
-        const Teuchos::ParameterList& timeparams,            //!< problem parameters (i)
-        MPI_Comm comm                                        //!< communicator(i)
+    create_poro_multi_phase_scatra_algorithm(
+        PoroMultiPhaseScaTra::SolutionSchemeOverFields solscheme,  //!< solution scheme to build (i)
+        const Teuchos::ParameterList& timeparams,                  //!< problem parameters (i)
+        MPI_Comm comm                                              //!< communicator(i)
     );
 
     //! create coupling strategy for coupling with 1D network depending on input file
@@ -71,8 +71,8 @@ namespace PoroMultiPhaseScaTra
      * @param vect [in]: the vector of interest
      * @return: the norm
      */
-    double calculate_vector_norm(const enum Inpar::PoroMultiPhaseScaTra::VectorNorm norm,
-        const Core::LinAlg::Vector<double>& vect);
+    double calculate_vector_norm(
+        const enum PoroMultiPhaseScaTra::VectorNorm norm, const Core::LinAlg::Vector<double>& vect);
 
     /**
      * Get oxygen partial pressure from oxygen concentration via numerical inversion

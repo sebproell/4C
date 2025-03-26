@@ -23,7 +23,6 @@
 #include "4C_inpar_mortar.hpp"
 #include "4C_inpar_mpc_rve.hpp"
 #include "4C_inpar_particle.hpp"
-#include "4C_inpar_porofluid_pressure_based_elast_scatra.hpp"
 #include "4C_inpar_s2i.hpp"
 #include "4C_inpar_scatra.hpp"
 #include "4C_inpar_ssi.hpp"
@@ -32,6 +31,7 @@
 #include "4C_inpar_structure.hpp"
 #include "4C_inpar_xfem.hpp"
 #include "4C_io_input_spec_builders.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 #include "4C_thermo_input.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -855,7 +855,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
   Inpar::RveMpc::set_valid_conditions(condlist);
   Inpar::BeamInteraction::set_valid_conditions(condlist);
   EHL::set_valid_conditions(condlist);
-  Inpar::PoroMultiPhaseScaTra::set_valid_conditions(condlist);
+  PoroMultiPhaseScaTra::set_valid_conditions(condlist);
 
   // finally some conditions that do not have their own files yet are problem-specific
   set_miscellaneous_conditions(condlist);

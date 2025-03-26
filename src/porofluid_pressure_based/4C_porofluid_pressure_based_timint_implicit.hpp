@@ -15,10 +15,10 @@
 #include "4C_adapter_art_net.hpp"
 #include "4C_adapter_porofluid_pressure_based.hpp"
 #include "4C_fem_discretization.hpp"
-#include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensevector.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -232,8 +232,8 @@ namespace POROFLUIDMULTIPHASE
 
     //! set the initial scalar field phi
     virtual void set_initial_field(
-        const Inpar::POROFLUIDMULTIPHASE::InitialField init,  //!< type of initial field
-        const int startfuncno                                 //!< number of spatial function
+        const POROFLUIDMULTIPHASE::InitialField init,  //!< type of initial field
+        const int startfuncno                          //!< number of spatial function
     );
 
     /*--- query and output ---------------------------------------------------*/
@@ -517,19 +517,19 @@ namespace POROFLUIDMULTIPHASE
     std::shared_ptr<Core::LinAlg::SerialDenseVector> domain_integrals_;
 
     //! flag for error calculation
-    const Inpar::POROFLUIDMULTIPHASE::CalcError calcerr_;
+    const POROFLUIDMULTIPHASE::CalcError calcerr_;
 
     //! flag for flux reconstruction
-    const Inpar::POROFLUIDMULTIPHASE::FluxReconstructionMethod fluxrecon_;
+    const POROFLUIDMULTIPHASE::FluxReconstructionMethod fluxrecon_;
 
     //! solver number for flux reconstruction
     const int fluxreconsolvernum_;
 
     //! what to do when nonlinear solution fails
-    enum Inpar::POROFLUIDMULTIPHASE::DivContAct divcontype_;
+    enum POROFLUIDMULTIPHASE::DivContAct divcontype_;
 
     //! flag for finite difference check
-    const Inpar::POROFLUIDMULTIPHASE::FdCheck fdcheck_;
+    const POROFLUIDMULTIPHASE::FdCheck fdcheck_;
 
     //! perturbation magnitude for finite difference check
     const double fdcheckeps_;
@@ -578,9 +578,9 @@ namespace POROFLUIDMULTIPHASE
     const int uprestart_;
 
     // vector norm for residuals
-    enum Inpar::POROFLUIDMULTIPHASE::VectorNorm vectornormfres_;
+    enum POROFLUIDMULTIPHASE::VectorNorm vectornormfres_;
     // vector norm for increments
-    enum Inpar::POROFLUIDMULTIPHASE::VectorNorm vectornorminc_;
+    enum POROFLUIDMULTIPHASE::VectorNorm vectornorminc_;
 
     //! convergence tolerance for increments
     double ittolres_;

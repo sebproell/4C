@@ -11,10 +11,10 @@
 #include "4C_config.hpp"
 
 #include "4C_inpar_bio.hpp"
-#include "4C_inpar_porofluid_pressure_based.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_vector.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 #include <memory>
@@ -70,12 +70,11 @@ namespace POROFLUIDMULTIPHASE
 
     /// create solution algorithm depending on input file
     std::shared_ptr<Adapter::PoroFluidMultiphase> create_algorithm(
-        Inpar::POROFLUIDMULTIPHASE::TimeIntegrationScheme
-            timintscheme,                               //!< time discretization scheme
-        std::shared_ptr<Core::FE::Discretization> dis,  //!< discretization
-        const int linsolvernumber,                      //!< number of linear solver
-        const Teuchos::ParameterList& probparams,       //!< parameter list of global problem
-        const Teuchos::ParameterList& poroparams,       //!< parameter list of poro problem
+        POROFLUIDMULTIPHASE::TimeIntegrationScheme timintscheme,  //!< time discretization scheme
+        std::shared_ptr<Core::FE::Discretization> dis,            //!< discretization
+        const int linsolvernumber,                                //!< number of linear solver
+        const Teuchos::ParameterList& probparams,  //!< parameter list of global problem
+        const Teuchos::ParameterList& poroparams,  //!< parameter list of poro problem
         std::shared_ptr<Core::IO::DiscretizationWriter> output  //!< output writer
     );
 
@@ -134,9 +133,8 @@ namespace POROFLUIDMULTIPHASE
         Core::FE::Discretization& dis, const Core::LinAlg::Map* nodemap);
 
     //! Determine norm of vector
-    double calculate_vector_norm(
-        const enum Inpar::POROFLUIDMULTIPHASE::VectorNorm norm,  //!< norm to use
-        const Core::LinAlg::Vector<double>& vect                 //!< the vector of interest
+    double calculate_vector_norm(const enum POROFLUIDMULTIPHASE::VectorNorm norm,  //!< norm to use
+        const Core::LinAlg::Vector<double>& vect  //!< the vector of interest
     );
 
     /*!

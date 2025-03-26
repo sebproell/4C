@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_input.hpp"
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_linalg_equilibrate.hpp"
@@ -14,7 +14,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
@@ -87,25 +87,25 @@ void Inpar::POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO:
 
   poromultiphasedynmono.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_RESF",
       {
-          {"L1", Inpar::POROMULTIPHASE::norm_l1},
-          {"L1_Scaled", Inpar::POROMULTIPHASE::norm_l1_scaled},
-          {"L2", Inpar::POROMULTIPHASE::norm_l2},
-          {"Rms", Inpar::POROMULTIPHASE::norm_rms},
-          {"Inf", Inpar::POROMULTIPHASE::norm_inf},
+          {"L1", POROMULTIPHASE::norm_l1},
+          {"L1_Scaled", POROMULTIPHASE::norm_l1_scaled},
+          {"L2", POROMULTIPHASE::norm_l2},
+          {"Rms", POROMULTIPHASE::norm_rms},
+          {"Inf", POROMULTIPHASE::norm_inf},
       },
       {.description = "type of norm to be applied to residuals",
-          .default_value = Inpar::POROMULTIPHASE::norm_l2}));
+          .default_value = POROMULTIPHASE::norm_l2}));
 
   poromultiphasedynmono.specs.emplace_back(deprecated_selection<VectorNorm>("VECTORNORM_INC",
       {
-          {"L1", Inpar::POROMULTIPHASE::norm_l1},
-          {"L1_Scaled", Inpar::POROMULTIPHASE::norm_l1_scaled},
-          {"L2", Inpar::POROMULTIPHASE::norm_l2},
-          {"Rms", Inpar::POROMULTIPHASE::norm_rms},
-          {"Inf", Inpar::POROMULTIPHASE::norm_inf},
+          {"L1", POROMULTIPHASE::norm_l1},
+          {"L1_Scaled", POROMULTIPHASE::norm_l1_scaled},
+          {"L2", POROMULTIPHASE::norm_l2},
+          {"Rms", POROMULTIPHASE::norm_rms},
+          {"Inf", POROMULTIPHASE::norm_inf},
       },
       {.description = "type of norm to be applied to residuals",
-          .default_value = Inpar::POROMULTIPHASE::norm_l2}));
+          .default_value = POROMULTIPHASE::norm_l2}));
 
   // flag for equilibration of global system of equations
   poromultiphasedynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
