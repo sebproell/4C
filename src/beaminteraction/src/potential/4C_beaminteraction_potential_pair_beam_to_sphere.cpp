@@ -152,7 +152,7 @@ bool BeamInteraction::BeamToSpherePotentialPair<numnodes, numnodalvalues>::evalu
   // Todo allow for independent choice of strategy for beam-to-sphere potentials
   switch (params()->strategy())
   {
-    case BeamPotential::strategy_doublelengthspec_largesepapprox:
+    case BeamPotential::Strategy::double_length_specific_large_separations:
     {
       evaluate_fpotand_stiffpot_large_sep_approx();
       break;
@@ -215,7 +215,7 @@ void BeamInteraction::BeamToSpherePotentialPair<numnodes,
     numnodalvalues>::evaluate_fpotand_stiffpot_large_sep_approx()
 {
   // get cutoff radius
-  const double cutoff_radius = params()->cutoff_radius();
+  const std::optional<double> cutoff_radius = params()->cutoff_radius();
 
   // Set gauss integration rule
   Core::FE::GaussRule1D gaussrule = get_gauss_rule();
@@ -272,15 +272,14 @@ void BeamInteraction::BeamToSpherePotentialPair<numnodes,
 
   switch (params()->potential_type())  // Todo do we need a own Beam-to-sphere potential type here?
   {
-    case BeamPotential::beampot_surf:
+    case BeamPotential::Type::surface:
       prefactor *= 2 * radius1_ * M_PI;
       break;
-    case BeamPotential::beampot_vol:
+    case BeamPotential::Type::volume:
       prefactor *= std::pow(radius1_, 2) * M_PI;
       break;
     default:
-      FOUR_C_THROW(
-          "No valid BEAMPOTENTIAL_TYPE specified. Choose either Surface or Volume in input file!");
+      FOUR_C_THROW("No valid TYPE specified. Choose either `surface` `volume` in input file!");
   }
 
   // get sphere midpoint position
@@ -299,7 +298,8 @@ void BeamInteraction::BeamToSpherePotentialPair<numnodes,
     norm_dist = Core::FADUtils::vector_norm<3>(dist);
 
     // check cutoff criterion: if specified, contributions are neglected at larger separation
-    if (cutoff_radius != -1.0 and Core::FADUtils::cast_to_double(norm_dist) > cutoff_radius)
+    if (cutoff_radius.has_value() and
+        Core::FADUtils::cast_to_double(norm_dist) > cutoff_radius.value())
       continue;
 
     // auxiliary variables to store pre-calculated common terms

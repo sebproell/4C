@@ -62,25 +62,25 @@ namespace BeamInteraction
       return *pot_law_prefactors_;
     }
 
-    inline enum BeamPotential::BeamPotentialType potential_type() const
+    inline enum BeamPotential::Type potential_type() const
     {
       throw_error_if_not_init_and_setup();
       return potential_type_;
     }
 
-    inline enum BeamPotential::BeamPotentialStrategy strategy() const
+    inline enum BeamPotential::Strategy strategy() const
     {
       throw_error_if_not_init_and_setup();
       return strategy_;
     }
 
-    inline double cutoff_radius() const
+    inline std::optional<double> cutoff_radius() const
     {
       throw_error_if_not_init_and_setup();
       return cutoff_radius_;
     }
 
-    inline enum BeamPotential::BeamPotentialRegularizationType regularization_type() const
+    inline enum BeamPotential::RegularizationType regularization_type() const
     {
       throw_error_if_not_init_and_setup();
       return regularization_type_;
@@ -131,7 +131,7 @@ namespace BeamInteraction
       return params_runtime_visualization_output_btb_potential_;
     }
 
-    inline double potential_reduction_length() const
+    inline std::optional<double> potential_reduction_length() const
     {
       throw_error_if_not_init_and_setup();
       return potential_reduction_length_;
@@ -154,16 +154,16 @@ namespace BeamInteraction
     std::shared_ptr<std::vector<double>> pot_law_prefactors_;
 
     //! type of applied potential (volume, surface)
-    enum BeamPotential::BeamPotentialType potential_type_;
+    enum BeamPotential::Type potential_type_;
 
     //! strategy to evaluate interaction potential
-    enum BeamPotential::BeamPotentialStrategy strategy_;
+    enum BeamPotential::Strategy strategy_;
 
     //! neglect all contributions at separation larger than this cutoff radius
-    double cutoff_radius_;
+    std::optional<double> cutoff_radius_;
 
     //! type of regularization to use for force law at separations below specified separation
-    enum BeamPotential::BeamPotentialRegularizationType regularization_type_;
+    enum BeamPotential::RegularizationType regularization_type_;
 
     //! use specified regularization type for separations smaller than this value
     double regularization_separation_;
@@ -191,7 +191,7 @@ namespace BeamInteraction
     //! within this length starting from the master beam end point the potential is smoothly
     //! reduced to zero to account for infinitely long master beam surrogates and enable an
     //! axial pull-off force.
-    double potential_reduction_length_;
+    std::optional<double> potential_reduction_length_;
   };
 
 }  // namespace BeamInteraction

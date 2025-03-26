@@ -143,7 +143,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_setup()
 {
   check_init_setup();
 
-  if (beam_potential_params().potential_reduction_length() != -1.0)
+  if (beam_potential_params().potential_reduction_length().has_value())
     setup_potential_reduction_strategy();
 
   nearby_elements_map_.clear();
@@ -599,7 +599,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_read_restart()
 {
   check_init_setup();
 
-  if (beam_potential_params().potential_reduction_length() != -1.0)
+  if (beam_potential_params().potential_reduction_length().has_value())
     setup_potential_reduction_strategy();
 
   nearby_elements_map_.clear();
@@ -647,9 +647,9 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::get_half_interaction_dis
 {
   check_init_setup();
 
-  if (beam_potential_params().cutoff_radius() > 0.0)
+  if (beam_potential_params().cutoff_radius().has_value())
   {
-    half_interaction_distance = 0.5 * beam_potential_params().cutoff_radius();
+    half_interaction_distance = 0.5 * beam_potential_params().cutoff_radius().value();
 
     if (g_state().get_my_rank() == 0)
       Core::IO::cout(Core::IO::verbose) << " beam potential half interaction distance "
@@ -969,12 +969,12 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::print_console_welcome_me
 
     switch (beam_potential_params().potential_type())
     {
-      case FourC::BeamPotential::beampot_surf:
+      case FourC::BeamPotential::Type::surface:
       {
         std::cout << "Potential Type:      Surface" << std::endl;
         break;
       }
-      case FourC::BeamPotential::beampot_vol:
+      case FourC::BeamPotential::Type::volume:
       {
         std::cout << "Potential Type:      Volume" << std::endl;
         break;
