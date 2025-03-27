@@ -11,10 +11,9 @@
 
 #include "4C_config.hpp"
 
-#include "4C_comm_mpi_utils.hpp"
-
 #include <Epetra_Comm.h>
 #include <Epetra_Map.h>
+#include <mpi.h>
 
 #include <memory>
 
