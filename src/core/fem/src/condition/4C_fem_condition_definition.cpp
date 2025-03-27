@@ -64,30 +64,27 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
       all_of(specs_),
   });
 
-  for (const auto& fragment : input.in_section(section_name()))
+  Core::IO::InputParameterContainer container;
+  try
   {
-    std::optional<Core::IO::InputParameterContainer> data;
-    try
-    {
-      data = fragment.match(condition_spec);
-    }
-    catch (const Core::Exception& e)
-    {
-      FOUR_C_THROW("Failed to match condition specification in section '{}'. The error was:\n{}.",
-          section_name().c_str(), e.what());
-    }
-    if (!data)
-    {
-      FOUR_C_THROW(
-          "Failed to match condition specification in section '{}'.", sectionname_.c_str());
-    }
+    input.match_section(section_name(), container);
+  }
+  catch (const Core::Exception& e)
+  {
+    FOUR_C_THROW("Failed to match condition specification in section '{}'. The error was:\n{}.",
+        section_name(), e.what());
+  }
 
+
+  for (const auto& condition_data :
+      container.get_or<std::vector<Core::IO::InputParameterContainer>>(section_name(), {}))
+  {
     // Read a one-based condition number but convert it to zero-based for internal use.
-    const int dobjid = data->get<int>("E") - 1;
+    const int dobjid = condition_data.get<int>("E") - 1;
 
     std::shared_ptr<Core::Conditions::Condition> condition =
         std::make_shared<Core::Conditions::Condition>(dobjid, condtype_, buildgeometry_, gtype_);
-    condition->parameters() = *std::move(data);
+    condition->parameters() = condition_data;
 
     //------------------------------- put condition in map of conditions
     cmap.insert(std::pair<int, std::shared_ptr<Core::Conditions::Condition>>(dobjid, condition));

@@ -309,6 +309,12 @@ namespace Core::IO
                std::all_of(section_name.begin() + 5, section_name.end(),
                    [](const char c) { return std::isdigit(c); });
       }
+
+      bool is_legacy_section(const std::string& section_name) const
+      {
+        return std::ranges::any_of(
+            legacy_section_names_, [&](const auto& name) { return name == section_name; });
+      }
     };
 
   }  // namespace Internal
@@ -878,6 +884,11 @@ namespace Core::IO
   InputFile::FragmentIteratorRange InputFile::in_section_rank_0_only(
       const std::string& section_name) const
   {
+    FOUR_C_ASSERT_ALWAYS(pimpl_->is_legacy_section(section_name),
+        "You tried to process section '{}' on rank 0 only, but this feature is meant for special "
+        "legacy sections. Please use match_section() instead.",
+        section_name);
+
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0 &&
         pimpl_->content_by_section_.contains(section_name))
     {

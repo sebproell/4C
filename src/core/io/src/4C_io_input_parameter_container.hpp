@@ -21,6 +21,7 @@
 #include <map>
 #include <optional>
 #include <ostream>
+#include <ranges>
 #include <string>
 #include <typeindex>
 #include <vector>
@@ -50,6 +51,8 @@ namespace Core::IO
      */
     using List = std::vector<InputParameterContainer>;
 
+    using GroupStorage = std::map<std::string, InputParameterContainer>;
+
     /**
      * \brief Add @data to the container at the given key @name.
      *
@@ -67,6 +70,11 @@ namespace Core::IO
      * Access group @p name. This function throws an error if the group does not exist.
      */
     [[nodiscard]] const InputParameterContainer& group(const std::string& name) const;
+
+    /**
+     * Get a range view of all groups in the container.
+     */
+    [[nodiscard]] auto groups() const;
 
     /**
      * Check if a group with the name @p name exists.
@@ -265,6 +273,11 @@ namespace Core::IO::Internal::InputParameterContainerImplementation
 
 }  // namespace Core::IO::Internal::InputParameterContainerImplementation
 
+
+inline auto Core::IO::InputParameterContainer::groups() const
+{
+  return std::ranges::subrange(groups_);
+}
 
 
 template <typename T>
