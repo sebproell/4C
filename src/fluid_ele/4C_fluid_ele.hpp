@@ -725,14 +725,6 @@ namespace Discret
         return nullspace;
       }
 
-      /// pre-evaluation
-      void pre_evaluate(Core::FE::Discretization& dis, Teuchos::ParameterList& p,
-          std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
-          std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
-          std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
-          std::shared_ptr<Core::LinAlg::Vector<double>> systemvector2,
-          std::shared_ptr<Core::LinAlg::Vector<double>> systemvector3) override;
-
      private:
       static FluidIntFaceType instance_;
     };

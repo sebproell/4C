@@ -756,37 +756,4 @@ int Discret::Elements::Fluid::evaluate_neumann(Teuchos::ParameterList& params,
   return 0;
 }
 
-
-/*----------------------------------------------------------------------*
- | pre-evaluation of FluidIntFaceType class (public)        schott Jun14|
- *----------------------------------------------------------------------*/
-void Discret::Elements::FluidIntFaceType::pre_evaluate(Core::FE::Discretization& dis,
-    Teuchos::ParameterList& p, std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
-    std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
-    std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
-    std::shared_ptr<Core::LinAlg::Vector<double>> systemvector2,
-    std::shared_ptr<Core::LinAlg::Vector<double>> systemvector3)
-{
-  const auto action = Teuchos::getIntegralValue<FLD::Action>(p, "action");
-
-  if (action == FLD::set_general_face_fluid_parameter)
-  {
-    Discret::Elements::FluidEleParameterIntFace* fldintfacepara =
-        Discret::Elements::FluidEleParameterIntFace::instance();
-    fldintfacepara->set_face_general_fluid_parameter(
-        p, Core::Communication::my_mpi_rank(dis.get_comm()));
-  }
-  else if (action == FLD::set_general_face_xfem_parameter)
-  {
-    Discret::Elements::FluidEleParameterIntFace* fldintfacepara =
-        Discret::Elements::FluidEleParameterIntFace::instance();
-    fldintfacepara->set_face_general_xfem_parameter(
-        p, Core::Communication::my_mpi_rank(dis.get_comm()));
-  }
-  else
-    FOUR_C_THROW("unknown action type for FluidIntFaceType::pre_evaluate");
-
-  return;
-}
-
 FOUR_C_NAMESPACE_CLOSE

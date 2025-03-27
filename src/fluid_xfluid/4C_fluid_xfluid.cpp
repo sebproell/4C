@@ -18,6 +18,7 @@
 #include "4C_fluid_ele_action.hpp"
 #include "4C_fluid_ele_factory.hpp"
 #include "4C_fluid_ele_interface.hpp"
+#include "4C_fluid_ele_parameter_intface.hpp"
 #include "4C_fluid_utils_infnormscaling.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_fluid_xfluid_outputservice.hpp"
@@ -464,8 +465,6 @@ void FLD::XFluid::set_face_general_fluid_xfem_parameter()
   {
     Teuchos::ParameterList faceparams;
 
-    faceparams.set<FLD::Action>("action", FLD::set_general_face_fluid_parameter);
-
     faceparams.sublist("EDGE-BASED STABILIZATION") = params_->sublist("EDGE-BASED STABILIZATION");
 
     faceparams.set<Inpar::FLUID::StabType>(
@@ -480,6 +479,11 @@ void FLD::XFluid::set_face_general_fluid_xfem_parameter()
 
     Discret::Elements::FluidIntFaceType::instance().pre_evaluate(
         *discret_, faceparams, nullptr, nullptr, nullptr, nullptr, nullptr);
+
+    Discret::Elements::FluidEleParameterIntFace* fldintfacepara =
+        Discret::Elements::FluidEleParameterIntFace::instance();
+    fldintfacepara->set_face_general_fluid_parameter(
+        faceparams, Core::Communication::my_mpi_rank(discret_->get_comm()));
   }
 
   //------------------------------------------------------------------------------------------------------
@@ -487,14 +491,14 @@ void FLD::XFluid::set_face_general_fluid_xfem_parameter()
   {
     Teuchos::ParameterList faceparams;
 
-    faceparams.set<FLD::Action>("action", FLD::set_general_face_xfem_parameter);
-
     // set general fluid face parameters are contained in the following two sublists
     faceparams.sublist("XFLUID DYNAMIC/STABILIZATION") =
         params_->sublist("XFLUID DYNAMIC/STABILIZATION");
 
-    Discret::Elements::FluidIntFaceType::instance().pre_evaluate(
-        *discret_, faceparams, nullptr, nullptr, nullptr, nullptr, nullptr);
+    Discret::Elements::FluidEleParameterIntFace* fldintfacepara =
+        Discret::Elements::FluidEleParameterIntFace::instance();
+    fldintfacepara->set_face_general_xfem_parameter(
+        faceparams, Core::Communication::my_mpi_rank(discret_->get_comm()));
   }
 
   return;

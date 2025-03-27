@@ -22,21 +22,9 @@ void Discret::Elements::FluidPoroEleType::pre_evaluate(Core::FE::Discretization&
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector3)
 {
-  const auto action = Teuchos::getIntegralValue<FLD::Action>(p, "action");
-
-  // poro specific actions
-  if (action == FLD::set_poro_parameter)
-  {
-    Discret::Elements::FluidEleParameterPoro* fldpara =
-        Discret::Elements::FluidEleParameterPoro::instance();
-    fldpara->set_element_poro_parameter(p, Core::Communication::my_mpi_rank(dis.get_comm()));
-  }
-  else
-  {
-    // call standard fluid type
-    FluidType::pre_evaluate(
-        dis, p, systemmatrix1, systemmatrix2, systemvector1, systemvector2, systemvector3);
-  }
+  // call standard fluid type
+  FluidType::pre_evaluate(
+      dis, p, systemmatrix1, systemmatrix2, systemvector1, systemvector2, systemvector3);
 }
 
 int Discret::Elements::FluidPoro::evaluate(Teuchos::ParameterList& params,
@@ -119,8 +107,6 @@ int Discret::Elements::FluidPoro::evaluate(Teuchos::ParameterList& params,
           ->evaluate_service(
               this, params, mat, discretization, lm, elemat1, elemat2, elevec1, elevec2, elevec3);
     }
-    case FLD::set_poro_parameter:
-      break;
     default:
       // call evaluate of standard fluid
       return Fluid::evaluate(

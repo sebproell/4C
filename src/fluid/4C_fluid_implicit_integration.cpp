@@ -23,6 +23,7 @@
 #include "4C_fluid_ele.hpp"
 #include "4C_fluid_ele_action.hpp"
 #include "4C_fluid_ele_intfaces_calc.hpp"
+#include "4C_fluid_ele_parameter_intface.hpp"
 #include "4C_fluid_impedancecondition.hpp"
 #include "4C_fluid_meshtying.hpp"
 #include "4C_fluid_result_test.hpp"
@@ -5494,8 +5495,6 @@ void FLD::FluidImplicitTimeInt::set_face_general_fluid_parameter()
 {
   Teuchos::ParameterList faceparams;
 
-  faceparams.set<FLD::Action>("action", FLD::set_general_face_fluid_parameter);
-
   // set general fluid face parameters are contained in the following two sublists
   faceparams.sublist("EDGE-BASED STABILIZATION") = params_->sublist("EDGE-BASED STABILIZATION");
 
@@ -5509,9 +5508,10 @@ void FLD::FluidImplicitTimeInt::set_face_general_fluid_parameter()
   if (physicaltype_ == Inpar::FLUID::oseen)
     faceparams.set<int>("OSEENFIELDFUNCNO", params_->get<int>("OSEENFIELDFUNCNO"));
 
-
-  Discret::Elements::FluidIntFaceType::instance().pre_evaluate(
-      *discret_, faceparams, nullptr, nullptr, nullptr, nullptr, nullptr);
+  Discret::Elements::FluidEleParameterIntFace* fldintfacepara =
+      Discret::Elements::FluidEleParameterIntFace::instance();
+  fldintfacepara->set_face_general_fluid_parameter(
+      faceparams, Core::Communication::my_mpi_rank(discret_->get_comm()));
 }
 
 // -------------------------------------------------------------------
