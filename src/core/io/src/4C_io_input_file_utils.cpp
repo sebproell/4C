@@ -579,110 +579,116 @@ void Core::IO::read_knots(InputFile& input, const std::string& name,
   {
     Core::IO::cout << "Reading knot vectors for " << name << " discretization :\n";
     fflush(stdout);
-  }
 
-  int npatches = 0;
-  int nurbs_dim = 0;
+    int npatches = 0;
+    int nurbs_dim = 0;
 
-  for (const auto& line : input.in_section(sectionname))
-  {
-    std::string line_str{line.get_as_dat_style_string()};
-    std::istringstream file{line_str};
-    std::string tmp;
-    file >> tmp;
-
-    if (tmp == "NURBS_DIMENSION")
+    for (const auto& line : input.in_section_rank_0_only(sectionname))
     {
-      file >> nurbs_dim;
-    }
-    else if (tmp == "ID")
-    {
-      npatches++;
-    }
-  }
+      std::string line_str{line.get_as_dat_style_string()};
+      std::istringstream file{line_str};
+      std::string tmp;
+      file >> tmp;
 
-  if (myrank == 0)
-  {
+      std::cout << "Token: " << tmp << std::endl;
+
+      if (tmp == "NURBS_DIMENSION")
+      {
+        file >> nurbs_dim;
+      }
+      else if (tmp == "ID")
+      {
+        npatches++;
+      }
+    }
+
     printf("                        %8d patches", npatches);
     fflush(stdout);
-  }
 
-  disknots = std::make_shared<Core::FE::Nurbs::Knotvector>(nurbs_dim, npatches);
-  if (!disknots) FOUR_C_THROW("disknots should have been allocated before");
+    disknots = std::make_shared<Core::FE::Nurbs::Knotvector>(nurbs_dim, npatches);
 
-  std::vector<std::shared_ptr<std::vector<double>>> patch_knots(nurbs_dim);
-  std::vector<int> n_x_m_x_l(nurbs_dim), degree(nurbs_dim), count_vals(nurbs_dim);
-  std::vector<std::string> knotvectortype(nurbs_dim);
+    std::vector<std::shared_ptr<std::vector<double>>> patch_knots(nurbs_dim);
+    std::vector<int> n_x_m_x_l(nurbs_dim), degree(nurbs_dim), count_vals(nurbs_dim);
+    std::vector<std::string> knotvectortype(nurbs_dim);
 
-  bool read = false;
-  int npatch = 0, actdim = -1, count_read = 0;
+    bool read = false;
+    int npatch = 0, actdim = -1, count_read = 0;
 
-  for (const auto& line : input.in_section(sectionname))
-  {
-    std::string line_str{line.get_as_dat_style_string()};
-    std::istringstream file{line_str};
-    std::string tmp;
-    file >> tmp;
+    for (const auto& line : input.in_section_rank_0_only(sectionname))
+    {
+      std::string line_str{line.get_as_dat_style_string()};
+      std::istringstream file{line_str};
+      std::string tmp;
+      file >> tmp;
 
-    if (tmp == "BEGIN")
-    {
-      read = true;
-      actdim = -1;
-      for (auto& knots : patch_knots) knots = std::make_shared<std::vector<double>>();
-      std::fill(count_vals.begin(), count_vals.end(), 0);
-    }
-    else if (tmp == "ID")
-    {
-      file >> npatch;
-      npatch--;
-    }
-    else if (tmp == "NUMKNOTS")
-    {
-      file >> n_x_m_x_l[++actdim];
-    }
-    else if (tmp == "DEGREE")
-    {
-      file >> degree[actdim];
-    }
-    else if (tmp == "TYPE")
-    {
-      file >> knotvectortype[actdim];
-    }
-    else if (tmp == "END")
-    {
-      for (int rr = 0; rr < nurbs_dim; ++rr)
+      if (tmp == "BEGIN")
       {
-        disknots->set_knots(
-            rr, npatch, degree[rr], n_x_m_x_l[rr], knotvectortype[rr], patch_knots[rr]);
+        read = true;
+        actdim = -1;
+        for (auto& knots : patch_knots) knots = std::make_shared<std::vector<double>>();
+        std::fill(count_vals.begin(), count_vals.end(), 0);
       }
-      read = false;
-      for (int rr = 0; rr < nurbs_dim; ++rr)
+      else if (tmp == "ID")
       {
-        if (n_x_m_x_l[rr] != count_vals[rr])
+        file >> npatch;
+        npatch--;
+      }
+      else if (tmp == "NUMKNOTS")
+      {
+        file >> n_x_m_x_l[++actdim];
+      }
+      else if (tmp == "DEGREE")
+      {
+        file >> degree[actdim];
+      }
+      else if (tmp == "TYPE")
+      {
+        file >> knotvectortype[actdim];
+      }
+      else if (tmp == "END")
+      {
+        for (int rr = 0; rr < nurbs_dim; ++rr)
         {
-          FOUR_C_THROW("not enough knots read in dim {} ({}!=NUMKNOTS={}), nurbs_dim={}\n", rr,
-              count_vals[rr], n_x_m_x_l[rr], nurbs_dim);
+          disknots->set_knots(
+              rr, npatch, degree[rr], n_x_m_x_l[rr], knotvectortype[rr], patch_knots[rr]);
         }
+        read = false;
+        for (int rr = 0; rr < nurbs_dim; ++rr)
+        {
+          if (n_x_m_x_l[rr] != count_vals[rr])
+          {
+            FOUR_C_THROW("not enough knots read in dim {} ({}!=NUMKNOTS={}), nurbs_dim={}\n", rr,
+                count_vals[rr], n_x_m_x_l[rr], nurbs_dim);
+          }
+        }
+        count_read++;
       }
-      count_read++;
+      else if (read)
+      {
+        patch_knots[actdim]->push_back(std::stod(tmp));
+        count_vals[actdim]++;
+      }
     }
-    else if (read)
+
+    if (count_read != npatches)
     {
-      patch_knots[actdim]->push_back(std::stod(tmp));
-      count_vals[actdim]++;
+      FOUR_C_THROW("wasn't able to read enough patches\n");
     }
-  }
 
-  if (count_read != npatches)
-  {
-    FOUR_C_THROW("wasn't able to read enough patches\n");
-  }
+    std::cout << "Rank 0 sending out knot vectors to all other processors" << std::endl;
+    // Now we have to broadcast the knot vectors to all other processors
+    Core::Communication::broadcast(*disknots, 0, input.get_comm());
 
-  if (myrank == 0)
-  {
     Core::IO::cout << " in...." << time.totalElapsedTime(true) << " secs\n";
     time.reset();
     fflush(stdout);
+  }
+  else
+  {
+    std::cout << "Rank " << myrank << " waiting for knot vectors from rank 0" << std::endl;
+    // All other ranks receive the knot vectors from rank 0.
+    disknots = std::make_shared<Core::FE::Nurbs::Knotvector>();
+    Core::Communication::broadcast(*disknots, 0, input.get_comm());
   }
 }
 
