@@ -769,10 +769,8 @@ namespace Core::IO
           }
         }
 
-        std::stringstream ss;
-        ss << tree_with_small_sections;
-        std::string yaml_str = ss.str();
-        Core::Communication::broadcast(yaml_str, /*root*/ 0, pimpl_->comm_);
+        auto serialized_tree = ryml::emitrs_yaml<std::string>(tree_with_small_sections);
+        Core::Communication::broadcast(serialized_tree, /*root*/ 0, pimpl_->comm_);
       }
       else
       {
