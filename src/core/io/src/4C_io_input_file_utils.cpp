@@ -554,44 +554,25 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
 void Core::IO::read_knots(InputFile& input, const std::string& name,
     std::shared_ptr<Core::FE::Nurbs::Knotvector>& disknots)
 {
-  // io to shell
   const int myrank = Core::Communication::my_mpi_rank(input.get_comm());
-
   Teuchos::Time time("", true);
 
-  // only the knotvector section of this discretisation
-  // type is of interest
   std::string field;
-  if (name == "fluid" or name == "xfluid" or name == "porofluid")
-  {
+  if (name == "fluid" || name == "xfluid" || name == "porofluid")
     field = "FLUID";
-  }
   else if (name == "structure")
-  {
     field = "STRUCTURE";
-  }
   else if (name == "ale")
-  {
     field = "ALE";
-  }
   else if (name == "scatra")
-  {
     field = "TRANSPORT";
-  }
   else if (name == "thermo")
-  {
     field = "THERMO";
-  }
   else if (name == "scatra_micro")
-  {
     field = "TRANSPORT2";
-  }
   else
-  {
-    FOUR_C_THROW("Unknown discretization name for knotvector input\n");
-  }
+    FOUR_C_THROW("Unknown discretization name for knotvector input.");
 
-  // another valid section name was found
   const std::string sectionname = field + " KNOTVECTORS";
 
   if (myrank == 0)
@@ -600,54 +581,24 @@ void Core::IO::read_knots(InputFile& input, const std::string& name,
     fflush(stdout);
   }
 
-  // number of patches to be determined
   int npatches = 0;
-
-  // dimension of nurbs patches
   int nurbs_dim = 0;
 
-  //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
-  //      first, determine number of patches and dimension of nurbs
-  //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
+  for (const auto& line : input.in_section(sectionname))
   {
-    // temporary string
+    std::string line_str{line.get_as_dat_style_string()};
+    std::istringstream file{line_str};
     std::string tmp;
-    // loop lines in file
-    for (const auto& line : input.in_section(sectionname))
+    file >> tmp;
+
+    if (tmp == "NURBS_DIMENSION")
     {
-      // count number of patches in knotvector section of
-      // this discretisation
-      {
-        std::string::size_type loc;
-        std::istringstream file{std::string{line.get_as_dat_style_string()}};
-        file >> tmp;
-
-        // check for the number of dimensions
-        loc = tmp.rfind("NURBS_DIMENSION");
-        if (loc != std::string::npos)
-        {
-          // set number of nurbs dimension
-          std::string str_nurbs_dim;
-          file >> str_nurbs_dim;
-          char* endptr = nullptr;
-          nurbs_dim = static_cast<int>(strtol(str_nurbs_dim.c_str(), &endptr, 10));
-
-          continue;
-        }
-
-        // check for a new patch
-        loc = tmp.rfind("ID");
-        if (loc != std::string::npos)
-        {
-          // increase number of patches
-          npatches++;
-
-          continue;
-        }
-      }
-    }  // end loop through file
+      file >> nurbs_dim;
+    }
+    else if (tmp == "ID")
+    {
+      npatches++;
+    }
   }
 
   if (myrank == 0)
@@ -656,203 +607,80 @@ void Core::IO::read_knots(InputFile& input, const std::string& name,
     fflush(stdout);
   }
 
-
-  //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
-  //                alloc knotvector object to fill
-  //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
-
-  // allocate knotvector for this dis
   disknots = std::make_shared<Core::FE::Nurbs::Knotvector>(nurbs_dim, npatches);
+  if (!disknots) FOUR_C_THROW("disknots should have been allocated before");
 
-  // make sure that we have some Knotvector object to fill
-  if (disknots == nullptr)
+  std::vector<std::shared_ptr<std::vector<double>>> patch_knots(nurbs_dim);
+  std::vector<int> n_x_m_x_l(nurbs_dim), degree(nurbs_dim), count_vals(nurbs_dim);
+  std::vector<std::string> knotvectortype(nurbs_dim);
+
+  bool read = false;
+  int npatch = 0, actdim = -1, count_read = 0;
+
+  for (const auto& line : input.in_section(sectionname))
   {
-    FOUR_C_THROW("disknots should have been allocated before");
+    std::string line_str{line.get_as_dat_style_string()};
+    std::istringstream file{line_str};
+    std::string tmp;
+    file >> tmp;
+
+    if (tmp == "BEGIN")
+    {
+      read = true;
+      actdim = -1;
+      for (auto& knots : patch_knots) knots = std::make_shared<std::vector<double>>();
+      std::fill(count_vals.begin(), count_vals.end(), 0);
+    }
+    else if (tmp == "ID")
+    {
+      file >> npatch;
+      npatch--;
+    }
+    else if (tmp == "NUMKNOTS")
+    {
+      file >> n_x_m_x_l[++actdim];
+    }
+    else if (tmp == "DEGREE")
+    {
+      file >> degree[actdim];
+    }
+    else if (tmp == "TYPE")
+    {
+      file >> knotvectortype[actdim];
+    }
+    else if (tmp == "END")
+    {
+      for (int rr = 0; rr < nurbs_dim; ++rr)
+      {
+        disknots->set_knots(
+            rr, npatch, degree[rr], n_x_m_x_l[rr], knotvectortype[rr], patch_knots[rr]);
+      }
+      read = false;
+      for (int rr = 0; rr < nurbs_dim; ++rr)
+      {
+        if (n_x_m_x_l[rr] != count_vals[rr])
+        {
+          FOUR_C_THROW("not enough knots read in dim {} ({}!=NUMKNOTS={}), nurbs_dim={}\n", rr,
+              count_vals[rr], n_x_m_x_l[rr], nurbs_dim);
+        }
+      }
+      count_read++;
+    }
+    else if (read)
+    {
+      patch_knots[actdim]->push_back(std::stod(tmp));
+      count_vals[actdim]++;
+    }
   }
 
-  //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
-  //                finally read knotvector section
-  //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
+  if (count_read != npatches)
   {
-    // this is a pointer to the knots of one patch in one direction
-    // we will read them and put them
-    std::vector<std::shared_ptr<std::vector<double>>> patch_knots(nurbs_dim);
-
-    // temporary string
-    std::string tmp;
-
-    // start to read something when read is true
-    bool read = false;
-
-    // index for number of patch
-    int npatch = 0;
-    // index for u/v/w
-    int actdim = -1;
-    // ints for the number of knots
-    std::vector<int> n_x_m_x_l(nurbs_dim);
-    // ints for patches degrees
-    std::vector<int> degree(nurbs_dim);
-    // a vector of strings holding the knotvectortypes read
-    std::vector<std::string> knotvectortype(nurbs_dim);
-
-    // count for sanity check
-    int count_read = 0;
-    std::vector<int> count_vals(nurbs_dim);
-
-    // loop lines in file
-    for (const auto& line : input.in_section(sectionname))
-    {
-      std::istringstream file{std::string{line.get_as_dat_style_string()}};
-      file >> tmp;
-
-      // check for a new patch
-      std::string::size_type loc = tmp.rfind("BEGIN");
-      if (loc != std::string::npos)
-      {
-        file >> tmp;
-
-        // activate reading
-        read = true;
-
-        actdim = -1;
-
-        // create vectors for knots in this patch
-        for (int rr = 0; rr < nurbs_dim; ++rr)
-        {
-          patch_knots[rr] = std::make_shared<std::vector<double>>();
-          (*(patch_knots[rr])).clear();
-        }
-
-        // reset counter for knot values
-        for (int rr = 0; rr < nurbs_dim; rr++)
-        {
-          count_vals[rr] = 0;
-        }
-
-        continue;
-      }
-
-      // get ID of patch we are currently reading
-      loc = tmp.rfind("ID");
-      if (loc != std::string::npos)
-      {
-        std::string str_npatch;
-        file >> str_npatch;
-
-        char* endptr = nullptr;
-        npatch = static_cast<int>(strtol(str_npatch.c_str(), &endptr, 10));
-        npatch--;
-
-        continue;
-      }
-
-      // get number of knots in the knotvector direction
-      // we are currently reading
-      loc = tmp.rfind("NUMKNOTS");
-      if (loc != std::string::npos)
-      {
-        std::string str_numknots;
-        file >> str_numknots;
-
-        // increase dimesion for knotvector (i.e. next time
-        // we'll fill the following knot vector)
-        actdim++;
-        if (actdim > nurbs_dim)
-        {
-          FOUR_C_THROW(
-              "too many knotvectors, we only need one for each dimension (nurbs_dim = {})\n",
-              nurbs_dim);
-        }
-
-        char* endptr = nullptr;
-        n_x_m_x_l[actdim] = static_cast<int>(strtol(str_numknots.c_str(), &endptr, 10));
-
-        continue;
-      }
-
-      // get number of bspline polinomial associated with
-      // knots in this direction
-      loc = tmp.rfind("DEGREE");
-      if (loc != std::string::npos)
-      {
-        std::string str_degree;
-        file >> str_degree;
-
-        char* endptr = nullptr;
-        degree[actdim] = static_cast<int>(strtol(str_degree.c_str(), &endptr, 10));
-
-        continue;
-      }
-
-      // get type of knotvector (interpolated or periodic)
-      loc = tmp.rfind("TYPE");
-      if (loc != std::string::npos)
-      {
-        std::string type;
-
-        file >> type;
-        knotvectortype[actdim] = type;
-
-        continue;
-      }
-
-      // locate end of patch
-      loc = tmp.rfind("END");
-      if (loc != std::string::npos)
-      {
-        for (int rr = 0; rr < nurbs_dim; ++rr)
-        {
-          disknots->set_knots(
-              rr, npatch, degree[rr], n_x_m_x_l[rr], knotvectortype[rr], patch_knots[rr]);
-        }
-        file >> tmp;
-        // stop reading of knot values if we are here
-        read = false;
-
-        for (int rr = 0; rr < nurbs_dim; rr++)
-        {
-          if (n_x_m_x_l[rr] != count_vals[rr])
-          {
-            FOUR_C_THROW("not enough knots read in dim {} ({}!=NUMKNOTS={}), nurbs_dim={}\n", rr,
-                count_vals[rr], n_x_m_x_l[rr], nurbs_dim);
-          }
-        }
-
-        // count for sanity check
-        count_read++;
-
-        continue;
-      }
-
-      //  reading of knot values if read is true and no
-      // other keyword was found
-      if (read)
-      {
-        char* endptr = nullptr;
-
-        double dv = strtod(tmp.c_str(), &endptr);
-
-        // count for sanity check
-        count_vals[actdim]++;
-
-        (*(patch_knots[actdim])).push_back(dv);
-      }
-    }  // end loop through file
-
-    if (count_read != npatches)
-    {
-      FOUR_C_THROW("wasn't able to read enough patches\n");
-    }
+    FOUR_C_THROW("wasn't able to read enough patches\n");
   }
 
   if (myrank == 0)
   {
     Core::IO::cout << " in...." << time.totalElapsedTime(true) << " secs\n";
-
     time.reset();
     fflush(stdout);
   }
