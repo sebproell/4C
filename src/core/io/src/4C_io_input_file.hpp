@@ -89,9 +89,9 @@ namespace Core::IO
    * @endcode
    *
    *
-   * @note The file is only read on rank 0 to save memory. Sections that are huge are only
-   * distributed to other ranks if they are accessed through line_in_section(). If you only
-   * want to read a section on rank 0, use in_section_rank_0_only().
+   * @note The file is only read on rank 0 to save memory. All sections are broadcast to all other
+   * ranks, except for the legacy sections (see the constructor). Legacy sections need to be
+   * consumed on rank 0 with the help of in_section_rank_0_only().
    */
   class InputFile
   {

@@ -321,12 +321,6 @@ namespace Core::IO
 
   namespace
   {
-    /**
-     * Sections that contain at least this number of entries are considered huge and are only
-     * available on rank 0.
-     */
-    constexpr std::size_t huge_section_threshold = 10'000;
-
     //! The different ways we want to handle sections in the input file.
     enum class SectionType
     {
@@ -726,31 +720,28 @@ namespace Core::IO
     // Communicate the dat content
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
     {
-      // Temporarily move the sections that are not huge into a separate map.
-      std::unordered_map<std::string, Internal::SectionContent> non_huge_sections;
+      // Temporarily move the sections that we want to broadcast into a separate map.
+      std::unordered_map<std::string, Internal::SectionContent> non_legacy_sections;
 
       for (auto&& [section_name, content] : pimpl_->content_by_section_)
       {
-        if (std::holds_alternative<Internal::SectionContent::DatContent>(content.content))
+        if (std::holds_alternative<Internal::SectionContent::DatContent>(content.content) &&
+            !pimpl_->is_legacy_section(section_name))
         {
-          if (content.as_dat().lines.size() < huge_section_threshold)
-          {
-            non_huge_sections[section_name] = std::move(content);
-          }
+          non_legacy_sections[section_name] = std::move(content);
         }
       }
 
-      Core::Communication::broadcast(non_huge_sections, 0, pimpl_->comm_);
+      Core::Communication::broadcast(non_legacy_sections, 0, pimpl_->comm_);
 
-      // Move the non-huge sections back into the main map.
-      for (auto&& [section_name, content] : non_huge_sections)
+      for (auto&& [section_name, content] : non_legacy_sections)
       {
         pimpl_->content_by_section_[section_name] = std::move(content);
       }
     }
     else
     {
-      // Other ranks receive the non-huge sections.
+      // Other ranks receive the non-legacy sections.
       Core::Communication::broadcast(pimpl_->content_by_section_, 0, pimpl_->comm_);
     }
 
@@ -760,7 +751,7 @@ namespace Core::IO
       {
         ryml::Tree tree_with_small_sections = init_yaml_tree_with_exceptions();
         tree_with_small_sections.rootref() |= ryml::MAP;
-        // Go through the tree and drop the huge sections from the tree.
+        // Go through the tree and drop the legacy sections from the tree.
         for (auto file_node : pimpl_->yaml_tree_.rootref())
         {
           auto new_file_node = tree_with_small_sections.rootref().append_child();
@@ -769,8 +760,7 @@ namespace Core::IO
 
           for (auto section_node : file_node.children())
           {
-            if (section_node.is_map() ||
-                (section_node.is_seq() && section_node.num_children() < huge_section_threshold))
+            if (!pimpl_->is_legacy_section(to_string(section_node.key())))
             {
               // Copy the node to the new tree.
               auto new_section_node = new_file_node.append_child();
