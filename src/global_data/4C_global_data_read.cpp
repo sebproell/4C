@@ -189,6 +189,8 @@ Core::IO::InputFile Global::set_up_input_file(MPI_Comm comm)
         parameter<int>("_positional_0_id"),
         one_of(std::move(all_element_specs)),
     });
+
+    legacy_partial_specs["legacy_particle_specs"] = PARTICLEENGINE::create_particle_spec();
   }
 
   return Core::IO::InputFile{std::move(valid_sections), std::move(legacy_section_names),
