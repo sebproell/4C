@@ -21,12 +21,12 @@ namespace
 {
   using namespace FourC;
 
-  void check_section(
+  void check_section_rank_0_only(
       Core::IO::InputFile& input, const std::string& section, const std::vector<std::string>& lines)
   {
     SCOPED_TRACE("Checking section " + section);
     ASSERT_TRUE(input.has_section(section));
-    auto section_lines = input.in_section(section);
+    auto section_lines = input.in_section_rank_0_only(section);
     std::vector<std::string> section_lines_str;
     std::ranges::copy(section_lines | std::views::transform([](const auto& line)
                                           { return std::string{line.get_as_dat_style_string()}; }),
@@ -57,10 +57,12 @@ namespace
     EXPECT_TRUE(input.has_section("EMPTY"));
     EXPECT_FALSE(input.has_section("NONEXISTENT SECTION"));
 
-    check_section(input, "SECTION WITH SPACES", {"line in section with spaces"});
-    check_section(input, "SECTION/WITH/SLASHES", {"line in section with slashes"});
-    check_section(input, "SHORT SECTION", std::vector<std::string>(3, "line in short section"));
-    check_section(input, "PARTICLES", std::vector<std::string>(30, "line in long section"));
+    check_section_rank_0_only(input, "SECTION WITH SPACES", {"line in section with spaces"});
+    check_section_rank_0_only(input, "SECTION/WITH/SLASHES", {"line in section with slashes"});
+    check_section_rank_0_only(
+        input, "SHORT SECTION", std::vector<std::string>(3, "line in short section"));
+    check_section_rank_0_only(
+        input, "PARTICLES", std::vector<std::string>(30, "line in long section"));
   }
 
   TEST(InputFile, HasIncludes)
@@ -86,11 +88,11 @@ namespace
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 1a").filename(), "include1a.dat");
     EXPECT_EQ(input.file_for_section("SECTION 1").filename(), "main.dat");
 
-    check_section(input, "INCLUDED SECTION 1a", std::vector<std::string>(2, "line"));
-    check_section(input, "INCLUDED SECTION 1b", std::vector<std::string>(2, "line"));
-    check_section(input, "INCLUDED SECTION 2", std::vector<std::string>(2, "line"));
-    check_section(input, "INCLUDED SECTION 3", std::vector<std::string>(2, "line"));
-    check_section(input, "PARTICLES", std::vector<std::string>(5, "line"));
+    check_section_rank_0_only(input, "INCLUDED SECTION 1a", std::vector<std::string>(2, "line"));
+    check_section_rank_0_only(input, "INCLUDED SECTION 1b", std::vector<std::string>(2, "line"));
+    check_section_rank_0_only(input, "INCLUDED SECTION 2", std::vector<std::string>(2, "line"));
+    check_section_rank_0_only(input, "INCLUDED SECTION 3", std::vector<std::string>(2, "line"));
+    check_section_rank_0_only(input, "PARTICLES", std::vector<std::string>(5, "line"));
   }
 
   TEST(InputFile, CyclicIncludes)
@@ -122,7 +124,8 @@ namespace
     EXPECT_FALSE(input.has_section("EMPTY"));
     EXPECT_FALSE(input.has_section("NONEXISTENT SECTION"));
 
-    check_section(input, "SECTION WITH LINES", {"first line", "second line", "third line"});
+    check_section_rank_0_only(
+        input, "SECTION WITH LINES", {"first line", "second line", "third line"});
   }
 
   TEST(InputFile, YamlIncludes)
@@ -146,8 +149,9 @@ namespace
         comm};
     input.read(input_file_name);
 
-    check_section(input, "INCLUDED SECTION 1", std::vector<std::string>(2, "line"));
-    check_section(input, "SECTION WITH SUBSTRUCTURE", {"MAT 1 THERMO COND 1 2 3 CAPA 2"});
+    check_section_rank_0_only(input, "INCLUDED SECTION 1", std::vector<std::string>(2, "line"));
+    check_section_rank_0_only(
+        input, "SECTION WITH SUBSTRUCTURE", {"MAT 1 THERMO COND 1 2 3 CAPA 2"});
 
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 2").filename(), "included.yaml");
 

@@ -315,6 +315,20 @@ namespace Core::IO
         return std::ranges::any_of(
             legacy_section_names_, [&](const auto& name) { return name == section_name; });
       }
+
+      InputFile::FragmentIteratorRange in_section(const std::string& section_name) const
+      {
+        static const std::vector<InputFile::Fragment> empty;
+
+        if (!content_by_section_.contains(section_name))
+        {
+          return std::views::all(empty);
+        }
+
+        // Take a const reference to the section content to match the return type.
+        const auto& lines = content_by_section_.at(section_name).fragments;
+        return std::views::all(lines);
+      }
     };
 
   }  // namespace Internal
@@ -830,44 +844,6 @@ namespace Core::IO
     }
   }
 
-  InputFile::FragmentIteratorRange InputFile::in_section(const std::string& section_name) const
-  {
-    static const std::vector<Fragment> empty;
-
-    // Early return in case the section does not exist at all.
-    const bool known_somewhere = has_section(section_name);
-    if (!known_somewhere)
-    {
-      return std::views::all(empty);
-    }
-
-    const bool locally_known = pimpl_->content_by_section_.contains(section_name);
-    const bool known_everywhere = Core::Communication::all_reduce<bool>(
-        locally_known, [](const bool& r, const bool& in) { return r && in; }, pimpl_->comm_);
-
-    if (known_everywhere)
-    {
-      // Take a const reference to the section content to match the return type.
-      const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
-      return std::views::all(lines);
-    }
-    else
-    // Distribute the content of the section to all ranks.
-    {
-      FOUR_C_ASSERT((!locally_known && (Core::Communication::my_mpi_rank(pimpl_->comm_) > 0)) ||
-                        (locally_known && (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)),
-          "Implementation error: section should be known on rank 0 and unknown on others.");
-
-      auto& content = pimpl_->content_by_section_[section_name];
-      Core::Communication::broadcast(content, 0, pimpl_->comm_);
-      content.set_up_fragments();
-
-      const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
-      return std::views::all(lines);
-    }
-  }
-
-
 
   InputFile::FragmentIteratorRange InputFile::in_section_rank_0_only(
       const std::string& section_name) const
@@ -951,7 +927,7 @@ namespace Core::IO
       if (list_spec)
       {
         std::vector<InputParameterContainer> list_entries;
-        for (const auto& line : in_section(section_name))
+        for (const auto& line : pimpl_->in_section(section_name))
         {
           Core::IO::ValueParser parser{line.get_as_dat_style_string(),
               {.user_scope_message =
@@ -976,7 +952,7 @@ namespace Core::IO
         // Create a group in the dat file format by starting with the section name.
         std::stringstream flattened_dat;
         flattened_dat << std::quoted(section_name) << " ";
-        for (const auto& line : in_section(section_name))
+        for (const auto& line : pimpl_->in_section(section_name))
         {
           std::string line_str(line.get_as_dat_style_string());
           // Split the line into key-value according to the dat file format. Quote keys and values
@@ -1083,7 +1059,7 @@ namespace Core::IO
         auto section = tree.rootref().append_child();
         section << ryml::key(section_name);
         section |= ryml::SEQ;
-        for (const auto& line : in_section(section_name))
+        for (const auto& line : pimpl_->in_section(section_name))
         {
           section.append_child() = ryml::csubstr(
               line.get_as_dat_style_string().data(), line.get_as_dat_style_string().size());
