@@ -112,14 +112,6 @@ namespace Core::Communication
     /// initialize all element types
     void initialize_elements(Core::FE::Discretization& dis);
 
-    /// preevaluate elements (via element types)
-    void pre_evaluate(Core::FE::Discretization& dis, Teuchos::ParameterList& p,
-        std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
-        std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
-        std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
-        std::shared_ptr<Core::LinAlg::Vector<double>> systemvector2,
-        std::shared_ptr<Core::LinAlg::Vector<double>> systemvector3);
-
     /// setup definition of element input file lines
     void setup_element_definition(
         std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions);
@@ -142,11 +134,7 @@ namespace Core::Communication
     /// preregistered types
     std::vector<ParObjectType*> types_;
 
-    /// element types that are actually used
-    std::map<Core::FE::Discretization*, std::set<Core::Elements::ElementType*>> active_elements_;
-
     // no copying
-
     ParObjectFactory(const ParObjectFactory&);
     ParObjectFactory& operator=(const ParObjectFactory&);
   };
