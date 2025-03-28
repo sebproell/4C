@@ -13,6 +13,7 @@
 #include "4C_fem_condition_utils.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_global_data.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
@@ -42,8 +43,19 @@ Arteries::ArtNetExplicitTimeInt::ArtNetExplicitTimeInt(
     Core::IO::DiscretizationWriter& output)
     : TimInt(actdis, linsolvernumber, probparams, artparams, output)
 {
-  //  exit(1);
+  const int restart_step = Global::Problem::instance()->restart();
+  if (restart_step > 0)
+  {
+    FourC::Core::IO::DiscretizationReader reader(
+        discret_, Global::Problem::instance()->input_control_file(), restart_step);
 
+    time_ = reader.read_double("time");
+  }
+
+  visualization_writer_ = std::make_unique<Core::IO::DiscretizationVisualizationWriterMesh>(
+      actdis, Core::IO::visualization_parameters_factory(
+                  Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT"),
+                  *Global::Problem::instance()->output_control_file(), time_));
 }  // ArtNetExplicitTimeInt::ArtNetExplicitTimeInt
 
 
@@ -614,9 +626,84 @@ void Arteries::ArtNetExplicitTimeInt::load_state()
   return;
 }  // ArtNetExplicitTimeInt::LoadState
 
+void Arteries::ArtNetExplicitTimeInt::collect_runtime_output_data(bool CoupledTo3D, int step)
+{
+  visualization_writer_->append_result_data_vector_with_context(
+      *qanp_, Core::IO::OutputEntity::dof, {"qanp"});
+
+  // write domain decomposition for visualization (only once!)
+  if (step_ == upres_) visualization_writer_->append_element_owner("Owner");
+
+  this->calc_postprocessing_values();
+
+  visualization_writer_->append_result_data_vector_with_context(
+      *qn_, Core::IO::OutputEntity::node, {"one_d_artery_flow"});
+
+  visualization_writer_->append_result_data_vector_with_context(
+      *on_, Core::IO::OutputEntity::node, {"one_d_artery_pressure"});
+
+  visualization_writer_->append_result_data_vector_with_context(
+      *an_, Core::IO::OutputEntity::node, {"one_d_artery_area"});
+
+  if (solvescatra_)
+  {
+    this->calc_scatra_from_scatra_fw(export_scatra_, scatraO2np_);
+    visualization_writer_->append_result_data_vector_with_context(
+        *export_scatra_, Core::IO::OutputEntity::node, {"one_d_o2_scatra"});
+  }
+
+
+  visualization_writer_->append_result_data_vector_with_context(
+      *Wfnp_, Core::IO::OutputEntity::node, {"forward_speed"});
+
+  visualization_writer_->append_result_data_vector_with_context(
+      *Wfo_, Core::IO::OutputEntity::node, {"forward_speed0"});
+
+  visualization_writer_->append_result_data_vector_with_context(
+      *Wbnp_, Core::IO::OutputEntity::node, {"backward_speed"});
+
+  visualization_writer_->append_result_data_vector_with_context(
+      *Wbo_, Core::IO::OutputEntity::node, {"backward_speed0"});
+
+  if (CoupledTo3D)
+  {
+    output_.write_int("Actual_RedD_step", step);
+  }
+}
+
+void Arteries::ArtNetExplicitTimeInt::output_restart(bool CoupledTo3D, int step)
+{
+  // step number and time (only after that data output is possible)
+  output_.new_step(step_, time_);
+
+  // "volumetric flow rate/cross-sectional area" vector
+  output_.write_vector("qanp", qanp_);
+
+  // Export postpro results
+  this->calc_postprocessing_values();
+  output_.write_vector("one_d_artery_flow", qn_);
+  output_.write_vector("one_d_artery_pressure", on_);
+  output_.write_vector("one_d_artery_area", an_);
+
+  if (solvescatra_)
+  {
+    this->calc_scatra_from_scatra_fw(export_scatra_, scatraO2np_);
+    output_.write_vector("one_d_o2_scatra", export_scatra_);
+  }
+
+
+  output_.write_vector("forward_speed", Wfnp_);
+  output_.write_vector("forward_speed0", Wfo_);
+  output_.write_vector("backward_speed", Wbnp_);
+  output_.write_vector("backward_speed0", Wbo_);
+
+  if (CoupledTo3D)
+  {
+    output_.write_int("Actual_RedD_step", step);
+  }
+}
 
 /*----------------------------------------------------------------------*
- | output of solution vector to binio                       ismail 07/09|
  *----------------------------------------------------------------------*/
 void Arteries::ArtNetExplicitTimeInt::output(
     bool CoupledTo3D, std::shared_ptr<Teuchos::ParameterList> CouplingParams)
@@ -645,103 +732,15 @@ void Arteries::ArtNetExplicitTimeInt::output(
 
   if (step_ % upres_ == 0)
   {
-    // step number and time
-    output_.new_step(step_, time_);
-    //    output_.write_vector("NodeIDs",nodeIds_);
+    visualization_writer_->reset();
 
-    // "volumetric flow rate/cross-sectional area" vector
-    output_.write_vector("qanp", qanp_);
+    collect_runtime_output_data(CoupledTo3D, step);
 
-
-    // write domain decomposition for visualization (only once!)
-    if (step_ == upres_) output_.write_element_data(true);
-
-    // #endif
-    //  ------------------------------------------------------------------
-    //  Export gnuplot format arteries
-    //  ------------------------------------------------------------------
-
-    Teuchos::ParameterList params;
-    // other parameters that might be needed by the elements
-    params.set("total time", time_);
-
-    // set the dof vector values
-    //    discret_->ClearState();
-    //    discret_->set_state("qanp",qanp_);
-
-    // call the gnuplot writer
-    //    artgnu_->Write(params);
-    //    discret_->ClearState();
-
-    // Export postpro results
-    this->calc_postprocessing_values();
-    output_.write_vector("one_d_artery_flow", qn_);
-    output_.write_vector("one_d_artery_pressure", on_);
-    output_.write_vector("one_d_artery_area", an_);
-
-    if (solvescatra_)
-    {
-      this->calc_scatra_from_scatra_fw(export_scatra_, scatraO2np_);
-      output_.write_vector("one_d_o2_scatra", export_scatra_);
-    }
-
-    output_.write_vector("forward_speed", Wfnp_);
-    output_.write_vector("forward_speed0", Wfo_);
-    output_.write_vector("backward_speed", Wbnp_);
-    output_.write_vector("backward_speed0", Wbo_);
-
-    if (CoupledTo3D)
-    {
-      output_.write_int("Actual_RedD_step", step);
-    }
+    visualization_writer_->write_to_disk(time_, step_);
   }
-  // write restart also when uprestart_ is not a integer multiple of upres_
-  else if (uprestart_ != 0 && step_ % uprestart_ == 0)
+  if (uprestart_ != 0 && step_ % uprestart_ == 0)
   {
-    // step number and time
-    output_.new_step(step_, time_);
-
-    // "volumetric flow rate/cross-sectional area" vector
-    output_.write_vector("qanp", qanp_);
-
-    // Export postpro results
-    this->calc_postprocessing_values();
-    output_.write_vector("one_d_artery_flow", qn_);
-    output_.write_vector("one_d_artery_pressure", on_);
-    output_.write_vector("one_d_artery_area", an_);
-
-    if (solvescatra_)
-    {
-      this->calc_scatra_from_scatra_fw(export_scatra_, scatraO2np_);
-      output_.write_vector("one_d_o2_scatra", export_scatra_);
-    }
-
-
-    output_.write_vector("forward_speed", Wfnp_);
-    output_.write_vector("forward_speed0", Wfo_);
-    output_.write_vector("backward_speed", Wbnp_);
-    output_.write_vector("backward_speed0", Wbo_);
-
-    // ------------------------------------------------------------------
-    // Export gnuplot format arteries
-    // ------------------------------------------------------------------
-    // #endif
-    Teuchos::ParameterList params;
-    // other parameters that might be needed by the elements
-    params.set("total time", time_);
-
-    // set the dof vector values
-    //    discret_->ClearState();
-    //    discret_->set_state("qanp",qanp_);
-
-    // call the gnuplot writer
-    //    artgnu_->Write(params);
-    //    discret_->ClearState();
-
-    if (CoupledTo3D)
-    {
-      output_.write_int("Actual_RedD_step", step);
-    }
+    output_restart(CoupledTo3D, step);
   }
 
   // -------------------------------------------------------------------
@@ -756,7 +755,7 @@ void Arteries::ArtNetExplicitTimeInt::output(
     time_ = time_backup;
   }
 
-  return;
+
 }  // ArteryExplicitTimeInt::Output
 
 
