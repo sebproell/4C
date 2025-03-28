@@ -62,17 +62,20 @@ namespace
 
     {
       std::vector<Core::IO::InputSpec> possible_materials;
+      std::vector<Core::Materials::MaterialType> material_type;
       {
         auto materials = global_legacy_module_callbacks().materials();
         for (auto&& [type, spec] : materials)
         {
           possible_materials.emplace_back(std::move(spec));
+          material_type.push_back(type);
         }
       }
 
       auto all_materials = all_of({
           parameter<int>("MAT"),
-          one_of(possible_materials),
+          one_of(possible_materials,
+              store_index_as<Core::Materials::MaterialType>("_material_type", material_type)),
       });
       section_specs["MATERIALS"] = all_materials;
     }
@@ -1933,57 +1936,37 @@ void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input
 /*----------------------------------------------------------------------*/
 void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input)
 {
-  std::vector<Core::IO::InputSpec> all_specs;
-  std::vector<Core::Materials::MaterialType> all_types;
+  Core::IO::InputParameterContainer container;
+  try
   {
-    auto materials = global_legacy_module_callbacks().materials();
-    for (auto&& [type, spec] : materials)
-    {
-      all_specs.emplace_back(std::move(spec));
-      all_types.push_back(type);
-    }
+    input.match_section("MATERIALS", container);
+  }
+  catch (const Core::Exception& e)
+  {
+    FOUR_C_THROW(
+        "Failed to match specification in section 'MATERIALS'. The error was:\n{}.", e.what());
   }
 
-  // Whenever one of the materials is read, the lambda function will update this index to the
-  // current material index. This lets us access the correct subcontainer for the current material
-  // without searching through all of them.
-  std::size_t current_index = 0;
-
-  using namespace Core::IO::InputSpecBuilders;
-
-  auto all_materials = all_of({
-      parameter<int>(
-          "MAT", {.description = "Material ID that may be used to refer to this material."}),
-      one_of(all_specs, [&current_index](Core::IO::InputParameterContainer& container,
-                            std::size_t index) { current_index = index; }),
-  });
-
-  for (const auto& fragment : input.in_section("MATERIALS"))
+  for (const auto& material_entry :
+      container.get_or<std::vector<Core::IO::InputParameterContainer>>("MATERIALS", {}))
   {
-    auto container = fragment.match(all_materials);
-
-    if (!container.has_value())
-    {
-      std::string l(fragment.get_as_dat_style_string());
-      FOUR_C_THROW("Invalid material specification. Could not parse line:\n  {}", l.c_str());
-    }
-
-    const int mat_id = container->get<int>("MAT");
+    const int mat_id = material_entry.get<int>("MAT");
 
     FOUR_C_ASSERT_ALWAYS(mat_id >= 0, "Material ID must be non-negative. Found: {}", mat_id);
 
     if (problem.materials()->id_exists(mat_id))
       FOUR_C_THROW("More than one material with 'MAT {}'", mat_id);
 
-    const std::string material_name = all_specs[current_index].impl().name();
-    FOUR_C_ASSERT_ALWAYS(container->has_group(material_name),
-        "Material type '{}' does not have a corresponding group in the input file.",
-        material_name.c_str());
+    const auto mat_type = material_entry.get<Core::Materials::MaterialType>("_material_type");
+
+    const auto& group = material_entry.groups();
+    FOUR_C_ASSERT_ALWAYS(
+        group.size() == 1, "Internal error: material must have exactly one group.");
+    const auto& [material_name, material_container] = group.front();
 
     problem.materials()->insert(
         mat_id, Core::Utils::LazyPtr<Core::Mat::PAR::Parameter>(
-                    [mat_id, mat_type = all_types[current_index],
-                        container = container->group(material_name)]()
+                    [mat_id, mat_type, container = material_entry.group(material_name)]()
                     { return Mat::make_parameter(mat_id, mat_type, container); }));
   }
 
@@ -1994,8 +1977,8 @@ void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input
   // such operations happen in the code base, thus we construct the materials here.
   for (const auto& [id, mat] : problem.materials()->map())
   {
-    // This is the point where the material is actually constructed via the side effect that we try
-    // to access the material.
+    // This is the point where the material is actually constructed via the side effect that we
+    // try to access the material.
     (void)mat.get();
   }
 }

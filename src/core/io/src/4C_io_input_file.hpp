@@ -40,11 +40,8 @@ namespace Core::IO
    * This class encapsulates input files independent of their format.
    *
    * Objects of this class read the content of a file and grant access to it. The input is not
-   * yet interpreted in any way. Input files contain different sections. A section either contains
-   * key-value pairs or a list of arbitrary lines of text. The content is accessed via the
-   * in_section() function which return InputFile::Fragment objects. These hide what exactly is
-   * contained and in which format. The content can be matched against an expected InputSpec to
-   * extract meaningful data.
+   * yet interpreted in any way. Input files contain different sections. The content can be matched
+   * against an expected InputSpec via match_section() to extract meaningful data.
    *
    * Sections may appear in an arbitrary order and each section name must be unique. An exception is
    * the special section named "INCLUDES" which can contain a list of other files that should be
@@ -52,7 +49,7 @@ namespace Core::IO
    *
    * Three file formats are supported: the custom .dat file format and the standard .yaml (or .yml)
    * and .json formats. The format of a file is detected based on its ending. If the ending is not
-   * one of the above mentioned, the file is assumed to be in the .dat format.
+   * one of the above-mentioned, the file is assumed to be in the .dat format.
    * Included files do not have to use the same format as the including file.
    *
    * The following example shows the structure of a .dat file:
@@ -86,12 +83,13 @@ namespace Core::IO
    * SECTION2:
    *   - A line with content that is not a key-value pair.
    *   - It can contain anything.
+   *   - We call these unstructured sections "legacy sections".
    * @endcode
    *
    *
-   * @note The file is only read on rank 0 to save memory. Sections that are huge are only
-   * distributed to other ranks if they are accessed through line_in_section(). If you only
-   * want to read a section on rank 0, use in_section_rank_0_only().
+   * @note The file is only read on rank 0 to save memory. All sections are broadcast to all other
+   * ranks, except for the legacy sections (see the constructor). Legacy sections need to be
+   * consumed on rank 0 with the help of in_section_rank_0_only().
    */
   class InputFile
   {
@@ -213,31 +211,10 @@ namespace Core::IO
      */
     [[nodiscard]] std::filesystem::path file_for_section(const std::string& section_name) const;
 
-    /**
-     * Get a range of Fragments inside a section. A Fragment always contains meaningful content,
-     * i.e., something other than whitespace or comments. The usual way to interact with the
-     * Fragments is as follows:
-     *
-     * @code
-     *   for (const auto& input_fragment : input.in_section("section_name"))
-     *   {
-     *      auto parameters = fragment.match(spec);
-     *   }
-     * @endcode
-     *
-     * @return A range of Fragments which encapsulate the content of the section. Use the
-     * Fragment::match() function to extract the content.
-     *
-     * @note This is a collective call that needs to be called on all MPI ranks in the
-     * communicator associated with this object. Depending on the section size, the content
-     * might need to be distributed from rank 0 to all other ranks. This happens automatically.
-     */
-    FragmentIteratorRange in_section(const std::string& section_name) const;
 
     /**
-     * This function is similar to in_section(), but it only returns the lines on rank 0 and
-     * returns an empty range on all other ranks. This is useful for sections that might be huge
-     * and are not processed on all ranks.
+     * Returns the lines in a section on rank 0 and returns an empty range on all other ranks. This
+     * only works for legacy sections.
      */
     FragmentIteratorRange in_section_rank_0_only(const std::string& section_name) const;
 
@@ -247,7 +224,7 @@ namespace Core::IO
      * that you do not need to pass an InputSpec to this function, since the InputFile object
      * already knows about the expected format of the section. Nevertheless, this function only
      * makes sense for sections with a known InputSpec. Legacy string sections cannot use this
-     * function and must be processed with in_section() or in_section_rank_0_only().
+     * function and must be processed with in_section_rank_0_only().
      */
     void match_section(const std::string& section_name, InputParameterContainer& container) const;
 

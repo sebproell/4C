@@ -309,18 +309,32 @@ namespace Core::IO
                std::all_of(section_name.begin() + 5, section_name.end(),
                    [](const char c) { return std::isdigit(c); });
       }
+
+      bool is_legacy_section(const std::string& section_name) const
+      {
+        return std::ranges::any_of(
+            legacy_section_names_, [&](const auto& name) { return name == section_name; });
+      }
+
+      InputFile::FragmentIteratorRange in_section(const std::string& section_name) const
+      {
+        static const std::vector<InputFile::Fragment> empty;
+
+        if (!content_by_section_.contains(section_name))
+        {
+          return std::views::all(empty);
+        }
+
+        // Take a const reference to the section content to match the return type.
+        const auto& lines = content_by_section_.at(section_name).fragments;
+        return std::views::all(lines);
+      }
     };
 
   }  // namespace Internal
 
   namespace
   {
-    /**
-     * Sections that contain at least this number of entries are considered huge and are only
-     * available on rank 0.
-     */
-    constexpr std::size_t huge_section_threshold = 10'000;
-
     //! The different ways we want to handle sections in the input file.
     enum class SectionType
     {
@@ -720,31 +734,28 @@ namespace Core::IO
     // Communicate the dat content
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
     {
-      // Temporarily move the sections that are not huge into a separate map.
-      std::unordered_map<std::string, Internal::SectionContent> non_huge_sections;
+      // Temporarily move the sections that we want to broadcast into a separate map.
+      std::unordered_map<std::string, Internal::SectionContent> non_legacy_sections;
 
       for (auto&& [section_name, content] : pimpl_->content_by_section_)
       {
-        if (std::holds_alternative<Internal::SectionContent::DatContent>(content.content))
+        if (std::holds_alternative<Internal::SectionContent::DatContent>(content.content) &&
+            !pimpl_->is_legacy_section(section_name))
         {
-          if (content.as_dat().lines.size() < huge_section_threshold)
-          {
-            non_huge_sections[section_name] = std::move(content);
-          }
+          non_legacy_sections[section_name] = std::move(content);
         }
       }
 
-      Core::Communication::broadcast(non_huge_sections, 0, pimpl_->comm_);
+      Core::Communication::broadcast(non_legacy_sections, 0, pimpl_->comm_);
 
-      // Move the non-huge sections back into the main map.
-      for (auto&& [section_name, content] : non_huge_sections)
+      for (auto&& [section_name, content] : non_legacy_sections)
       {
         pimpl_->content_by_section_[section_name] = std::move(content);
       }
     }
     else
     {
-      // Other ranks receive the non-huge sections.
+      // Other ranks receive the non-legacy sections.
       Core::Communication::broadcast(pimpl_->content_by_section_, 0, pimpl_->comm_);
     }
 
@@ -754,7 +765,7 @@ namespace Core::IO
       {
         ryml::Tree tree_with_small_sections = init_yaml_tree_with_exceptions();
         tree_with_small_sections.rootref() |= ryml::MAP;
-        // Go through the tree and drop the huge sections from the tree.
+        // Go through the tree and drop the legacy sections from the tree.
         for (auto file_node : pimpl_->yaml_tree_.rootref())
         {
           auto new_file_node = tree_with_small_sections.rootref().append_child();
@@ -763,8 +774,7 @@ namespace Core::IO
 
           for (auto section_node : file_node.children())
           {
-            if (section_node.is_map() ||
-                (section_node.is_seq() && section_node.num_children() < huge_section_threshold))
+            if (!pimpl_->is_legacy_section(to_string(section_node.key())))
             {
               // Copy the node to the new tree.
               auto new_section_node = new_file_node.append_child();
@@ -773,10 +783,8 @@ namespace Core::IO
           }
         }
 
-        std::stringstream ss;
-        ss << tree_with_small_sections;
-        std::string yaml_str = ss.str();
-        Core::Communication::broadcast(yaml_str, /*root*/ 0, pimpl_->comm_);
+        auto serialized_tree = ryml::emitrs_yaml<std::string>(tree_with_small_sections);
+        Core::Communication::broadcast(serialized_tree, /*root*/ 0, pimpl_->comm_);
       }
       else
       {
@@ -836,48 +844,15 @@ namespace Core::IO
     }
   }
 
-  InputFile::FragmentIteratorRange InputFile::in_section(const std::string& section_name) const
-  {
-    static const std::vector<Fragment> empty;
-
-    // Early return in case the section does not exist at all.
-    const bool known_somewhere = has_section(section_name);
-    if (!known_somewhere)
-    {
-      return std::views::all(empty);
-    }
-
-    const bool locally_known = pimpl_->content_by_section_.contains(section_name);
-    const bool known_everywhere = Core::Communication::all_reduce<bool>(
-        locally_known, [](const bool& r, const bool& in) { return r && in; }, pimpl_->comm_);
-
-    if (known_everywhere)
-    {
-      // Take a const reference to the section content to match the return type.
-      const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
-      return std::views::all(lines);
-    }
-    else
-    // Distribute the content of the section to all ranks.
-    {
-      FOUR_C_ASSERT((!locally_known && (Core::Communication::my_mpi_rank(pimpl_->comm_) > 0)) ||
-                        (locally_known && (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)),
-          "Implementation error: section should be known on rank 0 and unknown on others.");
-
-      auto& content = pimpl_->content_by_section_[section_name];
-      Core::Communication::broadcast(content, 0, pimpl_->comm_);
-      content.set_up_fragments();
-
-      const auto& lines = pimpl_->content_by_section_.at(section_name).fragments;
-      return std::views::all(lines);
-    }
-  }
-
-
 
   InputFile::FragmentIteratorRange InputFile::in_section_rank_0_only(
       const std::string& section_name) const
   {
+    FOUR_C_ASSERT_ALWAYS(pimpl_->is_legacy_section(section_name),
+        "You tried to process section '{}' on rank 0 only, but this feature is meant for special "
+        "legacy sections. Please use match_section() instead.",
+        section_name);
+
     if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0 &&
         pimpl_->content_by_section_.contains(section_name))
     {
@@ -952,7 +927,7 @@ namespace Core::IO
       if (list_spec)
       {
         std::vector<InputParameterContainer> list_entries;
-        for (const auto& line : in_section(section_name))
+        for (const auto& line : pimpl_->in_section(section_name))
         {
           Core::IO::ValueParser parser{line.get_as_dat_style_string(),
               {.user_scope_message =
@@ -977,7 +952,7 @@ namespace Core::IO
         // Create a group in the dat file format by starting with the section name.
         std::stringstream flattened_dat;
         flattened_dat << std::quoted(section_name) << " ";
-        for (const auto& line : in_section(section_name))
+        for (const auto& line : pimpl_->in_section(section_name))
         {
           std::string line_str(line.get_as_dat_style_string());
           // Split the line into key-value according to the dat file format. Quote keys and values
@@ -1084,7 +1059,7 @@ namespace Core::IO
         auto section = tree.rootref().append_child();
         section << ryml::key(section_name);
         section |= ryml::SEQ;
-        for (const auto& line : in_section(section_name))
+        for (const auto& line : pimpl_->in_section(section_name))
         {
           section.append_child() = ryml::csubstr(
               line.get_as_dat_style_string().data(), line.get_as_dat_style_string().size());
