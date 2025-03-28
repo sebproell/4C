@@ -15,18 +15,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void Discret::Elements::FluidPoroEleType::pre_evaluate(Core::FE::Discretization& dis,
-    Teuchos::ParameterList& p, std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
-    std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
-    std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
-    std::shared_ptr<Core::LinAlg::Vector<double>> systemvector2,
-    std::shared_ptr<Core::LinAlg::Vector<double>> systemvector3)
-{
-  // call standard fluid type
-  FluidType::pre_evaluate(
-      dis, p, systemmatrix1, systemmatrix2, systemvector1, systemvector2, systemvector3);
-}
-
 int Discret::Elements::FluidPoro::evaluate(Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& lm,
     Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,

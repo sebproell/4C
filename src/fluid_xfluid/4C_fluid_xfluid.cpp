@@ -19,6 +19,7 @@
 #include "4C_fluid_ele_factory.hpp"
 #include "4C_fluid_ele_interface.hpp"
 #include "4C_fluid_ele_parameter_intface.hpp"
+#include "4C_fluid_ele_parameter_xfem.hpp"
 #include "4C_fluid_utils_infnormscaling.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_fluid_xfluid_outputservice.hpp"
@@ -408,9 +409,6 @@ void FLD::XFluid::set_element_general_fluid_xfem_parameter()
 {
   Teuchos::ParameterList eleparams;
 
-  // do not call another action as then another object of the std-class will be created
-  eleparams.set<FLD::Action>("action", FLD::set_general_fluid_xfem_parameter);
-
   //------------------------------------------------------------------------------------------------------
   // set general element parameters
   eleparams.set("form of convective term", convform_);
@@ -447,12 +445,14 @@ void FLD::XFluid::set_element_general_fluid_xfem_parameter()
       params_->sublist("XFLUID DYNAMIC/STABILIZATION");
 
 
-  //------------------------------------------------------------------------------------------------------
-  // set the params in the XFEM-parameter-list class
-  Discret::Elements::FluidType::instance().pre_evaluate(
-      *discret_, eleparams, nullptr, nullptr, nullptr, nullptr, nullptr);
+  Discret::Elements::FluidEleParameterXFEM* fldpara =
+      Discret::Elements::FluidEleParameterXFEM::instance();
 
-  return;
+  fldpara->set_element_general_fluid_parameter(
+      eleparams, Core::Communication::my_mpi_rank(discret_->get_comm()));
+  fldpara->set_element_turbulence_parameters(eleparams);
+  fldpara->set_element_xfem_parameter(
+      eleparams, Core::Communication::my_mpi_rank(discret_->get_comm()));
 }
 
 // -------------------------------------------------------------------
@@ -476,9 +476,6 @@ void FLD::XFluid::set_face_general_fluid_xfem_parameter()
     // get function number of given Oseen advective field if necessary
     if (physicaltype_ == Inpar::FLUID::oseen)
       faceparams.set<int>("OSEENFIELDFUNCNO", params_->get<int>("OSEENFIELDFUNCNO"));
-
-    Discret::Elements::FluidIntFaceType::instance().pre_evaluate(
-        *discret_, faceparams, nullptr, nullptr, nullptr, nullptr, nullptr);
 
     Discret::Elements::FluidEleParameterIntFace* fldintfacepara =
         Discret::Elements::FluidEleParameterIntFace::instance();
@@ -512,8 +509,6 @@ void FLD::XFluid::set_element_time_parameter()
 {
   Teuchos::ParameterList eleparams;
 
-  // set action
-  eleparams.set<FLD::Action>("action", FLD::set_time_parameter);
   // set time integration scheme
   eleparams.set<Inpar::FLUID::TimeIntegrationScheme>("TimeIntegrationScheme", timealgo_);
   // set general element parameters
@@ -541,11 +536,7 @@ void FLD::XFluid::set_element_time_parameter()
     eleparams.set<bool>("ost new", params_->get<bool>("ost new"));
   }
 
-  // call standard loop over elements
-  // discret_->evaluate(eleparams,nullptr,nullptr,nullptr,nullptr,nullptr);
-
-  Discret::Elements::FluidType::instance().pre_evaluate(
-      *discret_, eleparams, nullptr, nullptr, nullptr, nullptr, nullptr);
+  Discret::Elements::FluidEleParameterTimInt::instance()->set_element_time_parameter(eleparams);
 }
 
 /*----------------------------------------------------------------------*
