@@ -11,12 +11,9 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_pack_buffer.hpp"
-#include "4C_linalg_vector.hpp"
-#include "4C_utils_parameter_list.fwd.hpp"
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
