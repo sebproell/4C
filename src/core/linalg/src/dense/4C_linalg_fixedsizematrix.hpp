@@ -388,6 +388,20 @@ namespace Core::LinAlg
     template <class ValueType, unsigned int i, unsigned int j>
     inline ValueType determinant(const ValueType* mat);
 
+    /// Compute
+    /*!
+      Computes and returns the trace of \e mat. To keep a common
+      interface there are two template parameters \c i and \c j, but they
+      must be the same number. The size of \e mat is expected to be
+      (\c i)x(\c j), and it must be square.
+
+      \param mat
+        pointer to the matrix, size (\c i)x(\c j)
+      \return determinant
+     */
+    template <unsigned int i, unsigned int j, class ValueType>
+    inline ValueType trace(const ValueType* mat);
+
     /// Copy: \e out = \e in
     /*!
       Copy \e in to \e out. This function takes two template parameters \c i and
@@ -1431,6 +1445,22 @@ namespace Core::LinAlg
       }
 
       return determinant_large_matrix(i, j, mat);
+    }
+
+    template <class ValueType, unsigned int i, unsigned int j>
+    inline ValueType trace(const ValueType* mat)
+    {
+      static_assert(i == j, "Matrix must be square");
+      static_assert(i > 0, "0x0 matrices are not supported for the trace");
+
+      ValueType trace = *mat;
+      for (unsigned int c = 1; c < i; ++c)
+      {
+        mat += i + 1;
+        trace += *mat;
+      }
+
+      return trace;
     }
 
 
