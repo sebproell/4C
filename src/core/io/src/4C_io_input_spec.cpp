@@ -13,7 +13,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-Core::IO::InputSpec::InputSpec(std::unique_ptr<Internal::InputSpecTypeErasedBase> pimpl)
+Core::IO::InputSpec::InputSpec(std::unique_ptr<Internal::InputSpecImpl> pimpl)
     : pimpl_(std::move(pimpl))
 {
 }
@@ -92,13 +92,13 @@ void Core::IO::InputSpec::emit_metadata(YamlNodeRef yaml) const
   pimpl_->emit_metadata(root);
 }
 
-Core::IO::Internal::InputSpecTypeErasedBase& Core::IO::InputSpec::impl()
+Core::IO::Internal::InputSpecImpl& Core::IO::InputSpec::impl()
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
   return *pimpl_;
 }
 
-const Core::IO::Internal::InputSpecTypeErasedBase& Core::IO::InputSpec::impl() const
+const Core::IO::Internal::InputSpecImpl& Core::IO::InputSpec::impl() const
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
   return *pimpl_;
