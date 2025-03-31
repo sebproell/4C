@@ -214,7 +214,7 @@ enum Inpar::Solid::EleTech Solid::Nln::convert_quantity_type2_ele_tech(
       break;
     default:
       FOUR_C_THROW("Cannot convert QuantityType {} to EleTech.",
-          NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
+          NOX::Nln::StatusTest::quantity_type_to_string(qtype));
       break;
   }
 

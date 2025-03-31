@@ -121,7 +121,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       act = Core::Elements::struct_postprocess_thickness;
     else
     {
-      FOUR_C_THROW("Unknown type of action for Membrane: {}", action.c_str());
+      FOUR_C_THROW("Unknown type of action for Membrane: {}", action);
     }
   }
 
@@ -494,7 +494,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
      | default                                                                       |
      *===============================================================================*/
     default:
-      FOUR_C_THROW("Unknown type of action for Membrane: {}", action_type_to_string(act).c_str());
+      FOUR_C_THROW("Unknown type of action for Membrane: {}", action_type_to_string(act));
       break;
   }
 

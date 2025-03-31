@@ -284,8 +284,8 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> CONTACT::NitscheStrategy::ge
     const enum CONTACT::VecBlockType& bt) const
 {
   if (!curr_state_eval_)
-    FOUR_C_THROW("you didn't evaluate this contact state for {} first",
-        CONTACT::vec_block_type_to_str(bt).c_str());
+    FOUR_C_THROW(
+        "you didn't evaluate this contact state for {} first", CONTACT::vec_block_type_to_str(bt));
 
   switch (bt)
   {

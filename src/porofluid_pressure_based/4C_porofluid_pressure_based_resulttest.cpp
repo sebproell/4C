@@ -48,7 +48,7 @@ void POROFLUIDMULTIPHASE::ResultTest::test_node(
   if (isnodeofanybody == 0)
   {
     FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1,
-        porotimint_.discretization()->name().c_str());
+        porotimint_.discretization()->name());
   }
   else
   {
@@ -97,7 +97,7 @@ void POROFLUIDMULTIPHASE::ResultTest::test_element(
   if (iselementofanybody == 0)
   {
     FOUR_C_THROW("Element {} does not belong to discretization {}", element + 1,
-        porotimint_.discretization()->name().c_str());
+        porotimint_.discretization()->name());
   }
   else
   {
@@ -199,7 +199,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_node(
 
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity);
 
   return result;
 }  // POROFLUIDMULTIPHASE::ResultTest::ResultNode
@@ -244,7 +244,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_element(
   }
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity);
 
   return result;
 }
@@ -311,7 +311,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_special(
   }
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity);
 
   return result;
 }  // POROFLUIDMULTIPHASE::ResultTest::result_special

@@ -583,7 +583,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
               }
               else
               {
-                FOUR_C_THROW("Unknown volume pleural pressure type: {}", ppl_Type.c_str());
+                FOUR_C_THROW("Unknown volume pleural pressure type: {}", ppl_Type);
               }
               Pp_np *= curvefac * (vals[0]);
             }
@@ -627,7 +627,7 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
         }
         else
         {
-          FOUR_C_THROW("prescribed [{}] is not defined for reduced acinuss", Bc.c_str());
+          FOUR_C_THROW("prescribed [{}] is not defined for reduced acinuss", Bc);
           exit(1);
         }
       }
@@ -894,7 +894,7 @@ void Discret::Elements::AcinusImpl<distype>::get_coupled_values(RedAcinus* ele,
         else
         {
           std::string str = (condition->parameters().get<std::string>("ReturnedVariable"));
-          FOUR_C_THROW("{}, is an unimplemented type of coupling", str.c_str());
+          FOUR_C_THROW("{}, is an unimplemented type of coupling", str);
           exit(1);
         }
         std::stringstream returnedBCwithId;
@@ -914,8 +914,8 @@ void Discret::Elements::AcinusImpl<distype>::get_coupled_values(RedAcinus* ele,
         itrMap1D = map1D->find(returnedBCwithId.str());
         if (itrMap1D == map1D->end())
         {
-          FOUR_C_THROW("The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]",
-              returnedBC.c_str(), ID);
+          FOUR_C_THROW(
+              "The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]", returnedBC, ID);
           exit(1);
         }
 

@@ -1836,8 +1836,7 @@ bool XFEM::XFluidTimeInt::special_check_interface_tips_space_time(
       break;
     }
     default:
-      FOUR_C_THROW(
-          "side-distype {} not handled", Core::FE::cell_type_to_string(side_distype).c_str());
+      FOUR_C_THROW("side-distype {} not handled", Core::FE::cell_type_to_string(side_distype));
       break;
   }
 

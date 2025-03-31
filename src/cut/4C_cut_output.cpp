@@ -140,8 +140,7 @@ char Cut::Output::gmsh_element_type(Core::FE::CellType shape)
       return ' ';
     }
     default:
-      FOUR_C_THROW(
-          "Unsupported cell shape! ( shape = {} )", Core::FE::cell_type_to_string(shape).c_str());
+      FOUR_C_THROW("Unsupported cell shape! ( shape = {} )", Core::FE::cell_type_to_string(shape));
       exit(EXIT_FAILURE);
   }
   // impossible to reach this point

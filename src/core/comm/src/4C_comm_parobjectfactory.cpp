@@ -150,7 +150,7 @@ std::shared_ptr<Core::Elements::Element> Core::Communication::ParObjectFactory::
     }
   }
 
-  FOUR_C_THROW("Unknown type '{}' of finite element", eletype.c_str());
+  FOUR_C_THROW("Unknown type '{}' of finite element", eletype);
   return nullptr;
 }
 
@@ -175,8 +175,8 @@ void Core::Communication::ParObjectFactory::do_register(ParObjectType* object_ty
   std::map<int, ParObjectType*>::iterator i = type_map_.find(hash);
   if (i != type_map_.end())
   {
-    FOUR_C_THROW("object ({},{}) already defined: ({},{})", name.c_str(), hash,
-        i->second->name().c_str(), i->first);
+    FOUR_C_THROW(
+        "object ({},{}) already defined: ({},{})", name, hash, i->second->name(), i->first);
   }
 
   if (hash == 0)

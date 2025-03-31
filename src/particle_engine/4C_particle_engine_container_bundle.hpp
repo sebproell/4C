@@ -81,8 +81,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedtypes_.count(type))
-        FOUR_C_THROW(
-            "container for particle type '{}' not stored!", enum_to_type_name(type).c_str());
+        FOUR_C_THROW("container for particle type '{}' not stored!", enum_to_type_name(type));
 #endif
 
       return (containers_[type])[status].get();
@@ -104,8 +103,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedtypes_.count(type))
-        FOUR_C_THROW(
-            "container for particle type '{}' not stored!", enum_to_type_name(type).c_str());
+        FOUR_C_THROW("container for particle type '{}' not stored!", enum_to_type_name(type));
 #endif
 
       ((containers_[type])[Owned])->scale_state(fac, state);
@@ -127,8 +125,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedtypes_.count(type))
-        FOUR_C_THROW(
-            "container for particle type '{}' not stored!", enum_to_type_name(type).c_str());
+        FOUR_C_THROW("container for particle type '{}' not stored!", enum_to_type_name(type));
 #endif
 
       ((containers_[type])[Owned])->update_state(facA, stateA, facB, stateB);
@@ -147,8 +144,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedtypes_.count(type))
-        FOUR_C_THROW(
-            "container for particle type '{}' not stored!", enum_to_type_name(type).c_str());
+        FOUR_C_THROW("container for particle type '{}' not stored!", enum_to_type_name(type));
 #endif
 
       ((containers_[type])[Owned])->set_state(val, state);
@@ -165,8 +161,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedtypes_.count(type))
-        FOUR_C_THROW(
-            "container for particle type '{}' not stored!", enum_to_type_name(type).c_str());
+        FOUR_C_THROW("container for particle type '{}' not stored!", enum_to_type_name(type));
 #endif
 
       ((containers_[type])[Owned])->clear_state(state);

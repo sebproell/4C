@@ -175,7 +175,7 @@ void Cardiovascular0DResultTest::test_special(
 
     // catch quantity strings, which are not handled by cardiovascular 0D result test
     if (unknownquantity)
-      FOUR_C_THROW("Quantity '{}' not supported in cardiovascular 0D testing", quantity.c_str());
+      FOUR_C_THROW("Quantity '{}' not supported in cardiovascular 0D testing", quantity);
 
     if (havegid)
     {
@@ -431,7 +431,7 @@ void Cardiovascular0DResultTest::test_special(
 
     // catch quantity strings, which are not handled by cardiovascular 0D result test
     if (unknownquantity)
-      FOUR_C_THROW("Quantity '{}' not supported in cardiovascular 0D testing", quantity.c_str());
+      FOUR_C_THROW("Quantity '{}' not supported in cardiovascular 0D testing", quantity);
 
     if (havegid)
     {

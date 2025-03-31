@@ -840,7 +840,7 @@ void Solid::TimeInt::BaseDataGlobalState::assign_model_block(Core::LinAlg::Spars
       }
       default:
       {
-        FOUR_C_THROW("model block {} is not supported", mat_block_type_to_string(bt).c_str());
+        FOUR_C_THROW("model block {} is not supported", mat_block_type_to_string(bt));
         break;
       }
     }
@@ -906,7 +906,7 @@ Solid::TimeInt::BaseDataGlobalState::extract_model_block(Core::LinAlg::SparseOpe
       }
       default:
       {
-        FOUR_C_THROW("model block {} is not supported", mat_block_type_to_string(bt).c_str());
+        FOUR_C_THROW("model block {} is not supported", mat_block_type_to_string(bt));
         break;
       }
     }

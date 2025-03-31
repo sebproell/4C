@@ -161,7 +161,7 @@ namespace
     std::shared_ptr<const Core::LinAlg::Vector<double>> quantities_np =
         discretization.get_state(*field_index, field_name);
 
-    if (quantities_np == nullptr) FOUR_C_THROW("Cannot get state vector '{}' ", field_name.c_str());
+    if (quantities_np == nullptr) FOUR_C_THROW("Cannot get state vector '{}' ", field_name);
 
     const auto my_quantities = Core::FE::extract_values(*quantities_np, la[*field_index].lm_);
 

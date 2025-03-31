@@ -76,7 +76,7 @@ void ParticleInteraction::SPHHeatSourceBase::setup(
       // safety check
       if (not potentialabsorbingtypes.count(type_i))
         FOUR_C_THROW("thermal absorptivity for particles of type '{}' not possible!",
-            PARTICLEENGINE::enum_to_type_name(type_i).c_str());
+            PARTICLEENGINE::enum_to_type_name(type_i));
 
       absorbingtypes_.insert(type_i);
     }

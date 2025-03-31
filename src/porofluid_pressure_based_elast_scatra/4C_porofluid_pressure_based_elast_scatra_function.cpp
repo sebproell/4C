@@ -1279,7 +1279,7 @@ void PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::check_order(
   else
   {
     FOUR_C_THROW("Variable <{}> not supported on position 0. Wrong order in variable vector! ",
-        variables[0].first.c_str());
+        variables[0].first);
   }
 
   // order is correct
@@ -1372,8 +1372,8 @@ std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_d
     volfrac_blood = variables[3].second;
   }
   else
-    FOUR_C_THROW("Derivative w.r.t. <{}> not supported in LUNG_OXYGEN_EXCHANGE_LAW.",
-        variables[0].first.c_str());
+    FOUR_C_THROW(
+        "Derivative w.r.t. <{}> not supported in LUNG_OXYGEN_EXCHANGE_LAW.", variables[0].first);
 
   // volfrac relation
   const double volfrac_relation = (volfrac_blood / parameters_.volfrac_blood_ref);
@@ -1406,8 +1406,8 @@ std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_d
                (1 / parameters_.volfrac_blood_ref) * (P_oA - P_oB.val());
   }
   else
-    FOUR_C_THROW("Derivative w.r.t. <{}> not supported in LUNG_OXYGEN_EXCHANGE_LAW.",
-        variables[0].first.c_str());
+    FOUR_C_THROW(
+        "Derivative w.r.t. <{}> not supported in LUNG_OXYGEN_EXCHANGE_LAW.", variables[0].first);
 
   return deriv;
 }
@@ -1464,7 +1464,7 @@ void PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::check_order(
   else
   {
     FOUR_C_THROW("Variable <{}> not supported on position 0. Wrong order in variable vector! ",
-        variables[0].first.c_str());
+        variables[0].first);
   }
 
   // order is correct
@@ -1577,7 +1577,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::eva
   }
   else
     FOUR_C_THROW("Derivative w.r.t. <{}> not supported in LUNG_CARBONDIOXIDE_EXCHANGE_LAW.",
-        variables[0].first.c_str());
+        variables[0].first);
 
   // volfrac relation
   const double volfrac_relation = (volfrac_blood / parameters_.volfrac_blood_ref);
@@ -1640,7 +1640,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::eva
   }
   else
     FOUR_C_THROW("Derivative w.r.t. <{}> not supported in LUNG_CARBONDIOXIDE_EXCHANGE_LAW.",
-        variables[0].first.c_str());
+        variables[0].first);
 
   return deriv;
 }

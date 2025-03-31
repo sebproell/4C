@@ -49,7 +49,7 @@ int Discret::Elements::Ale2::evaluate(Teuchos::ParameterList& params,
   else if (action == "calc_jacobian_determinant")
     act = Ale2::calc_det_jac;
   else
-    FOUR_C_THROW("{} is an unknown type of action for Ale2", action.c_str());
+    FOUR_C_THROW("{} is an unknown type of action for Ale2", action);
 
   bool spatialconfiguration = true;
   if (params.isParameter("use spatial configuration"))

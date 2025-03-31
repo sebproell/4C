@@ -299,8 +299,7 @@ void Core::LinearSolver::AMGNxN::CoupledAmg::setup()
 
     // Parse contents of the list
     Teuchos::ParameterList muelu_list_this_block;
-    if (not muelu_params_.isSublist(list_name))
-      FOUR_C_THROW("list {} not found", list_name.c_str());
+    if (not muelu_params_.isSublist(list_name)) FOUR_C_THROW("list {} not found", list_name);
     std::string xml_file = muelu_params_.sublist(list_name).get<std::string>("xml file", "none");
     if (xml_file != "none")
     {
@@ -1518,16 +1517,8 @@ Core::LinearSolver::AMGNxN::SingleFieldAMGFactory::create()
   std::string fine_smoother = get_params().get<std::string>("fine smoother", "none");
   if (fine_smoother == "none") FOUR_C_THROW("You have to set: fine smoother");
   if (not get_params_smoother().isSublist(fine_smoother))
-    FOUR_C_THROW("Not found a list named {}", fine_smoother.c_str());
+    FOUR_C_THROW("Not found a list named {}", fine_smoother);
   Teuchos::ParameterList fine_smoother_list = get_params_smoother().sublist(fine_smoother);
-
-  // std::string coarsest_smoother = GetParams().get<std::string>("coarsest smoother","none");
-  // if(coarsest_smoother == "none")
-  //  FOUR_C_THROW("You have to set: fine smoother");
-  // if(not GetParamsSmoother().isSublist(coarsest_smoother))
-  //   FOUR_C_THROW("Not found a list named {}", coarsest_smoother.c_str() );
-  // Teuchos::ParameterList fine_smoother_list = GetParamsSmoother().sublist(coarsest_smoother);
-
 
   if (get_verbosity() == "on")
   {
@@ -1755,10 +1746,10 @@ Core::LinearSolver::AMGNxN::BgsSmootherFactory::create()
     unsigned ib = 0;
     while (std::getline(ss, token, ','))
     {
-      if (ib >= NumSuperBlocks) FOUR_C_THROW("too many comas in {}", local_sweeps.c_str());
+      if (ib >= NumSuperBlocks) FOUR_C_THROW("too many comas in {}", local_sweeps);
       iters[ib++] = atoi(token.c_str());
     }
-    if (ib < NumSuperBlocks) FOUR_C_THROW("too less comas in {}", local_sweeps.c_str());
+    if (ib < NumSuperBlocks) FOUR_C_THROW("too less comas in {}", local_sweeps);
   }
   if (local_omegas != "none")
   {
@@ -1767,10 +1758,10 @@ Core::LinearSolver::AMGNxN::BgsSmootherFactory::create()
     unsigned ib = 0;
     while (std::getline(ss, token, ','))
     {
-      if (ib >= NumSuperBlocks) FOUR_C_THROW("too many comas in {}", local_omegas.c_str());
+      if (ib >= NumSuperBlocks) FOUR_C_THROW("too many comas in {}", local_omegas);
       omegas[ib++] = atof(token.c_str());
     }
-    if (ib < NumSuperBlocks) FOUR_C_THROW("too less comas in {}", local_omegas.c_str());
+    if (ib < NumSuperBlocks) FOUR_C_THROW("too less comas in {}", local_omegas);
   }
 
 

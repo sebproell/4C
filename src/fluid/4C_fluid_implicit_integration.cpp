@@ -1371,8 +1371,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       if (fdpcondid_from_container)
       {
         if ((*fdpcondid_from_container) != fdpcondid)
-          FOUR_C_THROW(
-              "Flow-dependent pressure condition {} has non-matching ID", fdpcondname.c_str());
+          FOUR_C_THROW("Flow-dependent pressure condition {} has non-matching ID", fdpcondname);
       }
       else
         fdpcond[fdpcondid]->parameters().add("ConditionID", fdpcondid);
@@ -1729,8 +1728,8 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       if (sscbcondid_from_container)
       {
         if (sscbcondid_from_container != sscbcondid)
-          FOUR_C_THROW("Slip Supplemental Curved Boundary condition {} has non-matching ID",
-              sscbcondname.c_str());
+          FOUR_C_THROW(
+              "Slip Supplemental Curved Boundary condition {} has non-matching ID", sscbcondname);
       }
       else
         sscbcond[sscbcondid]->parameters().add("ConditionID", sscbcondid);
@@ -1816,7 +1815,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       if (nscondid_from_container)
       {
         if (nscondid_from_container != nscondid)
-          FOUR_C_THROW("Navier slip boundary condition {} has non-matching ID", nscondname.c_str());
+          FOUR_C_THROW("Navier slip boundary condition {} has non-matching ID", nscondname);
       }
       else
         nscond[nscondid]->parameters().add("ConditionID", nscondid);
@@ -6643,7 +6642,7 @@ void FLD::FluidImplicitTimeInt::explicit_predictor()
     velpressplitter_->insert_other_vector(*unm, *velnp_);
   }
   else
-    FOUR_C_THROW("Unknown fluid predictor {}", predictor_.c_str());
+    FOUR_C_THROW("Unknown fluid predictor {}", predictor_);
 
   if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {

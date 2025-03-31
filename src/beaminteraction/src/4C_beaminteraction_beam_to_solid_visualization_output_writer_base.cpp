@@ -34,8 +34,7 @@ BeamInteraction::BeamToSolidVisualizationOutputWriterBase::add_visualization_wri
   const auto& it = visualization_writers_.find(writer_name_key);
   if (it != visualization_writers_.end())
   {
-    FOUR_C_THROW(
-        "The output writer key '{}' you want to add already exists.", writer_name_key.c_str());
+    FOUR_C_THROW("The output writer key '{}' you want to add already exists.", writer_name_key);
   }
   else
   {

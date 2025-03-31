@@ -702,7 +702,7 @@ void XFEM::MeshCouplingBC::evaluate_condition(std::shared_ptr<Core::LinAlg::Vect
     else if (condname == "XFEMSurfWeakDirichlet" or condname == "XFEMRobinDirichletSurf")
       evaluate_interface_velocity(final_values, lnode, cond, time, dt);
     else
-      FOUR_C_THROW("non supported condname for evaluation {}", condname.c_str());
+      FOUR_C_THROW("non supported condname for evaluation {}", condname);
 
 
     // set final values to vector
@@ -754,7 +754,7 @@ void XFEM::MeshCouplingBC::evaluate_interface_velocity(std::vector<double>& fina
       compute_interface_velocity_from_displacement(final_values, node, dt, evaltype);
   }
   else
-    FOUR_C_THROW("evaltype not supported {}", evaltype->c_str());
+    FOUR_C_THROW("evaltype not supported {}", *evaltype);
 }
 
 /*--------------------------------------------------------------------------*
@@ -781,7 +781,7 @@ void XFEM::MeshCouplingBC::evaluate_interface_displacement(std::vector<double>& 
     evaluate_implementation(final_values, node->x().data(), cond, time, function_name);
   }
   else
-    FOUR_C_THROW("evaltype not supported {}", evaltype.c_str());
+    FOUR_C_THROW("evaltype not supported {}", evaltype);
 }
 
 

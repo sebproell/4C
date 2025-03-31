@@ -505,7 +505,7 @@ void Discret::Elements::ScaTraEleCalcMultiPoroReac<distype>::extract_nodal_flux(
     // get convective (velocity - mesh displacement) velocity at nodes
     std::shared_ptr<const Core::LinAlg::Vector<double>> convel =
         discretization.get_state(ndsvel, statename.str());
-    if (convel == nullptr) FOUR_C_THROW("Cannot get state vector {}", statename.str().c_str());
+    if (convel == nullptr) FOUR_C_THROW("Cannot get state vector {}", statename.str());
 
     // extract local values of convective velocity field from global state vector
     Core::FE::extract_my_values<Core::LinAlg::Matrix<nsd_, nen_>>(

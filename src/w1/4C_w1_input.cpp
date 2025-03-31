@@ -60,7 +60,7 @@ bool Discret::Elements::Wall1::read_element(const std::string& eletype, const st
   else if (buffer == "plane_strain")
     wtype_ = plane_strain;
   else
-    FOUR_C_THROW("Illegal strain/stress type '{}'", buffer.c_str());
+    FOUR_C_THROW("Illegal strain/stress type '{}'", buffer);
 
   // kinematics type
   buffer = container.get<std::string>("KINEM");
@@ -70,7 +70,7 @@ bool Discret::Elements::Wall1::read_element(const std::string& eletype, const st
   else if (buffer == "nonlinear")
     kintype_ = Inpar::Solid::KinemType::nonlinearTotLag;
   else
-    FOUR_C_THROW("Illegal KINEM type '{}'", buffer.c_str());
+    FOUR_C_THROW("Illegal KINEM type '{}'", buffer);
 
   // EAS type
   buffer = container.get<std::string>("EAS");

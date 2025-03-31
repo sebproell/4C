@@ -279,7 +279,7 @@ void Core::IO::OutputControl::write_header(
 
     controlfile_.open(control_file_name.c_str(), std::ios_base::out);
     if (not controlfile_)
-      FOUR_C_THROW("Could not open control file '{}' for writing", control_file_name.c_str());
+      FOUR_C_THROW("Could not open control file '{}' for writing", control_file_name);
 
     time_t time_value;
     time_value = time(nullptr);

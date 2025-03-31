@@ -125,7 +125,7 @@ void Core::IO::create_directory(const std::string& dir_path, const int myrank)
   std::filesystem::path dir(dir_path);
   if (!std::filesystem::is_directory(dir))
     if (!std::filesystem::create_directory(dir))
-      FOUR_C_THROW("The directory \"{}\" could not be created!", dir_path.c_str());
+      FOUR_C_THROW("The directory \"{}\" could not be created!", dir_path);
 }
 
 /*----------------------------------------------------------------------------*

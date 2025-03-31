@@ -232,7 +232,7 @@ void ScaTra::LevelSet::Intersection::check_boundary_cell_type(Core::FE::CellType
   if (distype_bc != Core::FE::CellType::tri3 and distype_bc != Core::FE::CellType::quad4)
   {
     FOUR_C_THROW("unexpected type of boundary integration cell: {}",
-        Core::FE::cell_type_to_string(distype_bc).c_str());
+        Core::FE::cell_type_to_string(distype_bc));
   }
 }
 
@@ -321,8 +321,7 @@ void ScaTra::LevelSet::Intersection::prepare_cut(const Core::Elements::Element* 
       }
       break;
     default:
-      FOUR_C_THROW(
-          "Unknown element type ( type = {} )", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unknown element type ( type = {} )", Core::FE::cell_type_to_string(distype));
       break;
   }
 

@@ -343,6 +343,6 @@ void Mat::Elastic::CoupTransverselyIsotropic::error_handling(
     }
   }
 
-  FOUR_C_THROW("Uncaught error detected:\n{}", msg.str().c_str());
+  FOUR_C_THROW("Uncaught error detected:\n{}", msg.str());
 }
 FOUR_C_NAMESPACE_CLOSE

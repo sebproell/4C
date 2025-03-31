@@ -196,8 +196,8 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::provide
       break;
     }
     default:
-      FOUR_C_THROW("Element shape {} not activated. Just do it.",
-          Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW(
+          "Element shape {} not activated. Just do it.", Core::FE::cell_type_to_string(distype));
       break;
   }
   return nullptr;
@@ -281,8 +281,8 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::provide
           problem, numdofpernode, numscal, disname);
     }
     default:
-      FOUR_C_THROW("Element shape {} not activated. Just do it.",
-          Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW(
+          "Element shape {} not activated. Just do it.", Core::FE::cell_type_to_string(distype));
       break;
   }
   return nullptr;
@@ -306,7 +306,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::define_
         problem != Inpar::ScaTra::impltype_elch_electrode and
         problem != Inpar::ScaTra::impltype_elch_diffcond)
       FOUR_C_THROW("ImplType '{}' not implemented for transport on manifolds!",
-          ScaTra::impl_type_to_string(problem).c_str());
+          ScaTra::impl_type_to_string(problem));
   }
 
   switch (problem)
@@ -452,7 +452,7 @@ Discret::Elements::ScaTraEleInterface* Discret::Elements::ScaTraFactory::define_
     if (problem != Inpar::ScaTra::impltype_std and
         problem != Inpar::ScaTra::impltype_cardiac_monodomain)
       FOUR_C_THROW("ImplType '{}' not implemented for transport on manifolds!",
-          ScaTra::impl_type_to_string(problem).c_str());
+          ScaTra::impl_type_to_string(problem));
   }
 
   switch (problem)

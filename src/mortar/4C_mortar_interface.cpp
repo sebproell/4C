@@ -998,8 +998,7 @@ std::shared_ptr<Core::Binstrategy::BinningStrategy> Mortar::Interface::setup_bin
     int gid = slave_col_nodes()->GID(lid);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node)
-      FOUR_C_THROW(
-          "Cannot find node with gid {} in discretization '{}'.", gid, discret().name().c_str());
+      FOUR_C_THROW("Cannot find node with gid {} in discretization '{}'.", gid, discret().name());
     auto* mtrnode = dynamic_cast<Mortar::Node*>(node);
 
     for (unsigned int dim = 0; dim < 3; ++dim)
@@ -1029,7 +1028,7 @@ std::shared_ptr<Core::Binstrategy::BinningStrategy> Mortar::Interface::setup_bin
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele)
       FOUR_C_THROW(
-          "Cannot find element with gid {} in discretization '{}'.", gid, discret().name().c_str());
+          "Cannot find element with gid {} in discretization '{}'.", gid, discret().name());
     auto* mtrele = dynamic_cast<Mortar::Element*>(ele);
 
     // to be thought about, whether this is enough (safety = 2??)
@@ -2131,8 +2130,8 @@ void Mortar::Interface::set_state(
     }
     default:
     {
-      FOUR_C_THROW("The given state type is unsupported! (type = {})",
-          state_type_to_string(statetype).c_str());
+      FOUR_C_THROW(
+          "The given state type is unsupported! (type = {})", state_type_to_string(statetype));
       break;
     }
   }
@@ -4425,7 +4424,7 @@ bool Mortar::Interface::check_output_list(
   {
     if (not outParams.isParameter(requiredEntry))
     {
-      FOUR_C_THROW("Parameter list is missing the required entry '{}'.", (requiredEntry).c_str());
+      FOUR_C_THROW("Parameter list is missing the required entry '{}'.", (requiredEntry));
       return false;
     }
   }

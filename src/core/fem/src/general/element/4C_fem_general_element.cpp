@@ -389,8 +389,8 @@ void Core::Elements::Element::nodal_connectivity(
     }
   }
   else
-    FOUR_C_THROW("implementation is missing for this distype ({})",
-        Core::FE::cell_type_to_string(shape()).c_str());
+    FOUR_C_THROW(
+        "implementation is missing for this distype ({})", Core::FE::cell_type_to_string(shape()));
 }
 
 
@@ -717,7 +717,7 @@ int Core::Elements::Element::num_face() const
       return num_surface();
     default:
       FOUR_C_THROW("faces for discretization type {} not yet implemented",
-          (Core::FE::cell_type_to_string(shape())).c_str());
+          (Core::FE::cell_type_to_string(shape())));
       return 0;
   }
 }

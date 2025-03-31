@@ -83,7 +83,7 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
     else if (action == "calc_struct_energy")
       act = Core::Elements::struct_calc_energy;
     else
-      FOUR_C_THROW("Unknown type of action {} for Wall1", action.c_str());
+      FOUR_C_THROW("Unknown type of action {} for Wall1", action);
   }
   // get the material law
   std::shared_ptr<const Core::Mat::Material> actmat = material();
@@ -384,8 +384,7 @@ int Discret::Elements::Wall1::evaluate(Teuchos::ParameterList& params,
     //==================================================================================
     default:
     {
-      FOUR_C_THROW(
-          "Unknown type of action for Wall1 element: {}", action_type_to_string(act).c_str());
+      FOUR_C_THROW("Unknown type of action for Wall1 element: {}", action_type_to_string(act));
       break;
     }
   }

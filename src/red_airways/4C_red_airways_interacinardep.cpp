@@ -205,7 +205,7 @@ void Discret::Elements::RedInterAcinarDep::get_params(std::string name, double& 
   it = elem_params_.find(name);
   if (it == elem_params_.end())
   {
-    FOUR_C_THROW("[{}] is not found with in the element variables", name.c_str());
+    FOUR_C_THROW("[{}] is not found with in the element variables", name);
     exit(1);
   }
   var = elem_params_[name];
@@ -223,7 +223,7 @@ void Discret::Elements::RedInterAcinarDep::get_params(std::string name, int& var
   }
   else
   {
-    FOUR_C_THROW("[{}] is not found with in the element INT variables", name.c_str());
+    FOUR_C_THROW("[{}] is not found with in the element INT variables", name);
     exit(1);
   }
 }

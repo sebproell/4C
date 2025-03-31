@@ -1164,39 +1164,6 @@ namespace Discret
       //! identify elements of inflow section
       void inflow_element(Core::Elements::Element* ele);
 
-      // FLD::RotationallySymmetricPeriodicBC<distype> & rotsymmpbc, ///<
-      //  {
-      //    // get state of the global vector
-      //    std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
-      //    discretization.GetState(state); if(matrix_state == nullptr)
-      //       FOUR_C_THROW("Cannot get state vector {}", state.c_str());
-      //
-      //    // extract local values of the global vectors
-      //    std::vector<double> mymatrix(lm.size());
-      //    Core::FE::extract_my_values(*matrix_state,mymatrix,lm);
-      //
-      //    // rotate the vector field in the case of rotationally symmetric boundary conditions
-      //    if(matrixtofill != nullptr)
-      //      rotsymmpbc.rotate_my_values_if_necessary(mymatrix);
-      //
-      //    for (int inode=0; inode<nen_; ++inode)  // number of nodes
-      //    {
-      //      // fill a vector field via a pointer
-      //      if (matrixtofill != nullptr)
-      //      {
-      //        for(int idim=0; idim<nsd_; ++idim) // number of dimensions
-      //        {
-      //          (*matrixtofill)(idim,inode) = mymatrix[idim+(inode*numdofpernode_)];
-      //        }  // end for(idim)
-      //      }
-      //      // fill a scalar field via a pointer
-      //      if (vectortofill != nullptr)
-      //        (*vectortofill)(inode,0) = mymatrix[nsd_+(inode*numdofpernode_)];
-      //    }
-      //  }
-
-
-
       //==================================================================================
       // OLD FLUID ELE CALC ROUTINES BEFORE OST-HIST MIGRATION.
 

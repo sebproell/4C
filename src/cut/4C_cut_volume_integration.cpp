@@ -92,7 +92,7 @@ Core::LinAlg::SerialDenseVector Cut::VolumeIntegration::compute_rhs_moment()
     }
     default:
       FOUR_C_THROW("unsupported integration cell type ( cell type = {} )",
-          Core::FE::cell_type_to_string(elem1_->shape()).c_str());
+          Core::FE::cell_type_to_string(elem1_->shape()));
       exit(EXIT_FAILURE);
   }
   volcell_->set_volume(volGlobal);

@@ -419,8 +419,7 @@ void Cut::VolumeCell::new_boundary_cell(
       new_quad4_cell(mesh, f, x);
       break;
     default:
-      FOUR_C_THROW(
-          "Unsupported shape ( shape = {} )", Core::FE::cell_type_to_string(shape).c_str());
+      FOUR_C_THROW("Unsupported shape ( shape = {} )", Core::FE::cell_type_to_string(shape));
       exit(EXIT_FAILURE);
   }
 }
@@ -538,8 +537,7 @@ void Cut::VolumeCell::new_integration_cell(
       new_pyramid5_cell(mesh, x);
       break;
     default:
-      FOUR_C_THROW(
-          "Unsupported shape ( shape = {} )", Core::FE::cell_type_to_string(shape).c_str());
+      FOUR_C_THROW("Unsupported shape ( shape = {} )", Core::FE::cell_type_to_string(shape));
       exit(EXIT_FAILURE);
   }
 }

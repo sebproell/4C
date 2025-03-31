@@ -80,7 +80,7 @@ Cut::SideHandle* Cut::MeshHandle::create_side(
       }
       default:
         FOUR_C_THROW(
-            "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
+            "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
         exit(EXIT_FAILURE);
     }
     quadraticsides_[sid] = std::shared_ptr<QuadraticSideHandle>(qsh);
@@ -88,8 +88,7 @@ Cut::SideHandle* Cut::MeshHandle::create_side(
   }
   else
   {
-    FOUR_C_THROW(
-        "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
+    FOUR_C_THROW("unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
     exit(EXIT_FAILURE);
   }
 }
@@ -695,8 +694,7 @@ void Cut::MeshHandle::create_element_sides(const std::vector<int>& nids, Core::F
       break;
     }
     default:
-      FOUR_C_THROW(
-          "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
       exit(EXIT_FAILURE);
   }
 }
@@ -771,8 +769,8 @@ Cut::ElementHandle* Cut::MeshHandle::create_element(
           break;
         }
         default:
-          FOUR_C_THROW("unsupported distype ( distype = {} )",
-              Core::FE::cell_type_to_string(distype).c_str());
+          FOUR_C_THROW(
+              "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
           exit(EXIT_FAILURE);
       }
       quadraticelements_[eid] = std::shared_ptr<QuadraticElementHandle>(qeh);
@@ -780,8 +778,7 @@ Cut::ElementHandle* Cut::MeshHandle::create_element(
       return qeh;
     }
     default:
-      FOUR_C_THROW(
-          "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
       exit(EXIT_FAILURE);
   }
 }

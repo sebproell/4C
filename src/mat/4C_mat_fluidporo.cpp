@@ -677,7 +677,7 @@ Mat::PAR::FluidPoro::FluidPoro(const Core::Mat::PAR::Parameter::Data& matdata)
   else if (pfuncstring == "Const_Material_Nodal_Orthotropy")
     permeability_func_ = Mat::PAR::const_material_nodal_orthotropic;
   else
-    FOUR_C_THROW("Unknown permeability function: {}", pfuncstring.c_str());
+    FOUR_C_THROW("Unknown permeability function: {}", pfuncstring);
 
   orthotropic_permeabilities_.resize(3, 0.0);
   if (permeability_func_ == Mat::PAR::const_material_orthotropic)

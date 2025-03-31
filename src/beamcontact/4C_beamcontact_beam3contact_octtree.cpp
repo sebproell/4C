@@ -104,7 +104,7 @@ Beam3ContactOctTree::Beam3ContactOctTree(Teuchos::ParameterList& params,
   }
   else
   {
-    FOUR_C_THROW("OctTree called with unknown parameter list named '{}'!", params.name().c_str());
+    FOUR_C_THROW("OctTree called with unknown parameter list named '{}'!", params.name());
   }
 
   // sanity checks for extrusion value(s)

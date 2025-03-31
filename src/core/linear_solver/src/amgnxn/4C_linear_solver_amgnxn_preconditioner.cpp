@@ -106,7 +106,7 @@ void Core::LinearSolver::AmGnxnPreconditioner::setup(
         myInterface.get_preconditioner_params(), myInterface.get_smoothers_params());
   }
   else
-    FOUR_C_THROW("Unknown preconditioner type: {}", myInterface.get_preconditioner_type().c_str());
+    FOUR_C_THROW("Unknown preconditioner type: {}", myInterface.get_preconditioner_type());
 
   double elaptime = timer.totalElapsedTime(true);
   if (myInterface.get_preconditioner_params().get<std::string>("verbosity", "off") == "on" and
@@ -194,7 +194,7 @@ Core::LinearSolver::AmGnxnInterface::AmGnxnInterface(Teuchos::ParameterList& par
   }
   else
     FOUR_C_THROW(
-        "\"{}\" is an invalid value for \"AMGNXN_TYPE\". Fix your input file", amgnxn_type.c_str());
+        "\"{}\" is an invalid value for \"AMGNXN_TYPE\". Fix your input file", amgnxn_type);
 
 
 

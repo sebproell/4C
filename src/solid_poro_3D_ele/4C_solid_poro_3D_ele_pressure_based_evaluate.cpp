@@ -223,7 +223,7 @@ int Discret::Elements::SolidPoroPressureBased::evaluate(Teuchos::ParameterList& 
     }
     default:
       FOUR_C_THROW("The element action {} is not yet implemented for the new solid elements",
-          action_type_to_string(action).c_str());
+          action_type_to_string(action));
       return 0;
   }
 }

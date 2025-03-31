@@ -806,7 +806,7 @@ void NOX::Nln::LinSystem::PrePostOp::PseudoTransient::run_post_compute_jacobian(
     default:
     {
       FOUR_C_THROW("Unsupported jacobian operator type: {}",
-          NOX::Nln::LinSystem::operator_type_to_string(jactype).c_str());
+          NOX::Nln::LinSystem::operator_type_to_string(jactype));
       break;
     }
   }

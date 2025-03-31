@@ -243,7 +243,7 @@ void XFEM::LevelSetCoupling::set_level_set_boolean_type()
   else if (booleantype == "sym_difference")
     ls_boolean_type_ = ls_sym_difference;
   else
-    FOUR_C_THROW("not a valid boolean type {}: ", booleantype.c_str());
+    FOUR_C_THROW("not a valid boolean type {}: ", booleantype);
 }
 
 

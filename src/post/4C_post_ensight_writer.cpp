@@ -219,7 +219,7 @@ void EnsightWriter::write_geo_file(const std::string& geofilename)
   if (myrank_ == 0)
   {
     geofile.open(geofilename.c_str());
-    if (!geofile) FOUR_C_THROW("failed to open file: {}", geofilename.c_str());
+    if (!geofile) FOUR_C_THROW("failed to open file: {}", geofilename);
   }
 
   // header
@@ -1120,7 +1120,7 @@ void EnsightWriter::write_result_one_time_step(PostResult& result, const std::st
 {
   if (not map_has_map(result.group(), groupname.c_str()))
     FOUR_C_THROW("expected result: {} in step {}. Probably a return is missing here. But check!",
-        groupname.c_str(), result.step());
+        groupname, result.step());
 
   // FILE CONTINUATION NOT SUPPORTED DUE TO ITS COMPLEXITY FOR VARIABLE GEOMETRY ghamm 03.03.2014
   // guessing whether a new file is necessary should be possible with the current method because the
@@ -2147,7 +2147,7 @@ std::string EnsightWriter::get_variable_section(std::map<std::string, std::vecto
     const int setnumber = entry1->second;
 
     std::map<std::string, std::vector<int>>::const_iterator entry2 = filesetmap.find(key);
-    if (entry2 == filesetmap.end()) FOUR_C_THROW("filesetmap not defined for '{}'", key.c_str());
+    if (entry2 == filesetmap.end()) FOUR_C_THROW("filesetmap not defined for '{}'", key);
 
     const int numsubfilesteps = entry2->second.size();
     std::string filename_for_casefile;

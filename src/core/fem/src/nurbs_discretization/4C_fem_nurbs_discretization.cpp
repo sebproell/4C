@@ -416,7 +416,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
             break;
           default:
             FOUR_C_THROW("invalid element shape for least squares dirichlet evaluation: {}",
-                Core::FE::cell_type_to_string(distype).c_str());
+                Core::FE::cell_type_to_string(distype));
             break;
         }
       else
@@ -454,7 +454,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
             break;
           default:
             FOUR_C_THROW("invalid element shape for least squares dirichlet evaluation: {}",
-                Core::FE::cell_type_to_string(distype).c_str());
+                Core::FE::cell_type_to_string(distype));
             break;
         }
 

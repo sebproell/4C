@@ -2388,7 +2388,7 @@ void Discret::Elements::Wall1Poro<distype>::extract_values_from_global_vector(
   // get state of the global vector
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state(dofset, state);
-  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
+  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state);
 
   const int numdofpernode = discretization.num_dof(dofset, nodes()[0]);
 

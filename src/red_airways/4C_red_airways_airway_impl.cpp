@@ -200,7 +200,7 @@ namespace
     else
     {
       FOUR_C_THROW("[{}] is not a defined ElemSolvingType of a RED_AIRWAY element",
-          ele->elem_solving_type().c_str());
+          ele->elem_solving_type());
     }
 
     // Get airway branch length
@@ -380,7 +380,7 @@ namespace
     }
     else
     {
-      FOUR_C_THROW("[{}] is not a defined resistance model", ele->resistance().c_str());
+      FOUR_C_THROW("[{}] is not a defined resistance model", ele->resistance());
     }
 
     //------------------------------------------------------------
@@ -503,7 +503,7 @@ namespace
     }
     else
     {
-      FOUR_C_THROW("[{}] is not an implemented element yet", (ele->type()).c_str());
+      FOUR_C_THROW("[{}] is not an implemented element yet", (ele->type()));
       exit(1);
     }
 
@@ -1095,7 +1095,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
         }
         else
         {
-          FOUR_C_THROW("precribed [{}] is not defined for reduced airways", Bc.c_str());
+          FOUR_C_THROW("precribed [{}] is not defined for reduced airways", Bc);
           exit(1);
         }
       }
@@ -1416,7 +1416,7 @@ void Discret::Elements::AirwayImpl<distype>::get_coupled_values(RedAirway* ele,
         else
         {
           std::string str = (condition->parameters().get<std::string>("ReturnedVariable"));
-          FOUR_C_THROW("{}, is an unimplemented type of coupling", str.c_str());
+          FOUR_C_THROW("{}, is an unimplemented type of coupling", str);
           exit(1);
         }
         std::stringstream returnedBCwithId;
@@ -1434,8 +1434,8 @@ void Discret::Elements::AirwayImpl<distype>::get_coupled_values(RedAirway* ele,
         itrMap1D = map1D->find(returnedBCwithId.str());
         if (itrMap1D == map1D->end())
         {
-          FOUR_C_THROW("The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]",
-              returnedBC.c_str(), ID);
+          FOUR_C_THROW(
+              "The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]", returnedBC, ID);
           exit(1);
         }
 

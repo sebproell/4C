@@ -72,7 +72,7 @@ namespace ParticleInteraction
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not runtime_visualization_managers_.count(fieldname))
-        FOUR_C_THROW("no runtime output writer for field '{}' stored!", fieldname.c_str());
+        FOUR_C_THROW("no runtime output writer for field '{}' stored!", fieldname);
 #endif
 
       return runtime_visualization_managers_[fieldname].get();
@@ -83,7 +83,7 @@ namespace ParticleInteraction
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not runtime_csvwriters_.count(fieldname))
-        FOUR_C_THROW("no runtime csv writer for field '{}' stored!", fieldname.c_str());
+        FOUR_C_THROW("no runtime csv writer for field '{}' stored!", fieldname);
 #endif
 
       return runtime_csvwriters_[fieldname].get();

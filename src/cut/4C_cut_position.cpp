@@ -303,7 +303,7 @@ std::shared_ptr<Cut::Position> Cut::PositionFactory::create_position(
     case Core::FE::CellType::wedge6:
       return create_concrete_position<Core::FE::CellType::wedge6>(element, point, floattype);
     default:
-      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype));
       exit(EXIT_FAILURE);
   }
 
@@ -342,7 +342,7 @@ std::shared_ptr<Cut::Position> Cut::PositionFactory::create_position(
     case Core::FE::CellType::wedge6:
       return create_concrete_position<Core::FE::CellType::wedge6>(element, xyz, floattype);
     default:
-      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype));
       exit(EXIT_FAILURE);
   }
 
@@ -379,7 +379,7 @@ std::shared_ptr<Cut::Position> Cut::PositionFactory::create_position(const doubl
     case Core::FE::CellType::wedge6:
       return create_concrete_position<Core::FE::CellType::wedge6>(xyze, xyz, floattype);
     default:
-      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype));
       exit(EXIT_FAILURE);
   }
 
@@ -427,7 +427,7 @@ std::shared_ptr<Cut::Position> Cut::PositionFactory::create_position(
     case Core::FE::CellType::wedge6:
       return create_concrete_position<Core::FE::CellType::wedge6>(nodes, xyz, floattype);
     default:
-      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("Unsupported distype = {}", Core::FE::cell_type_to_string(distype));
       exit(EXIT_FAILURE);
   }
 

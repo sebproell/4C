@@ -67,8 +67,8 @@ void ALE::Utils::AleCloneStrategy::set_element_data(std::shared_ptr<Core::Elemen
       }
       else
       {
-        FOUR_C_THROW("unsupported ale element type '{}'",
-            Core::Utils::get_dynamic_type_name(*newele).c_str());
+        FOUR_C_THROW(
+            "unsupported ale element type '{}'", Core::Utils::get_dynamic_type_name(*newele));
       }
     }
   }
@@ -91,8 +91,8 @@ void ALE::Utils::AleCloneStrategy::set_element_data(std::shared_ptr<Core::Elemen
       }
       else
       {
-        FOUR_C_THROW("unsupported ale element type '{}'",
-            Core::Utils::get_dynamic_type_name(*newele).c_str());
+        FOUR_C_THROW(
+            "unsupported ale element type '{}'", Core::Utils::get_dynamic_type_name(*newele));
       }
     }
   }

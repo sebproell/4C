@@ -148,8 +148,7 @@ bool Core::FE::Discretization::clear_discret()
  *----------------------------------------------------------------------*/
 const Core::LinAlg::Map* Core::FE::Discretization::node_row_map() const
 {
-  FOUR_C_ASSERT(
-      filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
   return noderowmap_.get();
 }
 
@@ -157,8 +156,7 @@ const Core::LinAlg::Map* Core::FE::Discretization::node_row_map() const
  *----------------------------------------------------------------------*/
 const Core::LinAlg::Map* Core::FE::Discretization::node_col_map() const
 {
-  FOUR_C_ASSERT(
-      filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
   return nodecolmap_.get();
 }
 
@@ -166,8 +164,7 @@ const Core::LinAlg::Map* Core::FE::Discretization::node_col_map() const
  *----------------------------------------------------------------------*/
 const Core::LinAlg::Map* Core::FE::Discretization::element_row_map() const
 {
-  FOUR_C_ASSERT(
-      filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
   return elerowmap_.get();
 }
 
@@ -175,8 +172,7 @@ const Core::LinAlg::Map* Core::FE::Discretization::element_row_map() const
  *----------------------------------------------------------------------*/
 const Core::LinAlg::Map* Core::FE::Discretization::element_col_map() const
 {
-  FOUR_C_ASSERT(
-      filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
   return elecolmap_.get();
 }
 
@@ -184,8 +180,7 @@ const Core::LinAlg::Map* Core::FE::Discretization::element_col_map() const
  *----------------------------------------------------------------------*/
 int Core::FE::Discretization::num_global_elements() const
 {
-  FOUR_C_ASSERT(
-      filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
   return element_row_map()->NumGlobalElements();
 }
 
@@ -193,8 +188,7 @@ int Core::FE::Discretization::num_global_elements() const
  *----------------------------------------------------------------------*/
 int Core::FE::Discretization::num_my_row_elements() const
 {
-  FOUR_C_ASSERT(
-      filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
   return element_row_map()->NumMyElements();
 }
 
@@ -212,8 +206,7 @@ int Core::FE::Discretization::num_my_col_elements() const
  *----------------------------------------------------------------------*/
 int Core::FE::Discretization::num_global_nodes() const
 {
-  FOUR_C_ASSERT(
-      filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
   return node_row_map()->NumGlobalElements();
 }
 
@@ -221,8 +214,7 @@ int Core::FE::Discretization::num_global_nodes() const
  *----------------------------------------------------------------------*/
 int Core::FE::Discretization::num_my_row_nodes() const
 {
-  FOUR_C_ASSERT(
-      filled(), "fill_complete() must be called before for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(filled(), "fill_complete() must be called before for discretization {}!", name_);
   return node_row_map()->NumMyElements();
 }
 
@@ -393,12 +385,10 @@ void Core::FE::Discretization::print(std::ostream& os) const
  *----------------------------------------------------------------------*/
 const Core::LinAlg::Map* Core::FE::Discretization::dof_row_map(const unsigned nds) const
 {
-  FOUR_C_ASSERT(
-      nds < dofsets_.size(), "undefined dof set found in discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(nds < dofsets_.size(), "undefined dof set found in discretization {}!", name_);
+  FOUR_C_ASSERT_ALWAYS(filled(), "fill_complete was not called on discretization {}!", name_);
   FOUR_C_ASSERT_ALWAYS(
-      filled(), "fill_complete was not called on discretization {}!", name_.c_str());
-  FOUR_C_ASSERT_ALWAYS(
-      have_dofs(), "assign_degrees_of_freedom() not called on discretization {}!", name_.c_str());
+      have_dofs(), "assign_degrees_of_freedom() not called on discretization {}!", name_);
 
   return dofsets_[nds]->dof_row_map();
 }
@@ -408,12 +398,10 @@ const Core::LinAlg::Map* Core::FE::Discretization::dof_row_map(const unsigned nd
  *----------------------------------------------------------------------*/
 const Core::LinAlg::Map* Core::FE::Discretization::dof_col_map(const unsigned nds) const
 {
-  FOUR_C_ASSERT(
-      nds < dofsets_.size(), "undefined dof set found in discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(nds < dofsets_.size(), "undefined dof set found in discretization {}!", name_);
+  FOUR_C_ASSERT_ALWAYS(filled(), "fill_complete was not called on discretization {}!", name_);
   FOUR_C_ASSERT_ALWAYS(
-      filled(), "fill_complete was not called on discretization {}!", name_.c_str());
-  FOUR_C_ASSERT_ALWAYS(
-      have_dofs(), "assign_degrees_of_freedom() not called on discretization {}!", name_.c_str());
+      have_dofs(), "assign_degrees_of_freedom() not called on discretization {}!", name_);
 
   return dofsets_[nds]->dof_col_map();
 }
@@ -424,8 +412,7 @@ const Core::LinAlg::Map* Core::FE::Discretization::dof_col_map(const unsigned nd
 void Core::FE::Discretization::replace_dof_set(const unsigned nds,
     std::shared_ptr<Core::DOFSets::DofSetInterface> newdofset, const bool replaceinstatdofsets)
 {
-  FOUR_C_ASSERT(
-      nds < dofsets_.size(), "undefined dof set found in discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(nds < dofsets_.size(), "undefined dof set found in discretization {}!", name_);
   // if we already have our dofs here and we add a properly filled (proxy)
   // DofSet, we do not need (and do not want) to refill.
   havedof_ = havedof_ and newdofset->filled() and nds != 0;
@@ -451,8 +438,7 @@ int Core::FE::Discretization::add_dof_set(std::shared_ptr<Core::DOFSets::DofSetI
 std::shared_ptr<Core::DOFSets::DofSetInterface> Core::FE::Discretization::get_dof_set_proxy(
     const int nds)
 {
-  FOUR_C_ASSERT(
-      nds < (int)dofsets_.size(), "undefined dof set found in discretization {}!", name_.c_str());
+  FOUR_C_ASSERT(nds < (int)dofsets_.size(), "undefined dof set found in discretization {}!", name_);
   return std::make_shared<Core::DOFSets::DofSetProxy>(&*dofsets_[nds]);
 }
 
@@ -461,7 +447,7 @@ std::shared_ptr<Core::DOFSets::DofSetInterface> Core::FE::Discretization::get_do
 void Core::FE::Discretization::replace_dof_set(
     std::shared_ptr<Core::DOFSets::DofSetInterface> newdofset, const bool replaceinstatdofsets)
 {
-  FOUR_C_ASSERT(dofsets_.size() == 1, "Discretization {} expects just one dof set!", name_.c_str());
+  FOUR_C_ASSERT(dofsets_.size() == 1, "Discretization {} expects just one dof set!", name_);
   havedof_ = false;
   if (replaceinstatdofsets) newdofset->replace_in_static_dofsets(dofsets_[0]);
   dofsets_[0] = newdofset;
@@ -518,8 +504,7 @@ void Core::FE::Discretization::set_state(
 {
   TEUCHOS_FUNC_TIME_MONITOR("Core::FE::Discretization::set_state");
 
-  FOUR_C_ASSERT_ALWAYS(
-      have_dofs(), "fill_complete() was not called for discretization {}!", name_.c_str());
+  FOUR_C_ASSERT_ALWAYS(have_dofs(), "fill_complete() was not called for discretization {}!", name_);
   const Core::LinAlg::Map* colmap = dof_col_map(nds);
   const Epetra_BlockMap& vecmap = state.get_block_map();
 
@@ -615,7 +600,7 @@ void Core::FE::Discretization::get_condition(
     out[count++] = cond->second.get();
   }
   FOUR_C_ASSERT_ALWAYS(
-      count == num, "Mismatch in number of conditions found in discretization {}!", name_.c_str());
+      count == num, "Mismatch in number of conditions found in discretization {}!", name_);
 }
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -632,7 +617,7 @@ void Core::FE::Discretization::get_condition(
     out[count++] = cond->second;
   }
   FOUR_C_ASSERT_ALWAYS(
-      count == num, "Mismatch in number of conditions found in discretization {}!", name_.c_str());
+      count == num, "Mismatch in number of conditions found in discretization {}!", name_);
 }
 
 /*----------------------------------------------------------------------*
@@ -662,8 +647,7 @@ void Core::FE::Discretization::get_condition_names(std::vector<std::string>& nam
  *----------------------------------------------------------------------*/
 std::shared_ptr<std::vector<char>> Core::FE::Discretization::pack_my_elements() const
 {
-  FOUR_C_ASSERT_ALWAYS(
-      filled(), "fill_complete was not called on discretization {}!", name_.c_str());
+  FOUR_C_ASSERT_ALWAYS(filled(), "fill_complete was not called on discretization {}!", name_);
 
   Core::Communication::PackBuffer buffer;
 
@@ -679,8 +663,7 @@ std::shared_ptr<std::vector<char>> Core::FE::Discretization::pack_my_elements() 
  *----------------------------------------------------------------------*/
 std::shared_ptr<std::vector<char>> Core::FE::Discretization::pack_my_nodes() const
 {
-  FOUR_C_ASSERT_ALWAYS(
-      filled(), "fill_complete was not called on discretization {}!", name_.c_str());
+  FOUR_C_ASSERT_ALWAYS(filled(), "fill_complete was not called on discretization {}!", name_);
 
   Core::Communication::PackBuffer buffer;
 
@@ -702,7 +685,7 @@ void Core::FE::Discretization::unpack_my_elements(std::vector<char>& e)
     Core::Communication::ParObject* o = Core::Communication::factory(buffer);
     auto* ele = dynamic_cast<Core::Elements::Element*>(o);
     FOUR_C_ASSERT_ALWAYS(ele != nullptr,
-        "Failed to build an element from the element data for discretization {}", name_.c_str());
+        "Failed to build an element from the element data for discretization {}", name_);
     ele->set_owner(Core::Communication::my_mpi_rank(comm_));
     add_element(std::shared_ptr<Core::Elements::Element>(ele));
   }
@@ -719,8 +702,8 @@ void Core::FE::Discretization::unpack_my_nodes(std::vector<char>& e)
   {
     Core::Communication::ParObject* o = Core::Communication::factory(buffer);
     auto* node = dynamic_cast<Core::Nodes::Node*>(o);
-    FOUR_C_ASSERT_ALWAYS(node != nullptr,
-        "Failed to build a node from the node data for discretization {}", name_.c_str());
+    FOUR_C_ASSERT_ALWAYS(
+        node != nullptr, "Failed to build a node from the node data for discretization {}", name_);
     node->set_owner(Core::Communication::my_mpi_rank(comm_));
     add_node(std::shared_ptr<Core::Nodes::Node>(node));
   }

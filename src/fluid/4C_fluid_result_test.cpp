@@ -53,8 +53,7 @@ void FLD::FluidResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW(
-        "Node {} does not belong to discretization {}", node + 1, fluiddis_->name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, fluiddis_->name());
   }
   else
   {
@@ -120,7 +119,7 @@ void FLD::FluidResultTest::test_node(
       else if (position == "L2errmom")
         result = (*myerror_)[2];
       else
-        FOUR_C_THROW("Quantity '{}' not supported in fluid testing", position.c_str());
+        FOUR_C_THROW("Quantity '{}' not supported in fluid testing", position);
 
       nerr += compare_values(result, "NODE", container);
       test_count++;

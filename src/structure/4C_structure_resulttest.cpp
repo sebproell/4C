@@ -50,8 +50,7 @@ void StruResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW(
-        "Node {} does not belong to discretization {}", node + 1, strudisc_->name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, strudisc_->name());
   }
   else
   {
@@ -85,8 +84,8 @@ void StruResultTest::test_node(
           unknownpos = false;
           int lid = disnpmap.LID(strudisc_->dof(0, actnode, idx));
           if (lid < 0)
-            FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position.c_str(),
-                idx, actnode->id());
+            FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position, idx,
+                actnode->id());
           result = (*dis_)[lid];
         }
       }
@@ -108,8 +107,8 @@ void StruResultTest::test_node(
           unknownpos = false;
           int lid = velnpmap.LID(strudisc_->dof(0, actnode, idx));
           if (lid < 0)
-            FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position.c_str(),
-                idx, actnode->id());
+            FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position, idx,
+                actnode->id());
           result = (*vel_)[lid];
         }
       }
@@ -131,15 +130,14 @@ void StruResultTest::test_node(
           unknownpos = false;
           int lid = accnpmap.LID(strudisc_->dof(0, actnode, idx));
           if (lid < 0)
-            FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position.c_str(),
-                idx, actnode->id());
+            FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position, idx,
+                actnode->id());
           result = (*acc_)[lid];
         }
       }
 
       // catch position std::strings, which are not handled by structure result test
-      if (unknownpos)
-        FOUR_C_THROW("Quantity '{}' not supported in structure testing", position.c_str());
+      if (unknownpos) FOUR_C_THROW("Quantity '{}' not supported in structure testing", position);
 
       // compare values
       const int err = compare_values(result, "NODE", container);
@@ -181,7 +179,7 @@ double StruResultTest::get_special_result_for_testing(const std::string& quantit
   else if (quantity == "lin_iters_contact")  // number of iterations in contact linear solver
     result = static_cast<double>(timeintegrator_->contact_solver()->get_num_iters());
   else  // Catch unknown quantity strings
-    FOUR_C_THROW("Quantity '{}' not supported in structure result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in structure result test!", quantity);
 
   return result;
 }

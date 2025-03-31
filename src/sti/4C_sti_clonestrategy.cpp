@@ -73,7 +73,7 @@ void STI::ScatraThermoCloneStrategy::set_element_data(
   // safety check
   if (oldele_transport == nullptr or newele_transport == nullptr)
     FOUR_C_THROW("Expected transport element, but received element of type '{}'!",
-        Core::Utils::get_dynamic_type_name(*newele).c_str());
+        Core::Utils::get_dynamic_type_name(*newele));
 
   // provide cloned element with material
   newele_transport->set_material(matid, oldele);

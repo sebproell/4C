@@ -111,7 +111,7 @@ bool Cut::IntegrationCellCreator::create_cell(
       break;
     default:
       FOUR_C_THROW(
-          "unsupported element shape ( shape = {} )", Core::FE::cell_type_to_string(shape).c_str());
+          "unsupported element shape ( shape = {} )", Core::FE::cell_type_to_string(shape));
       exit(EXIT_FAILURE);
   }
   // if the create process was successful, we can finally create the integration cell

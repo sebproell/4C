@@ -262,14 +262,14 @@ std::pair<std::string, std::string> Core::IO::read_key_value(const std::string& 
     separator_index = line.find(' ');
 
     if (separator_index == std::string::npos)
-      FOUR_C_THROW("Line '{}' with just one word in parameter section", line.c_str());
+      FOUR_C_THROW("Line '{}' with just one word in parameter section", line);
   }
 
   std::string key = Core::Utils::trim(line.substr(0, separator_index));
   std::string value = Core::Utils::trim(line.substr(separator_index + 1));
 
-  if (key.empty()) FOUR_C_THROW("Cannot get key from line '{}'", line.c_str());
-  if (value.empty()) FOUR_C_THROW("Cannot get value from line '{}'", line.c_str());
+  if (key.empty()) FOUR_C_THROW("Cannot get key from line '{}'", line);
+  if (value.empty()) FOUR_C_THROW("Cannot get value from line '{}'", line);
 
   return {std::move(key), std::move(value)};
 }
@@ -308,7 +308,7 @@ void Core::IO::read_parameters_in_section(
   input.match_section(section_name, container);
 
   FOUR_C_ASSERT(container.has_group(section_name),
-      "Internal error: group '{}' not found in container.", section_name.c_str());
+      "Internal error: group '{}' not found in container.", section_name);
 
   container.group(section_name).to_teuchos_parameter_list(find_sublist(section_name, list));
 }
@@ -339,7 +339,7 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
     if (not stream)
     {
       auto s = l.get_as_dat_style_string();
-      FOUR_C_THROW("Illegal line in section '{}': '{}'", marker.c_str(), s);
+      FOUR_C_THROW("Illegal line in section '{}': '{}'", marker, s);
     }
 
     if (nname == "NODE")  // plain old reading of the design nodes from the input file
@@ -370,7 +370,7 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
 
       std::istringstream stream{l};
       stream >> nname;
-      if (not stream) FOUR_C_THROW("Illegal line in section '{}': '{}'", marker.c_str(), l.data());
+      if (not stream) FOUR_C_THROW("Illegal line in section '{}': '{}'", marker, l.data());
 
       if (nname == "CORNER" && name == "DNODE")
       {
@@ -415,7 +415,7 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
       }
       else
       {
-        FOUR_C_THROW("Illegal line in section '{}': '{}'", marker.c_str(), l.data());
+        FOUR_C_THROW("Illegal line in section '{}': '{}'", marker, l.data());
       }
 
       const Core::FE::Discretization& actdis = get_discretization(disname);
@@ -532,7 +532,7 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
 
       if (dname.substr(0, name.length()) != name)
         FOUR_C_THROW("Illegal line in section '{}': '{}'\n{} found, where {} was expected",
-            marker.c_str(), l.data(), dname.substr(0, name.length()).c_str(), name.c_str());
+            marker.c_str(), l.data(), dname.substr(0, name.length()), name);
     }
   }
 

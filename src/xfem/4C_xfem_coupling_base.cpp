@@ -53,7 +53,6 @@ Inpar::XFEM::EleCouplingCondType XFEM::cond_type_string_to_enum(const std::strin
     return Inpar::XFEM::CouplingCond_EMBEDDEDMESH_SOLID_SURF;
   else if (condname == "EmbeddedMeshSolidVolBackground")
     return Inpar::XFEM::CouplingCond_EMBEDDEDMESH_BACKGROUND_SOLID_VOL;
-  // else  FOUR_C_THROW("condition type not supported: {}", condname.c_str());
 
   return Inpar::XFEM::CouplingCond_NONE;
 }

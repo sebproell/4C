@@ -1667,7 +1667,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
         boundarydis_->get_state(state);
-    if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
+    if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state);
 
     // extract local values of the global vectors
     std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -2281,7 +2281,7 @@ void XFEM::XfluidStd::addeidisp(
 
   // get state of the global vector
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state = cutdis.get_state(state);
-  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
+  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state);
 
   // extract local values of the global vectors
   std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);
@@ -3070,7 +3070,7 @@ void XFEM::XfluidStd::project_on_point(
 )
 {
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state = boundarydis_->get_state(state);
-  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
+  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state);
 
   // extract local values of the global vectors
   std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);

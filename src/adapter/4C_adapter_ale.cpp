@@ -142,7 +142,7 @@ void Adapter::AleBaseAlgorithm::setup_ale(
     default:
     {
       FOUR_C_THROW("Decide, whether ALE_TYPE = '{}' is linear or nonlinear.",
-          adyn->get<std::string>("ALE_TYPE").c_str());
+          adyn->get<std::string>("ALE_TYPE"));
       break;
     }
   }

@@ -44,7 +44,7 @@ namespace Core
       void move_into_collection(std::map<std::string, Core::IO::InputSpec>& map)
       {
         FOUR_C_ASSERT(map.contains(section_name) == false,
-            "SectionSpecs of '{}' already exists in the collection.", section_name.c_str());
+            "SectionSpecs of '{}' already exists in the collection.", section_name);
         map[section_name] = Core::IO::InputSpecBuilders::all_of(std::move(specs));
       }
     };

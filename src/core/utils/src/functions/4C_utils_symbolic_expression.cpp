@@ -611,7 +611,7 @@ namespace Core::Utils::SymbolicExpressionDetails
             lhs->function_ = name;
             lexer.lexan();
             if (lexer.tok_ != Lexer::tok_lpar)
-              FOUR_C_THROW("'(' expected after function name '{}'", name.c_str());
+              FOUR_C_THROW("'(' expected after function name '{}'", name);
             lexer.lexan();
             lhs->lhs_ = parse_expr(lexer);
             if (lexer.tok_ != Lexer::tok_rpar) FOUR_C_THROW("')' expected");
@@ -625,14 +625,14 @@ namespace Core::Utils::SymbolicExpressionDetails
             lhs->function_ = name;
             lexer.lexan();
             if (lexer.tok_ != Lexer::tok_lpar)
-              FOUR_C_THROW("'(' expected after function name '{}'", name.c_str());
+              FOUR_C_THROW("'(' expected after function name '{}'", name);
             lexer.lexan();
             lhs->lhs_ = parse_expr(lexer);
             if (lexer.tok_ != Lexer::tok_comma) FOUR_C_THROW("',' expected");
             lexer.lexan();
             lhs->rhs_ = parse_expr(lexer);
             if (lexer.tok_ != Lexer::tok_rpar)
-              FOUR_C_THROW("')' expected for function name '{}'", name.c_str());
+              FOUR_C_THROW("')' expected for function name '{}'", name);
             lexer.lexan();
             break;
           }
@@ -843,8 +843,8 @@ namespace Core::Utils::SymbolicExpressionDetails
           {
             if (variable_values_->find(node.variable_) == variable_values_->end())
             {
-              FOUR_C_THROW("variable or constant '{}' not given as input in evaluate()",
-                  node.variable_.c_str());
+              FOUR_C_THROW(
+                  "variable or constant '{}' not given as input in evaluate()", node.variable_);
             }
             else
             {
@@ -857,7 +857,7 @@ namespace Core::Utils::SymbolicExpressionDetails
                 (constant_values_->find(node.variable_) == constant_values_->end()))
             {
               FOUR_C_THROW("variable or constant '{}' not given as input in EvaluateDeriv()",
-                  node.variable_.c_str());
+                  node.variable_);
             }
             else
             {
@@ -875,7 +875,7 @@ namespace Core::Utils::SymbolicExpressionDetails
           }
         }
         else
-          FOUR_C_THROW("unknown variable '{}'", node.variable_.c_str());
+          FOUR_C_THROW("unknown variable '{}'", node.variable_);
         break;
       }
       // unary operators
@@ -930,7 +930,7 @@ namespace Core::Utils::SymbolicExpressionDetails
           }
         }
         else
-          FOUR_C_THROW("unknown function_ '{}'", node.function_.c_str());
+          FOUR_C_THROW("unknown function_ '{}'", node.function_);
         break;
       }
       default:

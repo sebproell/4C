@@ -104,7 +104,7 @@ void PARTICLEENGINE::ParticleRuntimeVtpWriter::set_particle_positions_and_states
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       // safety check
       if (not container->have_stored_state(Position))
-        FOUR_C_THROW("particle state '{}' not found!", enum_to_state_name(Position).c_str());
+        FOUR_C_THROW("particle state '{}' not found!", enum_to_state_name(Position));
 #endif
 
       // iterate over particle states

@@ -78,7 +78,7 @@ void ParticleInteraction::SPHBarrierForce::setup(
   for (const auto& type_i : fluidtypes_)
     if (not particlecontainerbundle_->get_particle_types().count(type_i))
       FOUR_C_THROW("no particle container for particle type '{}' found!",
-          PARTICLEENGINE::enum_to_type_name(type_i).c_str());
+          PARTICLEENGINE::enum_to_type_name(type_i));
 
   // update with actual boundary particle types
   const auto boundarytypes = boundarytypes_;

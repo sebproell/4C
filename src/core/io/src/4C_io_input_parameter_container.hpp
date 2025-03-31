@@ -286,7 +286,7 @@ const T& Core::IO::InputParameterContainer::get(const std::string& name) const
   if (const T* p = get_if<T>(name))
     return *p;
   else
-    FOUR_C_THROW("Key '{}' cannot be found in the container.", name.c_str());
+    FOUR_C_THROW("Key '{}' cannot be found in the container.", name);
 }
 
 template <typename T>

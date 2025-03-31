@@ -59,7 +59,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::IO::DiscretizationReade
   int columns;
   if (map_find_int(result, "columns", &columns))
   {
-    if (columns != 1) FOUR_C_THROW("got multivector with name '{}', vector expected", name.c_str());
+    if (columns != 1) FOUR_C_THROW("got multivector with name '{}', vector expected", name);
   }
   return read_multi_vector(name);
 }
@@ -81,7 +81,7 @@ void Core::IO::DiscretizationReader::read_vector(
   int columns;
   if (map_find_int(result, "columns", &columns))
   {
-    if (columns != 1) FOUR_C_THROW("got multivector with name '{}', vector expected", name.c_str());
+    if (columns != 1) FOUR_C_THROW("got multivector with name '{}', vector expected", name);
   }
   read_multi_vector(vec, name);
 }
@@ -142,7 +142,7 @@ void Core::IO::DiscretizationReader::read_serial_dense_matrix(
     columns = 1;
   }
   if (columns != 1)
-    FOUR_C_THROW("got multivector with name '{}', std::vector<char> expected", name.c_str());
+    FOUR_C_THROW("got multivector with name '{}', std::vector<char> expected", name);
 
   std::shared_ptr<Core::LinAlg::Map> elemap;
   std::shared_ptr<std::vector<char>> data =
@@ -564,7 +564,7 @@ Core::IO::DiscretizationWriter::~DiscretizationWriter()
     const herr_t status = H5Fclose(meshfile_);
     if (status < 0)
     {
-      FOUR_C_THROW("Failed to close HDF file {}", meshfilename_.c_str());
+      FOUR_C_THROW("Failed to close HDF file {}", meshfilename_);
     }
   }
   if (resultfile_ != -1)
@@ -591,7 +591,7 @@ Core::IO::DiscretizationWriter::~DiscretizationWriter()
     const herr_t status_c = H5Fclose(resultfile_);
     if (status_c < 0)
     {
-      FOUR_C_THROW("Failed to close HDF file {}", resultfilename_.c_str());
+      FOUR_C_THROW("Failed to close HDF file {}", resultfilename_);
     }
   }
 }
@@ -620,12 +620,12 @@ void Core::IO::DiscretizationWriter::create_mesh_file(const int step)
       const herr_t status = H5Fclose(meshfile_);
       if (status < 0)
       {
-        FOUR_C_THROW("Failed to close HDF file {}", meshfilename_.c_str());
+        FOUR_C_THROW("Failed to close HDF file {}", meshfilename_);
       }
     }
 
     meshfile_ = H5Fcreate(meshname.str().c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-    if (meshfile_ < 0) FOUR_C_THROW("Failed to open file {}", meshname.str().c_str());
+    if (meshfile_ < 0) FOUR_C_THROW("Failed to open file {}", meshname.str());
     meshfile_changed_ = step;
   }
 }
@@ -650,7 +650,7 @@ void Core::IO::DiscretizationWriter::create_result_file(const int step)
       herr_t status = H5Fclose(resultfile_);
       if (status < 0)
       {
-        FOUR_C_THROW("Failed to close HDF file {}", resultfilename_.c_str());
+        FOUR_C_THROW("Failed to close HDF file {}", resultfilename_);
       }
     }
 
@@ -659,7 +659,7 @@ void Core::IO::DiscretizationWriter::create_result_file(const int step)
     mapstack_.clear();
 
     resultfile_ = H5Fcreate(resultname.str().c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-    if (resultfile_ < 0) FOUR_C_THROW("Failed to open file {}", resultname.str().c_str());
+    if (resultfile_ < 0) FOUR_C_THROW("Failed to open file {}", resultname.str());
     resultfile_changed_ = step;
   }
 }
@@ -738,7 +738,7 @@ void Core::IO::DiscretizationWriter::new_step(const int step, const double time)
       const herr_t status = H5Gclose(resultgroup_);
       if (status < 0)
       {
-        FOUR_C_THROW("Failed to close HDF group in file {}", resultfilename_.c_str());
+        FOUR_C_THROW("Failed to close HDF group in file {}", resultfilename_);
       }
     }
 
@@ -779,7 +779,7 @@ void Core::IO::DiscretizationWriter::new_step(const int step, const double time)
     const herr_t status = H5Fflush(resultgroup_, H5F_SCOPE_LOCAL);
     if (status < 0)
     {
-      FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_.c_str());
+      FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_);
     }
   }
 }
@@ -940,7 +940,7 @@ void Core::IO::DiscretizationWriter::write_multi_vector(
     const herr_t flush_status = H5Fflush(resultgroup_, H5F_SCOPE_LOCAL);
     if (flush_status < 0)
     {
-      FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_.c_str());
+      FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_);
     }
   }
 }
@@ -1054,7 +1054,7 @@ void Core::IO::DiscretizationWriter::write_vector(const std::string name,
     const herr_t flush_status = H5Fflush(resultgroup_, H5F_SCOPE_LOCAL);
     if (flush_status < 0)
     {
-      FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_.c_str());
+      FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_);
     }
   }
 }
@@ -1150,12 +1150,12 @@ void Core::IO::DiscretizationWriter::write_mesh(const int step, const double tim
     const herr_t flush_status = H5Fflush(meshgroup_, H5F_SCOPE_LOCAL);
     if (flush_status < 0)
     {
-      FOUR_C_THROW("Failed to flush HDF file {}", meshfilename_.c_str());
+      FOUR_C_THROW("Failed to flush HDF file {}", meshfilename_);
     }
     const herr_t close_status = H5Gclose(meshgroup_);
     if (close_status < 0)
     {
-      FOUR_C_THROW("Failed to close HDF group in file {}", meshfilename_.c_str());
+      FOUR_C_THROW("Failed to close HDF group in file {}", meshfilename_);
     }
   }
 }
@@ -1288,12 +1288,12 @@ void Core::IO::DiscretizationWriter::write_only_nodes_in_new_field_group_to_cont
     const herr_t flush_status = H5Fflush(meshgroup_, H5F_SCOPE_LOCAL);
     if (flush_status < 0)
     {
-      FOUR_C_THROW("Failed to flush HDF file {}", meshfilename_.c_str());
+      FOUR_C_THROW("Failed to flush HDF file {}", meshfilename_);
     }
     const herr_t close_status = H5Gclose(meshgroup_);
     if (close_status < 0)
     {
-      FOUR_C_THROW("Failed to close HDF group in file {}", meshfilename_.c_str());
+      FOUR_C_THROW("Failed to close HDF group in file {}", meshfilename_);
     }
   }
 }
@@ -1503,7 +1503,7 @@ void Core::IO::DiscretizationWriter::write_char_data(
     }
 
     const herr_t flush_status = H5Fflush(resultgroup_, H5F_SCOPE_LOCAL);
-    if (flush_status < 0) FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_.c_str());
+    if (flush_status < 0) FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_);
   }
 }
 
@@ -1549,7 +1549,7 @@ void Core::IO::DiscretizationWriter::write_redundant_double_vector(
                               << std::flush;
 
       const herr_t flush_status = H5Fflush(resultgroup_, H5F_SCOPE_LOCAL);
-      if (flush_status < 0) FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_.c_str());
+      if (flush_status < 0) FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_);
     }  // endif proc0
   }
 }
@@ -1596,7 +1596,7 @@ void Core::IO::DiscretizationWriter::write_redundant_int_vector(
                               << std::flush;
 
       const herr_t flush_status = H5Fflush(resultgroup_, H5F_SCOPE_LOCAL);
-      if (flush_status < 0) FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_.c_str());
+      if (flush_status < 0) FOUR_C_THROW("Failed to flush HDF file {}", resultfilename_);
     }  // endif proc0
   }
 }

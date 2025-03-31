@@ -94,7 +94,7 @@ void ParticleInteraction::SPHTemperature::setup(
     // safety check
     if (not(thermomaterial_[type_i]->thermalCapacity_ > 0.0))
       FOUR_C_THROW("thermal capacity for particles of type '{}' not positive!",
-          PARTICLEENGINE::enum_to_type_name(type_i).c_str());
+          PARTICLEENGINE::enum_to_type_name(type_i));
   }
 
   // setup heat source handler

@@ -630,7 +630,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
     else if (dt == "Centered")
       dtype = ::NOX::Epetra::FiniteDifference::Centered;
     else
-      FOUR_C_THROW("unsupported difference type '{}'", dt.c_str());
+      FOUR_C_THROW("unsupported difference type '{}'", dt);
 
     FD = Teuchos::make_rcp<::NOX::Epetra::FiniteDifference>(printParams, interface, noxSoln,
         Teuchos::rcpFromRef(raw_graph_->get_epetra_crs_graph()), beta, alpha);
@@ -641,7 +641,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
   }
   else
   {
-    FOUR_C_THROW("unsupported Jacobian '{}'", jacobian.c_str());
+    FOUR_C_THROW("unsupported Jacobian '{}'", jacobian);
   }
 
   // ==================================================================
@@ -692,7 +692,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
   }
   else
   {
-    FOUR_C_THROW("unsupported preconditioner '{}'", preconditioner.c_str());
+    FOUR_C_THROW("unsupported preconditioner '{}'", preconditioner);
   }
 
   return linSys;

@@ -135,7 +135,7 @@ namespace Mortar
     else if (name == "thermo_lm")
       type = state_thermo_lagrange_multiplier;
     else
-      FOUR_C_THROW("Unknown state type name. (name = {})", name.c_str());
+      FOUR_C_THROW("Unknown state type name. (name = {})", name);
 
     return type;
   }

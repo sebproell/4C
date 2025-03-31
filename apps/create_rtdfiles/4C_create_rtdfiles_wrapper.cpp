@@ -37,7 +37,7 @@ namespace RTD
     // open ascii file for writing the cell type information
     std::ofstream elementinformationfile(elementinformationfilename.c_str());
     if (!elementinformationfile)
-      FOUR_C_THROW("failed to open file: {}", elementinformationfilename.c_str());
+      FOUR_C_THROW("failed to open file: {}", elementinformationfilename);
     elementinformationfile << "# yaml file created using 4C version (git SHA1):\n";
     elementinformationfile << "# " << VersionControl::git_hash << "\n#\n";
 
@@ -52,7 +52,7 @@ namespace RTD
     // open ascii file for writing all header parameters
     std::ofstream headerdocumentationfile(headerdocumentationfilename.c_str());
     if (!headerdocumentationfile)
-      FOUR_C_THROW("failed to open file: {}", headerdocumentationfilename.c_str());
+      FOUR_C_THROW("failed to open file: {}", headerdocumentationfilename);
     headerdocumentationfile << "..\n   Created using 4C version (git SHA1):\n";
     headerdocumentationfile << "   " << VersionControl::git_hash << "\n\n";
     headerdocumentationfile << ".. _headerparameters:\n\n";
@@ -87,7 +87,7 @@ namespace RTD
     // open ascii file for writing all header parameters
     std::ofstream celltypeocumentationfile(celltypedocumentationfilename.c_str());
     if (!celltypeocumentationfile)
-      FOUR_C_THROW("failed to open file: {}", celltypedocumentationfilename.c_str());
+      FOUR_C_THROW("failed to open file: {}", celltypedocumentationfilename);
     celltypeocumentationfile << "..\n   Created using 4C version (git SHA1):\n";
     celltypeocumentationfile << "   " << VersionControl::git_hash << "\n\n";
 
@@ -102,7 +102,7 @@ namespace RTD
     // open ascii file for writing all material parameters
     std::ofstream materialdocumentationfile(materialdocumentationfilename.c_str());
     if (!materialdocumentationfile)
-      FOUR_C_THROW("failed to open file: {}", materialdocumentationfilename.c_str());
+      FOUR_C_THROW("failed to open file: {}", materialdocumentationfilename);
     materialdocumentationfile << "..\n   Created using 4C version (git SHA1):\n";
     materialdocumentationfile << "   " << VersionControl::git_hash << "\n\n";
     write_material_reference(materialdocumentationfile, Global::valid_materials());
@@ -116,7 +116,7 @@ namespace RTD
     // open ascii file for writing all constrains / conditions parameters
     std::ofstream conditiondocumentationfile(conditiondocumentationfilename.c_str());
     if (!conditiondocumentationfile)
-      FOUR_C_THROW("failed to open file: {}", conditiondocumentationfilename.c_str());
+      FOUR_C_THROW("failed to open file: {}", conditiondocumentationfilename);
     conditiondocumentationfile << "..\n   Created using 4C version (git SHA1):\n";
     conditiondocumentationfile << "   " << VersionControl::git_hash << "\n\n";
     write_conditions_reference(conditiondocumentationfile, Input::valid_conditions());
@@ -133,7 +133,7 @@ namespace RTD
     // open ascii file for writing other (non header) parameters
     std::ofstream variousdocumentationfile(variousdocumentationfilename.c_str());
     if (!variousdocumentationfile)
-      FOUR_C_THROW("failed to open file: {}", variousdocumentationfilename.c_str());
+      FOUR_C_THROW("failed to open file: {}", variousdocumentationfilename);
     variousdocumentationfile << "..\n   Created using 4C version (git SHA1):\n";
     variousdocumentationfile << "   " << VersionControl::git_hash << "\n\n";
     write_various_reference(variousdocumentationfile);

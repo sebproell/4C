@@ -2283,7 +2283,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::weak_dirichlet(
   else if (consistency == "diffusive-optimal")
     gamma = -1.0;
   else
-    FOUR_C_THROW("unknown definition for gamma parameter: {}", consistency.c_str());
+    FOUR_C_THROW("unknown definition for gamma parameter: {}", consistency);
 
   // use one-point Gauss rule to do calculations at element center
   const Core::FE::IntPointsAndWeights<bnsd> intpoints_tau(
