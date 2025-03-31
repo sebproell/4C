@@ -256,31 +256,48 @@ namespace
 
   void recursively_print_match_entries(const MatchEntry& entry, std::ostream& out, int depth)
   {
-    constexpr std::array state_symbol = {"[X]", "[ ]", "[!]", "[ ]"};
-    constexpr std::array state_phrase = {
-        "Expected", "Fully matched", "Partially matched", "Defaulted"};
     std::string indent = std::string(depth, ' ');
+    constexpr std::array state_symbol = {"[X]", "[ ]", "[!]", "[ ]"};
+
+    const auto print_match_state = [&]()
+    {
+      constexpr std::array state_phrase = {"Expected", "Matched", "Candidate", "Defaulted"};
+      out << indent;
+      out << std::format("{} {} {} '{}'", state_symbol[static_cast<int>(entry.state)],
+          state_phrase[static_cast<int>(entry.state)], entry.spec->impl().data.type,
+          entry.spec->impl().name());
+    };
 
     switch (entry.spec->impl().data.type)
     {
       case InputSpecType::parameter:
+      case InputSpecType::deprecated_selection:
       {
-        out << indent;
-        out << std::format("{} {} parameter '{}'", state_symbol[static_cast<int>(entry.state)],
-            state_phrase[static_cast<int>(entry.state)], entry.spec->impl().name());
-        if (entry.state == MatchEntry::State::partial)
+        print_match_state();
+        if (entry.state == MatchEntry::State::partial && !entry.additional_info.empty())
         {
-          out << std::format(
-              " (expected type '{}' did not validate)", entry.spec->impl().pretty_type_name());
+          out << " (" << entry.additional_info << ")";
         }
         out << '\n';
         break;
       }
+      case InputSpecType::selection:
+      {
+        print_match_state();
+        if (entry.state == MatchEntry::State::partial)
+        {
+          // Selection has the selector and the chosen spec as children.
+          for (const auto* child : entry.children)
+          {
+            recursively_print_match_entries(*child, out, depth + 2);
+          }
+        }
+        break;
+      }
       case InputSpecType::group:
       {
-        out << indent;
-        out << std::format("{} {} group '{}'\n", state_symbol[static_cast<int>(entry.state)],
-            state_phrase[static_cast<int>(entry.state)], entry.spec->impl().name());
+        print_match_state();
+        out << '\n';
         if (entry.state == MatchEntry::State::partial)
         {
           for (const auto* child : entry.children)
@@ -292,9 +309,8 @@ namespace
       }
       case InputSpecType::list:
       {
-        out << indent;
-        out << std::format("{} {} list '{}'\n", state_symbol[static_cast<int>(entry.state)],
-            state_phrase[static_cast<int>(entry.state)], entry.spec->impl().name());
+        print_match_state();
+        out << '\n';
         if (entry.state == MatchEntry::State::partial)
         {
           FOUR_C_ASSERT(entry.children.size() == 1,
@@ -385,7 +401,7 @@ namespace
           for (const auto* child : fully_matching_children)
           {
             out << indent << "  "
-                << std::format("{} Possible match:\n",
+                << std::format("{} Candidate:\n",
                        state_symbol[static_cast<int>(MatchEntry::State::partial)]);
 
             recursively_print_match_entries(*child, out, depth + 4);
@@ -407,19 +423,17 @@ namespace
         }
         break;
       }
-      default:
-        FOUR_C_ASSERT(false, "Internal error: unknown InputSpecType.");
     }
   }
 
   void recursively_find_unmatched_nodes(ryml::ConstNodeRef node,
       const std::vector<ryml::id_type>& matched_node_ids,
-      std::vector<ryml::id_type>& unmatched_node_ids)
+      std::set<ryml::id_type>& unmatched_node_ids)
   {
     if (std::find(matched_node_ids.begin(), matched_node_ids.end(), node.id()) ==
         matched_node_ids.end())
     {
-      unmatched_node_ids.push_back(node.id());
+      unmatched_node_ids.insert(node.id());
     }
     else if (node.has_children())
     {
@@ -442,7 +456,7 @@ namespace
     }
   }
 
-  std::vector<ryml::id_type> unmatched_input_nodes(
+  std::set<ryml::id_type> unmatched_input_nodes(
       const std::vector<MatchEntry> entries, ryml::ConstNodeRef node)
   {
     // We assume that the top-level node is always matched. If it is not, this must mean that the
@@ -482,21 +496,56 @@ namespace
           break;
         }
         case InputSpecType::selection:
+        case InputSpecType::deprecated_selection:
         {
           if (entry.state == MatchEntry::State::matched)
           {
             matched_node_ids.push_back(entry.matched_node);
           }
-        }
-        default:
           break;
+        }
+        case InputSpecType::all_of:
+        case InputSpecType::one_of:
+        {
+          // Nothing to do for logical specs. They do not appear in the input tree.
+          break;
+        }
       }
     }
 
     // Now compare against all the nodes that are in the input yaml tree.
-    std::vector<ryml::id_type> unmatched_node_ids;
+    std::set<ryml::id_type> unmatched_node_ids;
     recursively_find_unmatched_nodes(node, matched_node_ids, unmatched_node_ids);
     return unmatched_node_ids;
+  }
+
+  void markup_copy(
+      ryml::ConstNodeRef src, ryml::NodeRef dst, const std::set<ryml::id_type>& marked_ids)
+  {
+    dst.set_type(src.type());
+
+    if (src.has_key())
+    {
+      if (marked_ids.contains(src.id()))
+      {
+        std::string marked_up_key = "[!] " + std::string(src.key().data(), src.key().size());
+        dst << ryml::key(marked_up_key);
+        dst |= ryml::KEY_PLAIN;
+      }
+      else
+        dst.set_key(src.key());
+    }
+    if (src.has_val())
+    {
+      dst.set_val(src.val());
+    }
+    // Recursively copy children
+    for (size_t i = 0; i < src.num_children(); ++i)
+    {
+      c4::yml::ConstNodeRef src_child = src.child(i);
+      c4::yml::NodeRef dst_child = dst.append_child();
+      markup_copy(src_child, dst_child, marked_ids);
+    }
   }
 }  // namespace
 
@@ -518,14 +567,13 @@ void Core::IO::Internal::MatchTree::dump(std::ostream& stream) const
 
 void Core::IO::Internal::MatchTree::assert_match() const
 {
-  std::stringstream ss;
-  ss << "Could not match this input\n\n";
-  ss << node_.node << "\n\n";
-  ss << "against the given input specification. ";
-
   if (entries_.front().state != MatchEntry::State::matched &&
       entries_.front().state != MatchEntry::State::defaulted)
   {
+    std::stringstream ss;
+    ss << "Could not match this input\n\n";
+    ss << node_.node << "\n\n";
+    ss << "against the given input specification. ";
     ss << "This was the best attempt to match the input:\n\n";
     recursively_print_match_entries(entries_.front(), ss, 0);
     FOUR_C_THROW("{}", ss.str());
@@ -535,12 +583,17 @@ void Core::IO::Internal::MatchTree::assert_match() const
   auto unmatched_node_ids = unmatched_input_nodes(entries_, node_.node);
   if (!unmatched_node_ids.empty())
   {
-    ss << "The following parts of the input did not match:\n\n";
+    std::stringstream ss;
+    ss << "Matched the following input but the highlighted parts remain unused:\n\n";
 
-    for (const auto& id : unmatched_node_ids)
-    {
-      ss << node_.node.tree()->ref(id) << "\n";
-    }
+    // Create a copy that we can modify with some markup for a better error message.
+    auto copy = ryml::emitrs_yaml<std::string>(node_.node);
+    ryml::Tree copy_tree = init_yaml_tree_with_exceptions();
+    auto copy_root = copy_tree.rootref();
+    copy_root |= ryml::MAP;
+    markup_copy(node_.node, copy_root.append_child(), unmatched_node_ids);
+    ss << copy_tree.rootref().child(0) << "\n";
+
     FOUR_C_THROW("{}", ss.str());
   }
 }

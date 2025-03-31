@@ -15,9 +15,8 @@
 #include "4C_io_input_types.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_string.hpp"
-
-#include <magic_enum/magic_enum_iostream.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -119,7 +118,7 @@ namespace Core::IO
       requires(std::is_enum_v<Enum>)
     struct PrettyTypeName<Enum>
     {
-      std::string operator()() { return "enum"; }
+      std::string operator()() { return std::string{magic_enum::enum_type_name<Enum>()}; }
     };
 
     template <typename T>
@@ -255,6 +254,7 @@ namespace Core::IO
       MatchTree* tree;
       const InputSpec* spec;
       std::vector<MatchEntry*> children;
+      std::string additional_info;
 
       /**
        * A MatchEntry can only match a single node. Logical specs like all_of and one_of are not
@@ -1430,18 +1430,35 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     {
       if (!has_correct_size(value, container))
       {
+        match_entry.additional_info = "value has incorrect size";
         return false;
       }
     }
     container.add(name, value);
     match_entry.state = IO::Internal::MatchEntry::State::matched;
     match_entry.matched_node = entry_node.node.id();
+    if (data.on_parse_callback) data.on_parse_callback(container);
+    return true;
   }
   catch (const Core::Exception& e)
   {
+    if constexpr (std::is_enum_v<T>)
+    {
+      std::string choices_string;
+      for (const auto& e : magic_enum::enum_names<T>())
+      {
+        choices_string += std::string(e) + "|";
+      }
+      choices_string.pop_back();
+
+      match_entry.additional_info = "wrong value, possible values: " + choices_string;
+    }
+    else
+    {
+      match_entry.additional_info = "wrong type, expected type: " + get_pretty_type_name<T>();
+    }
     return false;
   }
-  return true;
 }
 
 
@@ -1611,6 +1628,8 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
     }
   }
 
+  // A child with the name of the spec exists, so this is at least a partial match.
+  match_entry.state = IO::Internal::MatchEntry::State::partial;
   auto entry_node = node.wrap(node.node[spec_name]);
 
   FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
@@ -1634,9 +1653,10 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
   }
   catch (const std::exception& e)
   {
-    return false;
+    // catch all and error out below
   }
 
+  match_entry.additional_info = "wrong value, possible values: " + choices_string;
   return false;
 }
 
