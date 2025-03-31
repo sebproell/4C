@@ -466,8 +466,8 @@ namespace Core::Communication
     {
       std::stringstream diff;
       diff << std::scientific << std::setprecision(16) << maxdiff;
-      FOUR_C_THROW("vectors {} do not match, maximum difference between entries is: {}", name,
-          diff.str().c_str());
+      FOUR_C_THROW(
+          "vectors {} do not match, maximum difference between entries is: {}", name, diff.str());
     }
 
     return true;
@@ -688,7 +688,7 @@ namespace Core::Communication
       std::stringstream diff;
       diff << std::scientific << std::setprecision(16) << maxdiff;
       FOUR_C_THROW("matrices {} do not match, maximum difference between entries is: {} in row",
-          name, diff.str().c_str());
+          name, diff.str());
     }
 
     return true;

@@ -114,7 +114,7 @@ namespace
     {
       if (iter.first == PARTICLEENGINE::Temperature and not iter.second.empty())
         FOUR_C_THROW("initial temperature cannot be specified for rigid bodies '{}' !",
-            PARTICLEENGINE::enum_to_state_name(iter.first).c_str());
+            PARTICLEENGINE::enum_to_state_name(iter.first));
     }
 #endif
 
@@ -137,7 +137,7 @@ namespace
 
       default:
         FOUR_C_THROW("unsupported state vector '{}' for initialization of rigid body!",
-            PARTICLEENGINE::enum_to_state_name(particleState).c_str());
+            PARTICLEENGINE::enum_to_state_name(particleState));
     }
   }
 }  // namespace

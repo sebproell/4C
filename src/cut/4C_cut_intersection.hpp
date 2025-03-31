@@ -232,7 +232,7 @@ namespace Cut
     {
       if (get_intersection_status() < intersect_single_cut_point)
         FOUR_C_THROW("INVALID IntersectionStatus! ( istatus = \"{}\" )",
-            intersection_status_to_string(get_intersection_status()).c_str());
+            intersection_status_to_string(get_intersection_status()));
 
       side_rs_cuts.clear();
       side_rs_cuts.reserve(num_cut_points());
@@ -250,7 +250,7 @@ namespace Cut
     {
       if (get_intersection_status() < intersect_single_cut_point)
         FOUR_C_THROW("INVALID IntersectionStatus! ( istatus = \"{}\" )",
-            intersection_status_to_string(get_intersection_status()).c_str());
+            intersection_status_to_string(get_intersection_status()));
 
       xyz_cuts.clear();
       xyz_cuts.reserve(num_cut_points());

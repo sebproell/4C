@@ -51,8 +51,7 @@ void caldyn_drt()
       dyn_nlnstructural_drt();
       break;
     default:
-      FOUR_C_THROW(
-          "unknown time integration scheme '{}'", sdyn.get<std::string>("DYNAMICTYPE").c_str());
+      FOUR_C_THROW("unknown time integration scheme '{}'", sdyn.get<std::string>("DYNAMICTYPE"));
       break;
   }
 

@@ -187,8 +187,8 @@ void Global::Problem::add_dis(
   {
     // if the same key already exists we have to inform the user since
     // the insert statement did not work in this case
-    FOUR_C_THROW("Could not insert discretization '{}' under (duplicate) key '{}'.",
-        dis->name().c_str(), name.c_str());
+    FOUR_C_THROW(
+        "Could not insert discretization '{}' under (duplicate) key '{}'.", dis->name(), name);
   }
 }
 
@@ -205,7 +205,7 @@ std::shared_ptr<Core::FE::Discretization> Global::Problem::get_dis(const std::st
   }
   else
   {
-    FOUR_C_THROW("Could not find discretization '{}'.", name.c_str());
+    FOUR_C_THROW("Could not find discretization '{}'.", name);
     return nullptr;
   }
 }

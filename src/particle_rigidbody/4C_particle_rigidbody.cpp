@@ -77,7 +77,7 @@ void ParticleRigidBody::RigidBodyHandler::setup(
 
     if (not particlecontainerbundle->get_particle_types().count(PARTICLEENGINE::RigidPhase))
       FOUR_C_THROW("no particle container for particle type '{}' found!",
-          PARTICLEENGINE::enum_to_type_name(PARTICLEENGINE::RigidPhase).c_str());
+          PARTICLEENGINE::enum_to_type_name(PARTICLEENGINE::RigidPhase));
   }
 
   // short screen output
@@ -1819,7 +1819,7 @@ void ParticleRigidBody::RigidBodyHandler::evaluate_rigid_body_solidification(
 
       if (type_i != PARTICLEENGINE::RigidPhase)
         FOUR_C_THROW("particle with global id {} not of particle type '{}'!", globalid_i,
-            PARTICLEENGINE::enum_to_type_name(PARTICLEENGINE::RigidPhase).c_str());
+            PARTICLEENGINE::enum_to_type_name(PARTICLEENGINE::RigidPhase));
 
       if (status_i == PARTICLEENGINE::Ghosted)
         FOUR_C_THROW("particle with global id {} not owned on this processor!", globalid_i);

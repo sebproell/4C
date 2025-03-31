@@ -93,7 +93,7 @@ Discret::Elements::TemperImplInterface* Discret::Elements::TemperImplInterface::
     }
     default:
       FOUR_C_THROW("Element shape {} ({} nodes) not activated. Just do it.",
-          Core::FE::cell_type_to_string(ele->shape()).c_str(), ele->num_node());
+          Core::FE::cell_type_to_string(ele->shape()), ele->num_node());
       break;
   }
   return nullptr;

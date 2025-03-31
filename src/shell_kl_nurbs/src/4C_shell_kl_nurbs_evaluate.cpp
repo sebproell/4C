@@ -111,7 +111,7 @@ int Discret::Elements::KirchhoffLoveShellNurbs::evaluate(Teuchos::ParameterList&
     default:
     {
       FOUR_C_THROW("Unknown type of action for KirchhoffLoveShellNurbs element: {}",
-          action_type_to_string(act).c_str());
+          action_type_to_string(act));
       break;
     }
   }

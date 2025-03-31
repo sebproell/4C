@@ -53,7 +53,7 @@ void Arteries::ArteryResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, dis_->name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, dis_->name());
   }
   else
   {
@@ -79,8 +79,8 @@ void Arteries::ArteryResultTest::test_node(
         result = (*mysol_)[pnpmap.LID(dis_->dof(actnode, 1))];
       else
       {
-        FOUR_C_THROW("Quantity '{}' not supported in result-test of artery transport problems",
-            position.c_str());
+        FOUR_C_THROW(
+            "Quantity '{}' not supported in result-test of artery transport problems", position);
       }
 
       nerr += compare_values(result, "NODE", container);
@@ -108,8 +108,7 @@ void Arteries::ArteryResultTest::test_element(
 
   if (iselementofanybody == 0)
   {
-    FOUR_C_THROW(
-        "Element {} does not belong to discretization {}", element + 1, dis_->name().c_str());
+    FOUR_C_THROW("Element {} does not belong to discretization {}", element + 1, dis_->name());
   }
   else
   {
@@ -137,8 +136,8 @@ void Arteries::ArteryResultTest::test_element(
       }
       else
       {
-        FOUR_C_THROW("Quantity '{}' not supported in result-test of artery transport problems",
-            quantity.c_str());
+        FOUR_C_THROW(
+            "Quantity '{}' not supported in result-test of artery transport problems", quantity);
       }
 
       nerr += compare_values(result, "ELEMENT", container);

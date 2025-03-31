@@ -341,7 +341,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
               }
               else
               {
-                FOUR_C_THROW("Unknown volume pleural pressure type: {}", ppl_Type.c_str());
+                FOUR_C_THROW("Unknown volume pleural pressure type: {}", ppl_Type);
               }
               Pp_np *= curvefac * (vals[0]);
             }
@@ -371,8 +371,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
         }
         else
         {
-          FOUR_C_THROW(
-              "Prescribed [{}] is not defined for reduced-inter-acinar linkers", Bc.c_str());
+          FOUR_C_THROW("Prescribed [{}] is not defined for reduced-inter-acinar linkers", Bc);
           exit(1);
         }
       }

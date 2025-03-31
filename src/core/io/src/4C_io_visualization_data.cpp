@@ -113,7 +113,7 @@ void Core::IO::VisualizationData::consistency_check() const
     const auto n_dim = get_data_dimension(map_item);
     if (size % n_dim != 0)
       FOUR_C_THROW("The size of the data vector {} ({}) is not a multiple of the dimension ({})!",
-          data_name.c_str(), size, n_dim);
+          data_name, size, n_dim);
     if (size / n_dim != n_items)
     {
       FOUR_C_THROW(

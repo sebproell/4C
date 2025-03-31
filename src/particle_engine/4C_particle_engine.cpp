@@ -215,8 +215,7 @@ void PARTICLEENGINE::ParticleEngine::erase_particles_outside_bounding_box(
     ParticleContainer* container = particlecontainerbundle_->get_specific_container(type, Owned);
 
     if (static_cast<int>(pos.size()) != container->get_state_dim(Position))
-      FOUR_C_THROW(
-          "dimension of particle state '{}' not valid!", enum_to_state_name(Position).c_str());
+      FOUR_C_THROW("dimension of particle state '{}' not valid!", enum_to_state_name(Position));
 #endif
 
     // check particle location with respect to bounding box in each spatial directions
@@ -1396,8 +1395,7 @@ void PARTICLEENGINE::ParticleEngine::determine_particles_to_be_distributed(
     ParticleContainer* container = particlecontainerbundle_->get_specific_container(type, Owned);
 
     if (static_cast<int>(pos.size()) != container->get_state_dim(Position))
-      FOUR_C_THROW(
-          "dimension of particle state '{}' not valid!", enum_to_state_name(Position).c_str());
+      FOUR_C_THROW("dimension of particle state '{}' not valid!", enum_to_state_name(Position));
 #endif
 
     // get global id of bin
@@ -1851,8 +1849,7 @@ void PARTICLEENGINE::ParticleEngine::insert_owned_particles(
             particlecontainerbundle_->get_specific_container(type, Owned);
 
         if (static_cast<int>(pos.size()) != container->get_state_dim(Position))
-          FOUR_C_THROW(
-              "dimension of particle state '{}' not valid!", enum_to_state_name(Position).c_str());
+          FOUR_C_THROW("dimension of particle state '{}' not valid!", enum_to_state_name(Position));
 
         // get global id of bin
         gidofbin = binstrategy_->convert_pos_to_gid(pos.data());

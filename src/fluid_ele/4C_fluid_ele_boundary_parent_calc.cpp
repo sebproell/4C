@@ -578,7 +578,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
       pressure = fdp_cond->parameters().get<double>("ConstCoeff") * curvefac;
     }
     else
-      FOUR_C_THROW("Unknown type of flow-dependent pressure condition: {}", condtype.c_str());
+      FOUR_C_THROW("Unknown type of flow-dependent pressure condition: {}", condtype);
 
     // get thermodynamic pressure at n+1/n+alpha_F
     const double thermpressaf = params.get<double>("thermpress at n+alpha_F/n+1", 1.0);
@@ -1842,7 +1842,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   else if (consistency == "diffusive-optimal")
     wd_gamma = -1.0;
   else
-    FOUR_C_THROW("unknown type of consistency for weak DBC: {}", consistency.c_str());
+    FOUR_C_THROW("unknown type of consistency for weak DBC: {}", consistency);
 
   // decide whether to use it or not
   const std::string& deftauB = (*wdbc_cond).parameters().get<std::string>("PENTYPE");
@@ -1852,7 +1852,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   else if (deftauB == "constant")
     spalding = false;
   else
-    FOUR_C_THROW("unknown PENTYPE tauB for weak DBC: {}", deftauB.c_str());
+    FOUR_C_THROW("unknown PENTYPE tauB for weak DBC: {}", deftauB);
 
   // linearisation of adjoint convective flux
   const std::string& linearisation_approach =
@@ -1863,7 +1863,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   else if (linearisation_approach == "no_lin_conv_inflow")
     complete_linearisation = false;
   else
-    FOUR_C_THROW("unknown linearisation for weak DBC: {}", linearisation_approach.c_str());
+    FOUR_C_THROW("unknown linearisation for weak DBC: {}", linearisation_approach);
 
   // find out whether there is a time curve and get factor
   // (time curve at n+1 applied for all time-integration schemes, but
@@ -1885,8 +1885,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   else if (active_components == "only_in_normal_direction")
     onlynormal = true;
   else
-    FOUR_C_THROW(
-        "unknown definition of active components for weak DBC: {}", active_components.c_str());
+    FOUR_C_THROW("unknown definition of active components for weak DBC: {}", active_components);
 
   // optional scaling of penalty parameter
   const double scaling = wdbc_cond->parameters().get<double>("TauBscaling");
@@ -4341,7 +4340,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
   }
   else
   {
-    FOUR_C_THROW("Unknown definition of penalty parameter: {}", deftauB.c_str());
+    FOUR_C_THROW("Unknown definition of penalty parameter: {}", deftauB);
   }
 
   // flag for utau computation (viscous tangent or at wall (a la Michler))

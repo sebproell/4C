@@ -65,7 +65,7 @@ namespace Core::IO
         return get_vtk_cell_type_from_element_cell_type(Core::FE::CellType::hex27);
       default:
         FOUR_C_THROW("The VTK cell type for the NURBS element {} is not implemented",
-            Core::FE::cell_type_to_string(celltype).c_str());
+            Core::FE::cell_type_to_string(celltype));
     }
   }
 
@@ -133,7 +133,7 @@ namespace Core::IO
               break;
             default:
               FOUR_C_THROW("The node numbering for the nurbs element shape {} is not implemented",
-                  Core::FE::cell_type_to_string(ele.shape()).c_str());
+                  Core::FE::cell_type_to_string(ele.shape()));
           }
         }
 
@@ -325,7 +325,7 @@ namespace Core::IO
               break;
             default:
               FOUR_C_THROW("The node numbering for the nurbs element shape {} is not implemented",
-                  Core::FE::cell_type_to_string(ele.shape()).c_str());
+                  Core::FE::cell_type_to_string(ele.shape()));
           }
         }
 
@@ -407,7 +407,7 @@ namespace Core::IO
               break;
             default:
               FOUR_C_THROW("The node numbering for the nurbs element shape {} is not implemented",
-                  Core::FE::cell_type_to_string(ele.shape()).c_str());
+                  Core::FE::cell_type_to_string(ele.shape()));
           }
         }
 

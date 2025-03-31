@@ -2170,8 +2170,8 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
       {
         const std::vector<int>* nodes = curr->second->get_nodes();
         if (nodes->size() == 0)
-          FOUR_C_THROW("{} condition {} has no nodal cloud", condition.description().c_str(),
-              curr->second->id());
+          FOUR_C_THROW(
+              "{} condition {} has no nodal cloud", condition.description(), curr->second->id());
 
         int foundit = 0;
         for (int node : *nodes)
@@ -2217,7 +2217,7 @@ void Global::read_knots(Global::Problem& problem, Core::IO::InputFile& input)
       auto* nurbsdis = dynamic_cast<Core::FE::Nurbs::NurbsDiscretization*>(&(*dis));
 
       if (nurbsdis == nullptr)
-        FOUR_C_THROW("discretization {} is not a NurbsDiscretization! Panic.", dis->name().c_str());
+        FOUR_C_THROW("discretization {} is not a NurbsDiscretization! Panic.", dis->name());
 
       // define an empty knot vector object
       std::shared_ptr<Core::FE::Nurbs::Knotvector> disknots = nullptr;

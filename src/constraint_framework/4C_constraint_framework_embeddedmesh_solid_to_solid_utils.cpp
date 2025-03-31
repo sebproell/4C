@@ -151,7 +151,7 @@ std::shared_ptr<CONSTRAINTS::EMBEDDEDMESH::SolidInteractionPair> coupling_pair_m
     }
     default:
       FOUR_C_THROW("The interaction pairs with interface element of type {} not yet implemented",
-          (Core::FE::cell_type_to_string(background_ele->shape())).c_str());
+          (Core::FE::cell_type_to_string(background_ele->shape())));
   }
 }
 

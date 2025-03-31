@@ -122,7 +122,7 @@ void PARTICLEENGINE::ParticleContainer::add_particle(
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (static_cast<int>(states[state].size()) != statedim_[state])
         FOUR_C_THROW("can not add particle: dimensions of state '{}' do not match!",
-            enum_to_state_name(state).c_str());
+            enum_to_state_name(state));
 #endif
 
       // store state in container
@@ -163,7 +163,7 @@ void PARTICLEENGINE::ParticleContainer::replace_particle(
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (static_cast<int>(states[state].size()) != statedim_[state])
         FOUR_C_THROW("can not replace particle: dimensions of state '{}' do not match!",
-            enum_to_state_name(state).c_str());
+            enum_to_state_name(state));
 #endif
 
       // replace state in container
@@ -225,7 +225,7 @@ double PARTICLEENGINE::ParticleContainer::get_min_value_of_state(ParticleState s
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (not storedstates_.count(state))
-    FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
+    FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state));
 #endif
 
   if (particlestored_ <= 0) return 0.0;
@@ -242,7 +242,7 @@ double PARTICLEENGINE::ParticleContainer::get_max_value_of_state(ParticleState s
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (not storedstates_.count(state))
-    FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
+    FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state));
 #endif
 
   if (particlestored_ <= 0) return 0.0;

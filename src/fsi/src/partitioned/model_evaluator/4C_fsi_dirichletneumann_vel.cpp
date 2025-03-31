@@ -148,8 +148,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FSI::DirichletNeumannVel::initial_
     const Teuchos::ParameterList& fsipart = fsidyn.sublist("PARTITIONED SOLVER");
     if (fsipart.get<std::string>("PREDICTOR") != "d(n)")
     {
-      FOUR_C_THROW(
-          "unknown interface force predictor '{}'", fsipart.get<std::string>("PREDICTOR").c_str());
+      FOUR_C_THROW("unknown interface force predictor '{}'", fsipart.get<std::string>("PREDICTOR"));
     }
     return interface_force();
   }

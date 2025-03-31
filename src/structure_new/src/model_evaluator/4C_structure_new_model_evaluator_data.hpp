@@ -400,7 +400,7 @@ namespace Solid
         c_it = normtype_update_.find(qtype);
         if (c_it == normtype_update_.end())
           FOUR_C_THROW("The corresponding norm type could not be found! (quantity: {})",
-              NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
+              NOX::Nln::StatusTest::quantity_type_to_string(qtype));
         return c_it->second;
       }
 

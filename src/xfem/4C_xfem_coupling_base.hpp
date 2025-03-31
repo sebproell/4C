@@ -78,7 +78,7 @@ namespace XFEM
     int get_coupling_dofset_nds(const std::string& name)
     {
       if (not(dofset_coupling_map_.count(name) == 1))
-        FOUR_C_THROW("{} -dofset not set in dofset_coupling_map for fluid dis!", name.c_str());
+        FOUR_C_THROW("{} -dofset not set in dofset_coupling_map for fluid dis!", name);
 
       return dofset_coupling_map_[name];
     }

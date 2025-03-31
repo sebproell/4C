@@ -7053,7 +7053,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::extract_values_from_glob
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
       discretization.get_state(state);
 
-  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state.c_str());
+  if (matrix_state == nullptr) FOUR_C_THROW("Cannot get state vector {}", state);
 
   // extract local values of the global vectors
   std::vector<double> mymatrix = Core::FE::extract_values(*matrix_state, lm);

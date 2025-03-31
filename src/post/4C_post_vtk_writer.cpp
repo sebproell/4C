@@ -164,8 +164,7 @@ void PostVtkWriter::write_special_field(SpecialFieldInterface& special,
     }
   }
   // should always find the correct result
-  if (!foundit)
-    FOUR_C_THROW("Internal error when trying to identify output type {}", groupname.c_str());
+  if (!foundit) FOUR_C_THROW("Internal error when trying to identify output type {}", groupname);
 
   // jump to the correct location in the data vector. Some fields might only
   // be stored once, so need to catch that case as well

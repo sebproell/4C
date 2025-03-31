@@ -111,7 +111,7 @@ void ParticleRigidBody::RigidBodyResultTest::test_special(
       actresult = mass[globalid];
     }
     else
-      FOUR_C_THROW("result check failed with unknown quantity '{}'!", quantity.c_str());
+      FOUR_C_THROW("result check failed with unknown quantity '{}'!", quantity);
 
     // compare values
     const int err = compare_values(actresult, "SPECIAL", container);

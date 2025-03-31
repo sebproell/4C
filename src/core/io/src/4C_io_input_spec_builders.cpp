@@ -108,7 +108,7 @@ namespace
     {
       // Unnamed entries contain a useful description, which indicates what is missing.
       FOUR_C_ASSERT_ALWAYS(!entry->impl().required(), "Required '{}' not found in input line",
-          entry->impl().description().c_str());
+          entry->impl().description());
     }
 
     // Check if all required values have been parsed, i.e., any remaining component must be optional
@@ -116,7 +116,7 @@ namespace
     {
       if (entry->impl().required())
       {
-        FOUR_C_THROW("Required value '{}' not found in input line", name.c_str());
+        FOUR_C_THROW("Required value '{}' not found in input line", name);
       }
       else if (entry->impl().has_default_value())
       {
@@ -132,7 +132,7 @@ namespace
     {
       if (!spec.impl().name().empty())
         FOUR_C_ASSERT_ALWAYS(names.insert(spec.impl().name()).second,
-            "Duplicate component name '{}' found in input line.", spec.impl().name().c_str());
+            "Duplicate component name '{}' found in input line.", spec.impl().name());
     }
   }
 
@@ -528,7 +528,7 @@ void Core::IO::Internal::MatchTree::assert_match() const
   {
     ss << "This was the best attempt to match the input:\n\n";
     recursively_print_match_entries(entries_.front(), ss, 0);
-    FOUR_C_THROW("{}", ss.str().c_str());
+    FOUR_C_THROW("{}", ss.str());
   }
 
   // Check that everything in the input was actually used.
@@ -541,7 +541,7 @@ void Core::IO::Internal::MatchTree::assert_match() const
     {
       ss << node_.node.tree()->ref(id) << "\n";
     }
-    FOUR_C_THROW("{}", ss.str().c_str());
+    FOUR_C_THROW("{}", ss.str());
   }
 }
 
@@ -909,8 +909,8 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
 
   // Convert remainder into a null-terminated string for the error message.
   std::string remainder(parser.get_unparsed_remainder());
-  FOUR_C_THROW("While parsing '{}'.\nNone of the specs fit the input. Expected {}",
-      remainder.c_str(), data.description.c_str());
+  FOUR_C_THROW("While parsing '{}'.\nNone of the specs fit the input. Expected {}", remainder,
+      data.description);
 }
 
 
@@ -1207,7 +1207,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
   }
   if (data.required.value() && data.defaultable)
   {
-    FOUR_C_THROW("Group '{}': a group cannot be both required and defaultable.", name.c_str());
+    FOUR_C_THROW("Group '{}': a group cannot be both required and defaultable.", name);
   }
   if (data.defaultable && !all_have_default_values(flattened_specs))
   {

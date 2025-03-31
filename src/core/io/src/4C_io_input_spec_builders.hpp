@@ -1337,7 +1337,7 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::parse(
   else
   {
     std::string next_token{parser.peek()};
-    FOUR_C_THROW("Could not parse '{}'. Next token is '{}'.", name.c_str(), next_token.c_str());
+    FOUR_C_THROW("Could not parse '{}'. Next token is '{}'.", name, next_token);
   }
 
   if constexpr (rank<T>() == 0)
@@ -1549,7 +1549,7 @@ void Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::parse(
   else
   {
     std::string next_token{parser.peek()};
-    FOUR_C_THROW("Could not parse '{}'. Next token is '{}'.", name.c_str(), next_token.c_str());
+    FOUR_C_THROW("Could not parse '{}'. Next token is '{}'.", name, next_token);
   }
 
   auto value = parser.read<InputType>();
@@ -1565,7 +1565,7 @@ void Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::parse(
   IO::Internal::DatPrinter{}(parsed_value_str, value);
 
   FOUR_C_THROW("Could not parse parameter '{}': invalid value '{}'. Valid options are: {}",
-      name.c_str(), parsed_value_str.str().c_str(), choices_string.c_str());
+      name.c_str(), parsed_value_str.str(), choices_string);
 }
 
 
@@ -1758,8 +1758,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::parse(
   else
   {
     std::string next_token{parser.peek()};
-    FOUR_C_THROW(
-        "Could not parse '{}'. Next token is '{}'.", group_name.c_str(), next_token.c_str());
+    FOUR_C_THROW("Could not parse '{}'. Next token is '{}'.", group_name.c_str(), next_token);
   }
 }
 
@@ -1897,7 +1896,7 @@ auto Core::IO::InputSpecBuilders::from_parameter(const std::string& name)
   return [name](const InputParameterContainer& container) -> T
   {
     const T* val = container.get_if<T>(name);
-    FOUR_C_ASSERT_ALWAYS(val, "Parameter '{}' not found in container.", name.c_str());
+    FOUR_C_ASSERT_ALWAYS(val, "Parameter '{}' not found in container.", name);
     return *val;
   };
 }
@@ -2021,7 +2020,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
       std::stringstream default_value_stream;
       Core::IO::Internal::DatPrinter{}(default_value_stream, default_value);
       FOUR_C_THROW("Default value '{}' of selection not found in choices '{}'.",
-          default_value_stream.str().c_str(), choices_string.c_str());
+          default_value_stream.str(), choices_string);
     }
   }
 

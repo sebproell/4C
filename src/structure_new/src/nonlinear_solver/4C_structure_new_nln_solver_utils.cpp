@@ -38,7 +38,7 @@ bool Solid::Nln::SOLVER::is_xml_status_test_file(const Teuchos::ParameterList& p
         if (pxml.sublist("Outer Status Test").numParams() > 0) check = true;
     }
     else
-      FOUR_C_THROW("The file name \"{}\" is not a valid XML file name.", xmlfilename->c_str());
+      FOUR_C_THROW("The file name \"{}\" is not a valid XML file name.", xmlfilename->string());
   }
 
   return check;
@@ -413,7 +413,7 @@ void Solid::Nln::SOLVER::set_quantity_test_params(Teuchos::ParameterList& p,
   else if (testname == "ActiveSet")
     set_active_set_params(p, qtype);
   else
-    FOUR_C_THROW("Unknown/Unsupported status test name: {}", testname.c_str());
+    FOUR_C_THROW("Unknown/Unsupported status test name: {}", testname);
 }
 
 
@@ -435,7 +435,7 @@ void Solid::Nln::SOLVER::split_and_or_combo(
     if (testname == "NormF")
       combotype = datasdyn.get_res_combo_type(*qtiter);
     else if (testname != "NormUpdate")
-      FOUR_C_THROW("The given test \"{}\" name is not supported!", testname.c_str());
+      FOUR_C_THROW("The given test \"{}\" name is not supported!", testname);
 
     switch (combotype)
     {

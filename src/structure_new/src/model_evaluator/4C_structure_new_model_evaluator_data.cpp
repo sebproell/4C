@@ -301,13 +301,13 @@ void Solid::ModelEvaluator::Data::fill_norm_type_maps()
         double atol = NOX::Nln::Aux::get_norm_wrms_class_variable(ostatus, *qiter, "ATOL");
         if (atol < 0.0)
           FOUR_C_THROW("The absolute wrms tolerance of the quantity {} is missing.",
-              NOX::Nln::StatusTest::quantity_type_to_string(*qiter).c_str());
+              NOX::Nln::StatusTest::quantity_type_to_string(*qiter));
         else
           atol_wrms_[*qiter] = atol;
         double rtol = NOX::Nln::Aux::get_norm_wrms_class_variable(ostatus, *qiter, "RTOL");
         if (rtol < 0.0)
           FOUR_C_THROW("The relative wrms tolerance of the quantity {} is missing.",
-              NOX::Nln::StatusTest::quantity_type_to_string(*qiter).c_str());
+              NOX::Nln::StatusTest::quantity_type_to_string(*qiter));
         else
           rtol_wrms_[*qiter] = rtol;
       }
@@ -652,8 +652,8 @@ double Solid::ModelEvaluator::Data::get_energy_data(enum Solid::EnergyType type)
 {
   auto check = get_energy_data().find(type);
   if (check == get_energy_data().cend())
-    FOUR_C_THROW("Couldn't find the energy contribution: \"{}\".",
-        Solid::energy_type_to_string(type).c_str());
+    FOUR_C_THROW(
+        "Couldn't find the energy contribution: \"{}\".", Solid::energy_type_to_string(type));
 
   return check->second;
 }

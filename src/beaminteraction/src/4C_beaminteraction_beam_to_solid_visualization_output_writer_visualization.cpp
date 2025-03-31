@@ -47,14 +47,14 @@ void BeamInteraction::BeamToSolidOutputWriterVisualization::
     FOUR_C_THROW("Point coordinate vector is not empty!");
   for (const auto& point_data_name : visualization_data.get_point_data_names())
     if (visualization_data.get_point_data_size(point_data_name) != 0)
-      FOUR_C_THROW("Point data for '{}' is not empty!", point_data_name.c_str());
+      FOUR_C_THROW("Point data for '{}' is not empty!", point_data_name);
   if (visualization_data.get_cell_types().size() != 0)
     FOUR_C_THROW("Cell types vector is not empty!");
   if (visualization_data.get_cell_offsets().size() != 0)
     FOUR_C_THROW("Cell offsets vector is not empty!");
   for (const auto& cell_data_name : visualization_data.get_cell_data_names())
     if (visualization_data.get_cell_data_size(cell_data_name) != 0)
-      FOUR_C_THROW("Cell data for '{}' is not empty!", cell_data_name.c_str());
+      FOUR_C_THROW("Cell data for '{}' is not empty!", cell_data_name);
 
   // Set the discretization for this writer.
   discret_ = discret;

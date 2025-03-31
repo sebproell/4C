@@ -100,8 +100,8 @@ void ScaTra::ScaTraUtils::check_consistency_with_s2_i_kinetics_condition(
       }
       default:
       {
-        FOUR_C_THROW("interface side of {} has to be either 'Slave' or 'Master'",
-            condition_to_be_tested.c_str());
+        FOUR_C_THROW(
+            "interface side of {} has to be either 'Slave' or 'Master'", condition_to_be_tested);
         break;
       }
     }

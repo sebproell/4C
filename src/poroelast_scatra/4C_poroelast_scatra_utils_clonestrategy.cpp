@@ -125,8 +125,7 @@ void PoroElastScaTra::Utils::PoroScatraCloneStrategy::set_element_data(
   // note: set_material() was reimplemented by the transport element!
   auto* trans = dynamic_cast<Discret::Elements::Transport*>(newele.get());
   if (trans == nullptr)
-    FOUR_C_THROW(
-        "unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*newele).c_str());
+    FOUR_C_THROW("unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*newele));
 
 
   // set material

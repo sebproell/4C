@@ -1876,8 +1876,7 @@ Cut::Side* Cut::SideFactory::create_side(Core::FE::CellType sidetype, int sid,
       break;
     default:
     {
-      FOUR_C_THROW(
-          "Unsupported side type! ( {} )", Core::FE::cell_type_to_string(sidetype).c_str());
+      FOUR_C_THROW("Unsupported side type! ( {} )", Core::FE::cell_type_to_string(sidetype));
       break;
     }
   }

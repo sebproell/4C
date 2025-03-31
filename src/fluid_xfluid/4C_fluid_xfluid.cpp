@@ -4942,7 +4942,7 @@ void FLD::XFluid::explicit_predictor()
     state_->velpressplitter_->insert_other_vector(*unm, *state_->velnp_);
   }
   else
-    FOUR_C_THROW("Unknown fluid predictor {}", predictor_.c_str());
+    FOUR_C_THROW("Unknown fluid predictor {}", predictor_);
 
   if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {

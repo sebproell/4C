@@ -163,7 +163,7 @@ void MonWriter::write_mon_stress_file(
 {
   // stop it now
   if ((stresstype != "none") and (stresstype != "ndxyz"))
-    FOUR_C_THROW("Cannot deal with requested stress output type: {}", stresstype.c_str());
+    FOUR_C_THROW("Cannot deal with requested stress output type: {}", stresstype);
 
   // write stress
   if (stresstype != "none")
@@ -187,7 +187,7 @@ void MonWriter::write_mon_strain_file(
 {
   // stop it now
   if ((straintype != "none") and (straintype != "ndxyz"))
-    FOUR_C_THROW("Cannot deal with requested strain output type: {}", straintype.c_str());
+    FOUR_C_THROW("Cannot deal with requested strain output type: {}", straintype);
 
   if (straintype != "none")
   {
@@ -213,7 +213,7 @@ void MonWriter::write_mon_pl_strain_file(
 {
   // stop it now
   if ((straintype != "none") and (straintype != "ndxyz"))
-    FOUR_C_THROW("Cannot deal with requested plastic strain output type: {}", straintype.c_str());
+    FOUR_C_THROW("Cannot deal with requested plastic strain output type: {}", straintype);
 
   if (straintype != "none")
   {
@@ -329,7 +329,7 @@ void MonWriter::write_mon_heatflux_file(
 {
   // stop it now
   if ((heatfluxtype != "none") and (heatfluxtype != "ndxyz"))
-    FOUR_C_THROW("Cannot deal with requested heatflux output type: {}", heatfluxtype.c_str());
+    FOUR_C_THROW("Cannot deal with requested heatflux output type: {}", heatfluxtype);
 
   // write heatflux
   if (heatfluxtype != "none")
@@ -357,8 +357,7 @@ void MonWriter::write_mon_tempgrad_file(
 {
   // stop it now
   if ((tempgradtype != "none") and (tempgradtype != "ndxyz"))
-    FOUR_C_THROW(
-        "Cannot deal with requested temperature gradient output type: {}", tempgradtype.c_str());
+    FOUR_C_THROW("Cannot deal with requested temperature gradient output type: {}", tempgradtype);
 
   if (tempgradtype != "none")
   {
@@ -1851,8 +1850,8 @@ int main(int argc, char** argv)
         mymonwriter.write_mon_file(problem, infieldtype, node);
       }
       else
-        FOUR_C_THROW("Unsupported field type {} for problem-type Multiphase_Poroelasticity",
-            infieldtype.c_str());
+        FOUR_C_THROW(
+            "Unsupported field type {} for problem-type Multiphase_Poroelasticity", infieldtype);
       break;
     }
     case Core::ProblemType::poromultiphasescatra:
@@ -1879,7 +1878,7 @@ int main(int argc, char** argv)
       }
       else
         FOUR_C_THROW("Unsupported field type {} for problem-type Multiphase_Poroelasticity_ScaTra",
-            infieldtype.c_str());
+            infieldtype);
       break;
     }
     default:

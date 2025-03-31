@@ -1804,7 +1804,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         if (dim != numdf)
         {
-          FOUR_C_THROW("dim and numdf not matching for field {}", name.c_str());
+          FOUR_C_THROW("dim and numdf not matching for field {}", name);
         }
 
         for (int rr = 0; rr < dim; ++rr)
@@ -1816,7 +1816,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         if (dim != numdf)
         {
-          FOUR_C_THROW("dim and numdf not matching for field {}", name.c_str());
+          FOUR_C_THROW("dim and numdf not matching for field {}", name);
         }
         for (int rr = 0; rr < dim; ++rr)
         {
@@ -1856,7 +1856,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
         else if ((name == "c_5") or (name == "averaged_c_5"))
           k = 4;
         else
-          FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name.c_str());
+          FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name);
 
         Core::Nodes::Node* n = nurbsdis->l_row_node(inode);
         int numdofpernode = actele->num_dof_per_node(*n);
@@ -1878,7 +1878,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       {
         if (dim != numdf)
         {
-          FOUR_C_THROW("dim and numdf not matching for field {}", name.c_str());
+          FOUR_C_THROW("dim and numdf not matching for field {}", name);
         }
         for (int rr = 0; rr < dim; ++rr)
         {
@@ -1891,7 +1891,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       }
       else
       {
-        FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name.c_str());
+        FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name);
       }
     }
   }
@@ -2059,7 +2059,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
       else if ((name == "c_5") or (name == "averaged_c_5"))
         k = 4;
       else
-        FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name.c_str());
+        FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name);
 
       for (int inode = 0; inode < numnp; ++inode)
       {
@@ -2107,7 +2107,7 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
     }
     else
     {
-      FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name.c_str());
+      FOUR_C_THROW("Up to now, I'm not able to write a field named {}\n", name);
     }
 
     interpolate_nurbs_result_to_viz_points(*idata, dim, npatch, vpoff, ele_cart_id, actele,

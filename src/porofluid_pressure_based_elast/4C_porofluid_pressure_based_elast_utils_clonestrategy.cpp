@@ -67,8 +67,7 @@ void POROMULTIPHASE::Utils::PoroFluidMultiPhaseCloneStrategy::set_element_data(
   }
   else
   {
-    FOUR_C_THROW(
-        "unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*newele).c_str());
+    FOUR_C_THROW("unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*newele));
   }
   return;
 }

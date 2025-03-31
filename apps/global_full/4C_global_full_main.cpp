@@ -263,7 +263,7 @@ namespace
         FOUR_C_THROW("4C produced an unknown floating point exception.");
         break;
     }
-    FOUR_C_THROW("4C produced a {} floating point exception.", exception_string.c_str());
+    FOUR_C_THROW("4C produced a {} floating point exception.", exception_string);
   }
 #endif
 

@@ -1171,7 +1171,7 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::evaluate_inter
       }
       default:
         FOUR_C_THROW("cell distype not implemented yet ( cellType = {} )",
-            Core::FE::cell_type_to_string(celldistype).c_str());
+            Core::FE::cell_type_to_string(celldistype));
         break;
     }
   }

@@ -163,8 +163,8 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> CONTACT::NitscheStrategySsi:
   if (bp == CONTACT::VecBlockType::constraint) return nullptr;
 
   if (!curr_state_eval_)
-    FOUR_C_THROW("you didn't evaluate this contact state for {} first",
-        CONTACT::vec_block_type_to_str(bp).c_str());
+    FOUR_C_THROW(
+        "you didn't evaluate this contact state for {} first", CONTACT::vec_block_type_to_str(bp));
 
   switch (bp)
   {

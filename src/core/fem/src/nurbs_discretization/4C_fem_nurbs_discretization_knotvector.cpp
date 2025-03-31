@@ -551,7 +551,7 @@ void Core::FE::Nurbs::Knotvector::set_knots(const int& direction, const int& npa
   }
   else
   {
-    FOUR_C_THROW("unknown knotvector-type '{}'\n", knotvectortype.c_str());
+    FOUR_C_THROW("unknown knotvector-type '{}'\n", knotvectortype);
   }
 
   // set the degree of the added knotvector

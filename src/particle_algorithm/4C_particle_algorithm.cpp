@@ -573,7 +573,7 @@ void PARTICLEALGORITHM::ParticleAlgorithm::determine_particle_types()
   for (auto& particle : particlestodistribute_)
     if (not particlestatestotypes_.count(particle->return_particle_type()))
       FOUR_C_THROW("particle type '{}' of initial particle not defined!",
-          PARTICLEENGINE::enum_to_type_name(particle->return_particle_type()).c_str());
+          PARTICLEENGINE::enum_to_type_name(particle->return_particle_type()));
 }
 
 void PARTICLEALGORITHM::ParticleAlgorithm::determine_particle_states_of_particle_types()

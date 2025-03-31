@@ -80,8 +80,7 @@ Cut::Element* Cut::Mesh::create_element(
     case Core::FE::CellType::wedge6:
       return create_wedge6(eid, nids);
     default:
-      FOUR_C_THROW(
-          "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
       exit(EXIT_FAILURE);
   }
   return nullptr;
@@ -100,8 +99,7 @@ Cut::Side* Cut::Mesh::create_side(int sid, const std::vector<int>& nids, Core::F
     case Core::FE::CellType::tri3:
       return create_tri3_side(sid, nids);
     default:
-      FOUR_C_THROW(
-          "unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW("unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
       exit(EXIT_FAILURE);
   }
   return nullptr;

@@ -1483,7 +1483,7 @@ double Mortar::Element::min_edge_size() const
     default:
     {
       FOUR_C_THROW("{} is not implemented for discretization type '{}' of Mortar::Element.",
-          __PRETTY_FUNCTION__, Core::FE::cell_type_to_string(shape()).c_str());
+          __PRETTY_FUNCTION__, Core::FE::cell_type_to_string(shape()));
       break;
     }
   }
@@ -1558,7 +1558,7 @@ double Mortar::Element::max_edge_size() const
     default:
     {
       FOUR_C_THROW("{} is not implemented for discretization type '{}' of Mortar::Element.",
-          __PRETTY_FUNCTION__, Core::FE::cell_type_to_string(shape()).c_str());
+          __PRETTY_FUNCTION__, Core::FE::cell_type_to_string(shape()));
       break;
     }
   }

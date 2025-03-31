@@ -158,7 +158,7 @@ namespace Core::IO
           fragments.reserve(node.num_children());
 
           FOUR_C_ASSERT(node.is_seq() || node.is_map(),
-              "Section '{}' is neither a sequence nor a map.", to_string(node.key()).c_str());
+              "Section '{}' is neither a sequence nor a map.", to_string(node.key()));
 
           for (auto child : node.children())
           {
@@ -394,7 +394,7 @@ namespace Core::IO
       };
 
       std::ifstream file(file_path);
-      if (not file) FOUR_C_THROW("Unable to open file: {}", file_path.c_str());
+      if (not file) FOUR_C_THROW("Unable to open file: {}", file_path.string());
 
       // Tracking variables while walking through the file
       std::vector<std::filesystem::path> included_files;
@@ -454,7 +454,7 @@ namespace Core::IO
           {
             current_section_type = SectionType::normal;
             FOUR_C_ASSERT_ALWAYS(!input_file_impl.content_by_section_.contains(name),
-                "Section '{}' is defined again in file '{}'.", name.c_str(), file_path.c_str());
+                "Section '{}' is defined again in file '{}'.", name, file_path.string());
 
             input_file_impl.section_order_.emplace_back(name);
             current_section_content = &input_file_impl.content_by_section_[name];
@@ -513,11 +513,11 @@ namespace Core::IO
       if (tmp_tree.rootref().is_stream())
       {
         FOUR_C_ASSERT_ALWAYS(tmp_tree.rootref().num_children() == 1,
-            "The input file '{}' may only contain one YAML document.", file_path.c_str());
+            "The input file '{}' may only contain one YAML document.", file_path.string());
         tmp_tree_root_without_docs = tmp_tree.rootref().first_child();
       }
       FOUR_C_ASSERT_ALWAYS(tmp_tree_root_without_docs.is_map(),
-          "The input file '{}' must contain a map as root node.", file_path.c_str());
+          "The input file '{}' must contain a map as root node.", file_path.string());
 
       std::stringstream file_content_without_docs;
       file_content_without_docs << tmp_tree_root_without_docs;
@@ -690,7 +690,7 @@ namespace Core::IO
     {
       // the top_level_file must exist
       if (!std::filesystem::is_regular_file(top_level_file))
-        FOUR_C_THROW("Input file '{}' does not exist.", top_level_file.c_str());
+        FOUR_C_THROW("Input file '{}' does not exist.", top_level_file.string());
 
       // Start by "including" the top-level file.
       std::list<std::filesystem::path> included_files{top_level_file};
@@ -721,7 +721,7 @@ namespace Core::IO
           if (std::ranges::find(included_files, file) != included_files.end())
           {
             FOUR_C_THROW(
-                "File '{}' was already included before.\n Cycles are not allowed.", file.c_str());
+                "File '{}' was already included before.\n Cycles are not allowed.", file.string());
           }
           else
           {
@@ -801,7 +801,7 @@ namespace Core::IO
         {
           const std::string section_name = to_string(node.key());
           FOUR_C_ASSERT_ALWAYS(!pimpl_->content_by_section_.contains(section_name),
-              "Section '{}' is defined more than once.", section_name.c_str());
+              "Section '{}' is defined more than once.", section_name);
 
           pimpl_->section_order_.emplace_back(section_name);
           Internal::SectionContent& content = pimpl_->content_by_section_[section_name];
@@ -838,7 +838,7 @@ namespace Core::IO
       {
         if (!pimpl_->is_section_known(section_name))
         {
-          FOUR_C_THROW("Section '{}' is not a valid section name.", section_name.c_str());
+          FOUR_C_THROW("Section '{}' is not a valid section name.", section_name);
         }
       }
     }
@@ -883,7 +883,7 @@ namespace Core::IO
                pimpl_->legacy_section_names_.end())
       {
         FOUR_C_THROW(
-            "Tried to match section '{}' which is not a valid section name.", section_name.c_str());
+            "Tried to match section '{}' which is not a valid section name.", section_name);
       }
       else
       {
@@ -906,7 +906,7 @@ namespace Core::IO
       }
       else if (spec.impl().required())
       {
-        FOUR_C_THROW("Required section '{}' not found in input file.", section_name.c_str());
+        FOUR_C_THROW("Required section '{}' not found in input file.", section_name);
       }
       else
       {
@@ -941,8 +941,8 @@ namespace Core::IO
           }
           catch (const std::exception& e)
           {
-            FOUR_C_THROW("Error while parsing list entries in section '{}': {}",
-                section_name.c_str(), e.what());
+            FOUR_C_THROW(
+                "Error while parsing list entries in section '{}': {}", section_name, e.what());
           }
         }
         container.add_list(section_name, std::move(list_entries));
@@ -971,7 +971,7 @@ namespace Core::IO
         }
         catch (const std::exception& e)
         {
-          FOUR_C_THROW("Error while parsing section '{}': {}", section_name.c_str(), e.what());
+          FOUR_C_THROW("Error while parsing section '{}': {}", section_name, e.what());
         }
       }
     }

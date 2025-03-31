@@ -25,7 +25,7 @@ int EXODUS::write_dat_file(const std::string& datfile, const EXODUS::Mesh& mymes
 {
   // open datfile
   std::ofstream dat(datfile.c_str());
-  if (!dat) FOUR_C_THROW("failed to open file: {}", datfile.c_str());
+  if (!dat) FOUR_C_THROW("failed to open file: {}", datfile);
 
   // write dat-file intro
   EXODUS::write_dat_intro(headfile, mymesh, dat);
@@ -259,8 +259,7 @@ std::vector<double> EXODUS::calc_normal_surf_locsys(const int ns_id, const EXODU
   }
   if (normaltangent.size() == 1)
   {
-    FOUR_C_THROW(
-        "Warning! No normal defined for SurfLocsys within nodeset '{}'!", (ns.get_name()).c_str());
+    FOUR_C_THROW("Warning! No normal defined for SurfLocsys within nodeset '{}'!", (ns.get_name()));
   }
 
   // find tangent by Gram-Schmidt

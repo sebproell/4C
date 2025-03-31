@@ -152,7 +152,7 @@ Teuchos::RCP<const std::vector<double>> NOX::Nln::CONSTRAINT::Group::get_rhs_nor
     else
     {
       FOUR_C_THROW("The norm value {} for quantity {} is not valid!", rval,
-          NOX::Nln::StatusTest::quantity_type_to_string(chQ[i]).c_str());
+          NOX::Nln::StatusTest::quantity_type_to_string(chQ[i]));
     }
   }
 

@@ -291,8 +291,8 @@ void CONTACT::MtAbstractStrategy::set_state(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported state type! (state type = {})",
-          Mortar::state_type_to_string(statetype).c_str());
+      FOUR_C_THROW(
+          "Unsupported state type! (state type = {})", Mortar::state_type_to_string(statetype));
       break;
     }
   }

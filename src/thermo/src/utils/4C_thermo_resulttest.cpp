@@ -43,8 +43,7 @@ void Thermo::ResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW(
-        "Node {} does not belong to discretization {}", node + 1, thrdisc_->name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, thrdisc_->name());
   }
   else
   {
@@ -97,8 +96,7 @@ void Thermo::ResultTest::test_node(
       }
 
       // catch position strings, which are not handled by thermo result test
-      if (unknownpos)
-        FOUR_C_THROW("Quantity '{}' not supported in thermo testing", position.c_str());
+      if (unknownpos) FOUR_C_THROW("Quantity '{}' not supported in thermo testing", position);
 
       // compare values
       const int err = compare_values(result, "NODE", container);

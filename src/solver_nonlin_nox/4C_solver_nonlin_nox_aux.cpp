@@ -543,7 +543,7 @@ enum NOX::Nln::SolutionType NOX::Nln::Aux::convert_quantity_type_to_solution_typ
     case NOX::Nln::StatusTest::quantity_unknown:
     default:
       FOUR_C_THROW("Unknown conversion for the quantity type \"{}\".",
-          NOX::Nln::StatusTest::quantity_type_to_string(qtype).c_str());
+          NOX::Nln::StatusTest::quantity_type_to_string(qtype));
   }
   // return the corresponding solution type
   return soltype;
@@ -561,7 +561,7 @@ enum ::NOX::Abstract::Vector::NormType NOX::Nln::Aux::string_to_norm_type(const 
   else if (name == "Max Norm")
     norm_type = ::NOX::Abstract::Vector::MaxNorm;
   else
-    FOUR_C_THROW("Unknown conversion from STL_STRING to NormType enum for {}.", name.c_str());
+    FOUR_C_THROW("Unknown conversion from STL_STRING to NormType enum for {}.", name);
 
   return norm_type;
 }
@@ -616,8 +616,7 @@ std::string NOX::Nln::Aux::get_direction_method_list_name(const Teuchos::Paramet
     return "Newton";
   else
   {
-    FOUR_C_THROW("Currently unsupported direction method string: {}", dir_str->c_str());
-    exit(EXIT_FAILURE);
+    FOUR_C_THROW("Currently unsupported direction method string: {}", *dir_str);
   }
 }
 

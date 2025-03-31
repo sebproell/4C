@@ -296,7 +296,7 @@ void NOX::Nln::GlobalData::set_status_test_parameters()
     }
   }
   else
-    FOUR_C_THROW("The file name '{}' is not a valid XML file name.", xmlfilename->c_str());
+    FOUR_C_THROW("The file name '{}' is not a valid XML file name.", xmlfilename->string());
 
   // copy the "Outer Status Test" into the nox parameter list
   if (not xmlParams.isSublist("Outer Status Test"))

@@ -131,8 +131,7 @@ void Core::IO::ValueParser::consume(const std::string& expected)
 {
   std::string_view read_string = advance_token();
   if (read_string != std::string_view(expected))
-    FOUR_C_THROW("{}Could not read expected string '{}'.", context_.user_scope_message.c_str(),
-        expected.c_str());
+    FOUR_C_THROW("{}Could not read expected string '{}'.", context_.user_scope_message, expected);
 }
 
 
@@ -140,8 +139,8 @@ void Core::IO::ValueParser::consume_comment(const std::string& comment_marker)
 {
   std::string token(advance_token());
   if (token != comment_marker)
-    FOUR_C_THROW("{}', but found '{}'.", context_.user_scope_message.c_str(),
-        comment_marker.c_str(), token.c_str());
+    FOUR_C_THROW(
+        "{}', but found '{}'.", context_.user_scope_message, comment_marker.c_str(), token);
 
   // Consume the rest of the line
   current_index_ = line_.size();
@@ -170,7 +169,7 @@ std::string_view Core::IO::ValueParser::advance_token()
   auto token = advance_token_impl(line_, current_index_, context_.token_delimiter);
 
   FOUR_C_ASSERT_ALWAYS(!token.empty(), "{}Expected more tokens, but reached the end of the line.",
-      context_.user_scope_message.c_str());
+      context_.user_scope_message);
 
   return token;
 }

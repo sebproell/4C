@@ -67,7 +67,7 @@ namespace
     if (local_id < 0)
     {
       FOUR_C_THROW("You tried to test {} on a proc that does not own node {}.",
-          name_and_component.name.c_str(), node_id);
+          name_and_component.name, node_id);
     }
 
     return data(name_and_component.component)[local_id];
@@ -123,8 +123,7 @@ namespace
 
     if (local_id < 0)
     {
-      FOUR_C_THROW(
-          "You tried to test {} on a proc that does not own node {}.", label.c_str(), node_id);
+      FOUR_C_THROW("You tried to test {} on a proc that does not own node {}.", label, node_id);
     }
 
     return nodal_data(voigt_index)[local_id];
@@ -194,8 +193,7 @@ void Solid::ResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW(
-        "Node {} does not belong to discretization {}", node + 1, strudisc_->name().c_str());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, strudisc_->name());
   }
 
   std::string position = container.get<std::string>("QUANTITY");
@@ -248,8 +246,8 @@ int Solid::ResultTest::get_nodal_result(
       unknownpos = false;
       int lid = disnpmap.LID(strudisc_->dof(0, actnode, idx));
       if (lid < 0)
-        FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position.c_str(), idx,
-            actnode->id());
+        FOUR_C_THROW(
+            "You tried to test {} on nonexistent dof {} on node {}", position, idx, actnode->id());
       result = (*disn_)[lid];
     }
   }
@@ -271,8 +269,8 @@ int Solid::ResultTest::get_nodal_result(
       unknownpos = false;
       int lid = velnpmap.LID(strudisc_->dof(0, actnode, idx));
       if (lid < 0)
-        FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position.c_str(), idx,
-            actnode->id());
+        FOUR_C_THROW(
+            "You tried to test {} on nonexistent dof {} on node {}", position, idx, actnode->id());
       result = (*veln_)[lid];
     }
   }
@@ -294,8 +292,8 @@ int Solid::ResultTest::get_nodal_result(
       unknownpos = false;
       int lid = accnpmap.LID(strudisc_->dof(0, actnode, idx));
       if (lid < 0)
-        FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position.c_str(), idx,
-            actnode->id());
+        FOUR_C_THROW(
+            "You tried to test {} on nonexistent dof {} on node {}", position, idx, actnode->id());
       result = (*accn_)[lid];
     }
   }
@@ -359,15 +357,14 @@ int Solid::ResultTest::get_nodal_result(
       unknownpos = false;
       int lid = reactmap.LID(strudisc_->dof(0, actnode, idx));
       if (lid < 0)
-        FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position.c_str(), idx,
-            actnode->id());
+        FOUR_C_THROW(
+            "You tried to test {} on nonexistent dof {} on node {}", position, idx, actnode->id());
       result = (*reactn_)[lid];
     }
   }
 
   // catch position std::strings, which are not handled by structure result test
-  if (unknownpos)
-    FOUR_C_THROW("Quantity '{}' not supported in structure testing", position.c_str());
+  if (unknownpos) FOUR_C_THROW("Quantity '{}' not supported in structure testing", position);
 
   return 0;
 }

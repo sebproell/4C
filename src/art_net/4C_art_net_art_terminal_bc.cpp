@@ -100,7 +100,7 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     }
     else
     {
-      FOUR_C_THROW("{} is not defined as a 1D artery's inlet BC type", Type.c_str());
+      FOUR_C_THROW("{} is not defined as a 1D artery's inlet BC type", Type);
       exit(1);
     }
 
@@ -197,7 +197,7 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     }
     else
     {
-      FOUR_C_THROW("{}, is an unimplemented type of coupling", Type.c_str());
+      FOUR_C_THROW("{}, is an unimplemented type of coupling", Type);
       exit(1);
     }
   }
@@ -318,7 +318,7 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     }
     else
     {
-      FOUR_C_THROW("{} is not defined!", BC.c_str());
+      FOUR_C_THROW("{} is not defined!", BC);
       exit(1);
     }
   }  // If BC is prescribed at the inlet
@@ -489,7 +489,7 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     else
     {
       std::string str = (condition->parameters().get<std::string>("ReturnedVariable"));
-      FOUR_C_THROW("{}, is an unimplemented type of coupling", str.c_str());
+      FOUR_C_THROW("{}, is an unimplemented type of coupling", str);
       exit(1);
     }
     std::stringstream returnedBCwithId;
@@ -508,8 +508,8 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     itrMap1D = map1D->find(returnedBCwithId.str());
     if (itrMap1D == map1D->end())
     {
-      FOUR_C_THROW("The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]",
-          returnedBC.c_str(), ID);
+      FOUR_C_THROW(
+          "The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]", returnedBC, ID);
       exit(1);
     }
 
@@ -994,7 +994,7 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
     }
     else
     {
-      FOUR_C_THROW("\"{}\" is not supported type of windkessel model\n", wk_type.c_str());
+      FOUR_C_THROW("\"{}\" is not supported type of windkessel model\n", wk_type);
       exit(1);
     }
 

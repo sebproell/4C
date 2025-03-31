@@ -414,8 +414,7 @@ void PoroElast::Utils::PoroMaterialStrategy::assign_material2_to1(
   }
   else
   {
-    FOUR_C_THROW(
-        "ERROR: Unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*ele2).c_str());
+    FOUR_C_THROW("ERROR: Unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*ele2));
   }
 }
 
@@ -472,8 +471,7 @@ void PoroElast::Utils::PoroMaterialStrategy::assign_material1_to2(
   }
   else
   {
-    FOUR_C_THROW(
-        "ERROR: Unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*ele2).c_str());
+    FOUR_C_THROW("ERROR: Unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*ele2));
   }
 }
 

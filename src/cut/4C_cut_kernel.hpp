@@ -3066,7 +3066,7 @@ namespace Cut::Kernel
     {
       if (side_type != Core::FE::CellType::tri3)
         FOUR_C_THROW("This method only works for tri3 side. Current side is {}",
-            Core::FE::cell_type_to_string(side_type).c_str());
+            Core::FE::cell_type_to_string(side_type));
 
       Core::LinAlg::Matrix<dim_side, 1> scaled_tolerance;
       double distance_tolerance = TOPOLOGICAL_TOLERANCE;
@@ -4450,7 +4450,7 @@ namespace Cut::Kernel
     {
       if (side_type != Core::FE::CellType::tri3)
         FOUR_C_THROW("This method only works for tri3 side. Current side is {}",
-            Core::FE::cell_type_to_string(side_type).c_str());
+            Core::FE::cell_type_to_string(side_type));
 
       double distance_tolerance = TOPOLOGICAL_TOLERANCE;
       // get tolerance with 1e-14 around the triangle, but in local coordinates

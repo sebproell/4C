@@ -167,8 +167,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
-        FOUR_C_THROW(
-            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
+        FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state));
 #endif
 
       return statedim_[state];
@@ -196,8 +195,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
-        FOUR_C_THROW(
-            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
+        FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state));
 
       if (index < 0 or index > (particlestored_ - 1))
         FOUR_C_THROW(
@@ -271,8 +269,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
-        FOUR_C_THROW(
-            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
+        FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state));
 #endif
 
       for (int i = 0; i < (particlestored_ * statedim_[state]); ++i) (states_[state])[i] *= fac;
@@ -291,12 +288,10 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(stateA))
-        FOUR_C_THROW(
-            "particle state '{}' not stored in container!", enum_to_state_name(stateA).c_str());
+        FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(stateA));
 
       if (not storedstates_.count(stateB))
-        FOUR_C_THROW(
-            "particle state '{}' not stored in container!", enum_to_state_name(stateB).c_str());
+        FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(stateB));
 
       if (statedim_[stateA] != statedim_[stateB])
         FOUR_C_THROW("dimensions of states do not match!");
@@ -317,8 +312,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
-        FOUR_C_THROW(
-            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
+        FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state));
 
       if (statedim_[state] != static_cast<int>(val.size()))
         FOUR_C_THROW("dimensions of states do not match!");
@@ -339,8 +333,7 @@ namespace PARTICLEENGINE
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
       if (not storedstates_.count(state))
-        FOUR_C_THROW(
-            "particle state '{}' not stored in container!", enum_to_state_name(state).c_str());
+        FOUR_C_THROW("particle state '{}' not stored in container!", enum_to_state_name(state));
 #endif
 
       for (int i = 0; i < (particlestored_ * statedim_[state]); ++i) (states_[state])[i] = 0.0;

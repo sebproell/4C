@@ -928,7 +928,7 @@ void XFEM::MultiFieldMapExtractor::build_slave_discret_id_map()
     else if (name == "xstructure")
       slave_discret_id_map_[xstructure] = dis_count;
     else
-      FOUR_C_THROW("Unknown field discretization name \"{}\"!", name.c_str());
+      FOUR_C_THROW("Unknown field discretization name \"{}\"!", name);
     // increase counter
     ++dis_count;
   }

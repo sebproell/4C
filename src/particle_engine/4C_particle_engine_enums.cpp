@@ -217,7 +217,7 @@ enum PARTICLEENGINE::ParticleState PARTICLEENGINE::enum_from_state_name(const st
   else if (name == "temperature")
     state = Temperature;
   else
-    FOUR_C_THROW("particle state '{}' unknown!", name.c_str());
+    FOUR_C_THROW("particle state '{}' unknown!", name);
 
   return state;
 }
@@ -235,7 +235,7 @@ std::string PARTICLEENGINE::enum_to_type_name(const enum ParticleType& type)
 enum PARTICLEENGINE::ParticleType PARTICLEENGINE::enum_from_type_name(const std::string& name)
 {
   auto it = std::ranges::find(particle_type_names, name);
-  FOUR_C_ASSERT(it != particle_type_names.end(), "particle type '{}' unknown!", name.c_str());
+  FOUR_C_ASSERT(it != particle_type_names.end(), "particle type '{}' unknown!", name);
   return static_cast<enum ParticleType>(std::distance(particle_type_names.begin(), it));
 }
 

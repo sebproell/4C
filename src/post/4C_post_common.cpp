@@ -273,7 +273,7 @@ void PostProblem::setup_filter(std::string control_file_name, std::string output
     SYMBOL* first_result = map_find_symbol(&control_table_, "result");
     if (first_result == nullptr)
     {
-      FOUR_C_THROW("no result sections in control file '{}'\n", control_file_name.c_str());
+      FOUR_C_THROW("no result sections in control file '{}'\n", control_file_name);
     }
     while (first_result->next != nullptr)
     {
@@ -455,8 +455,7 @@ void PostProblem::read_meshes()
       currfield.set_num_output_procs(num_output_procs);
       const char* fn;
       if (!map_find_string(meshmap, "mesh_file", &fn))
-        FOUR_C_THROW(
-            "No meshfile name for discretization {}.", currfield.discretization()->name().c_str());
+        FOUR_C_THROW("No meshfile name for discretization {}.", currfield.discretization()->name());
       std::string filename = fn;
       Core::IO::HDFReader reader = Core::IO::HDFReader(input_dir_);
       reader.open(filename, num_output_procs, Core::Communication::num_mpi_ranks(comm_),
@@ -490,7 +489,7 @@ void PostProblem::read_meshes()
 
           if (nurbsdis == nullptr)
             FOUR_C_THROW("discretization {} is not a NurbsDiscretization",
-                currfield.discretization()->name().c_str());
+                currfield.discretization()->name());
 
           std::shared_ptr<std::vector<char>> packed_knots;
           if (Core::Communication::my_mpi_rank(comm_) == 0)
@@ -718,7 +717,7 @@ std::vector<double> PostResult::get_result_times(
   if (this->next_result(groupname))
     times.push_back(this->time());
   else
-    FOUR_C_THROW("no solution found in field '{}'", fieldname.c_str());
+    FOUR_C_THROW("no solution found in field '{}'", fieldname);
 
   while (this->next_result(groupname)) times.push_back(this->time());
 
@@ -866,7 +865,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> PostResult::read_result(const std:
   int columns;
   if (map_find_int(result, "columns", &columns))
   {
-    if (columns != 1) FOUR_C_THROW("got multivector with name '{}', vector expected", name.c_str());
+    if (columns != 1) FOUR_C_THROW("got multivector with name '{}', vector expected", name);
   }
   auto test = read_multi_result(name);
   return std::make_shared<Core::LinAlg::Vector<double>>((*test)(0));
@@ -892,7 +891,7 @@ PostResult::read_result_serialdensematrix(const std::string name)
     columns = 1;
   }
   if (columns != 1)
-    FOUR_C_THROW("got multivector with name '{}', std::vector<char> expected", name.c_str());
+    FOUR_C_THROW("got multivector with name '{}', std::vector<char> expected", name);
 
   std::shared_ptr<Core::LinAlg::Map> elemap;
   std::shared_ptr<std::vector<char>> data =

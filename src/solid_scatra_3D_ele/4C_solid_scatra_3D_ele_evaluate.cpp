@@ -129,7 +129,7 @@ int Discret::Elements::SolidScatra::evaluate(Teuchos::ParameterList& params,
       return 0;
     default:
       FOUR_C_THROW("The element action {} is not yet implemented for the new solid-scatra elements",
-          action_type_to_string(action).c_str());
+          action_type_to_string(action));
   }
 
   return 0;

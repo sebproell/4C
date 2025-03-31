@@ -190,7 +190,7 @@ namespace Core::IO
 
       // check if file was found
       if (not restartfile)
-        FOUR_C_THROW("restart file '{}' could not be found", fullpathrestartfile.c_str());
+        FOUR_C_THROW("restart file '{}' could not be found", fullpathrestartfile);
 
       std::stringstream sectionpriorrestart;
 
@@ -236,11 +236,10 @@ namespace Core::IO
   void RuntimeCsvWriterProc0::append_data_vector(
       const std::string& dataname, const std::vector<double>& datavalues)
   {
-    FOUR_C_ASSERT(
-        data_vectors_.count(dataname) > 0, "data vector '{}' not registered!", dataname.c_str());
+    FOUR_C_ASSERT(data_vectors_.count(dataname) > 0, "data vector '{}' not registered!", dataname);
 
     FOUR_C_ASSERT((data_vectors_[dataname].first).size() == datavalues.size(),
-        "size of data vector '{}' changed!", dataname.c_str());
+        "size of data vector '{}' changed!", dataname);
 
     data_vectors_[dataname].first = datavalues;
   }
@@ -277,11 +276,11 @@ namespace Core::IO
 
     for (const auto& [data_name, data_vector] : data)
     {
-      FOUR_C_ASSERT(data_vectors_.count(data_name) > 0, "data vector '{}' not registered!",
-          data_name.c_str());
+      FOUR_C_ASSERT(
+          data_vectors_.count(data_name) > 0, "data vector '{}' not registered!", data_name);
 
       FOUR_C_ASSERT((data_vectors_.at(data_name).first).size() == data_vector.size(),
-          "size of data vector '{}' changed!", data_name.c_str());
+          "size of data vector '{}' changed!", data_name);
 
       const int precision = (data_vectors_.at(data_name).second);
 

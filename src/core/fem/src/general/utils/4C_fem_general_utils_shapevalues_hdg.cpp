@@ -464,8 +464,8 @@ void Core::FE::ShapeValuesFace<distype>::adjust_face_orientation(
           }
         }
         else
-          FOUR_C_THROW("Shape type {} not yet implemented",
-              (Core::FE::cell_type_to_string(distype)).c_str());
+          FOUR_C_THROW(
+              "Shape type {} not yet implemented", (Core::FE::cell_type_to_string(distype)));
         break;
       default:
         FOUR_C_THROW("Only implemented in 2D and 3D");

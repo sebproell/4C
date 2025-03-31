@@ -1629,8 +1629,7 @@ std::shared_ptr<CONTACT::AbstractStrategy> CONTACT::STRATEGY::Factory::build_str
   }
   else
   {
-    FOUR_C_THROW(
-        "Unrecognized strategy: \"{}\"", CONTACT::solving_strategy_to_string(stype).c_str());
+    FOUR_C_THROW("Unrecognized strategy: \"{}\"", CONTACT::solving_strategy_to_string(stype));
   }
 
   // setup the strategy object

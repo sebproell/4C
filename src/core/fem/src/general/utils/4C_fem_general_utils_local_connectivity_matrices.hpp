@@ -1301,8 +1301,8 @@ namespace Core::FE
       }
       default:
       {
-        FOUR_C_THROW("discretization type {} not yet implemented",
-            Core::FE::cell_type_to_string(distype).c_str());
+        FOUR_C_THROW(
+            "discretization type {} not yet implemented", Core::FE::cell_type_to_string(distype));
         exit(EXIT_FAILURE);
       }
     }

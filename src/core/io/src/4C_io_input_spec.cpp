@@ -45,8 +45,8 @@ void Core::IO::InputSpec::fully_parse(
     std::stringstream ss;
     container.print(ss);
     std::string remainder(parser.get_unparsed_remainder());
-    FOUR_C_THROW("After parsing, the line still contains '{}'.\nParsed parameters: {}",
-        remainder.c_str(), ss.str().c_str());
+    FOUR_C_THROW(
+        "After parsing, the line still contains '{}'.\nParsed parameters: {}", remainder, ss.str());
   }
 }
 

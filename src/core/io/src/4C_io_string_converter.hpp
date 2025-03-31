@@ -335,7 +335,7 @@ namespace Core::IO
 
       if (!(is >> std::boolalpha >> d))
       {
-        FOUR_C_THROW("String {} cannot be converted to a boolean", str.c_str());
+        FOUR_C_THROW("String {} cannot be converted to a boolean", str);
       }
 
       return d;

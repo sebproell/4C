@@ -236,7 +236,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   }
   else
   {
-    FOUR_C_THROW("[{}]: is not a defined normal evaluation type", normal_info.c_str());
+    FOUR_C_THROW("[{}]: is not a defined normal evaluation type", normal_info);
     exit(1);
   }
 
@@ -264,7 +264,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   }
   else
   {
-    FOUR_C_THROW("[{}]: is not a defined center-of-mass evaluation type", normal_info.c_str());
+    FOUR_C_THROW("[{}]: is not a defined center-of-mass evaluation type", normal_info);
     exit(1);
   }
 
@@ -281,7 +281,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   }
   else
   {
-    FOUR_C_THROW("[{}]: is not a defined flow-direction-type", normal_info.c_str());
+    FOUR_C_THROW("[{}]: is not a defined flow-direction-type", normal_info);
     exit(1);
   }
 

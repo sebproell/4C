@@ -99,8 +99,8 @@ Discret::Elements::LubricationEleInterface* Discret::Elements::LubricationFactor
       break;
     }
     default:
-      FOUR_C_THROW("Element shape {} not activated. Just do it.",
-          Core::FE::cell_type_to_string(distype).c_str());
+      FOUR_C_THROW(
+          "Element shape {} not activated. Just do it.", Core::FE::cell_type_to_string(distype));
       break;
   }
   return nullptr;

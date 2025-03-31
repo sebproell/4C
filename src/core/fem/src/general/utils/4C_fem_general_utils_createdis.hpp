@@ -313,8 +313,8 @@ namespace Core::FE
       std::pair<std::string, std::string> key(sourcedis.name(), targetdis.name());
       matmap = clonefieldmatmap.at(key);
       if (matmap.size() < 1)
-        FOUR_C_THROW("Key pair '{}/{}' not defined in --CLONING MATERIAL MAP.",
-            sourcedis.name().c_str(), targetdis.name().c_str());
+        FOUR_C_THROW("Key pair '{}/{}' not defined in --CLONING MATERIAL MAP.", sourcedis.name(),
+            targetdis.name());
 
       return;
     };  // create_clone_field_mat_map

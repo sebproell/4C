@@ -627,7 +627,7 @@ int main(int argc, char** argv)
     if (filter == "ensight" || filter == "vtu" || filter == "vtu_node_based" || filter == "vti")
       run_ensight_vtu_filter(problem);
     else
-      FOUR_C_THROW("Unknown filter {} given, supported filters: [ensight|vtu|vti]", filter.c_str());
+      FOUR_C_THROW("Unknown filter {} given, supported filters: [ensight|vtu|vti]", filter);
 
   }  // try
   catch (Core::Exception& err)

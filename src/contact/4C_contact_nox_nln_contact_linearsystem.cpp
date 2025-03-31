@@ -170,7 +170,7 @@ void NOX::Nln::CONTACT::LinearSystem::set_linear_problem_for_solve(
     default:
     {
       FOUR_C_THROW("Unsupported matrix type! Type = {}",
-          NOX::Nln::LinSystem::operator_type_to_string(jacType_).c_str());
+          NOX::Nln::LinSystem::operator_type_to_string(jacType_));
 
       exit(EXIT_FAILURE);
     }

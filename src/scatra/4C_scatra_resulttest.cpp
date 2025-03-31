@@ -44,7 +44,7 @@ void ScaTra::ScaTraResultTest::test_node(
   if (isnodeofanybody == 0)
   {
     FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1,
-        scatratimint_->discretization()->name().c_str());
+        scatratimint_->discretization()->name());
   }
   else
   {
@@ -213,7 +213,7 @@ double ScaTra::ScaTraResultTest::result_node(
 
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity);
 
   return result;
 }  // ScaTra::ScaTraResultTest::ResultNode
@@ -463,7 +463,7 @@ double ScaTra::ScaTraResultTest::result_special(
 
   // catch unknown quantity strings
   else
-    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity.c_str());
+    FOUR_C_THROW("Quantity '{}' not supported in result test!", quantity);
 
   return result;
 }  // ScaTra::ScaTraResultTest::result_special

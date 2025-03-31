@@ -607,8 +607,8 @@ namespace Core::IO
     {
       if (data.find(data_name) == data.end())
       {
-        FOUR_C_THROW("The requested {} field \"{}\" does not exist", get_data_type(data).c_str(),
-            data_name.c_str());
+        FOUR_C_THROW(
+            "The requested {} field \"{}\" does not exist", get_data_type(data), data_name);
       }
       else
       {
@@ -643,8 +643,7 @@ namespace Core::IO
           allocated_type = "UNKNOWN";
 
         FOUR_C_THROW("Requested {} field \"{}\" with type {}, but the allocated type is {}",
-            get_data_type(data).c_str(), data_name.c_str(), requested_type.c_str(),
-            allocated_type.c_str());
+            get_data_type(data).c_str(), data_name, requested_type, allocated_type.c_str());
       }
     }
 
@@ -699,7 +698,7 @@ namespace Core::IO
       if (data.find(data_name) != data.end())
       {
         FOUR_C_THROW("The {} vector with the name \"{}\" you want to add already exists.",
-            get_data_type(data).c_str(), data_name.c_str());
+            get_data_type(data), data_name);
       }
       if (n_dim == 0)
       {

@@ -237,7 +237,7 @@ FLD::Utils::FluidImpedanceBc::FluidImpedanceBc(
   // some safety check
   if (not(treetype_ == "windkessel" or treetype_ == "resistive" or
           treetype_ == "pressure_by_funct"))
-    FOUR_C_THROW("TYPE {} not supported!", treetype_.c_str());
+    FOUR_C_THROW("TYPE {} not supported!", treetype_);
 
   if (myrank_ == 0)
   {
@@ -366,7 +366,7 @@ void FLD::Utils::FluidImpedanceBc::calculate_impedance_tractions_and_update_resi
     pressure = 0.0;
     Q_np_fac = 0.0;
 
-    FOUR_C_THROW("Treetype {} not supported!", treetype_.c_str());
+    FOUR_C_THROW("Treetype {} not supported!", treetype_);
   }
 
   // save pressure value

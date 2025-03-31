@@ -317,7 +317,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
           if (itr == map3_dnp_->end())
           {
             FOUR_C_THROW("[3D/Reduced-D COUPLING] 3D map has no variable {} for condition [{}]",
-                variable_str.c_str(), condID);
+                variable_str, condID);
           }
           (*map3_dnp_)[CouplingVariable.str()] =
               mapiter->second->FluidCouplingBc::flow_rate_calculation(time, dta, condID);
@@ -328,7 +328,7 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
           if (itr == map3_dnp_->end())
           {
             FOUR_C_THROW("[3D/Reduced-D COUPLING] 3D map has no variable {} for condition [{}]",
-                variable_str.c_str(), condID);
+                variable_str, condID);
           }
           double density = 0.0;
           double viscosity = 0.0;
@@ -340,8 +340,8 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
         }
         else
         {
-          FOUR_C_THROW("({}): No such coupling variable on the 3D side is defined yet",
-              variable_str.c_str());
+          FOUR_C_THROW(
+              "({}): No such coupling variable on the 3D side is defined yet", variable_str);
         }
         if (Core::Communication::my_mpi_rank(discret_3d_->get_comm()) == 0)
         {
@@ -408,8 +408,8 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
 
           else
           {
-            FOUR_C_THROW("({}): No such coupling variable on the 3D side is defined yet",
-                variable_str.c_str());
+            FOUR_C_THROW(
+                "({}): No such coupling variable on the 3D side is defined yet", variable_str);
           }
           break;
         }

@@ -34,8 +34,8 @@ const Core::IO::VisualizationData& Core::IO::VisualizationManager::get_visualiza
 {
   if (visualization_map_.find(visualization_data_name) == visualization_map_.end())
   {
-    FOUR_C_THROW("The requested visualization data \"{}\" is not registered.",
-        visualization_data_name.c_str());
+    FOUR_C_THROW(
+        "The requested visualization data \"{}\" is not registered.", visualization_data_name);
   }
   return visualization_map_.at(visualization_data_name).first;
 }

@@ -965,8 +965,8 @@ void CONTACT::AbstractStrategy::set_state(
     }
     default:
     {
-      FOUR_C_THROW("Unsupported state type! (state type = {})",
-          Mortar::state_type_to_string(statetype).c_str());
+      FOUR_C_THROW(
+          "Unsupported state type! (state type = {})", Mortar::state_type_to_string(statetype));
       break;
     }
   }
@@ -1072,8 +1072,8 @@ void CONTACT::AbstractStrategy::calc_mean_velocity_for_binning(
 
     int err = interfaceVelocity.mean_value(&meanVelocity);
     if (err)
-      FOUR_C_THROW("Calculation of mean velocity for interface {} failed.",
-          interface->discret().name().c_str());
+      FOUR_C_THROW(
+          "Calculation of mean velocity for interface {} failed.", interface->discret().name());
     meanVelocity = abs(meanVelocity);
 
     ivel_.push_back(meanVelocity);
@@ -2923,7 +2923,7 @@ double CONTACT::AbstractStrategy::get_potential_value(
     const enum NOX::Nln::MeritFunction::MeritFctName mrt_type) const
 {
   FOUR_C_THROW("The currently active strategy \"{}\" does not support this method!",
-      CONTACT::solving_strategy_to_string(type()).c_str());
+      CONTACT::solving_strategy_to_string(type()));
   exit(EXIT_FAILURE);
 }
 
@@ -2936,7 +2936,7 @@ double CONTACT::AbstractStrategy::get_linearized_potential_value_terms(
     const enum NOX::Nln::MeritFunction::LinType lintype) const
 {
   FOUR_C_THROW("The currently active strategy \"{}\" does not support this method!",
-      CONTACT::solving_strategy_to_string(type()).c_str());
+      CONTACT::solving_strategy_to_string(type()));
   exit(EXIT_FAILURE);
 }
 
