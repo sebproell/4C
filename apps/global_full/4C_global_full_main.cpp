@@ -7,7 +7,6 @@
 
 #include "4C_config.hpp"
 #include "4C_config_revision.hpp"
-#include "4C_config_trilinos_version.hpp"
 
 #include "4C_comm_utils.hpp"
 #include "4C_contact_constitutivelaw_valid_laws.hpp"
@@ -447,9 +446,9 @@ int main(int argc, char* argv[])
       std::cout << std::string(box_width, '*') << '\n';
       std::cout << '\n';
 
-      printf(
-          "Trilinos Version %s (git SHA1 %s)\n", TrilinosVersion.c_str(), TrilinosGitHash.c_str());
-      printf("Total number of processors: %d\n", Core::Communication::num_mpi_ranks(gcomm));
+      std::cout << "Trilinos Version: " << FOUR_C_TRILINOS_HASH << "(git SHA1 %s)\n";
+      std::cout << "Total number of MPI ranks: " << Core::Communication::num_mpi_ranks(gcomm)
+                << '\n';
     }
 
     /* Here we turn the NaN and INF numbers off. No need to calculate

@@ -37,6 +37,17 @@ if(Trilinos_FOUND AND NOT TARGET Trilinos::all_selected_libs)
     )
 endif()
 
+# Figure out the version.
+if(EXISTS "${Trilinos_DIR}/../../../TrilinosRepoVersion.txt")
+  file(STRINGS "${Trilinos_DIR}/../../../TrilinosRepoVersion.txt" TrilinosRepoVersionFile)
+  # The hash is the first token on the second line.
+  list(GET TrilinosRepoVersionFile 1 TrilinosRepoVersionFileLine2)
+  separate_arguments(TrilinosRepoVersionFileLine2)
+  list(GET TrilinosRepoVersionFileLine2 0 _sha)
+
+  set(FOUR_C_Trilinos_GIT_HASH ${_sha})
+endif()
+
 target_link_libraries(
   four_c_all_enabled_external_dependencies INTERFACE Trilinos::all_selected_libs
   )

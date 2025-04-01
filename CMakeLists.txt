@@ -129,16 +129,6 @@ four_c_configure_dependency(Backtrace DEFAULT OFF)
 four_c_configure_dependency(ryml DEFAULT ON)
 four_c_configure_dependency(magic_enum DEFAULT ON)
 
-# Generate the macro definition for all dependencies automatically
-get_property(FOUR_C_FLAGS_EXTERNAL_DEPENDENCIES GLOBAL PROPERTY FOUR_C_FLAGS_EXTERNAL_DEPENDENCIES)
-foreach(_dependency ${FOUR_C_FLAGS_EXTERNAL_DEPENDENCIES})
-  if(${_dependency})
-    string(APPEND FOUR_C_DEFINES_FOR_EXTERNAL_DEPENDENCIES "#define ${_dependency}\n")
-  else()
-    string(APPEND FOUR_C_DEFINES_FOR_EXTERNAL_DEPENDENCIES "/* #undef ${_dependency} */\n")
-  endif()
-endforeach()
-
 ### end of configuration and feature detection
 
 # Enable testing right away since we encounter src and tests interspersed in modules

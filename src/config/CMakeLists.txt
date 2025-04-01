@@ -7,6 +7,11 @@
 
 # This module is special since files need to be generated.
 
+# Import the global property with external dependey configuration as a variable.
+get_property(
+  FOUR_C_DEFINES_FOR_EXTERNAL_DEPENDENCIES GLOBAL PROPERTY FOUR_C_DEFINES_FOR_EXTERNAL_DEPENDENCIES
+  )
+
 # configure a header file to pass some of the CMake settings to the source code
 configure_file("4C_config.hpp.in" "${CMAKE_CURRENT_BINARY_DIR}/config/4C_config.hpp")
 
@@ -16,17 +21,9 @@ configure_file(
   "4C_config_revision.hpp.in" "${CMAKE_CURRENT_BINARY_DIR}/config/4C_config_revision.hpp"
   )
 
-four_c_get_trilinos_version()
-# configure trilinos version file to pass information to the source code
-configure_file(
-  "4C_config_trilinos_version.hpp.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/config/4C_config_trilinos_version.hpp"
-  )
-
 set(_headers
     ${CMAKE_CURRENT_BINARY_DIR}/config/4C_config.hpp
     ${CMAKE_CURRENT_BINARY_DIR}/config/4C_config_revision.hpp
-    ${CMAKE_CURRENT_BINARY_DIR}/config/4C_config_trilinos_version.hpp
     )
 
 # Use the automatic definition which will create the usual targets.
