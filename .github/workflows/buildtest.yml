@@ -3,10 +3,10 @@ name: buildtest
 on:
   pull_request:
     branches:
-      - 'main'
+      - main
   push:
     branches:
-      - 'main'
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -134,6 +134,13 @@ jobs:
           path: |
             ${{ github.workspace }}/build/4C_schema.json
           retention-days: 1
+      - name: Upload 4C metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}-metadata
+          path: |
+            ${{ github.workspace }}/build/4C_metadata.yaml
+          retention-days: 1
 
   clang18_test_minimal:
     needs: clang18_build
@@ -215,8 +222,14 @@ jobs:
           json_extension: .4C.json
 
   ensure_all_tests_pass:
-    needs: [gcc13_assertions_test, gcc13_assertions_test_report, gcc13_assertions_build, clang18_build,
-      clang18_test_minimal, clang18_test_install, clang18_verify_schema]
+    needs:
+      - gcc13_assertions_test
+      - gcc13_assertions_test_report
+      - gcc13_assertions_build
+      - clang18_build
+      - clang18_test_minimal
+      - clang18_test_install
+      - clang18_verify_schema
     runs-on: ubuntu-latest
     if: always() && github.ref != 'refs/heads/main'
     steps:
