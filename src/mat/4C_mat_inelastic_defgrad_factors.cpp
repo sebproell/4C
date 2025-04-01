@@ -2804,7 +2804,7 @@ Core::LinAlg::Matrix<10, 10> Mat::InelasticDefgradTransvIsotropElastViscoplast::
         Core::LinAlg::matrix_3x3_log_1st_deriv(T, log_deriv_err_status);
     FOUR_C_ASSERT_ALWAYS(log_deriv_err_status == Core::LinAlg::MatrixFunctErrorType::no_errors,
         "Matrix logarithm derivative evaluation failed!");
-    Core::LinAlg::Matrix<9, 9> dTdiFin(true);
+    Core::LinAlg::Matrix<9, 9> dTdiFin(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Tensor::add_non_symmetric_product(
         1.0, last_FinM, const_non_mat_tensors.id3x3_, dTdiFin);
     Core::LinAlg::Matrix<9, 9> dlogTdiFin(Core::LinAlg::Initialization::zero);
@@ -2867,9 +2867,8 @@ Core::LinAlg::Matrix<10, 1> Mat::InelasticDefgradTransvIsotropElastViscoplast::l
   SubstepParams substep_params = {
       .t = 0,                // t = 0 (time parameter)
       .substep_counter = 1,  // substep_counter = 1 (evaluation of first substep)
-      .curr_dt =
-          time_step_settings_
-              .dt_,  // curr_dt = time_step_settings_.dt_ (first substep length = full time step)
+      .curr_dt = time_step_settings_
+          .dt_,  // curr_dt = time_step_settings_.dt_ (first substep length = full time step)
       .time_step_halving_counter =
           0,  // time_step_halving_counter = 0 (full time step, therefore no substep halving yet)
       .total_num_of_substeps =
