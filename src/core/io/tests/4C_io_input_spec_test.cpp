@@ -1572,11 +1572,11 @@ v:
     }
 
     {
-      SCOPED_TRACE("Wrong size from_parameter not validated in yaml.");
+      SCOPED_TRACE("Wrong size from_parameter");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::parse_in_arena(R"(num: 2
 v:
-  - key1: [1, 2, 3] # inner most vector is too long but we do not check for this in yaml
+  - key1: [1, 2, 3]
     key2: [3, 4]
   - key1: [5, 6])",
           &tree);
@@ -1584,7 +1584,7 @@ v:
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
-      spec.match(node, container);
+      EXPECT_THROW(spec.match(node, container), Core::Exception);
     }
 
     {
