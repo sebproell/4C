@@ -28,7 +28,7 @@ The following list shows the most important ones:
 
 External solver and linear algebra:
 
-- :ref:`Trilinos <trilinos>` (recommended version: 15.0)
+- :ref:`Trilinos <trilinos>` (supported versions are listed in `dependencies/supported_version/Trilinos.txt`)
 - :ref:`SuiteSparse <suitesparse>` including Umfpack (recommended version: 5.4)
 - :ref:`SuperLUDist <superludist>` (recommended version: 7.2.0)
 - BLAS
@@ -55,6 +55,8 @@ Build information
 ~~~~~~~~~~~~~~~~~
 
 For many external dependencies, you'll find an installation file for the recommended version in the ``<4C_source>/dependencies/current`` directory.
+Additionally, some dependencies are accepted in multiple versions. During configuration, |FOURC| will check the version of the installed dependency
+and warn you if it is not a supported version.
 
 .. _suitesparse:
 
@@ -84,8 +86,7 @@ See the `ArborX repository <https://github.com/arborx/ArborX>`_ for details and 
 **Trilinos**
 
 This external dependency can be downloaded from the `Trilinos Github repository <https://github.com/trilinos/Trilinos>`__.
-The currently used (and tested) version is tagged with *trilinos-release-15-0-0*.
-Additionally, |FOURC| is tested weekly against the Trilinos develop branch. Though, this may not always work.
+Currently supported versions are listed in `dependencies/supported_version/Trilinos.txt`.
 
 .. _4Cinstallation:
 
@@ -210,141 +211,11 @@ Set-up your IDE
 ----------------
 
 We recommend to use an Integrated Development Environment (IDE) for code development
-because it eases various aspects of code development, e.g. indexing or code formatting.
-Three of the most popular IDEs for larger software project are outlined in the following:
+because it eases various aspects of code development when working on large projects.
+Current popular choices in the |FOURC| community are:
 
-- :ref:`Eclipse <eclipse>`
 - :ref:`CLion <clion>`
 - :ref:`Visual Studio Code <visualstudiocode>`
-
-.. _eclipse:
-
-Eclipse
-~~~~~~~~~
-
-Eclipse is a GUI-based IDE that provides many convenient features like code indexing, Git integration, plugins for code formatting and many others.
-
-**Setting up Eclipse**
-
-.. note::
-
-    These instructions might be outdated.
-
-Let's assume that you already have cloned the repository and created a build directory as outlined above.
-To include the |FOURC| source code into Eclipse and enable Eclipse to build |FOURC|, follow these steps:
-
-- Open Eclipse Photon.
-- :menuselection:`File --> New --> C/C++ Project`.
-- Select "C++ Managed Build", then click "Next"
-- Type a project name, uncheck "Use default location" and choose the source code folder with your local |FOURC| git repository instead.
-- Select the 'Project type' as :menuselection:`Makefile project --> Empty Project`.
-- Select the 'Toolchains' as 'Linux GCC'.
-- Click Finish.
-- Change to console and configure |FOURC| using ``cmake``.
-- Now go back into Eclipse.
-- Right-Click on the |FOURC| project in the :menuselection:`Project Explorer --> Choose Properties`.
-- On "C/C++ General" in ”Paths and Symbols”, in the ”Includes” as well as in the ”Symbols” part click ”Add”, write some dummy name in the new window and click ”Add to all configurations” and ”Add to all languages”.
-- On "C/C++ Build", select the tab "Builder Settings" and
-
-   - de-select :command:`Use default build command`, then specify the build command as ``make -j`` with an appropriate number of processors
-   - de-select ”Generate Makefiles automatically”.
-   - select the build location/build directory as /build
-
-- On :command:`C/C++ Build`, select the tab ”Behaviour” and remove ”all” from ”Build (Incremental build)” and press ”OK/Apply and Close”.
-- Setup code style (see below) for correct behavior of tabs and white spaces.
-- Close Eclipse.
-- Change to console and reconfigure |FOURC| (the ”DEFINES” are now loaded into |FOURC|) be sure to use ``--ide=eclipse``.
-- Build |FOURC| using ``make`` or ``make full`` for a complete build.
-- Restart eclipse.
-
-To enable the code indexer, right-click on the project and select :menuselection:`Index --> Rebuild`.
-
-**Automation of code formatting**
-
-*Source code*
-
-|FOURC| uses a mandatory code style defined as a `.clang-format style file <https://github.com/4C-multiphysics/4C/blob/main/.clang-format>`_.
-Adherence to this code style will be checked on each commit as well as on each merge request.
-To a priori conform to the codes style and avoid issues in your daily workflow,
-you can configure Eclipse to apply the code style to your source code at every file save.
-To do so, follow these steps:
-
-#. Select "Eclipse Marketplace" from the "Help" menu and install the plugin CppStyle (Note that this requires Eclipse Photon or later)
-#. Right-Click on the |FOURC| project in the :menuselection:`Project Explorer --> Choose Properties`.
-#. On "CppStyle",
-
-   - select "Enable project specific settings"
-   - click on "Configure Workspace Settings" and set the "Clang-format path" to <4C-sourcedir>/utilities/python-venv/bin/clang-format.
-   - select "Run clang-format on file save"
-
-#. Click "Apply and Close"
-
-Eclipse will now automatically format the code in accordance to the mandatory style every time you save a file.
-This feature not only works for new code you are writing, but also you can select a block of code and have it reformatted with |ctrl| + |shift| + F.
-Make sure that under :menuselection:`Window --> Preferences --> C/C++ --> Code Style --> Formatter` the settings for maximum characters per line are at least 110.
-Otherwise some lines may be trimmed inadvertently.
-
-*Other files*
-
-All non-source-code files (like \*.dat, \*.md, ...) are still subject to formatting rules:
-
-#. No tabs. Use 2 whitespaces instead.
-#. No trailing whitespaces
-
-Eclipse provides automated features to help you with these rules. To configure them, go to
-
-#. :menuselection:`Preferences --> C/C++ --> Editor --> Save Actions` and
-
-   - enable "Remove trailing whitespace"
-   - select "In all lines".
-   - click "Apply" and "Ok".
-
-#. :menuselection:`Preferences --> C/C++ --> Code Style --> Formatter`
-
-   - Click "Edit"
-   - On "Indentation",
-
-      - select the "Tab policy" to be "Spaces only".
-      - Set the "Indentation size" to 2
-      - Set the "Tab size" to 2
-
-   - Click "Ok", then click "Apply" and "Ok".
-
-*Automation and utilities for Doxygen documentation*
-
-|FOURC| mandates documentation via Doxygen. Further information and an introduction is summarized in |FOURC|'s :ref:`Doxygen guidelines <doxygen>`.
-Eclipse can assist in writing Doxygen documentation by auto-generating lists of input and return parameters when writing a function's documentation.
-
-To enable this utility in Eclipse, perform these steps:
-
-- :menuselection:`Project Properties --> C/C++ General`
-
-   - Select "Enable project specific settings"
-   - Select "Doxygen" in the drop down menu "Documentation tool"
-   - Click "Apply and Close"
-
-
-.. note::
-
-    To configure Doxygen as default documentation tool for all your projects in Eclipse,
-    go to :menuselection:`Preferences --> C/C++ --> Editor` and select "Doxygen" in the drop down menu "Workspace default".
-
-
-*Include external resources into indexer*
-
-Folders and files can be linked to locations in the file system outside of the project's location. These special folders and files are called linked resources.
-This is particularly useful to include Trilinos packages into Eclipse's indexer.
-
-To create a linked folder:
-
-- Right-click the project or folder where you want to create the linked folder.
-- Select "New --> Folder".
-- Specify name of the folder as it will appear in the workbkbench. This name can be different from the name of the folder in the file system.
-- Click "Advanced".
-- Check "Link to alternate location (Linked Folder)".
-- Enter a file system path, or click "Browse" to select a folder in the file system.
-- Click "Finish".
-- Right-click the project folder and select "Index --> Rebuild".
 
 .. _clion:
 
@@ -354,52 +225,8 @@ CLion
 **Setting up CLion**
 
 Let's assume that you already have cloned the repository and created a build directory as outlined above.
-Now open CLion:
-
-#. New project → choose the source code folder with your local |FOURC| git repository
-#. Answer the prompt "Would you like to create a project from existing sources instead?" with "Yes".
-#. :menuselection:`File --> Settings --> Build, Execution, Deployment`
-
-   - Toolchains: Enter your desired cmake path
-   - CMake: CLion will recognize the cmake presets automatically (the general as well as the user presets).
-     You may click on the presets you want to use, and select the check box ``Enable Profile``.
-   - Press "Ok"
-
-#. Navigate to build folder → Run the correct do-configure command again with the specification of the IDE as an argument.
-   You should get some output like "++ Update of .idea/workspace.xml file done".
-#. In the top right, select target from the dropdown and build the project.
-
-**Automation of code formatting**
-
-|FOURC| uses a mandatory code style defined as a .clang-format style file.
-Adherence to this code style will be checked on each commit as well as on each merge request.
-To a priori conform to the codes style and avoid issues in your daily workflow, you can configure CLion to apply the code style to your source code at every file save.
-To do so, follow these steps:
-
-- :menuselection:`File --> Settings --> Editor`: Code Style tick "Enable ClangFormat (only for C/C++/Objective-C)"
-- :menuselection:`File --> Settings --> Tools --> Actions on Save`: tick "Reformat code"
-
-CLion will now automatically format the code in accordance to the mandatory style every time you save a file.
-This feature not only works for new code you are writing,
-but also you can select a block of code and have it reformatted with |ctrl| + |shift| + F.
-
-.. note::
-
-    There are some rare cases when the automated formatting within CLion is not doing exactly the same as expected in our code checks.
-    However, this is not a problem because you can easily set up a so-called External Tool as described below:
-
-- :menuselection:`File --> Settings --> Tools --> External Tools`: add an External Tool
-- Give a Name and a Description as you wish
-- In the Tool Settings:
-
-   - Programs: here you need to enter the path to our |FOURC| custom clang-format i.e.
-     ``<4C-sourcedir>/utilities/python-venv/bin/clang-format``
-   - Arguments: here you enter this: ``-i --style=file $FileName$``
-   - Working Directory: Enter the macro variable ``$FileDir$``
-
-- Click on "OK" to confirm. Now you can run our custom clang-format on a specific file
-  by opening this file in CLion and clicking on:
-  :menuselection:`Tools --> External Tools --> <Name>` (the name you specified in step 2).
+Open CLion and open the 4C source directory. CLion understands CMake preset files, so configuration is easy.
+Consult the CLion documentation for more information on how to set up a project.
 
 **Enable debugging with CLion**
 
