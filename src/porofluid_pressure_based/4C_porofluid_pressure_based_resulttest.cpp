@@ -11,6 +11,7 @@
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_global_data.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_porofluid_pressure_based_meshtying_strategy_base.hpp"
 #include "4C_porofluid_pressure_based_timint_implicit.hpp"
 

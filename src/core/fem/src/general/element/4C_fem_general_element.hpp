@@ -15,16 +15,19 @@
 #include "4C_fem_general_cell_type.hpp"
 #include "4C_fem_general_cell_type_traits.hpp"
 #include "4C_fem_general_elements_paramsinterface.hpp"
-#include "4C_io_input_parameter_container.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
+#include <map>
 #include <memory>
-#include <variant>
 
 FOUR_C_NAMESPACE_OPEN
 
-// forward declarations
+namespace Core::IO
+{
+  class InputParameterContainer;
+}
+
 namespace Core::Mat
 {
   class Material;

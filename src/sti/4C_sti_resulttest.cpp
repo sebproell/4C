@@ -8,6 +8,7 @@
 #include "4C_sti_resulttest.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_sti_monolithic.hpp"
 

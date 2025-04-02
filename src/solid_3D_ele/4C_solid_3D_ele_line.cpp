@@ -13,6 +13,7 @@
 
 #include <Teuchos_ParameterList.hpp>
 
+#include <functional>
 #include <string>
 
 FOUR_C_NAMESPACE_OPEN

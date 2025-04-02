@@ -7,6 +7,7 @@
 
 #include "4C_particle_rigidbody_result_test.hpp"
 
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_particle_rigidbody_datastate.hpp"
 #include "4C_particle_rigidbody_interface.hpp"
 #include "4C_utils_exceptions.hpp"
