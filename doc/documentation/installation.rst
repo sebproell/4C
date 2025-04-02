@@ -5,38 +5,26 @@ Installation
 
 Here you'll find some useful notes on setting up and running |FOURC|.
 
-|FOURC| is developed and used on Linux. Other Unixes work as well.
-Windows versions might be created using cygwin or mingw, but this will require some small modifications and is not covered here.
-People around have already ported the code to Windows, but this needs quite a number of changes,
-so it is not advised to try on your own, and the topic will not be covered here.
+|FOURC| is developed and used on Linux but other Unixes might work as well.
 Additionally, |FOURC| can be compiled under Windows using the WSL (Windows Subsystem for Linux),
 which provides a complete Linux Environment within the Windows operating system.
-
-Besides the basic setup of the software, the following topics are of particular interest for **all** developers:
-
-- Read the :ref:`development guidelines <coding-guidelines>`.
-- Documentation using Doxygen is mandatory. See our :ref:`Doxygen guidelines <doxygen>`.
-- Speed up recompilation of the code after switching branches using :ref:`ccache <ccache>`.
-- :ref:`Testing <4Ctesting>`
-- :ref:`Coverage report <coveragereport>`
-- :ref:`Code Debugging and Profiling Tools <debugging_profiling>`
 
 .. _external-dependencies:
 
 External dependencies
 ---------------------
 
-|FOURC| heavily relies on the numerical library Trilinos developed mainly at Sandia National Lab,
-but it also relies on some other external libraries, also called third party libraries (TPLs).
-So we have to install TPLs first. Here's an list of the |FOURC|-related tools and a few notes on how to install them:
-
-General software development:
+|FOURC| requires the following general tools to write parallel C++ code:
 
 - git
-- c++ compiler with c++20 compatibility (e.g. gcc 13)
+- C++ compiler with C++20 compatibility (e.g. gcc 13, clang 18)
 - MPI installation
 - CMake
 - Ninja
+
+|FOURC| is built on top of other powerful external dependencies.
+The top-level directory ``dependencies`` contains information about these dependencies.
+The following list shows the most important ones:
 
 External solver and linear algebra:
 
@@ -66,7 +54,7 @@ Post processing:
 Build information
 ~~~~~~~~~~~~~~~~~
 
-For many third party libraries, you'll find an installation file for the recommended version in the ``<4C_source>/dependencies/current`` directory.
+For many external dependencies, you'll find an installation file for the recommended version in the ``<4C_source>/dependencies/current`` directory.
 
 .. _suitesparse:
 
@@ -78,9 +66,6 @@ See the `SuiteSparse repository <https://github.com/DrTimothyAldenDavis/SuiteSpa
 After downloading the package, the configure file can be found in ``SuiteSparse-5.4.0/SuiteSparse_config/SuiteSparse_config.mk``.
 As |FOURC| uses BLAS/LAPACK in forms of libblas and liblapack, the respective linker flags need to be changed!
 
-Instead of downloading manually, the complete download and installation is provided by an :download:`installation script example <suitesparse/install.sh>`
-(taken from ``<4C_sourcce>/dependencies/current/suitesparse``)
-
 
 .. _superludist:
 
@@ -88,9 +73,6 @@ Instead of downloading manually, the complete download and installation is provi
 
 |FOURC| uses SuperLUDist indirectly via the Trilinos package Amesos/Amesos2 for directly solving linear systems of equations in distributed memory fashion.
 See the `superLU repository <https://github.com/xiaoyeli/superlu_dist>`_ for details and downloads.
-
-Instead of downloading manually, the complete download and installation is provided by an :download:`installation script example <superlu_dist/install.sh>`
-(taken from ``<4C_sourcce>/dependencies/current/superlu_dist``)
 
 **ArborX**
 
@@ -101,20 +83,16 @@ See the `ArborX repository <https://github.com/arborx/ArborX>`_ for details and 
 
 **Trilinos**
 
-This essential TPL can be downloaded from the `Trilinos Github repository <https://github.com/trilinos/Trilinos>`__.
+This external dependency can be downloaded from the `Trilinos Github repository <https://github.com/trilinos/Trilinos>`__.
 The currently used (and tested) version is tagged with *trilinos-release-15-0-0*.
 Additionally, |FOURC| is tested weekly against the Trilinos develop branch. Though, this may not always work.
-
-Instead of downloading manually, the complete download and installation is provided by an :download:`installation script example <trilinos/install.sh>`
-(taken from ``<4C_sourcce>/dependencies/current/trilinos``)
 
 .. _4Cinstallation:
 
 Download and install
 --------------------
 
-Here comes the main part.
-After you have installed all the TPLs, you should download and install |FOURC| itself.
+After you have installed all the external dependencies, you should download and install |FOURC| itself.
 
 Clone the repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
