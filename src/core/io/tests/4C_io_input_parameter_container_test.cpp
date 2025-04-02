@@ -59,4 +59,22 @@ namespace
     EXPECT_EQ(
         pl.get<std::vector<Teuchos::ParameterList>>("list")[1].sublist("group").get<int>("b"), 2);
   }
+
+  TEST(InputParameterContainerTest, StreamInsertableEnum)
+  {
+    enum class TestEnum
+    {
+      A,
+      B,
+      C
+    };
+
+    InputParameterContainer container;
+    container.add("enum", TestEnum::A);
+
+    // check that the enum is stream-insertable
+    static_assert(
+        Core::IO::Internal::InputParameterContainerImplementation::StreamInsertable<TestEnum>,
+        "TestEnum must be stream-insertable");
+  }
 }  // namespace
