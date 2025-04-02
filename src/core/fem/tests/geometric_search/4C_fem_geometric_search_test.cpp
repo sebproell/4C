@@ -27,10 +27,6 @@ namespace
   class GeometricSearch : public ::testing::Test
   {
    public:
-    static void SetUpTestSuite() { Kokkos::initialize(); }
-
-    static void TearDownTestSuite() { Kokkos::finalize(); }
-
     GeometricSearch() { verbosity_ = Core::IO::minimal; }
 
    protected:
