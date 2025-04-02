@@ -84,14 +84,6 @@ void CONTACT::CONSTITUTIVELAW::MircoConstitutiveLawParams::set_parameters()
   // Composite Young's modulus
   composite_youngs_ = pow(((1 - pow(nu1, 2)) / E1 + (1 - pow(nu2, 2)) / E2), -1);
 
-  // Composite Shear modulus
-  double G1 = E1 / (2 * (1 + nu1));
-  double G2 = E2 / (2 * (1 + nu2));
-  double CompositeShear = pow(((2 - nu1) / (4 * G1) + (2 - nu2) / (4 * G2)), -1);
-
-  // Composite Poisson's ratio
-  composite_poissons_ratio_ = composite_youngs_ / (2 * CompositeShear) - 1;
-
   grid_size_ = lateral_length_ / (pow(2, resolution_) + 1);
 
   // Shape factors (See section 3.3 of https://doi.org/10.1007/s00466-019-01791-3)
@@ -141,10 +133,9 @@ double CONTACT::CONSTITUTIVELAW::MircoConstitutiveLaw::evaluate(double gap, CONT
   double pressure = 0.0;
   MIRCO::Evaluate(pressure, -(gap + params_.get_offset()), params_.get_lateral_length(),
       params_.get_grid_size(), params_.get_tolerance(), params_.get_max_iteration(),
-      params_.get_composite_youngs(), params_.get_composite_poissons_ratio(),
-      params_.get_warm_starting_flag(), params_.get_compliance_correction(), topology,
-      roughNode->get_max_topology_height(), *params_.get_mesh_grid(),
-      params_.get_pressure_green_fun_flag());
+      params_.get_composite_youngs(), params_.get_warm_starting_flag(),
+      params_.get_compliance_correction(), topology, roughNode->get_max_topology_height(),
+      *params_.get_mesh_grid(), params_.get_pressure_green_fun_flag());
 
   return (-1 * pressure);
 }  // end of mirco_coconstlaw evaluate
@@ -170,15 +161,13 @@ double CONTACT::CONSTITUTIVELAW::MircoConstitutiveLaw::evaluate_deriv(
   // using backward difference approach
   MIRCO::Evaluate(pressure1, -1.0 * (gap + params_.get_offset()), params_.get_lateral_length(),
       params_.get_grid_size(), params_.get_tolerance(), params_.get_max_iteration(),
-      params_.get_composite_youngs(), params_.get_composite_poissons_ratio(),
-      params_.get_warm_starting_flag(), params_.get_compliance_correction(), topology,
-      roughNode->get_max_topology_height(), *params_.get_mesh_grid(),
-      params_.get_pressure_green_fun_flag());
+      params_.get_composite_youngs(), params_.get_warm_starting_flag(),
+      params_.get_compliance_correction(), topology, roughNode->get_max_topology_height(),
+      *params_.get_mesh_grid(), params_.get_pressure_green_fun_flag());
   MIRCO::Evaluate(pressure2,
       -(1 - params_.get_finite_difference_fraction()) * (gap + params_.get_offset()),
       params_.get_lateral_length(), params_.get_grid_size(), params_.get_tolerance(),
-      params_.get_max_iteration(), params_.get_composite_youngs(),
-      params_.get_composite_poissons_ratio(), params_.get_warm_starting_flag(),
+      params_.get_max_iteration(), params_.get_composite_youngs(), params_.get_warm_starting_flag(),
       params_.get_compliance_correction(), topology, roughNode->get_max_topology_height(),
       *params_.get_mesh_grid(), params_.get_pressure_green_fun_flag());
   return ((pressure1 - pressure2) /

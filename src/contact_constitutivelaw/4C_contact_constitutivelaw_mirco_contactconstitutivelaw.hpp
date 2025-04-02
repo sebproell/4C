@@ -45,7 +45,6 @@ namespace CONTACT
       double get_max_iteration() const { return max_iteration_; };
       bool get_warm_starting_flag() const { return warm_starting_flag_; };
       double get_composite_youngs() const { return composite_youngs_; };
-      double get_composite_poissons_ratio() const { return composite_poissons_ratio_; };
       double get_grid_size() const { return grid_size_; };
       double get_compliance_correction() const { return elastic_compliance_correction_; };
       double get_finite_difference_fraction() const { return finite_difference_fraction_; };
@@ -70,7 +69,6 @@ namespace CONTACT
       int max_iteration_;
       bool warm_starting_flag_;
       double composite_youngs_;
-      double composite_poissons_ratio_;
       double grid_size_;
       double elastic_compliance_correction_;
       Teuchos::Ptr<std::vector<double>> meshgrid_;
