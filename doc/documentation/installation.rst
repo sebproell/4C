@@ -115,7 +115,7 @@ Your directory tree should look like the following::
 Development environment
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-If you plan to contribute to |FOURC|, you should create the python virtual environment for development.
+If you plan to contribute to |FOURC|, you need to create a python virtual environment for development.
 In the source directory, execute::
 
     ./utilities/set_up_dev_env.sh <optional-path-to-python-executable>
@@ -135,9 +135,22 @@ This script installs `pre-commit <https://pre-commit.com/>`_ and sets up the pre
 Configure
 ~~~~~~~~~
 
-|FOURC| enforces an out-of-source build, i.e. your build directory may not be located inside the source code directory.
+|FOURC| enforces an out-of-source build, i.e. your build directory may not be the same as your source directory.
+This is a good practice to keep your source directory clean. Instead, create a build directory.
+Many development tools work well when the build directory is a subdirectory of the source directory.
+A possible directory structure could look like this::
 
-|FOURC| uses ``cmake`` with appropriate presets for the build process.
+::
+
+    <4C_home>/
+       build/
+         debug/
+         release/
+         other_configuration
+
+That said, you can create a build directory wherever you want. This is just a suggestion we find useful in daily work.
+
+|FOURC| uses ``cmake`` for configuration and creation of a build. We strongly recommend to use preset files for ``cmake``.
 The command to run is
 
 ::
@@ -152,7 +165,9 @@ Use
     cmake <4C_home> --list-presets
 
 to get a list of all available presets.
+
 In general, it is highly recommended to create your own preset, which is stored in ``<4C_home>/CMakeUserPresets.txt``.
+To create your own preset you may start with the presets used in our CI, see ``presets/docker/CMakePresets.json``.
 In a preset within this file, you should define a few options that are important to your specific build:
 
 - the build type. This is given by the variable ``CMAKE_BUILD_TYPE`` and can be ``DEBUG`` or ``RELEASE``.
@@ -184,10 +199,9 @@ where `<numProcs>` is the number of processors you want to use.
 
     After the first build, it is rarely necessary to reconfigure |FOURC| &mdash; only the build-command is required.
     `cmake` is invoked *automatically* during the build process if something changed within `CMakeLists.txt`.
-    Make sure to have Ninja installed on your system.
 
 To verify that the build was successful, it is highly recommended to run the test suite,
-at least the small version of it.
+at least the minimal version of it.
 You will find the information about it in the :ref:`testing <4Ctesting>` section below.
 
 .. _set-up-your-ide:
