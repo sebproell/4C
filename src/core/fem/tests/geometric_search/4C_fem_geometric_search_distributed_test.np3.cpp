@@ -27,10 +27,6 @@ namespace
   class GeometricSearchDistributed : public ::testing::Test
   {
    public:
-    static void SetUpTestSuite() { Kokkos::initialize(); }
-
-    static void TearDownTestSuite() { Kokkos::finalize(); }
-
     GeometricSearchDistributed()
     {
       comm_ = MPI_COMM_WORLD;

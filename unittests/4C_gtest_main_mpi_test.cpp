@@ -11,6 +11,7 @@
 
 #include "4C_utils_singleton_owner.hpp"
 
+#include <Kokkos_Core.hpp>
 #include <mpi.h>
 
 int main(int argc, char* argv[])
@@ -28,6 +29,9 @@ int main(int argc, char* argv[])
   {
     ~CleanUpMPI() { MPI_Finalize(); }
   } cleanup;
+
+  // Kokkos should be initialized right after MPI.
+  Kokkos::ScopeGuard kokkos_guard{};
 
   Core::Utils::SingletonOwnerRegistry::ScopeGuard guard;
 
