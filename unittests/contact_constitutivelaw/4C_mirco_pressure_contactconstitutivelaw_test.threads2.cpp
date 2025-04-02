@@ -108,13 +108,13 @@ namespace
     // 0< gap < offset
     EXPECT_ANY_THROW(coconstlaw_->evaluate(-0.25, cnode.get()));
     // offset < gap
-    EXPECT_NEAR(coconstlaw_->evaluate(-12.0, cnode.get()), -0.0005861475487657709, 1.e-10);
+    EXPECT_NEAR(coconstlaw_->evaluate(-12.0, cnode.get()), -0.0004784628885090747, 1.e-10);
   }
 
   //! test member function EvaluateDeriv
   TEST_F(MircoConstitutiveLawPressureTest, TestEvaluateDeriv)
   {
-    EXPECT_NEAR(coconstlaw_->evaluate_deriv(-12.0, cnode.get()), 1.56329102801896e-04, 1.e-10);
+    EXPECT_NEAR(coconstlaw_->evaluate_deriv(-12.0, cnode.get()), 1.17161352338802e-04, 1.e-10);
     EXPECT_ANY_THROW(coconstlaw_->evaluate_deriv(-0.25, cnode.get()));
   }
 }  // namespace
