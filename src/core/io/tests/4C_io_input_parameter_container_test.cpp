@@ -11,6 +11,8 @@
 
 #include <Teuchos_ParameterList.hpp>
 
+#include <ostream>
+
 namespace
 {
   using namespace FourC;
@@ -60,7 +62,7 @@ namespace
         pl.get<std::vector<Teuchos::ParameterList>>("list")[1].sublist("group").get<int>("b"), 2);
   }
 
-  TEST(InputParameterContainerTest, StreamInsertableEnum)
+  TEST(InputParameterContainerTest, PrintEnum)
   {
     enum class TestEnum
     {
@@ -70,11 +72,11 @@ namespace
     };
 
     InputParameterContainer container;
-    container.add("enum", TestEnum::A);
+    container.add("test_enum", TestEnum::A);
 
-    // check that the enum is stream-insertable
-    static_assert(
-        Core::IO::Internal::InputParameterContainerImplementation::StreamInsertable<TestEnum>,
-        "TestEnum must be stream-insertable");
+    // check print output
+    std::ostringstream print_output{""};
+    container.print(print_output);
+    EXPECT_EQ(print_output.str(), "test_enum : A ");
   }
 }  // namespace
