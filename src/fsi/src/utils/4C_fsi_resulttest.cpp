@@ -23,6 +23,7 @@
 #include "4C_fsi_mortarmonolithic_structuresplit.hpp"
 #include "4C_fsi_slidingmonolithic_fluidsplit.hpp"
 #include "4C_fsi_slidingmonolithic_structuresplit.hpp"
+#include "4C_io_input_parameter_container.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 

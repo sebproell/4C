@@ -8,6 +8,7 @@
 #include "4C_utils_result_test.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_utils_exceptions.hpp"
 

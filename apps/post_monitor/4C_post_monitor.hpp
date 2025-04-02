@@ -131,7 +131,6 @@ class FieldMonWriter : public MonWriter
  protected:
   PostField* get_field_ptr(PostProblem& problem) override;
 
- private:
 };  // end of class FieldMonWriter
 
 
@@ -466,7 +465,7 @@ class PoroFluidMultiMonWriter : public FieldMonWriter
  public:
   //! constructor
   PoroFluidMultiMonWriter(PostProblem& problem, std::string& infieldtype, int node)
-      : FieldMonWriter(problem, infieldtype, node), poro_dof_(node)
+      : FieldMonWriter(problem, infieldtype, node)
   {
   }
 
@@ -487,9 +486,6 @@ class PoroFluidMultiMonWriter : public FieldMonWriter
   void write_result(
       std::ofstream& outfile, PostResult& result, std::vector<int>& gdof, int dim) override;
 
- private:
-  //! dof for output of porosity ( = node number, since defined as nodal quantity)
-  int poro_dof_;
 };  // end of class FluidMonWriter
 
 /*----------------------------------------------------------------------*/

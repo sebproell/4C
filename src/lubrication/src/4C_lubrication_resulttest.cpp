@@ -10,6 +10,7 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_node.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_lubrication_timint_implicit.hpp"
 
 FOUR_C_NAMESPACE_OPEN

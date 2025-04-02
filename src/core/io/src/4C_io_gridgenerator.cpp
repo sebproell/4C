@@ -13,6 +13,7 @@
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_element_definition.hpp"
 #include "4C_fem_general_node.hpp"
+#include "4C_io_input_parameter_container.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_rebalance_binning_based.hpp"

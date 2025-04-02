@@ -12,6 +12,7 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
+#include "4C_io_input_parameter_container.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
