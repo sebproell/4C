@@ -24,6 +24,17 @@ namespace
                .count() *
            1.0e-3;
   }
+
+  void print_dat_deprecation_warning()
+  {
+    std::cout << "\n\n"
+              << "-------------------------\n"
+              << "-- DEPRECATION WARNING --\n"
+              << "-------------------------\n"
+              << "The use of the .dat file format is deprecated. Please use .yaml instead.\n"
+              << "You can convert a .dat file to .yaml using 4C's --to-yaml option.\n"
+              << std::endl;
+  }
 }  // namespace
 
 void ntacal();
@@ -48,6 +59,14 @@ void ntam(int argc, char* argv[])
 
   /* input phase, input of all information */
 
+  if (Core::Communication::my_mpi_rank(gcomm) == 0)
+  {
+    if (inputfile_name.ends_with(".dat"))
+    {
+      print_dat_deprecation_warning();
+    }
+  }
+
   t0 = walltime_in_seconds();
 
   ntainp_ccadiscret(inputfile_name, outputfile_kenner, restartfile_kenner);
@@ -69,5 +88,14 @@ void ntam(int argc, char* argv[])
   {
     Core::IO::cout << "\nTotal wall time for CALCULATION: " << std::setw(10) << std::setprecision(3)
                    << std::scientific << tc << " sec \n\n";
+  }
+
+  // Let's print the deprecation warning again to increase the chance users will see it.
+  if (Core::Communication::my_mpi_rank(gcomm) == 0)
+  {
+    if (inputfile_name.ends_with(".dat"))
+    {
+      print_dat_deprecation_warning();
+    }
   }
 }
