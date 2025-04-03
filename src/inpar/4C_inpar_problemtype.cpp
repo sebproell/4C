@@ -8,9 +8,8 @@
 #include "4C_inpar_problemtype.hpp"
 
 #include "4C_fem_general_shape_function_type.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_exceptions.hpp"
-#include "4C_utils_parameter_list.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/

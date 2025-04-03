@@ -8,10 +8,9 @@
 #include "4C_inpar_io.hpp"
 
 #include "4C_inpar_structure.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_thermo_input.hpp"
-#include "4C_utils_parameter_list.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
 void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)

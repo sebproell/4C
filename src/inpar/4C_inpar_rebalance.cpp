@@ -7,9 +7,8 @@
 
 #include "4C_inpar_rebalance.hpp"
 
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_rebalance.hpp"
-#include "4C_utils_parameter_list.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Rebalance::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)

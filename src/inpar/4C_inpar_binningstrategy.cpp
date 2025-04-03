@@ -8,8 +8,7 @@
 #include "4C_inpar_binningstrategy.hpp"
 
 #include "4C_binstrategy.hpp"
-#include "4C_utils_parameter_list.hpp"
-
+#include "4C_io_input_spec_builders.hpp"
 FOUR_C_NAMESPACE_OPEN
 
 

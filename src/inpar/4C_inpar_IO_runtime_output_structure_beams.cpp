@@ -7,7 +7,7 @@
 
 #include "4C_inpar_IO_runtime_output_structure_beams.hpp"
 
-#include "4C_utils_parameter_list.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 #include <Teuchos_ParameterList.hpp>
 

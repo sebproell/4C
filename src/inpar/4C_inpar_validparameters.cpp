@@ -58,13 +58,13 @@
 #include "4C_inpar_wear.hpp"
 #include "4C_inpar_xfem.hpp"
 #include "4C_io_input_file_utils.hpp"
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_lubrication_input.hpp"
 #include "4C_porofluid_pressure_based_elast_input.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 #include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_thermo_input.hpp"
-#include "4C_utils_parameter_list.hpp"
 
 #include <Teuchos_any.hpp>
 #include <Teuchos_Array.hpp>

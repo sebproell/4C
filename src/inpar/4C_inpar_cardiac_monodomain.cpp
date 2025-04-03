@@ -8,8 +8,7 @@
 #include "4C_inpar_cardiac_monodomain.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_utils_parameter_list.hpp"
-
+#include "4C_io_input_spec_builders.hpp"
 FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ElectroPhysiology::set_valid_parameters(

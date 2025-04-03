@@ -16,7 +16,6 @@
 #include "4C_linalg_sparseoperator.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
-#include "4C_utils_parameter_list.hpp"
 
 #include <utility>
 #include <vector>

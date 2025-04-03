@@ -7,9 +7,8 @@
 
 #include "4C_inpar_solver_nonlin.hpp"
 
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_solver_nonlin_nox_enum_lists.hpp"
-#include "4C_utils_parameter_list.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------------*
