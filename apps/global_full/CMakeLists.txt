@@ -26,14 +26,14 @@ if(FOUR_C_ENABLE_METADATA_GENERATION)
     add_custom_command(
       TARGET ${FOUR_C_EXECUTABLE_NAME}
       POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E rm -f ${CMAKE_BINARY_DIR}/4C_metadata.yaml
-      COMMAND ${CMAKE_COMMAND} -E rm -f ${CMAKE_BINARY_DIR}/4C_schema.json
+      COMMAND ${CMAKE_COMMAND} -E rm -f ${PROJECT_BINARY_DIR}/4C_metadata.yaml
+      COMMAND ${CMAKE_COMMAND} -E rm -f ${PROJECT_BINARY_DIR}/4C_schema.json
       COMMAND
         ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS} "$<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>"
-        -p > ${CMAKE_BINARY_DIR}/4C_metadata.yaml
+        -p > ${PROJECT_BINARY_DIR}/4C_metadata.yaml
       COMMAND
         ${FOUR_C_PYTHON_VENV_BUILD}/bin/python ${PROJECT_SOURCE_DIR}/utilities/create_json_schema.py
-        ${CMAKE_BINARY_DIR}/4C_metadata.yaml ${CMAKE_BINARY_DIR}/4C_schema.json
+        ${PROJECT_BINARY_DIR}/4C_metadata.yaml ${PROJECT_BINARY_DIR}/4C_schema.json
       COMMENT "Creating JSON schema file for input"
       )
   else()

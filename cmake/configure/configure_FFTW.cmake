@@ -14,13 +14,13 @@ if(FFTW_FOUND)
   target_link_libraries(four_c_all_enabled_external_dependencies INTERFACE fftw::fftw)
 
   configure_file(
-    ${CMAKE_SOURCE_DIR}/cmake/templates/FFTW.cmake.in
-    ${CMAKE_BINARY_DIR}/cmake/templates/FFTW.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/templates/FFTW.cmake.in
+    ${PROJECT_BINARY_DIR}/cmake/templates/FFTW.cmake
     @ONLY
     )
   include(GNUInstallDirs)
   install(
-    FILES ${CMAKE_SOURCE_DIR}/cmake/modules/FindFFTW.cmake
+    FILES ${PROJECT_SOURCE_DIR}/cmake/modules/FindFFTW.cmake
     DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C/modules
     )
 endif()

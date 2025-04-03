@@ -32,8 +32,8 @@ if(Boost_FOUND)
     )
 
   configure_file(
-    ${CMAKE_SOURCE_DIR}/cmake/templates/Boost.cmake.in
-    ${CMAKE_BINARY_DIR}/cmake/templates/Boost.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/templates/Boost.cmake.in
+    ${PROJECT_BINARY_DIR}/cmake/templates/Boost.cmake
     @ONLY
     )
 endif()

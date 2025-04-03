@@ -58,7 +58,7 @@ if(Python3_VERSION VERSION_LESS "3.8")
   message(FATAL_ERROR "Python version must be at least 3.8, but found ${Python3_VERSION}")
 endif()
 
-set(FOUR_C_PYTHON_VENV_BUILD "${CMAKE_BINARY_DIR}/python_venv_build_test")
+set(FOUR_C_PYTHON_VENV_BUILD "${PROJECT_BINARY_DIR}/python_venv_build_test")
 
 _execute_process(
   PROCESS_COMMAND
@@ -79,7 +79,7 @@ _execute_process(
   ${FOUR_C_PYTHON_VENV_BUILD}/bin/pip
   install
   -r
-  ${CMAKE_SOURCE_DIR}/cmake/python/requirements.txt
+  ${PROJECT_SOURCE_DIR}/cmake/python/requirements.txt
   )
 
 message(

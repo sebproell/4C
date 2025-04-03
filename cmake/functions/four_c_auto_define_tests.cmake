@@ -40,7 +40,7 @@ function(_set_up_unit_test_target _module_under_test _target)
     ${PROJECT_SOURCE_DIR}/unittests/4C_gtest_main_mpi_test.cpp ${assert_mpi_file} ${_parsed_SOURCE}
     )
   # Store unit test executables directly inside the tests/ directory
-  set_target_properties(${_target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
+  set_target_properties(${_target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
 
   # Do not try to build tests as unity files.
   set_target_properties(${_target} PROPERTIES UNITY_BUILD OFF)
@@ -179,7 +179,7 @@ function(four_c_auto_define_tests)
 
       # Use the same support file directory for all flavors
       set(FOUR_C_TEST_SUPPORT_FILE_DIR
-          "${CMAKE_BINARY_DIR}/tests/support_files/${_test_name_base}/"
+          "${PROJECT_BINARY_DIR}/tests/support_files/${_test_name_base}/"
           )
       target_compile_definitions(
         ${_current_test_name}
@@ -235,7 +235,7 @@ function(four_c_add_support_files_to_test _test_name_base)
 
   endif()
 
-  set(FOUR_C_TEST_SUPPORT_FILE_DIR "${CMAKE_BINARY_DIR}/tests/support_files/${_test_name_base}/")
+  set(FOUR_C_TEST_SUPPORT_FILE_DIR "${PROJECT_BINARY_DIR}/tests/support_files/${_test_name_base}/")
 
   foreach(_support_file ${_parsed_SUPPORT_FILES})
     # Get file name relative to current list file

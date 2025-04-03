@@ -21,7 +21,7 @@ set(FOUR_C_RYML_ROOT "${CMAKE_INSTALL_PREFIX}/lib/cmake/ryml")
 four_c_add_external_dependency(four_c_all_enabled_external_dependencies ryml::ryml)
 
 configure_file(
-  ${CMAKE_SOURCE_DIR}/cmake/templates/ryml.cmake.in
-  ${CMAKE_BINARY_DIR}/cmake/templates/ryml.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/templates/ryml.cmake.in
+  ${PROJECT_BINARY_DIR}/cmake/templates/ryml.cmake
   @ONLY
   )
