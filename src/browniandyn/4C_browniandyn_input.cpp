@@ -17,52 +17,48 @@ void BrownianDynamics::set_valid_parameters(std::map<std::string, Core::IO::Inpu
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs browniandyn_list{"BROWNIAN DYNAMICS"};
+  list["BROWNIAN DYNAMICS"] = all_of({
 
-  browniandyn_list.specs.emplace_back(parameter<bool>(
-      "BROWNDYNPROB", {.description = "switch Brownian dynamics on/off", .default_value = false}));
+      parameter<bool>("BROWNDYNPROB",
+          {.description = "switch Brownian dynamics on/off", .default_value = false}),
 
-  // Reading double parameter for viscosity of background fluid
-  browniandyn_list.specs.emplace_back(
-      parameter<double>("VISCOSITY", {.description = "viscosity", .default_value = 0.0}));
+      // Reading double parameter for viscosity of background fluid
+      parameter<double>("VISCOSITY", {.description = "viscosity", .default_value = 0.0}),
 
-  // Reading double parameter for thermal energy in background fluid (temperature * Boltzmann
-  // constant)
-  browniandyn_list.specs.emplace_back(
-      parameter<double>("KT", {.description = "thermal energy", .default_value = 0.0}));
+      // Reading double parameter for thermal energy in background fluid (temperature * Boltzmann
+      // constant)
+      parameter<double>("KT", {.description = "thermal energy", .default_value = 0.0}),
 
-  // cutoff for random forces, which determines the maximal value
-  browniandyn_list.specs.emplace_back(parameter<double>(
-      "MAXRANDFORCE", {.description = "Any random force beyond MAXRANDFORCE*(standard dev.) will "
-                                      "be omitted and redrawn. -1.0 means no bounds.'",
-                          .default_value = -1.0}));
+      // cutoff for random forces, which determines the maximal value
+      parameter<double>("MAXRANDFORCE",
+          {.description = "Any random force beyond MAXRANDFORCE*(standard dev.) will "
+                          "be omitted and redrawn. -1.0 means no bounds.'",
+              .default_value = -1.0}),
 
-  // time interval in which random numbers are constant
-  browniandyn_list.specs.emplace_back(parameter<double>("TIMESTEP",
-      {.description = "Within this time interval the random numbers remain constant. -1.0 ",
-          .default_value = -1.0}));
+      // time interval in which random numbers are constant
+      parameter<double>("TIMESTEP",
+          {.description = "Within this time interval the random numbers remain constant. -1.0 ",
+              .default_value = -1.0}),
 
-  // the way how damping coefficient values for beams are specified
-  browniandyn_list.specs.emplace_back(deprecated_selection<BeamDampingCoefficientSpecificationType>(
-      "BEAMS_DAMPING_COEFF_SPECIFIED_VIA",
-      {
-          {"cylinder_geometry_approx", BrownianDynamics::cylinder_geometry_approx},
-          {"Cylinder_geometry_approx", BrownianDynamics::cylinder_geometry_approx},
-          {"input_file", BrownianDynamics::input_file},
-          {"Input_file", BrownianDynamics::input_file},
-      },
-      {.description = "In which way are damping coefficient values for beams specified?",
-          .default_value = BrownianDynamics::cylinder_geometry_approx}));
+      // the way how damping coefficient values for beams are specified
+      deprecated_selection<BeamDampingCoefficientSpecificationType>(
+          "BEAMS_DAMPING_COEFF_SPECIFIED_VIA",
+          {
+              {"cylinder_geometry_approx", BrownianDynamics::cylinder_geometry_approx},
+              {"Cylinder_geometry_approx", BrownianDynamics::cylinder_geometry_approx},
+              {"input_file", BrownianDynamics::input_file},
+              {"Input_file", BrownianDynamics::input_file},
+          },
+          {.description = "In which way are damping coefficient values for beams specified?",
+              .default_value = BrownianDynamics::cylinder_geometry_approx}),
 
-  // values for damping coefficients of beams if they are specified via input file
-  // (per unit length, NOT yet multiplied by fluid viscosity)
-  browniandyn_list.specs.emplace_back(parameter<std::string>("BEAMS_DAMPING_COEFF_PER_UNITLENGTH",
-      {.description = "values for beam damping coefficients (per unit length and NOT yet "
-                      "multiplied by fluid viscosity): translational perpendicular/parallel to "
-                      "beam axis, rotational around axis",
-          .default_value = "0.0 0.0 0.0"}));
-
-  browniandyn_list.move_into_collection(list);
+      // values for damping coefficients of beams if they are specified via input file
+      // (per unit length, NOT yet multiplied by fluid viscosity)
+      parameter<std::string>("BEAMS_DAMPING_COEFF_PER_UNITLENGTH",
+          {.description = "values for beam damping coefficients (per unit length and NOT yet "
+                          "multiplied by fluid viscosity): translational perpendicular/parallel to "
+                          "beam axis, rotational around axis",
+              .default_value = "0.0 0.0 0.0"})});
 }
 
 FOUR_C_NAMESPACE_CLOSE

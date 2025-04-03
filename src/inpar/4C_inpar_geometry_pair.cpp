@@ -15,33 +15,33 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Core::Utils::SectionSpecs& list)
+void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(std::vector<Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
   // Add the input parameters for line to 3D coupling.
 
   // Segmentation strategy.
-  list.specs.emplace_back(parameter<LineTo3DStrategy>(
+  list.push_back(parameter<LineTo3DStrategy>(
       "GEOMETRY_PAIR_STRATEGY", {.description = "Type of employed segmentation strategy",
                                     .default_value = LineTo3DStrategy::segmentation}));
 
   // Number of search points for segmentation.
-  list.specs.emplace_back(parameter<int>("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS",
+  list.push_back(parameter<int>("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS",
       {.description = "Number of search points for segmentation", .default_value = 6}));
 
   // What to do if not all Gauss points of a segment project valid
-  list.specs.emplace_back(parameter<NotAllGaussPointsProjectValidAction>(
+  list.push_back(parameter<NotAllGaussPointsProjectValidAction>(
       "GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
       {.description = "What to do if not all Gauss points of a segment project valid",
           .default_value = NotAllGaussPointsProjectValidAction::fail}));
 
   // Number of integration points on the line.
-  list.specs.emplace_back(parameter<int>("GAUSS_POINTS",
+  list.push_back(parameter<int>("GAUSS_POINTS",
       {.description = "Number of Gauss Points for the integral evaluations", .default_value = 6}));
 
   // Number of integration along the circumference in cross section coupling.
-  list.specs.emplace_back(parameter<int>("INTEGRATION_POINTS_CIRCUMFERENCE",
+  list.push_back(parameter<int>("INTEGRATION_POINTS_CIRCUMFERENCE",
       {.description = "Number of Integration points along the circumferential direction of the "
                       "beam. This is parameter is only used in beam to cylinder meshtying. No "
                       "gauss integration is used along the circumferential direction, equally "
@@ -52,12 +52,13 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(Core::Utils::SectionSp
 /**
  *
  */
-void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(Core::Utils::SectionSpecs& list)
+void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(
+    std::vector<Core::IO::InputSpec>& list)
 {
   // Add the input parameters for line to surface coupling.
 
   // Add the surface normal option.
-  list.specs.emplace_back(Core::IO::InputSpecBuilders::parameter<GEOMETRYPAIR::SurfaceNormals>(
+  list.push_back(Core::IO::InputSpecBuilders::parameter<GEOMETRYPAIR::SurfaceNormals>(
       "GEOMETRY_PAIR_SURFACE_NORMALS",
       {.description = "How the surface normals are evaluated",
           .default_value = GEOMETRYPAIR::SurfaceNormals::standard}));

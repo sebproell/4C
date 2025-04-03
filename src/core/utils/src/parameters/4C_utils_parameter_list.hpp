@@ -20,35 +20,6 @@ namespace Core
 {
   namespace Utils
   {
-    //! A wrapper to gather InputSpecs for a section. This type is used during migration
-    //! to InputSpec.
-    struct SectionSpecs
-    {
-      SectionSpecs(const std::string& section_name) : section_name(section_name) {}
-      //! Create the concatenated section name
-      SectionSpecs(const SectionSpecs& parent, const std::string& section_name)
-          : section_name(parent.section_name + "/" + section_name)
-      {
-      }
-
-      ~SectionSpecs()
-      {
-        FOUR_C_ASSERT(specs.empty(),
-            "SectionSpecs of '{}' must be moved into a collection before destruction.",
-            section_name.c_str());
-      }
-
-      std::string section_name;
-      std::vector<Core::IO::InputSpec> specs;
-
-      void move_into_collection(std::map<std::string, Core::IO::InputSpec>& map)
-      {
-        FOUR_C_ASSERT(map.contains(section_name) == false,
-            "SectionSpecs of '{}' already exists in the collection.", section_name);
-        map[section_name] = Core::IO::InputSpecBuilders::all_of(std::move(specs));
-      }
-    };
-
     //! add entry as item of enum class @p value to @p list with name @p parameter_name
     template <class EnumType>
     void add_enum_class_to_parameter_list(

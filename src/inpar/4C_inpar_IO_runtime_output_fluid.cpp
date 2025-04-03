@@ -7,7 +7,7 @@
 
 #include "4C_inpar_IO_runtime_output_fluid.hpp"
 
-#include "4C_utils_parameter_list.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 #include <Teuchos_ParameterList.hpp>
 
@@ -26,48 +26,43 @@ namespace Inpar
         using Teuchos::tuple;
         using namespace Core::IO::InputSpecBuilders;
 
-        // related sublist
-        Core::Utils::SectionSpecs sublist_IO{"IO"};
-        Core::Utils::SectionSpecs sublist_IO_output{sublist_IO, "RUNTIME VTK OUTPUT"};
-        Core::Utils::SectionSpecs sublist_IO_output_fluid{sublist_IO_output, "FLUID"};
+        list["IO/RUNTIME VTK OUTPUT/FLUID"] = all_of({
+            // whether to write output for fluid
+            parameter<bool>(
+                "OUTPUT_FLUID", {.description = "write fluid output", .default_value = false}),
 
-        // whether to write output for fluid
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>(
-            "OUTPUT_FLUID", {.description = "write fluid output", .default_value = false}));
+            // whether to write velocity state
+            parameter<bool>(
+                "VELOCITY", {.description = "write velocity output", .default_value = false}),
 
-        // whether to write velocity state
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>(
-            "VELOCITY", {.description = "write velocity output", .default_value = false}));
+            // whether to write pressure state
+            parameter<bool>(
+                "PRESSURE", {.description = "write pressure output", .default_value = false}),
 
-        // whether to write pressure state
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>(
-            "PRESSURE", {.description = "write pressure output", .default_value = false}));
+            // whether to write acceleration state
+            parameter<bool>("ACCELERATION",
+                {.description = "write acceleration output", .default_value = false}),
 
-        // whether to write acceleration state
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>(
-            "ACCELERATION", {.description = "write acceleration output", .default_value = false}));
+            // whether to write displacement state
+            parameter<bool>("DISPLACEMENT",
+                {.description = "write displacement output", .default_value = false}),
 
-        // whether to write displacement state
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>(
-            "DISPLACEMENT", {.description = "write displacement output", .default_value = false}));
+            // whether to write displacement state
+            parameter<bool>("GRIDVELOCITY",
+                {.description = "write grid velocity output", .default_value = false}),
 
-        // whether to write displacement state
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>(
-            "GRIDVELOCITY", {.description = "write grid velocity output", .default_value = false}));
+            // whether to write element owner
+            parameter<bool>(
+                "ELEMENT_OWNER", {.description = "write element owner", .default_value = false}),
 
-        // whether to write element owner
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>(
-            "ELEMENT_OWNER", {.description = "write element owner", .default_value = false}));
+            // whether to write element GIDs
+            parameter<bool>("ELEMENT_GID",
+                {.description = "write 4C internal element GIDs", .default_value = false}),
 
-        // whether to write element GIDs
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>("ELEMENT_GID",
-            {.description = "write 4C internal element GIDs", .default_value = false}));
-
-        // whether to write node GIDs
-        sublist_IO_output_fluid.specs.emplace_back(parameter<bool>(
-            "NODE_GID", {.description = "write 4C internal node GIDs", .default_value = false}));
-
-        sublist_IO_output_fluid.move_into_collection(list);
+            // whether to write node GIDs
+            parameter<bool>(
+                "NODE_GID", {.description = "write 4C internal node GIDs", .default_value = false}),
+        });
       }
     }  // namespace FLUID
   }  // namespace IORuntimeOutput

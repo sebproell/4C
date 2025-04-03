@@ -11,8 +11,6 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_utils_parameter_list.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
 
@@ -31,9 +29,8 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs beaminteraction{"BEAM INTERACTION"};
+  list["BEAM INTERACTION"] = all_of({
 
-  beaminteraction.specs.emplace_back(
       deprecated_selection<Inpar::BeamInteraction::RepartitionStrategy>("REPARTITIONSTRATEGY",
           {
               {"Adaptive", repstr_adaptive},
@@ -42,116 +39,111 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
               {"everydt", repstr_everydt},
           },
           {.description = "Type of employed repartitioning strategy",
-              .default_value = repstr_adaptive}));
+              .default_value = repstr_adaptive}),
 
-  beaminteraction.specs.emplace_back(parameter<SearchStrategy>(
-      "SEARCH_STRATEGY", {.description = "Type of search strategy used for finding coupling pairs",
-                             .default_value = SearchStrategy::bruteforce_with_binning}));
-
-  beaminteraction.move_into_collection(list);
-
-  /*----------------------------------------------------------------------*/
+      parameter<SearchStrategy>("SEARCH_STRATEGY",
+          {.description = "Type of search strategy used for finding coupling pairs",
+              .default_value = SearchStrategy::
+                  bruteforce_with_binning})}); /*----------------------------------------------------------------------*/
   /* parameters for crosslinking submodel */
 
-  Core::Utils::SectionSpecs crosslinking{beaminteraction, "CROSSLINKING"};
+  list["BEAM INTERACTION/CROSSLINKING"] = all_of({
 
-  // remove this some day
-  crosslinking.specs.emplace_back(parameter<bool>(
-      "CROSSLINKER", {.description = "Crosslinker in problem", .default_value = false}));
+      // remove this some day
+      parameter<bool>(
+          "CROSSLINKER", {.description = "Crosslinker in problem", .default_value = false}),
 
-  // bounding box for initial random crosslinker position
-  crosslinking.specs.emplace_back(parameter<std::string>("INIT_LINKER_BOUNDINGBOX",
-      {.description = "Linker are initially set randomly within this bounding box",
-          .default_value = "1e12 1e12 1e12 1e12 1e12 1e12"}));
+      // bounding box for initial random crosslinker position
+      parameter<std::string>("INIT_LINKER_BOUNDINGBOX",
+          {.description = "Linker are initially set randomly within this bounding box",
+              .default_value = "1e12 1e12 1e12 1e12 1e12 1e12"}),
 
-  // time step for stochastic events concerning crosslinking
-  crosslinking.specs.emplace_back(parameter<double>(
-      "TIMESTEP", {.description = "time step for stochastic events concerning crosslinking (e.g. "
-                                  "diffusion, p_link, p_unlink) ",
-                      .default_value = -1.0}));
-  // Reading double parameter for viscosity of background fluid
-  crosslinking.specs.emplace_back(
-      parameter<double>("VISCOSITY", {.description = "viscosity", .default_value = 0.0}));
-  // Reading double parameter for thermal energy in background fluid (temperature * Boltzmann
-  // constant)
-  crosslinking.specs.emplace_back(
-      parameter<double>("KT", {.description = "thermal energy", .default_value = 0.0}));
-  // number of initial (are set right in the beginning) crosslinker of certain type
-  crosslinking.specs.emplace_back(parameter<std::string>(
-      "MAXNUMINITCROSSLINKERPERTYPE", {.description = "number of initial crosslinker of certain "
-                                                      "type (additional to NUMCROSSLINKERPERTYPE) ",
-                                          .default_value = "0"}));
-  // number of crosslinker of certain type
-  crosslinking.specs.emplace_back(parameter<std::string>("NUMCROSSLINKERPERTYPE",
-      {.description = "number of crosslinker of certain type ", .default_value = "0"}));
-  // material number characterizing crosslinker type
-  crosslinking.specs.emplace_back(parameter<std::string>("MATCROSSLINKERPERTYPE",
-      {.description = "material number characterizing crosslinker type ", .default_value = "-1"}));
-  // maximal number of binding partner per filament binding spot for each binding spot type
-  crosslinking.specs.emplace_back(parameter<std::string>("MAXNUMBONDSPERFILAMENTBSPOT",
-      {.description = "maximal number of bonds per filament binding spot", .default_value = "1"}));
-  // distance between two binding spots on a filament (same on all filaments)
-  crosslinking.specs.emplace_back(parameter<std::string>("FILAMENTBSPOTINTERVALGLOBAL",
-      {.description = "distance between two binding spots on all filaments",
-          .default_value = "-1.0"}));
-  // distance between two binding spots on a filament (as percentage of current filament length)
-  crosslinking.specs.emplace_back(parameter<std::string>("FILAMENTBSPOTINTERVALLOCAL",
-      {.description = "distance between two binding spots on current filament",
-          .default_value = "-1.0"}));
-  // start and end for bspots on a filament in arc parameter (same on each filament independent of
-  // their length)
-  crosslinking.specs.emplace_back(parameter<std::string>("FILAMENTBSPOTRANGEGLOBAL",
-      {.description = "Lower and upper arc parameter bound for binding spots on a filament",
-          .default_value = "-1.0 -1.0"}));
-  // start and end for bspots on a filament in percent of reference filament length
-  crosslinking.specs.emplace_back(parameter<std::string>("FILAMENTBSPOTRANGELOCAL",
-      {.description = "Lower and upper arc parameter bound for binding spots on a filament",
-          .default_value = "0.0 1.0"}));
-
-  crosslinking.move_into_collection(list);
+      // time step for stochastic events concerning crosslinking
+      parameter<double>("TIMESTEP",
+          {.description = "time step for stochastic events concerning crosslinking (e.g. "
+                          "diffusion, p_link, p_unlink) ",
+              .default_value = -1.0}),
+      // Reading double parameter for viscosity of background fluid
+      parameter<double>("VISCOSITY", {.description = "viscosity", .default_value = 0.0}),
+      // Reading double parameter for thermal energy in background fluid (temperature * Boltzmann
+      // constant)
+      parameter<double>("KT", {.description = "thermal energy", .default_value = 0.0}),
+      // number of initial (are set right in the beginning) crosslinker of certain type
+      parameter<std::string>("MAXNUMINITCROSSLINKERPERTYPE",
+          {.description = "number of initial crosslinker of certain "
+                          "type (additional to NUMCROSSLINKERPERTYPE) ",
+              .default_value = "0"}),
+      // number of crosslinker of certain type
+      parameter<std::string>("NUMCROSSLINKERPERTYPE",
+          {.description = "number of crosslinker of certain type ", .default_value = "0"}),
+      // material number characterizing crosslinker type
+      parameter<std::string>("MATCROSSLINKERPERTYPE",
+          {.description = "material number characterizing crosslinker type ",
+              .default_value = "-1"}),
+      // maximal number of binding partner per filament binding spot for each binding spot type
+      parameter<std::string>("MAXNUMBONDSPERFILAMENTBSPOT",
+          {.description = "maximal number of bonds per filament binding spot",
+              .default_value = "1"}),
+      // distance between two binding spots on a filament (same on all filaments)
+      parameter<std::string>("FILAMENTBSPOTINTERVALGLOBAL",
+          {.description = "distance between two binding spots on all filaments",
+              .default_value = "-1.0"}),
+      // distance between two binding spots on a filament (as percentage of current filament length)
+      parameter<std::string>("FILAMENTBSPOTINTERVALLOCAL",
+          {.description = "distance between two binding spots on current filament",
+              .default_value = "-1.0"}),
+      // start and end for bspots on a filament in arc parameter (same on each filament independent
+      // of
+      // their length)
+      parameter<std::string>("FILAMENTBSPOTRANGEGLOBAL",
+          {.description = "Lower and upper arc parameter bound for binding spots on a filament",
+              .default_value = "-1.0 -1.0"}),
+      // start and end for bspots on a filament in percent of reference filament length
+      parameter<std::string>("FILAMENTBSPOTRANGELOCAL",
+          {.description = "Lower and upper arc parameter bound for binding spots on a filament",
+              .default_value = "0.0 1.0"})});
 
 
   /*----------------------------------------------------------------------*/
   /* parameters for sphere beam link submodel */
 
-  Core::Utils::SectionSpecs spherebeamlink{beaminteraction, "SPHERE BEAM LINK"};
+  list["BEAM INTERACTION/SPHERE BEAM LINK"] = all_of({
 
-  spherebeamlink.specs.emplace_back(parameter<bool>(
-      "SPHEREBEAMLINKING", {.description = "Integrins in problem", .default_value = false}));
+      parameter<bool>(
+          "SPHEREBEAMLINKING", {.description = "Integrins in problem", .default_value = false}),
 
-  // Reading double parameter for contraction rate for active linker
-  spherebeamlink.specs.emplace_back(parameter<double>(
-      "CONTRACTIONRATE", {.description = "contraction rate of cell (integrin linker) in [microm/s]",
-                             .default_value = 0.0}));
-  // time step for stochastic events concerning sphere beam linking
-  spherebeamlink.specs.emplace_back(parameter<double>(
-      "TIMESTEP", {.description = "time step for stochastic events concerning sphere beam linking "
-                                  "(e.g. catch-slip-bond behavior) ",
-                      .default_value = -1.0}));
-  spherebeamlink.specs.emplace_back(parameter<std::string>("MAXNUMLINKERPERTYPE",
-      {.description = "number of crosslinker of certain type ", .default_value = "0"}));
-  // material number characterizing crosslinker type
-  spherebeamlink.specs.emplace_back(parameter<std::string>("MATLINKERPERTYPE",
-      {.description = "material number characterizing crosslinker type ", .default_value = "-1"}));
-  // distance between two binding spots on a filament (same on all filaments)
-  spherebeamlink.specs.emplace_back(parameter<std::string>("FILAMENTBSPOTINTERVALGLOBAL",
-      {.description = "distance between two binding spots on all filaments",
-          .default_value = "-1.0"}));
-  // distance between two binding spots on a filament (as percentage of current filament length)
-  spherebeamlink.specs.emplace_back(parameter<std::string>("FILAMENTBSPOTINTERVALLOCAL",
-      {.description = "distance between two binding spots on current filament",
-          .default_value = "-1.0"}));
-  // start and end for bspots on a filament in arc parameter (same on each filament independent of
-  // their length)
-  spherebeamlink.specs.emplace_back(parameter<std::string>("FILAMENTBSPOTRANGEGLOBAL",
-      {.description = "Lower and upper arc parameter bound for binding spots on a filament",
-          .default_value = "-1.0 -1.0"}));
-  // start and end for bspots on a filament in percent of reference filament length
-  spherebeamlink.specs.emplace_back(parameter<std::string>("FILAMENTBSPOTRANGELOCAL",
-      {.description = "Lower and upper arc parameter bound for binding spots on a filament",
-          .default_value = "0.0 1.0"}));
-
-  spherebeamlink.move_into_collection(list);
+      // Reading double parameter for contraction rate for active linker
+      parameter<double>("CONTRACTIONRATE",
+          {.description = "contraction rate of cell (integrin linker) in [microm/s]",
+              .default_value = 0.0}),
+      // time step for stochastic events concerning sphere beam linking
+      parameter<double>("TIMESTEP",
+          {.description = "time step for stochastic events concerning sphere beam linking "
+                          "(e.g. catch-slip-bond behavior) ",
+              .default_value = -1.0}),
+      parameter<std::string>("MAXNUMLINKERPERTYPE",
+          {.description = "number of crosslinker of certain type ", .default_value = "0"}),
+      // material number characterizing crosslinker type
+      parameter<std::string>(
+          "MATLINKERPERTYPE", {.description = "material number characterizing crosslinker type ",
+                                  .default_value = "-1"}),
+      // distance between two binding spots on a filament (same on all filaments)
+      parameter<std::string>("FILAMENTBSPOTINTERVALGLOBAL",
+          {.description = "distance between two binding spots on all filaments",
+              .default_value = "-1.0"}),
+      // distance between two binding spots on a filament (as percentage of current filament length)
+      parameter<std::string>("FILAMENTBSPOTINTERVALLOCAL",
+          {.description = "distance between two binding spots on current filament",
+              .default_value = "-1.0"}),
+      // start and end for bspots on a filament in arc parameter (same on each filament independent
+      // of their length)
+      parameter<std::string>("FILAMENTBSPOTRANGEGLOBAL",
+          {.description = "Lower and upper arc parameter bound for binding spots on a filament",
+              .default_value = "-1.0 -1.0"}),
+      // start and end for bspots on a filament in percent of reference filament length
+      parameter<std::string>("FILAMENTBSPOTRANGELOCAL",
+          {.description = "Lower and upper arc parameter bound for binding spots on a filament",
+              .default_value = "0.0 1.0"})});
 
   /*----------------------------------------------------------------------*/
   /* parameters for beam to ? contact submodel*/
@@ -160,9 +152,8 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
   /*----------------------------------------------------------------------*/
   /* parameters for beam to beam contact */
 
-  Core::Utils::SectionSpecs beamtobeamcontact{beaminteraction, "BEAM TO BEAM CONTACT"};
+  list["BEAM INTERACTION/BEAM TO BEAM CONTACT"] = all_of({
 
-  beamtobeamcontact.specs.emplace_back(
       deprecated_selection<Inpar::BeamInteraction::Strategy>("STRATEGY",
           {
               {"None", bstr_none},
@@ -170,18 +161,15 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
               {"Penalty", bstr_penalty},
               {"penalty", bstr_penalty},
           },
-          {.description = "Type of employed solving strategy", .default_value = bstr_none}));
-
-  beamtobeamcontact.move_into_collection(list);
+          {.description = "Type of employed solving strategy", .default_value = bstr_none})});
 
   // ...
 
   /*----------------------------------------------------------------------*/
   /* parameters for beam to sphere contact */
 
-  Core::Utils::SectionSpecs beamtospherecontact{beaminteraction, "BEAM TO SPHERE CONTACT"};
+  list["BEAM INTERACTION/BEAM TO SPHERE CONTACT"] = all_of({
 
-  beamtospherecontact.specs.emplace_back(
       deprecated_selection<Inpar::BeamInteraction::Strategy>("STRATEGY",
           {
               {"None", bstr_none},
@@ -189,12 +177,11 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
               {"Penalty", bstr_penalty},
               {"penalty", bstr_penalty},
           },
-          {.description = "Type of employed solving strategy", .default_value = bstr_none}));
+          {.description = "Type of employed solving strategy", .default_value = bstr_none}),
 
-  beamtospherecontact.specs.emplace_back(parameter<double>("PENALTY_PARAMETER",
-      {.description = "Penalty parameter for beam-to-rigidsphere contact", .default_value = 0.0}));
-
-  beamtospherecontact.move_into_collection(list);
+      parameter<double>(
+          "PENALTY_PARAMETER", {.description = "Penalty parameter for beam-to-rigidsphere contact",
+                                   .default_value = 0.0})});
 
   // ...
 

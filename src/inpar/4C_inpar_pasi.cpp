@@ -7,8 +7,7 @@
 
 #include "4C_inpar_pasi.hpp"
 
-#include "4C_utils_parameter_list.hpp"
-
+#include "4C_io_input_spec_builders.hpp"
 FOUR_C_NAMESPACE_OPEN
 
 /*---------------------------------------------------------------------------*
@@ -19,61 +18,60 @@ void Inpar::PaSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs pasidyn{"PASI DYNAMIC"};
+  list["PASI DYNAMIC"] = all_of({
 
-  // time loop control
-  pasidyn.specs.emplace_back(parameter<int>(
-      "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}));
-  pasidyn.specs.emplace_back(parameter<int>(
-      "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}));
-  pasidyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}));
-  pasidyn.specs.emplace_back(parameter<int>(
-      "NUMSTEP", {.description = "Total number of Timesteps", .default_value = 100}));
-  pasidyn.specs.emplace_back(
-      parameter<double>("MAXTIME", {.description = "Total simulation time", .default_value = 1.0}));
+      // time loop control
+      parameter<int>(
+          "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}),
+      parameter<int>(
+          "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}),
 
-  // type of partitioned coupling
-  pasidyn.specs.emplace_back(parameter<PartitionedCouplingType>("COUPLING",
-      {.description = "partitioned coupling strategies for particle structure interaction",
-          .default_value = partitioned_onewaycoup}));
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}),
+      parameter<int>("NUMSTEP", {.description = "Total number of Timesteps", .default_value = 100}),
 
-  // partitioned iteration dependent parameters
-  pasidyn.specs.emplace_back(parameter<int>(
-      "ITEMAX", {.description = "maximum number of partitioned iterations over fields",
-                    .default_value = 10}));
+      parameter<double>("MAXTIME", {.description = "Total simulation time", .default_value = 1.0}),
 
-  pasidyn.specs.emplace_back(parameter<double>(
-      "CONVTOLSCALEDDISP", {.description = "tolerance of dof and dt scaled interface displacement "
-                                           "increments in partitioned iterations",
-                               .default_value = -1.0}));
+      // type of partitioned coupling
+      parameter<PartitionedCouplingType>("COUPLING",
+          {.description = "partitioned coupling strategies for particle structure interaction",
+              .default_value = partitioned_onewaycoup}),
 
-  pasidyn.specs.emplace_back(parameter<double>("CONVTOLRELATIVEDISP",
-      {.description =
-              "tolerance of relative interface displacement increments in partitioned iterations",
-          .default_value = -1.0}));
+      // partitioned iteration dependent parameters
+      parameter<int>(
+          "ITEMAX", {.description = "maximum number of partitioned iterations over fields",
+                        .default_value = 10}),
 
-  pasidyn.specs.emplace_back(parameter<double>("CONVTOLSCALEDFORCE",
-      {.description =
-              "tolerance of dof and dt scaled interface force increments in partitioned iterations",
-          .default_value = -1.0}));
+      parameter<double>("CONVTOLSCALEDDISP",
+          {.description = "tolerance of dof and dt scaled interface displacement "
+                          "increments in partitioned iterations",
+              .default_value = -1.0}),
 
-  pasidyn.specs.emplace_back(parameter<double>("CONVTOLRELATIVEFORCE",
-      {.description = "tolerance of relative interface force increments in partitioned iterations",
-          .default_value = -1.0}));
+      parameter<double>(
+          "CONVTOLRELATIVEDISP", {.description = "tolerance of relative interface displacement "
+                                                 "increments in partitioned iterations",
+                                     .default_value = -1.0}),
 
-  pasidyn.specs.emplace_back(parameter<bool>("IGNORE_CONV_CHECK",
-      {.description = "ignore convergence check and proceed simulation", .default_value = false}));
+      parameter<double>(
+          "CONVTOLSCALEDFORCE", {.description = "tolerance of dof and dt scaled interface force "
+                                                "increments in partitioned iterations",
+                                    .default_value = -1.0}),
 
-  // parameters for relaxation
-  pasidyn.specs.emplace_back(parameter<double>(
-      "STARTOMEGA", {.description = "fixed relaxation parameter", .default_value = 1.0}));
-  pasidyn.specs.emplace_back(parameter<double>("MAXOMEGA",
-      {.description = "largest omega allowed for Aitken relaxation", .default_value = 10.0}));
-  pasidyn.specs.emplace_back(parameter<double>("MINOMEGA",
-      {.description = "smallest omega allowed for Aitken relaxation", .default_value = 0.1}));
+      parameter<double>("CONVTOLRELATIVEFORCE",
+          {.description =
+                  "tolerance of relative interface force increments in partitioned iterations",
+              .default_value = -1.0}),
 
-  pasidyn.move_into_collection(list);
+      parameter<bool>(
+          "IGNORE_CONV_CHECK", {.description = "ignore convergence check and proceed simulation",
+                                   .default_value = false}),
+
+      // parameters for relaxation
+      parameter<double>(
+          "STARTOMEGA", {.description = "fixed relaxation parameter", .default_value = 1.0}),
+      parameter<double>("MAXOMEGA",
+          {.description = "largest omega allowed for Aitken relaxation", .default_value = 10.0}),
+      parameter<double>("MINOMEGA",
+          {.description = "smallest omega allowed for Aitken relaxation", .default_value = 0.1})});
 }
 
 FOUR_C_NAMESPACE_CLOSE

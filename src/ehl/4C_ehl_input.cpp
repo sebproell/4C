@@ -20,154 +20,150 @@ void EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs ehldyn{"ELASTO HYDRO DYNAMIC"};
+  list["ELASTO HYDRO DYNAMIC"] = all_of({
 
-  // Output type
-  ehldyn.specs.emplace_back(parameter<double>("RESTARTEVERYTIME",
-      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0.0}));
-  ehldyn.specs.emplace_back(parameter<int>("RESTARTEVERY",
-      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 1}));
-  // Time loop control
-  ehldyn.specs.emplace_back(parameter<int>(
-      "NUMSTEP", {.description = "maximum number of Timesteps", .default_value = 200}));
-  ehldyn.specs.emplace_back(parameter<double>(
-      "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
-  ehldyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}));
-  ehldyn.specs.emplace_back(parameter<bool>(
-      "DIFFTIMESTEPSIZE", {.description = "use different step size for lubrication and solid",
-                              .default_value = false}));
-  ehldyn.specs.emplace_back(parameter<double>(
-      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0.0}));
-  ehldyn.specs.emplace_back(parameter<int>(
-      "RESULTSEVERY", {.description = "increment for writing solution", .default_value = 1}));
-  ehldyn.specs.emplace_back(parameter<int>(
-      "ITEMAX", {.description = "maximum number of iterations over fields", .default_value = 10}));
-  ehldyn.specs.emplace_back(parameter<int>(
-      "ITEMIN", {.description = "minimal number of iterations over fields", .default_value = 1}));
+      // Output type
+      parameter<double>(
+          "RESTARTEVERYTIME", {.description = "write restart possibility every RESTARTEVERY steps",
+                                  .default_value = 0.0}),
+      parameter<int>(
+          "RESTARTEVERY", {.description = "write restart possibility every RESTARTEVERY steps",
+                              .default_value = 1}),
+      // Time loop control
+      parameter<int>(
+          "NUMSTEP", {.description = "maximum number of Timesteps", .default_value = 200}),
+      parameter<double>(
+          "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}),
 
-  // Type of coupling strategy between the two fields
-  ehldyn.specs.emplace_back(deprecated_selection<FieldCoupling>("FIELDCOUPLING",
-      {
-          {"none", coupling_none},
-          {"matching", coupling_matching},
-      },
-      {.description = "Type of coupling strategy between fields", .default_value = coupling_none}));
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}),
+      parameter<bool>(
+          "DIFFTIMESTEPSIZE", {.description = "use different step size for lubrication and solid",
+                                  .default_value = false}),
+      parameter<double>("RESULTSEVERYTIME",
+          {.description = "increment for writing solution", .default_value = 0.0}),
+      parameter<int>(
+          "RESULTSEVERY", {.description = "increment for writing solution", .default_value = 1}),
+      parameter<int>("ITEMAX",
+          {.description = "maximum number of iterations over fields", .default_value = 10}),
+      parameter<int>("ITEMIN",
+          {.description = "minimal number of iterations over fields", .default_value = 1}),
 
-  // Coupling strategy for EHL solvers
-  ehldyn.specs.emplace_back(parameter<SolutionSchemeOverFields>("COUPALGO",
-      {.description = "Coupling strategies for EHL solvers", .default_value = ehl_Monolithic}));
+      // Type of coupling strategy between the two fields
+      deprecated_selection<FieldCoupling>("FIELDCOUPLING",
+          {
+              {"none", coupling_none},
+              {"matching", coupling_matching},
+          },
+          {.description = "Type of coupling strategy between fields",
+              .default_value = coupling_none}),
 
-  // set unprojectable nodes to zero pressure via Dirichlet condition
-  ehldyn.specs.emplace_back(parameter<bool>("UNPROJ_ZERO_DBC",
-      {.description = "set unprojectable nodes to zero pressure via Dirichlet condition",
-          .default_value = false}));
+      // Coupling strategy for EHL solvers
+      parameter<SolutionSchemeOverFields>("COUPALGO",
+          {.description = "Coupling strategies for EHL solvers", .default_value = ehl_Monolithic}),
 
-  // use dry contact model
-  ehldyn.specs.emplace_back(parameter<bool>("DRY_CONTACT_MODEL",
-      {.description = "set unprojectable nodes to zero pressure via Dirichlet condition",
-          .default_value = false}));
+      // set unprojectable nodes to zero pressure via Dirichlet condition
+      parameter<bool>("UNPROJ_ZERO_DBC",
+          {.description = "set unprojectable nodes to zero pressure via Dirichlet condition",
+              .default_value = false}),
 
-
-  ehldyn.move_into_collection(list);
-
-  /*----------------------------------------------------------------------*/
+      // use dry contact model
+      parameter<bool>("DRY_CONTACT_MODEL",
+          {.description = "set unprojectable nodes to zero pressure via Dirichlet condition",
+              .default_value =
+                  false})}); /*----------------------------------------------------------------------*/
   /* parameters for monolithic EHL */
-  Core::Utils::SectionSpecs ehldynmono{ehldyn, "MONOLITHIC"};
+  list["ELASTO HYDRO DYNAMIC/MONOLITHIC"] = all_of({
 
-  // convergence tolerance of EHL residual
-  ehldynmono.specs.emplace_back(parameter<double>(
-      "CONVTOL", {.description = "tolerance for convergence check of EHL", .default_value = 1e-6}));
-  // Iterationparameters
-  ehldynmono.specs.emplace_back(parameter<double>("TOLINC",
-      {.description = "tolerance for convergence check of EHL-increment in monolithic EHL",
-          .default_value = 1.0e-6}));
+      // convergence tolerance of EHL residual
+      parameter<double>("CONVTOL",
+          {.description = "tolerance for convergence check of EHL", .default_value = 1e-6}),
+      // Iterationparameters
+      parameter<double>("TOLINC",
+          {.description = "tolerance for convergence check of EHL-increment in monolithic EHL",
+              .default_value = 1.0e-6}),
 
-  ehldynmono.specs.emplace_back(deprecated_selection<ConvNorm>("NORM_RESF",
-      {
-          {"Abs", convnorm_abs},
-          {"Rel", convnorm_rel},
-          {"Mix", convnorm_mix},
-      },
-      {.description = "type of norm for residual convergence check",
-          .default_value = convnorm_abs}));
+      deprecated_selection<ConvNorm>("NORM_RESF",
+          {
+              {"Abs", convnorm_abs},
+              {"Rel", convnorm_rel},
+              {"Mix", convnorm_mix},
+          },
+          {.description = "type of norm for residual convergence check",
+              .default_value = convnorm_abs}),
 
-  ehldynmono.specs.emplace_back(deprecated_selection<ConvNorm>("NORM_INC",
-      {
-          {"Abs", convnorm_abs},
-          {"Rel", convnorm_rel},
-          {"Mix", convnorm_mix},
-      },
-      {.description = "type of norm for convergence check of primary variables in EHL",
-          .default_value = convnorm_abs}));
+      deprecated_selection<ConvNorm>("NORM_INC",
+          {
+              {"Abs", convnorm_abs},
+              {"Rel", convnorm_rel},
+              {"Mix", convnorm_mix},
+          },
+          {.description = "type of norm for convergence check of primary variables in EHL",
+              .default_value = convnorm_abs}),
 
 
-  ehldynmono.specs.emplace_back(deprecated_selection<BinaryOp>("NORMCOMBI_RESFINC",
-      {
-          {"And", bop_and},
-          {"Or", bop_or},
-          {"Coupl_Or_Single", bop_coupl_or_single},
-          {"Coupl_And_Single", bop_coupl_and_single},
-          {"And_Single", bop_and_single},
-          {"Or_Single", bop_or_single},
-      },
-      {.description = "binary operator to combine primary variables and residual force values",
-          .default_value = bop_coupl_and_single}));
+      deprecated_selection<BinaryOp>("NORMCOMBI_RESFINC",
+          {
+              {"And", bop_and},
+              {"Or", bop_or},
+              {"Coupl_Or_Single", bop_coupl_or_single},
+              {"Coupl_And_Single", bop_coupl_and_single},
+              {"And_Single", bop_and_single},
+              {"Or_Single", bop_or_single},
+          },
+          {.description = "binary operator to combine primary variables and residual force values",
+              .default_value = bop_coupl_and_single}),
 
-  ehldynmono.specs.emplace_back(deprecated_selection<VectorNorm>("ITERNORM",
-      {
-          {"L1", norm_l1},
-          {"L1_Scaled", norm_l1_scaled},
-          {"L2", norm_l2},
-          {"Rms", norm_rms},
-          {"Inf", norm_inf},
-      },
-      {.description = "type of norm to be applied to residuals", .default_value = norm_rms}));
+      deprecated_selection<VectorNorm>("ITERNORM",
+          {
+              {"L1", norm_l1},
+              {"L1_Scaled", norm_l1_scaled},
+              {"L2", norm_l2},
+              {"Rms", norm_rms},
+              {"Inf", norm_inf},
+          },
+          {.description = "type of norm to be applied to residuals", .default_value = norm_rms}),
 
-  ehldynmono.specs.emplace_back(
+
       parameter<double>("PTCDT", {.description = "pseudo time step for pseudo-transient "
                                                  "continuation (PTC) stabilised Newton procedure",
-                                     .default_value = 0.1}));
+                                     .default_value = 0.1}),
 
-  // number of linear solver used for monolithic EHL
-  ehldynmono.specs.emplace_back(parameter<int>(
-      "LINEAR_SOLVER", {.description = "number of linear solver used for monolithic EHL problems",
-                           .default_value = -1}));
+      // number of linear solver used for monolithic EHL
+      parameter<int>("LINEAR_SOLVER",
+          {.description = "number of linear solver used for monolithic EHL problems",
+              .default_value = -1}),
 
-  // convergence criteria adaptivity of monolithic EHL solver
-  ehldynmono.specs.emplace_back(parameter<bool>("ADAPTCONV",
-      {.description =
-              "Switch on adaptive control of linear solver tolerance for nonlinear solution",
-          .default_value = false}));
-  ehldynmono.specs.emplace_back(parameter<double>("ADAPTCONV_BETTER",
-      {.description = "The linear solver shall be this much better than the current nonlinear "
-                      "residual in the nonlinear convergence limit",
-          .default_value = 0.1}));
+      // convergence criteria adaptivity of monolithic EHL solver
+      parameter<bool>("ADAPTCONV",
+          {.description =
+                  "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+              .default_value = false}),
+      parameter<double>("ADAPTCONV_BETTER",
+          {.description = "The linear solver shall be this much better than the current nonlinear "
+                          "residual in the nonlinear convergence limit",
+              .default_value = 0.1}),
 
-  ehldynmono.specs.emplace_back(parameter<bool>("INFNORMSCALING",
-      {.description = "Scale blocks of matrix with row infnorm?", .default_value = true}));
-
-  ehldynmono.move_into_collection(list);
+      parameter<bool>("INFNORMSCALING",
+          {.description = "Scale blocks of matrix with row infnorm?", .default_value = true})});
 
   /*----------------------------------------------------------------------*/
   /* parameters for partitioned EHL */
   /*----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs ehldynpart{ehldyn, "PARTITIONED"};
+  list["ELASTO HYDRO DYNAMIC/PARTITIONED"] = all_of({
 
-  // Solver parameter for relaxation of iterative staggered partitioned EHL
-  ehldynpart.specs.emplace_back(parameter<double>("MAXOMEGA",
-      {.description = "largest omega allowed for Aitken relaxation", .default_value = 10.0}));
-  ehldynpart.specs.emplace_back(parameter<double>("MINOMEGA",
-      {.description = "smallest omega allowed for Aitken relaxation", .default_value = 0.1}));
-  ehldynpart.specs.emplace_back(parameter<double>(
-      "STARTOMEGA", {.description = "fixed relaxation parameter", .default_value = 1.0}));
+      // Solver parameter for relaxation of iterative staggered partitioned EHL
+      parameter<double>("MAXOMEGA",
+          {.description = "largest omega allowed for Aitken relaxation", .default_value = 10.0}),
+      parameter<double>("MINOMEGA",
+          {.description = "smallest omega allowed for Aitken relaxation", .default_value = 0.1}),
+      parameter<double>(
+          "STARTOMEGA", {.description = "fixed relaxation parameter", .default_value = 1.0}),
 
-  // convergence tolerance of outer iteration loop
-  ehldynpart.specs.emplace_back(parameter<double>("CONVTOL",
-      {.description = "tolerance for convergence check of outer iteration within partitioned EHL",
-          .default_value = 1e-6}));
-
-  ehldynpart.move_into_collection(list);
+      // convergence tolerance of outer iteration loop
+      parameter<double>("CONVTOL",
+          {.description =
+                  "tolerance for convergence check of outer iteration within partitioned EHL",
+              .default_value = 1e-6})});
 }
 
 

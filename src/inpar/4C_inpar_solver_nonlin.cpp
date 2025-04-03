@@ -7,9 +7,8 @@
 
 #include "4C_inpar_solver_nonlin.hpp"
 
+#include "4C_io_input_spec_builders.hpp"
 #include "4C_solver_nonlin_nox_enum_lists.hpp"
-#include "4C_utils_parameter_list.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------------*
@@ -22,408 +21,342 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   /*----------------------------------------------------------------------*
    * parameters for NOX - non-linear solution
    *----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs snox{"STRUCT NOX"};
+  list["STRUCT NOX"] = all_of({
 
-  {
-    std::vector<std::string> nonlinear_solver_valid_input = {"Line Search Based",
-        "Pseudo Transient", "Trust Region Based", "Inexact Trust Region Based", "Tensor Based",
-        "Single Step"};
-
-    snox.specs.emplace_back(
-        deprecated_selection<std::string>("Nonlinear Solver", nonlinear_solver_valid_input,
-            {.description = "Choose a nonlinear solver method.",
-                .default_value = "Line Search Based"}));
-  }
-  snox.move_into_collection(list);
+      deprecated_selection<std::string>("Nonlinear Solver",
+          {"Line Search Based", "Pseudo Transient", "Trust Region Based",
+              "Inexact Trust Region Based", "Tensor Based", "Single Step"},
+          {.description = "Choose a nonlinear solver method.",
+              .default_value = "Line Search Based"})});
 
   // sub-list direction
-  Core::Utils::SectionSpecs direction{snox, "Direction"};
+  list["STRUCT NOX/Direction"] = all_of({
 
-  {
-    std::vector<std::string> newton_method_valid_input = {
-        "Newton", "Steepest Descent", "NonlinearCG", "Broyden", "User Defined"};
-    direction.specs.emplace_back(
-        deprecated_selection<std::string>("Method", newton_method_valid_input,
-            {.description = "Choose a direction method for the nonlinear solver.",
-                .default_value = "Newton"}));
+      deprecated_selection<std::string>("Method",
+          {"Newton", "Steepest Descent", "NonlinearCG", "Broyden", "User Defined"},
+          {.description = "Choose a direction method for the nonlinear solver.",
+              .default_value = "Newton"}),
 
-    std::vector<std::string> user_defined_method_valid_input = {"Newton", "Modified Newton"};
-    direction.specs.emplace_back(
-        deprecated_selection<std::string>("User Defined Method", user_defined_method_valid_input,
-            {.description = "Choose a user-defined direction method.",
-                .default_value = "Modified Newton"}));
-  }
-  direction.move_into_collection(list);
+
+      deprecated_selection<std::string>("User Defined Method", {"Newton", "Modified Newton"},
+          {.description = "Choose a user-defined direction method.",
+              .default_value = "Modified Newton"})});
 
   // sub-sub-list "Newton"
-  Core::Utils::SectionSpecs newton{direction, "Newton"};
+  list["STRUCT NOX/Direction/Newton"] = all_of({
 
-  {
-    std::vector<std::string> forcing_term_valid_input = {"Constant", "Type 1", "Type 2"};
-    newton.specs.emplace_back(deprecated_selection<std::string>("Forcing Term Method",
-        forcing_term_valid_input, {.description = "", .default_value = "Constant"}));
+      deprecated_selection<std::string>("Forcing Term Method", {"Constant", "Type 1", "Type 2"},
+          {.description = "", .default_value = "Constant"}),
 
-    newton.specs.emplace_back(parameter<double>("Forcing Term Initial Tolerance",
-        {.description = "initial linear solver tolerance", .default_value = 0.1}));
-    newton.specs.emplace_back(parameter<double>(
-        "Forcing Term Minimum Tolerance", {.description = "", .default_value = 1.0e-6}));
-    newton.specs.emplace_back(parameter<double>(
-        "Forcing Term Maximum Tolerance", {.description = "", .default_value = 0.01}));
-    newton.specs.emplace_back(parameter<double>(
-        "Forcing Term Alpha", {.description = "used only by \"Type 2\"", .default_value = 1.5}));
-    newton.specs.emplace_back(parameter<double>(
-        "Forcing Term Gamma", {.description = "used only by \"Type 2\"", .default_value = 0.9}));
-    newton.specs.emplace_back(parameter<bool>("Rescue Bad Newton Solve",
-        {.description = "If set to true, we will use the computed direction even if the linear "
-                        "solve does not achieve the tolerance specified by the forcing term",
-            .default_value = true}));
-  }
-  newton.move_into_collection(list);
+      parameter<double>("Forcing Term Initial Tolerance",
+          {.description = "initial linear solver tolerance", .default_value = 0.1}),
+      parameter<double>(
+          "Forcing Term Minimum Tolerance", {.description = "", .default_value = 1.0e-6}),
+      parameter<double>(
+          "Forcing Term Maximum Tolerance", {.description = "", .default_value = 0.01}),
+      parameter<double>(
+          "Forcing Term Alpha", {.description = "used only by \"Type 2\"", .default_value = 1.5}),
+      parameter<double>(
+          "Forcing Term Gamma", {.description = "used only by \"Type 2\"", .default_value = 0.9}),
+      parameter<bool>("Rescue Bad Newton Solve",
+          {.description = "If set to true, we will use the computed direction even if the linear "
+                          "solve does not achieve the tolerance specified by the forcing term",
+              .default_value = true})});
 
   // sub-sub-list "Steepest Descent"
-  Core::Utils::SectionSpecs steepestdescent{direction, "Steepest Descent"};
+  list["STRUCT NOX/Direction/Steepest Descent"] = all_of({
 
-  {
-    std::vector<std::string> scaling_type_valid_input = {
-        "2-Norm", "Quadratic Model Min", "F 2-Norm", "None"};
-    steepestdescent.specs.emplace_back(deprecated_selection<std::string>(
-        "Scaling Type", scaling_type_valid_input, {.description = "", .default_value = "None"}));
-  }
-  steepestdescent.move_into_collection(list);
+      deprecated_selection<std::string>("Scaling Type",
+          {"2-Norm", "Quadratic Model Min", "F 2-Norm", "None"},
+          {.description = "", .default_value = "None"})});
 
   // sub-list "Pseudo Transient"
-  Core::Utils::SectionSpecs ptc{snox, "Pseudo Transient"};
+  list["STRUCT NOX/Pseudo Transient"] = all_of({
 
-  {
-    ptc.specs.emplace_back(parameter<double>(
-        "deltaInit", {.description = "Initial time step size. If its negative, the initial time "
-                                     "step is calculated automatically.",
-                         .default_value = -1.0}));
-    ptc.specs.emplace_back(parameter<double>("deltaMax",
-        {.description =
-                "Maximum time step size. If the new step size is greater than this value, the "
-                "transient terms will be eliminated from the Newton iteration resulting in a full "
-                "Newton solve.",
-            .default_value = std::numeric_limits<double>::max()}));
-    ptc.specs.emplace_back(parameter<double>(
-        "deltaMin", {.description = "Minimum step size.", .default_value = 1.0e-5}));
-    ptc.specs.emplace_back(parameter<int>("Max Number of PTC Iterations",
-        {.description = "", .default_value = std::numeric_limits<int>::max()}));
-    ptc.specs.emplace_back(
-        parameter<double>("SER_alpha", {.description = "Exponent of SET.", .default_value = 1.0}));
-    ptc.specs.emplace_back(parameter<double>(
-        "ScalingFactor", {.description = "Scaling Factor for ptc matrix.", .default_value = 1.0}));
+      parameter<double>(
+          "deltaInit", {.description = "Initial time step size. If its negative, the initial time "
+                                       "step is calculated automatically.",
+                           .default_value = -1.0}),
+      parameter<double>("deltaMax",
+          {.description =
+                  "Maximum time step size. If the new step size is greater than this value, the "
+                  "transient terms will be eliminated from the Newton iteration resulting in a "
+                  "full "
+                  "Newton solve.",
+              .default_value = std::numeric_limits<double>::max()}),
+      parameter<double>("deltaMin", {.description = "Minimum step size.", .default_value = 1.0e-5}),
+      parameter<int>("Max Number of PTC Iterations",
+          {.description = "", .default_value = std::numeric_limits<int>::max()}),
 
-    std::vector<std::string> time_step_control_valid_input = {"SER",
-        "Switched Evolution Relaxation", "TTE", "Temporal Truncation Error", "MRR",
-        "Model Reduction Ratio"};
-    ptc.specs.emplace_back(deprecated_selection<std::string>("Time Step Control",
-        time_step_control_valid_input, {.description = "", .default_value = "SER"}));
+      parameter<double>("SER_alpha", {.description = "Exponent of SET.", .default_value = 1.0}),
+      parameter<double>(
+          "ScalingFactor", {.description = "Scaling Factor for ptc matrix.", .default_value = 1.0}),
 
-    std::vector<std::string> tsc_norm_type_valid_input = {"Two Norm", "One Norm", "Max Norm"};
-    ptc.specs.emplace_back(
-        deprecated_selection<std::string>("Norm Type for TSC", tsc_norm_type_valid_input,
-            {.description = "Norm Type for the time step control", .default_value = "Max Norm"}));
+      deprecated_selection<std::string>("Time Step Control",
+          {"SER", "Switched Evolution Relaxation", "TTE", "Temporal Truncation Error", "MRR",
+              "Model Reduction Ratio"},
+          {.description = "", .default_value = "SER"}),
 
-    std::vector<std::string> scaling_op_valid_input = {
-        "Identity", "CFL Diagonal", "Lumped Mass", "Element based"};
-    ptc.specs.emplace_back(deprecated_selection<std::string>("Scaling Type", scaling_op_valid_input,
-        {.description = "Type of the scaling matrix for the PTC method.",
-            .default_value = "Identity"}));
 
-    std::vector<std::string> build_scale_op_valid_input = {"every iter", "every timestep"};
-    ptc.specs.emplace_back(
-        deprecated_selection<std::string>("Build scaling operator", build_scale_op_valid_input,
-            {.description = "Build scaling operator in every iteration or timestep",
-                .default_value = "every timestep"}));
-  }
-  ptc.move_into_collection(list);
+      deprecated_selection<std::string>("Norm Type for TSC", {"Two Norm", "One Norm", "Max Norm"},
+          {.description = "Norm Type for the time step control", .default_value = "Max Norm"}),
+
+      deprecated_selection<std::string>("Scaling Type",
+          {"Identity", "CFL Diagonal", "Lumped Mass", "Element based"},
+          {.description = "Type of the scaling matrix for the PTC method.",
+              .default_value = "Identity"}),
+
+
+      deprecated_selection<std::string>("Build scaling operator", {"every iter", "every timestep"},
+          {.description = "Build scaling operator in every iteration or timestep",
+              .default_value = "every timestep"})});
 
   // sub-list "Line Search"
-  Core::Utils::SectionSpecs linesearch{snox, "Line Search"};
+  list["STRUCT NOX/Line Search"] = all_of({
 
-  {
-    std::vector<std::string> method_valid_input = {
-        "Full Step", "Backtrack", "Polynomial", "More'-Thuente", "User Defined"};
-    linesearch.specs.emplace_back(deprecated_selection<std::string>(
-        "Method", method_valid_input, {.description = "", .default_value = "Full Step"}));
+      deprecated_selection<std::string>("Method",
+          {"Full Step", "Backtrack", "Polynomial", "More'-Thuente", "User Defined"},
+          {.description = "", .default_value = "Full Step"}),
 
 
-    linesearch.specs.emplace_back(
-        deprecated_selection<::NOX::StatusTest::CheckType>("Inner Status Test Check Type",
-            {
-                {"Complete", ::NOX::StatusTest::Complete},
-                {"Minimal", ::NOX::StatusTest::Minimal},
-                {"None", ::NOX::StatusTest::None},
-            },
-            {.description = "Specify the check type for the inner status tests.",
-                .default_value = ::NOX::StatusTest::Minimal}));
-  }
-  linesearch.move_into_collection(list);
+
+      deprecated_selection<::NOX::StatusTest::CheckType>("Inner Status Test Check Type",
+          {
+              {"Complete", ::NOX::StatusTest::Complete},
+              {"Minimal", ::NOX::StatusTest::Minimal},
+              {"None", ::NOX::StatusTest::None},
+          },
+          {.description = "Specify the check type for the inner status tests.",
+              .default_value = ::NOX::StatusTest::Minimal})});
 
   // sub-sub-list "Full Step"
-  Core::Utils::SectionSpecs fullstep{linesearch, "Full Step"};
+  list["STRUCT NOX/Line Search/Full Step"] = all_of({
 
-  {
-    fullstep.specs.emplace_back(parameter<double>(
-        "Full Step", {.description = "length of a full step", .default_value = 1.0}));
-  }
-  fullstep.move_into_collection(list);
+      parameter<double>(
+          "Full Step", {.description = "length of a full step", .default_value = 1.0})});
 
   // sub-sub-list "Backtrack"
-  Core::Utils::SectionSpecs backtrack{linesearch, "Backtrack"};
+  list["STRUCT NOX/Line Search/Backtrack"] = all_of({
 
-  {
-    backtrack.specs.emplace_back(parameter<double>(
-        "Default Step", {.description = "starting step length", .default_value = 1.0}));
-    backtrack.specs.emplace_back(parameter<double>("Minimum Step",
-        {.description = "minimum acceptable step length", .default_value = 1.0e-12}));
-    backtrack.specs.emplace_back(parameter<double>("Recovery Step",
-        {.description =
-                "step to take when the line search fails (defaults to value for \"Default Step\")",
-            .default_value = 1.0}));
-    backtrack.specs.emplace_back(parameter<int>(
-        "Max Iters", {.description = "maximum number of iterations", .default_value = 50}));
-    backtrack.specs.emplace_back(parameter<double>(
-        "Reduction Factor", {.description = "A multiplier between zero and one that reduces the "
-                                            "step size between line search iterations",
-                                .default_value = 0.5}));
-    backtrack.specs.emplace_back(parameter<bool>("Allow Exceptions",
-        {.description = "Set to true, if exceptions during the force evaluation and backtracking "
-                        "routine should be allowed.",
-            .default_value = false}));
-  }
-  backtrack.move_into_collection(list);
+      parameter<double>(
+          "Default Step", {.description = "starting step length", .default_value = 1.0}),
+      parameter<double>("Minimum Step",
+          {.description = "minimum acceptable step length", .default_value = 1.0e-12}),
+      parameter<double>("Recovery Step", {.description = "step to take when the line search fails "
+                                                         "(defaults to value for \"Default Step\")",
+                                             .default_value = 1.0}),
+      parameter<int>(
+          "Max Iters", {.description = "maximum number of iterations", .default_value = 50}),
+      parameter<double>(
+          "Reduction Factor", {.description = "A multiplier between zero and one that reduces the "
+                                              "step size between line search iterations",
+                                  .default_value = 0.5}),
+      parameter<bool>("Allow Exceptions",
+          {.description = "Set to true, if exceptions during the force evaluation and backtracking "
+                          "routine should be allowed.",
+              .default_value = false})});
 
   // sub-sub-list "Polynomial"
-  Core::Utils::SectionSpecs polynomial{linesearch, "Polynomial"};
+  list["STRUCT NOX/Line Search/Polynomial"] = all_of({
 
-  {
-    polynomial.specs.emplace_back(parameter<double>(
-        "Default Step", {.description = "Starting step length", .default_value = 1.0}));
-    polynomial.specs.emplace_back(parameter<int>(
-        "Max Iters", {.description = "Maximum number of line search iterations. The search "
-                                     "fails if the number of iterations exceeds this value",
-                         .default_value = 100}));
-    polynomial.specs.emplace_back(parameter<double>(
-        "Minimum Step", {.description = "Minimum acceptable step length. The search fails if the "
-                                        "computed $\\lambda_k$ is less than this value",
-                            .default_value = 1.0e-12}));
+      parameter<double>(
+          "Default Step", {.description = "Starting step length", .default_value = 1.0}),
+      parameter<int>(
+          "Max Iters", {.description = "Maximum number of line search iterations. The search "
+                                       "fails if the number of iterations exceeds this value",
+                           .default_value = 100}),
+      parameter<double>(
+          "Minimum Step", {.description = "Minimum acceptable step length. The search fails if the "
+                                          "computed $\\lambda_k$ is less than this value",
+                              .default_value = 1.0e-12}),
 
-    std::vector<std::string> recovery_step_type_valid_input = {"Constant", "Last Computed Step"};
-    polynomial.specs.emplace_back(
-        deprecated_selection<std::string>("Recovery Step Type", recovery_step_type_valid_input,
-            {.description = "Determines the step size to take when the line search fails",
-                .default_value = "Constant"}));
 
-    polynomial.specs.emplace_back(parameter<double>(
-        "Recovery Step", {.description = "The value of the step to take when the line search "
-                                         "fails. Only used if the \"Recovery "
-                                         "Step Type\" is set to \"Constant\"",
-                             .default_value = 1.0}));
+      deprecated_selection<std::string>("Recovery Step Type", {"Constant", "Last Computed Step"},
+          {.description = "Determines the step size to take when the line search fails",
+              .default_value = "Constant"}),
 
-    std::vector<std::string> interpolation_type_valid_input = {"Quadratic", "Quadratic3", "Cubic"};
-    polynomial.specs.emplace_back(deprecated_selection<std::string>("Interpolation Type",
-        interpolation_type_valid_input,
-        {.description = "Type of interpolation that should be used", .default_value = "Cubic"}));
+      parameter<double>(
+          "Recovery Step", {.description = "The value of the step to take when the line search "
+                                           "fails. Only used if the \"Recovery "
+                                           "Step Type\" is set to \"Constant\"",
+                               .default_value = 1.0}),
 
-    polynomial.specs.emplace_back(parameter<double>("Min Bounds Factor",
-        {.description = "Choice for $\\gamma_{\\min}$, i.e., the factor that limits the minimum "
-                        "size of the new step based on the previous step",
-            .default_value = 0.1}));
-    polynomial.specs.emplace_back(parameter<double>("Max Bounds Factor",
-        {.description = "Choice for $\\gamma_{\\max}$, i.e., the factor that limits the maximum "
-                        "size of the new step based on the previous step",
-            .default_value = 0.5}));
 
-    std::vector<std::string> sufficient_decrease_condition_valid_input = {
-        "Armijo-Goldstein", "Ared/Pred", "None"};
-    polynomial.specs.emplace_back(deprecated_selection<std::string>("Sufficient Decrease Condition",
-        sufficient_decrease_condition_valid_input,
-        {.description = "Choice to use for the sufficient decrease condition",
-            .default_value = "Armijo-Goldstein"}));
+      deprecated_selection<std::string>("Interpolation Type", {"Quadratic", "Quadratic3", "Cubic"},
+          {.description = "Type of interpolation that should be used", .default_value = "Cubic"}),
 
-    polynomial.specs.emplace_back(parameter<double>(
-        "Alpha Factor", {.description = "Parameter choice for sufficient decrease condition",
-                            .default_value = 1.0e-4}));
-    polynomial.specs.emplace_back(parameter<bool>("Force Interpolation",
-        {.description = "Set to true if at least one interpolation step should be used. The "
-                        "default is false which means that the line search will stop if the "
-                        "default step length satisfies the convergence criteria",
-            .default_value = false}));
-    polynomial.specs.emplace_back(parameter<bool>("Use Counters",
-        {.description = "Set to true if we should use counters and then output the result to the "
-                        "parameter list as described in Output Parameters",
-            .default_value = true}));
-    polynomial.specs.emplace_back(parameter<int>("Maximum Iteration for Increase",
-        {.description =
-                "Maximum index of the nonlinear iteration for which we allow a relative increase",
-            .default_value = 0}));
-    polynomial.specs.emplace_back(parameter<double>(
-        "Allowed Relative Increase", {.description = "", .default_value = 100.0}));
-  }
-  polynomial.move_into_collection(list);
+      parameter<double>("Min Bounds Factor",
+          {.description = "Choice for $\\gamma_{\\min}$, i.e., the factor that limits the minimum "
+                          "size of the new step based on the previous step",
+              .default_value = 0.1}),
+      parameter<double>("Max Bounds Factor",
+          {.description = "Choice for $\\gamma_{\\max}$, i.e., the factor that limits the maximum "
+                          "size of the new step based on the previous step",
+              .default_value = 0.5}),
+
+      deprecated_selection<std::string>("Sufficient Decrease Condition",
+          {"Armijo-Goldstein", "Ared/Pred", "None"},
+          {.description = "Choice to use for the sufficient decrease condition",
+              .default_value = "Armijo-Goldstein"}),
+
+      parameter<double>(
+          "Alpha Factor", {.description = "Parameter choice for sufficient decrease condition",
+                              .default_value = 1.0e-4}),
+      parameter<bool>("Force Interpolation",
+          {.description = "Set to true if at least one interpolation step should be used. The "
+                          "default is false which means that the line search will stop if the "
+                          "default step length satisfies the convergence criteria",
+              .default_value = false}),
+      parameter<bool>("Use Counters",
+          {.description = "Set to true if we should use counters and then output the result to the "
+                          "parameter list as described in Output Parameters",
+              .default_value = true}),
+      parameter<int>("Maximum Iteration for Increase",
+          {.description =
+                  "Maximum index of the nonlinear iteration for which we allow a relative increase",
+              .default_value = 0}),
+
+      parameter<double>("Allowed Relative Increase", {.description = "", .default_value = 100.0})});
 
   // sub-sub-list "More'-Thuente"
-  Core::Utils::SectionSpecs morethuente{linesearch, "More'-Thuente"};
+  list["STRUCT NOX/Line Search/More'-Thuente"] = all_of({
 
-  {
-    morethuente.specs.emplace_back(parameter<double>("Sufficient Decrease",
-        {.description = "The ftol in the sufficient decrease condition", .default_value = 1.0e-4}));
-    morethuente.specs.emplace_back(parameter<double>("Curvature Condition",
-        {.description = "The gtol in the curvature condition", .default_value = 0.9999}));
-    morethuente.specs.emplace_back(parameter<double>("Interval Width",
-        {.description =
-                "The maximum width of the interval containing the minimum of the modified function",
-            .default_value = 1.0e-15}));
-    morethuente.specs.emplace_back(parameter<double>(
-        "Maximum Step", {.description = "maximum allowable step length", .default_value = 1.0e6}));
-    morethuente.specs.emplace_back(parameter<double>("Minimum Step",
-        {.description = "minimum allowable step length", .default_value = 1.0e-12}));
-    morethuente.specs.emplace_back(parameter<int>("Max Iters",
-        {.description = "maximum number of right-hand-side and corresponding Jacobian evaluations",
-            .default_value = 20}));
-    morethuente.specs.emplace_back(parameter<double>(
-        "Default Step", {.description = "starting step length", .default_value = 1.0}));
+      parameter<double>(
+          "Sufficient Decrease", {.description = "The ftol in the sufficient decrease condition",
+                                     .default_value = 1.0e-4}),
+      parameter<double>("Curvature Condition",
+          {.description = "The gtol in the curvature condition", .default_value = 0.9999}),
+      parameter<double>(
+          "Interval Width", {.description = "The maximum width of the interval containing the "
+                                            "minimum of the modified function",
+                                .default_value = 1.0e-15}),
+      parameter<double>(
+          "Maximum Step", {.description = "maximum allowable step length", .default_value = 1.0e6}),
+      parameter<double>("Minimum Step",
+          {.description = "minimum allowable step length", .default_value = 1.0e-12}),
+      parameter<int>("Max Iters",
+          {.description =
+                  "maximum number of right-hand-side and corresponding Jacobian evaluations",
+              .default_value = 20}),
+      parameter<double>(
+          "Default Step", {.description = "starting step length", .default_value = 1.0}),
 
-    std::vector<std::string> recovery_step_type_valid_input = {"Constant", "Last Computed Step"};
-    morethuente.specs.emplace_back(
-        deprecated_selection<std::string>("Recovery Step Type", recovery_step_type_valid_input,
-            {.description = "Determines the step size to take when the line search fails",
-                .default_value = "Constant"}));
 
-    morethuente.specs.emplace_back(parameter<double>(
-        "Recovery Step", {.description = "The value of the step to take when the line search "
-                                         "fails. Only used if the \"Recovery "
-                                         "Step Type\" is set to \"Constant\"",
-                             .default_value = 1.0}));
+      deprecated_selection<std::string>("Recovery Step Type", {"Constant", "Last Computed Step"},
+          {.description = "Determines the step size to take when the line search fails",
+              .default_value = "Constant"}),
 
-    std::vector<std::string> sufficient_decrease_condition_valid_input = {
-        "Armijo-Goldstein", "Ared/Pred", "None"};
-    morethuente.specs.emplace_back(deprecated_selection<std::string>(
-        "Sufficient Decrease Condition", sufficient_decrease_condition_valid_input,
-        {.description = "Choice to use for the sufficient decrease condition",
-            .default_value = "Armijo-Goldstein"}));
+      parameter<double>(
+          "Recovery Step", {.description = "The value of the step to take when the line search "
+                                           "fails. Only used if the \"Recovery "
+                                           "Step Type\" is set to \"Constant\"",
+                               .default_value = 1.0}),
 
-    morethuente.specs.emplace_back(parameter<bool>("Optimize Slope Calculation",
-        {.description = "Boolean value. If set to true the value of $s^T J^T F$ is estimated using "
-                        "a directional derivative in a call to "
-                        "::NOX::LineSearch::Common::computeSlopeWithOutJac. If false the slope "
-                        "computation is computed with the ::NOX::LineSearch::Common::computeSlope "
-                        "method. Setting this to true eliminates having to compute the Jacobian at "
-                        "each inner iteration of the More'-Thuente line search",
-            .default_value = false}));
-  }
-  morethuente.move_into_collection(list);
+      deprecated_selection<std::string>("Sufficient Decrease Condition",
+          {"Armijo-Goldstein", "Ared/Pred", "None"},
+          {.description = "Choice to use for the sufficient decrease condition",
+              .default_value = "Armijo-Goldstein"}),
+
+      parameter<bool>("Optimize Slope Calculation",
+          {.description =
+                  "Boolean value. If set to true the value of $s^T J^T F$ is estimated using "
+                  "a directional derivative in a call to "
+                  "::NOX::LineSearch::Common::computeSlopeWithOutJac. If false the slope "
+                  "computation is computed with the ::NOX::LineSearch::Common::computeSlope "
+                  "method. Setting this to true eliminates having to compute the Jacobian at "
+                  "each inner iteration of the More'-Thuente line search",
+              .default_value = false})});
 
   // sub-list "Trust Region"
-  Core::Utils::SectionSpecs trustregion{snox, "Trust Region"};
+  list["STRUCT NOX/Trust Region"] = all_of({
 
-  {
-    trustregion.specs.emplace_back(parameter<double>("Minimum Trust Region Radius",
-        {.description = "Minimum allowable trust region radius", .default_value = 1.0e-6}));
-    trustregion.specs.emplace_back(parameter<double>("Maximum Trust Region Radius",
-        {.description = "Maximum allowable trust region radius", .default_value = 1.0e+9}));
-    trustregion.specs.emplace_back(parameter<double>("Minimum Improvement Ratio",
-        {.description = "Minimum improvement ratio to accept the step", .default_value = 1.0e-4}));
-    trustregion.specs.emplace_back(parameter<double>("Contraction Trigger Ratio",
-        {.description =
-                "If the improvement ratio is less than this value, then the trust region is "
-                "contracted by "
-                "the amount specified by the \"Contraction Factor\". Must be larger than \"Minimum "
-                "Improvement Ratio\"",
-            .default_value = 0.1}));
-    trustregion.specs.emplace_back(
-        parameter<double>("Contraction Factor", {.description = "", .default_value = 0.25}));
-    trustregion.specs.emplace_back(parameter<double>("Expansion Trigger Ratio",
-        {.description = "If the improvement ratio is greater than this value, then the trust "
-                        "region is contracted "
-                        "by the amount specified by the \"Expansion Factor\"",
-            .default_value = 0.75}));
-    trustregion.specs.emplace_back(
-        parameter<double>("Expansion Factor", {.description = "", .default_value = 4.0}));
-    trustregion.specs.emplace_back(
-        parameter<double>("Recovery Step", {.description = "", .default_value = 1.0}));
-  }
-  trustregion.move_into_collection(list);
+      parameter<double>("Minimum Trust Region Radius",
+          {.description = "Minimum allowable trust region radius", .default_value = 1.0e-6}),
+      parameter<double>("Maximum Trust Region Radius",
+          {.description = "Maximum allowable trust region radius", .default_value = 1.0e+9}),
+      parameter<double>("Minimum Improvement Ratio",
+          {.description = "Minimum improvement ratio to accept the step", .default_value = 1.0e-4}),
+      parameter<double>("Contraction Trigger Ratio",
+          {.description =
+                  "If the improvement ratio is less than this value, then the trust region is "
+                  "contracted by "
+                  "the amount specified by the \"Contraction Factor\". Must be larger than "
+                  "\"Minimum "
+                  "Improvement Ratio\"",
+              .default_value = 0.1}),
+
+      parameter<double>("Contraction Factor", {.description = "", .default_value = 0.25}),
+      parameter<double>("Expansion Trigger Ratio",
+          {.description = "If the improvement ratio is greater than this value, then the trust "
+                          "region is contracted "
+                          "by the amount specified by the \"Expansion Factor\"",
+              .default_value = 0.75}),
+
+      parameter<double>("Expansion Factor", {.description = "", .default_value = 4.0}),
+
+      parameter<double>("Recovery Step", {.description = "", .default_value = 1.0})});
 
   // sub-list "Printing"
-  Core::Utils::SectionSpecs printing{snox, "Printing"};
+  list["STRUCT NOX/Printing"] = all_of({
 
-  {
-    printing.specs.emplace_back(
-        parameter<bool>("Error", {.description = "", .default_value = false}));
-    printing.specs.emplace_back(
-        parameter<bool>("Warning", {.description = "", .default_value = true}));
-    printing.specs.emplace_back(
-        parameter<bool>("Outer Iteration", {.description = "", .default_value = true}));
-    printing.specs.emplace_back(
-        parameter<bool>("Inner Iteration", {.description = "", .default_value = true}));
-    printing.specs.emplace_back(
-        parameter<bool>("Parameters", {.description = "", .default_value = false}));
-    printing.specs.emplace_back(
-        parameter<bool>("Details", {.description = "", .default_value = false}));
-    printing.specs.emplace_back(
-        parameter<bool>("Outer Iteration StatusTest", {.description = "", .default_value = true}));
-    printing.specs.emplace_back(
-        parameter<bool>("Linear Solver Details", {.description = "", .default_value = false}));
-    printing.specs.emplace_back(
-        parameter<bool>("Test Details", {.description = "", .default_value = false}));
-    printing.specs.emplace_back(
-        parameter<bool>("Debug", {.description = "", .default_value = false}));
-  }
-  printing.move_into_collection(list);
+      parameter<bool>("Error", {.description = "", .default_value = false}),
+
+      parameter<bool>("Warning", {.description = "", .default_value = true}),
+
+      parameter<bool>("Outer Iteration", {.description = "", .default_value = true}),
+
+      parameter<bool>("Inner Iteration", {.description = "", .default_value = true}),
+
+      parameter<bool>("Parameters", {.description = "", .default_value = false}),
+
+      parameter<bool>("Details", {.description = "", .default_value = false}),
+
+      parameter<bool>("Outer Iteration StatusTest", {.description = "", .default_value = true}),
+
+      parameter<bool>("Linear Solver Details", {.description = "", .default_value = false}),
+
+      parameter<bool>("Test Details", {.description = "", .default_value = false}),
+
+      parameter<bool>("Debug", {.description = "", .default_value = false})});
 
   // sub-list "Status Test"
-  Core::Utils::SectionSpecs statusTest{snox, "Status Test"};
+  list["STRUCT NOX/Status Test"] = all_of({
 
-  {
-    statusTest.specs.emplace_back(
-        Core::IO::InputSpecBuilders::parameter<std::optional<std::filesystem::path>>("XML File",
-            {.description = "Filename of XML file with configuration of nox status test"}));
-  }
-  statusTest.move_into_collection(list);
+      Core::IO::InputSpecBuilders::parameter<std::optional<std::filesystem::path>>("XML File",
+          {.description = "Filename of XML file with configuration of nox status test"})});
 
   // sub-list "Solver Options"
-  Core::Utils::SectionSpecs solverOptions{snox, "Solver Options"};
+  list["STRUCT NOX/Solver Options"] = all_of({
 
-  {
-    solverOptions.specs.emplace_back(
-        deprecated_selection<NOX::Nln::MeritFunction::MeritFctName>("Merit Function",
-            {
-                {"Sum of Squares", NOX::Nln::MeritFunction::mrtfct_sum_of_squares},
-            },
-            {.description = "", .default_value = NOX::Nln::MeritFunction::mrtfct_sum_of_squares}));
+      deprecated_selection<NOX::Nln::MeritFunction::MeritFctName>("Merit Function",
+          {
+              {"Sum of Squares", NOX::Nln::MeritFunction::mrtfct_sum_of_squares},
+          },
+          {.description = "", .default_value = NOX::Nln::MeritFunction::mrtfct_sum_of_squares}),
 
-    std::vector<std::string> status_test_check_type_valid_input = {"Complete", "Minimal", "None"};
-    solverOptions.specs.emplace_back(deprecated_selection<std::string>("Status Test Check Type",
-        status_test_check_type_valid_input, {.description = "", .default_value = "Complete"}));
-  }
-  solverOptions.move_into_collection(list);
+      deprecated_selection<std::string>("Status Test Check Type", {"Complete", "Minimal", "None"},
+          {.description = "", .default_value = "Complete"})});
 
   // sub-sub-sub-list "Linear Solver"
-  Core::Utils::SectionSpecs linearSolver{newton, "Linear Solver"};
+  list["STRUCT NOX/Direction/Newton/Linear Solver"] = all_of({
 
-  {
-    // convergence criteria adaptivity
-    linearSolver.specs.emplace_back(parameter<bool>("Adaptive Control",
-        {.description =
-                "Switch on adaptive control of linear solver tolerance for nonlinear solution",
-            .default_value = false}));
-    linearSolver.specs.emplace_back(parameter<double>("Adaptive Control Objective",
-        {.description = "The linear solver shall be this much better than the current nonlinear "
-                        "residual in the nonlinear convergence limit",
-            .default_value = 0.1}));
-    linearSolver.specs.emplace_back(parameter<bool>("Zero Initial Guess",
-        {.description = "Zero out the delta X vector if requested.", .default_value = true}));
-    linearSolver.specs.emplace_back(parameter<bool>("Computing Scaling Manually",
-        {.description =
-                "Allows the manually scaling of your linear system (not supported at the moment).",
-            .default_value = false}));
-    linearSolver.specs.emplace_back(parameter<bool>("Output Solver Details",
-        {.description = "Switch the linear solver output on and off.", .default_value = true}));
-  }
-  linearSolver.move_into_collection(list);
+      // convergence criteria adaptivity
+      parameter<bool>("Adaptive Control",
+          {.description =
+                  "Switch on adaptive control of linear solver tolerance for nonlinear solution",
+              .default_value = false}),
+      parameter<double>("Adaptive Control Objective",
+          {.description = "The linear solver shall be this much better than the current nonlinear "
+                          "residual in the nonlinear convergence limit",
+              .default_value = 0.1}),
+      parameter<bool>("Zero Initial Guess",
+          {.description = "Zero out the delta X vector if requested.", .default_value = true}),
+      parameter<bool>("Computing Scaling Manually",
+          {.description = "Allows the manually scaling of your linear system (not supported at the "
+                          "moment).",
+              .default_value = false}),
+      parameter<bool>("Output Solver Details",
+          {.description = "Switch the linear solver output on and off.", .default_value = true})});
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -21,32 +21,29 @@ void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs cut_general{"CUT GENERAL"};
+  list["CUT GENERAL"] = all_of({
 
-  // intersection precision (double or cln)
-  cut_general.specs.emplace_back(
+      // intersection precision (double or cln)
       deprecated_selection<FourC::Cut::CutFloatType>("KERNEL_INTERSECTION_FLOATTYPE",
           {
               {"cln", floattype_cln},
               {"double", floattype_double},
           },
           {.description = "The floattype of the cut surface-edge intersection",
-              .default_value = floattype_double}));
+              .default_value = floattype_double}),
 
-  // Computing disctance surface to point precision (double or cln)
-  cut_general.specs.emplace_back(
+      // Computing disctance surface to point precision (double or cln)
       deprecated_selection<FourC::Cut::CutFloatType>("KERNEL_DISTANCE_FLOATTYPE",
           {
               {"cln", floattype_cln},
               {"double", floattype_double},
           },
           {.description = "The floattype of the cut distance computation",
-              .default_value = floattype_double}));
+              .default_value = floattype_double}),
 
-  // A general floattype for Cut::Position for Embedded Elements (compute_distance)
-  // If specified this floattype is used for all computations of Cut::Position with
-  // embedded elements
-  cut_general.specs.emplace_back(
+      // A general floattype for Cut::Position for Embedded Elements (compute_distance)
+      // If specified this floattype is used for all computations of Cut::Position with
+      // embedded elements
       deprecated_selection<FourC::Cut::CutFloatType>("GENERAL_POSITION_DISTANCE_FLOATTYPE",
           {
               {"none", floattype_none},
@@ -55,11 +52,10 @@ void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
           },
           {.description =
                   "A general floattype for Cut::Position for Embedded Elements (compute_distance)",
-              .default_value = floattype_none}));
+              .default_value = floattype_none}),
 
-  // A general floattype for Cut::Position for Elements (ComputePosition)
-  // If specified this floattype is used for all computations of Cut::Position
-  cut_general.specs.emplace_back(
+      // A general floattype for Cut::Position for Elements (ComputePosition)
+      // If specified this floattype is used for all computations of Cut::Position
       deprecated_selection<FourC::Cut::CutFloatType>("GENERAL_POSITION_POSITION_FLOATTYPE",
           {
               {"none", floattype_none},
@@ -67,10 +63,9 @@ void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
               {"double", floattype_double},
           },
           {.description = "A general floattype for Cut::Position Elements (ComputePosition)",
-              .default_value = floattype_none}));
+              .default_value = floattype_none}),
 
-  // Specify which Referenceplanes are used in DirectDivergence
-  cut_general.specs.emplace_back(
+      // Specify which Referenceplanes are used in DirectDivergence
       deprecated_selection<FourC::Cut::CutDirectDivergenceRefplane>("DIRECT_DIVERGENCE_REFPLANE",
           {
               {"all", DirDiv_refplane_all},
@@ -81,38 +76,36 @@ void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
               {"none", DirDiv_refplane_none},
           },
           {.description = "Specify which Referenceplanes are used in DirectDivergence",
-              .default_value = DirDiv_refplane_all}));
+              .default_value = DirDiv_refplane_all}),
 
-  // Specify is Cutsides are triangulated
-  cut_general.specs.emplace_back(parameter<bool>("SPLIT_CUTSIDES",
-      {.description = "Split Quad4 CutSides into Tri3-Subtriangles?", .default_value = true}));
+      // Specify is Cutsides are triangulated
+      parameter<bool>("SPLIT_CUTSIDES",
+          {.description = "Split Quad4 CutSides into Tri3-Subtriangles?", .default_value = true}),
 
-  // Do the Selfcut before standard CUT
-  cut_general.specs.emplace_back(
-      parameter<bool>("DO_SELFCUT", {.description = "Do the SelfCut?", .default_value = true}));
+      // Do the Selfcut before standard CUT
+      parameter<bool>("DO_SELFCUT", {.description = "Do the SelfCut?", .default_value = true}),
 
-  // Do meshcorrection in Selfcut
-  cut_general.specs.emplace_back(parameter<bool>("SELFCUT_DO_MESHCORRECTION",
-      {.description = "Do meshcorrection in the SelfCut?", .default_value = true}));
+      // Do meshcorrection in Selfcut
+      parameter<bool>("SELFCUT_DO_MESHCORRECTION",
+          {.description = "Do meshcorrection in the SelfCut?", .default_value = true}),
 
-  // Selfcut meshcorrection multiplicator
-  cut_general.specs.emplace_back(parameter<int>("SELFCUT_MESHCORRECTION_MULTIPLICATOR",
-      {.description =
-              "ISLANDS with maximal size of the bounding box of h*multiplacator will be removed in "
-              "the meshcorrection",
-          .default_value = 30}));
+      // Selfcut meshcorrection multiplicator
+      parameter<int>("SELFCUT_MESHCORRECTION_MULTIPLICATOR",
+          {.description = "ISLANDS with maximal size of the bounding box of h*multiplacator will "
+                          "be removed in "
+                          "the meshcorrection",
+              .default_value = 30}),
 
-  // Cubaturedegree utilized for the numerical integration on the CUT BoundaryCells.
-  cut_general.specs.emplace_back(parameter<int>("BOUNDARYCELL_CUBATURDEGREE",
-      {.description =
-              "Cubaturedegree utilized for the numerical integration on the CUT BoundaryCells.",
-          .default_value = 20}));
+      // Cubaturedegree utilized for the numerical integration on the CUT BoundaryCells.
+      parameter<int>("BOUNDARYCELL_CUBATURDEGREE",
+          {.description =
+                  "Cubaturedegree utilized for the numerical integration on the CUT BoundaryCells.",
+              .default_value = 20}),
 
-  // Integrate inside volume cells
-  cut_general.specs.emplace_back(parameter<bool>("INTEGRATE_INSIDE_CELLS",
-      {.description = "Should the integration be done on inside cells", .default_value = true}));
-
-  cut_general.move_into_collection(list);
+      // Integrate inside volume cells
+      parameter<bool>("INTEGRATE_INSIDE_CELLS",
+          {.description = "Should the integration be done on inside cells",
+              .default_value = true})});
 }
 
 FOUR_C_NAMESPACE_CLOSE

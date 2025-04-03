@@ -10,8 +10,6 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io_input_spec_builders.hpp"
-#include "4C_utils_parameter_list.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
 
@@ -19,48 +17,48 @@ void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 {
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
-  Core::Utils::SectionSpecs andyn{"ARTERIAL DYNAMIC"};
+  list["ARTERIAL DYNAMIC"] = all_of({
 
-  andyn.specs.emplace_back(deprecated_selection<TimeIntegrationScheme>("DYNAMICTYPE",
-      {
-          {"ExpTaylorGalerkin", tay_gal},
-          {"Stationary", stationary},
-      },
-      {.description = "Explicit Taylor Galerkin Scheme", .default_value = tay_gal}));
+      deprecated_selection<TimeIntegrationScheme>("DYNAMICTYPE",
+          {
+              {"ExpTaylorGalerkin", tay_gal},
+              {"Stationary", stationary},
+          },
+          {.description = "Explicit Taylor Galerkin Scheme", .default_value = tay_gal}),
 
-  andyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}));
-  andyn.specs.emplace_back(
-      parameter<int>("NUMSTEP", {.description = "Number of Time Steps", .default_value = 0}));
-  andyn.specs.emplace_back(parameter<double>(
-      "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
-  andyn.specs.emplace_back(parameter<int>(
-      "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}));
-  andyn.specs.emplace_back(parameter<int>(
-      "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}));
 
-  andyn.specs.emplace_back(parameter<bool>(
-      "SOLVESCATRA", {.description = "Flag to (de)activate solving scalar transport in blood",
-                         .default_value = false}));
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}),
 
-  // number of linear solver used for arterial dynamics
-  andyn.specs.emplace_back(parameter<int>("LINEAR_SOLVER",
-      {.description = "number of linear solver used for arterial dynamics", .default_value = -1}));
+      parameter<int>("NUMSTEP", {.description = "Number of Time Steps", .default_value = 0}),
+      parameter<double>(
+          "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}),
+      parameter<int>(
+          "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}),
+      parameter<int>(
+          "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}),
 
-  // initial function number
-  andyn.specs.emplace_back(parameter<int>("INITFUNCNO",
-      {.description = "function number for artery initial field", .default_value = -1}));
+      parameter<bool>(
+          "SOLVESCATRA", {.description = "Flag to (de)activate solving scalar transport in blood",
+                             .default_value = false}),
 
-  // type of initial field
-  andyn.specs.emplace_back(deprecated_selection<InitialField>("INITIALFIELD",
-      {
-          {"zero_field", initfield_zero_field},
-          {"field_by_function", initfield_field_by_function},
-          {"field_by_condition", initfield_field_by_condition},
-      },
-      {.description = "Initial Field for artery problem", .default_value = initfield_zero_field}));
+      // number of linear solver used for arterial dynamics
+      parameter<int>(
+          "LINEAR_SOLVER", {.description = "number of linear solver used for arterial dynamics",
+                               .default_value = -1}),
 
-  andyn.move_into_collection(list);
+      // initial function number
+      parameter<int>("INITFUNCNO",
+          {.description = "function number for artery initial field", .default_value = -1}),
+
+      // type of initial field
+      deprecated_selection<InitialField>("INITIALFIELD",
+          {
+              {"zero_field", initfield_zero_field},
+              {"field_by_function", initfield_field_by_function},
+              {"field_by_condition", initfield_field_by_condition},
+          },
+          {.description = "Initial Field for artery problem",
+              .default_value = initfield_zero_field})});
 }
 
 
@@ -70,27 +68,25 @@ void Inpar::ArteryNetwork::set_valid_parameters(std::map<std::string, Core::IO::
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs redtisdyn{"COUPLED REDUCED-D AIRWAYS AND TISSUE DYNAMIC"};
-  redtisdyn.specs.emplace_back(parameter<double>("CONVTOL_P",
-      {.description = "Coupled red_airway and tissue iteration convergence for pressure",
-          .default_value = 1E-6}));
-  redtisdyn.specs.emplace_back(parameter<double>(
-      "CONVTOL_Q", {.description = "Coupled red_airway and tissue iteration convergence for flux",
-                       .default_value = 1E-6}));
-  redtisdyn.specs.emplace_back(parameter<int>(
-      "MAXITER", {.description = "Maximum coupling iterations", .default_value = 5}));
-  redtisdyn.specs.emplace_back(parameter<Relaxtype3D0D>(
-      "RELAXTYPE", {.description = "Dynamic Relaxation Type", .default_value = norelaxation}));
-  redtisdyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}));
-  redtisdyn.specs.emplace_back(
-      parameter<int>("NUMSTEP", {.description = "Number of Time Steps", .default_value = 1}));
-  redtisdyn.specs.emplace_back(
-      parameter<double>("MAXTIME", {.description = "", .default_value = 4.0}));
-  redtisdyn.specs.emplace_back(
-      parameter<double>("NORMAL", {.description = "", .default_value = 1.0}));
+  list["COUPLED REDUCED-D AIRWAYS AND TISSUE DYNAMIC"] = all_of({
 
-  redtisdyn.move_into_collection(list);
+      parameter<double>("CONVTOL_P",
+          {.description = "Coupled red_airway and tissue iteration convergence for pressure",
+              .default_value = 1E-6}),
+      parameter<double>("CONVTOL_Q",
+          {.description = "Coupled red_airway and tissue iteration convergence for flux",
+              .default_value = 1E-6}),
+      parameter<int>("MAXITER", {.description = "Maximum coupling iterations", .default_value = 5}),
+      parameter<Relaxtype3D0D>(
+          "RELAXTYPE", {.description = "Dynamic Relaxation Type", .default_value = norelaxation}),
+
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}),
+
+      parameter<int>("NUMSTEP", {.description = "Number of Time Steps", .default_value = 1}),
+
+      parameter<double>("MAXTIME", {.description = "", .default_value = 4.0}),
+
+      parameter<double>("NORMAL", {.description = "", .default_value = 1.0})});
 }
 
 
@@ -228,35 +224,34 @@ void Inpar::ArteryNetwork::set_valid_conditions(
 void Inpar::BioFilm::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
-  Core::Utils::SectionSpecs biofilmcontrol{"BIOFILM CONTROL"};
+  list["BIOFILM CONTROL"] = all_of({
 
-  biofilmcontrol.specs.emplace_back(parameter<bool>("BIOFILMGROWTH",
-      {.description = "Scatra algorithm for biofilm growth", .default_value = false}));
-  biofilmcontrol.specs.emplace_back(parameter<bool>("AVGROWTH",
-      {.description = "The calculation of growth parameters is based on averaged values",
-          .default_value = false}));
-  biofilmcontrol.specs.emplace_back(parameter<double>("FLUXCOEF",
-      {.description = "Coefficient for growth due to scalar flux", .default_value = 0.0}));
-  biofilmcontrol.specs.emplace_back(parameter<double>("NORMFORCEPOSCOEF",
-      {.description = "Coefficient for erosion due to traction normal surface forces",
-          .default_value = 0.0}));
-  biofilmcontrol.specs.emplace_back(parameter<double>("NORMFORCENEGCOEF",
-      {.description = "Coefficient for erosion due to compression normal surface forces",
-          .default_value = 0.0}));
-  biofilmcontrol.specs.emplace_back(parameter<double>("TANGONEFORCECOEF",
-      {.description = "Coefficient for erosion due to the first tangential surface force",
-          .default_value = 0.0}));
-  biofilmcontrol.specs.emplace_back(parameter<double>("TANGTWOFORCECOEF",
-      {.description = "Coefficient for erosion due to the second tangential surface force",
-          .default_value = 0.0}));
-  biofilmcontrol.specs.emplace_back(parameter<double>(
-      "BIOTIMESTEP", {.description = "Time step size for biofilm growth", .default_value = 0.05}));
-  biofilmcontrol.specs.emplace_back(parameter<int>("BIONUMSTEP",
-      {.description = "Maximum number of steps for biofilm growth", .default_value = 0}));
-  biofilmcontrol.specs.emplace_back(parameter<bool>("OUTPUT_GMSH",
-      {.description = "Do you want to write Gmsh postprocessing files?", .default_value = false}));
-
-  biofilmcontrol.move_into_collection(list);
+      parameter<bool>("BIOFILMGROWTH",
+          {.description = "Scatra algorithm for biofilm growth", .default_value = false}),
+      parameter<bool>("AVGROWTH",
+          {.description = "The calculation of growth parameters is based on averaged values",
+              .default_value = false}),
+      parameter<double>("FLUXCOEF",
+          {.description = "Coefficient for growth due to scalar flux", .default_value = 0.0}),
+      parameter<double>("NORMFORCEPOSCOEF",
+          {.description = "Coefficient for erosion due to traction normal surface forces",
+              .default_value = 0.0}),
+      parameter<double>("NORMFORCENEGCOEF",
+          {.description = "Coefficient for erosion due to compression normal surface forces",
+              .default_value = 0.0}),
+      parameter<double>("TANGONEFORCECOEF",
+          {.description = "Coefficient for erosion due to the first tangential surface force",
+              .default_value = 0.0}),
+      parameter<double>("TANGTWOFORCECOEF",
+          {.description = "Coefficient for erosion due to the second tangential surface force",
+              .default_value = 0.0}),
+      parameter<double>("BIOTIMESTEP",
+          {.description = "Time step size for biofilm growth", .default_value = 0.05}),
+      parameter<int>("BIONUMSTEP",
+          {.description = "Maximum number of steps for biofilm growth", .default_value = 0}),
+      parameter<bool>(
+          "OUTPUT_GMSH", {.description = "Do you want to write Gmsh postprocessing files?",
+                             .default_value = false})});
 }
 
 
@@ -282,60 +277,58 @@ void Inpar::ReducedLung::set_valid_parameters(std::map<std::string, Core::IO::In
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs redawdyn{"REDUCED DIMENSIONAL AIRWAYS DYNAMIC"};
+  list["REDUCED DIMENSIONAL AIRWAYS DYNAMIC"] = all_of({
 
-  redawdyn.specs.emplace_back(deprecated_selection<RedAirwaysDyntype>("DYNAMICTYPE",
-      {
-          {"OneStepTheta", one_step_theta},
-      },
-      {.description = "OneStepTheta Scheme", .default_value = one_step_theta}));
+      deprecated_selection<RedAirwaysDyntype>("DYNAMICTYPE",
+          {
+              {"OneStepTheta", one_step_theta},
+          },
+          {.description = "OneStepTheta Scheme", .default_value = one_step_theta}),
 
-  redawdyn.specs.emplace_back(deprecated_selection<RedAirwaysDyntype>("SOLVERTYPE",
-      {
-          {"Linear", linear},
-          {"Nonlinear", nonlinear},
-      },
-      {.description = "Solver type", .default_value = linear}));
+      deprecated_selection<RedAirwaysDyntype>("SOLVERTYPE",
+          {
+              {"Linear", linear},
+              {"Nonlinear", nonlinear},
+          },
+          {.description = "Solver type", .default_value = linear}),
 
-  redawdyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}));
-  redawdyn.specs.emplace_back(
-      parameter<int>("NUMSTEP", {.description = "Number of Time Steps", .default_value = 0}));
-  redawdyn.specs.emplace_back(parameter<int>(
-      "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}));
-  redawdyn.specs.emplace_back(parameter<int>(
-      "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}));
-  redawdyn.specs.emplace_back(parameter<double>(
-      "THETA", {.description = "One-step-theta time integration factor", .default_value = 1.0}));
 
-  redawdyn.specs.emplace_back(parameter<int>(
-      "MAXITERATIONS", {.description = "maximum iteration steps", .default_value = 1}));
-  redawdyn.specs.emplace_back(
-      parameter<double>("TOLERANCE", {.description = "tolerance", .default_value = 1.0E-6}));
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.01}),
 
-  // number of linear solver used for reduced dimensional airways dynamic
-  redawdyn.specs.emplace_back(parameter<int>("LINEAR_SOLVER",
-      {.description = "number of linear solver used for reduced dim arterial dynamics",
-          .default_value = -1}));
+      parameter<int>("NUMSTEP", {.description = "Number of Time Steps", .default_value = 0}),
+      parameter<int>(
+          "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}),
+      parameter<int>(
+          "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}),
+      parameter<double>(
+          "THETA", {.description = "One-step-theta time integration factor", .default_value = 1.0}),
 
-  redawdyn.specs.emplace_back(parameter<bool>(
-      "SOLVESCATRA", {.description = "Flag to (de)activate solving scalar transport in blood",
-                         .default_value = false}));
+      parameter<int>(
+          "MAXITERATIONS", {.description = "maximum iteration steps", .default_value = 1}),
 
-  redawdyn.specs.emplace_back(parameter<bool>("COMPAWACINTER",
-      {.description = "Flag to (de)activate computation of airway-acinus interdependency",
-          .default_value = false}));
+      parameter<double>("TOLERANCE", {.description = "tolerance", .default_value = 1.0E-6}),
 
-  redawdyn.specs.emplace_back(parameter<bool>("CALCV0PRESTRESS",
-      {.description =
-              "Flag to (de)activate initial acini volume adjustment with pre-stress condition",
-          .default_value = false}));
+      // number of linear solver used for reduced dimensional airways dynamic
+      parameter<int>("LINEAR_SOLVER",
+          {.description = "number of linear solver used for reduced dim arterial dynamics",
+              .default_value = -1}),
 
-  redawdyn.specs.emplace_back(parameter<double>("TRANSPULMPRESS",
-      {.description = "Transpulmonary pressure needed for recalculation of acini volumes",
-          .default_value = 800.0}));
+      parameter<bool>(
+          "SOLVESCATRA", {.description = "Flag to (de)activate solving scalar transport in blood",
+                             .default_value = false}),
 
-  redawdyn.move_into_collection(list);
+      parameter<bool>("COMPAWACINTER",
+          {.description = "Flag to (de)activate computation of airway-acinus interdependency",
+              .default_value = false}),
+
+      parameter<bool>("CALCV0PRESTRESS",
+          {.description =
+                  "Flag to (de)activate initial acini volume adjustment with pre-stress condition",
+              .default_value = false}),
+
+      parameter<double>("TRANSPULMPRESS",
+          {.description = "Transpulmonary pressure needed for recalculation of acini volumes",
+              .default_value = 800.0})});
 }
 
 

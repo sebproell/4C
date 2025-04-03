@@ -8,8 +8,7 @@
 #include "4C_inpar_volmortar.hpp"
 
 #include "4C_coupling_volmortar.hpp"
-#include "4C_utils_parameter_list.hpp"
-
+#include "4C_io_input_spec_builders.hpp"
 FOUR_C_NAMESPACE_OPEN
 
 
@@ -20,19 +19,19 @@ void Inpar::VolMortar::set_valid_parameters(std::map<std::string, Core::IO::Inpu
   using namespace Core::IO::InputSpecBuilders;
 
   /* parameters for volmortar */
-  Core::Utils::SectionSpecs volmortar{"VOLMORTAR COUPLING"};
+  list["VOLMORTAR COUPLING"] = all_of({
 
-  volmortar.specs.emplace_back(deprecated_selection<Coupling::VolMortar::IntType>("INTTYPE",
-      {
-          {"Elements", Coupling::VolMortar::inttype_elements},
-          {"elements", Coupling::VolMortar::inttype_elements},
-          {"Segments", Coupling::VolMortar::inttype_segments},
-          {"segments", Coupling::VolMortar::inttype_segments},
-      },
-      {.description = "Type of numerical integration scheme",
-          .default_value = Coupling::VolMortar::inttype_elements}));
+      deprecated_selection<Coupling::VolMortar::IntType>("INTTYPE",
+          {
+              {"Elements", Coupling::VolMortar::inttype_elements},
+              {"elements", Coupling::VolMortar::inttype_elements},
+              {"Segments", Coupling::VolMortar::inttype_segments},
+              {"segments", Coupling::VolMortar::inttype_segments},
+          },
+          {.description = "Type of numerical integration scheme",
+              .default_value = Coupling::VolMortar::inttype_elements}),
 
-  volmortar.specs.emplace_back(
+
       deprecated_selection<Coupling::VolMortar::CouplingType>("COUPLINGTYPE",
           {
               {"Volmortar", Coupling::VolMortar::couplingtype_volmortar},
@@ -41,52 +40,50 @@ void Inpar::VolMortar::set_valid_parameters(std::map<std::string, Core::IO::Inpu
               {"consint", Coupling::VolMortar::couplingtype_coninter},
           },
           {.description = "Type of coupling",
-              .default_value = Coupling::VolMortar::couplingtype_volmortar}));
+              .default_value = Coupling::VolMortar::couplingtype_volmortar}),
 
-  volmortar.specs.emplace_back(deprecated_selection<Coupling::VolMortar::Shapefcn>("SHAPEFCN",
-      {
-          {"Dual", Coupling::VolMortar::shape_dual},
-          {"dual", Coupling::VolMortar::shape_dual},
-          {"Standard", Coupling::VolMortar::shape_std},
-          {"standard", Coupling::VolMortar::shape_std},
-          {"std", Coupling::VolMortar::shape_std},
-      },
-      {.description = "Type of employed set of shape functions",
-          .default_value = Coupling::VolMortar::shape_dual}));
+      deprecated_selection<Coupling::VolMortar::Shapefcn>("SHAPEFCN",
+          {
+              {"Dual", Coupling::VolMortar::shape_dual},
+              {"dual", Coupling::VolMortar::shape_dual},
+              {"Standard", Coupling::VolMortar::shape_std},
+              {"standard", Coupling::VolMortar::shape_std},
+              {"std", Coupling::VolMortar::shape_std},
+          },
+          {.description = "Type of employed set of shape functions",
+              .default_value = Coupling::VolMortar::shape_dual}),
 
-  volmortar.specs.emplace_back(deprecated_selection<Coupling::VolMortar::CutType>("CUTTYPE",
-      {
-          {"dd", Coupling::VolMortar::cuttype_directdivergence},
-          {"directdivergence", Coupling::VolMortar::cuttype_directdivergence},
-          {"DirectDivergence", Coupling::VolMortar::cuttype_directdivergence},
-          {"tessellation", Coupling::VolMortar::cuttype_tessellation},
-          {"t", Coupling::VolMortar::cuttype_tessellation},
-          {"Tessellation", Coupling::VolMortar::cuttype_tessellation},
-      },
-      {.description = "Type of cut procedure/ integration point calculation",
-          .default_value = Coupling::VolMortar::cuttype_directdivergence}));
+      deprecated_selection<Coupling::VolMortar::CutType>("CUTTYPE",
+          {
+              {"dd", Coupling::VolMortar::cuttype_directdivergence},
+              {"directdivergence", Coupling::VolMortar::cuttype_directdivergence},
+              {"DirectDivergence", Coupling::VolMortar::cuttype_directdivergence},
+              {"tessellation", Coupling::VolMortar::cuttype_tessellation},
+              {"t", Coupling::VolMortar::cuttype_tessellation},
+              {"Tessellation", Coupling::VolMortar::cuttype_tessellation},
+          },
+          {.description = "Type of cut procedure/ integration point calculation",
+              .default_value = Coupling::VolMortar::cuttype_directdivergence}),
 
-  volmortar.specs.emplace_back(deprecated_selection<Coupling::VolMortar::DualQuad>("DUALQUAD",
-      {
-          {"nm", Coupling::VolMortar::dualquad_no_mod},
-          {"nomod", Coupling::VolMortar::dualquad_no_mod},
-          {"lm", Coupling::VolMortar::dualquad_lin_mod},
-          {"lin_mod", Coupling::VolMortar::dualquad_lin_mod},
-          {"qm", Coupling::VolMortar::dualquad_quad_mod},
-          {"quad_mod", Coupling::VolMortar::dualquad_quad_mod},
-      },
-      {.description = "Type of dual shape function for weighting function for quadr. problems",
-          .default_value = Coupling::VolMortar::dualquad_no_mod}));
+      deprecated_selection<Coupling::VolMortar::DualQuad>("DUALQUAD",
+          {
+              {"nm", Coupling::VolMortar::dualquad_no_mod},
+              {"nomod", Coupling::VolMortar::dualquad_no_mod},
+              {"lm", Coupling::VolMortar::dualquad_lin_mod},
+              {"lin_mod", Coupling::VolMortar::dualquad_lin_mod},
+              {"qm", Coupling::VolMortar::dualquad_quad_mod},
+              {"quad_mod", Coupling::VolMortar::dualquad_quad_mod},
+          },
+          {.description = "Type of dual shape function for weighting function for quadr. problems",
+              .default_value = Coupling::VolMortar::dualquad_no_mod}),
 
-  volmortar.specs.emplace_back(parameter<bool>(
-      "MESH_INIT", {.description = "If chosen, mesh initialization procedure is performed",
-                       .default_value = false}));
+      parameter<bool>(
+          "MESH_INIT", {.description = "If chosen, mesh initialization procedure is performed",
+                           .default_value = false}),
 
-  volmortar.specs.emplace_back(parameter<bool>("KEEP_EXTENDEDGHOSTING",
-      {.description = "If chosen, extended ghosting is kept for simulation",
-          .default_value = true}));
-
-  volmortar.move_into_collection(list);
+      parameter<bool>("KEEP_EXTENDEDGHOSTING",
+          {.description = "If chosen, extended ghosting is kept for simulation",
+              .default_value = true})});
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -8,7 +8,7 @@
 #include "4C_inpar_IO_monitor_structure_dbc.hpp"
 
 #include "4C_io_geometry_type.hpp"
-#include "4C_utils_parameter_list.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 #include <Teuchos_ParameterList.hpp>
 
@@ -26,25 +26,22 @@ namespace Inpar
       using namespace Core::IO::InputSpecBuilders;
 
       // related sublist
-      Core::Utils::SectionSpecs sublist_IO{"IO"};
-      Core::Utils::SectionSpecs sublist_IO_monitor_structure_dbc{
-          sublist_IO, "MONITOR STRUCTURE DBC"};
+      list["IO/MONITOR STRUCTURE DBC"] = all_of({
 
-      // output interval regarding steps: write output every INTERVAL_STEPS steps
-      sublist_IO_monitor_structure_dbc.specs.emplace_back(parameter<int>("INTERVAL_STEPS",
-          {.description = "write reaction force output every INTERVAL_STEPS steps",
-              .default_value = -1}));
+          // output interval regarding steps: write output every INTERVAL_STEPS steps
+          parameter<int>("INTERVAL_STEPS",
+              {.description = "write reaction force output every INTERVAL_STEPS steps",
+                  .default_value = -1}),
 
-      // precision for file
-      sublist_IO_monitor_structure_dbc.specs.emplace_back(parameter<int>(
-          "PRECISION_FILE", {.description = "precision for written file", .default_value = 16}));
+          // precision for file
+          parameter<int>(
+              "PRECISION_FILE", {.description = "precision for written file", .default_value = 16}),
 
-      // precision for screen
-      sublist_IO_monitor_structure_dbc.specs.emplace_back(parameter<int>("PRECISION_SCREEN",
-          {.description = "precision for written screen output", .default_value = 5}));
+          // precision for screen
+          parameter<int>("PRECISION_SCREEN",
+              {.description = "precision for written screen output", .default_value = 5}),
 
-      // type of written output file
-      sublist_IO_monitor_structure_dbc.specs.emplace_back(
+          // type of written output file
           deprecated_selection<Inpar::IOMonitorStructureDBC::FileType>("FILE_TYPE",
               {
                   {"csv", Inpar::IOMonitorStructureDBC::csv},
@@ -55,14 +52,12 @@ namespace Inpar
                   {"DATA", Inpar::IOMonitorStructureDBC::data},
               },
               {.description = "type of written output file",
-                  .default_value = Inpar::IOMonitorStructureDBC::csv}));
+                  .default_value = Inpar::IOMonitorStructureDBC::csv}),
 
-      // whether to write output in every iteration of the nonlinear solver
-      sublist_IO_monitor_structure_dbc.specs.emplace_back(parameter<bool>("WRITE_HEADER",
-          {.description = "write information about monitored boundary condition to output file",
-              .default_value = false}));
-
-      sublist_IO_monitor_structure_dbc.move_into_collection(list);
+          // whether to write output in every iteration of the nonlinear solver
+          parameter<bool>("WRITE_HEADER",
+              {.description = "write information about monitored boundary condition to output file",
+                  .default_value = false})});
     }
 
     std::string to_string(FileType type)

@@ -69,7 +69,7 @@ namespace Inpar
      *
      * @param (out) Parameter list to add the line to 3D parameters to.
      */
-    void set_valid_parameters_line_to3_d(Core::Utils::SectionSpecs& list);
+    void set_valid_parameters_line_to3_d(std::vector<Core::IO::InputSpec>& list);
 
     /**
      * \brief Set valid input parameters for line to surface geometry pairs.
@@ -79,7 +79,7 @@ namespace Inpar
      *
      * @param (out) Parameter list to add the line to surface parameters to.
      */
-    void set_valid_parameters_line_to_surface(Core::Utils::SectionSpecs& list);
+    void set_valid_parameters_line_to_surface(std::vector<Core::IO::InputSpec>& list);
 
   }  // namespace GEOMETRYPAIR
 
