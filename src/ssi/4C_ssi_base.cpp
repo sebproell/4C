@@ -229,8 +229,13 @@ void SSI::SSIBase::post_setup()
 {
   check_is_setup();
 
-  // communicate scatra states to structure
-  set_scatra_solution(scatra_field()->phinp());
+  // communicate scatra states to structure if necessary
+  if (Teuchos::getIntegralValue<Inpar::SSI::SolutionSchemeOverFields>(
+          Global::Problem::instance()->ssi_control_params(), "COUPALGO") !=
+      Inpar::SSI::SolutionSchemeOverFields::ssi_OneWay_SolidToScatra)
+  {
+    set_scatra_solution(scatra_field()->phinp());
+  }
 
   structure_->post_setup();
 }
