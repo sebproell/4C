@@ -114,6 +114,19 @@
         "FOUR_C_BUILD_DOCUMENTATION": "OFF",
         "FOUR_C_DOXYGEN_USE_LOCAL_MATHJAX": "OFF"
       }
+    },
+    {
+      "name": "docker_no_optional_dependencies",
+      "displayName": "Build with all optional dependencies turned off",
+      "description": "Build with all optional dependencies turned off",
+      "inherits": [
+        ".docker_base"
+      ],
+      "cacheVariables": {
+        "FOUR_C_WITH_ARBORX": "OFF",
+        "FOUR_C_WITH_BACKTRACE": "OFF",
+        "FOUR_C_WITH_MIRCO": "OFF"
+      }
     }
   ]
 }

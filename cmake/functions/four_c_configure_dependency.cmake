@@ -210,6 +210,18 @@ function(four_c_configure_dependency _package_name)
     FOUR_C_WITH_${_package_name_sanitized} "Build 4C with ${_package_name}" ${_parsed_DEFAULT}
     )
 
+  if(${_parsed_DEFAULT} STREQUAL "ON")
+    if(NOT FOUR_C_WITH_${_package_name_sanitized})
+      message(
+        FATAL_ERROR
+          "The dependency ${_package_name} is required, so you cannot set option "
+          "FOUR_C_WITH_${_package_name_sanitized} to OFF. "
+          "Please set 'FOUR_C_WITH_${_package_name_sanitized}' to ON "
+          "(or remove the manually set variable)."
+        )
+    endif()
+  endif()
+
   if(FOUR_C_WITH_${_package_name_sanitized})
     if(${_package_name}_ROOT)
       message(
