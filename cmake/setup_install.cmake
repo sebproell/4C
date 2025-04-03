@@ -13,14 +13,14 @@ function(_add_dependency_to_settings _package_name)
   # Append the dependency info to the target settings
   if(FOUR_C_WITH_${_package_name_SANITIZED})
     # Append a tab at the start of each line of content
-    file(READ ${CMAKE_BINARY_DIR}/cmake/templates/${_package_name}.cmake _content)
+    file(READ ${PROJECT_BINARY_DIR}/cmake/templates/${_package_name}.cmake _content)
     string(REPLACE "\n" "\n\t" _content_with_tab "${_content}")
     file(
-      APPEND ${CMAKE_BINARY_DIR}/cmake/templates/4CSettings.cmake
+      APPEND ${PROJECT_BINARY_DIR}/cmake/templates/4CSettings.cmake
       "\nif(FOUR_C_WITH_${_package_name_SANITIZED})\n\t"
       )
-    file(APPEND ${CMAKE_BINARY_DIR}/cmake/templates/4CSettings.cmake "${_content_with_tab}")
-    file(APPEND ${CMAKE_BINARY_DIR}/cmake/templates/4CSettings.cmake "\nendif()\n")
+    file(APPEND ${PROJECT_BINARY_DIR}/cmake/templates/4CSettings.cmake "${_content_with_tab}")
+    file(APPEND ${PROJECT_BINARY_DIR}/cmake/templates/4CSettings.cmake "\nendif()\n")
   endif()
 endfunction()
 
@@ -63,8 +63,8 @@ install(
 
 # create the settings file
 configure_file(
-  ${CMAKE_SOURCE_DIR}/cmake/templates/4CSettings.cmake.in
-  ${CMAKE_BINARY_DIR}/cmake/templates/4CSettings.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/templates/4CSettings.cmake.in
+  ${PROJECT_BINARY_DIR}/cmake/templates/4CSettings.cmake
   @ONLY
   )
 
@@ -84,7 +84,7 @@ _add_dependency_to_settings(magic_enum)
 
 # install
 install(
-  FILES ${CMAKE_BINARY_DIR}/cmake/templates/4CSettings.cmake
+  FILES ${PROJECT_BINARY_DIR}/cmake/templates/4CSettings.cmake
   DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C
   )
 
@@ -92,17 +92,17 @@ install(
 include(CMakePackageConfigHelpers)
 set(FOUR_C_VERSION_STRING "${FOUR_C_VERSION_MAJOR}.${FOUR_C_VERSION_MINOR}")
 configure_package_config_file(
-  cmake/templates/4CConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/templates/4CConfig.cmake
+  cmake/templates/4CConfig.cmake.in ${PROJECT_BINARY_DIR}/cmake/templates/4CConfig.cmake
   INSTALL_DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C
   )
 write_basic_package_version_file(
-  ${CMAKE_BINARY_DIR}/cmake/templates/4CConfigVersion.cmake
+  ${PROJECT_BINARY_DIR}/cmake/templates/4CConfigVersion.cmake
   VERSION ${FOUR_C_VERSION_STRING}
   COMPATIBILITY ExactVersion
   )
 
 install(
-  FILES ${CMAKE_BINARY_DIR}/cmake/templates/4CConfig.cmake
-        ${CMAKE_BINARY_DIR}/cmake/templates/4CConfigVersion.cmake
+  FILES ${PROJECT_BINARY_DIR}/cmake/templates/4CConfig.cmake
+        ${PROJECT_BINARY_DIR}/cmake/templates/4CConfigVersion.cmake
   DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C
   )

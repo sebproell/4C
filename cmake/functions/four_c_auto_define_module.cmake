@@ -117,7 +117,7 @@ function(four_c_auto_define_module)
               ${PROJECT_SOURCE_DIR}/src
     )
   include(GNUInstallDirs)
-  file(RELATIVE_PATH _relative_path ${CMAKE_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
+  file(RELATIVE_PATH _relative_path ${PROJECT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR})
   target_include_directories(
     ${_target}_deps
     INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

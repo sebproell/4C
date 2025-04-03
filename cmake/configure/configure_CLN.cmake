@@ -14,13 +14,13 @@ if(CLN_FOUND)
   target_link_libraries(four_c_all_enabled_external_dependencies INTERFACE cln::cln)
 
   configure_file(
-    ${CMAKE_SOURCE_DIR}/cmake/templates/CLN.cmake.in
-    ${CMAKE_BINARY_DIR}/cmake/templates/CLN.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/templates/CLN.cmake.in
+    ${PROJECT_BINARY_DIR}/cmake/templates/CLN.cmake
     @ONLY
     )
   include(GNUInstallDirs)
   install(
-    FILES ${CMAKE_SOURCE_DIR}/cmake/modules/FindCLN.cmake
+    FILES ${PROJECT_SOURCE_DIR}/cmake/modules/FindCLN.cmake
     DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C/modules
     )
 endif()

@@ -40,7 +40,7 @@ else() # Fetch MIRCO from GIT repository
 endif()
 
 configure_file(
-  ${CMAKE_SOURCE_DIR}/cmake/templates/MIRCO.cmake.in
-  ${CMAKE_BINARY_DIR}/cmake/templates/MIRCO.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/templates/MIRCO.cmake.in
+  ${PROJECT_BINARY_DIR}/cmake/templates/MIRCO.cmake
   @ONLY
   )

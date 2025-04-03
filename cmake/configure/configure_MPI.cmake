@@ -30,7 +30,7 @@ if(NOT FOUR_C_MPI_LINKAGE_OK)
 endif()
 
 configure_file(
-  ${CMAKE_SOURCE_DIR}/cmake/templates/MPI.cmake.in
-  ${CMAKE_BINARY_DIR}/cmake/templates/MPI.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/templates/MPI.cmake.in
+  ${PROJECT_BINARY_DIR}/cmake/templates/MPI.cmake
   @ONLY
   )

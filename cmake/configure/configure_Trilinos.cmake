@@ -53,7 +53,7 @@ target_link_libraries(
   )
 
 configure_file(
-  ${CMAKE_SOURCE_DIR}/cmake/templates/Trilinos.cmake.in
-  ${CMAKE_BINARY_DIR}/cmake/templates/Trilinos.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/templates/Trilinos.cmake.in
+  ${PROJECT_BINARY_DIR}/cmake/templates/Trilinos.cmake
   @ONLY
   )

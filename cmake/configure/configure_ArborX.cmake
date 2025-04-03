@@ -36,7 +36,7 @@ else() # Fetch ArborX from GIT repository
 endif()
 
 configure_file(
-  ${CMAKE_SOURCE_DIR}/cmake/templates/ArborX.cmake.in
-  ${CMAKE_BINARY_DIR}/cmake/templates/ArborX.cmake
+  ${PROJECT_SOURCE_DIR}/cmake/templates/ArborX.cmake.in
+  ${PROJECT_BINARY_DIR}/cmake/templates/ArborX.cmake
   @ONLY
   )
