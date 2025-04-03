@@ -18,24 +18,22 @@ FOUR_C_NAMESPACE_OPEN
 void Inpar::RveMpc::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
-  Core::Utils::SectionSpecs mpc{"MULTI POINT CONSTRAINTS"};
+  list["MULTI POINT CONSTRAINTS"] = all_of({
 
-  mpc.specs.emplace_back(
       parameter<Inpar::RveMpc::RveReferenceDeformationDefinition>("RVE_REFERENCE_POINTS",
           {.description = "Method of definition of the reference points of an RVE",
-              .default_value = automatic}));
+              .default_value = automatic}),
 
-  mpc.specs.emplace_back(deprecated_selection<Inpar::RveMpc::EnforcementStrategy>("ENFORCEMENT",
-      {
-          {"penalty_method", penalty},
-          {"lagrange_multiplier_method", lagrangeMultiplier},
-      },
-      {.description = "Method to enforce the multi point constraint", .default_value = penalty}));
+      deprecated_selection<Inpar::RveMpc::EnforcementStrategy>("ENFORCEMENT",
+          {
+              {"penalty_method", penalty},
+              {"lagrange_multiplier_method", lagrangeMultiplier},
+          },
+          {.description = "Method to enforce the multi point constraint",
+              .default_value = penalty}),
 
-  mpc.specs.emplace_back(parameter<double>(
-      "PENALTY_PARAM", {.description = "Value of the penalty parameter", .default_value = 1e5}));
-
-  mpc.move_into_collection(list);
+      parameter<double>("PENALTY_PARAM",
+          {.description = "Value of the penalty parameter", .default_value = 1e5})});
 }
 
 // set mpc specific conditions

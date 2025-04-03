@@ -17,26 +17,25 @@ void Inpar::Rebalance::set_valid_parameters(std::map<std::string, Core::IO::Inpu
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs meshpartitioning{"MESH PARTITIONING"};
+  list["MESH PARTITIONING"] = all_of({
 
-  meshpartitioning.specs.emplace_back(parameter<Core::Rebalance::RebalanceType>(
-      "METHOD", {.description = "Type of rebalance/partition algorithm to be used for decomposing "
-                                "the entire mesh into subdomains for parallel computing.",
-                    .default_value = Core::Rebalance::RebalanceType::hypergraph}));
+      parameter<Core::Rebalance::RebalanceType>("METHOD",
+          {.description = "Type of rebalance/partition algorithm to be used for decomposing "
+                          "the entire mesh into subdomains for parallel computing.",
+              .default_value = Core::Rebalance::RebalanceType::hypergraph}),
 
-  meshpartitioning.specs.emplace_back(parameter<double>("IMBALANCE_TOL",
-      {.description = "Tolerance for relative imbalance of subdomain sizes for graph partitioning "
-                      "of unstructured meshes read from input files.",
-          .default_value = 1.1}));
+      parameter<double>("IMBALANCE_TOL",
+          {.description =
+                  "Tolerance for relative imbalance of subdomain sizes for graph partitioning "
+                  "of unstructured meshes read from input files.",
+              .default_value = 1.1}),
 
-  meshpartitioning.specs.emplace_back(parameter<int>("MIN_ELE_PER_PROC",
-      {.description =
-              "This parameter defines the minimum number of elements to be assigned to any "
-              "MPI rank during redistribution. Use 0 to not interfere with the minimal size "
-              "of a subdomain.",
-          .default_value = 0}));
-
-  meshpartitioning.move_into_collection(list);
+      parameter<int>("MIN_ELE_PER_PROC",
+          {.description =
+                  "This parameter defines the minimum number of elements to be assigned to any "
+                  "MPI rank during redistribution. Use 0 to not interfere with the minimal size "
+                  "of a subdomain.",
+              .default_value = 0})});
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -21,88 +21,89 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs s2icoupling{"SCALAR TRANSPORT DYNAMIC/S2I COUPLING"};
+  list["SCALAR TRANSPORT DYNAMIC/S2I COUPLING"] = all_of({
 
-  // type of mortar meshtying
-  s2icoupling.specs.emplace_back(deprecated_selection<CouplingType>("COUPLINGTYPE",
-      {
-          {"Undefined", coupling_undefined},
-          {"MatchingNodes", coupling_matching_nodes},
-          {"StandardMortar", coupling_mortar_standard},
-          {"SaddlePointMortar_Petrov", coupling_mortar_saddlepoint_petrov},
-          {"SaddlePointMortar_Bubnov", coupling_mortar_saddlepoint_bubnov},
-          {"CondensedMortar_Petrov", coupling_mortar_condensed_petrov},
-          {"CondensedMortar_Bubnov", coupling_mortar_condensed_bubnov},
-          {"StandardNodeToSegment", coupling_nts_standard},
-      },
-      {.description = "type of mortar meshtying", .default_value = coupling_undefined}));
+      // type of mortar meshtying
+      deprecated_selection<CouplingType>("COUPLINGTYPE",
+          {
+              {"Undefined", coupling_undefined},
+              {"MatchingNodes", coupling_matching_nodes},
+              {"StandardMortar", coupling_mortar_standard},
+              {"SaddlePointMortar_Petrov", coupling_mortar_saddlepoint_petrov},
+              {"SaddlePointMortar_Bubnov", coupling_mortar_saddlepoint_bubnov},
+              {"CondensedMortar_Petrov", coupling_mortar_condensed_petrov},
+              {"CondensedMortar_Bubnov", coupling_mortar_condensed_bubnov},
+              {"StandardNodeToSegment", coupling_nts_standard},
+          },
+          {.description = "type of mortar meshtying", .default_value = coupling_undefined}),
 
-  // flag for interface side underlying Lagrange multiplier definition
-  s2icoupling.specs.emplace_back(deprecated_selection<InterfaceSides>("LMSIDE",
-      {
-          {"slave", side_slave},
-          {"master", side_master},
-      },
-      {.description = "flag for interface side underlying Lagrange multiplier definition",
-          .default_value = side_slave}));
+      // flag for interface side underlying Lagrange multiplier definition
+      deprecated_selection<InterfaceSides>("LMSIDE",
+          {
+              {"slave", side_slave},
+              {"master", side_master},
+          },
+          {.description = "flag for interface side underlying Lagrange multiplier definition",
+              .default_value = side_slave}),
 
-  // flag for evaluation of interface linearizations and residuals on slave side only
-  s2icoupling.specs.emplace_back(parameter<bool>("SLAVEONLY",
-      {.description =
-              "flag for evaluation of interface linearizations and residuals on slave side only",
-          .default_value = false}));
+      // flag for evaluation of interface linearizations and residuals on slave side only
+      parameter<bool>(
+          "SLAVEONLY", {.description = "flag for evaluation of interface linearizations and "
+                                       "residuals on slave side only",
+                           .default_value = false}),
 
-  // node-to-segment projection tolerance
-  s2icoupling.specs.emplace_back(parameter<double>(
-      "NTSPROJTOL", {.description = "node-to-segment projection tolerance", .default_value = 0.0}));
+      // node-to-segment projection tolerance
+      parameter<double>("NTSPROJTOL",
+          {.description = "node-to-segment projection tolerance", .default_value = 0.0}),
 
-  // flag for evaluation of scatra-scatra interface coupling involving interface layer growth
-  s2icoupling.specs.emplace_back(deprecated_selection<GrowthEvaluation>("INTLAYERGROWTH_EVALUATION",
-      {
-          {"none", growth_evaluation_none},
-          {"monolithic", growth_evaluation_monolithic},
-          {"semi-implicit", growth_evaluation_semi_implicit},
-      },
-      {.description = "flag for evaluation of scatra-scatra interface coupling involving interface "
-                      "layer growth",
-          .default_value = growth_evaluation_none}));
+      // flag for evaluation of scatra-scatra interface coupling involving interface layer growth
+      deprecated_selection<GrowthEvaluation>("INTLAYERGROWTH_EVALUATION",
+          {
+              {"none", growth_evaluation_none},
+              {"monolithic", growth_evaluation_monolithic},
+              {"semi-implicit", growth_evaluation_semi_implicit},
+          },
+          {.description =
+                  "flag for evaluation of scatra-scatra interface coupling involving interface "
+                  "layer growth",
+              .default_value = growth_evaluation_none}),
 
-  // local Newton-Raphson convergence tolerance for scatra-scatra interface coupling involving
-  // interface layer growth
-  s2icoupling.specs.emplace_back(parameter<double>("INTLAYERGROWTH_CONVTOL",
-      {.description = "local Newton-Raphson convergence tolerance for scatra-scatra interface "
-                      "coupling involving interface layer growth",
-          .default_value = 1.e-12}));
+      // local Newton-Raphson convergence tolerance for scatra-scatra interface coupling involving
+      // interface layer growth
+      parameter<double>("INTLAYERGROWTH_CONVTOL",
+          {.description = "local Newton-Raphson convergence tolerance for scatra-scatra interface "
+                          "coupling involving interface layer growth",
+              .default_value = 1.e-12}),
 
-  // maximum number of local Newton-Raphson iterations for scatra-scatra interface coupling
-  // involving interface layer growth
-  s2icoupling.specs.emplace_back(parameter<int>("INTLAYERGROWTH_ITEMAX",
-      {.description = "maximum number of local Newton-Raphson iterations for scatra-scatra "
-                      "interface coupling involving interface layer growth",
-          .default_value = 5}));
+      // maximum number of local Newton-Raphson iterations for scatra-scatra interface coupling
+      // involving interface layer growth
+      parameter<int>("INTLAYERGROWTH_ITEMAX",
+          {.description = "maximum number of local Newton-Raphson iterations for scatra-scatra "
+                          "interface coupling involving interface layer growth",
+              .default_value = 5}),
 
-  // ID of linear solver for monolithic scatra-scatra interface coupling involving interface layer
-  // growth
-  s2icoupling.specs.emplace_back(parameter<int>("INTLAYERGROWTH_LINEAR_SOLVER",
-      {.description = "ID of linear solver for monolithic scatra-scatra interface coupling "
-                      "involving interface layer growth",
-          .default_value = -1}));
-  // modified time step size for scatra-scatra interface coupling involving interface layer growth
-  s2icoupling.specs.emplace_back(parameter<double>("INTLAYERGROWTH_TIMESTEP",
-      {.description = "modified time step size for scatra-scatra interface coupling involving "
-                      "interface layer growth",
-          .default_value = -1.}));
+      // ID of linear solver for monolithic scatra-scatra interface coupling involving interface
+      // layer
+      // growth
+      parameter<int>("INTLAYERGROWTH_LINEAR_SOLVER",
+          {.description = "ID of linear solver for monolithic scatra-scatra interface coupling "
+                          "involving interface layer growth",
+              .default_value = -1}),
+      // modified time step size for scatra-scatra interface coupling involving interface layer
+      // growth
+      parameter<double>("INTLAYERGROWTH_TIMESTEP",
+          {.description = "modified time step size for scatra-scatra interface coupling involving "
+                          "interface layer growth",
+              .default_value = -1.}),
 
-  s2icoupling.specs.emplace_back(parameter<bool>("MESHTYING_CONDITIONS_INDEPENDENT_SETUP",
-      {.description = "mesh tying for different conditions should be setup independently",
-          .default_value = false}));
+      parameter<bool>("MESHTYING_CONDITIONS_INDEPENDENT_SETUP",
+          {.description = "mesh tying for different conditions should be setup independently",
+              .default_value = false}),
 
-  s2icoupling.specs.emplace_back(parameter<bool>(
-      "OUTPUT_INTERFACE_FLUX", {.description = "evaluate integral of coupling flux on slave side "
-                                               "for each s2i condition and write it to csv file",
-                                   .default_value = false}));
-
-  s2icoupling.move_into_collection(list);
+      parameter<bool>("OUTPUT_INTERFACE_FLUX",
+          {.description = "evaluate integral of coupling flux on slave side "
+                          "for each s2i condition and write it to csv file",
+              .default_value = false})});
 }
 
 

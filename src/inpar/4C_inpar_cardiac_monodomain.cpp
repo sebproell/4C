@@ -18,21 +18,20 @@ void Inpar::ElectroPhysiology::set_valid_parameters(
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs epcontrol{"CARDIAC MONODOMAIN CONTROL"};
+  list["CARDIAC MONODOMAIN CONTROL"] = all_of({
 
-  // Parameters for reaction-diffusion systems (for example cardiac electrophysiology)
-  epcontrol.specs.emplace_back(parameter<int>("WRITEMAXINTSTATE",
-      {.description = "number of maximal internal state variables to be postprocessed",
-          .default_value = 0}));
-  epcontrol.specs.emplace_back(parameter<int>("WRITEMAXIONICCURRENTS",
-      {.description = "number of maximal ionic currents to be postprocessed", .default_value = 0}));
+      // Parameters for reaction-diffusion systems (for example cardiac electrophysiology)
+      parameter<int>("WRITEMAXINTSTATE",
+          {.description = "number of maximal internal state variables to be postprocessed",
+              .default_value = 0}),
+      parameter<int>("WRITEMAXIONICCURRENTS",
+          {.description = "number of maximal ionic currents to be postprocessed",
+              .default_value = 0}),
 
-  epcontrol.specs.emplace_back(parameter<double>("ACTTHRES",
-      {.description =
-              "threshold for the potential for computing and postprocessing activation time ",
-          .default_value = 1.0}));
-
-  epcontrol.move_into_collection(list);
+      parameter<double>("ACTTHRES",
+          {.description =
+                  "threshold for the potential for computing and postprocessing activation time ",
+              .default_value = 1.0})});
 }
 
 

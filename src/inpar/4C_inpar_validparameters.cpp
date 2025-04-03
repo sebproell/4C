@@ -92,65 +92,54 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   using namespace Core::IO::InputSpecBuilders;
   std::map<std::string, Core::IO::InputSpec> list;
   /*----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs discret{"DISCRETISATION"};
+  list["DISCRETISATION"] = all_of({
 
-  discret.specs.emplace_back(parameter<int>(
-      "NUMFLUIDDIS", {.description = "Number of meshes in fluid field", .default_value = 1}));
-  discret.specs.emplace_back(parameter<int>(
-      "NUMSTRUCDIS", {.description = "Number of meshes in structural field", .default_value = 1}));
-  discret.specs.emplace_back(parameter<int>(
-      "NUMALEDIS", {.description = "Number of meshes in ale field", .default_value = 1}));
-  discret.specs.emplace_back(parameter<int>("NUMARTNETDIS",
-      {.description = "Number of meshes in arterial network field", .default_value = 1}));
-  discret.specs.emplace_back(parameter<int>(
-      "NUMTHERMDIS", {.description = "Number of meshes in thermal field", .default_value = 1}));
-  discret.specs.emplace_back(parameter<int>("NUMAIRWAYSDIS",
-      {.description = "Number of meshes in reduced dimensional airways network field",
-          .default_value = 1}));
+      parameter<int>(
+          "NUMFLUIDDIS", {.description = "Number of meshes in fluid field", .default_value = 1}),
+      parameter<int>("NUMSTRUCDIS",
+          {.description = "Number of meshes in structural field", .default_value = 1}),
+      parameter<int>(
+          "NUMALEDIS", {.description = "Number of meshes in ale field", .default_value = 1}),
+      parameter<int>("NUMARTNETDIS",
+          {.description = "Number of meshes in arterial network field", .default_value = 1}),
+      parameter<int>(
+          "NUMTHERMDIS", {.description = "Number of meshes in thermal field", .default_value = 1}),
+      parameter<int>("NUMAIRWAYSDIS",
+          {.description = "Number of meshes in reduced dimensional airways network field",
+              .default_value =
+                  1})}); /*----------------------------------------------------------------------*/
+  list["PROBLEM SIZE"] = all_of({
 
-  discret.move_into_collection(list);
+      parameter<int>("DIM", {.description = "2d or 3d problem", .default_value = 3}),
 
-  /*----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs size{"PROBLEM SIZE"};
+      // deactivate all the following (unused) parameters one day
+      // they are nice as general info in the input file but should not
+      // read into a parameter list. Misuse is possible
+      parameter<int>("ELEMENTS", {.description = "Total number of elements", .default_value = 0}),
 
-  size.specs.emplace_back(
-      parameter<int>("DIM", {.description = "2d or 3d problem", .default_value = 3}));
+      parameter<int>("NODES", {.description = "Total number of nodes", .default_value = 0}),
 
-  // deactivate all the following (unused) parameters one day
-  // they are nice as general info in the input file but should not
-  // read into a parameter list. Misuse is possible
-  size.specs.emplace_back(
-      parameter<int>("ELEMENTS", {.description = "Total number of elements", .default_value = 0}));
-  size.specs.emplace_back(
-      parameter<int>("NODES", {.description = "Total number of nodes", .default_value = 0}));
-  size.specs.emplace_back(
-      parameter<int>("NPATCHES", {.description = "number of nurbs patches", .default_value = 0}));
-  size.specs.emplace_back(
-      parameter<int>("MATERIALS", {.description = "number of materials", .default_value = 0}));
-  size.specs.emplace_back(parameter<int>(
-      "NUMDF", {.description = "maximum number of degrees of freedom", .default_value = 3}));
+      parameter<int>("NPATCHES", {.description = "number of nurbs patches", .default_value = 0}),
 
-  size.move_into_collection(list);
-
+      parameter<int>("MATERIALS", {.description = "number of materials", .default_value = 0}),
+      parameter<int>(
+          "NUMDF", {.description = "maximum number of degrees of freedom", .default_value = 3})});
   Inpar::PROBLEMTYPE::set_valid_parameters(list);
 
   /*----------------------------------------------------------------------*/
 
-  Core::Utils::SectionSpecs nurbs_param{"NURBS"};
+  list["NURBS"] = all_of({
 
-  nurbs_param.specs.emplace_back(parameter<bool>(
-      "DO_LS_DBC_PROJECTION", {.description = "Determines if a projection is needed for least "
-                                              "square Dirichlet boundary conditions.",
-                                  .default_value = false}));
+      parameter<bool>(
+          "DO_LS_DBC_PROJECTION", {.description = "Determines if a projection is needed for least "
+                                                  "square Dirichlet boundary conditions.",
+                                      .default_value = false}),
 
-  nurbs_param.specs.emplace_back(parameter<int>("SOLVER_LS_DBC_PROJECTION",
-      {.description = "Number of linear solver for the projection of least squares "
-                      "Dirichlet boundary conditions for NURBS discretizations",
-          .default_value = -1}));
-
-  nurbs_param.move_into_collection(list);
-
-  /*----------------------------------------------------------------------*/
+      parameter<int>("SOLVER_LS_DBC_PROJECTION",
+          {.description = "Number of linear solver for the projection of least squares "
+                          "Dirichlet boundary conditions for NURBS discretizations",
+              .default_value =
+                  -1})}); /*----------------------------------------------------------------------*/
   /* Finally call the problem-specific SetValidParameter functions        */
   /*----------------------------------------------------------------------*/
 

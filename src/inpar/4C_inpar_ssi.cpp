@@ -22,173 +22,173 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs ssidyn{"SSI CONTROL"};
+  list["SSI CONTROL"] = all_of({
 
-  // Output type
-  ssidyn.specs.emplace_back(parameter<double>("RESTARTEVERYTIME",
-      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 0.0}));
-  ssidyn.specs.emplace_back(parameter<int>("RESTARTEVERY",
-      {.description = "write restart possibility every RESTARTEVERY steps", .default_value = 1}));
-  // Time loop control
-  ssidyn.specs.emplace_back(parameter<int>(
-      "NUMSTEP", {.description = "maximum number of Timesteps", .default_value = 200}));
-  ssidyn.specs.emplace_back(parameter<double>(
-      "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}));
-  ssidyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}));
-  ssidyn.specs.emplace_back(parameter<bool>("DIFFTIMESTEPSIZE",
-      {.description = "use different step size for scatra and solid", .default_value = false}));
-  ssidyn.specs.emplace_back(parameter<double>(
-      "RESULTSEVERYTIME", {.description = "increment for writing solution", .default_value = 0.0}));
-  ssidyn.specs.emplace_back(parameter<int>(
-      "RESULTSEVERY", {.description = "increment for writing solution", .default_value = 1}));
-  ssidyn.specs.emplace_back(parameter<int>(
-      "ITEMAX", {.description = "maximum number of iterations over fields", .default_value = 10}));
-  ssidyn.specs.emplace_back(parameter<bool>("SCATRA_FROM_RESTART_FILE",
-      {.description = "read scatra result from restart files (use option 'restartfromfile' during "
-                      "execution of 4C)",
-          .default_value = false}));
-  ssidyn.specs.emplace_back(parameter<std::string>(
-      "SCATRA_FILENAME", {.description = "Control-file name for reading scatra results in SSI",
-                             .default_value = "nil"}));
+      // Output type
+      parameter<double>(
+          "RESTARTEVERYTIME", {.description = "write restart possibility every RESTARTEVERY steps",
+                                  .default_value = 0.0}),
+      parameter<int>(
+          "RESTARTEVERY", {.description = "write restart possibility every RESTARTEVERY steps",
+                              .default_value = 1}),
+      // Time loop control
+      parameter<int>(
+          "NUMSTEP", {.description = "maximum number of Timesteps", .default_value = 200}),
+      parameter<double>(
+          "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}),
 
-  // Type of coupling strategy between the two fields
-  ssidyn.specs.emplace_back(deprecated_selection<FieldCoupling>("FIELDCOUPLING",
-      {
-          {"volume_matching", FieldCoupling::volume_match},
-          {"volume_nonmatching", FieldCoupling::volume_nonmatch},
-          {"boundary_nonmatching", FieldCoupling::boundary_nonmatch},
-          {"volumeboundary_matching", FieldCoupling::volumeboundary_match},
-      },
-      {.description = "Type of coupling strategy between fields",
-          .default_value = FieldCoupling::volume_match}));
+      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}),
+      parameter<bool>("DIFFTIMESTEPSIZE",
+          {.description = "use different step size for scatra and solid", .default_value = false}),
+      parameter<double>("RESULTSEVERYTIME",
+          {.description = "increment for writing solution", .default_value = 0.0}),
+      parameter<int>(
+          "RESULTSEVERY", {.description = "increment for writing solution", .default_value = 1}),
+      parameter<int>("ITEMAX",
+          {.description = "maximum number of iterations over fields", .default_value = 10}),
+      parameter<bool>("SCATRA_FROM_RESTART_FILE",
+          {.description =
+                  "read scatra result from restart files (use option 'restartfromfile' during "
+                  "execution of 4C)",
+              .default_value = false}),
+      parameter<std::string>(
+          "SCATRA_FILENAME", {.description = "Control-file name for reading scatra results in SSI",
+                                 .default_value = "nil"}),
 
-  // Coupling strategy for SSI solvers
-  ssidyn.specs.emplace_back(parameter<SolutionSchemeOverFields>(
-      "COUPALGO", {.description = "Coupling strategies for SSI solvers",
-                      .default_value = SolutionSchemeOverFields::ssi_IterStagg}));
+      // Type of coupling strategy between the two fields
+      deprecated_selection<FieldCoupling>("FIELDCOUPLING",
+          {
+              {"volume_matching", FieldCoupling::volume_match},
+              {"volume_nonmatching", FieldCoupling::volume_nonmatch},
+              {"boundary_nonmatching", FieldCoupling::boundary_nonmatch},
+              {"volumeboundary_matching", FieldCoupling::volumeboundary_match},
+          },
+          {.description = "Type of coupling strategy between fields",
+              .default_value = FieldCoupling::volume_match}),
 
-  // type of scalar transport time integration
-  ssidyn.specs.emplace_back(deprecated_selection<ScaTraTimIntType>("SCATRATIMINTTYPE",
-      {
-          {"Standard", ScaTraTimIntType::standard},
-          {"Cardiac_Monodomain", ScaTraTimIntType::cardiac_monodomain},
-          {"Elch", ScaTraTimIntType::elch},
-      },
-      {.description = "scalar transport time integration type is needed to instantiate correct "
-                      "scalar transport time integration scheme for ssi problems",
-          .default_value = ScaTraTimIntType::standard}));
+      // Coupling strategy for SSI solvers
+      parameter<SolutionSchemeOverFields>(
+          "COUPALGO", {.description = "Coupling strategies for SSI solvers",
+                          .default_value = SolutionSchemeOverFields::ssi_IterStagg}),
 
-  // Restart from Structure problem instead of SSI
-  ssidyn.specs.emplace_back(parameter<bool>("RESTART_FROM_STRUCTURE",
-      {.description =
-              "restart from structure problem (e.g. from prestress calculations) instead of ssi",
-          .default_value = false}));
+      // type of scalar transport time integration
+      deprecated_selection<ScaTraTimIntType>("SCATRATIMINTTYPE",
+          {
+              {"Standard", ScaTraTimIntType::standard},
+              {"Cardiac_Monodomain", ScaTraTimIntType::cardiac_monodomain},
+              {"Elch", ScaTraTimIntType::elch},
+          },
+          {.description = "scalar transport time integration type is needed to instantiate correct "
+                          "scalar transport time integration scheme for ssi problems",
+              .default_value = ScaTraTimIntType::standard}),
 
-  // Adaptive time stepping
-  ssidyn.specs.emplace_back(parameter<bool>("ADAPTIVE_TIMESTEPPING",
-      {.description = "flag for adaptive time stepping", .default_value = false}));
+      // Restart from Structure problem instead of SSI
+      parameter<bool>(
+          "RESTART_FROM_STRUCTURE", {.description = "restart from structure problem (e.g. from "
+                                                    "prestress calculations) instead of ssi",
+                                        .default_value = false}),
 
-  // do redistribution by binning of solid mechanics discretization (scatra dis is cloned from solid
-  // dis for volume_matching and volumeboundary_matching)
-  ssidyn.specs.emplace_back(parameter<bool>("REDISTRIBUTE_SOLID",
-      {.description = "redistribution by binning of solid mechanics discretization",
-          .default_value = false}));
+      // Adaptive time stepping
+      parameter<bool>("ADAPTIVE_TIMESTEPPING",
+          {.description = "flag for adaptive time stepping", .default_value = false}),
 
-  ssidyn.move_into_collection(list);
-
-  /*----------------------------------------------------------------------*/
+      // do redistribution by binning of solid mechanics discretization (scatra dis is cloned from
+      // solid
+      // dis for volume_matching and volumeboundary_matching)
+      parameter<bool>("REDISTRIBUTE_SOLID",
+          {.description = "redistribution by binning of solid mechanics discretization",
+              .default_value =
+                  false})}); /*----------------------------------------------------------------------*/
   /* parameters for partitioned SSI */
   /*----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs ssidynpart{ssidyn, "PARTITIONED"};
+  list["SSI CONTROL/PARTITIONED"] = all_of({
 
-  // Solver parameter for relaxation of iterative staggered partitioned SSI
-  ssidynpart.specs.emplace_back(parameter<double>("MAXOMEGA",
-      {.description = "largest omega allowed for Aitken relaxation", .default_value = 10.0}));
-  ssidynpart.specs.emplace_back(parameter<double>("MINOMEGA",
-      {.description = "smallest omega allowed for Aitken relaxation", .default_value = 0.1}));
-  ssidynpart.specs.emplace_back(parameter<double>(
-      "STARTOMEGA", {.description = "fixed relaxation parameter", .default_value = 1.0}));
+      // Solver parameter for relaxation of iterative staggered partitioned SSI
+      parameter<double>("MAXOMEGA",
+          {.description = "largest omega allowed for Aitken relaxation", .default_value = 10.0}),
+      parameter<double>("MINOMEGA",
+          {.description = "smallest omega allowed for Aitken relaxation", .default_value = 0.1}),
+      parameter<double>(
+          "STARTOMEGA", {.description = "fixed relaxation parameter", .default_value = 1.0}),
 
-  // convergence tolerance of outer iteration loop
-  ssidynpart.specs.emplace_back(parameter<double>("CONVTOL",
-      {.description = "tolerance for convergence check of outer iteration within partitioned SSI",
-          .default_value = 1e-6}));
-
-  ssidynpart.move_into_collection(list);
+      // convergence tolerance of outer iteration loop
+      parameter<double>("CONVTOL",
+          {.description =
+                  "tolerance for convergence check of outer iteration within partitioned SSI",
+              .default_value = 1e-6})});
 
   /*----------------------------------------------------------------------*/
   /* parameters for monolithic SSI */
   /*----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs ssidynmono{ssidyn, "MONOLITHIC"};
+  list["SSI CONTROL/MONOLITHIC"] = all_of({
 
-  // convergence tolerances of Newton-Raphson iteration loop
-  ssidynmono.specs.emplace_back(parameter<double>(
-      "ABSTOLRES", {.description = "absolute tolerance for deciding if global residual of "
-                                   "nonlinear problem is already zero",
-                       .default_value = 1.e-14}));
-  ssidynmono.specs.emplace_back(parameter<double>("CONVTOL",
-      {.description =
-              "tolerance for convergence check of Newton-Raphson iteration within monolithic SSI",
-          .default_value = 1.e-6}));
+      // convergence tolerances of Newton-Raphson iteration loop
+      parameter<double>(
+          "ABSTOLRES", {.description = "absolute tolerance for deciding if global residual of "
+                                       "nonlinear problem is already zero",
+                           .default_value = 1.e-14}),
+      parameter<double>("CONVTOL", {.description = "tolerance for convergence check of "
+                                                   "Newton-Raphson iteration within monolithic SSI",
+                                       .default_value = 1.e-6}),
 
-  // ID of linear solver for global system of equations
-  ssidynmono.specs.emplace_back(parameter<int>("LINEAR_SOLVER",
-      {.description = "ID of linear solver for global system of equations", .default_value = -1}));
+      // ID of linear solver for global system of equations
+      parameter<int>(
+          "LINEAR_SOLVER", {.description = "ID of linear solver for global system of equations",
+                               .default_value = -1}),
 
-  // type of global system matrix in global system of equations
-  ssidynmono.specs.emplace_back(deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
-      {
-          {"undefined", Core::LinAlg::MatrixType::undefined},
-          {"block", Core::LinAlg::MatrixType::block_field},
-          {"sparse", Core::LinAlg::MatrixType::sparse},
-      },
-      {.description = "type of global system matrix in global system of equations",
-          .default_value = Core::LinAlg::MatrixType::undefined}));
+      // type of global system matrix in global system of equations
+      deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
+          {
+              {"undefined", Core::LinAlg::MatrixType::undefined},
+              {"block", Core::LinAlg::MatrixType::block_field},
+              {"sparse", Core::LinAlg::MatrixType::sparse},
+          },
+          {.description = "type of global system matrix in global system of equations",
+              .default_value = Core::LinAlg::MatrixType::undefined}),
 
-  ssidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
-      "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
-                           .default_value = Core::LinAlg::EquilibrationMethod::none}));
+      parameter<Core::LinAlg::EquilibrationMethod>(
+          "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
+                               .default_value = Core::LinAlg::EquilibrationMethod::none}),
 
-  ssidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
-      "EQUILIBRATION_STRUCTURE", {.description = "flag for equilibration of structural equations",
-                                     .default_value = Core::LinAlg::EquilibrationMethod::none}));
+      parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION_STRUCTURE",
+          {.description = "flag for equilibration of structural equations",
+              .default_value = Core::LinAlg::EquilibrationMethod::none}),
 
-  ssidynmono.specs.emplace_back(parameter<Core::LinAlg::EquilibrationMethod>(
-      "EQUILIBRATION_SCATRA", {.description = "flag for equilibration of scatra equations",
-                                  .default_value = Core::LinAlg::EquilibrationMethod::none}));
+      parameter<Core::LinAlg::EquilibrationMethod>(
+          "EQUILIBRATION_SCATRA", {.description = "flag for equilibration of scatra equations",
+                                      .default_value = Core::LinAlg::EquilibrationMethod::none}),
 
-  ssidynmono.specs.emplace_back(parameter<bool>("PRINT_MAT_RHS_MAP_MATLAB",
-      {.description = "print system matrix, rhs vector, and full map to matlab readable file after "
-                      "solution of time step",
-          .default_value = false}));
+      parameter<bool>("PRINT_MAT_RHS_MAP_MATLAB",
+          {.description =
+                  "print system matrix, rhs vector, and full map to matlab readable file after "
+                  "solution of time step",
+              .default_value = false}),
 
-  ssidynmono.specs.emplace_back(parameter<double>("RELAX_LIN_SOLVER_TOLERANCE",
-      {.description = "relax the tolerance of the linear solver in case it is an iterative solver "
-                      "by scaling the convergence tolerance with factor RELAX_LIN_SOLVER_TOLERANCE",
-          .default_value = 1.0}));
+      parameter<double>("RELAX_LIN_SOLVER_TOLERANCE",
+          {.description =
+                  "relax the tolerance of the linear solver in case it is an iterative solver "
+                  "by scaling the convergence tolerance with factor RELAX_LIN_SOLVER_TOLERANCE",
+              .default_value = 1.0}),
 
-  ssidynmono.specs.emplace_back(parameter<int>(
-      "RELAX_LIN_SOLVER_STEP", {.description = "relax the tolerance of the linear solver within "
-                                               "the first RELAX_LIN_SOLVER_STEP steps",
-                                   .default_value = -1}));
-
-  ssidynmono.move_into_collection(list);
+      parameter<int>("RELAX_LIN_SOLVER_STEP",
+          {.description = "relax the tolerance of the linear solver within "
+                          "the first RELAX_LIN_SOLVER_STEP steps",
+              .default_value = -1})});
 
   /*----------------------------------------------------------------------*/
   /* parameters for SSI with manifold */
   /*----------------------------------------------------------------------*/
 
-  Core::Utils::SectionSpecs ssidynmanifold{ssidyn, "MANIFOLD"};
+  list["SSI CONTROL/MANIFOLD"] = all_of({
 
-  ssidynmanifold.specs.emplace_back(parameter<bool>(
-      "ADD_MANIFOLD", {.description = "activate additional manifold?", .default_value = false}));
+      parameter<bool>(
+          "ADD_MANIFOLD", {.description = "activate additional manifold?", .default_value = false}),
 
-  ssidynmanifold.specs.emplace_back(parameter<bool>("MESHTYING_MANIFOLD",
-      {.description = "activate meshtying between all manifold fields in case they intersect?",
-          .default_value = false}));
+      parameter<bool>("MESHTYING_MANIFOLD",
+          {.description = "activate meshtying between all manifold fields in case they intersect?",
+              .default_value = false}),
 
-  ssidynmanifold.specs.emplace_back(
+
       deprecated_selection<Inpar::ScaTra::InitialField>("INITIALFIELD",
           {
               {"zero_field", Inpar::ScaTra::initfield_zero_field},
@@ -196,30 +196,27 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               {"field_by_condition", Inpar::ScaTra::initfield_field_by_condition},
           },
           {.description = "Initial field for scalar transport on manifold",
-              .default_value = Inpar::ScaTra::initfield_zero_field}));
+              .default_value = Inpar::ScaTra::initfield_zero_field}),
 
-  ssidynmanifold.specs.emplace_back(parameter<int>("INITFUNCNO",
-      {.description = "function number for scalar transport on manifold initial field",
-          .default_value = -1}));
-  ssidynmanifold.specs.emplace_back(parameter<int>("LINEAR_SOLVER",
-      {.description = "linear solver for scalar transport on manifold", .default_value = -1}));
+      parameter<int>("INITFUNCNO",
+          {.description = "function number for scalar transport on manifold initial field",
+              .default_value = -1}),
+      parameter<int>("LINEAR_SOLVER",
+          {.description = "linear solver for scalar transport on manifold", .default_value = -1}),
 
-  ssidynmanifold.specs.emplace_back(parameter<bool>(
-      "OUTPUT_INFLOW", {.description = "write output of inflow of scatra manifold - scatra "
-                                       "coupling into scatra manifold to csv file",
-                           .default_value = false}));
-
-  ssidynmanifold.move_into_collection(list);
+      parameter<bool>(
+          "OUTPUT_INFLOW", {.description = "write output of inflow of scatra manifold - scatra "
+                                           "coupling into scatra manifold to csv file",
+                               .default_value = false})});
 
   /*----------------------------------------------------------------------*/
   /* parameters for SSI with elch */
   /*----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs ssidynelch{ssidyn, "ELCH"};
-  ssidynelch.specs.emplace_back(parameter<bool>(
-      "INITPOTCALC", {.description = "Automatically calculate initial field for electric potential",
-                         .default_value = false}));
+  list["SSI CONTROL/ELCH"] = all_of({
 
-  ssidynelch.move_into_collection(list);
+      parameter<bool>("INITPOTCALC",
+          {.description = "Automatically calculate initial field for electric potential",
+              .default_value = false})});
 }
 
 /*--------------------------------------------------------------------

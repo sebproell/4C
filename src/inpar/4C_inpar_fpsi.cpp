@@ -20,113 +20,112 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs fpsidyn{"FPSI DYNAMIC"};
+  list["FPSI DYNAMIC"] = all_of({
 
-  fpsidyn.specs.emplace_back(parameter<FpsiCouplingType>("COUPALGO",
-      {.description = "Iteration Scheme over the fields", .default_value = fpsi_monolithic_plain}));
+      parameter<FpsiCouplingType>("COUPALGO", {.description = "Iteration Scheme over the fields",
+                                                  .default_value = fpsi_monolithic_plain}),
 
-  fpsidyn.specs.emplace_back(parameter<bool>("SHAPEDERIVATIVES",
-      {.description = "Include linearization with respect to mesh movement in Navier Stokes "
-                      "equation.\nSupported in monolithic FPSI for now.",
-          .default_value = false}));
+      parameter<bool>("SHAPEDERIVATIVES",
+          {.description = "Include linearization with respect to mesh movement in Navier Stokes "
+                          "equation.\nSupported in monolithic FPSI for now.",
+              .default_value = false}),
 
-  fpsidyn.specs.emplace_back(parameter<bool>("USESHAPEDERIVATIVES",
-      {.description = "Add linearization with respect to mesh movement in Navier Stokes equation "
-                      "to stiffness matrix.\nSupported in monolithic FPSI for now.",
-          .default_value = false}));
+      parameter<bool>("USESHAPEDERIVATIVES",
+          {.description =
+                  "Add linearization with respect to mesh movement in Navier Stokes equation "
+                  "to stiffness matrix.\nSupported in monolithic FPSI for now.",
+              .default_value = false}),
 
-  fpsidyn.specs.emplace_back(parameter<Inpar::FPSI::PartitionedCouplingMethod>(
-      "PARTITIONED", {.description = "Coupling strategies for partitioned FPSI solvers.",
-                         .default_value = RobinNeumann}));
+      parameter<Inpar::FPSI::PartitionedCouplingMethod>(
+          "PARTITIONED", {.description = "Coupling strategies for partitioned FPSI solvers.",
+                             .default_value = RobinNeumann}),
 
-  fpsidyn.specs.emplace_back(parameter<bool>("SECONDORDER",
-      {.description = "Second order coupling at the interface.", .default_value = false}));
+      parameter<bool>("SECONDORDER",
+          {.description = "Second order coupling at the interface.", .default_value = false}),
 
-  // Iterationparameters
-  fpsidyn.specs.emplace_back(parameter<std::string>("RESTOL",
-      {.description = "Tolerances for single fields in the residual norm for the Newton iteration. "
-                      "\nFor NORM_RESF != Abs_sys_split only the first value is used for all "
-                      "fields. \nOrder of fields: porofluidvelocity, porofluidpressure, "
-                      "porostructure, fluidvelocity, fluidpressure, ale",
-          .default_value = "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8"}));
+      // Iterationparameters
+      parameter<std::string>("RESTOL",
+          {.description =
+                  "Tolerances for single fields in the residual norm for the Newton iteration. "
+                  "\nFor NORM_RESF != Abs_sys_split only the first value is used for all "
+                  "fields. \nOrder of fields: porofluidvelocity, porofluidpressure, "
+                  "porostructure, fluidvelocity, fluidpressure, ale",
+              .default_value = "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8"}),
 
-  fpsidyn.specs.emplace_back(parameter<std::string>(
-      "INCTOL", {.description = "Tolerance in the increment norm for the Newton iteration. \nFor "
-                                "NORM_INC != \\*_split only the first value is used for all "
-                                "fields. \nOrder of fields: porofluidvelocity, porofluidpressure, "
-                                "porostructure, fluidvelocity, fluidpressure, ale",
-                    .default_value = "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8"}));
+      parameter<std::string>("INCTOL",
+          {.description = "Tolerance in the increment norm for the Newton iteration. \nFor "
+                          "NORM_INC != \\*_split only the first value is used for all "
+                          "fields. \nOrder of fields: porofluidvelocity, porofluidpressure, "
+                          "porostructure, fluidvelocity, fluidpressure, ale",
+              .default_value = "1e-8 1e-8 1e-8 1e-8 1e-8 1e-8"}),
 
-  fpsidyn.specs.emplace_back(deprecated_selection<Inpar::FPSI::ConvergenceNorm>("NORM_INC",
-      {
-          {"Abs", absoluteconvergencenorm},
-          {"Abs_sys_split", absoluteconvergencenorm_sys_split},
-          {"Rel_sys", relativconvergencenorm_sys},
-      },
-      {.description =
-              "Type of norm for primary variables convergence check.  \nAbs: absolute values, "
-              "Abs_sys_split: absolute values with correction of systemsize for every field "
-              "separate, Rel_sys: relative values with correction of systemsize.",
-          .default_value = absoluteconvergencenorm}));
+      deprecated_selection<Inpar::FPSI::ConvergenceNorm>("NORM_INC",
+          {
+              {"Abs", absoluteconvergencenorm},
+              {"Abs_sys_split", absoluteconvergencenorm_sys_split},
+              {"Rel_sys", relativconvergencenorm_sys},
+          },
+          {.description =
+                  "Type of norm for primary variables convergence check.  \nAbs: absolute values, "
+                  "Abs_sys_split: absolute values with correction of systemsize for every field "
+                  "separate, Rel_sys: relative values with correction of systemsize.",
+              .default_value = absoluteconvergencenorm}),
 
-  fpsidyn.specs.emplace_back(deprecated_selection<Inpar::FPSI::ConvergenceNorm>("NORM_RESF",
-      {
-          {"Abs", absoluteconvergencenorm},
-          {"Abs_sys_split", absoluteconvergencenorm_sys_split},
-          {"Rel_sys", relativconvergencenorm_sys},
-      },
-      {.description =
-              "Type of norm for primary variables convergence check. \nAbs: absolute values, "
-              "Abs_sys_split: absolute values with correction of systemsize for every field "
-              "separate, Rel_sys: relative values with correction of systemsize.",
-          .default_value = absoluteconvergencenorm}));
+      deprecated_selection<Inpar::FPSI::ConvergenceNorm>("NORM_RESF",
+          {
+              {"Abs", absoluteconvergencenorm},
+              {"Abs_sys_split", absoluteconvergencenorm_sys_split},
+              {"Rel_sys", relativconvergencenorm_sys},
+          },
+          {.description =
+                  "Type of norm for primary variables convergence check. \nAbs: absolute values, "
+                  "Abs_sys_split: absolute values with correction of systemsize for every field "
+                  "separate, Rel_sys: relative values with correction of systemsize.",
+              .default_value = absoluteconvergencenorm}),
 
-  fpsidyn.specs.emplace_back(deprecated_selection<Inpar::FPSI::BinaryOp>("NORMCOMBI_RESFINC",
-      {
-          {"And", bop_and},
-          {"Or", bop_or},
-      },
-      {.description = "binary operator to combine primary variables and residual force values",
-          .default_value = bop_and}));
+      deprecated_selection<Inpar::FPSI::BinaryOp>("NORMCOMBI_RESFINC",
+          {
+              {"And", bop_and},
+              {"Or", bop_or},
+          },
+          {.description = "binary operator to combine primary variables and residual force values",
+              .default_value = bop_and}),
 
-  fpsidyn.specs.emplace_back(
+
       parameter<bool>("LineSearch", {.description = "adapt increment in case of non-monotonic "
                                                     "residual convergence or residual oscillations",
-                                        .default_value = false}));
+                                        .default_value = false}),
 
-  fpsidyn.specs.emplace_back(parameter<bool>("FDCheck",
-      {.description = "perform FPSIFDCheck() finite difference check", .default_value = false}));
+      parameter<bool>("FDCheck",
+          {.description = "perform FPSIFDCheck() finite difference check", .default_value = false}),
 
-  // number of linear solver used for poroelasticity
-  fpsidyn.specs.emplace_back(parameter<int>("LINEAR_SOLVER",
-      {.description = "number of linear solver used for FPSI problems", .default_value = -1}));
-  fpsidyn.specs.emplace_back(parameter<int>(
-      "ITEMIN", {.description = "minimal number of iterations over fields", .default_value = 1}));
-  fpsidyn.specs.emplace_back(parameter<int>(
-      "NUMSTEP", {.description = "Total number of Timesteps", .default_value = 200}));
-  fpsidyn.specs.emplace_back(parameter<int>(
-      "ITEMAX", {.description = "Maximum number of iterations over fields", .default_value = 100}));
-  fpsidyn.specs.emplace_back(parameter<int>(
-      "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}));
-  fpsidyn.specs.emplace_back(parameter<int>(
-      "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}));
-  fpsidyn.specs.emplace_back(parameter<int>(
-      "FDCheck_row", {.description = "print row value during fd_check", .default_value = 0}));
-  fpsidyn.specs.emplace_back(parameter<int>(
-      "FDCheck_column", {.description = "print column value during fd_check", .default_value = 0}));
+      // number of linear solver used for poroelasticity
+      parameter<int>("LINEAR_SOLVER",
+          {.description = "number of linear solver used for FPSI problems", .default_value = -1}),
+      parameter<int>("ITEMIN",
+          {.description = "minimal number of iterations over fields", .default_value = 1}),
+      parameter<int>("NUMSTEP", {.description = "Total number of Timesteps", .default_value = 200}),
+      parameter<int>("ITEMAX",
+          {.description = "Maximum number of iterations over fields", .default_value = 100}),
+      parameter<int>(
+          "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}),
+      parameter<int>(
+          "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}),
+      parameter<int>(
+          "FDCheck_row", {.description = "print row value during fd_check", .default_value = 0}),
+      parameter<int>("FDCheck_column",
+          {.description = "print column value during fd_check", .default_value = 0}),
 
-  fpsidyn.specs.emplace_back(
-      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}));
-  fpsidyn.specs.emplace_back(parameter<double>(
-      "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}));
-  fpsidyn.specs.emplace_back(parameter<double>(
-      "CONVTOL", {.description = "Tolerance for iteration over fields", .default_value = 1e-6}));
-  fpsidyn.specs.emplace_back(parameter<double>(
-      "ALPHABJ", {.description = "Beavers-Joseph-Coefficient for Slip-Boundary-Condition at "
-                                 "Fluid-Porous-Interface (0.1-4)",
-                     .default_value = 1.0}));
 
-  fpsidyn.move_into_collection(list);
+      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}),
+      parameter<double>(
+          "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}),
+      parameter<double>(
+          "CONVTOL", {.description = "Tolerance for iteration over fields", .default_value = 1e-6}),
+      parameter<double>(
+          "ALPHABJ", {.description = "Beavers-Joseph-Coefficient for Slip-Boundary-Condition at "
+                                     "Fluid-Porous-Interface (0.1-4)",
+                         .default_value = 1.0})});
 }
 
 

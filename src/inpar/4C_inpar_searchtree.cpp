@@ -18,18 +18,16 @@ void Inpar::Geo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs search_tree{"SEARCH TREE"};
+  list["SEARCH TREE"] = all_of({
 
-  search_tree.specs.emplace_back(deprecated_selection<Inpar::Geo::TreeType>("TREE_TYPE",
-      {
-          {"notree", Inpar::Geo::Notree},
-          {"octree3d", Inpar::Geo::Octree3D},
-          {"quadtree3d", Inpar::Geo::Quadtree3D},
-          {"quadtree2d", Inpar::Geo::Quadtree2D},
-      },
-      {.description = "set tree type", .default_value = Inpar::Geo::Notree}));
-
-  search_tree.move_into_collection(list);
+      deprecated_selection<Inpar::Geo::TreeType>("TREE_TYPE",
+          {
+              {"notree", Inpar::Geo::Notree},
+              {"octree3d", Inpar::Geo::Octree3D},
+              {"quadtree3d", Inpar::Geo::Quadtree3D},
+              {"quadtree2d", Inpar::Geo::Quadtree2D},
+          },
+          {.description = "set tree type", .default_value = Inpar::Geo::Notree})});
 }
 
 FOUR_C_NAMESPACE_CLOSE

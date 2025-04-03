@@ -21,22 +21,19 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(std::map<std::string, Core::IO::In
   using namespace Core::IO::InputSpecBuilders;
 
   /*----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs type{"PROBLEM TYPE"};
+  list["PROBLEM TYPE"] = all_of({
 
-  type.specs.emplace_back(
       deprecated_selection<Core::ProblemType>("PROBLEMTYPE", string_to_problem_type_map(),
-          {.description = "Type of the problem", .default_value = Core::ProblemType::fsi}));
+          {.description = "Type of the problem", .default_value = Core::ProblemType::fsi}),
 
-  type.specs.emplace_back(deprecated_selection<Core::FE::ShapeFunctionType>("SHAPEFCT",
-      Core::FE::string_to_shape_function_type_map(),
-      {.description = "Defines the function spaces for the spatial approximation",
-          .default_value = Core::FE::ShapeFunctionType::polynomial}));
+      deprecated_selection<Core::FE::ShapeFunctionType>("SHAPEFCT",
+          Core::FE::string_to_shape_function_type_map(),
+          {.description = "Defines the function spaces for the spatial approximation",
+              .default_value = Core::FE::ShapeFunctionType::polynomial}),
 
-  type.specs.emplace_back(parameter<int>("RESTART", {.description = "", .default_value = 0}));
-  type.specs.emplace_back(parameter<int>("RANDSEED",
-      {.description = "Set the random seed. If < 0 use current time.", .default_value = -1}));
-
-  type.move_into_collection(list);
+      parameter<int>("RESTART", {.description = "", .default_value = 0}),
+      parameter<int>("RANDSEED",
+          {.description = "Set the random seed. If < 0 use current time.", .default_value = -1})});
 }
 
 /*----------------------------------------------------------------------*/

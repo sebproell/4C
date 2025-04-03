@@ -19,97 +19,96 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
   using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
-  Core::Utils::SectionSpecs io{"IO"};
+  list["IO"] = all_of({
 
-  io.specs.emplace_back(
-      parameter<bool>("OUTPUT_GMSH", {.description = "", .default_value = false}));
-  io.specs.emplace_back(parameter<bool>("OUTPUT_ROT", {.description = "", .default_value = false}));
-  io.specs.emplace_back(
-      parameter<bool>("OUTPUT_SPRING", {.description = "", .default_value = false}));
-  io.specs.emplace_back(parameter<bool>(
-      "OUTPUT_BIN", {.description = "Do you want to have binary output?", .default_value = true}));
+      parameter<bool>("OUTPUT_GMSH", {.description = "", .default_value = false}),
+      parameter<bool>("OUTPUT_ROT", {.description = "", .default_value = false}),
 
-  // Output every iteration (for debugging purposes)
-  io.specs.emplace_back(parameter<bool>("OUTPUT_EVERY_ITER",
-      {.description = "Do you desire structural displ. output every Newton iteration",
-          .default_value = false}));
-  io.specs.emplace_back(parameter<int>("OEI_FILE_COUNTER",
-      {.description = "Add an output name affix by introducing a additional number",
-          .default_value = 0}));
+      parameter<bool>("OUTPUT_SPRING", {.description = "", .default_value = false}),
+      parameter<bool>("OUTPUT_BIN",
+          {.description = "Do you want to have binary output?", .default_value = true}),
 
-  io.specs.emplace_back(parameter<bool>("ELEMENT_MAT_ID",
-      {.description = "Output of the material id of each element", .default_value = false}));
+      // Output every iteration (for debugging purposes)
+      parameter<bool>("OUTPUT_EVERY_ITER",
+          {.description = "Do you desire structural displ. output every Newton iteration",
+              .default_value = false}),
+      parameter<int>("OEI_FILE_COUNTER",
+          {.description = "Add an output name affix by introducing a additional number",
+              .default_value = 0}),
 
-  // Structural output
-  io.specs.emplace_back(parameter<bool>(
-      "STRUCT_ELE", {.description = "Output of element properties", .default_value = true}));
-  io.specs.emplace_back(parameter<bool>(
-      "STRUCT_DISP", {.description = "Output of displacements", .default_value = true}));
-  io.specs.emplace_back(deprecated_selection<Inpar::Solid::StressType>("STRUCT_STRESS",
-      {
-          {"No", Inpar::Solid::stress_none},
-          {"no", Inpar::Solid::stress_none},
-          {"NO", Inpar::Solid::stress_none},
-          {"Yes", Inpar::Solid::stress_2pk},
-          {"yes", Inpar::Solid::stress_2pk},
-          {"YES", Inpar::Solid::stress_2pk},
-          {"Cauchy", Inpar::Solid::stress_cauchy},
-          {"cauchy", Inpar::Solid::stress_cauchy},
-          {"2PK", Inpar::Solid::stress_2pk},
-          {"2pk", Inpar::Solid::stress_2pk},
-      },
-      {.description = "Output of stress", .default_value = Inpar::Solid::stress_none}));
-  // in case of a coupled problem (e.g. TSI) the additional stresses are
-  // (TSI: thermal stresses) are printed here
-  io.specs.emplace_back(deprecated_selection<Inpar::Solid::StressType>("STRUCT_COUPLING_STRESS",
-      {
-          {"No", Inpar::Solid::stress_none},
-          {"no", Inpar::Solid::stress_none},
-          {"NO", Inpar::Solid::stress_none},
-          {"Yes", Inpar::Solid::stress_2pk},
-          {"yes", Inpar::Solid::stress_2pk},
-          {"YES", Inpar::Solid::stress_2pk},
-          {"Cauchy", Inpar::Solid::stress_cauchy},
-          {"cauchy", Inpar::Solid::stress_cauchy},
-          {"2PK", Inpar::Solid::stress_2pk},
-          {"2pk", Inpar::Solid::stress_2pk},
-      },
-      {.description = "", .default_value = Inpar::Solid::stress_none}));
-  io.specs.emplace_back(deprecated_selection<Inpar::Solid::StrainType>("STRUCT_STRAIN",
-      {
-          {"No", Inpar::Solid::strain_none},
-          {"no", Inpar::Solid::strain_none},
-          {"NO", Inpar::Solid::strain_none},
-          {"Yes", Inpar::Solid::strain_gl},
-          {"yes", Inpar::Solid::strain_gl},
-          {"YES", Inpar::Solid::strain_gl},
-          {"EA", Inpar::Solid::strain_ea},
-          {"ea", Inpar::Solid::strain_ea},
-          {"GL", Inpar::Solid::strain_gl},
-          {"gl", Inpar::Solid::strain_gl},
-          {"LOG", Inpar::Solid::strain_log},
-          {"log", Inpar::Solid::strain_log},
-      },
-      {.description = "Output of strains", .default_value = Inpar::Solid::strain_none}));
-  io.specs.emplace_back(deprecated_selection<Inpar::Solid::StrainType>("STRUCT_PLASTIC_STRAIN",
-      {
-          {"No", Inpar::Solid::strain_none},
-          {"no", Inpar::Solid::strain_none},
-          {"NO", Inpar::Solid::strain_none},
-          {"Yes", Inpar::Solid::strain_gl},
-          {"yes", Inpar::Solid::strain_gl},
-          {"YES", Inpar::Solid::strain_gl},
-          {"EA", Inpar::Solid::strain_ea},
-          {"ea", Inpar::Solid::strain_ea},
-          {"GL", Inpar::Solid::strain_gl},
-          {"gl", Inpar::Solid::strain_gl},
-      },
-      {.description = "", .default_value = Inpar::Solid::strain_none}));
-  io.specs.emplace_back(
-      parameter<bool>("STRUCT_SURFACTANT", {.description = "", .default_value = false}));
-  io.specs.emplace_back(
-      parameter<bool>("STRUCT_JACOBIAN_MATLAB", {.description = "", .default_value = false}));
-  io.specs.emplace_back(
+      parameter<bool>("ELEMENT_MAT_ID",
+          {.description = "Output of the material id of each element", .default_value = false}),
+
+      // Structural output
+      parameter<bool>(
+          "STRUCT_ELE", {.description = "Output of element properties", .default_value = true}),
+      parameter<bool>(
+          "STRUCT_DISP", {.description = "Output of displacements", .default_value = true}),
+      deprecated_selection<Inpar::Solid::StressType>("STRUCT_STRESS",
+          {
+              {"No", Inpar::Solid::stress_none},
+              {"no", Inpar::Solid::stress_none},
+              {"NO", Inpar::Solid::stress_none},
+              {"Yes", Inpar::Solid::stress_2pk},
+              {"yes", Inpar::Solid::stress_2pk},
+              {"YES", Inpar::Solid::stress_2pk},
+              {"Cauchy", Inpar::Solid::stress_cauchy},
+              {"cauchy", Inpar::Solid::stress_cauchy},
+              {"2PK", Inpar::Solid::stress_2pk},
+              {"2pk", Inpar::Solid::stress_2pk},
+          },
+          {.description = "Output of stress", .default_value = Inpar::Solid::stress_none}),
+      // in case of a coupled problem (e.g. TSI) the additional stresses are
+      // (TSI: thermal stresses) are printed here
+      deprecated_selection<Inpar::Solid::StressType>("STRUCT_COUPLING_STRESS",
+          {
+              {"No", Inpar::Solid::stress_none},
+              {"no", Inpar::Solid::stress_none},
+              {"NO", Inpar::Solid::stress_none},
+              {"Yes", Inpar::Solid::stress_2pk},
+              {"yes", Inpar::Solid::stress_2pk},
+              {"YES", Inpar::Solid::stress_2pk},
+              {"Cauchy", Inpar::Solid::stress_cauchy},
+              {"cauchy", Inpar::Solid::stress_cauchy},
+              {"2PK", Inpar::Solid::stress_2pk},
+              {"2pk", Inpar::Solid::stress_2pk},
+          },
+          {.description = "", .default_value = Inpar::Solid::stress_none}),
+      deprecated_selection<Inpar::Solid::StrainType>("STRUCT_STRAIN",
+          {
+              {"No", Inpar::Solid::strain_none},
+              {"no", Inpar::Solid::strain_none},
+              {"NO", Inpar::Solid::strain_none},
+              {"Yes", Inpar::Solid::strain_gl},
+              {"yes", Inpar::Solid::strain_gl},
+              {"YES", Inpar::Solid::strain_gl},
+              {"EA", Inpar::Solid::strain_ea},
+              {"ea", Inpar::Solid::strain_ea},
+              {"GL", Inpar::Solid::strain_gl},
+              {"gl", Inpar::Solid::strain_gl},
+              {"LOG", Inpar::Solid::strain_log},
+              {"log", Inpar::Solid::strain_log},
+          },
+          {.description = "Output of strains", .default_value = Inpar::Solid::strain_none}),
+      deprecated_selection<Inpar::Solid::StrainType>("STRUCT_PLASTIC_STRAIN",
+          {
+              {"No", Inpar::Solid::strain_none},
+              {"no", Inpar::Solid::strain_none},
+              {"NO", Inpar::Solid::strain_none},
+              {"Yes", Inpar::Solid::strain_gl},
+              {"yes", Inpar::Solid::strain_gl},
+              {"YES", Inpar::Solid::strain_gl},
+              {"EA", Inpar::Solid::strain_ea},
+              {"ea", Inpar::Solid::strain_ea},
+              {"GL", Inpar::Solid::strain_gl},
+              {"gl", Inpar::Solid::strain_gl},
+          },
+          {.description = "", .default_value = Inpar::Solid::strain_none}),
+
+      parameter<bool>("STRUCT_SURFACTANT", {.description = "", .default_value = false}),
+
+      parameter<bool>("STRUCT_JACOBIAN_MATLAB", {.description = "", .default_value = false}),
+
       deprecated_selection<Inpar::Solid::ConditionNumber>("STRUCT_CONDITION_NUMBER",
           {
               {"gmres_estimate", Inpar::Solid::ConditionNumber::gmres_estimate},
@@ -120,106 +119,105 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
           },
           {.description = "Compute the condition number of the structural system matrix and write "
                           "it to a text file.",
-              .default_value = Inpar::Solid::ConditionNumber::none}));
-  io.specs.emplace_back(
-      parameter<bool>("FLUID_STRESS", {.description = "", .default_value = false}));
-  io.specs.emplace_back(
-      parameter<bool>("FLUID_WALL_SHEAR_STRESS", {.description = "", .default_value = false}));
-  io.specs.emplace_back(
-      parameter<bool>("FLUID_ELEDATA_EVERY_STEP", {.description = "", .default_value = false}));
-  io.specs.emplace_back(
-      parameter<bool>("FLUID_NODEDATA_FIRST_STEP", {.description = "", .default_value = false}));
-  io.specs.emplace_back(
-      parameter<bool>("THERM_TEMPERATURE", {.description = "", .default_value = false}));
-  io.specs.emplace_back(deprecated_selection<Thermo::HeatFluxType>("THERM_HEATFLUX",
-      {
-          {"None", Thermo::heatflux_none},
-          {"No", Thermo::heatflux_none},
-          {"NO", Thermo::heatflux_none},
-          {"no", Thermo::heatflux_none},
-          {"Current", Thermo::heatflux_current},
-          {"Initial", Thermo::heatflux_initial},
-      },
-      {.description = "", .default_value = Thermo::heatflux_none}));
-  io.specs.emplace_back(deprecated_selection<Thermo::TempGradType>("THERM_TEMPGRAD",
-      {
-          {"None", Thermo::tempgrad_none},
-          {"No", Thermo::tempgrad_none},
-          {"NO", Thermo::tempgrad_none},
-          {"no", Thermo::tempgrad_none},
-          {"Current", Thermo::tempgrad_current},
-          {"Initial", Thermo::tempgrad_initial},
-      },
-      {.description = "", .default_value = Thermo::tempgrad_none}));
+              .default_value = Inpar::Solid::ConditionNumber::none}),
 
-  io.specs.emplace_back(parameter<int>(
-      "FILESTEPS", {.description = "Amount of timesteps written to a single result file",
-                       .default_value = 1000}));
-  io.specs.emplace_back(parameter<int>(
-      "STDOUTEVERY", {.description = "Print to screen every n step", .default_value = 1}));
+      parameter<bool>("FLUID_STRESS", {.description = "", .default_value = false}),
 
-  io.specs.emplace_back(parameter<bool>(
-      "WRITE_TO_SCREEN", {.description = "Write screen output", .default_value = true}));
-  io.specs.emplace_back(parameter<bool>(
-      "WRITE_TO_FILE", {.description = "Write the output into a file", .default_value = false}));
+      parameter<bool>("FLUID_WALL_SHEAR_STRESS", {.description = "", .default_value = false}),
 
-  io.specs.emplace_back(parameter<bool>("WRITE_INITIAL_STATE",
-      {.description = "Do you want to write output for initial state ?", .default_value = true}));
-  io.specs.emplace_back(parameter<bool>(
-      "WRITE_FINAL_STATE", {.description = "Enforce to write output/restart data at the final "
-                                           "state regardless of the other output/restart intervals",
-                               .default_value = false}));
+      parameter<bool>("FLUID_ELEDATA_EVERY_STEP", {.description = "", .default_value = false}),
 
-  io.specs.emplace_back(parameter<bool>("PREFIX_GROUP_ID",
-      {.description = "Put a <GroupID>: in front of every line", .default_value = false}));
-  io.specs.emplace_back(parameter<int>("LIMIT_OUTP_TO_PROC",
-      {.description = "Only the specified procs will write output", .default_value = -1}));
-  io.specs.emplace_back(deprecated_selection<FourC::Core::IO::Verbositylevel>("VERBOSITY",
-      {
-          {"minimal", FourC::Core::IO::minimal},
-          {"Minimal", FourC::Core::IO::minimal},
-          {"standard", FourC::Core::IO::standard},
-          {"Standard", FourC::Core::IO::standard},
-          {"verbose", FourC::Core::IO::verbose},
-          {"Verbose", FourC::Core::IO::verbose},
-          {"debug", FourC::Core::IO::debug},
-          {"Debug", FourC::Core::IO::debug},
-      },
-      {.description = "", .default_value = FourC::Core::IO::verbose}));
+      parameter<bool>("FLUID_NODEDATA_FIRST_STEP", {.description = "", .default_value = false}),
 
-  io.specs.emplace_back(parameter<double>("RESTARTWALLTIMEINTERVAL",
-      {.description =
-              "Enforce restart after this walltime interval (in seconds), smaller zero to disable",
-          .default_value = -1.0}));
-  io.specs.emplace_back(parameter<int>("RESTARTEVERY",
-      {.description = "write restart every RESTARTEVERY steps", .default_value = -1}));
+      parameter<bool>("THERM_TEMPERATURE", {.description = "", .default_value = false}),
+      deprecated_selection<Thermo::HeatFluxType>("THERM_HEATFLUX",
+          {
+              {"None", Thermo::heatflux_none},
+              {"No", Thermo::heatflux_none},
+              {"NO", Thermo::heatflux_none},
+              {"no", Thermo::heatflux_none},
+              {"Current", Thermo::heatflux_current},
+              {"Initial", Thermo::heatflux_initial},
+          },
+          {.description = "", .default_value = Thermo::heatflux_none}),
+      deprecated_selection<Thermo::TempGradType>("THERM_TEMPGRAD",
+          {
+              {"None", Thermo::tempgrad_none},
+              {"No", Thermo::tempgrad_none},
+              {"NO", Thermo::tempgrad_none},
+              {"no", Thermo::tempgrad_none},
+              {"Current", Thermo::tempgrad_current},
+              {"Initial", Thermo::tempgrad_initial},
+          },
+          {.description = "", .default_value = Thermo::tempgrad_none}),
 
-  io.move_into_collection(list);
+      parameter<int>(
+          "FILESTEPS", {.description = "Amount of timesteps written to a single result file",
+                           .default_value = 1000}),
+      parameter<int>(
+          "STDOUTEVERY", {.description = "Print to screen every n step", .default_value = 1}),
 
-  /*----------------------------------------------------------------------*/
-  Core::Utils::SectionSpecs io_every_iter{io, "EVERY ITERATION"};
+      parameter<bool>(
+          "WRITE_TO_SCREEN", {.description = "Write screen output", .default_value = true}),
+      parameter<bool>(
+          "WRITE_TO_FILE", {.description = "Write the output into a file", .default_value = false}),
 
-  // Output every iteration (for debugging purposes)
-  io_every_iter.specs.emplace_back(parameter<bool>("OUTPUT_EVERY_ITER",
-      {.description = "Do you wish output every Newton iteration?", .default_value = false}));
+      parameter<bool>(
+          "WRITE_INITIAL_STATE", {.description = "Do you want to write output for initial state ?",
+                                     .default_value = true}),
+      parameter<bool>("WRITE_FINAL_STATE",
+          {.description = "Enforce to write output/restart data at the final "
+                          "state regardless of the other output/restart intervals",
+              .default_value = false}),
 
-  io_every_iter.specs.emplace_back(parameter<int>("RUN_NUMBER",
-      {.description = "Create a new folder for different runs of the same simulation. "
-                      "If equal -1, no folder is created.",
-          .default_value = -1}));
+      parameter<bool>("PREFIX_GROUP_ID",
+          {.description = "Put a <GroupID>: in front of every line", .default_value = false}),
+      parameter<int>("LIMIT_OUTP_TO_PROC",
+          {.description = "Only the specified procs will write output", .default_value = -1}),
+      deprecated_selection<FourC::Core::IO::Verbositylevel>("VERBOSITY",
+          {
+              {"minimal", FourC::Core::IO::minimal},
+              {"Minimal", FourC::Core::IO::minimal},
+              {"standard", FourC::Core::IO::standard},
+              {"Standard", FourC::Core::IO::standard},
+              {"verbose", FourC::Core::IO::verbose},
+              {"Verbose", FourC::Core::IO::verbose},
+              {"debug", FourC::Core::IO::debug},
+              {"Debug", FourC::Core::IO::debug},
+          },
+          {.description = "", .default_value = FourC::Core::IO::verbose}),
 
-  io_every_iter.specs.emplace_back(parameter<int>("STEP_NP_NUMBER",
-      {.description = "Give the number of the step (i.e. step_{n+1}) for which you want to write "
-                      "the debug output. If a negative step number is provided, all steps will"
-                      "be written.",
-          .default_value = -1}));
+      parameter<double>(
+          "RESTARTWALLTIMEINTERVAL", {.description = "Enforce restart after this walltime interval "
+                                                     "(in seconds), smaller zero to disable",
+                                         .default_value = -1.0}),
+      parameter<int>("RESTARTEVERY",
+          {.description = "write restart every RESTARTEVERY steps",
+              .default_value =
+                  -1})}); /*----------------------------------------------------------------------*/
+  list["IO/EVERY ITERATION"] = all_of({
 
-  io_every_iter.specs.emplace_back(parameter<bool>("WRITE_OWNER_EACH_NEWTON_ITER",
-      {.description = "If yes, the ownership of elements and nodes are written each Newton step, "
-                      "instead of only once per time/load step.",
-          .default_value = false}));
+      // Output every iteration (for debugging purposes)
+      parameter<bool>("OUTPUT_EVERY_ITER",
+          {.description = "Do you wish output every Newton iteration?", .default_value = false}),
 
-  io_every_iter.move_into_collection(list);
+      parameter<int>("RUN_NUMBER",
+          {.description = "Create a new folder for different runs of the same simulation. "
+                          "If equal -1, no folder is created.",
+              .default_value = -1}),
+
+      parameter<int>("STEP_NP_NUMBER",
+          {.description =
+                  "Give the number of the step (i.e. step_{n+1}) for which you want to write "
+                  "the debug output. If a negative step number is provided, all steps will"
+                  "be written.",
+              .default_value = -1}),
+
+      parameter<bool>("WRITE_OWNER_EACH_NEWTON_ITER",
+          {.description =
+                  "If yes, the ownership of elements and nodes are written each Newton step, "
+                  "instead of only once per time/load step.",
+              .default_value = false})});
 }
 
 FOUR_C_NAMESPACE_CLOSE
