@@ -11,6 +11,8 @@
 
 #include <Teuchos_ParameterList.hpp>
 
+#include <ostream>
+
 namespace
 {
   using namespace FourC;
@@ -58,5 +60,23 @@ namespace
 
     EXPECT_EQ(
         pl.get<std::vector<Teuchos::ParameterList>>("list")[1].sublist("group").get<int>("b"), 2);
+  }
+
+  TEST(InputParameterContainerTest, PrintEnum)
+  {
+    enum class TestEnum
+    {
+      A,
+      B,
+      C
+    };
+
+    InputParameterContainer container;
+    container.add("test_enum", TestEnum::A);
+
+    // check print output
+    std::ostringstream print_output{""};
+    container.print(print_output);
+    EXPECT_EQ(print_output.str(), "test_enum : A ");
   }
 }  // namespace
