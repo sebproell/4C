@@ -45,8 +45,10 @@ namespace Mixture
   [[nodiscard]] inline T get_exponential_fiber_strain_energy(
       const PAR::ExponentialFiberParameters& params, const T I4)
   {
-    if (I4 < 0 && !params.supports_compression_)
-      FOUR_C_THROW("The fiber is under compression, but does not support that.");
+    if (I4 < 1 && !params.supports_compression_)
+    {
+      return 0.0;  // Following Holzapfel & Ogden (2009): Fibers under compression do not contribute
+    }
 
     return (params.k1_ / (2.0 * params.k2_)) *
            (std::exp(params.k2_ * (I4 - 1.0) * (I4 - 1.0)) - 1.0);
@@ -56,8 +58,10 @@ namespace Mixture
   [[nodiscard]] inline T get_d_exponential_fiber_strain_energy_d_i4(
       const PAR::ExponentialFiberParameters& params, const T I4)
   {
-    if (I4 < 0 && !params.supports_compression_)
-      FOUR_C_THROW("The fiber is under compression, but does not support that.");
+    if (I4 < 1 && !params.supports_compression_)
+    {
+      return 0.0;  // Following Holzapfel & Ogden (2009): Fibers under compression do not contribute
+    }
 
     return params.k1_ * (I4 - 1.0) * std::exp(params.k2_ * (I4 - 1.0) * (I4 - 1.0));
   }
@@ -66,8 +70,10 @@ namespace Mixture
   [[nodiscard]] inline T get_d_exponential_fiber_strain_energy_d_i4_d_i4(
       const PAR::ExponentialFiberParameters& params, const T I4)
   {
-    if (I4 < 0 && !params.supports_compression_)
-      FOUR_C_THROW("The fiber is under compression, but does not support that.");
+    if (I4 < 1 && !params.supports_compression_)
+    {
+      return 0.0;  // Following Holzapfel & Ogden (2009): Fibers under compression do not contribute
+    }
 
     return (1.0 + 2.0 * params.k2_ * std::pow((I4 - 1.0), 2)) * params.k1_ *
            std::exp(params.k2_ * std::pow((I4 - 1.0), 2));
@@ -77,8 +83,10 @@ namespace Mixture
   [[nodiscard]] inline T get_d_exponential_fiber_strain_energy_d_i4_d_i4_d_i4(
       const PAR::ExponentialFiberParameters& params, const T I4)
   {
-    if (I4 < 0 && !params.supports_compression_)
-      FOUR_C_THROW("The fiber is under compression, but does not support that.");
+    if (I4 < 1 && !params.supports_compression_)
+    {
+      return 0.0;  // Following Holzapfel & Ogden (2009): Fibers under compression do not contribute
+    }
 
     return 4 * params.k2_ * (I4 - 1.0) * params.k1_ *
                std::exp(params.k2_ * (I4 - 1.0) * (I4 - 1.0)) +
