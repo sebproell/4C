@@ -820,9 +820,7 @@ namespace Core::IO
         // the input of the functions is restructured.
         auto spec = pimpl_->valid_sections_.at("FUNCT<n>");
         spec.impl().data.name = name;
-        dynamic_cast<
-            Internal::InputSpecTypeErasedImplementation<InputSpecBuilders::Internal::ListSpec>&>(
-            spec.impl())
+        dynamic_cast<Internal::InputSpecTypeErasedImplementation<Internal::ListSpec>&>(spec.impl())
             .wrapped.name = name;
         pimpl_->valid_sections_.emplace(name, std::move(spec));
       }
@@ -921,8 +919,9 @@ namespace Core::IO
     {
       // Dat format has too little structure and the interpretation of line breaks differs
       // depending on the expected spec.
-      const auto* list_spec = dynamic_cast<const Internal::InputSpecTypeErasedImplementation<
-          InputSpecBuilders::Internal::ListSpec>*>(&spec.impl());
+      const auto* list_spec =
+          dynamic_cast<const Internal::InputSpecTypeErasedImplementation<Internal::ListSpec>*>(
+              &spec.impl());
 
       if (list_spec)
       {

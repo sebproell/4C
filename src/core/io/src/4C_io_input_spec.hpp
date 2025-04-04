@@ -24,7 +24,7 @@ namespace Core::IO
 
   namespace Internal
   {
-    class InputSpecTypeErasedBase;
+    class InputSpecImpl;
   }  // namespace Internal
 
   struct InputSpecEmitOptions
@@ -48,7 +48,7 @@ namespace Core::IO
 
     ~InputSpec();
 
-    InputSpec(std::unique_ptr<Internal::InputSpecTypeErasedBase> pimpl);
+    InputSpec(std::unique_ptr<Internal::InputSpecImpl> pimpl);
 
     InputSpec(const InputSpec& other);
     InputSpec& operator=(const InputSpec& other);
@@ -93,17 +93,17 @@ namespace Core::IO
      * definition is known. There is nothing you can or should do with this function in the user
      * code.
      */
-    Internal::InputSpecTypeErasedBase& impl();
+    Internal::InputSpecImpl& impl();
 
     /**
      * Access the opaque implementation class. This is used in the implementation files where the
      * definition is known. There is nothing you can or should do with this function in the user
      * code.
      */
-    [[nodiscard]] const Internal::InputSpecTypeErasedBase& impl() const;
+    [[nodiscard]] const Internal::InputSpecImpl& impl() const;
 
    private:
-    std::unique_ptr<Internal::InputSpecTypeErasedBase> pimpl_;
+    std::unique_ptr<Internal::InputSpecImpl> pimpl_;
   };
 }  // namespace Core::IO
 

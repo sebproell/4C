@@ -256,31 +256,48 @@ namespace
 
   void recursively_print_match_entries(const MatchEntry& entry, std::ostream& out, int depth)
   {
-    constexpr std::array state_symbol = {"[X]", "[ ]", "[!]", "[ ]"};
-    constexpr std::array state_phrase = {
-        "Expected", "Fully matched", "Partially matched", "Defaulted"};
     std::string indent = std::string(depth, ' ');
+    constexpr std::array state_symbol = {"[X]", "[ ]", "[!]", "[ ]"};
 
-    switch (entry.type)
+    const auto print_match_state = [&]()
     {
-      case MatchEntry::Type::parameter:
+      constexpr std::array state_phrase = {"Expected", "Matched", "Candidate", "Defaulted"};
+      out << indent;
+      out << std::format("{} {} {} '{}'", state_symbol[static_cast<int>(entry.state)],
+          state_phrase[static_cast<int>(entry.state)], entry.spec->impl().data.type,
+          entry.spec->impl().name());
+    };
+
+    switch (entry.spec->impl().data.type)
+    {
+      case InputSpecType::parameter:
+      case InputSpecType::deprecated_selection:
       {
-        out << indent;
-        out << std::format("{} {} parameter '{}'", state_symbol[static_cast<int>(entry.state)],
-            state_phrase[static_cast<int>(entry.state)], entry.spec->impl().name());
-        if (entry.state == MatchEntry::State::partial)
+        print_match_state();
+        if (entry.state == MatchEntry::State::partial && !entry.additional_info.empty())
         {
-          out << std::format(
-              " (expected type '{}' did not validate)", entry.spec->impl().pretty_type_name());
+          out << " (" << entry.additional_info << ")";
         }
         out << '\n';
         break;
       }
-      case MatchEntry::Type::group:
+      case InputSpecType::selection:
       {
-        out << indent;
-        out << std::format("{} {} group '{}'\n", state_symbol[static_cast<int>(entry.state)],
-            state_phrase[static_cast<int>(entry.state)], entry.spec->impl().name());
+        print_match_state();
+        if (entry.state == MatchEntry::State::partial)
+        {
+          // Selection has the selector and the chosen spec as children.
+          for (const auto* child : entry.children)
+          {
+            recursively_print_match_entries(*child, out, depth + 2);
+          }
+        }
+        break;
+      }
+      case InputSpecType::group:
+      {
+        print_match_state();
+        out << '\n';
         if (entry.state == MatchEntry::State::partial)
         {
           for (const auto* child : entry.children)
@@ -290,11 +307,10 @@ namespace
         }
         break;
       }
-      case MatchEntry::Type::list:
+      case InputSpecType::list:
       {
-        out << indent;
-        out << std::format("{} {} list '{}'\n", state_symbol[static_cast<int>(entry.state)],
-            state_phrase[static_cast<int>(entry.state)], entry.spec->impl().name());
+        print_match_state();
+        out << '\n';
         if (entry.state == MatchEntry::State::partial)
         {
           FOUR_C_ASSERT(entry.children.size() == 1,
@@ -305,9 +321,9 @@ namespace
 
           if (entry.children.front()->state == MatchEntry::State::matched)
           {
-            auto* list_spec = dynamic_cast<
-                const InputSpecTypeErasedImplementation<InputSpecBuilders::Internal::ListSpec>*>(
-                &entry.spec->impl());
+            auto* list_spec =
+                dynamic_cast<const InputSpecTypeErasedImplementation<Internal::ListSpec>*>(
+                    &entry.spec->impl());
             FOUR_C_ASSERT(list_spec != nullptr, "Internal error: ListSpec expected.");
 
             const int n_actual_entries = partially_matched_list_node.num_children();
@@ -328,7 +344,7 @@ namespace
         }
         break;
       }
-      case MatchEntry::Type::all_of:
+      case InputSpecType::all_of:
       {
         out << indent << "{\n";
         for (const auto* child : entry.children)
@@ -338,7 +354,7 @@ namespace
         out << indent << "}\n";
         break;
       }
-      case MatchEntry::Type::one_of:
+      case InputSpecType::one_of:
       {
         // one_of can print way too much information, so we try to figure out what the best match
         // was.
@@ -385,7 +401,7 @@ namespace
           for (const auto* child : fully_matching_children)
           {
             out << indent << "  "
-                << std::format("{} Possible match:\n",
+                << std::format("{} Candidate:\n",
                        state_symbol[static_cast<int>(MatchEntry::State::partial)]);
 
             recursively_print_match_entries(*child, out, depth + 4);
@@ -407,19 +423,17 @@ namespace
         }
         break;
       }
-      default:
-        FOUR_C_ASSERT(false, "Internal error: unknown MatchEntry::Type.");
     }
   }
 
   void recursively_find_unmatched_nodes(ryml::ConstNodeRef node,
       const std::vector<ryml::id_type>& matched_node_ids,
-      std::vector<ryml::id_type>& unmatched_node_ids)
+      std::set<ryml::id_type>& unmatched_node_ids)
   {
     if (std::find(matched_node_ids.begin(), matched_node_ids.end(), node.id()) ==
         matched_node_ids.end())
     {
-      unmatched_node_ids.push_back(node.id());
+      unmatched_node_ids.insert(node.id());
     }
     else if (node.has_children())
     {
@@ -442,7 +456,7 @@ namespace
     }
   }
 
-  std::vector<ryml::id_type> unmatched_input_nodes(
+  std::set<ryml::id_type> unmatched_input_nodes(
       const std::vector<MatchEntry> entries, ryml::ConstNodeRef node)
   {
     // We assume that the top-level node is always matched. If it is not, this must mean that the
@@ -452,9 +466,9 @@ namespace
     std::vector<ryml::id_type> matched_node_ids{node.id()};
     for (const auto& entry : entries)
     {
-      switch (entry.type)
+      switch (entry.spec->impl().data.type)
       {
-        case MatchEntry::Type::parameter:
+        case InputSpecType::parameter:
         {
           if (entry.state == MatchEntry::State::matched)
           {
@@ -462,7 +476,7 @@ namespace
           }
           break;
         }
-        case MatchEntry::Type::group:
+        case InputSpecType::group:
         {
           if (entry.state != MatchEntry::State::unmatched)
           {
@@ -472,7 +486,7 @@ namespace
           }
           break;
         }
-        case MatchEntry::Type::list:
+        case InputSpecType::list:
         {
           if (entry.state == MatchEntry::State::matched)
           {
@@ -481,22 +495,57 @@ namespace
           }
           break;
         }
-        case MatchEntry::Type::selection:
+        case InputSpecType::selection:
+        case InputSpecType::deprecated_selection:
         {
           if (entry.state == MatchEntry::State::matched)
           {
             matched_node_ids.push_back(entry.matched_node);
           }
-        }
-        default:
           break;
+        }
+        case InputSpecType::all_of:
+        case InputSpecType::one_of:
+        {
+          // Nothing to do for logical specs. They do not appear in the input tree.
+          break;
+        }
       }
     }
 
     // Now compare against all the nodes that are in the input yaml tree.
-    std::vector<ryml::id_type> unmatched_node_ids;
+    std::set<ryml::id_type> unmatched_node_ids;
     recursively_find_unmatched_nodes(node, matched_node_ids, unmatched_node_ids);
     return unmatched_node_ids;
+  }
+
+  void markup_copy(
+      ryml::ConstNodeRef src, ryml::NodeRef dst, const std::set<ryml::id_type>& marked_ids)
+  {
+    dst.set_type(src.type());
+
+    if (src.has_key())
+    {
+      if (marked_ids.contains(src.id()))
+      {
+        std::string marked_up_key = "[!] " + std::string(src.key().data(), src.key().size());
+        dst << ryml::key(marked_up_key);
+        dst |= ryml::KEY_PLAIN;
+      }
+      else
+        dst.set_key(src.key());
+    }
+    if (src.has_val())
+    {
+      dst.set_val(src.val());
+    }
+    // Recursively copy children
+    for (size_t i = 0; i < src.num_children(); ++i)
+    {
+      c4::yml::ConstNodeRef src_child = src.child(i);
+      c4::yml::NodeRef dst_child = dst.append_child();
+      markup_copy(src_child, dst_child, marked_ids);
+    }
   }
 }  // namespace
 
@@ -518,14 +567,13 @@ void Core::IO::Internal::MatchTree::dump(std::ostream& stream) const
 
 void Core::IO::Internal::MatchTree::assert_match() const
 {
-  std::stringstream ss;
-  ss << "Could not match this input\n\n";
-  ss << node_.node << "\n\n";
-  ss << "against the given input specification. ";
-
   if (entries_.front().state != MatchEntry::State::matched &&
       entries_.front().state != MatchEntry::State::defaulted)
   {
+    std::stringstream ss;
+    ss << "Could not match this input\n\n";
+    ss << node_.node << "\n\n";
+    ss << "against the given input specification. ";
     ss << "This was the best attempt to match the input:\n\n";
     recursively_print_match_entries(entries_.front(), ss, 0);
     FOUR_C_THROW("{}", ss.str());
@@ -535,12 +583,17 @@ void Core::IO::Internal::MatchTree::assert_match() const
   auto unmatched_node_ids = unmatched_input_nodes(entries_, node_.node);
   if (!unmatched_node_ids.empty())
   {
-    ss << "The following parts of the input did not match:\n\n";
+    std::stringstream ss;
+    ss << "Matched the following input but the highlighted parts remain unused:\n\n";
 
-    for (const auto& id : unmatched_node_ids)
-    {
-      ss << node_.node.tree()->ref(id) << "\n";
-    }
+    // Create a copy that we can modify with some markup for a better error message.
+    auto copy = ryml::emitrs_yaml<std::string>(node_.node);
+    ryml::Tree copy_tree = init_yaml_tree_with_exceptions();
+    auto copy_root = copy_tree.rootref();
+    copy_root |= ryml::MAP;
+    markup_copy(node_.node, copy_root.append_child(), unmatched_node_ids);
+    ss << copy_tree.rootref().child(0) << "\n";
+
     FOUR_C_THROW("{}", ss.str());
   }
 }
@@ -570,15 +623,13 @@ Core::IO::Internal::MatchEntry& Core::IO::Internal::MatchEntry::append_child(
 void MatchEntry::reset()
 {
   state = State::unmatched;
-  type = Type::unknown;
   matched_node = ryml::npos;
   children.clear();
   tree->erase_everything_after(*this);
 }
 
 
-InputSpecTypeErasedBase::InputSpecTypeErasedBase(InputSpecTypeErasedBase::CommonData data)
-    : data(std::move(data))
+InputSpecImpl::InputSpecImpl(InputSpecImpl::CommonData data) : data(std::move(data))
 {
   const auto check_for_unprintable_chars =
       [](const std::string& check_string, const auto& field_type)
@@ -614,13 +665,13 @@ InputSpecTypeErasedBase::InputSpecTypeErasedBase(InputSpecTypeErasedBase::Common
   check_for_unprintable_chars(this->data.name, "name");
 }
 
-std::string Core::IO::Internal::InputSpecTypeErasedBase::description_one_line() const
+std::string Core::IO::Internal::InputSpecImpl::description_one_line() const
 {
   return Core::Utils::trim(data.description);
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::GroupSpec::parse(
+void Core::IO::Internal::GroupSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
 {
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
@@ -634,10 +685,9 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::parse(
   container.group(name) = subcontainer;
 }
 
-bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef node,
+bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
     Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::group;
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
   const auto group_name = ryml::to_csubstr(name);
 
@@ -679,7 +729,7 @@ bool Core::IO::InputSpecBuilders::Internal::GroupSpec::match(ConstYamlNodeRef no
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::GroupSpec::set_default_value(
+void Core::IO::Internal::GroupSpec::set_default_value(
     Core::IO::InputParameterContainer& container) const
 {
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
@@ -690,8 +740,7 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::set_default_value(
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::GroupSpec::print(
-    std::ostream& stream, std::size_t indent) const
+void Core::IO::Internal::GroupSpec::print(std::ostream& stream, std::size_t indent) const
 {
   stream << "// " << std::string(indent, ' ') << name << ":\n";
   indent += 2;
@@ -702,7 +751,7 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::print(
   }
 }
 
-void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::GroupSpec::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
   node["name"] << name;
@@ -726,8 +775,8 @@ void Core::IO::InputSpecBuilders::Internal::GroupSpec::emit_metadata(ryml::NodeR
 }
 
 
-bool InputSpecBuilders::Internal::GroupSpec::emit(YamlNodeRef node,
-    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+bool Internal::GroupSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
+    const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
   ChildNodeCheckpoint checkpoint(node);
@@ -756,7 +805,7 @@ bool InputSpecBuilders::Internal::GroupSpec::emit(YamlNodeRef node,
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::AllOfSpec::parse(
+void Core::IO::Internal::AllOfSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
 {
   // Parse into a separate container to avoid side effects if parsing fails.
@@ -766,10 +815,9 @@ void Core::IO::InputSpecBuilders::Internal::AllOfSpec::parse(
 }
 
 
-bool Core::IO::InputSpecBuilders::Internal::AllOfSpec::match(ConstYamlNodeRef node,
+bool Core::IO::Internal::AllOfSpec::match(ConstYamlNodeRef node,
     Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::all_of;
   std::vector<ryml::id_type> parsed_node_ids;
 
   // Parse into a separate container to avoid side effects if parsing fails.
@@ -791,7 +839,7 @@ bool Core::IO::InputSpecBuilders::Internal::AllOfSpec::match(ConstYamlNodeRef no
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::AllOfSpec::set_default_value(
+void Core::IO::Internal::AllOfSpec::set_default_value(
     Core::IO::InputParameterContainer& container) const
 {
   for (const auto& spec : specs)
@@ -801,8 +849,7 @@ void Core::IO::InputSpecBuilders::Internal::AllOfSpec::set_default_value(
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::AllOfSpec::print(
-    std::ostream& stream, std::size_t indent) const
+void Core::IO::Internal::AllOfSpec::print(std::ostream& stream, std::size_t indent) const
 {
   // Only print an "<all_of>" header if it is not present at the top-level.
   if (indent > 0)
@@ -817,7 +864,7 @@ void Core::IO::InputSpecBuilders::Internal::AllOfSpec::print(
   }
 }
 
-void Core::IO::InputSpecBuilders::Internal::AllOfSpec::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::AllOfSpec::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
 
@@ -839,8 +886,8 @@ void Core::IO::InputSpecBuilders::Internal::AllOfSpec::emit_metadata(ryml::NodeR
 }
 
 
-bool InputSpecBuilders::Internal::AllOfSpec::emit(YamlNodeRef node,
-    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+bool Internal::AllOfSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
+    const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
   ChildNodeCheckpoint checkpoint(node);
@@ -856,7 +903,7 @@ bool InputSpecBuilders::Internal::AllOfSpec::emit(YamlNodeRef node,
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
+void Core::IO::Internal::OneOfSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
 {
   ValueParser::BacktrackScope backtrack_scope(parser);
@@ -914,10 +961,9 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::parse(
 }
 
 
-bool Core::IO::InputSpecBuilders::Internal::OneOfSpec::match(ConstYamlNodeRef node,
+bool Core::IO::Internal::OneOfSpec::match(ConstYamlNodeRef node,
     Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::one_of;
   InputParameterContainer subcontainer;
 
   std::size_t matched_index = 0;
@@ -959,15 +1005,14 @@ bool Core::IO::InputSpecBuilders::Internal::OneOfSpec::match(ConstYamlNodeRef no
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::OneOfSpec::set_default_value(
+void Core::IO::Internal::OneOfSpec::set_default_value(
     Core::IO::InputParameterContainer& container) const
 {
   FOUR_C_THROW("Implementation error: OneOfSpec cannot have a default value.");
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::OneOfSpec::print(
-    std::ostream& stream, std::size_t indent) const
+void Core::IO::Internal::OneOfSpec::print(std::ostream& stream, std::size_t indent) const
 {
   stream << "// " << std::string(indent, ' ') << "<one_of>:\n";
   for (const auto& spec : specs)
@@ -976,7 +1021,7 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::print(
   }
 }
 
-void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::OneOfSpec::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
 
@@ -994,8 +1039,8 @@ void Core::IO::InputSpecBuilders::Internal::OneOfSpec::emit_metadata(ryml::NodeR
 }
 
 
-bool InputSpecBuilders::Internal::OneOfSpec::emit(YamlNodeRef node,
-    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+bool Internal::OneOfSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
+    const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
   ChildNodeCheckpoint checkpoint(node);
@@ -1016,11 +1061,11 @@ bool InputSpecBuilders::Internal::OneOfSpec::emit(YamlNodeRef node,
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::ListSpec::parse(
+void Core::IO::Internal::ListSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
 {
-  FOUR_C_ASSERT_ALWAYS(
-      data.size != dynamic_size, "ListSpec with dynamic size cannot be parsed from dat.");
+  FOUR_C_ASSERT_ALWAYS(data.size != InputSpecBuilders::dynamic_size,
+      "ListSpec with dynamic size cannot be parsed from dat.");
 
   parser.consume(name);
 
@@ -1033,10 +1078,9 @@ void Core::IO::InputSpecBuilders::Internal::ListSpec::parse(
 }
 
 
-bool Core::IO::InputSpecBuilders::Internal::ListSpec::match(ConstYamlNodeRef node,
+bool Core::IO::Internal::ListSpec::match(ConstYamlNodeRef node,
     Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::list;
   FOUR_C_ASSERT(!name.empty(), "Internal error: list name must not be empty.");
   const auto list_name = ryml::to_csubstr(name);
 
@@ -1088,7 +1132,7 @@ bool Core::IO::InputSpecBuilders::Internal::ListSpec::match(ConstYamlNodeRef nod
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::ListSpec::set_default_value(
+void Core::IO::Internal::ListSpec::set_default_value(
     Core::IO::InputParameterContainer& container) const
 {
   std::vector<InputParameterContainer> default_list(data.size);
@@ -1102,15 +1146,14 @@ void Core::IO::InputSpecBuilders::Internal::ListSpec::set_default_value(
 }
 
 
-void Core::IO::InputSpecBuilders::Internal::ListSpec::print(
-    std::ostream& stream, std::size_t indent) const
+void Core::IO::Internal::ListSpec::print(std::ostream& stream, std::size_t indent) const
 {
   stream << "// " << std::string(indent, ' ') << "list '" << name << "'"
          << " with entries:\n";
   spec.impl().print(stream, indent + 2);
 }
 
-void Core::IO::InputSpecBuilders::Internal::ListSpec::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::ListSpec::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
 
@@ -1128,8 +1171,8 @@ void Core::IO::InputSpecBuilders::Internal::ListSpec::emit_metadata(ryml::NodeRe
 }
 
 
-bool InputSpecBuilders::Internal::ListSpec::emit(YamlNodeRef node,
-    const InputParameterContainer& container, const InputSpecEmitOptions& options) const
+bool Internal::ListSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
+    const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
   ChildNodeCheckpoint checkpoint(node);
@@ -1160,15 +1203,15 @@ namespace
   // Nesting all_of or one_of within another spec of that same type is the same as pulling the
   // nested specs up into the parent spec. An additional predicate can be used to filter the nested
   // specs that may be flattened.
-  template <typename SpecType>
+  template <typename InputSpecType>
   std::vector<Core::IO::InputSpec> flatten_nested(std::vector<Core::IO::InputSpec> specs,
-      std::function<bool(const SpecType&)> predicate = nullptr)
+      std::function<bool(const InputSpecType&)> predicate = nullptr)
   {
     std::vector<Core::IO::InputSpec> flattened_specs;
     for (auto&& spec : specs)
     {
       if (auto* nested =
-              dynamic_cast<Core::IO::Internal::InputSpecTypeErasedImplementation<SpecType>*>(
+              dynamic_cast<Core::IO::Internal::InputSpecTypeErasedImplementation<InputSpecType>*>(
                   &spec.impl());
           nested && (!predicate || predicate(nested->wrapped)))
       {
@@ -1217,12 +1260,13 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
         name.c_str());
   }
 
-  IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
+  InputSpecImpl::CommonData common_data{
       .name = name,
       .description = data.description,
       .required = data.required.value(),
       .has_default_value = data.defaultable,
       .n_specs = count_contained_specs(flattened_specs) + 1,
+      .type = InputSpecType::group,
   };
 
   return IO::Internal::make_spec(
@@ -1249,12 +1293,13 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> s
   // Generate a description of the form "group {a, b, c}".
   std::string description = "all_of " + describe(flattened_specs);
 
-  IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
+  InputSpecImpl::CommonData common_data{
       .name = "",
       .description = description,
       .required = any_required,
       .has_default_value = all_have_default_values(flattened_specs),
       .n_specs = count_contained_specs(flattened_specs) + 1,
+      .type = InputSpecType::all_of,
   };
 
   return IO::Internal::make_spec(
@@ -1303,12 +1348,13 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
   }
 
   std::string description = "one_of " + describe(flattened_specs);
-  IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
+  InputSpecImpl::CommonData common_data{
       .name = "",
       .description = description,
       .required = true,
       .has_default_value = false,
       .n_specs = count_contained_specs(flattened_specs) + 1,
+      .type = InputSpecType::one_of,
   };
 
   GroupData group_data{
@@ -1326,7 +1372,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
 Core::IO::InputSpec Core::IO::InputSpecBuilders::list(
     std::string name, Core::IO::InputSpec spec, ListData data)
 {
-  IO::Internal::InputSpecTypeErasedBase::CommonData common_data{
+  InputSpecImpl::CommonData common_data{
       .name = name,
       .description = data.description,
       .required = data.required,
@@ -1334,6 +1380,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::list(
       // a default value.
       .has_default_value = spec.impl().has_default_value() && data.size != dynamic_size,
       .n_specs = spec.impl().data.n_specs + 1,
+      .type = InputSpecType::list,
   };
 
   return IO::Internal::make_spec(

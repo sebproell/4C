@@ -684,7 +684,7 @@ specs:
       spec.print_as_dat(out);
       EXPECT_EQ(out.str(), R"(// g:
 //   a <int> "An integer"
-//   c <enum> (default: c1) "Selection"
+//   c <Options> (default: c1) "Selection"
 //   d <int> (default: 42) "Another integer"
 )");
     }
@@ -942,6 +942,20 @@ specs:
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
           spec.match(node, container), Core::Exception, "Expected parameter 'a'");
     }
+
+    {
+      SCOPED_TRACE("Wrong type.");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+
+      root |= ryml::MAP;
+      root["a"] << "string";
+      ConstYamlNodeRef node(root, "");
+
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
+          "Candidate parameter 'a' (wrong type, expected type: int)");
+    }
   }
 
   TEST(InputSpecTest, MatchYamlGroup)
@@ -1055,6 +1069,85 @@ specs:
       spec.match(node, container);
       EXPECT_EQ(container.group("model").get<Model>("type"), Model::quadratic);
       EXPECT_EQ(container.group("model").get<double>("c"), 3.0);
+    }
+
+    {
+      SCOPED_TRACE("Type matched but wrong choice");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(model:
+  type: quadratic
+  coefficient: 1
+)",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, "Expected parameter 'a'");
+    }
+
+    {
+      SCOPED_TRACE("Type matched but wrong choice v2");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(model:
+  type: quadratic
+  a: 1
+)",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, "Expected parameter 'b'");
+    }
+  }
+
+  TEST(InputSpecTest, MatchYamlDeprecatedSelection)
+  {
+    enum class Enum
+    {
+      a,
+      b,
+    };
+
+    auto spec = deprecated_selection<Enum>("enum", {{"A", Enum::a}, {"B", Enum::b}});
+
+    {
+      SCOPED_TRACE("Match");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(enum: A)", root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<Enum>("enum"), Enum::a);
+    }
+
+    {
+      SCOPED_TRACE("No match: wrong key");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(this_is_the_wrong_name: A)", root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, "Expected deprecated_selection 'enum'");
+    }
+
+    {
+      SCOPED_TRACE("No match: wrong value");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(enum: wrong_value)", root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
+          "Candidate deprecated_selection 'enum' (wrong value, possible values: A|B)");
     }
   }
 
@@ -1170,8 +1263,13 @@ group:
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          "The following parts of the input did not match:\n\n"
-          "d: 42");
+          "Matched the following input but the highlighted parts remain unused:\n\n"
+          "a: 1\n"
+          "b:\n"
+          "  - b1\n"
+          "  - b2\n"
+          "c: 2\n"
+          "[!] d: 42");
     }
   }
 
@@ -1231,15 +1329,15 @@ group:
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
           "[X] Expected exactly one but matched multiple:\n"
-          "  [!] Possible match:\n"
+          "  [!] Candidate:\n"
           "    {\n"
-          "      [ ] Fully matched parameter 'a'\n"
-          "      [ ] Fully matched parameter 'b'\n"
+          "      [ ] Matched parameter 'a'\n"
+          "      [ ] Matched parameter 'b'\n"
           "    }\n"
-          "  [!] Possible match:\n"
+          "  [!] Candidate:\n"
           "    {\n"
-          "      [ ] Fully matched parameter 'a'\n"
-          "      [ ] Fully matched parameter 'd'\n"
+          "      [ ] Matched parameter 'a'\n"
+          "      [ ] Matched parameter 'd'\n"
           "    }");
     }
   }
@@ -1503,7 +1601,7 @@ v:
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, "Partially matched parameter 'v'");
+          spec.match(node, container), Core::Exception, "Candidate parameter 'v'");
     }
   }
 
@@ -1638,6 +1736,85 @@ i: 42
 v: [1,2,3]
 )";
       EXPECT_EQ(out.str(), expected);
+    }
+  }
+
+  TEST(InputSpecTest, ComplexMatchError)
+  {
+    // Let this test look a little bit more like actual input so it doubles as documentation.
+    enum class Type
+    {
+      user,
+      gemm,
+    };
+    auto spec = group("parameters", {
+                                        parameter<double>("start"),
+                                        parameter<bool>("write_output", {.default_value = true}),
+                                        group("TimeIntegration",
+                                            {
+                                                one_of({
+                                                    group("OST",
+                                                        {
+                                                            parameter<double>("theta"),
+                                                        }),
+                                                    group("Special", {parameter<Type>("type")}),
+                                                }),
+                                            }),
+                                    });
+
+    {
+      SCOPED_TRACE("Partial match in one_of");
+      auto tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(parameters:
+  start: 0.0
+  TimeIntegration:
+    OST:
+      theta: true # wrong type
+    Special:
+      type: invalid)",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, R"([!] Candidate group 'parameters'
+  [ ] Matched parameter 'start'
+  [ ] Defaulted parameter 'write_output'
+  [!] Candidate group 'TimeIntegration'
+    [X] Expected exactly one of a few choices but matched:
+      [!] Candidate group 'OST'
+        [!] Candidate parameter 'theta' (wrong type, expected type: double)
+      [!] Candidate group 'Special'
+        [!] Candidate parameter 'type' (wrong value, possible values: user|gemm))");
+    }
+    {
+      SCOPED_TRACE("Unused parts.");
+      auto tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(data:
+  a: 1
+parameters:
+  start: 0.0
+  TimeIntegration:
+    OST:
+      theta: 0.5
+    Special:)",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
+          R"(Matched the following input but the highlighted parts remain unused:
+
+[!] data:
+  a: 1
+parameters:
+  start: 0.0
+  TimeIntegration:
+    OST:
+      theta: 0.5
+    [!] Special: )");
     }
   }
 }  // namespace

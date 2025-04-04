@@ -15,9 +15,8 @@
 #include "4C_io_input_types.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_string.hpp"
-
-#include <magic_enum/magic_enum_iostream.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -119,7 +118,7 @@ namespace Core::IO
       requires(std::is_enum_v<Enum>)
     struct PrettyTypeName<Enum>
     {
-      std::string operator()() { return "enum"; }
+      std::string operator()() { return std::string{magic_enum::enum_type_name<Enum>()}; }
     };
 
     template <typename T>
@@ -255,6 +254,7 @@ namespace Core::IO
       MatchTree* tree;
       const InputSpec* spec;
       std::vector<MatchEntry*> children;
+      std::string additional_info;
 
       /**
        * A MatchEntry can only match a single node. Logical specs like all_of and one_of are not
@@ -270,20 +270,7 @@ namespace Core::IO
         defaulted,
       };
 
-      enum class Type : std::uint8_t
-      {
-        unknown,
-        parameter,
-        selection,
-        group,
-        all_of,
-        one_of,
-        list,
-      };
-
       State state{State::unmatched};
-      Type type{Type::unknown};
-
 
       /**
        * Append a child for the @p in_spec to the current entry and return a reference to it. This
@@ -331,7 +318,23 @@ namespace Core::IO
       ConstYamlNodeRef node_;
     };
 
-    class InputSpecTypeErasedBase
+
+    /**
+     * Distinguish between different types of specs in the implementation.
+     */
+    enum class InputSpecType : std::uint8_t
+    {
+      parameter,
+      group,
+      list,
+      selection,
+      all_of,
+      one_of,
+      deprecated_selection,
+    };
+
+
+    class InputSpecImpl
     {
      public:
       /**
@@ -365,14 +368,20 @@ namespace Core::IO
          * that the minimum value is 1. This value can be used to reserve memory ahead of time.
          */
         std::size_t n_specs;
+
+        /**
+         * The type of the spec.
+         */
+        InputSpecType type;
       };
 
-      virtual ~InputSpecTypeErasedBase() = default;
+
+      virtual ~InputSpecImpl() = default;
 
       /**
        * @param data The common data of the spec.
        */
-      InputSpecTypeErasedBase(CommonData data);
+      InputSpecImpl(CommonData data);
 
       virtual void parse(ValueParser& parser, InputParameterContainer& container) const = 0;
 
@@ -398,7 +407,7 @@ namespace Core::IO
 
       [[nodiscard]] virtual std::string pretty_type_name() const = 0;
 
-      [[nodiscard]] virtual std::unique_ptr<InputSpecTypeErasedBase> clone() const = 0;
+      [[nodiscard]] virtual std::unique_ptr<InputSpecImpl> clone() const = 0;
 
       void print(std::ostream& stream, std::size_t indent) const { do_print(stream, indent); }
 
@@ -416,10 +425,10 @@ namespace Core::IO
       CommonData data;
 
      protected:
-      InputSpecTypeErasedBase(const InputSpecTypeErasedBase&) = default;
-      InputSpecTypeErasedBase& operator=(const InputSpecTypeErasedBase&) = default;
-      InputSpecTypeErasedBase(InputSpecTypeErasedBase&&) noexcept = default;
-      InputSpecTypeErasedBase& operator=(InputSpecTypeErasedBase&&) noexcept = default;
+      InputSpecImpl(const InputSpecImpl&) = default;
+      InputSpecImpl& operator=(const InputSpecImpl&) = default;
+      InputSpecImpl(InputSpecImpl&&) noexcept = default;
+      InputSpecImpl& operator=(InputSpecImpl&&) noexcept = default;
 
      private:
       virtual void do_print(std::ostream& stream, std::size_t indent) const = 0;
@@ -429,11 +438,11 @@ namespace Core::IO
     concept StoresType = requires(T t) { typename T::StoredType; };
 
     template <typename T>
-    struct InputSpecTypeErasedImplementation : public InputSpecTypeErasedBase
+    struct InputSpecTypeErasedImplementation : public InputSpecImpl
     {
       template <typename T2>
       explicit InputSpecTypeErasedImplementation(T2&& wrapped, CommonData data)
-          : InputSpecTypeErasedBase(std::move(data)), wrapped(std::forward<T2>(wrapped))
+          : InputSpecImpl(std::move(data)), wrapped(std::forward<T2>(wrapped))
       {
       }
 
@@ -515,7 +524,7 @@ namespace Core::IO
         }
       }
 
-      [[nodiscard]] std::unique_ptr<InputSpecTypeErasedBase> clone() const override
+      [[nodiscard]] std::unique_ptr<InputSpecImpl> clone() const override
       {
         return std::make_unique<InputSpecTypeErasedImplementation<T>>(wrapped, data);
       }
@@ -524,7 +533,7 @@ namespace Core::IO
     };
 
     template <typename T>
-    InputSpec make_spec(T&& wrapped, InputSpecTypeErasedBase::CommonData data)
+    InputSpec make_spec(T&& wrapped, InputSpecImpl::CommonData data)
     {
       return InputSpec(std::make_unique<InputSpecTypeErasedImplementation<std::decay_t<T>>>(
           std::forward<T>(wrapped), std::move(data)));
@@ -703,211 +712,214 @@ namespace Core::IO
        */
       int size{dynamic_size};
     };
+  }  // namespace InputSpecBuilders
 
-    namespace Internal
+  namespace Internal
+  {
+    template <typename T>
+    struct ParameterData
     {
-      template <typename T>
-      struct ParameterData
+      using StoredType = T;
+
+      std::string description{};
+
+      std::variant<std::monostate, StoredType> default_value{};
+
+      InputSpecBuilders::ParameterCallback on_parse_callback{nullptr};
+
+      std::array<InputSpecBuilders::Size, rank<T>()> size{};
+    };
+
+    template <typename T>
+    struct DeprecatedSelectionData
+    {
+      using StoredType = T;
+
+      std::string description{};
+
+      std::variant<std::monostate, StoredType> default_value{};
+
+      InputSpecBuilders::ParameterCallback on_parse_callback{nullptr};
+    };
+
+    template <SupportedType T>
+    struct ParameterSpec
+    {
+      std::string name;
+      using StoredType = T;
+      ParameterData<T> data;
+      void parse(ValueParser& parser, InputParameterContainer& container) const;
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          IO::Internal::MatchEntry& match_entry) const;
+      void emit_metadata(ryml::NodeRef node) const;
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const;
+      [[nodiscard]] bool has_correct_size(
+          const T& val, const InputParameterContainer& container) const;
+    };
+
+    /**
+     * Note that a DeprecatedSelectionSpec can store any type since we never need to read or write
+     * values of this type.
+     */
+    template <typename T>
+    struct DeprecatedSelectionSpec
+    {
+      std::string name;
+      using StoredType = T;
+      //! The type that is used in the input file.
+      using InputType =
+          std::conditional_t<OptionalType<T>, std::optional<std::string>, std::string>;
+      using ChoiceMap = std::map<InputType, StoredType>;
+      DeprecatedSelectionData<T> data;
+      ChoiceMap choices;
+      //! The string representation of the choices.
+      std::string choices_string;
+      void parse(ValueParser& parser, InputParameterContainer& container) const;
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          IO::Internal::MatchEntry& match_entry) const;
+      void print(std::ostream& stream, std::size_t indent) const;
+      void emit_metadata(ryml::NodeRef node) const;
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const;
+    };
+
+    //! Helper for selection().
+    template <typename T>
+      requires(std::is_enum_v<T>)
+    struct BasedOn
+    {
+      std::string selector{"type"};
+      std::map<T, InputSpec> choices;
+    };
+
+    template <typename T>
+      requires(std::is_enum_v<T>)
+    struct SelectionSpec
+    {
+      std::string group_name;
+      BasedOn<T> based_on;
+      InputSpecBuilders::SelectionData data;
+      InputSpec selector_spec;
+
+      void parse(ValueParser& parser, InputParameterContainer& container) const;
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          IO::Internal::MatchEntry& match_entry) const;
+      void print(std::ostream& stream, std::size_t indent) const;
+      void emit_metadata(ryml::NodeRef node) const;
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const;
+      void set_default_value(InputParameterContainer& container) const;
+    };
+
+    struct GroupSpec
+    {
+      std::string name;
+      InputSpecBuilders::GroupData data;
+      std::vector<InputSpec> specs;
+
+      void parse(ValueParser& parser, InputParameterContainer& container) const;
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          IO::Internal::MatchEntry& match_entry) const;
+      void set_default_value(InputParameterContainer& container) const;
+      void print(std::ostream& stream, std::size_t indent) const;
+      void emit_metadata(ryml::NodeRef node) const;
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const;
+    };
+
+    struct AllOfSpec
+    {
+      InputSpecBuilders::GroupData data;
+      std::vector<InputSpec> specs;
+
+      void parse(ValueParser& parser, InputParameterContainer& container) const;
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          IO::Internal::MatchEntry& match_entry) const;
+      void set_default_value(InputParameterContainer& container) const;
+      void print(std::ostream& stream, std::size_t indent) const;
+      void emit_metadata(ryml::NodeRef node) const;
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const;
+    };
+
+    struct OneOfSpec
+    {
+      // A one_of spec is essentially an unnamed group with additional logic to ensure that
+      // exactly one of the contained specs is present.
+      InputSpecBuilders::GroupData data;
+      std::vector<InputSpec> specs;
+
+      //! This callback may be used to perform additional actions after parsing one of the specs.
+      //! The index of the parsed spec as given inside #specs is passed as an argument.
+      std::function<void(InputParameterContainer& container, std::size_t index)> on_parse_callback;
+
+      void parse(ValueParser& parser, InputParameterContainer& container) const;
+
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          IO::Internal::MatchEntry& match_entry) const;
+
+      void set_default_value(InputParameterContainer& container) const;
+
+      void print(std::ostream& stream, std::size_t indent) const;
+
+      void emit_metadata(ryml::NodeRef node) const;
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const;
+    };
+
+    struct ListSpec
+    {
+      //! The name of the list.
+      std::string name;
+      //! The spec that fits the list elements.
+      InputSpec spec;
+
+      InputSpecBuilders::ListData data;
+
+      void parse(ValueParser& parser, InputParameterContainer& container) const;
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          IO::Internal::MatchEntry& match_entry) const;
+      void set_default_value(InputParameterContainer& container) const;
+      void print(std::ostream& stream, std::size_t indent) const;
+      void emit_metadata(ryml::NodeRef node) const;
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const;
+    };
+
+
+    //! Helper to create selection() specs.
+    //! Note that the type can be anything since we never read or write values of this type.
+    template <typename T>
+    [[nodiscard]] InputSpec selection_internal(std::string name,
+        std::map<std::string, RemoveOptional<T>> choices,
+        InputSpecBuilders::ParameterDataIn<T> data = {});
+
+
+    struct SizeChecker
+    {
+      constexpr bool operator()(const auto& val, std::size_t* size_info) const { return true; }
+
+      template <typename U>
+      constexpr bool operator()(const std::vector<U>& v, std::size_t* size_info) const
       {
-        using StoredType = T;
+        return ((*size_info == InputSpecBuilders::dynamic_size) || (v.size() == *size_info)) &&
+               std::ranges::all_of(
+                   v, [&](const auto& val) { return this->operator()(val, size_info + 1); });
+      }
 
-        std::string description{};
-
-        std::variant<std::monostate, StoredType> default_value{};
-
-        ParameterCallback on_parse_callback{nullptr};
-
-        std::array<Size, rank<T>()> size{};
-      };
-
-      template <typename T>
-      struct DeprecatedSelectionData
+      template <typename U>
+      constexpr bool operator()(const std::map<std::string, U>& m, std::size_t* size_info) const
       {
-        using StoredType = T;
+        return ((*size_info == InputSpecBuilders::dynamic_size) || (m.size() == *size_info)) &&
+               std::ranges::all_of(
+                   m, [&](const auto& val) { return this->operator()(val.second, size_info + 1); });
+      }
+    };
+  }  // namespace Internal
 
-        std::string description{};
-
-        std::variant<std::monostate, StoredType> default_value{};
-
-        ParameterCallback on_parse_callback{nullptr};
-      };
-
-      template <SupportedType T>
-      struct ParameterSpec
-      {
-        std::string name;
-        using StoredType = T;
-        ParameterData<T> data;
-        void parse(ValueParser& parser, InputParameterContainer& container) const;
-        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
-            IO::Internal::MatchEntry& match_entry) const;
-        void emit_metadata(ryml::NodeRef node) const;
-        bool emit(YamlNodeRef node, const InputParameterContainer& container,
-            const InputSpecEmitOptions& options) const;
-        [[nodiscard]] bool has_correct_size(
-            const T& val, const InputParameterContainer& container) const;
-      };
-
-      /**
-       * Note that a DeprecatedSelectionSpec can store any type since we never need to read or write
-       * values of this type.
-       */
-      template <typename T>
-      struct DeprecatedSelectionSpec
-      {
-        std::string name;
-        using StoredType = T;
-        //! The type that is used in the input file.
-        using InputType =
-            std::conditional_t<OptionalType<T>, std::optional<std::string>, std::string>;
-        using ChoiceMap = std::map<InputType, StoredType>;
-        DeprecatedSelectionData<T> data;
-        ChoiceMap choices;
-        //! The string representation of the choices.
-        std::string choices_string;
-        void parse(ValueParser& parser, InputParameterContainer& container) const;
-        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
-            IO::Internal::MatchEntry& match_entry) const;
-        void print(std::ostream& stream, std::size_t indent) const;
-        void emit_metadata(ryml::NodeRef node) const;
-        bool emit(YamlNodeRef node, const InputParameterContainer& container,
-            const InputSpecEmitOptions& options) const;
-      };
-
-      //! Helper for selection().
-      template <typename T>
-        requires(std::is_enum_v<T>)
-      struct BasedOn
-      {
-        std::string selector{"type"};
-        std::map<T, InputSpec> choices;
-      };
-
-      template <typename T>
-        requires(std::is_enum_v<T>)
-      struct SelectionSpec
-      {
-        std::string group_name;
-        BasedOn<T> based_on;
-        SelectionData data;
-        InputSpec selector_spec;
-
-        void parse(ValueParser& parser, InputParameterContainer& container) const;
-        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
-            IO::Internal::MatchEntry& match_entry) const;
-        void print(std::ostream& stream, std::size_t indent) const;
-        void emit_metadata(ryml::NodeRef node) const;
-        bool emit(YamlNodeRef node, const InputParameterContainer& container,
-            const InputSpecEmitOptions& options) const;
-        void set_default_value(InputParameterContainer& container) const;
-      };
-
-      struct GroupSpec
-      {
-        std::string name;
-        GroupData data;
-        std::vector<InputSpec> specs;
-
-        void parse(ValueParser& parser, InputParameterContainer& container) const;
-        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
-            IO::Internal::MatchEntry& match_entry) const;
-        void set_default_value(InputParameterContainer& container) const;
-        void print(std::ostream& stream, std::size_t indent) const;
-        void emit_metadata(ryml::NodeRef node) const;
-        bool emit(YamlNodeRef node, const InputParameterContainer& container,
-            const InputSpecEmitOptions& options) const;
-      };
-
-      struct AllOfSpec
-      {
-        GroupData data;
-        std::vector<InputSpec> specs;
-
-        void parse(ValueParser& parser, InputParameterContainer& container) const;
-        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
-            IO::Internal::MatchEntry& match_entry) const;
-        void set_default_value(InputParameterContainer& container) const;
-        void print(std::ostream& stream, std::size_t indent) const;
-        void emit_metadata(ryml::NodeRef node) const;
-        bool emit(YamlNodeRef node, const InputParameterContainer& container,
-            const InputSpecEmitOptions& options) const;
-      };
-
-      struct OneOfSpec
-      {
-        // A one_of spec is essentially an unnamed group with additional logic to ensure that
-        // exactly one of the contained specs is present.
-        GroupData data;
-        std::vector<InputSpec> specs;
-
-        //! This callback may be used to perform additional actions after parsing one of the specs.
-        //! The index of the parsed spec as given inside #specs is passed as an argument.
-        std::function<void(InputParameterContainer& container, std::size_t index)>
-            on_parse_callback;
-
-        void parse(ValueParser& parser, InputParameterContainer& container) const;
-
-        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
-            IO::Internal::MatchEntry& match_entry) const;
-
-        void set_default_value(InputParameterContainer& container) const;
-
-        void print(std::ostream& stream, std::size_t indent) const;
-
-        void emit_metadata(ryml::NodeRef node) const;
-        bool emit(YamlNodeRef node, const InputParameterContainer& container,
-            const InputSpecEmitOptions& options) const;
-      };
-
-      struct ListSpec
-      {
-        //! The name of the list.
-        std::string name;
-        //! The spec that fits the list elements.
-        InputSpec spec;
-
-        ListData data;
-
-        void parse(ValueParser& parser, InputParameterContainer& container) const;
-        bool match(ConstYamlNodeRef node, InputParameterContainer& container,
-            IO::Internal::MatchEntry& match_entry) const;
-        void set_default_value(InputParameterContainer& container) const;
-        void print(std::ostream& stream, std::size_t indent) const;
-        void emit_metadata(ryml::NodeRef node) const;
-        bool emit(YamlNodeRef node, const InputParameterContainer& container,
-            const InputSpecEmitOptions& options) const;
-      };
-
-
-      //! Helper to create selection() specs.
-      //! Note that the type can be anything since we never read or write values of this type.
-      template <typename T>
-      [[nodiscard]] InputSpec selection_internal(std::string name,
-          std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data = {});
-
-
-      struct SizeChecker
-      {
-        constexpr bool operator()(const auto& val, std::size_t* size_info) const { return true; }
-
-        template <typename U>
-        constexpr bool operator()(const std::vector<U>& v, std::size_t* size_info) const
-        {
-          return ((*size_info == dynamic_size) || (v.size() == *size_info)) &&
-                 std::ranges::all_of(
-                     v, [&](const auto& val) { return this->operator()(val, size_info + 1); });
-        }
-
-        template <typename U>
-        constexpr bool operator()(const std::map<std::string, U>& m, std::size_t* size_info) const
-        {
-          return ((*size_info == dynamic_size) || (m.size() == *size_info)) &&
-                 std::ranges::all_of(m,
-                     [&](const auto& val) { return this->operator()(val.second, size_info + 1); });
-        }
-      };
-    }  // namespace Internal
-
+  namespace InputSpecBuilders
+  {
     /**
      * Create a normal parameter with given @p name. All parameters are parameterized by a struct
      * which contains the optional `description` and `default_value` fields. The following examples
@@ -1324,7 +1336,7 @@ namespace Core::IO
 // --- template definitions --- //
 
 template <Core::IO::SupportedType T>
-void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::parse(
+void Core::IO::Internal::ParameterSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
   if (parser.peek() == name)
@@ -1354,7 +1366,10 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::parse(
 
         FOUR_C_THROW("Reading a vector from a dat-style string requires a known size.");
       }
-      int operator()(const SizeCallback& callback) const { return callback(container); }
+      int operator()(const InputSpecBuilders::SizeCallback& callback) const
+      {
+        return callback(container);
+      }
       InputParameterContainer& container;
     };
 
@@ -1375,10 +1390,9 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::parse(
 
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
+bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::parameter;
   auto spec_name = ryml::to_csubstr(name);
 
   // If we are not even in a map, we refuse to do anything and let the MatchTree handle this case.
@@ -1416,24 +1430,40 @@ bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::match(ConstYamlNod
     {
       if (!has_correct_size(value, container))
       {
+        match_entry.additional_info = "value has incorrect size";
         return false;
       }
     }
     container.add(name, value);
     match_entry.state = IO::Internal::MatchEntry::State::matched;
     match_entry.matched_node = entry_node.node.id();
+    if (data.on_parse_callback) data.on_parse_callback(container);
+    return true;
   }
   catch (const Core::Exception& e)
   {
+    if constexpr (std::is_enum_v<T>)
+    {
+      std::string choices_string;
+      for (const auto& e : magic_enum::enum_names<T>())
+      {
+        choices_string += std::string(e) + "|";
+      }
+      choices_string.pop_back();
+
+      match_entry.additional_info = "wrong value, possible values: " + choices_string;
+    }
+    else
+    {
+      match_entry.additional_info = "wrong type, expected type: " + get_pretty_type_name<T>();
+    }
     return false;
   }
-  return true;
 }
 
 
 template <Core::IO::SupportedType T>
-void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit_metadata(
-    ryml::NodeRef node) const
+void Core::IO::Internal::ParameterSpec<T>::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
   node["name"] << name;
@@ -1445,7 +1475,10 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit_metadata(
     struct DynamicSizeVisitor
     {
       int operator()(int size) const { return size; }
-      int operator()(const SizeCallback& callback) const { return dynamic_size; }
+      int operator()(const InputSpecBuilders::SizeCallback& callback) const
+      {
+        return InputSpecBuilders::dynamic_size;
+      }
     };
 
     std::array<std::size_t, rank<T>()> size_info;
@@ -1468,7 +1501,7 @@ void Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit_metadata(
 }
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit(YamlNodeRef node,
+bool Core::IO::Internal::ParameterSpec<T>::emit(YamlNodeRef node,
     const InputParameterContainer& container, const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1503,7 +1536,7 @@ bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::emit(YamlNodeRef n
 
 
 template <Core::IO::SupportedType T>
-bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::has_correct_size(
+bool Core::IO::Internal::ParameterSpec<T>::has_correct_size(
     const T& val, const InputParameterContainer& container) const
 {
   if constexpr (rank<T>() == 0)
@@ -1515,11 +1548,11 @@ bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::has_correct_size(
     struct SizeVisitor
     {
       int operator()(int size) const { return size; }
-      int operator()(const SizeCallback& callback) const
+      int operator()(const InputSpecBuilders::SizeCallback& callback) const
       {
         // For yaml, we do not validate the size based on the callback. This feature can be removed
         // once we remove dat.
-        return dynamic_size;
+        return InputSpecBuilders::dynamic_size;
       }
       const InputParameterContainer& container;
     };
@@ -1536,7 +1569,7 @@ bool Core::IO::InputSpecBuilders::Internal::ParameterSpec<T>::has_correct_size(
 
 
 template <typename T>
-void Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::parse(
+void Core::IO::Internal::DeprecatedSelectionSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
   if (parser.peek() == name)
@@ -1570,10 +1603,9 @@ void Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::parse(
 
 
 template <typename T>
-bool Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node,
+bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::parameter;
   auto spec_name = ryml::to_csubstr(name);
 
   // If we are not even in a map, we refuse to do anything and let the MatchTree handle this case.
@@ -1596,6 +1628,8 @@ bool Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::match(Co
     }
   }
 
+  // A child with the name of the spec exists, so this is at least a partial match.
+  match_entry.state = IO::Internal::MatchEntry::State::partial;
   auto entry_node = node.wrap(node.node[spec_name]);
 
   FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
@@ -1619,14 +1653,15 @@ bool Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::match(Co
   }
   catch (const std::exception& e)
   {
-    return false;
+    // catch all and error out below
   }
 
+  match_entry.additional_info = "wrong value, possible values: " + choices_string;
   return false;
 }
 
 template <typename T>
-void Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::print(
+void Core::IO::Internal::DeprecatedSelectionSpec<T>::print(
     std::ostream& stream, std::size_t indent) const
 {
   stream << "// " << std::string(indent, ' ') << name;
@@ -1656,8 +1691,7 @@ void Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::print(
 }
 
 template <typename T>
-void Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::emit_metadata(
-    ryml::NodeRef node) const
+void Core::IO::Internal::DeprecatedSelectionSpec<T>::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
   node["name"] << name;
@@ -1690,7 +1724,7 @@ void Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::emit_met
 }
 
 template <typename T>
-bool Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::emit(YamlNodeRef node,
+bool Core::IO::Internal::DeprecatedSelectionSpec<T>::emit(YamlNodeRef node,
     const InputParameterContainer& container, const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1737,7 +1771,7 @@ bool Core::IO::InputSpecBuilders::Internal::DeprecatedSelectionSpec<T>::emit(Yam
 
 template <typename T>
   requires(std::is_enum_v<T>)
-void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::parse(
+void Core::IO::Internal::SelectionSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
   if (parser.peek() == group_name)
@@ -1765,10 +1799,9 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::parse(
 
 template <typename T>
   requires(std::is_enum_v<T>)
-bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
+bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
     InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
 {
-  match_entry.type = IO::Internal::MatchEntry::Type::selection;
   const auto group_name_substr = ryml::to_csubstr(group_name);
 
   const bool group_node_is_input = node.node.has_key() && (node.node.key() == group_name);
@@ -1810,8 +1843,7 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::match(ConstYamlNod
 
 template <typename T>
   requires(std::is_enum_v<T>)
-void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::print(
-    std::ostream& stream, std::size_t indent) const
+void Core::IO::Internal::SelectionSpec<T>::print(std::ostream& stream, std::size_t indent) const
 {
   stream << "// " << std::string(indent, ' ') << group_name;
   selector_spec.impl().print(stream, indent + 2);
@@ -1828,8 +1860,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::print(
 
 template <typename T>
   requires(std::is_enum_v<T>)
-void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
-    ryml::NodeRef node) const
+void Core::IO::Internal::SelectionSpec<T>::emit_metadata(ryml::NodeRef node) const
 {
   node |= ryml::MAP;
   node["name"] << group_name;
@@ -1856,7 +1887,7 @@ void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit_metadata(
 
 template <typename T>
   requires(std::is_enum_v<T>)
-bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit(YamlNodeRef node,
+bool Core::IO::Internal::SelectionSpec<T>::emit(YamlNodeRef node,
     const InputParameterContainer& container, const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1883,7 +1914,7 @@ bool Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::emit(YamlNodeRef n
 
 template <typename T>
   requires(std::is_enum_v<T>)
-void Core::IO::InputSpecBuilders::Internal::SelectionSpec<T>::set_default_value(
+void Core::IO::Internal::SelectionSpec<T>::set_default_value(
     InputParameterContainer& container) const
 {
   FOUR_C_THROW("Internal error: set_default_value() called on a SelectionSpec.");
@@ -1934,6 +1965,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
           .required = !(internal_data.default_value.index() == 1),
           .has_default_value = internal_data.default_value.index() == 1,
           .n_specs = 1,
+          .type = Internal::InputSpecType::parameter,
       });
 }
 
@@ -1967,13 +1999,14 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
           .has_default_value = false,
           // one for the group, one for the selector, plus the number of specs for the choices.
           .n_specs = 2 + max_specs_for_choices,
+          .type = Internal::InputSpecType::selection,
       });
 }
 
 
 template <typename T>
-Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
-    std::string name, std::map<std::string, RemoveOptional<T>> choices, ParameterDataIn<T> data)
+Core::IO::InputSpec Core::IO::Internal::selection_internal(std::string name,
+    std::map<std::string, RemoveOptional<T>> choices, InputSpecBuilders::ParameterDataIn<T> data)
 {
   FOUR_C_ASSERT_ALWAYS(!choices.empty(), "Selection must have at least one choice.");
 
@@ -2037,6 +2070,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::Internal::selection_internal(
           .required = !has_default_value,
           .has_default_value = has_default_value,
           .n_specs = 1,
+          .type = InputSpecType::deprecated_selection,
       });
 }
 
