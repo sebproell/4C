@@ -37,7 +37,7 @@ namespace Adapter
   class PoroFluidMultiphase;
 }
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   /// setup second materials for porosity evaluation within solid phase
   void setup_material(
@@ -66,9 +66,9 @@ namespace POROFLUIDMULTIPHASE
 
   /// create solution algorithm depending on input file
   std::shared_ptr<Adapter::PoroFluidMultiphase> create_algorithm(
-      POROFLUIDMULTIPHASE::TimeIntegrationScheme timintscheme,  //!< time discretization scheme
-      std::shared_ptr<Core::FE::Discretization> dis,            //!< discretization
-      const int linsolvernumber,                                //!< number of linear solver
+      PoroPressureBased::TimeIntegrationScheme timintscheme,  //!< time discretization scheme
+      std::shared_ptr<Core::FE::Discretization> dis,          //!< discretization
+      const int linsolvernumber,                              //!< number of linear solver
       const Teuchos::ParameterList& probparams,               //!< parameter list of global problem
       const Teuchos::ParameterList& poroparams,               //!< parameter list of poro problem
       std::shared_ptr<Core::IO::DiscretizationWriter> output  //!< output writer
@@ -128,7 +128,7 @@ namespace POROFLUIDMULTIPHASE
       Core::FE::Discretization& dis, const Core::LinAlg::Map* nodemap);
 
   //! Determine norm of vector
-  double calculate_vector_norm(const enum POROFLUIDMULTIPHASE::VectorNorm norm,  //!< norm to use
+  double calculate_vector_norm(const enum PoroPressureBased::VectorNorm norm,  //!< norm to use
       const Core::LinAlg::Vector<double>& vect  //!< the vector of interest
   );
 
@@ -144,7 +144,7 @@ namespace POROFLUIDMULTIPHASE
 
   // Print the logo
   void print_logo();
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

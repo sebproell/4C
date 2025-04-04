@@ -66,7 +66,7 @@ namespace Discret
 
       //! evaluate action
       virtual int evaluate_action(Core::Elements::Element* ele, Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, POROFLUIDMULTIPHASE::BoundaryAction action,
+          Core::FE::Discretization& discretization, PoroPressureBased::BoundaryAction action,
           Core::Elements::LocationArray& la, std::vector<Core::LinAlg::SerialDenseMatrix*>& elemat,
           std::vector<Core::LinAlg::SerialDenseVector*>& elevec);
 

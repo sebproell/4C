@@ -20,13 +20,13 @@ namespace PoroMultiPhaseScaTra
   class PoroMultiPhaseScaTraArtCouplBase;
 }
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   class MeshtyingStrategyArtery : public MeshtyingStrategyBase
   {
    public:
     //! constructor
-    explicit MeshtyingStrategyArtery(POROFLUIDMULTIPHASE::TimIntImpl* porofluidmultitimint,
+    explicit MeshtyingStrategyArtery(PoroPressureBased::TimIntImpl* porofluidmultitimint,
         const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams);
 
 
@@ -125,7 +125,7 @@ namespace POROFLUIDMULTIPHASE
     std::shared_ptr<Core::LinAlg::Vector<double>> comb_phinp_;
   };
 
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

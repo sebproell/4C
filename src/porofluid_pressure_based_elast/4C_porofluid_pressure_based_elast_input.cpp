@@ -4,17 +4,18 @@
 // See the LICENSE.md file in the top-level for license information.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
-
 #include "4C_porofluid_pressure_based_elast_input.hpp"
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 
-void POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void PoroPressureBased::set_valid_parameters_porofluid_elast(
+    std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -90,25 +91,25 @@ void POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputS
 
           deprecated_selection<VectorNorm>("VECTORNORM_RESF",
               {
-                  {"L1", POROMULTIPHASE::norm_l1},
-                  {"L1_Scaled", POROMULTIPHASE::norm_l1_scaled},
-                  {"L2", POROMULTIPHASE::norm_l2},
-                  {"Rms", POROMULTIPHASE::norm_rms},
-                  {"Inf", POROMULTIPHASE::norm_inf},
+                  {"L1", PoroPressureBased::norm_l1},
+                  {"L1_Scaled", PoroPressureBased::norm_l1_scaled},
+                  {"L2", PoroPressureBased::norm_l2},
+                  {"Rms", PoroPressureBased::norm_rms},
+                  {"Inf", PoroPressureBased::norm_inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = POROMULTIPHASE::norm_l2}),
+                  .default_value = PoroPressureBased::norm_l2}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_INC",
               {
-                  {"L1", POROMULTIPHASE::norm_l1},
-                  {"L1_Scaled", POROMULTIPHASE::norm_l1_scaled},
-                  {"L2", POROMULTIPHASE::norm_l2},
-                  {"Rms", POROMULTIPHASE::norm_rms},
-                  {"Inf", POROMULTIPHASE::norm_inf},
+                  {"L1", PoroPressureBased::norm_l1},
+                  {"L1_Scaled", PoroPressureBased::norm_l1_scaled},
+                  {"L2", PoroPressureBased::norm_l2},
+                  {"Rms", PoroPressureBased::norm_rms},
+                  {"Inf", PoroPressureBased::norm_inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = POROMULTIPHASE::norm_l2}),
+                  .default_value = PoroPressureBased::norm_l2}),
 
           // flag for equilibration of global system of equations
           parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",

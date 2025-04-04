@@ -152,7 +152,7 @@ std::map<int, std::set<int>> PoroMultiPhaseScaTra::setup_discretizations_and_fie
   // artery_scatra discretization is cloned from artery discretization
 
   std::map<int, std::set<int>> nearbyelepairs =
-      POROMULTIPHASE::setup_discretizations_and_field_coupling(
+      PoroPressureBased::setup_discretizations_and_field_coupling(
           comm, struct_disname, fluid_disname, ndsporo_disp, ndsporo_vel, ndsporo_solidpressure);
 
   Global::Problem* problem = Global::Problem::instance();
@@ -238,7 +238,7 @@ std::map<int, std::set<int>> PoroMultiPhaseScaTra::setup_discretizations_and_fie
 void PoroMultiPhaseScaTra::assign_material_pointers(const std::string& struct_disname,
     const std::string& fluid_disname, const std::string& scatra_disname, const bool artery_coupl)
 {
-  POROMULTIPHASE::assign_material_pointers(struct_disname, fluid_disname);
+  PoroPressureBased::assign_material_pointers(struct_disname, fluid_disname);
 
   Global::Problem* problem = Global::Problem::instance();
 

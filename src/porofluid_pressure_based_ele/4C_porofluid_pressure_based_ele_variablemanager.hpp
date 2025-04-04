@@ -104,7 +104,7 @@ namespace Discret
         //! factory method
         static std::shared_ptr<VariableManagerInterface<nsd, nen>> create_variable_manager(
             const Discret::Elements::PoroFluidMultiPhaseEleParameter& para,
-            const POROFLUIDMULTIPHASE::Action& action, std::shared_ptr<Core::Mat::Material> mat,
+            const PoroPressureBased::Action& action, std::shared_ptr<Core::Mat::Material> mat,
             const int numdofpernode, const int numfluidphases);
 
         //! extract element and node values from the discretization

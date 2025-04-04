@@ -26,7 +26,7 @@ namespace Mat
   class FluidPoroSingleReaction;
 }  // namespace Mat
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   namespace ElementUtils
   {
@@ -385,7 +385,7 @@ namespace POROFLUIDMULTIPHASE
 
   }  // namespace ElementUtils
 
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

@@ -28,7 +28,7 @@ namespace Core::FE
   class Discretization;
 }  // namespace Core::FE
 
-namespace POROMULTIPHASE
+namespace PoroPressureBased
 {
   //! Base class of all solid-scatra algorithms
   class PoroMultiPhaseBase : public Adapter::AlgorithmBase, public PoroMultiPhase
@@ -235,7 +235,7 @@ namespace POROMULTIPHASE
   };  // PoroMultiPhaseBase
 
 
-}  // namespace POROMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

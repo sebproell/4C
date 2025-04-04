@@ -33,7 +33,7 @@ namespace Core::Elements
   class Element;
 }
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   // forward declaration
   class TimIntImpl;
@@ -85,7 +85,7 @@ namespace POROFLUIDMULTIPHASE
     //! time integrator
     const TimIntImpl& porotimint_;
   };
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

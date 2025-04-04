@@ -12,7 +12,8 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void PoroPressureBased::set_valid_parameters_porofluid(
+    std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -114,25 +115,25 @@ void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::I
 
           deprecated_selection<VectorNorm>("VECTORNORM_RESF",
               {
-                  {"L1", POROFLUIDMULTIPHASE::norm_l1},
-                  {"L1_Scaled", POROFLUIDMULTIPHASE::norm_l1_scaled},
-                  {"L2", POROFLUIDMULTIPHASE::norm_l2},
-                  {"Rms", POROFLUIDMULTIPHASE::norm_rms},
-                  {"Inf", POROFLUIDMULTIPHASE::norm_inf},
+                  {"L1", PoroPressureBased::norm_l1},
+                  {"L1_Scaled", PoroPressureBased::norm_l1_scaled},
+                  {"L2", PoroPressureBased::norm_l2},
+                  {"Rms", PoroPressureBased::norm_rms},
+                  {"Inf", PoroPressureBased::norm_inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = POROFLUIDMULTIPHASE::norm_l2}),
+                  .default_value = PoroPressureBased::norm_l2}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_INC",
               {
-                  {"L1", POROFLUIDMULTIPHASE::norm_l1},
-                  {"L1_Scaled", POROFLUIDMULTIPHASE::norm_l1_scaled},
-                  {"L2", POROFLUIDMULTIPHASE::norm_l2},
-                  {"Rms", POROFLUIDMULTIPHASE::norm_rms},
-                  {"Inf", POROFLUIDMULTIPHASE::norm_inf},
+                  {"L1", PoroPressureBased::norm_l1},
+                  {"L1_Scaled", PoroPressureBased::norm_l1_scaled},
+                  {"L2", PoroPressureBased::norm_l2},
+                  {"Rms", PoroPressureBased::norm_rms},
+                  {"Inf", PoroPressureBased::norm_inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = POROFLUIDMULTIPHASE::norm_l2}),
+                  .default_value = PoroPressureBased::norm_l2}),
 
           // Iterationparameters
           parameter<double>(

@@ -21,7 +21,7 @@ namespace Core::Elements
   class Element;
 }
 
-namespace POROMULTIPHASE
+namespace PoroPressureBased
 {
   /*!
   \brief implementation of special clone strategy for automatic generation
@@ -51,7 +51,7 @@ namespace POROMULTIPHASE
     void check_material_type(const int matid);
   };  // class PoroFluidMultiPhaseCloneStrategy
 
-}  // namespace POROMULTIPHASE
+}  // namespace PoroPressureBased
 
 FOUR_C_NAMESPACE_CLOSE
 

@@ -14,13 +14,13 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   class MeshtyingStrategyStd : public MeshtyingStrategyBase
   {
    public:
     //! constructor
-    explicit MeshtyingStrategyStd(POROFLUIDMULTIPHASE::TimIntImpl* porofluidmultitimint,
+    explicit MeshtyingStrategyStd(PoroPressureBased::TimIntImpl* porofluidmultitimint,
         const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams);
 
 
@@ -82,7 +82,7 @@ namespace POROFLUIDMULTIPHASE
     void apply_mesh_movement() const override;
   };
 
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

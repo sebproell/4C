@@ -1485,7 +1485,7 @@ namespace Discret
         phasemanager_ =
             Discret::Elements::PoroFluidManager::PhaseManagerInterface::create_phase_manager(*para,
                 nsd, multiphase_mat()->material_type(),
-                POROFLUIDMULTIPHASE::Action::get_access_from_scatra, totalnummultiphasedofpernode,
+                PoroPressureBased::Action::get_access_from_scatra, totalnummultiphasedofpernode,
                 numfluidphases);
 
         // access from outside to the phasemanager: scatra-discretization has fluid-dis on dofset 2
@@ -1493,9 +1493,8 @@ namespace Discret
 
         // create variablemanager
         variablemanager_ = Discret::Elements::PoroFluidManager::VariableManagerInterface<nsd,
-            nen>::create_variable_manager(*para,
-            POROFLUIDMULTIPHASE::Action::get_access_from_scatra, multiphase_mat(),
-            totalnummultiphasedofpernode, numfluidphases);
+            nen>::create_variable_manager(*para, PoroPressureBased::Action::get_access_from_scatra,
+            multiphase_mat(), totalnummultiphasedofpernode, numfluidphases);
 
         return;
       }

@@ -24,7 +24,7 @@ namespace Core::FE
   class Discretization;
 }  // namespace Core::FE
 
-namespace POROMULTIPHASE
+namespace PoroPressureBased
 {
   /// setup discretizations and dofsets
   std::map<int, std::set<int>> setup_discretizations_and_field_coupling(MPI_Comm comm,
@@ -36,20 +36,12 @@ namespace POROMULTIPHASE
       const std::string& struct_disname, const std::string& fluid_disname);
 
   /// create solution algorithm depending on input file
-  std::shared_ptr<POROMULTIPHASE::PoroMultiPhase> create_poro_multi_phase_algorithm(
-      POROMULTIPHASE::SolutionSchemeOverFields solscheme,  //!< solution scheme to build (i)
-      const Teuchos::ParameterList& timeparams,            //!< problem parameters (i)
-      MPI_Comm comm                                        //!< communicator(i)
+  std::shared_ptr<PoroPressureBased::PoroMultiPhase> create_poro_multi_phase_algorithm(
+      PoroPressureBased::SolutionSchemeOverFields solscheme,  //!< solution scheme to build (i)
+      const Teuchos::ParameterList& timeparams,               //!< problem parameters (i)
+      MPI_Comm comm                                           //!< communicator(i)
   );
-
-  //! Determine norm of vector
-  double calculate_vector_norm(const enum POROMULTIPHASE::VectorNorm norm,  //!< norm to use
-      const Core::LinAlg::Vector<double>& vect  //!< the vector of interest
-  );
-
-  // Print the logo
-  void print_logo();
-}  // namespace POROMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

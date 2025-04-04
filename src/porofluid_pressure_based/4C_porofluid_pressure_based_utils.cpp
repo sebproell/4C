@@ -65,7 +65,7 @@ namespace
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::setup_material(
+void PoroPressureBased::setup_material(
     MPI_Comm comm, const std::string& struct_disname, const std::string& fluid_disname)
 {
   // get the fluid discretization
@@ -131,7 +131,7 @@ void POROFLUIDMULTIPHASE::setup_material(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>>
-POROFLUIDMULTIPHASE::convert_dof_vector_to_node_based_multi_vector(
+PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
     const Core::FE::Discretization& dis, const Core::LinAlg::Vector<double>& vector, const int nds,
     const int numdofpernode)
 {
@@ -158,8 +158,8 @@ POROFLUIDMULTIPHASE::convert_dof_vector_to_node_based_multi_vector(
 /*----------------------------------------------------------------------*
  | create algorithm                                                      |
  *----------------------------------------------------------------------*/
-std::shared_ptr<Adapter::PoroFluidMultiphase> POROFLUIDMULTIPHASE::create_algorithm(
-    POROFLUIDMULTIPHASE::TimeIntegrationScheme timintscheme,
+std::shared_ptr<Adapter::PoroFluidMultiphase> PoroPressureBased::create_algorithm(
+    PoroPressureBased::TimeIntegrationScheme timintscheme,
     std::shared_ptr<Core::FE::Discretization> dis, const int linsolvernumber,
     const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams,
     std::shared_ptr<Core::IO::DiscretizationWriter> output)
@@ -174,10 +174,10 @@ std::shared_ptr<Adapter::PoroFluidMultiphase> POROFLUIDMULTIPHASE::create_algori
 
   switch (timintscheme)
   {
-    case POROFLUIDMULTIPHASE::timeint_one_step_theta:
+    case PoroPressureBased::timeint_one_step_theta:
     {
       // create algorithm
-      algo = std::make_shared<POROFLUIDMULTIPHASE::TimIntOneStepTheta>(
+      algo = std::make_shared<PoroPressureBased::TimIntOneStepTheta>(
           dis, linsolvernumber, probparams, poroparams, output);
       break;
     }
@@ -192,7 +192,7 @@ std::shared_ptr<Adapter::PoroFluidMultiphase> POROFLUIDMULTIPHASE::create_algori
 /*--------------------------------------------------------------------------*
  | perform extended ghosting for artery dis                kremheller 03/19 |
  *--------------------------------------------------------------------------*/
-std::map<int, std::set<int>> POROFLUIDMULTIPHASE::extended_ghosting_artery_discretization(
+std::map<int, std::set<int>> PoroPressureBased::extended_ghosting_artery_discretization(
     Core::FE::Discretization& contdis, std::shared_ptr<Core::FE::Discretization> artdis,
     const bool evaluate_on_lateral_surface,
     const Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod couplingmethod)
@@ -287,7 +287,7 @@ std::map<int, std::set<int>> POROFLUIDMULTIPHASE::extended_ghosting_artery_discr
  | create the fully overlapping artery discretization      kremheller 03/19 |
  *--------------------------------------------------------------------------*/
 std::shared_ptr<Core::FE::Discretization>
-POROFLUIDMULTIPHASE::create_fully_overlapping_artery_discretization(
+PoroPressureBased::create_fully_overlapping_artery_discretization(
     Core::FE::Discretization& artdis, std::string disname, bool doboundaryconditions)
 {
   // we clone a search discretization of the artery discretization on which the search will be
@@ -305,7 +305,7 @@ POROFLUIDMULTIPHASE::create_fully_overlapping_artery_discretization(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::map<int, std::set<int>> POROFLUIDMULTIPHASE::oct_tree_search(Core::FE::Discretization& contdis,
+std::map<int, std::set<int>> PoroPressureBased::oct_tree_search(Core::FE::Discretization& contdis,
     Core::FE::Discretization& artdis, Core::FE::Discretization& artsearchdis,
     const bool evaluate_on_lateral_surface, const std::vector<int> artEleGIDs,
     std::set<int>& elecolset, std::set<int>& nodecolset)
@@ -401,7 +401,7 @@ std::map<int, std::set<int>> POROFLUIDMULTIPHASE::oct_tree_search(Core::FE::Disc
 /*----------------------------------------------------------------------*
  | get axis-aligned bounding box of element            kremheller 03/19 |
  *----------------------------------------------------------------------*/
-Core::LinAlg::Matrix<3, 2> POROFLUIDMULTIPHASE::get_aabb(Core::Elements::Element* ele,
+Core::LinAlg::Matrix<3, 2> PoroPressureBased::get_aabb(Core::Elements::Element* ele,
     std::map<int, Core::LinAlg::Matrix<3, 1>>& positions, const bool evaluate_on_lateral_surface)
 {
   const Core::LinAlg::SerialDenseMatrix xyze_element(
@@ -432,7 +432,7 @@ Core::LinAlg::Matrix<3, 2> POROFLUIDMULTIPHASE::get_aabb(Core::Elements::Element
 /*----------------------------------------------------------------------*
  | get nodal positions                                 kremheller 10/19 |
  *----------------------------------------------------------------------*/
-std::map<int, Core::LinAlg::Matrix<3, 1>> POROFLUIDMULTIPHASE::get_nodal_positions(
+std::map<int, Core::LinAlg::Matrix<3, 1>> PoroPressureBased::get_nodal_positions(
     Core::FE::Discretization& dis, const Core::LinAlg::Map* nodemap)
 {
   std::map<int, Core::LinAlg::Matrix<3, 1>> positions;
@@ -453,7 +453,7 @@ std::map<int, Core::LinAlg::Matrix<3, 1>> POROFLUIDMULTIPHASE::get_nodal_positio
 /*----------------------------------------------------------------------*
  | get maximum nodal distance                          kremheller 05/18 |
  *----------------------------------------------------------------------*/
-double POROFLUIDMULTIPHASE::get_max_nodal_distance(
+double PoroPressureBased::get_max_nodal_distance(
     Core::Elements::Element* ele, Core::FE::Discretization& dis)
 {
   double maxdist = 0.0;
@@ -493,12 +493,12 @@ double POROFLUIDMULTIPHASE::get_max_nodal_distance(
 /*----------------------------------------------------------------------*
  | calculate vector norm                             kremheller 12/17   |
  *----------------------------------------------------------------------*/
-double POROFLUIDMULTIPHASE::calculate_vector_norm(
-    const enum POROFLUIDMULTIPHASE::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
+double PoroPressureBased::calculate_vector_norm(
+    const enum PoroPressureBased::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
 {
   // L1 norm
   // norm = sum_0^i vect[i]
-  if (norm == POROFLUIDMULTIPHASE::norm_l1)
+  if (norm == PoroPressureBased::norm_l1)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);
@@ -506,7 +506,7 @@ double POROFLUIDMULTIPHASE::calculate_vector_norm(
   }
   // L2/Euclidian norm
   // norm = sqrt{sum_0^i vect[i]^2 }
-  else if (norm == POROFLUIDMULTIPHASE::norm_l2)
+  else if (norm == PoroPressureBased::norm_l2)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -514,7 +514,7 @@ double POROFLUIDMULTIPHASE::calculate_vector_norm(
   }
   // RMS norm
   // norm = sqrt{sum_0^i vect[i]^2 }/ sqrt{length_vect}
-  else if (norm == POROFLUIDMULTIPHASE::norm_rms)
+  else if (norm == PoroPressureBased::norm_rms)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -522,14 +522,14 @@ double POROFLUIDMULTIPHASE::calculate_vector_norm(
   }
   // infinity/maximum norm
   // norm = max( vect[i] )
-  else if (norm == POROFLUIDMULTIPHASE::norm_inf)
+  else if (norm == PoroPressureBased::norm_inf)
   {
     double vectnorm;
     vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   // norm = sum_0^i vect[i]/length_vect
-  else if (norm == POROFLUIDMULTIPHASE::norm_l1_scaled)
+  else if (norm == PoroPressureBased::norm_l1_scaled)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);
@@ -545,7 +545,7 @@ double POROFLUIDMULTIPHASE::calculate_vector_norm(
 /*----------------------------------------------------------------------*
  |                                                    kremheller 03/17  |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::print_logo()
+void PoroPressureBased::print_logo()
 {
   std::cout << "This is a Porous Media problem with multiphase flow" << std::endl;
   std::cout << "" << std::endl;

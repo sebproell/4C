@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
  | define conditions to copy to the cloned discretization    vuong 08/16 |
  *----------------------------------------------------------------------*/
 std::map<std::string, std::string>
-POROMULTIPHASE::PoroFluidMultiPhaseCloneStrategy::conditions_to_copy() const
+PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::conditions_to_copy() const
 {
   return {{"PoroDirichlet", "Dirichlet"}, {"PoroPointNeumann", "PointNeumann"},
       {"PoroLineNeumann", "LineNeumann"}, {"PoroSurfaceNeumann", "SurfaceNeumann"},
@@ -34,7 +34,7 @@ POROMULTIPHASE::PoroFluidMultiPhaseCloneStrategy::conditions_to_copy() const
 /*----------------------------------------------------------------------*
  | check for correct material                               vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroFluidMultiPhaseCloneStrategy::check_material_type(const int matid)
+void PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::check_material_type(const int matid)
 {
   // We take the material with the ID specified by the user
   // Here we check first, whether this material is of admissible type
@@ -49,7 +49,7 @@ void POROMULTIPHASE::PoroFluidMultiPhaseCloneStrategy::check_material_type(const
 /*----------------------------------------------------------------------*
  | set element-specific data (material etc.)                 vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroFluidMultiPhaseCloneStrategy::set_element_data(
+void PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::set_element_data(
     std::shared_ptr<Core::Elements::Element> newele, Core::Elements::Element* oldele,
     const int matid, const bool isnurbsdis)
 {
@@ -76,7 +76,7 @@ void POROMULTIPHASE::PoroFluidMultiPhaseCloneStrategy::set_element_data(
 /*----------------------------------------------------------------------*
  | determine whether element is copied or not               vuong 08/16 |
  *----------------------------------------------------------------------*/
-bool POROMULTIPHASE::PoroFluidMultiPhaseCloneStrategy::determine_ele_type(
+bool PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::determine_ele_type(
     Core::Elements::Element* actele, const bool ismyele, std::vector<std::string>& eletype)
 {
   // note: ismyele, actele remain unused here! Used only for ALE creation

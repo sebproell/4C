@@ -30,7 +30,7 @@ namespace Core::LinAlg
   class Solver;
 }
 
-namespace POROMULTIPHASE
+namespace PoroPressureBased
 {
   class PoroMultiPhase
   {
@@ -167,7 +167,7 @@ namespace POROMULTIPHASE
     virtual void build_artery_block_null_space(
         std::shared_ptr<Core::LinAlg::Solver>& solver, const int& arteryblocknum) = 0;
   };
-}  // namespace POROMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

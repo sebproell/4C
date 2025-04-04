@@ -12,7 +12,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   /*--------------------------------------------------------------------------*/
   /*!
@@ -47,7 +47,7 @@ namespace POROFLUIDMULTIPHASE
   {
     bd_calc_Neumann,  // evaluate neumann loads
   };  // enum POROFLUIDMULTIPHASE::BoundaryAction
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 FOUR_C_NAMESPACE_CLOSE
 

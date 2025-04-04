@@ -17,7 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  |  Constructor (public)                                   vuong  08/16 |
  *----------------------------------------------------------------------*/
-POROFLUIDMULTIPHASE::TimIntOneStepTheta::TimIntOneStepTheta(
+PoroPressureBased::TimIntOneStepTheta::TimIntOneStepTheta(
     std::shared_ptr<Core::FE::Discretization> dis,  //!< discretization
     const int linsolvernumber,                      //!< number of linear solver
     const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams,
@@ -33,7 +33,7 @@ POROFLUIDMULTIPHASE::TimIntOneStepTheta::TimIntOneStepTheta(
 /*----------------------------------------------------------------------*
  |  set parameter for element evaluation                    vuong 06/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::set_element_time_step_parameter() const
+void PoroPressureBased::TimIntOneStepTheta::set_element_time_step_parameter() const
 {
   Teuchos::ParameterList eleparams;
 
@@ -51,7 +51,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::set_element_time_step_parameter() 
 /*-----------------------------------------------------------------------------*
  | set time for evaluation of POINT -Neumann boundary conditions   vuong 08/16 |
  *----------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::set_time_for_neumann_evaluation(
+void PoroPressureBased::TimIntOneStepTheta::set_time_for_neumann_evaluation(
     Teuchos::ParameterList& params)
 {
   params.set("total time", time_);
@@ -61,7 +61,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::set_time_for_neumann_evaluation(
 /*----------------------------------------------------------------------*
 | Print information about current time step to screen      vuong 08/16  |
 *-----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::print_time_step_info()
+void PoroPressureBased::TimIntOneStepTheta::print_time_step_info()
 {
   if (myrank_ == 0)
   {
@@ -80,7 +80,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::print_time_step_info()
  | set part of the residual vector belonging to the old timestep        |
  |                                                          vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::set_old_part_of_righthandside()
+void PoroPressureBased::TimIntOneStepTheta::set_old_part_of_righthandside()
 {
   // hist_ = phin_ + dt*(1-Theta)*phidtn_
   hist_->update(1.0, *phin_, dt_ * (1.0 - theta_), *phidtn_, 0.0);
@@ -90,7 +90,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::set_old_part_of_righthandside()
 /*----------------------------------------------------------------------*
  | perform an explicit predictor step                       vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::explicit_predictor()
+void PoroPressureBased::TimIntOneStepTheta::explicit_predictor()
 {
   phinp_->update(dt_, *phidtn_, 1.0);
 }
@@ -100,7 +100,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::explicit_predictor()
  | add actual Neumann loads                                             |
  | scaled with a factor resulting from time discretization  vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::add_neumann_to_residual()
+void PoroPressureBased::TimIntOneStepTheta::add_neumann_to_residual()
 {
   residual_->update(theta_ * dt_, *neumann_loads_, 1.0);
 }
@@ -109,7 +109,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::add_neumann_to_residual()
 /*----------------------------------------------------------------------------*
  | add global state vectors specific for time-integration scheme  vuong 08/16 |
  *---------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::add_time_integration_specific_vectors()
+void PoroPressureBased::TimIntOneStepTheta::add_time_integration_specific_vectors()
 {
   discret_->set_state("hist", *hist_);
   discret_->set_state("phinp_fluid", *phinp_);
@@ -121,7 +121,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::add_time_integration_specific_vect
 /*----------------------------------------------------------------------*
  | compute time derivative                                  vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::compute_time_derivative()
+void PoroPressureBased::TimIntOneStepTheta::compute_time_derivative()
 {
   // time derivative of phi:
   // *phidt(n+1) = (phi(n+1)-phi(n)) / (theta*dt) + (1-(1/theta))*phidt(n)
@@ -136,10 +136,10 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::compute_time_derivative()
  | current solution becomes most recent solution of next timestep       |
  |                                                          vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::update()
+void PoroPressureBased::TimIntOneStepTheta::update()
 {
   // call base class
-  POROFLUIDMULTIPHASE::TimIntImpl::update();
+  PoroPressureBased::TimIntImpl::update();
 
   // compute time derivative at time n+1
   compute_time_derivative();
@@ -156,9 +156,9 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::update()
 /*----------------------------------------------------------------------*
  | write additional data required for restart               vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::output_restart()
+void PoroPressureBased::TimIntOneStepTheta::output_restart()
 {
-  POROFLUIDMULTIPHASE::TimIntImpl::output_restart();
+  PoroPressureBased::TimIntImpl::output_restart();
 
   // additional state vectors that are needed for One-Step-Theta restart
   output_->write_vector("phidtn_fluid", phidtn_);
@@ -169,10 +169,10 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::output_restart()
 /*----------------------------------------------------------------------*
  |  read restart data                                       vuong 08/16 |
  -----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::read_restart(const int step)
+void PoroPressureBased::TimIntOneStepTheta::read_restart(const int step)
 {
   // call base class
-  POROFLUIDMULTIPHASE::TimIntImpl::read_restart(step);
+  PoroPressureBased::TimIntImpl::read_restart(step);
 
   std::shared_ptr<Core::IO::DiscretizationReader> reader(nullptr);
   reader = std::make_shared<Core::IO::DiscretizationReader>(
@@ -194,7 +194,7 @@ void POROFLUIDMULTIPHASE::TimIntOneStepTheta::read_restart(const int step)
 /*--------------------------------------------------------------------*
  | calculate init time derivatives of state variables kremheller 03/17 |
  *--------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntOneStepTheta::calc_initial_time_derivative()
+void PoroPressureBased::TimIntOneStepTheta::calc_initial_time_derivative()
 {
   // standard general element parameter without stabilization
   set_element_general_parameters();

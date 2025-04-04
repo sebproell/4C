@@ -41,7 +41,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | constructor                                     (public) vuong 08/16 |
  *----------------------------------------------------------------------*/
-POROFLUIDMULTIPHASE::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretization> actdis,
+PoroPressureBased::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretization> actdis,
     const int linsolvernumber, const Teuchos::ParameterList& probparams,
     const Teuchos::ParameterList& poroparams,
     std::shared_ptr<Core::IO::DiscretizationWriter> output)
@@ -63,13 +63,13 @@ POROFLUIDMULTIPHASE::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretiza
       stab_biot_(poroparams_.get<bool>("STAB_BIOT")),
       domainint_funct_(std::vector<int>()),
       num_domainint_funct_(0),
-      calcerr_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::CalcError>(poroparams_, "CALCERROR")),
-      fluxrecon_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::FluxReconstructionMethod>(
+      calcerr_(Teuchos::getIntegralValue<PoroPressureBased::CalcError>(poroparams_, "CALCERROR")),
+      fluxrecon_(Teuchos::getIntegralValue<PoroPressureBased::FluxReconstructionMethod>(
           poroparams_, "FLUX_PROJ_METHOD")),
       fluxreconsolvernum_(poroparams_.get<int>("FLUX_PROJ_SOLVER")),
       divcontype_(
-          Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::DivContAct>(poroparams_, "DIVERCONT")),
-      fdcheck_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::FdCheck>(poroparams_, "FDCHECK")),
+          Teuchos::getIntegralValue<PoroPressureBased::DivContAct>(poroparams_, "DIVERCONT")),
+      fdcheck_(Teuchos::getIntegralValue<PoroPressureBased::FdCheck>(poroparams_, "FDCHECK")),
       fdcheckeps_(poroparams_.get<double>("FDCHECKEPS")),
       fdchecktol_(poroparams_.get<double>("FDCHECKTOL")),
       stab_biot_scaling_(poroparams_.get<double>("STAB_BIOT_SCALING")),
@@ -84,10 +84,10 @@ POROFLUIDMULTIPHASE::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretiza
       itemax_(poroparams_.get<int>("ITEMAX")),
       upres_(params_.get<int>("RESULTSEVERY")),
       uprestart_(params_.get<int>("RESTARTEVERY")),
-      vectornormfres_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::VectorNorm>(
-          poroparams_, "VECTORNORM_RESF")),
-      vectornorminc_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::VectorNorm>(
-          poroparams_, "VECTORNORM_INC")),
+      vectornormfres_(
+          Teuchos::getIntegralValue<PoroPressureBased::VectorNorm>(poroparams_, "VECTORNORM_RESF")),
+      vectornorminc_(
+          Teuchos::getIntegralValue<PoroPressureBased::VectorNorm>(poroparams_, "VECTORNORM_INC")),
       ittolres_(poroparams_.get<double>("TOLRES")),
       ittolinc_(poroparams_.get<double>("TOLINC")),
       artery_coupling_active_(params_.get<bool>("ARTERY_COUPLING")),
@@ -142,7 +142,7 @@ POROFLUIDMULTIPHASE::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretiza
 /*------------------------------------------------------------------------*
  | initialize time integration                                vuong 08/16 |
  *------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::init(bool isale, int nds_disp, int nds_vel,
+void PoroPressureBased::TimIntImpl::init(bool isale, int nds_disp, int nds_vel,
     int nds_solidpressure, int nds_scalar, const std::map<int, std::set<int>>* nearbyelepairs)
 {
   // set flags
@@ -276,7 +276,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::init(bool isale, int nds_disp, int nds_vel
   // set initial field
   // -------------------------------------------------------------------
   set_initial_field(
-      Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::InitialField>(poroparams_, "INITIALFIELD"),
+      Teuchos::getIntegralValue<PoroPressureBased::InitialField>(poroparams_, "INITIALFIELD"),
       poroparams_.get<int>("INITFUNCNO"));
 
   // -------------------------------------------------------------------
@@ -303,10 +303,10 @@ void POROFLUIDMULTIPHASE::TimIntImpl::init(bool isale, int nds_disp, int nds_vel
   // -------------------------------------------------------------------
   if (artery_coupling_active_)
     strategy_ =
-        std::make_shared<POROFLUIDMULTIPHASE::MeshtyingStrategyArtery>(this, params_, poroparams_);
+        std::make_shared<PoroPressureBased::MeshtyingStrategyArtery>(this, params_, poroparams_);
   else
     strategy_ =
-        std::make_shared<POROFLUIDMULTIPHASE::MeshtyingStrategyStd>(this, params_, poroparams_);
+        std::make_shared<PoroPressureBased::MeshtyingStrategyStd>(this, params_, poroparams_);
   // check if initial fields match
   strategy_->check_initial_fields(phinp_);
   // set the nearby ele pairs
@@ -336,7 +336,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::init(bool isale, int nds_disp, int nds_vel
 /*----------------------------------------------------------------------*
  | set all general parameters for element                   vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::set_element_general_parameters() const
+void PoroPressureBased::TimIntImpl::set_element_general_parameters() const
 {
   Teuchos::ParameterList eleparams;
 
@@ -369,7 +369,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_element_general_parameters() const
 /*----------------------------------------------------------------------*
  | prepare time loop                                        vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::prepare_time_loop()
+void PoroPressureBased::TimIntImpl::prepare_time_loop()
 {
   // compute pressure and saturations
   reconstruct_pressures_and_saturations();
@@ -397,7 +397,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::prepare_time_loop()
 /*----------------------------------------------------------------------*
  | setup the variables to do a new time step       (public) vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::prepare_time_step()
+void PoroPressureBased::TimIntImpl::prepare_time_step()
 {
   // time measurement: prepare time step
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:    + prepare time step");
@@ -447,7 +447,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::prepare_time_step()
 /*------------------------------------------------------------------------------*
  | initialization procedure prior to evaluation of first time step  vuong 08/16 |
  *------------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::prepare_first_time_step()
+void PoroPressureBased::TimIntImpl::prepare_first_time_step()
 {
   if (not skipinitder_)
   {
@@ -469,7 +469,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::prepare_first_time_step()
 /*----------------------------------------------------------------------*
  | contains the time loop                                   vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::time_loop()
+void PoroPressureBased::TimIntImpl::time_loop()
 {
   // time measurement: time loop
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:  + time loop");
@@ -498,7 +498,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::time_loop()
     // -------------------------------------------------------------------
     // evaluate error for problems with analytical solution
     // -------------------------------------------------------------------
-    if (calcerr_ != POROFLUIDMULTIPHASE::calcerror_no) evaluate_error_compared_to_analytical_sol();
+    if (calcerr_ != PoroPressureBased::calcerror_no) evaluate_error_compared_to_analytical_sol();
 
     // -------------------------------------------------------------------
     //                         output of solution
@@ -517,7 +517,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::time_loop()
 /*----------------------------------------------------------------------*
  | contains the call of linear/nonlinear solver             vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::solve()
+void PoroPressureBased::TimIntImpl::solve()
 {
   // -----------------------------------------------------------------
   //                    always solve nonlinear equation
@@ -536,13 +536,13 @@ void POROFLUIDMULTIPHASE::TimIntImpl::solve()
 /*----------------------------------------------------------------------*
  | contains the call of linear/nonlinear solver             vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::update() { strategy_->update(); }
+void PoroPressureBased::TimIntImpl::update() { strategy_->update(); }
 
 
 /*----------------------------------------------------------------------*
  | apply moving mesh data                                   vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::apply_mesh_movement(
+void PoroPressureBased::TimIntImpl::apply_mesh_movement(
     std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp)
 {
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE: apply mesh movement");
@@ -568,7 +568,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_mesh_movement(
 /*----------------------------------------------------------------------*
  |  print information about current time step to screen     vuong 08/16 |
  *----------------------------------------------------------------------*/
-inline void POROFLUIDMULTIPHASE::TimIntImpl::print_time_step_info()
+inline void PoroPressureBased::TimIntImpl::print_time_step_info()
 {
   if (myrank_ == 0)
     printf("TIME: %11.4E/%11.4E  DT = %11.4E  Stationary  STEP = %4d/%4d \n", time_, maxtime_, dt_,
@@ -577,7 +577,7 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::print_time_step_info()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
+void PoroPressureBased::TimIntImpl::collect_runtime_output_data()
 {
   // write domain decomposition for visualization (only once at step 0!)
   if (step_ == 0)
@@ -634,7 +634,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
   {
     // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> solidpressure_multi =
-        POROFLUIDMULTIPHASE::convert_dof_vector_to_node_based_multi_vector(
+        PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *solidpressure_, nds_solidpressure_, 1);
 
     visualization_writer_->append_result_data_vector_with_context(
@@ -650,7 +650,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
 
     // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> dispnp_multi =
-        POROFLUIDMULTIPHASE::convert_dof_vector_to_node_based_multi_vector(
+        PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *dispnp, nds_disp_, nsd_);
 
     std::vector<std::optional<std::string>> context(nsd_, "ale-displacement");
@@ -721,7 +721,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
   {
     // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> porosity_multi =
-        POROFLUIDMULTIPHASE::convert_dof_vector_to_node_based_multi_vector(
+        PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *porosity_, nds_solidpressure_, 1);
 
     visualization_writer_->append_result_data_vector_with_context(
@@ -731,7 +731,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::output()
+void PoroPressureBased::TimIntImpl::output()
 {
   // time measurement: output of solution
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:    + output of solution");
@@ -770,7 +770,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::output()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::output_restart()
+void PoroPressureBased::TimIntImpl::output_restart()
 {
   // step number and time (only after that data output is possible)
   output_->new_step(step_, time_);
@@ -782,7 +782,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::output_restart()
 /*----------------------------------------------------------------------*
  | output of solution vector to BINIO                       vuong 08/16 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Map> POROFLUIDMULTIPHASE::TimIntImpl::dof_row_map(
+std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::TimIntImpl::dof_row_map(
     unsigned nds) const
 {
   return Core::Utils::shared_ptr_from_ref(*discret_->dof_row_map(nds));
@@ -791,7 +791,7 @@ std::shared_ptr<const Core::LinAlg::Map> POROFLUIDMULTIPHASE::TimIntImpl::dof_ro
 /*----------------------------------------------------------------------*
  | output of solution vector to BINIO                       vuong 08/16 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Map> POROFLUIDMULTIPHASE::TimIntImpl::artery_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::TimIntImpl::artery_dof_row_map() const
 {
   return strategy_->artery_dof_row_map();
 }
@@ -800,7 +800,7 @@ std::shared_ptr<const Core::LinAlg::Map> POROFLUIDMULTIPHASE::TimIntImpl::artery
  | access to block system matrix of artery poro problem kremheller 05/18 |
  *-----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase>
-POROFLUIDMULTIPHASE::TimIntImpl::artery_porofluid_sysmat() const
+PoroPressureBased::TimIntImpl::artery_porofluid_sysmat() const
 {
   return strategy_->artery_porofluid_sysmat();
 }
@@ -809,7 +809,7 @@ POROFLUIDMULTIPHASE::TimIntImpl::artery_porofluid_sysmat() const
  | return artery residual for coupled system           kremheller 05/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-POROFLUIDMULTIPHASE::TimIntImpl::artery_porofluid_rhs() const
+PoroPressureBased::TimIntImpl::artery_porofluid_rhs() const
 {
   return strategy_->artery_porofluid_rhs();
 }
@@ -829,7 +829,7 @@ POROFLUIDMULTIPHASE::TimIntImpl::artery_porofluid_rhs() const
 /*----------------------------------------------------------------------*
  | evaluate Dirichlet boundary conditions at t_{n+1}        vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::apply_dirichlet_bc(const double time,
+void PoroPressureBased::TimIntImpl::apply_dirichlet_bc(const double time,
     std::shared_ptr<Core::LinAlg::Vector<double>> prenp,
     std::shared_ptr<Core::LinAlg::Vector<double>> predt)
 {
@@ -856,7 +856,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_dirichlet_bc(const double time,
  | contains the residual scaling and addition of Neumann terms          |
  |                                                          vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::scaling_and_neumann()
+void PoroPressureBased::TimIntImpl::scaling_and_neumann()
 {
   // scaling to get true residual vector for all time integration schemes
   trueresidual_->update(residual_scaling(), *residual_, 0.0);
@@ -871,7 +871,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::scaling_and_neumann()
 /*----------------------------------------------------------------------*
  | evaluate Neumann boundary conditions                     vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::apply_neumann_bc(
+void PoroPressureBased::TimIntImpl::apply_neumann_bc(
     Core::LinAlg::Vector<double>& neumann_loads  //!< Neumann loads
 )
 {
@@ -882,8 +882,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_neumann_bc(
   Teuchos::ParameterList condparams;
 
   // action for elements
-  condparams.set<POROFLUIDMULTIPHASE::BoundaryAction>(
-      "action", POROFLUIDMULTIPHASE::bd_calc_Neumann);
+  condparams.set<PoroPressureBased::BoundaryAction>("action", PoroPressureBased::bd_calc_Neumann);
 
   // set time for evaluation of point Neumann conditions as parameter depending on time integration
   // scheme line/surface/volume Neumann conditions use the time stored in the time parameter class
@@ -901,7 +900,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_neumann_bc(
 /*----------------------------------------------------------------------*
  | contains the assembly process for matrix and rhs         vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::assemble_mat_and_rhs()
+void PoroPressureBased::TimIntImpl::assemble_mat_and_rhs()
 {
   // time measurement: element calls
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:       + element calls");
@@ -919,7 +918,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::assemble_mat_and_rhs()
   Teuchos::ParameterList eleparams;
 
   // action for elements
-  eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_mat_and_rhs);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_mat_and_rhs);
 
   // clean up, just in case ...
   discret_->clear_state();
@@ -950,7 +949,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::assemble_mat_and_rhs()
 /*------------------------------------------------------------------------*
  | contains the assembly process for 'valid...-vectors'  kremheller 09/18 |
  *------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_valid_volume_frac_press_and_spec()
+void PoroPressureBased::TimIntImpl::evaluate_valid_volume_frac_press_and_spec()
 {
   // time measurement: element calls
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:       + element calls");
@@ -963,7 +962,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_valid_volume_frac_press_and_spec(
   Teuchos::ParameterList eleparams;
 
   // action for elements
-  eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_valid_dofs);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_valid_dofs);
 
   // clean up, just in case ...
   discret_->clear_state();
@@ -985,7 +984,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_valid_volume_frac_press_and_spec(
 /*------------------------------------------------------------------------------*
  | apply the additional DBC for the volume fraction pressures  kremheller 09/18 |
  *------------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::apply_additional_dbc_for_vol_frac_press()
+void PoroPressureBased::TimIntImpl::apply_additional_dbc_for_vol_frac_press()
 {
   const Core::LinAlg::Map* elecolmap = discret_->element_col_map();
   std::vector<int> mydirichdofs(0);
@@ -1061,7 +1060,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_additional_dbc_for_vol_frac_press()
   return;
 }
 
-void POROFLUIDMULTIPHASE::TimIntImpl::apply_starting_dbc()
+void PoroPressureBased::TimIntImpl::apply_starting_dbc()
 {
   const auto& elecolmap = *discret_->element_col_map();
   std::vector<int> dirichlet_dofs(0);
@@ -1122,7 +1121,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::apply_starting_dbc()
 /*----------------------------------------------------------------------*
  | assembly process for fluid-structure-coupling matrix kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::assemble_fluid_struct_coupling_mat(
+void PoroPressureBased::TimIntImpl::assemble_fluid_struct_coupling_mat(
     std::shared_ptr<Core::LinAlg::SparseOperator> k_fs)
 {
   // time measurement: element calls
@@ -1135,8 +1134,8 @@ void POROFLUIDMULTIPHASE::TimIntImpl::assemble_fluid_struct_coupling_mat(
   Teuchos::ParameterList eleparams;
 
   // action for elements
-  eleparams.set<POROFLUIDMULTIPHASE::Action>(
-      "action", POROFLUIDMULTIPHASE::calc_fluid_struct_coupl_mat);
+  eleparams.set<PoroPressureBased::Action>(
+      "action", PoroPressureBased::calc_fluid_struct_coupl_mat);
 
   // clean up, just in case ...
   discret_->clear_state();
@@ -1167,7 +1166,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::assemble_fluid_struct_coupling_mat(
 /*----------------------------------------------------------------------*
  | assembly process for fluid-scatra-coupling matrix   kremheller 06/17 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::assemble_fluid_scatra_coupling_mat(
+void PoroPressureBased::TimIntImpl::assemble_fluid_scatra_coupling_mat(
     std::shared_ptr<Core::LinAlg::SparseOperator> k_pfs)
 {
   // time measurement: element calls
@@ -1180,8 +1179,8 @@ void POROFLUIDMULTIPHASE::TimIntImpl::assemble_fluid_scatra_coupling_mat(
   Teuchos::ParameterList eleparams;
 
   // action for elements
-  eleparams.set<POROFLUIDMULTIPHASE::Action>(
-      "action", POROFLUIDMULTIPHASE::calc_fluid_scatra_coupl_mat);
+  eleparams.set<PoroPressureBased::Action>(
+      "action", PoroPressureBased::calc_fluid_scatra_coupl_mat);
 
   // clean up, just in case ...
   discret_->clear_state();
@@ -1212,7 +1211,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::assemble_fluid_scatra_coupling_mat(
 /*----------------------------------------------------------------------*
  | contains the nonlinear iteration loop                    vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::nonlinear_solve()
+void PoroPressureBased::TimIntImpl::nonlinear_solve()
 {
   // time measurement: nonlinear iteration
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:   + nonlin. iteration/lin. solve");
@@ -1261,7 +1260,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::nonlinear_solve()
 /*--------------------------------------------------------------------------*
  | solve linear system of equations                        kremheller 04/18 |
  *--------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::linear_solve(
+void PoroPressureBased::TimIntImpl::linear_solve(
     bool isadapttol, double actresidual, double adaptolbetter)
 {
   // get cpu time
@@ -1294,7 +1293,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::linear_solve(
 /*----------------------------------------------------------------------*
  | check if to stop the nonlinear iteration                 vuong 08/16 |
  *----------------------------------------------------------------------*/
-bool POROFLUIDMULTIPHASE::TimIntImpl::abort_nonlin_iter(
+bool PoroPressureBased::TimIntImpl::abort_nonlin_iter(
     const int itnum, const int itemax, const double abstolres, double& actresidual)
 {
   //----------------------------------------------------- compute norms
@@ -1358,7 +1357,7 @@ bool POROFLUIDMULTIPHASE::TimIntImpl::abort_nonlin_iter(
   {
     switch (divcontype_)
     {
-      case POROFLUIDMULTIPHASE::divcont_continue:
+      case PoroPressureBased::divcont_continue:
       {
         // warn if itemax is reached without convergence, but proceed to
         // next timestep...
@@ -1374,7 +1373,7 @@ bool POROFLUIDMULTIPHASE::TimIntImpl::abort_nonlin_iter(
         }
         break;
       }
-      case POROFLUIDMULTIPHASE::divcont_stop:
+      case PoroPressureBased::divcont_stop:
       {
         FOUR_C_THROW("Porofluid multiphase solver not converged in itemax steps!");
         break;
@@ -1404,7 +1403,7 @@ bool POROFLUIDMULTIPHASE::TimIntImpl::abort_nonlin_iter(
 /*----------------------------------------------------------------------*
  | Print Header to screen                              kremheller 05/17 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::print_header()
+void PoroPressureBased::TimIntImpl::print_header()
 {
   if (myrank_ == 0)
   {
@@ -1420,7 +1419,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::print_header()
 /*----------------------------------------------------------------------------*
  | reconstruct pressures and saturation from current solution     vuong 08/16 |
  *--------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_pressures_and_saturations()
+void PoroPressureBased::TimIntImpl::reconstruct_pressures_and_saturations()
 {
   if (output_satpress_)
   {
@@ -1432,7 +1431,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_pressures_and_saturations()
     Teuchos::ParameterList eleparams;
 
     // action for elements
-    eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_pres_and_sat);
+    eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_pres_and_sat);
 
     // set vector values needed by elements
     discret_->clear_state();
@@ -1467,7 +1466,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_pressures_and_saturations()
 /*----------------------------------------------------------------------------*
  | reconstruct pressures from current solution                    vuong 08/16 |
  *---------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_solid_pressures()
+void PoroPressureBased::TimIntImpl::reconstruct_solid_pressures()
 {
   // reset
   solidpressure_->put_scalar(0.0);
@@ -1476,7 +1475,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_solid_pressures()
   Teuchos::ParameterList eleparams;
 
   // action for elements
-  eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_solidpressure);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_solidpressure);
 
   // set vector values needed by elements
   discret_->clear_state();
@@ -1508,15 +1507,15 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_solid_pressures()
 /*----------------------------------------------------------------------------*
  | reconstruct velocicities from current solution                vuong 08/16 |
  *--------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_flux()
+void PoroPressureBased::TimIntImpl::reconstruct_flux()
 {
-  if (fluxrecon_ == POROFLUIDMULTIPHASE::gradreco_none) return;
+  if (fluxrecon_ == PoroPressureBased::gradreco_none) return;
 
   // create the parameters for the discretization
   Teuchos::ParameterList eleparams;
 
   // action for elements
-  eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::recon_flux_at_nodes);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::recon_flux_at_nodes);
 
   const int dim = Global::Problem::instance()->n_dim();
   // we assume same number of dofs per node in the whole dis here
@@ -1528,7 +1527,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_flux()
 
   switch (fluxrecon_)
   {
-    case POROFLUIDMULTIPHASE::gradreco_l2:
+    case PoroPressureBased::gradreco_l2:
     {
       const auto& solverparams = Global::Problem::instance()->solver_params(fluxreconsolvernum_);
       flux_ = Core::FE::compute_nodal_l2_projection(*discret_, "phinp_fluid", numvec, eleparams,
@@ -1543,12 +1542,12 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_flux()
 
 /*----------------------------------------------------------------------------*
  *---------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::calculate_phase_velocities()
+void PoroPressureBased::TimIntImpl::calculate_phase_velocities()
 {
   phase_velocities_->PutScalar(0.0);
 
   Teuchos::ParameterList eleparams;
-  eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_phase_velocities);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_phase_velocities);
 
   discret_->clear_state();
 
@@ -1560,7 +1559,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::calculate_phase_velocities()
 /*----------------------------------------------------------------------------*
  | reconstruct porosity from current solution                kremheller 04/17 |
  *---------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_porosity()
+void PoroPressureBased::TimIntImpl::reconstruct_porosity()
 {
   // time measurement: reconstruction of porosity
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:    + reconstruct porosity");
@@ -1572,7 +1571,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_porosity()
   Teuchos::ParameterList eleparams;
 
   // action for elements
-  eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_porosity);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_porosity);
 
   // set vector values needed by elements
   discret_->clear_state();
@@ -1606,7 +1605,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::reconstruct_porosity()
 /*----------------------------------------------------------------------------*
  | evaluate domain integrals                                 kremheller 03/19 |
  *---------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_domain_integrals()
+void PoroPressureBased::TimIntImpl::evaluate_domain_integrals()
 {
   // time measurement: evaluation of domain integrals
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:    + evaluate domain integrals");
@@ -1615,7 +1614,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_domain_integrals()
   Teuchos::ParameterList eleparams;
 
   // action for elements
-  eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_domain_integrals);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_domain_integrals);
 
   // set vector values needed by elements
   discret_->clear_state();
@@ -1671,7 +1670,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_domain_integrals()
 /*----------------------------------------------------------------------*
  | print header of convergence table to screen              vuong 08/16 |
  *----------------------------------------------------------------------*/
-inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_header()
+inline void PoroPressureBased::TimIntImpl::print_convergence_header()
 {
   if (myrank_ == 0)
   {
@@ -1702,7 +1701,7 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_header()
 /*----------------------------------------------------------------------*
  | print first line of convergence table to screen          vuong 08/16 |
  *----------------------------------------------------------------------*/
-inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_values_first_iter(
+inline void PoroPressureBased::TimIntImpl::print_convergence_values_first_iter(
     const int& itnum,                      //!< current Newton-Raphson iteration step
     const int& itemax,                     //!< maximum number of Newton-Raphson iteration steps
     const double& ittol,                   //!< relative tolerance for Newton-Raphson scheme
@@ -1734,7 +1733,7 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_values_first_iter
 /*----------------------------------------------------------------------*
  | print current line of convergence table to screen        vuong 08/16 |
  *----------------------------------------------------------------------*/
-inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_values(
+inline void PoroPressureBased::TimIntImpl::print_convergence_values(
     const int& itnum,                       //!< current Newton-Raphson iteration step
     const int& itemax,                      //!< maximum number of Newton-Raphson iteration steps
     const double& ittol,                    //!< relative tolerance for Newton-Raphson scheme
@@ -1768,7 +1767,7 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_values(
 /*----------------------------------------------------------------------*
  | print finish line of convergence table to screen         vuong 08/16 |
  *----------------------------------------------------------------------*/
-inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_finish_line()
+inline void PoroPressureBased::TimIntImpl::print_convergence_finish_line()
 {
   if (myrank_ == 0)
   {
@@ -1793,7 +1792,7 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::print_convergence_finish_line()
 /*----------------------------------------------------------------------*
  | increment time and step for next iteration               vuong 08/16 |
  *----------------------------------------------------------------------*/
-inline void POROFLUIDMULTIPHASE::TimIntImpl::increment_time_and_step()
+inline void PoroPressureBased::TimIntImpl::increment_time_and_step()
 {
   step_ += 1;
   time_ += dt_;
@@ -1803,20 +1802,20 @@ inline void POROFLUIDMULTIPHASE::TimIntImpl::increment_time_and_step()
 /*----------------------------------------------------------------------*
  |  calculate error compared to analytical solution         vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_error_compared_to_analytical_sol()
+void PoroPressureBased::TimIntImpl::evaluate_error_compared_to_analytical_sol()
 {
-  if (calcerr_ == POROFLUIDMULTIPHASE::calcerror_no) return;
+  if (calcerr_ == PoroPressureBased::calcerror_no) return;
   FOUR_C_THROW("Error calculation not yet implemented! Element evaluation is missing.");
 
   // create the parameters for the error calculation
   Teuchos::ParameterList eleparams;
-  eleparams.set<POROFLUIDMULTIPHASE::Action>("action", POROFLUIDMULTIPHASE::calc_error);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_error);
   eleparams.set("total time", time_);
-  eleparams.set<POROFLUIDMULTIPHASE::CalcError>("calcerrorflag", calcerr_);
+  eleparams.set<PoroPressureBased::CalcError>("calcerrorflag", calcerr_);
 
   switch (calcerr_)
   {
-    case POROFLUIDMULTIPHASE::calcerror_byfunction:
+    case PoroPressureBased::calcerror_byfunction:
     {
       const int errorfunctnumber = poroparams_.get<int>("CALCERRORNO");
       if (errorfunctnumber < 1)
@@ -1893,13 +1892,13 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate_error_compared_to_analytical_sol(
 /*----------------------------------------------------------------------*
  | build linear system tangent matrix, rhs/force residual   vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::evaluate()
+void PoroPressureBased::TimIntImpl::evaluate()
 {
   // call elements to calculate system matrix and rhs and assemble
   assemble_mat_and_rhs();
 
   // perform finite difference check on time integrator level
-  if (fdcheck_ == POROFLUIDMULTIPHASE::fdcheck_global) fd_check();
+  if (fdcheck_ == PoroPressureBased::fdcheck_global) fd_check();
 
   // Apply Dirichlet Boundary Condition
   prepare_system_for_newton_solve();
@@ -1911,7 +1910,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::evaluate()
 /*----------------------------------------------------------------------*
  | basically apply Dirichlet BC                        kremheller 06/17 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::prepare_system_for_newton_solve()
+void PoroPressureBased::TimIntImpl::prepare_system_for_newton_solve()
 {
   // Apply Dirichlet boundary conditions to system of equations
   // residual values are supposed to be zero at Dirichlet boundaries
@@ -1935,7 +1934,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::prepare_system_for_newton_solve()
 /*----------------------------------------------------------------------*
  | iterative update of scalars                              vuong 08/16  |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::update_iter(
+void PoroPressureBased::TimIntImpl::update_iter(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> inc)
 {
   std::shared_ptr<const Core::LinAlg::Vector<double>> extractedinc =
@@ -1956,7 +1955,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::update_iter(
 /*----------------------------------------------------------------------*
  | set convective velocity field                            vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::set_velocity_field(
+void PoroPressureBased::TimIntImpl::set_velocity_field(
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel  //!< velocity vector
 )
 {
@@ -1990,7 +1989,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_velocity_field(
  | set state on discretization                                          |
  |                                                          vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::set_state(unsigned nds, const std::string& name,
+void PoroPressureBased::TimIntImpl::set_state(unsigned nds, const std::string& name,
     std::shared_ptr<const Core::LinAlg::Vector<double>> state)
 {
   // provide discretization with velocity
@@ -2001,18 +2000,18 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_state(unsigned nds, const std::string&
 /*----------------------------------------------------------------------*
  |  set initial field for phi                                 vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
-    const POROFLUIDMULTIPHASE::InitialField init, const int startfuncno)
+void PoroPressureBased::TimIntImpl::set_initial_field(
+    const PoroPressureBased::InitialField init, const int startfuncno)
 {
   switch (init)
   {
-    case POROFLUIDMULTIPHASE::initfield_zero_field:
+    case PoroPressureBased::initfield_zero_field:
     {
       phin_->put_scalar(0.0);
       phinp_->put_scalar(0.0);
       break;
     }
-    case POROFLUIDMULTIPHASE::initfield_field_by_function:
+    case PoroPressureBased::initfield_field_by_function:
     {
       const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
@@ -2044,7 +2043,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
 
       break;
     }
-    case POROFLUIDMULTIPHASE::initfield_field_by_condition:
+    case PoroPressureBased::initfield_field_by_condition:
     {
       // set initial field for ALL existing scatra fields in condition
       const std::string field = "PoroMultiFluid";
@@ -2096,16 +2095,16 @@ void POROFLUIDMULTIPHASE::TimIntImpl::set_initial_field(
 /*----------------------------------------------------------------------*
  | create result test for this field                        vuong 08/16  |
  *----------------------------------------------------------------------*/
-std::shared_ptr<Core::Utils::ResultTest> POROFLUIDMULTIPHASE::TimIntImpl::create_field_test()
+std::shared_ptr<Core::Utils::ResultTest> PoroPressureBased::TimIntImpl::create_field_test()
 {
   strategy_->create_field_test();
-  return std::make_shared<POROFLUIDMULTIPHASE::ResultTest>(*this);
+  return std::make_shared<PoroPressureBased::ResultTest>(*this);
 }
 
 /*----------------------------------------------------------------------*
  |  read restart data                                  kremheller 04/18 |
  -----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::read_restart(const int step)
+void PoroPressureBased::TimIntImpl::read_restart(const int step)
 {
   strategy_->read_restart(step);
   return;
@@ -2114,7 +2113,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::read_restart(const int step)
 /*--------------------------------------------------------------------*
  | calculate init time derivatives of state variables kremheller 03/17 |
  *--------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::calc_initial_time_derivative()
+void PoroPressureBased::TimIntImpl::calc_initial_time_derivative()
 {
   // time measurement
   TEUCHOS_FUNC_TIME_MONITOR("POROFLUIDMULTIPHASE:       + calculate initial time derivative");
@@ -2141,8 +2140,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::calc_initial_time_derivative()
 
   // create and fill parameter list for elements
   Teuchos::ParameterList eleparams;
-  eleparams.set<POROFLUIDMULTIPHASE::Action>(
-      "action", POROFLUIDMULTIPHASE::calc_initial_time_deriv);
+  eleparams.set<PoroPressureBased::Action>("action", PoroPressureBased::calc_initial_time_deriv);
 
   // add state vectors according to time integration scheme
   discret_->clear_state();
@@ -2200,7 +2198,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::calc_initial_time_derivative()
 /*----------------------------------------------------------------------------------------------*
  | finite difference check for scalar transport system matrix (for debugging only)   vuong 08/16 |
  *----------------------------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::TimIntImpl::fd_check()
+void PoroPressureBased::TimIntImpl::fd_check()
 {
   // initial screen output
   if (myrank_ == 0)
@@ -2396,7 +2394,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::fd_check()
 /*----------------------------------------------------------------*
  | return arterial network time integrator       kremheller 04/18 |
  *----------------------------------------------------------------*/
-std::shared_ptr<Adapter::ArtNet> POROFLUIDMULTIPHASE::TimIntImpl::art_net_tim_int()
+std::shared_ptr<Adapter::ArtNet> PoroPressureBased::TimIntImpl::art_net_tim_int()
 {
   return strategy_->art_net_tim_int();
 }

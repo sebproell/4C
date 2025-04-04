@@ -15,7 +15,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace POROMULTIPHASE
+namespace PoroPressureBased
 {
   //! Base class of all solid-scatra algorithms
   class PoroMultiPhasePartitionedTwoWay : public PoroMultiPhasePartitioned
@@ -113,12 +113,12 @@ namespace POROMULTIPHASE
     bool artery_coupling_active_;
 
     //! relaxation method
-    POROMULTIPHASE::RelaxationMethods relaxationmethod_;
+    PoroPressureBased::RelaxationMethods relaxationmethod_;
 
   };  // PoroMultiPhasePartitioned
 
 
-}  // namespace POROMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

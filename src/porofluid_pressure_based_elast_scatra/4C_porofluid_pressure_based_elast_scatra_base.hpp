@@ -104,7 +104,7 @@ namespace PoroMultiPhaseScaTra
     void apply_additional_dbc_for_vol_frac_species();
 
     //! access to poro field
-    const std::shared_ptr<POROMULTIPHASE::PoroMultiPhase>& poro_field() { return poromulti_; }
+    const std::shared_ptr<PoroPressureBased::PoroMultiPhase>& poro_field() { return poromulti_; }
 
     //! access to fluid field
     const std::shared_ptr<Adapter::ScaTraBaseAlgorithm>& scatra_algo() { return scatra_; }
@@ -117,13 +117,13 @@ namespace PoroMultiPhaseScaTra
 
    private:
     //! underlying poroelast multi phase
-    std::shared_ptr<POROMULTIPHASE::PoroMultiPhase> poromulti_;
+    std::shared_ptr<PoroPressureBased::PoroMultiPhase> poromulti_;
 
     //! underlying scatra problem
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_;
 
     //! flux-reconstruction method
-    POROFLUIDMULTIPHASE::FluxReconstructionMethod fluxreconmethod_;
+    PoroPressureBased::FluxReconstructionMethod fluxreconmethod_;
 
     //! dofset of scatra field on fluid dis
     //! TODO: find a better way to do this. Perhaps this should be moved to the adapter?

@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
  |                                                                      |
  *----------------------------------------------------------------------*/
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   /// time integration schemes
   enum TimeIntegrationScheme
@@ -85,10 +85,10 @@ namespace POROFLUIDMULTIPHASE
     gradreco_l2
   };
 
-  /// set the lubrication parameters
-  void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
+  /// set the valid parameters
+  void set_valid_parameters_porofluid(std::map<std::string, Core::IO::InputSpec>& list);
 
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

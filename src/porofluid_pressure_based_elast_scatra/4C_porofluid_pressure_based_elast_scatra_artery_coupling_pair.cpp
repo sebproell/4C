@@ -463,7 +463,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
   // create phase-manager
   phasemanager_ = Discret::Elements::PoroFluidManager::PhaseManagerInterface::create_phase_manager(
       *para, numdim_, multiphasemat->material_type(),
-      POROFLUIDMULTIPHASE::Action::get_access_from_artcoupling, multiphasemat->num_mat(),
+      PoroPressureBased::Action::get_access_from_artcoupling, multiphasemat->num_mat(),
       multiphasemat->num_fluid_phases());
 
   // setup phasemanager
@@ -472,7 +472,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
   // create variablemanager
   variablemanager_ = Discret::Elements::PoroFluidManager::VariableManagerInterface<numdim_,
       numnodescont_>::create_variable_manager(*para,
-      POROFLUIDMULTIPHASE::Action::get_access_from_artcoupling, multiphasemat,
+      PoroPressureBased::Action::get_access_from_artcoupling, multiphasemat,
       multiphasemat->num_mat(), multiphasemat->num_fluid_phases());
 
   // initialize the names used in functions

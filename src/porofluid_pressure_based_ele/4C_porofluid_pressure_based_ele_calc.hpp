@@ -78,7 +78,7 @@ namespace Discret
 
       //! element-type specific flag if second derivatives are needed
       static constexpr bool use2ndderiv_ =
-          POROFLUIDMULTIPHASE::ElementUtils::Use2ndDerivs<distype>::use;
+          PoroPressureBased::ElementUtils::Use2ndDerivs<distype>::use;
 
       /// Evaluate the element
       /*!
@@ -96,11 +96,11 @@ namespace Discret
 
       /// Setup element evaluation
       virtual int setup_calc(Core::Elements::Element* ele, Core::FE::Discretization& discretization,
-          const POROFLUIDMULTIPHASE::Action& action);
+          const PoroPressureBased::Action& action);
 
       //! evaluate action
       virtual int evaluate_action(Core::Elements::Element* ele, Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, const POROFLUIDMULTIPHASE::Action& action,
+          Core::FE::Discretization& discretization, const PoroPressureBased::Action& action,
           Core::Elements::LocationArray& la, std::vector<Core::LinAlg::SerialDenseMatrix*>& elemat,
           std::vector<Core::LinAlg::SerialDenseVector*>& elevec);
 

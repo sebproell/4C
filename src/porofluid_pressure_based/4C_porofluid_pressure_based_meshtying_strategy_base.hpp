@@ -27,20 +27,20 @@ namespace Core::LinAlg
   struct SolverParams;
 }
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   class MeshtyingStrategyBase
   {
    public:
     //! constructor
-    explicit MeshtyingStrategyBase(POROFLUIDMULTIPHASE::TimIntImpl* porofluidmultitimint,
+    explicit MeshtyingStrategyBase(PoroPressureBased::TimIntImpl* porofluidmultitimint,
         const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams)
         : porofluidmultitimint_(porofluidmultitimint),
           params_(probparams),
           poroparams_(poroparams),
-          vectornormfres_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::VectorNorm>(
+          vectornormfres_(Teuchos::getIntegralValue<PoroPressureBased::VectorNorm>(
               poroparams_, "VECTORNORM_RESF")),
-          vectornorminc_(Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::VectorNorm>(
+          vectornorminc_(Teuchos::getIntegralValue<PoroPressureBased::VectorNorm>(
               poroparams_, "VECTORNORM_INC"))
     {
       return;
@@ -145,7 +145,7 @@ namespace POROFLUIDMULTIPHASE
 
    protected:
     //! porofluid multi time integrator
-    POROFLUIDMULTIPHASE::TimIntImpl* porofluidmultitimint_;
+    PoroPressureBased::TimIntImpl* porofluidmultitimint_;
 
     //! parameter list of global control problem
     const Teuchos::ParameterList& params_;
@@ -154,13 +154,13 @@ namespace POROFLUIDMULTIPHASE
     const Teuchos::ParameterList& poroparams_;
 
     // vector norm for residuals
-    enum POROFLUIDMULTIPHASE::VectorNorm vectornormfres_;
+    enum PoroPressureBased::VectorNorm vectornormfres_;
 
     // vector norm for increments
-    enum POROFLUIDMULTIPHASE::VectorNorm vectornorminc_;
+    enum PoroPressureBased::VectorNorm vectornorminc_;
   };
 
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 FOUR_C_NAMESPACE_CLOSE
 

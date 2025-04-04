@@ -60,7 +60,7 @@ namespace Adapter
 }
 
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   // forward declaration
   class MeshtyingStrategyBase;
@@ -232,8 +232,8 @@ namespace POROFLUIDMULTIPHASE
 
     //! set the initial scalar field phi
     virtual void set_initial_field(
-        const POROFLUIDMULTIPHASE::InitialField init,  //!< type of initial field
-        const int startfuncno                          //!< number of spatial function
+        const PoroPressureBased::InitialField init,  //!< type of initial field
+        const int startfuncno                        //!< number of spatial function
     );
 
     /*--- query and output ---------------------------------------------------*/
@@ -305,7 +305,7 @@ namespace POROFLUIDMULTIPHASE
     }
 
     //! return the meshtying strategy
-    std::shared_ptr<POROFLUIDMULTIPHASE::MeshtyingStrategyBase> mesh_tying_strategy() const
+    std::shared_ptr<PoroPressureBased::MeshtyingStrategyBase> mesh_tying_strategy() const
     {
       return strategy_;
     }
@@ -517,19 +517,19 @@ namespace POROFLUIDMULTIPHASE
     std::shared_ptr<Core::LinAlg::SerialDenseVector> domain_integrals_;
 
     //! flag for error calculation
-    const POROFLUIDMULTIPHASE::CalcError calcerr_;
+    const PoroPressureBased::CalcError calcerr_;
 
     //! flag for flux reconstruction
-    const POROFLUIDMULTIPHASE::FluxReconstructionMethod fluxrecon_;
+    const PoroPressureBased::FluxReconstructionMethod fluxrecon_;
 
     //! solver number for flux reconstruction
     const int fluxreconsolvernum_;
 
     //! what to do when nonlinear solution fails
-    enum POROFLUIDMULTIPHASE::DivContAct divcontype_;
+    enum PoroPressureBased::DivContAct divcontype_;
 
     //! flag for finite difference check
-    const POROFLUIDMULTIPHASE::FdCheck fdcheck_;
+    const PoroPressureBased::FdCheck fdcheck_;
 
     //! perturbation magnitude for finite difference check
     const double fdcheckeps_;
@@ -578,9 +578,9 @@ namespace POROFLUIDMULTIPHASE
     const int uprestart_;
 
     // vector norm for residuals
-    enum POROFLUIDMULTIPHASE::VectorNorm vectornormfres_;
+    enum PoroPressureBased::VectorNorm vectornormfres_;
     // vector norm for increments
-    enum POROFLUIDMULTIPHASE::VectorNorm vectornorminc_;
+    enum PoroPressureBased::VectorNorm vectornorminc_;
 
     //! convergence tolerance for increments
     double ittolres_;
@@ -695,7 +695,7 @@ namespace POROFLUIDMULTIPHASE
     std::shared_ptr<Core::LinAlg::Vector<double>> increment_;
 
     //! meshtying strategy (includes standard case without meshtying)
-    std::shared_ptr<POROFLUIDMULTIPHASE::MeshtyingStrategyBase> strategy_;
+    std::shared_ptr<PoroPressureBased::MeshtyingStrategyBase> strategy_;
 
     //! end time point when to switch off the starting Dirichlet boundary condition
     double starting_dbc_time_end_;
@@ -712,7 +712,7 @@ namespace POROFLUIDMULTIPHASE
     /*========================================================================*/
 
   };  // class TimIntImpl
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE
