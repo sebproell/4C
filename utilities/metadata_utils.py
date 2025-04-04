@@ -19,7 +19,6 @@ class NotSet:
 
 NOTSET = NotSet()
 
-
 MISSING_DESCRIPTION = "No description yet."
 FOURC_BASE_TYPES_TO_JSON_SCHEMA_DICT = {
     "double": "number",
@@ -261,7 +260,7 @@ class All_Of(Collection):
             all_ofs = self.all_ofs(pop=True)
             for ao in all_ofs:
                 ao._condense_all_ofs()
-            self.specs.extend(ao.specs)
+                self.specs.extend(ao.specs)
 
 
 @dataclass
