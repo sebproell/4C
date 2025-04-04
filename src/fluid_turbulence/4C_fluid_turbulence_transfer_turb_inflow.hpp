@@ -17,6 +17,11 @@
 
 FOUR_C_NAMESPACE_OPEN
 
+namespace Core::Conditions
+{
+  class Condition;
+}
+
 namespace Core::FE
 {
   class Discretization;

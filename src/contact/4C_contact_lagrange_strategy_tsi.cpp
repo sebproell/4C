@@ -14,6 +14,7 @@
 #include "4C_contact_tsi_interface.hpp"
 #include "4C_coupling_adapter.hpp"
 #include "4C_coupling_adapter_converter.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_sparsematrix.hpp"

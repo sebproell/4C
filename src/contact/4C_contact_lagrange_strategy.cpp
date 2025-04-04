@@ -16,6 +16,7 @@
 #include "4C_contact_interface.hpp"
 #include "4C_contact_paramsinterface.hpp"
 #include "4C_contact_utils.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"

@@ -19,6 +19,7 @@
 #include "4C_contact_nitsche_utils.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_contact_selfcontact_binarytree_unbiased.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_graph.hpp"

@@ -13,6 +13,7 @@
 #include "4C_contact_interface.hpp"
 #include "4C_coupling_adapter.hpp"
 #include "4C_coupling_adapter_converter.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"

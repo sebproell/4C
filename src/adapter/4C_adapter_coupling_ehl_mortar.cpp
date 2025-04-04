@@ -10,6 +10,7 @@
 #include "4C_contact_friction_node.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_contact_lagrange_strategy_tsi.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_sparsematrix.hpp"

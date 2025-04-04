@@ -9,6 +9,7 @@
 #include "4C_contact_friction_node.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_coupling_adapter.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_linalg_utils_densematrix_multiply.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"

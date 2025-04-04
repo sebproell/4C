@@ -8,6 +8,7 @@
 #include "4C_structure_timint_ab2.hpp"
 
 #include "4C_contact_meshtying_contact_bridge.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linear_solver_method_linalg.hpp"

@@ -9,6 +9,7 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_utils_factory.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_element_definition.hpp"
 #include "4C_io_input_file.hpp"

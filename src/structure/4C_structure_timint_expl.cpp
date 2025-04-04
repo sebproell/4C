@@ -12,6 +12,7 @@
 #include "4C_constraint_springdashpot_manager.hpp"
 #include "4C_contact_input.hpp"
 #include "4C_contact_meshtying_contact_bridge.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mortar_manager_base.hpp"
 #include "4C_mortar_strategy_base.hpp"

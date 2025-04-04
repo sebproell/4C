@@ -10,6 +10,7 @@
 #include "4C_comm_exporter.hpp"
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_coupling_adapter.hpp"
+#include "4C_fem_discretization.hpp"
 
 #include <Epetra_Export.h>
 

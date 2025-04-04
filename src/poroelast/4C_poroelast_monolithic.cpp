@@ -14,6 +14,7 @@
 #include "4C_contact_meshtying_contact_bridge.hpp"
 #include "4C_contact_meshtying_poro_lagrange_strategy.hpp"
 #include "4C_contact_nitsche_strategy_poro.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_fem_general_assemblestrategy.hpp"
 #include "4C_fem_general_elements_paramsminimal.hpp"
 #include "4C_fluid_ele_action.hpp"
