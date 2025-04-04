@@ -19,6 +19,7 @@
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
+#include "4C_utils_exceptions.hpp"
 #include "4C_utils_string.hpp"
 
 #include <Teuchos_ParameterList.hpp>
@@ -345,6 +346,11 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
     if (nname == "NODE")  // plain old reading of the design nodes from the input file
     {
       stream >> nodeid >> dname >> dobj;
+
+      FOUR_C_ASSERT_ALWAYS(name == dname || (name == "DSURF" && dname == "DSURFACE") ||
+                               (name == "DVOL" && dname == "DVOLUME"),
+          "Wrong design node name: {}. Expected {}.", dname, name);
+
       topology[dobj - 1].insert(nodeid - 1);
     }
     else  // fancy specification of the design nodes by specifying min or max of the domain
