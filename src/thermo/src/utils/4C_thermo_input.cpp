@@ -16,7 +16,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["THERMAL DYNAMIC"] = all_of({

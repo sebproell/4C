@@ -9,7 +9,7 @@
 
 #include "4C_cut_enum.hpp"
 #include "4C_fem_condition_definition.hpp"
-#include "4C_utils_parameter_list.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
 void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace FourC::Cut;
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["CUT GENERAL"] = all_of({

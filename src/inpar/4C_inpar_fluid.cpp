@@ -17,7 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["FLUID DYNAMIC"] = all_of({
@@ -1405,7 +1404,6 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
 
 void Inpar::LowMach::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["LOMA CONTROL"] = all_of({

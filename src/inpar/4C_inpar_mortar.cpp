@@ -15,7 +15,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   /* parameters for mortar coupling */

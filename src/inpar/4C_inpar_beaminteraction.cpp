@@ -26,7 +26,6 @@ void Inpar::BeamInteraction::beam_interaction_conditions_get_all(
 
 void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["BEAM INTERACTION"] = all_of({

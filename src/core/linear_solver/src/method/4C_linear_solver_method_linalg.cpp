@@ -13,7 +13,6 @@
 #include "4C_linear_solver_method_direct.hpp"
 #include "4C_linear_solver_method_iterative.hpp"
 #include "4C_utils_enum.hpp"
-#include "4C_utils_parameter_list.hpp"
 
 #include <BelosTypes.hpp>  // for Belos verbosity codes
 #include <Epetra_LinearProblem.h>
@@ -21,6 +20,8 @@
 #include <Teuchos_ParameterList.hpp>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
+
+#include <filesystem>
 
 FOUR_C_NAMESPACE_OPEN
 

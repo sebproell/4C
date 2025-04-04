@@ -9,12 +9,12 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_geometry_pair.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   /*----------------------------------------------------------------------*/

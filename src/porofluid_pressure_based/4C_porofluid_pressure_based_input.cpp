@@ -8,13 +8,12 @@
 #include "4C_porofluid_pressure_based_input.hpp"
 
 #include "4C_inpar_bio.hpp"
-#include "4C_utils_parameter_list.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["POROFLUIDMULTIPHASE DYNAMIC"] = all_of({

@@ -15,7 +15,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
   list["ARTERIAL DYNAMIC"] = all_of({
 
@@ -65,7 +64,6 @@ void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
 void Inpar::ArteryNetwork::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["COUPLED REDUCED-D AIRWAYS AND TISSUE DYNAMIC"] = all_of({
@@ -274,7 +272,6 @@ void Inpar::BioFilm::set_valid_conditions(
 
 void Inpar::ReducedLung::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["REDUCED DIMENSIONAL AIRWAYS DYNAMIC"] = all_of({

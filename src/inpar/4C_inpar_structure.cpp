@@ -63,7 +63,6 @@ namespace Inpar
 
     void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
     {
-      using Teuchos::tuple;
       using namespace Core::IO::InputSpecBuilders;
 
       list["STRUCTURAL DYNAMIC"] = all_of({
