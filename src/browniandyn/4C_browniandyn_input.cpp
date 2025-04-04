@@ -7,14 +7,13 @@
 
 #include "4C_browniandyn_input.hpp"
 
-#include "4C_utils_parameter_list.hpp"
+#include "4C_io_input_spec_builders.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 
 void BrownianDynamics::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   list["BROWNIAN DYNAMICS"] = all_of({

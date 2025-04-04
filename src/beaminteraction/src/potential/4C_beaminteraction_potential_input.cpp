@@ -18,7 +18,6 @@ FOUR_C_NAMESPACE_OPEN
 
 void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   /* parameters for potential-based beam interaction */

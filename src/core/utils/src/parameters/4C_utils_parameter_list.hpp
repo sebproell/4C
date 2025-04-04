@@ -10,8 +10,6 @@
 
 #include "4C_config.hpp"
 
-#include "4C_io_input_spec_builders.hpp"
-
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
 FOUR_C_NAMESPACE_OPEN

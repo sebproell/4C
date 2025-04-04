@@ -9,7 +9,6 @@
 
 #include "4C_io_input_spec_builders.hpp"
 
-#include <Teuchos_ParameterList.hpp>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -24,7 +23,6 @@ namespace Inpar
        *----------------------------------------------------------------------*/
       void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
       {
-        using Teuchos::tuple;
         using namespace Core::IO::InputSpecBuilders;
 
         // related sublist

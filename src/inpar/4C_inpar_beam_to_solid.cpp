@@ -49,7 +49,6 @@ void Inpar::BeamToSolid::beam_to_solid_interaction_get_string(
  */
 void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
-  using Teuchos::tuple;
   using namespace Core::IO::InputSpecBuilders;
 
   // Beam to solid volume mesh tying parameters.
