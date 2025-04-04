@@ -7,6 +7,7 @@
 
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_linebased.hpp"
 
+#include "4C_fem_discretization.hpp"
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"

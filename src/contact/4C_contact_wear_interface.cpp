@@ -12,6 +12,7 @@
 #include "4C_contact_friction_node.hpp"
 #include "4C_contact_interface.hpp"
 #include "4C_contact_node.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"

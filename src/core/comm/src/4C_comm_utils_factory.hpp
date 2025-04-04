@@ -10,12 +10,19 @@
 
 #include "4C_config.hpp"
 
-#include "4C_fem_discretization.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
 #include "4C_utils_shared_ptr_from_ref.hpp"
 
 
 
+namespace FourC::Core::Nodes
+{
+  class Node;
+}
+namespace FourC::Core::Elements
+{
+  class Element;
+}
 FOUR_C_NAMESPACE_OPEN
 
 namespace Core::Communication

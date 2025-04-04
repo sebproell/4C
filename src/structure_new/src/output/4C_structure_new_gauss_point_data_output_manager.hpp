@@ -26,6 +26,15 @@ namespace Discret
   class Exporter;
 }
 
+namespace Core::LinAlg
+{
+  template <typename T>
+  class MultiVector;
+
+  template <typename T>
+  class Vector;
+}  // namespace Core::LinAlg
+
 namespace Solid
 {
   namespace ModelEvaluator

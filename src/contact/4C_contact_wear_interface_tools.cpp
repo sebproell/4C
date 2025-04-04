@@ -11,6 +11,7 @@
 #include "4C_contact_integrator.hpp"
 #include "4C_contact_selfcontact_binarytree.hpp"
 #include "4C_contact_wear_interface.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_io_control.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_mortar_defines.hpp"

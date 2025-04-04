@@ -12,6 +12,7 @@
 #include "4C_contact_meshtying_lagrange_strategy.hpp"
 #include "4C_contact_meshtying_penalty_strategy.hpp"
 #include "4C_contact_meshtying_poro_lagrange_strategy.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_io.hpp"

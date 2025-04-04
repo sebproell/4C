@@ -26,6 +26,7 @@
 #include "4C_contact_utils.hpp"
 #include "4C_contact_utils_parallel.hpp"
 #include "4C_contact_wear_interface.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_mortar.hpp"
 #include "4C_inpar_wear.hpp"

@@ -9,6 +9,7 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_comm_utils.hpp"
+#include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_utils_densematrix_svd.hpp"
 #include "4C_mat_micromaterial.hpp"
