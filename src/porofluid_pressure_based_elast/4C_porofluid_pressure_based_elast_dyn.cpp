@@ -49,7 +49,7 @@ void poromultiphase_dyn(int restart)
 
   // Setup discretizations and coupling. Assign the dof sets and return the numbers
   std::map<int, std::set<int>> nearbyelepairs =
-      POROMULTIPHASE::Utils::setup_discretizations_and_field_coupling(
+      POROMULTIPHASE::setup_discretizations_and_field_coupling(
           comm, struct_disname, fluid_disname, nds_disp, nds_vel, nds_solidpressure);
 
   // Parameter reading
@@ -67,7 +67,7 @@ void poromultiphase_dyn(int restart)
       Teuchos::getIntegralValue<POROMULTIPHASE::SolutionSchemeOverFields>(poroparams, "COUPALGO");
 
   std::shared_ptr<POROMULTIPHASE::PoroMultiPhase> algo =
-      POROMULTIPHASE::Utils::create_poro_multi_phase_algorithm(solscheme, poroparams, comm);
+      POROMULTIPHASE::create_poro_multi_phase_algorithm(solscheme, poroparams, comm);
 
   // initialize
   algo->init(poroparams, poroparams, structdyn, fluiddyn, struct_disname, fluid_disname, true,
@@ -88,7 +88,7 @@ void poromultiphase_dyn(int restart)
   // assign poro material for evaluation of porosity
   // note: to be done after potential restart, as in read_restart()
   //       the secondary material is destroyed
-  POROMULTIPHASE::Utils::assign_material_pointers(struct_disname, fluid_disname);
+  POROMULTIPHASE::assign_material_pointers(struct_disname, fluid_disname);
 
   // Setup the solver (only for the monolithic problem)
   algo->setup_solver();

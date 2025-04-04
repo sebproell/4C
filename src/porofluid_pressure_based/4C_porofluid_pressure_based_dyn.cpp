@@ -86,7 +86,7 @@ void porofluidmultiphase_dyn(int restart)
       case Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp:
       {
         actdis->fill_complete();
-        nearbyelepairs = POROFLUIDMULTIPHASE::Utils::extended_ghosting_artery_discretization(
+        nearbyelepairs = POROFLUIDMULTIPHASE::extended_ghosting_artery_discretization(
             *actdis, arterydis, evaluate_on_lateral_surface, arterycoupl);
         break;
       }
@@ -123,7 +123,7 @@ void porofluidmultiphase_dyn(int restart)
       Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::TimeIntegrationScheme>(porodyn, "TIMEINTEGR");
 
   // build poro fluid time integrator
-  std::shared_ptr<Adapter::PoroFluidMultiphase> algo = POROFLUIDMULTIPHASE::Utils::create_algorithm(
+  std::shared_ptr<Adapter::PoroFluidMultiphase> algo = POROFLUIDMULTIPHASE::create_algorithm(
       timintscheme, actdis, linsolvernumber, porodyn, porodyn, output);
 
   // initialize
@@ -140,7 +140,7 @@ void porofluidmultiphase_dyn(int restart)
   // assign poro material for evaluation of porosity
   // note: to be done after potential restart, as in read_restart()
   //       the secondary material is destroyed
-  POROFLUIDMULTIPHASE::Utils::setup_material(comm, struct_disname, fluid_disname);
+  POROFLUIDMULTIPHASE::setup_material(comm, struct_disname, fluid_disname);
 
   // 4.- Run of the actual problem.
   algo->time_loop();

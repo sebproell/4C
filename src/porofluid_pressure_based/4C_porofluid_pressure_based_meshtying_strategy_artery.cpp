@@ -86,7 +86,7 @@ POROFLUIDMULTIPHASE::MeshtyingStrategyArtery::MeshtyingStrategyArtery(
       });
 
   // initialize mesh tying object
-  arttoporofluidcoupling_ = PoroMultiPhaseScaTra::Utils::create_and_init_artery_coupling_strategy(
+  arttoporofluidcoupling_ = PoroMultiPhaseScaTra::create_and_init_artery_coupling_strategy(
       arterydis_, porofluidmultitimint->discretization(), poroparams.sublist("ARTERY COUPLING"),
       couplingcondname, "COUPLEDDOFS_ART", "COUPLEDDOFS_PORO", evaluate_on_lateral_surface);
 
@@ -219,8 +219,8 @@ void POROFLUIDMULTIPHASE::MeshtyingStrategyArtery::calculate_norms(std::vector<d
   incprenorm.resize(2);
   prenorm.resize(2);
 
-  prenorm[0] = Utils::calculate_vector_norm(vectornorminc_, *porofluidmultitimint_->phinp());
-  prenorm[1] = Utils::calculate_vector_norm(vectornorminc_, *artnettimint_->pressurenp());
+  prenorm[0] = calculate_vector_norm(vectornorminc_, *porofluidmultitimint_->phinp());
+  prenorm[1] = calculate_vector_norm(vectornorminc_, *artnettimint_->pressurenp());
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> arterypressinc;
   std::shared_ptr<const Core::LinAlg::Vector<double>> porofluidinc;
@@ -228,16 +228,16 @@ void POROFLUIDMULTIPHASE::MeshtyingStrategyArtery::calculate_norms(std::vector<d
   arttoporofluidcoupling_->extract_single_field_vectors(
       comb_increment_, porofluidinc, arterypressinc);
 
-  incprenorm[0] = Utils::calculate_vector_norm(vectornorminc_, *porofluidinc);
-  incprenorm[1] = Utils::calculate_vector_norm(vectornorminc_, *arterypressinc);
+  incprenorm[0] = calculate_vector_norm(vectornorminc_, *porofluidinc);
+  incprenorm[1] = calculate_vector_norm(vectornorminc_, *arterypressinc);
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> arterypressrhs;
   std::shared_ptr<const Core::LinAlg::Vector<double>> porofluidrhs;
 
   arttoporofluidcoupling_->extract_single_field_vectors(rhs_, porofluidrhs, arterypressrhs);
 
-  preresnorm[0] = Utils::calculate_vector_norm(vectornormfres_, *porofluidrhs);
-  preresnorm[1] = Utils::calculate_vector_norm(vectornormfres_, *arterypressrhs);
+  preresnorm[0] = calculate_vector_norm(vectornormfres_, *porofluidrhs);
+  preresnorm[1] = calculate_vector_norm(vectornormfres_, *arterypressrhs);
 
   return;
 }

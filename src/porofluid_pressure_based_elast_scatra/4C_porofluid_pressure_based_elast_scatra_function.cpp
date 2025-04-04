@@ -1035,7 +1035,7 @@ double PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate(
   // safety check --> should not be larger than CaO2_max, which already corresponds to partial
   // pressures of ~250Pa
   CaO2 = std::max(0.0, std::min(CaO2, 1.0 * parameters_.CaO2_max));
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(
+  PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<double>(
       Pb, CaO2, parameters_.CaO2_max, parameters_.Pb50, parameters_.n, parameters_.alpha_bl_eff);
 
   // evaluate function
@@ -1089,7 +1089,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate_derivati
   // safety check --> should not be larger than CaO2_max, which already corresponds to partial
   // pressures of ~250Pa
   CaO2 = std::max(0.0, std::min(CaO2, 1.0 * parameters_.CaO2_max));
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<FAD>(
+  PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<FAD>(
       Pb, CaO2, parameters_.CaO2_max, parameters_.Pb50, parameters_.n, parameters_.alpha_bl_eff);
   const double heaviside_oxy((Pb - oxy_mass_frac_if / fac_if) > 0. ? 1. : 0.);
 
@@ -1179,7 +1179,7 @@ double PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate(
   // safety check --> should not be larger than CaO2_max, which already corresponds to partial
   // pressures of ~250Pa
   CaO2 = std::max(0.0, std::min(CaO2, 1.0 * parameters_.CaO2_max));
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(
+  PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<double>(
       Pb, CaO2, parameters_.CaO2_max, parameters_.Pb50, parameters_.n, parameters_.alpha_bl_eff);
 
   // evaluate function
@@ -1218,7 +1218,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate_derivati
   // safety check --> should not be larger than CaO2_max, which already corresponds to partial
   // pressures of ~250Pa
   CaO2 = std::max(0.0, std::min(CaO2, 1.0 * parameters_.CaO2_max));
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<FAD>(
+  PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<FAD>(
       Pb, CaO2, parameters_.CaO2_max, parameters_.Pb50, parameters_.n, parameters_.alpha_bl_eff);
 
   // evaluate function
@@ -1321,7 +1321,7 @@ double PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate(
   double P_oB = 0.0;
 
   // Calculate partial pressure of oxygen in blood
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(
+  PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<double>(
       P_oB, CoB_total, parameters_.NC_Hb, parameters_.P_oB50, parameters_.n, parameters_.alpha_oxy);
 
   // evaluate function
@@ -1381,7 +1381,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_d
   FAD P_oB = 0.0;
   FAD C_oB_total = oxy_mass_frac_bl * parameters_.rho_bl / parameters_.rho_oxy;
 
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<FAD>(P_oB, C_oB_total,
+  PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<FAD>(P_oB, C_oB_total,
       parameters_.NC_Hb, parameters_.P_oB50, parameters_.n, parameters_.alpha_oxy);
 
 
@@ -1507,7 +1507,7 @@ double PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::evaluate(
   double P_O2B = 0.0;
 
   // Calculate partial pressure of oxygen in blood
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(P_O2B, CoB_total,
+  PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<double>(P_O2B, CoB_total,
       parameters_.NC_Hb, parameters_.P_oB50, parameters_.n, parameters_.alpha_oxy);
 
   // saturation of hemoglobin with oxygen from hill equation
@@ -1585,7 +1585,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::eva
   FAD P_O2B = 0.0;
   FAD C_oB_total = O2_mass_frac_bl * parameters_.rho_bl / parameters_.rho_oxy;
 
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<FAD>(P_O2B, C_oB_total,
+  PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<FAD>(P_O2B, C_oB_total,
       parameters_.NC_Hb, parameters_.P_oB50, parameters_.n, parameters_.alpha_oxy);
 
   // saturation of hemoglobin with oxygen from hill equation

@@ -634,7 +634,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
   {
     // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> solidpressure_multi =
-        POROFLUIDMULTIPHASE::Utils::convert_dof_vector_to_node_based_multi_vector(
+        POROFLUIDMULTIPHASE::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *solidpressure_, nds_solidpressure_, 1);
 
     visualization_writer_->append_result_data_vector_with_context(
@@ -650,7 +650,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
 
     // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> dispnp_multi =
-        POROFLUIDMULTIPHASE::Utils::convert_dof_vector_to_node_based_multi_vector(
+        POROFLUIDMULTIPHASE::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *dispnp, nds_disp_, nsd_);
 
     std::vector<std::optional<std::string>> context(nsd_, "ale-displacement");
@@ -721,7 +721,7 @@ void POROFLUIDMULTIPHASE::TimIntImpl::collect_runtime_output_data()
   {
     // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> porosity_multi =
-        POROFLUIDMULTIPHASE::Utils::convert_dof_vector_to_node_based_multi_vector(
+        POROFLUIDMULTIPHASE::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *porosity_, nds_solidpressure_, 1);
 
     visualization_writer_->append_result_data_vector_with_context(

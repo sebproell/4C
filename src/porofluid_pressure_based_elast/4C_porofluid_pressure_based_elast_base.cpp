@@ -94,9 +94,8 @@ void POROMULTIPHASE::PoroMultiPhaseBase::init(const Teuchos::ParameterList& glob
       fluidparams, "TIMEINTEGR");
 
   // build poro fluid time integrator
-  std::shared_ptr<Adapter::PoroFluidMultiphase> porofluid =
-      POROFLUIDMULTIPHASE::Utils::create_algorithm(
-          timintscheme, fluiddis, linsolvernumber, globaltimeparams, fluidparams, output);
+  std::shared_ptr<Adapter::PoroFluidMultiphase> porofluid = POROFLUIDMULTIPHASE::create_algorithm(
+      timintscheme, fluiddis, linsolvernumber, globaltimeparams, fluidparams, output);
 
   // wrap it
   fluid_ = std::make_shared<Adapter::PoroFluidMultiphaseWrapper>(porofluid);

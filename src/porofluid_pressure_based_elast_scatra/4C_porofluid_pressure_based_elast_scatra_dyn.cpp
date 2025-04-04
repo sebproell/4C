@@ -65,7 +65,7 @@ void poromultiphasescatra_dyn(int restart)
 
   // Setup discretizations and coupling. Assign the dof sets and return the numbers
   std::map<int, std::set<int>> nearbyelepairs =
-      PoroMultiPhaseScaTra::Utils::setup_discretizations_and_field_coupling(comm, struct_disname,
+      PoroMultiPhaseScaTra::setup_discretizations_and_field_coupling(comm, struct_disname,
           fluid_disname, scatra_disname, ndsporo_disp, ndsporo_vel, ndsporo_solidpressure,
           ndsporofluid_scatra, artery_coupl);
 
@@ -77,7 +77,7 @@ void poromultiphasescatra_dyn(int restart)
       poroscatraparams, "COUPALGO");
 
   std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase> algo =
-      PoroMultiPhaseScaTra::Utils::create_poro_multi_phase_scatra_algorithm(
+      PoroMultiPhaseScaTra::create_poro_multi_phase_scatra_algorithm(
           solscheme, poroscatraparams, comm);
 
   algo->init(poroscatraparams, poroscatraparams, poroparams, structparams, fluidparams,
@@ -97,7 +97,7 @@ void poromultiphasescatra_dyn(int restart)
   // assign materials
   // note: to be done after potential restart, as in read_restart()
   //       the secondary material is destroyed
-  PoroMultiPhaseScaTra::Utils::assign_material_pointers(
+  PoroMultiPhaseScaTra::assign_material_pointers(
       struct_disname, fluid_disname, scatra_disname, artery_coupl);
 
   // Setup Solver (necessary if poro-structure coupling solved monolithically)
