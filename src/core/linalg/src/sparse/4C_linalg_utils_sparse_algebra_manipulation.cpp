@@ -312,36 +312,6 @@ std::shared_ptr<Core::LinAlg::Graph> Core::LinAlg::enrich_matrix_graph(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool Core::LinAlg::split_matrix2x2(std::shared_ptr<Epetra_CrsMatrix> A,
-    std::shared_ptr<BlockSparseMatrix<DefaultBlockMatrixStrategy>>& Ablock,
-    std::shared_ptr<Core::LinAlg::Map>& A11rowmap, std::shared_ptr<Core::LinAlg::Map>& A22rowmap)
-{
-  if (A == nullptr) FOUR_C_THROW("A==null on entry");
-
-  if (A11rowmap == nullptr && A22rowmap != nullptr)
-    A11rowmap = Core::LinAlg::split_map(Map(A->RowMap()), *A22rowmap);
-  else if (A11rowmap != nullptr && A22rowmap == nullptr)
-    A22rowmap = Core::LinAlg::split_map(Map(A->RowMap()), *A11rowmap);
-  else if (A11rowmap == nullptr && A22rowmap == nullptr)
-    FOUR_C_THROW("Both A11rowmap and A22rowmap == null on entry");
-
-  std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);
-  maps[0] = std::make_shared<Core::LinAlg::Map>(*A11rowmap);
-  maps[1] = std::make_shared<Core::LinAlg::Map>(*A22rowmap);
-  Core::LinAlg::MultiMapExtractor extractor(Map(A->RowMap()), maps);
-
-  // create SparseMatrix view to input matrix A
-  SparseMatrix a(A, DataAccess::View);
-
-  // split matrix into pieces, where main diagonal blocks are square
-  Ablock = Core::LinAlg::split_matrix<DefaultBlockMatrixStrategy>(a, extractor, extractor);
-  Ablock->complete();
-
-  return true;
-}
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
 bool Core::LinAlg::split_matrix2x2(std::shared_ptr<Core::LinAlg::SparseMatrix> A,
     std::shared_ptr<Core::LinAlg::Map>& A11rowmap, std::shared_ptr<Core::LinAlg::Map>& A22rowmap,
     std::shared_ptr<Core::LinAlg::Map>& A11domainmap,
