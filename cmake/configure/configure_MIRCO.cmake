@@ -34,6 +34,7 @@ else() # Fetch MIRCO from GIT repository
     GIT_TAG ${MIRCO_GIT_TAG}
     )
   fetchcontent_makeavailable(mirco)
+  # MIRCO requires a specific path, possibly due to inconsistent naming "mirco" vs "mirco_lib".
   set(FOUR_C_MIRCO_ROOT "${CMAKE_INSTALL_PREFIX}/lib/cmake/mirco")
 
   four_c_add_external_dependency(four_c_all_enabled_external_dependencies mirco::mirco_lib)

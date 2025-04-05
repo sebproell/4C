@@ -16,7 +16,7 @@ set(MAGIC_ENUM_OPT_INSTALL
     CACHE BOOL "Turn on magic_enum install" FORCE
     )
 fetchcontent_makeavailable(magic_enum)
-set(FOUR_C_MAGIC_ENUM_ROOT "${CMAKE_INSTALL_PREFIX}/share/cmake/magic_enum")
+set(FOUR_C_MAGIC_ENUM_ROOT "${CMAKE_INSTALL_PREFIX}")
 
 four_c_add_external_dependency(four_c_all_enabled_external_dependencies magic_enum::magic_enum)
 

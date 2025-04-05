@@ -16,7 +16,7 @@ set(RYML_INSTALL
     CACHE BOOL "Turn on ryml install" FORCE
     )
 fetchcontent_makeavailable(ryml)
-set(FOUR_C_RYML_ROOT "${CMAKE_INSTALL_PREFIX}/lib/cmake/ryml")
+set(FOUR_C_RYML_ROOT "${CMAKE_INSTALL_PREFIX}")
 
 four_c_add_external_dependency(four_c_all_enabled_external_dependencies ryml::ryml)
 
