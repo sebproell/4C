@@ -18,9 +18,4 @@ if(FFTW_FOUND)
     ${PROJECT_BINARY_DIR}/cmake/templates/FFTW.cmake
     @ONLY
     )
-  include(GNUInstallDirs)
-  install(
-    FILES ${PROJECT_SOURCE_DIR}/cmake/modules/FindFFTW.cmake
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C/modules
-    )
 endif()

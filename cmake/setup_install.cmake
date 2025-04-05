@@ -82,6 +82,12 @@ _add_dependency_to_settings(Backtrace)
 _add_dependency_to_settings(ryml)
 _add_dependency_to_settings(magic_enum)
 
+# install the Find modules
+install(
+  DIRECTORY ${PROJECT_SOURCE_DIR}/cmake/modules/
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C/modules
+  )
+
 # install
 install(
   FILES ${PROJECT_BINARY_DIR}/cmake/templates/4CSettings.cmake
