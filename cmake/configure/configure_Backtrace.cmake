@@ -18,9 +18,4 @@ if(Backtrace_FOUND)
     ${PROJECT_BINARY_DIR}/cmake/templates/Backtrace.cmake
     @ONLY
     )
-  include(GNUInstallDirs)
-  install(
-    FILES ${PROJECT_SOURCE_DIR}/cmake/modules/FindBacktrace.cmake
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C/modules
-    )
 endif()

@@ -18,9 +18,4 @@ if(CLN_FOUND)
     ${PROJECT_BINARY_DIR}/cmake/templates/CLN.cmake
     @ONLY
     )
-  include(GNUInstallDirs)
-  install(
-    FILES ${PROJECT_SOURCE_DIR}/cmake/modules/FindCLN.cmake
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C/modules
-    )
 endif()

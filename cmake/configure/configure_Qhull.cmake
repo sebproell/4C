@@ -18,9 +18,4 @@ if(QHULL_FOUND)
     ${PROJECT_BINARY_DIR}/cmake/templates/Qhull.cmake
     @ONLY
     )
-  include(GNUInstallDirs)
-  install(
-    FILES ${PROJECT_SOURCE_DIR}/cmake/modules/FindQhull.cmake
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/cmake/4C/modules
-    )
 endif()
