@@ -689,6 +689,7 @@ namespace Core::LinAlg
     }
 
     template <typename TensorLeft, typename TensorRight>
+      requires(TensorConcept<TensorLeft> && TensorConcept<TensorRight>)
     constexpr auto operator*(const TensorLeft& A, const TensorRight& B)
     {
       return dot(A, B);

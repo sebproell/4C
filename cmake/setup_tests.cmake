@@ -31,7 +31,8 @@ if(FOUR_C_WITH_GOOGLETEST)
 
   if(TARGET gtest)
     message(
-      FATAL_ERROR "A target <gtest> has already been included by a TPL." "This is not supported."
+      FATAL_ERROR "A target <gtest> has already been included by another library."
+                  "This is not supported."
       )
   endif()
 
@@ -48,6 +49,37 @@ if(FOUR_C_WITH_GOOGLETEST)
 
 else()
   message(STATUS "Unit tests with GoogleTest: disabled")
+endif()
+
+# Fetch Google Benchmark and setup benchmark tests if option is enabled
+four_c_process_global_option(
+  FOUR_C_WITH_GOOGLE_BENCHMARK "Use Google Benchmark for micro benchmark tests" OFF
+  )
+if(FOUR_C_WITH_GOOGLE_BENCHMARK)
+  # Define a convenience target for all benchmark tests and add it to 'full'
+  # All benchmark test executables should add themselves as a dependency to 'benchmarktests'
+  # disable tests from google benchmark
+  set(BENCHMARK_ENABLE_TESTING OFF)
+  add_custom_target(benchmarktests)
+  add_dependencies(full benchmarktests)
+
+  if(TARGET benchmark_main)
+    message(
+      FATAL_ERROR "A target <benchmark_main> has already been included by another library."
+                  "This is not supported."
+      )
+  endif()
+
+  include(FetchContent)
+  fetchcontent_declare(
+    googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG afa23b7699c17f1e26c88cbf95257b20d78d6247 # v1.9.2
+    )
+  fetchcontent_makeavailable(googlebenchmark)
+
+else()
+  message(STATUS "Benchmark tests with Google Benchmark: disabled")
 endif()
 
 # setup test for installation
