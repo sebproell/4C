@@ -16,7 +16,6 @@
 #include "4C_io_pstream.hpp"
 #include "4C_structure_new_model_evaluator_generic.hpp"
 
-#include <boost/algorithm/string.hpp>
 #include <Teuchos_ParameterList.hpp>
 
 #include <map>

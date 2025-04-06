@@ -62,7 +62,8 @@ namespace RTD
 
     for (const auto& [section_name, spec] : parameters)
     {
-      std::string linktarget = boost::algorithm::replace_all_copy(section_name, "/", "_");
+      std::string linktarget = section_name;
+      std::ranges::replace(linktarget, '/', '_');
       linktarget = Teuchos::StrUtils::removeAllSpaces(Core::Utils::to_lower(linktarget));
 
       // write link:

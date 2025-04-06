@@ -15,7 +15,6 @@
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_string.hpp"
 
-#include <boost/algorithm/string.hpp>
 #include <Teuchos_StrUtils.hpp>
 
 #include <format>
@@ -221,7 +220,7 @@ namespace RTD
         const unsigned celldimension = Core::FE::get_dimension(celltype);
         if (celldimension != outputdim) continue;
 
-        std::string celltypelinkname = boost::algorithm::to_lower_copy(celltypename);
+        std::string celltypelinkname = Core::Utils::to_lower(celltypename);
         write_linktarget(stream, celltypelinkname);
         write_header(stream, 3, celltypename);
 
@@ -353,7 +352,8 @@ namespace RTD
           issubsection = true;
         }
         fullname += name;
-        std::string linktarget = boost::algorithm::replace_all_copy(fullname, "/", "_");
+        std::string linktarget = fullname;
+        std::ranges::replace(linktarget, '/', '_');
         linktarget = Teuchos::StrUtils::removeAllSpaces(Core::Utils::to_lower(linktarget));
 
         if (entry.isList())  // it is a section header

@@ -11,8 +11,6 @@
 
 #include "4C_config.hpp"
 
-#include <boost/proto/detail/template_arity.hpp>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN

@@ -13,7 +13,6 @@
 #include "4C_cut_cycle.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/boyer_myrvold_planar_test.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/copy.hpp>
