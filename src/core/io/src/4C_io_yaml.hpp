@@ -123,29 +123,29 @@ namespace Core::IO
    */
   [[nodiscard]] ryml::Tree init_yaml_tree_with_exceptions();
 
-  void emit_value_as_yaml(ryml::NodeRef node, const int& value);
+  void emit_value_as_yaml(YamlNodeRef node, const int& value);
 
-  void emit_value_as_yaml(ryml::NodeRef node, const double& value);
+  void emit_value_as_yaml(YamlNodeRef node, const double& value);
 
-  void emit_value_as_yaml(ryml::NodeRef node, const std::string& value);
-  void emit_value_as_yaml(ryml::NodeRef node, const std::string_view& value);
+  void emit_value_as_yaml(YamlNodeRef node, const std::string& value);
+  void emit_value_as_yaml(YamlNodeRef node, const std::string_view& value);
 
-  void emit_value_as_yaml(ryml::NodeRef node, const bool& value);
+  void emit_value_as_yaml(YamlNodeRef node, const bool& value);
 
-  void emit_value_as_yaml(ryml::NodeRef node, const std::filesystem::path& value);
+  void emit_value_as_yaml(YamlNodeRef node, const std::filesystem::path& value);
 
   template <typename T>
     requires(std::is_enum_v<T>)
-  void emit_value_as_yaml(ryml::NodeRef node, const T& value);
+  void emit_value_as_yaml(YamlNodeRef node, const T& value);
 
   template <typename T>
-  void emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value);
+  void emit_value_as_yaml(YamlNodeRef node, const std::optional<T>& value);
 
   template <typename T>
-  void emit_value_as_yaml(ryml::NodeRef node, const std::map<std::string, T>& value);
+  void emit_value_as_yaml(YamlNodeRef node, const std::map<std::string, T>& value);
 
   template <typename T>
-  void emit_value_as_yaml(ryml::NodeRef node, const std::vector<T>& value);
+  void emit_value_as_yaml(YamlNodeRef node, const std::vector<T>& value);
 
   template <YamlSupportedType T>
     requires(!std::is_enum_v<T>)
@@ -200,18 +200,7 @@ namespace Core::IO
     }
   }
 
-  inline void read_value_from_yaml(ConstYamlNodeRef node, std::filesystem::path& value)
-  {
-    FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
-    std::string path;
-    read_value_from_yaml(node, path);
-
-    value = std::filesystem::path(path);
-    if (value.is_relative())
-    {
-      value = node.associated_file.parent_path() / value;
-    }
-  }
+  void read_value_from_yaml(ConstYamlNodeRef node, std::filesystem::path& value);
 
   template <typename U>
   void read_value_from_yaml(ConstYamlNodeRef node, std::map<std::string, U>& value)
@@ -242,14 +231,14 @@ namespace Core::IO
 
 template <typename T>
   requires(std::is_enum_v<T>)
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const T& value)
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const T& value)
 {
   std::string_view str = magic_enum::enum_name(value);
-  node << ryml::csubstr(str.data(), str.size());
+  node.node << ryml::csubstr(str.data(), str.size());
 }
 
 template <typename T>
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& value)
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const std::optional<T>& value)
 {
   if (value.has_value())
   {
@@ -257,29 +246,29 @@ void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::optional<T>& va
   }
   else
   {
-    node = "null";
+    node.node = "null";
   }
 }
 
 template <typename T>
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::map<std::string, T>& value)
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const std::map<std::string, T>& value)
 {
-  node |= ryml::MAP;
+  node.node |= ryml::MAP;
   for (const auto& [key, v] : value)
   {
-    auto child = node.append_child();
-    child << ryml::key(key);
+    auto child = node.wrap(node.node.append_child());
+    child.node << ryml::key(key);
     emit_value_as_yaml(child, v);
   }
 }
 
 template <typename T>
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::vector<T>& value)
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const std::vector<T>& value)
 {
-  node |= ryml::SEQ | ryml::FLOW_SL;
+  node.node |= ryml::SEQ | ryml::FLOW_SL;
   for (const auto& v : value)
   {
-    auto child = node.append_child();
+    auto child = node.wrap(node.node.append_child());
     emit_value_as_yaml(child, v);
   }
 }

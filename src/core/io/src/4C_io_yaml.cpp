@@ -7,6 +7,8 @@
 
 #include "4C_io_yaml.hpp"
 
+#include <iostream>
+
 FOUR_C_NAMESPACE_OPEN
 
 namespace
@@ -27,31 +29,40 @@ ryml::Tree Core::IO::init_yaml_tree_with_exceptions()
   return ryml::Tree{cb};
 }
 
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const int& value) { node << value; }
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const int& value) { node.node << value; }
 
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const double& value) { node << value; }
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const double& value) { node.node << value; }
 
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::string& value)
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const std::string& value)
 {
-  node |= ryml::VAL_DQUO;
-  node << ryml::to_csubstr(value);
+  node.node |= ryml::VAL_DQUO;
+  node.node << ryml::to_csubstr(value);
 }
 
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::string_view& value)
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const std::string_view& value)
 {
-  node |= ryml::VAL_DQUO;
-  node << ryml::csubstr(value.data(), value.size());
+  node.node |= ryml::VAL_DQUO;
+  node.node << ryml::csubstr(value.data(), value.size());
 }
 
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const bool& value)
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const bool& value)
 {
-  node << (value ? "true" : "false");
+  node.node << (value ? "true" : "false");
 }
 
-void Core::IO::emit_value_as_yaml(ryml::NodeRef node, const std::filesystem::path& value)
+void Core::IO::emit_value_as_yaml(YamlNodeRef node, const std::filesystem::path& value)
 {
-  node |= ryml::VAL_DQUO;
-  node << value.string();
+  node.node |= ryml::VAL_DQUO;
+  if (node.associated_file.empty())
+  {
+    node.node << value.string();
+  }
+  // Make the path relative to the associated file.
+  else
+  {
+    auto relative_path = std::filesystem::relative(value, node.associated_file.parent_path());
+    node.node << relative_path.string();
+  }
 }
 
 void Core::IO::read_value_from_yaml(Core::IO::ConstYamlNodeRef node, double& value)
@@ -90,6 +101,19 @@ void Core::IO::read_value_from_yaml(FourC::Core::IO::ConstYamlNodeRef node, bool
   else
   {
     throw YamlException("Could not parse '" + token + "' as a boolean value.");
+  }
+}
+
+void Core::IO::read_value_from_yaml(ConstYamlNodeRef node, std::filesystem::path& value)
+{
+  FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
+  std::string path;
+  read_value_from_yaml(node, path);
+
+  value = std::filesystem::path(path);
+  if (value.is_relative())
+  {
+    value = node.associated_file.parent_path() / value;
   }
 }
 
