@@ -539,32 +539,7 @@ double PoroPressureBased::calculate_vector_norm(
   {
     FOUR_C_THROW("Cannot handle vector norm");
     return 0;
-  }
-}  // calculate_vector_norm()
-
-/*----------------------------------------------------------------------*
- |                                                    kremheller 03/17  |
- *----------------------------------------------------------------------*/
-void PoroPressureBased::print_logo()
-{
-  std::cout << "This is a Porous Media problem with multiphase flow" << std::endl;
-  std::cout << "" << std::endl;
-  std::cout << "              +----------+" << std::endl;
-  std::cout << "              |  Krebs-  |" << std::endl;
-  std::cout << "              |  Model  |" << std::endl;
-  std::cout << "              +----------+" << std::endl;
-  std::cout << "              |          |" << std::endl;
-  std::cout << "              |          |" << std::endl;
-  std::cout << " /\\           |          /\\" << std::endl;
-  std::cout << "( /   @ @    (|)        ( /   @ @    ()" << std::endl;
-  std::cout << " \\  __| |__  /           \\  __| |__  /" << std::endl;
-  std::cout << "  \\/   \"   \\/             \\/   \"   \\/" << std::endl;
-  std::cout << " /-|       |-\\           /-|       |-\\" << std::endl;
-  std::cout << "/ /-\\     /-\\ \\         / /-\\     /-\\ \\" << std::endl;
-  std::cout << " / /-`---'-\\ \\           / /-`---'-\\ \\" << std::endl;
-  std::cout << "  /         \\             /         \\" << std::endl;
-
-  return;
+  }  // calculate_vector_norm()
 }
 
 FOUR_C_NAMESPACE_CLOSE

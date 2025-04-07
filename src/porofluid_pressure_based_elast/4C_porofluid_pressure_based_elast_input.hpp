@@ -26,11 +26,11 @@ namespace Core::Conditions
 namespace PoroPressureBased
 {
   /// Type of coupling strategy for POROMULTIPHASE problems
-  enum SolutionSchemeOverFields
+  enum class SolutionSchemePorofluidElast
   {
-    solscheme_undefined,
-    solscheme_twoway_partitioned,
-    solscheme_twoway_monolithic
+    undefined,
+    twoway_partitioned,
+    twoway_monolithic
   };
 
   //! relaxation methods for partitioned coupling

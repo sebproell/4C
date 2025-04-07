@@ -26,48 +26,25 @@ namespace Core::Conditions
 /*----------------------------------------------------------------------*
  |                                                                      |
  *----------------------------------------------------------------------*/
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   /// Type of coupling strategy for poro scatra problems
-  enum SolutionSchemeOverFields
+  enum class SolutionSchemePorofluidElastScatra
   {
-    solscheme_twoway_partitioned_nested,
-    solscheme_twoway_partitioned_sequential,
-    solscheme_twoway_monolithic
-  };
-
-  /// type of finite difference check
-  enum FdCheck
-  {
-    fdcheck_none,
-    fdcheck_global
-  };
-
-  /// type of norm to be calculated
-  enum VectorNorm
-  {
-    norm_undefined,
-    norm_l1,         //!< L1/linear norm
-    norm_l1_scaled,  //!< L1/linear norm scaled by length of vector
-    norm_l2,         //!< L2/Euclidean norm
-    norm_rms,        //!< root mean square (RMS) norm
-    norm_inf         //!< Maximum/infinity norm
-  };
-
-  //! Handling of non-converged nonlinear solver
-  enum DivContAct
-  {
-    divcont_stop,     ///< abort simulation
-    divcont_continue  ///< continue nevertheless
+    twoway_partitioned_nested,
+    twoway_partitioned_sequential,
+    twoway_monolithic
   };
 
   /// set the poromultiphasescatra parameters
-  void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
+  void set_valid_parameters_porofluid_elast_scatra(
+      std::map<std::string, Core::IO::InputSpec>& list);
 
   /// set the poromultiphasescatra conditions
-  void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
+  void set_valid_conditions_porofluid_elast_scatra(
+      std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 

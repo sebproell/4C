@@ -31,45 +31,35 @@ namespace Core::FE
   class Discretization;
 }  // namespace Core::FE
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   class PoroMultiPhaseScaTraBase;
   class PoroMultiPhaseScaTraArtCouplBase;
 
   //! setup discretizations and dofsets
-  std::map<int, std::set<int>> setup_discretizations_and_field_coupling(MPI_Comm comm,
-      const std::string& struct_disname, const std::string& fluid_disname,
+  std::map<int, std::set<int>> setup_discretizations_and_field_coupling_porofluid_elast_scatra(
+      MPI_Comm comm, const std::string& struct_disname, const std::string& fluid_disname,
       const std::string& scatra_disname, int& ndsporo_disp, int& ndsporo_vel,
       int& ndsporo_solidpressure, int& ndsporofluid_scatra, const bool artery_coupl);
 
   //! exchange material pointers of discretizations
-  void assign_material_pointers(const std::string& struct_disname, const std::string& fluid_disname,
-      const std::string& scatra_disname, const bool artery_coupl);
+  void assign_material_pointers_porofluid_elast_scatra(const std::string& struct_disname,
+      const std::string& fluid_disname, const std::string& scatra_disname, const bool artery_coupl);
 
   //! create solution algorithm depending on input file
-  std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase>
-  create_poro_multi_phase_scatra_algorithm(
-      PoroMultiPhaseScaTra::SolutionSchemeOverFields solscheme,  //!< solution scheme to build (i)
-      const Teuchos::ParameterList& timeparams,                  //!< problem parameters (i)
-      MPI_Comm comm                                              //!< communicator(i)
+  std::shared_ptr<PoroMultiPhaseScaTraBase> create_algorithm_porofluid_elast_scatra(
+      SolutionSchemePorofluidElastScatra solscheme,  //!< solution scheme to build (i)
+      const Teuchos::ParameterList& timeparams,      //!< problem parameters (i)
+      MPI_Comm comm                                  //!< communicator(i)
   );
 
   //! create coupling strategy for coupling with 1D network depending on input file
-  std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase>
-  create_and_init_artery_coupling_strategy(std::shared_ptr<Core::FE::Discretization> arterydis,
+  std::shared_ptr<PoroMultiPhaseScaTraArtCouplBase> create_and_init_artery_coupling_strategy(
+      std::shared_ptr<Core::FE::Discretization> arterydis,
       std::shared_ptr<Core::FE::Discretization> contdis,
       const Teuchos::ParameterList& meshtyingparams, const std::string& condname,
       const std::string& artcoupleddofname, const std::string& contcoupleddofname,
       const bool evaluate_on_lateral_surface);
-
-  /**
-   * Determine norm of vector
-   * @param norm [in]: norm to use
-   * @param vect [in]: the vector of interest
-   * @return: the norm
-   */
-  double calculate_vector_norm(
-      const enum PoroMultiPhaseScaTra::VectorNorm norm, const Core::LinAlg::Vector<double>& vect);
 
   /**
    * Get oxygen partial pressure from oxygen concentration via numerical inversion
@@ -112,9 +102,7 @@ namespace PoroMultiPhaseScaTra
       FOUR_C_THROW("local Newton for computation of oxygen partial pressure unconverged");
     }
   }
-  //! Print the logo
-  void print_logo();
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 

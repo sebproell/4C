@@ -106,8 +106,8 @@ void ScaTra::MeshtyingStrategyArtery::init_meshtying()
       });
 
   // init the mesh tying object, which does all the work
-  arttoscatracoupling_ = PoroMultiPhaseScaTra::create_and_init_artery_coupling_strategy(
-      artscatradis_, scatradis_, myscatraparams.sublist("ARTERY COUPLING"), couplingcondname,
+  arttoscatracoupling_ = PoroPressureBased::create_and_init_artery_coupling_strategy(artscatradis_,
+      scatradis_, myscatraparams.sublist("ARTERY COUPLING"), couplingcondname,
       "COUPLEDDOFS_ARTSCATRA", "COUPLEDDOFS_SCATRA", evaluate_on_lateral_surface);
 
   initialize_linear_solver(myscatraparams);

@@ -30,7 +30,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::PoroMultiPhaseScatraArteryCouplingPair()
     : PoroMultiPhaseScatraArteryCouplingPairBase(),
       coupltype_(CouplingType::type_undefined),
@@ -84,7 +84,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distyp
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::init(std::vector<Core::Elements::Element const*> elements,
     const Teuchos::ParameterList& couplingparams, const Teuchos::ParameterList& fluidcouplingparams,
     const std::vector<int>& coupleddofs_cont, const std::vector<int>& coupleddofs_art,
@@ -284,7 +284,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::setup_fluid_managers_and_materials(const std::string disname,
     const double& timefacrhs_art, const double& timefacrhs_cont)
 {
@@ -495,7 +495,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::pre_evaluate(std::shared_ptr<Core::LinAlg::MultiVector<double>> gp_vector)
 {
   if (!isinit_) FOUR_C_THROW("MeshTying Pair has not yet been initialized");
@@ -519,7 +519,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::pre_evaluate_lateral_surface_coupling(Core::LinAlg::MultiVector<double>& gp_vector)
 {
   const int pid =
@@ -635,7 +635,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::pre_evaluate_centerline_coupling()
 {
   // Try to create integration segment [eta_a, eta_b]
@@ -714,7 +714,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::pre_evaluate_node_to_point_coupling()
 {
   xi_.resize(1);
@@ -750,7 +750,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::delete_unnecessary_gps(std::shared_ptr<Core::LinAlg::MultiVector<double>> gp_vector)
 {
   const int mylid = element1_->lid();
@@ -788,7 +788,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::reset_state(std::shared_ptr<Core::FE::Discretization> contdis,
     std::shared_ptr<Core::FE::Discretization> artdis)
 {
@@ -897,13 +897,13 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-double PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
-    dim>::evaluate(Core::LinAlg::SerialDenseVector* forcevec1,
-    Core::LinAlg::SerialDenseVector* forcevec2, Core::LinAlg::SerialDenseMatrix* stiffmat11,
-    Core::LinAlg::SerialDenseMatrix* stiffmat12, Core::LinAlg::SerialDenseMatrix* stiffmat21,
-    Core::LinAlg::SerialDenseMatrix* stiffmat22, Core::LinAlg::SerialDenseMatrix* D_ele,
-    Core::LinAlg::SerialDenseMatrix* M_ele, Core::LinAlg::SerialDenseVector* Kappa_ele,
-    const std::vector<double>& segmentlengths)
+double
+PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont, dim>::evaluate(
+    Core::LinAlg::SerialDenseVector* forcevec1, Core::LinAlg::SerialDenseVector* forcevec2,
+    Core::LinAlg::SerialDenseMatrix* stiffmat11, Core::LinAlg::SerialDenseMatrix* stiffmat12,
+    Core::LinAlg::SerialDenseMatrix* stiffmat21, Core::LinAlg::SerialDenseMatrix* stiffmat22,
+    Core::LinAlg::SerialDenseMatrix* D_ele, Core::LinAlg::SerialDenseMatrix* M_ele,
+    Core::LinAlg::SerialDenseVector* Kappa_ele, const std::vector<double>& segmentlengths)
 {
   if (!ispreevaluated_) FOUR_C_THROW("MeshTying Pair has not yet been pre-evaluated");
 
@@ -985,7 +985,7 @@ double PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art,
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_additional_linearizationof_integrated_diam(Core::LinAlg::SerialDenseMatrix*
                                                                   stiffmat11,
     Core::LinAlg::SerialDenseMatrix* stiffmat12)
@@ -1011,7 +1011,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-int PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+int PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::ele1_gid() const
 {
   return element1_->id();
@@ -1020,7 +1020,7 @@ int PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, di
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-int PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+int PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::ele2_gid() const
 {
   return element2_->id();
@@ -1029,7 +1029,7 @@ int PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, di
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-int PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+int PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::get_segment_id() const
 {
   return segmentid_;
@@ -1038,7 +1038,7 @@ int PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, di
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-double PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+double PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::calculate_vol_2d_3d() const
 {
   // use one-point Gauss rule
@@ -1089,7 +1089,7 @@ double PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art,
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::set_segment_id(const int& segmentid)
 {
   segmentid_ = segmentid;
@@ -1098,7 +1098,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-double PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+double PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::apply_mesh_movement(const bool firstcall,
     std::shared_ptr<Core::FE::Discretization> contdis)
 {
@@ -1159,7 +1159,7 @@ double PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art,
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::recompute_eta_and_xi_in_deformed_configuration(const std::vector<double>& segmentlengths,
     std::vector<double>& myEta, std::vector<std::vector<double>>& myXi, double& etaA, double& etaB)
 {
@@ -1272,7 +1272,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_gpts(const std::vector<double>& eta, const std::vector<std::vector<double>>& xi,
     const std::vector<double>& segmentlengths, Core::LinAlg::SerialDenseVector* forcevec1,
     Core::LinAlg::SerialDenseVector* forcevec2, Core::LinAlg::SerialDenseMatrix* stiffmat11,
@@ -1336,7 +1336,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_ntp(const std::vector<double>& eta, const std::vector<std::vector<double>>& xi,
     Core::LinAlg::SerialDenseVector* forcevec1, Core::LinAlg::SerialDenseVector* forcevec2,
     Core::LinAlg::SerialDenseMatrix* stiffmat11, Core::LinAlg::SerialDenseMatrix* stiffmat12,
@@ -1396,7 +1396,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_dm_kappa(const std::vector<double>& eta,
     const std::vector<std::vector<double>>& xi, const std::vector<double>& segmentlengths,
     Core::LinAlg::SerialDenseMatrix* D_ele, Core::LinAlg::SerialDenseMatrix* M_ele,
@@ -1455,7 +1455,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_function_coupling(const std::vector<double>& eta,
     const std::vector<std::vector<double>>& xi, const std::vector<double>& segmentlengths,
     Core::LinAlg::SerialDenseVector* forcevec1, Core::LinAlg::SerialDenseVector* forcevec2,
@@ -1533,7 +1533,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluated_nds_solid_vel(const std::vector<double>& eta,
     const std::vector<std::vector<double>>& xi, const std::vector<double>& segmentlengths,
     Core::LinAlg::SerialDenseVector& forcevec1, const double& etaA, const double& etaB)
@@ -1612,7 +1612,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_gpts_stiff(const double& w_gp, const Core::LinAlg::Matrix<1, numnodesart_>& N1,
     const Core::LinAlg::Matrix<1, numnodescont_>& N2, const double& jacobi, const double& pp)
 {
@@ -1670,7 +1670,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_ntp_stiff(const Core::LinAlg::Matrix<1, numnodesart_>& N1,
     const Core::LinAlg::Matrix<1, numnodescont_>& N2, const double& pp)
 {
@@ -1728,7 +1728,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_dm_kappa(const double& w_gp, const Core::LinAlg::Matrix<1, numnodesart_>& N1,
     const Core::LinAlg::Matrix<1, numnodescont_>& N2, const double& jacobi)
 {
@@ -1767,7 +1767,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_gptsntp_force(Core::LinAlg::SerialDenseVector& forcevec1,
     Core::LinAlg::SerialDenseVector& forcevec2, const Core::LinAlg::SerialDenseMatrix& stiffmat11,
     const Core::LinAlg::SerialDenseMatrix& stiffmat12,
@@ -1792,7 +1792,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::update_gptsntp_stiff(Core::LinAlg::SerialDenseMatrix& stiffmat11,
     Core::LinAlg::SerialDenseMatrix& stiffmat12, Core::LinAlg::SerialDenseMatrix& stiffmat21,
     Core::LinAlg::SerialDenseMatrix& stiffmat22)
@@ -1807,7 +1807,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::check_valid_volume_fraction_pressure_coupling(Core::LinAlg::SerialDenseMatrix& stiffmat11,
     Core::LinAlg::SerialDenseMatrix& stiffmat12, Core::LinAlg::SerialDenseMatrix& stiffmat21,
     Core::LinAlg::SerialDenseMatrix& stiffmat22)
@@ -1853,7 +1853,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::update_dm_kappa(Core::LinAlg::SerialDenseMatrix& D_ele,
     Core::LinAlg::SerialDenseMatrix& M_ele, Core::LinAlg::SerialDenseVector& Kappa_ele)
 {
@@ -1886,7 +1886,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_function_coupling(const double& w_gp,
     const Core::LinAlg::Matrix<1, numnodesart_>& N1,
     const Core::LinAlg::Matrix<1, numnodescont_>& N2, const double& jacobi,
@@ -1952,7 +1952,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_diam_function_and_deriv(const double artpressnpAtGP, const double& w_gp,
     const Core::LinAlg::Matrix<1, numnodesart_>& N1,
     const Core::LinAlg::Matrix<1, numnodescont_>& N2, const double& jacobi)
@@ -2041,7 +2041,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::set_time_fac_rhs(const double& arterydensity, Mat::MatList& contscatramat,
     const double& timefacrhs_art, const double& timefacrhs_cont)
 {
@@ -2116,7 +2116,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::extract_solid_vel(Core::FE::Discretization& contdis)
 {
   // no need for this
@@ -2141,7 +2141,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-FAD PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+FAD PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::integrate_length_to_eta_s(const FAD& eta_s)
 {
   FAD length = 0.0;
@@ -2224,7 +2224,7 @@ FAD PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, di
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::get_artery_values_at_gp(const Core::LinAlg::Matrix<1, numnodesart_>& N1, double& artpress,
     std::vector<double>& artscalar)
 {
@@ -2259,7 +2259,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::get_cont_scalar_values_at_gp(const Core::LinAlg::Matrix<1, numnodescont_>& N2,
     std::vector<double>& contscalarnp)
 {
@@ -2292,7 +2292,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::assemble_function_coupling_into_force_stiff_art(const int& i_art, const double& w_gp,
     const Core::LinAlg::Matrix<1, numnodesart_>& N1,
     const Core::LinAlg::Matrix<1, numnodescont_>& N2, const double& jacobi, const int& scale,
@@ -2325,7 +2325,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::assemble_function_coupling_into_force_stiff_cont(const std::vector<int>& assembleInto,
     const double& w_gp, const Core::LinAlg::Matrix<1, numnodesart_>& N1,
     const Core::LinAlg::Matrix<1, numnodescont_>& N2, const double& jacobi, const int& scale,
@@ -2373,7 +2373,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_function_and_deriv(const Core::Utils::FunctionOfAnything& funct,
     const double& artpressnpAtGP, const std::vector<double>& artscalarnpAtGP,
     const std::vector<double>& scalarnpAtGP, double& functval, std::vector<double>& artderivs,
@@ -2453,7 +2453,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::set_scalar_values_as_constants(std::vector<std::pair<std::string, double>>& constants,
     const std::vector<double>& artscalarnpAtGP, const std::vector<double>& scalarnpAtGP)
 {
@@ -2469,7 +2469,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::set_fluid_values_as_variables(std::vector<std::pair<std::string, double>>& variables,
     const double& artpressnpAtGP)
 {
@@ -2503,7 +2503,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::set_fluid_values_as_constants(std::vector<std::pair<std::string, double>>& constants,
     const double& artpressnpAtGP)
 {
@@ -2547,7 +2547,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::set_scalar_values_as_variables(std::vector<std::pair<std::string, double>>& variables,
     const std::vector<double>& artscalarnpAtGP, const std::vector<double>& scalarnpAtGP)
 {
@@ -2563,7 +2563,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_fluid_derivs(std::vector<double>& artderivs, std::vector<double>& contderivs,
     const std::vector<double>& functderivs)
 {
@@ -2618,7 +2618,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::evaluate_scalar_derivs(std::vector<double>& artderivs, std::vector<double>& contderivs,
     const std::vector<double>& functderivs)
 {
@@ -2633,7 +2633,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::create_integration_segment()
 {
   if (PROJOUTPUT)
@@ -2810,7 +2810,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-std::vector<double> PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art,
+std::vector<double> PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art,
     distype_cont, dim>::get_all_inter_sections()
 {
   std::vector<double> intersections(0);
@@ -2880,7 +2880,7 @@ std::vector<double> PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-bool PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+bool PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::projection_not_yet_found(const std::vector<double>& intersections, const double& eta)
 {
   for (unsigned int i = 0; i < intersections.size(); i++)
@@ -2897,7 +2897,7 @@ bool PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::inter_sect_with_2d_3d(std::vector<double>& xi, double& eta, const int& fixedPar,
     const double& fixedAt, bool& projection_valid)
 {
@@ -3260,7 +3260,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
 template <typename T>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::projection(Core::LinAlg::Matrix<numdim_, 1, T>& r1, std::vector<T>& xi,
     bool& projection_valid)
 {
@@ -3523,7 +3523,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
 template <typename T>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::get_1d_shape_functions(Core::LinAlg::Matrix<1, numnodesart_, T>& N1,
     Core::LinAlg::Matrix<1, numnodesart_, T>& N1_eta, const T& eta)
 {
@@ -3545,7 +3545,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
 template <typename T>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::get_2d_3d_shape_functions(Core::LinAlg::Matrix<1, numnodescont_, T>& N2,
     Core::LinAlg::Matrix<numdim_, numnodescont_, T>& N2_xi, const std::vector<T>& xi)
 {
@@ -3582,7 +3582,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
  *------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
 template <typename T>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::compute_artery_coords_and_derivs_ref(Core::LinAlg::Matrix<numdim_, 1, T>& r1,
     Core::LinAlg::Matrix<numdim_, 1, T>& r1_eta, const Core::LinAlg::Matrix<1, numnodesart_, T>& N1,
     const Core::LinAlg::Matrix<1, numnodesart_, T>& N1_eta)
@@ -3605,7 +3605,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
  *------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
 template <typename T>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::compute_2d_3d_coords_and_derivs_ref(Core::LinAlg::Matrix<numdim_, 1, T>& x2,
     Core::LinAlg::Matrix<numdim_, numdim_, T>& x2_xi,
     const Core::LinAlg::Matrix<1, numnodescont_, T>& N2,
@@ -3630,7 +3630,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::fill_function_vector(std::vector<const Core::Utils::FunctionOfAnything*>& my_funct_vec,
     const std::vector<int>& funct_vec, const std::vector<int>& scale_vec)
 {
@@ -3651,7 +3651,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::initialize_function(const Core::Utils::FunctionOfAnything& funct)
 {
   // safety check
@@ -3662,7 +3662,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::initialize_function_names()
 {
   pressurenames_.resize(numfluidphases_);
@@ -3730,7 +3730,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int dim>
-void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
+void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::initialize_assemble_into_cont_dof_vector()
 {
   cont_dofs_to_assemble_functions_into_.resize(numdof_cont_);
@@ -3766,31 +3766,31 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<distype_art, d
 
 
 // explicit template instantiations
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::quad4, 1>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::hex8, 1>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::tet4, 1>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::tet10, 1>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::quad4, 1>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::hex8, 1>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::tet4, 1>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::tet10, 1>;
 
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::quad4, 2>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::hex8, 2>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::tet4, 2>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::tet10, 2>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::quad4, 2>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::hex8, 2>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::tet4, 2>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::tet10, 2>;
 
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::quad4, 3>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::hex8, 3>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::tet4, 3>;
-template class PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPair<
-    Core::FE::CellType::line2, Core::FE::CellType::tet10, 3>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::quad4, 3>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::hex8, 3>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::tet4, 3>;
+template class PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<Core::FE::CellType::line2,
+    Core::FE::CellType::tet10, 3>;
 
 FOUR_C_NAMESPACE_CLOSE

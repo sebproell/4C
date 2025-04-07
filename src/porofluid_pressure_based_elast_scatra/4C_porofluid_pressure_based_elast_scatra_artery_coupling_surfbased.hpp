@@ -15,7 +15,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   // forward declaration
   class PoroMultiPhaseScatraArteryCouplingPairBase;
@@ -84,7 +84,7 @@ namespace PoroMultiPhaseScaTra
     //! print out the coupling method
     void print_out_coupling_method() const override;
   };
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

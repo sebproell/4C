@@ -206,7 +206,7 @@ void ScaTra::ScaTraTimIntPoroMulti::collect_runtime_output_data()
           // compute CaO2
           const double CaO2 = (*phinp_)[lidoxydof] * rho_bl / rho_oxy;
           // compute Pb
-          PoroMultiPhaseScaTra::get_oxy_partial_pressure_from_concentration<double>(
+          PoroPressureBased::get_oxy_partial_pressure_from_concentration<double>(
               Pb, CaO2, CaO2_max, Pb50, n, alpha_eff);
           // replace value
           oxypartpress.replace_global_value(node->id(), 0, Pb);

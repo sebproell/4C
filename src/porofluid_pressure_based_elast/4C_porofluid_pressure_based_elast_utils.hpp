@@ -27,19 +27,19 @@ namespace Core::FE
 namespace PoroPressureBased
 {
   /// setup discretizations and dofsets
-  std::map<int, std::set<int>> setup_discretizations_and_field_coupling(MPI_Comm comm,
-      const std::string& struct_disname, const std::string& fluid_disname, int& nds_disp,
-      int& nds_vel, int& nds_solidpressure);
+  std::map<int, std::set<int>> setup_discretizations_and_field_coupling_porofluid_elast(
+      MPI_Comm comm, const std::string& struct_disname, const std::string& fluid_disname,
+      int& nds_disp, int& nds_vel, int& nds_solidpressure);
 
   //! exchange material pointers of both discretizations
-  void assign_material_pointers(
+  void assign_material_pointers_porofluid_elast(
       const std::string& struct_disname, const std::string& fluid_disname);
 
   /// create solution algorithm depending on input file
-  std::shared_ptr<PoroPressureBased::PoroMultiPhase> create_poro_multi_phase_algorithm(
-      PoroPressureBased::SolutionSchemeOverFields solscheme,  //!< solution scheme to build (i)
-      const Teuchos::ParameterList& timeparams,               //!< problem parameters (i)
-      MPI_Comm comm                                           //!< communicator(i)
+  std::shared_ptr<PoroMultiPhase> create_algorithm_porofluid_elast(
+      SolutionSchemePorofluidElast solscheme,    //!< solution scheme to build (i)
+      const Teuchos::ParameterList& timeparams,  //!< problem parameters (i)
+      MPI_Comm comm                              //!< communicator(i)
   );
 }  // namespace PoroPressureBased
 

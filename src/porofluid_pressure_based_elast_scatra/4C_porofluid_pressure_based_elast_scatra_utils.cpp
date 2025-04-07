@@ -30,47 +30,46 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase>
-PoroMultiPhaseScaTra::create_poro_multi_phase_scatra_algorithm(
-    PoroMultiPhaseScaTra::SolutionSchemeOverFields solscheme,
+std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraBase>
+PoroPressureBased::create_algorithm_porofluid_elast_scatra(
+    PoroPressureBased::SolutionSchemePorofluidElastScatra solscheme,
     const Teuchos::ParameterList& timeparams, MPI_Comm comm)
 {
   // Creation of Coupled Problem algorithm.
-  std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase> algo;
+  std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraBase> algo;
 
   switch (solscheme)
   {
-    case PoroMultiPhaseScaTra::solscheme_twoway_partitioned_nested:
+    case SolutionSchemePorofluidElastScatra::twoway_partitioned_nested:
     {
       // call constructor
-      algo = std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraPartitionedTwoWayNested>(
+      algo = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraPartitionedTwoWayNested>(
           comm, timeparams);
       break;
     }
-    case PoroMultiPhaseScaTra::solscheme_twoway_partitioned_sequential:
+    case SolutionSchemePorofluidElastScatra::twoway_partitioned_sequential:
     {
       // call constructor
-      algo =
-          std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraPartitionedTwoWaySequential>(
-              comm, timeparams);
+      algo = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraPartitionedTwoWaySequential>(
+          comm, timeparams);
       break;
     }
-    case PoroMultiPhaseScaTra::solscheme_twoway_monolithic:
+    case SolutionSchemePorofluidElastScatra::twoway_monolithic:
     {
       const bool artery_coupl = timeparams.get<bool>("ARTERY_COUPLING");
       if (!artery_coupl)
       {
         // call constructor
-        algo = std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWay>(
+        algo = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraMonolithicTwoWay>(
             comm, timeparams);
       }
       else
       {
         // call constructor
-        algo = std::make_shared<
-            PoroMultiPhaseScaTra::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling>(
+        algo =
+            std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling>(
 
-            comm, timeparams);
+                comm, timeparams);
       }
       break;
     }
@@ -84,8 +83,8 @@ PoroMultiPhaseScaTra::create_poro_multi_phase_scatra_algorithm(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase>
-PoroMultiPhaseScaTra::create_and_init_artery_coupling_strategy(
+std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase>
+PoroPressureBased::create_and_init_artery_coupling_strategy(
     std::shared_ptr<Core::FE::Discretization> arterydis,
     std::shared_ptr<Core::FE::Discretization> contdis,
     const Teuchos::ParameterList& meshtyingparams, const std::string& condname,
@@ -93,7 +92,7 @@ PoroMultiPhaseScaTra::create_and_init_artery_coupling_strategy(
     const bool evaluate_on_lateral_surface)
 {
   // Creation of coupling strategy.
-  std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase> strategy;
+  std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase> strategy;
 
   auto arterycoupl =
       Teuchos::getIntegralValue<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
@@ -105,22 +104,22 @@ PoroMultiPhaseScaTra::create_and_init_artery_coupling_strategy(
     case Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp:
     {
       if (evaluate_on_lateral_surface)
-        strategy = std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased>(
+        strategy = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased>(
             arterydis, contdis, meshtyingparams, condname, artcoupleddofname, contcoupleddofname);
       else
-        strategy = std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplLineBased>(
+        strategy = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased>(
             arterydis, contdis, meshtyingparams, condname, artcoupleddofname, contcoupleddofname);
       break;
     }
     case Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::nodal:
     {
-      strategy = std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased>(
+      strategy = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased>(
           arterydis, contdis, meshtyingparams, condname, artcoupleddofname, contcoupleddofname);
       break;
     }
     case Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp:
     {
-      strategy = std::make_shared<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint>(
+      strategy = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint>(
           arterydis, contdis, meshtyingparams, condname, artcoupleddofname, contcoupleddofname);
       break;
     }
@@ -139,8 +138,9 @@ PoroMultiPhaseScaTra::create_and_init_artery_coupling_strategy(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::map<int, std::set<int>> PoroMultiPhaseScaTra::setup_discretizations_and_field_coupling(
-    MPI_Comm comm, const std::string& struct_disname, const std::string& fluid_disname,
+std::map<int, std::set<int>>
+PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast_scatra(MPI_Comm comm,
+    const std::string& struct_disname, const std::string& fluid_disname,
     const std::string& scatra_disname, int& ndsporo_disp, int& ndsporo_vel,
     int& ndsporo_solidpressure, int& ndsporofluid_scatra, const bool artery_coupl)
 {
@@ -152,7 +152,7 @@ std::map<int, std::set<int>> PoroMultiPhaseScaTra::setup_discretizations_and_fie
   // artery_scatra discretization is cloned from artery discretization
 
   std::map<int, std::set<int>> nearbyelepairs =
-      PoroPressureBased::setup_discretizations_and_field_coupling(
+      PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(
           comm, struct_disname, fluid_disname, ndsporo_disp, ndsporo_vel, ndsporo_solidpressure);
 
   Global::Problem* problem = Global::Problem::instance();
@@ -235,10 +235,11 @@ std::map<int, std::set<int>> PoroMultiPhaseScaTra::setup_discretizations_and_fie
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::assign_material_pointers(const std::string& struct_disname,
-    const std::string& fluid_disname, const std::string& scatra_disname, const bool artery_coupl)
+void PoroPressureBased::assign_material_pointers_porofluid_elast_scatra(
+    const std::string& struct_disname, const std::string& fluid_disname,
+    const std::string& scatra_disname, const bool artery_coupl)
 {
-  PoroPressureBased::assign_material_pointers(struct_disname, fluid_disname);
+  PoroPressureBased::assign_material_pointers_porofluid_elast(struct_disname, fluid_disname);
 
   Global::Problem* problem = Global::Problem::instance();
 
@@ -256,83 +257,6 @@ void PoroMultiPhaseScaTra::assign_material_pointers(const std::string& struct_di
 
     Arteries::Utils::set_material_pointers_matching_grid(*arterydis, *artscatradis);
   }
-}
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-double PoroMultiPhaseScaTra::calculate_vector_norm(
-    const enum PoroMultiPhaseScaTra::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
-{
-  // L1 norm
-  // norm = sum_0^i vect[i]
-  if (norm == PoroMultiPhaseScaTra::norm_l1)
-  {
-    double vectnorm;
-    vect.norm_1(&vectnorm);
-    return vectnorm;
-  }
-  // L2/Euclidian norm
-  // norm = sqrt{sum_0^i vect[i]^2 }
-  else if (norm == PoroMultiPhaseScaTra::norm_l2)
-  {
-    double vectnorm;
-    vect.norm_2(&vectnorm);
-    return vectnorm;
-  }
-  // RMS norm
-  // norm = sqrt{sum_0^i vect[i]^2 }/ sqrt{length_vect}
-  else if (norm == PoroMultiPhaseScaTra::norm_rms)
-  {
-    double vectnorm;
-    vect.norm_2(&vectnorm);
-    return vectnorm / sqrt((double)vect.global_length());
-  }
-  // infinity/maximum norm
-  // norm = max( vect[i] )
-  else if (norm == PoroMultiPhaseScaTra::norm_inf)
-  {
-    double vectnorm;
-    vect.norm_inf(&vectnorm);
-    return vectnorm;
-  }
-  // norm = sum_0^i vect[i]/length_vect
-  else if (norm == PoroMultiPhaseScaTra::norm_l1_scaled)
-  {
-    double vectnorm;
-    vect.norm_1(&vectnorm);
-    return vectnorm / ((double)vect.global_length());
-  }
-  else
-  {
-    FOUR_C_THROW("Cannot handle vector norm");
-    return 0;
-  }
-}  // calculate_vector_norm()
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::print_logo()
-{
-  std::cout
-      << "This is a Porous Media problem with multiphase flow and deformation and scalar transport"
-      << std::endl;
-  std::cout << "" << std::endl;
-  std::cout << "              +----------+" << std::endl;
-  std::cout << "              |  Krebs-  |" << std::endl;
-  std::cout << "              |  Model  |" << std::endl;
-  std::cout << "              +----------+" << std::endl;
-  std::cout << "              |          |" << std::endl;
-  std::cout << "              |          |" << std::endl;
-  std::cout << " /\\           |          /\\" << std::endl;
-  std::cout << "( /   @ @    (|)        ( /   @ @    ()" << std::endl;
-  std::cout << " \\  __| |__  /           \\  __| |__  /" << std::endl;
-  std::cout << "  \\/   \"   \\/             \\/   \"   \\/" << std::endl;
-  std::cout << " /-|       |-\\           /-|       |-\\" << std::endl;
-  std::cout << "/ /-\\     /-\\ \\         / /-\\     /-\\ \\" << std::endl;
-  std::cout << " / /-`---'-\\ \\           / /-`---'-\\ \\" << std::endl;
-  std::cout << "  /         \\             /         \\" << std::endl;
-
-  return;
 }
 
 FOUR_C_NAMESPACE_CLOSE

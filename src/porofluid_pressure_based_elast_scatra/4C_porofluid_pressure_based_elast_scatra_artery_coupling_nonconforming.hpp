@@ -26,7 +26,7 @@ namespace Core::LinAlg
 {
   class SerialDenseVector;
 }
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   // forward declaration
   class PoroMultiPhaseScatraArteryCouplingPairBase;
@@ -101,7 +101,7 @@ namespace PoroMultiPhaseScaTra
     double delete_free_hanging_eles_threshold_;
 
     //! interacting pairs of artery and continuous-discretization elements
-    std::vector<std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPairBase>>
+    std::vector<std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>
         coupl_elepairs_;
 
     //! vector with 1D coupling nodes for ntp coupling
@@ -182,7 +182,7 @@ namespace PoroMultiPhaseScaTra
 
     //! return appropriate internal implementation class (acts as a simple factory to create single
     //! pairs)
-    static std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPairBase>
+    static std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>
     create_new_artery_coupling_pair(std::vector<Core::Elements::Element const*> const& ele_ptrs);
 
     //! set the artery diameter in material to be able to use it on 1D discretization
@@ -235,7 +235,7 @@ namespace PoroMultiPhaseScaTra
     //! coupling rhs-vector (FE)
     std::shared_ptr<Epetra_FEVector> fe_rhs_;
   };
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

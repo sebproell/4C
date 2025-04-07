@@ -26,7 +26,7 @@ namespace
     void SetUp() override
     {
       // function parameters
-      const auto& parameters = PoroMultiPhaseScaTra::LungOxygenExchangeLawParameters{
+      const auto& parameters = PoroPressureBased::LungOxygenExchangeLawParameters{
           .rho_oxy = 1.429e-9,
           .DiffAdVTLC = 5.36,
           .alpha_oxy = 2.1e-4,
@@ -41,10 +41,10 @@ namespace
 
       // construct LungOxygenExchangeLaw
       LungOxygenExchangeLaw_ =
-          std::make_unique<PoroMultiPhaseScaTra::LungOxygenExchangeLaw<3>>(parameters);
+          std::make_unique<PoroPressureBased::LungOxygenExchangeLaw<3>>(parameters);
     }
 
-    std::unique_ptr<PoroMultiPhaseScaTra::LungOxygenExchangeLaw<3>> LungOxygenExchangeLaw_;
+    std::unique_ptr<PoroPressureBased::LungOxygenExchangeLaw<3>> LungOxygenExchangeLaw_;
   };
 
   class LungCarbonDioxideExchangeLawTest : public ::testing::Test
@@ -53,7 +53,7 @@ namespace
     void SetUp() override
     {
       // function parameters
-      const auto& parameters = PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLawParameters{
+      const auto& parameters = PoroPressureBased::LungCarbonDioxideExchangeLawParameters{
           .rho_CO2 = 1.98e-9,
           .DiffsolAdVTLC = 4.5192e-3,
           .pH = 7.352,
@@ -72,10 +72,10 @@ namespace
 
       // construct LungCarbonDioxideExchangeLaw
       LungCarbonDioxideExchangeLaw_ =
-          std::make_unique<PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<3>>(parameters);
+          std::make_unique<PoroPressureBased::LungCarbonDioxideExchangeLaw<3>>(parameters);
     }
 
-    std::unique_ptr<PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<3>>
+    std::unique_ptr<PoroPressureBased::LungCarbonDioxideExchangeLaw<3>>
         LungCarbonDioxideExchangeLaw_;
   };
 

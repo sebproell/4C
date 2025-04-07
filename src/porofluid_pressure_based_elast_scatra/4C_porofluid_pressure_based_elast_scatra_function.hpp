@@ -23,7 +23,7 @@ namespace Core::Utils
   class FunctionManager;
 }
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   /*!
    * @brief abstract class derived from FunctionOfAnything since reaction functions are cast to
@@ -465,7 +465,7 @@ namespace PoroMultiPhaseScaTra
     const LungCarbonDioxideExchangeLawParameters parameters_;
   };
 
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 FOUR_C_NAMESPACE_CLOSE
 

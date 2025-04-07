@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::PoroMultiPhaseScaTraArtCouplBase(
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase::PoroMultiPhaseScaTraArtCouplBase(
     std::shared_ptr<Core::FE::Discretization> arterydis,
     std::shared_ptr<Core::FE::Discretization> contdis, const Teuchos::ParameterList& couplingparams,
     const std::string& condname, const std::string& artcoupleddofname,
@@ -82,7 +82,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::PoroMultiPhaseScaTraArtC
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::recompute_coupled_do_fs_for_ntp(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase::recompute_coupled_do_fs_for_ntp(
     std::vector<Core::Conditions::Condition*> coupcond, unsigned int couplingnode)
 {
   coupleddofs_art_ =
@@ -99,7 +99,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::recompute_coupled_d
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 const std::shared_ptr<const Core::LinAlg::Map>&
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::full_map() const
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase::full_map() const
 {
   return globalex_->full_map();
 }
@@ -107,14 +107,14 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::full_map() const
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 const std::shared_ptr<Core::LinAlg::MultiMapExtractor>&
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::global_extractor() const
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase::global_extractor() const
 {
   return globalex_;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::set_solution_vectors(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase::set_solution_vectors(
     std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_cont,
     std::shared_ptr<const Core::LinAlg::Vector<double>> phin_cont,
     std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_art)
@@ -124,7 +124,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::set_solution_vector
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase::set_nearby_ele_pairs(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase::set_nearby_ele_pairs(
     const std::map<int, std::set<int>>* nearbyelepairs)
 {
   // do nothing

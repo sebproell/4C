@@ -17,7 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::PoroMultiPhaseScaTraArtCouplSurfBased(
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::PoroMultiPhaseScaTraArtCouplSurfBased(
     std::shared_ptr<Core::FE::Discretization> arterydis,
     std::shared_ptr<Core::FE::Discretization> contdis, const Teuchos::ParameterList& couplingparams,
     const std::string& condname, const std::string& artcoupleddofname,
@@ -38,7 +38,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::PoroMultiPhaseScaTr
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_coupling_pairs()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_coupling_pairs()
 {
   const int numpatch_axi = Global::Problem::instance()
                                ->poro_fluid_multi_phase_dynamic_params()
@@ -164,10 +164,10 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_c
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::setup()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::setup()
 {
   // call base class
-  PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::setup();
+  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup();
 
   // error-checks
   if (has_varying_diam_)
@@ -180,7 +180,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::setup()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::evaluate(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::evaluate(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
@@ -193,12 +193,12 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::evaluate(
   }
 
   // call base class
-  PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate(sysmat, rhs);
+  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate(sysmat, rhs);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::setup_system(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::setup_system(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs,
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_cont,
@@ -209,14 +209,14 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::setup_system(
     std::shared_ptr<const Core::LinAlg::MapExtractor> dbcmap_art)
 {
   // call base class
-  PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::setup_system(*sysmat, rhs,
+  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup_system(*sysmat, rhs,
       *sysmat_cont, *sysmat_art, rhs_cont, rhs_art, *dbcmap_cont, *dbcmap_art->cond_map(),
       *dbcmap_art->cond_map());
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::apply_mesh_movement()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::apply_mesh_movement()
 {
   if (!evaluate_in_ref_config_)
     FOUR_C_THROW("Evaluation in current configuration not possible for surface-based coupling");
@@ -225,7 +225,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::apply_mesh_mov
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::blood_vessel_volume_fraction()
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::blood_vessel_volume_fraction()
 {
   FOUR_C_THROW("Output of vessel volume fraction not possible for surface-based coupling");
 
@@ -235,7 +235,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::blood_vessel_volume
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplSurfBased::print_out_coupling_method() const
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::print_out_coupling_method() const
 {
   std::cout << "<   surface-based formulation                      >" << std::endl;
   PoroMultiPhaseScaTraArtCouplNonConforming::print_out_coupling_method();

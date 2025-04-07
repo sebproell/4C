@@ -15,7 +15,7 @@
 #include <string>
 
 FOUR_C_NAMESPACE_OPEN
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   /*!
    *  @brief struct for managing the parameters of the POROMULTIPHASESCATRA_FUNCTION
@@ -144,7 +144,7 @@ namespace PoroMultiPhaseScaTra
     double ScalingFormmHg{};
     double volfrac_blood_ref{};
   };
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

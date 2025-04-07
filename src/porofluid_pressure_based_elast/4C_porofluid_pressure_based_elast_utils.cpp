@@ -26,9 +26,10 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | setup discretizations and dofsets                         vuong 08/16 |
  *----------------------------------------------------------------------*/
-std::map<int, std::set<int>> PoroPressureBased::setup_discretizations_and_field_coupling(
-    MPI_Comm comm, const std::string& struct_disname, const std::string& fluid_disname,
-    int& nds_disp, int& nds_vel, int& nds_solidpressure)
+std::map<int, std::set<int>>
+PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(MPI_Comm comm,
+    const std::string& struct_disname, const std::string& fluid_disname, int& nds_disp,
+    int& nds_vel, int& nds_solidpressure)
 {
   // Scheme   : the structure discretization is received from the input.
   //            Then, a poro fluid disc. is cloned.
@@ -138,7 +139,7 @@ std::map<int, std::set<int>> PoroPressureBased::setup_discretizations_and_field_
 /*----------------------------------------------------------------------*
  | exchange material pointers of both discretizations       vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::assign_material_pointers(
+void PoroPressureBased::assign_material_pointers_porofluid_elast(
     const std::string& struct_disname, const std::string& fluid_disname)
 {
   Global::Problem* problem = Global::Problem::instance();
@@ -153,22 +154,22 @@ void PoroPressureBased::assign_material_pointers(
  | create algorithm                                                      |
  *----------------------------------------------------------------------*/
 std::shared_ptr<PoroPressureBased::PoroMultiPhase>
-PoroPressureBased::create_poro_multi_phase_algorithm(
-    PoroPressureBased::SolutionSchemeOverFields solscheme, const Teuchos::ParameterList& timeparams,
-    MPI_Comm comm)
+PoroPressureBased::create_algorithm_porofluid_elast(
+    PoroPressureBased::SolutionSchemePorofluidElast solscheme,
+    const Teuchos::ParameterList& timeparams, MPI_Comm comm)
 {
   // Creation of Coupled Problem algorithm.
   std::shared_ptr<PoroPressureBased::PoroMultiPhase> algo = nullptr;
 
   switch (solscheme)
   {
-    case PoroPressureBased::solscheme_twoway_partitioned:
+    case SolutionSchemePorofluidElast::twoway_partitioned:
     {
       // call constructor
       algo = std::make_shared<PoroPressureBased::PoroMultiPhasePartitionedTwoWay>(comm, timeparams);
       break;
     }
-    case PoroPressureBased::solscheme_twoway_monolithic:
+    case SolutionSchemePorofluidElast::twoway_monolithic:
     {
       const bool artery_coupl = timeparams.get<bool>("ARTERY_COUPLING");
       if (!artery_coupl)

@@ -86,8 +86,8 @@ PoroPressureBased::MeshtyingStrategyArtery::MeshtyingStrategyArtery(
       });
 
   // initialize mesh tying object
-  arttoporofluidcoupling_ = PoroMultiPhaseScaTra::create_and_init_artery_coupling_strategy(
-      arterydis_, porofluidmultitimint->discretization(), poroparams.sublist("ARTERY COUPLING"),
+  arttoporofluidcoupling_ = PoroPressureBased::create_and_init_artery_coupling_strategy(arterydis_,
+      porofluidmultitimint->discretization(), poroparams.sublist("ARTERY COUPLING"),
       couplingcondname, "COUPLEDDOFS_ART", "COUPLEDDOFS_PORO", evaluate_on_lateral_surface);
 
   // Initialize rhs vector

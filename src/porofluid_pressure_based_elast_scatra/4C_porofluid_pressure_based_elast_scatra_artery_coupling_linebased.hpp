@@ -16,7 +16,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   // forward declaration
   class PoroMultiPhaseScatraArteryCouplingPairBase;
@@ -68,7 +68,7 @@ namespace PoroMultiPhaseScaTra
     //! fill the GID to segment vector
     void fill_gid_to_segment_vector(
         const std::vector<std::shared_ptr<
-            PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
         std::map<int, std::vector<double>>& gid_to_seglength);
 
     //! set the artery diameter in column based vector
@@ -144,13 +144,13 @@ namespace PoroMultiPhaseScaTra
     //! check for duplicate segment
     bool is_duplicate_segment(
         const std::vector<std::shared_ptr<
-            PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
-        PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPairBase& possible_duplicate);
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
+        PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase& possible_duplicate);
 
     //! check for identical segment
     bool is_identical_segment(
         const std::vector<std::shared_ptr<
-            PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
         const int& ele1gid, const double& etaA, const double& etaB, int& elepairID);
 
     //! set flag if varying diameter has to be calculated
@@ -197,7 +197,7 @@ namespace PoroMultiPhaseScaTra
     //!  porofluid-problems)
     std::map<int, std::vector<double>> gid_to_seglength_;
   };
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 FOUR_C_NAMESPACE_CLOSE
 

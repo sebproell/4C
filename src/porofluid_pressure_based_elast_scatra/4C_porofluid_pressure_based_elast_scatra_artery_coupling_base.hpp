@@ -24,7 +24,7 @@ namespace Core::FE
   class Discretization;
 }  // namespace Core::FE
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   //! base class for coupling between artery network and poromultiphasescatra algorithm
   class PoroMultiPhaseScaTraArtCouplBase
@@ -163,7 +163,7 @@ namespace PoroMultiPhaseScaTra
     MPI_Comm comm_;
   };
 
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 

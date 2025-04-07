@@ -15,7 +15,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 // forward declaration
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   class PoroMultiPhaseScaTraArtCouplBase;
 }
@@ -110,7 +110,7 @@ namespace PoroPressureBased
     std::shared_ptr<Core::FE::Discretization> arterydis_;
 
     //! the mesh tying object
-    std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase> arttoporofluidcoupling_;
+    std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase> arttoporofluidcoupling_;
 
     //! block systemmatrix
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> comb_systemmatrix_;

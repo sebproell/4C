@@ -39,7 +39,7 @@ namespace ScaTra
   class MeshtyingStrategyArtery;
 }
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   //! Base class of all solid-scatra algorithms
   class PoroMultiPhaseScaTraBase : public Adapter::AlgorithmBase
@@ -134,7 +134,7 @@ namespace PoroMultiPhaseScaTra
 
    protected:
     //! what to do when nonlinear solution fails
-    enum PoroMultiPhaseScaTra::DivContAct divcontype_;
+    enum PoroPressureBased::DivContAct divcontype_;
     //! do we perform coupling with 1D artery
     const bool artery_coupl_;
 
@@ -146,7 +146,7 @@ namespace PoroMultiPhaseScaTra
   };  // PoroMultiPhaseScaTraBase
 
 
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 

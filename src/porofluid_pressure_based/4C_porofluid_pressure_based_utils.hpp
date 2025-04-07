@@ -142,8 +142,6 @@ namespace PoroPressureBased
   std::shared_ptr<Core::FE::Discretization> create_fully_overlapping_artery_discretization(
       Core::FE::Discretization& artdis, std::string disname, bool doboundaryconditions);
 
-  // Print the logo
-  void print_logo();
 }  // namespace PoroPressureBased
 
 

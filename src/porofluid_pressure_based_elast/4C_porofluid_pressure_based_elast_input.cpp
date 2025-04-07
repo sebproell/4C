@@ -50,13 +50,13 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast(
 
 
           // Coupling strategy for solvers
-          deprecated_selection<SolutionSchemeOverFields>("COUPALGO",
+          deprecated_selection<SolutionSchemePorofluidElast>("COUPALGO",
               {
-                  {"twoway_partitioned", solscheme_twoway_partitioned},
-                  {"twoway_monolithic", solscheme_twoway_monolithic},
+                  {"twoway_partitioned", SolutionSchemePorofluidElast::twoway_partitioned},
+                  {"twoway_monolithic", SolutionSchemePorofluidElast::twoway_monolithic},
               },
               {.description = "Coupling strategies for poro multiphase solvers",
-                  .default_value = solscheme_twoway_partitioned}),
+                  .default_value = SolutionSchemePorofluidElast::twoway_partitioned}),
 
           // coupling with 1D artery network active
           parameter<bool>("ARTERY_COUPLING",

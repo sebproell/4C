@@ -17,11 +17,11 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::
-    PoroMultiPhaseScaTraArtCouplNodeToPoint(std::shared_ptr<Core::FE::Discretization> arterydis,
-        std::shared_ptr<Core::FE::Discretization> contdis,
-        const Teuchos::ParameterList& couplingparams, const std::string& condname,
-        const std::string& artcoupleddofname, const std::string& contcoupleddofname)
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::PoroMultiPhaseScaTraArtCouplNodeToPoint(
+    std::shared_ptr<Core::FE::Discretization> arterydis,
+    std::shared_ptr<Core::FE::Discretization> contdis, const Teuchos::ParameterList& couplingparams,
+    const std::string& condname, const std::string& artcoupleddofname,
+    const std::string& contcoupleddofname)
     : PoroMultiPhaseScaTraArtCouplNonConforming(
           arterydis, contdis, couplingparams, condname, artcoupleddofname, contcoupleddofname)
 {
@@ -39,10 +39,10 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::setup()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::setup()
 {
   // call base class
-  PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::setup();
+  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup();
 
 
   // preevaluate coupling pairs
@@ -63,7 +63,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::setup()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::pre_evaluate_coupling_pairs()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::pre_evaluate_coupling_pairs()
 {
   // pre-evaluate
   for (auto& coupl_elepair : coupl_elepairs_) coupl_elepair->pre_evaluate(nullptr);
@@ -71,7 +71,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::pre_evaluate
   // delete the inactive pairs
   coupl_elepairs_.erase(
       std::remove_if(coupl_elepairs_.begin(), coupl_elepairs_.end(),
-          [](const std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScatraArteryCouplingPairBase>
+          [](const std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>
                   coupling_pair) { return not coupling_pair->is_active(); }),
       coupl_elepairs_.end());
 
@@ -88,7 +88,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::pre_evaluate
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::evaluate(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::evaluate(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
@@ -96,12 +96,12 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::evaluate(
 
 
   // call base class
-  PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate(sysmat, rhs);
+  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate(sysmat, rhs);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::setup_system(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::setup_system(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs,
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_cont,
@@ -112,14 +112,14 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::setup_system
     std::shared_ptr<const Core::LinAlg::MapExtractor> dbcmap_art)
 {
   // call base class
-  PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNonConforming::setup_system(*sysmat, rhs,
+  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup_system(*sysmat, rhs,
       *sysmat_cont, *sysmat_art, rhs_cont, rhs_art, *dbcmap_cont, *dbcmap_art->cond_map(),
       *dbcmap_art->cond_map());
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::apply_mesh_movement()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::apply_mesh_movement()
 {
   if (!evaluate_in_ref_config_)
     FOUR_C_THROW("Evaluation in current configuration not possible for node-to-point coupling");
@@ -128,7 +128,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::apply_mesh_m
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::blood_vessel_volume_fraction()
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::blood_vessel_volume_fraction()
 {
   FOUR_C_THROW("Output of vessel volume fraction not possible for node-to-point coupling");
 
@@ -137,15 +137,14 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::blood_vessel_volu
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::print_out_coupling_method()
-    const
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::print_out_coupling_method() const
 {
   std::cout << "<Coupling-Method: 1D node to coincident point in 3D>" << std::endl;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeToPoint::output_coupling_pairs() const
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeToPoint::output_coupling_pairs() const
 {
   if (myrank_ == 0)
   {

@@ -202,7 +202,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::PoroElast::set_valid_parameters(specs);
   Inpar::PoroScaTra::set_valid_parameters(specs);
   PoroPressureBased::set_valid_parameters_porofluid(specs);
-  PoroMultiPhaseScaTra::set_valid_parameters(specs);
+  PoroPressureBased::set_valid_parameters_porofluid_elast_scatra(specs);
   PoroPressureBased::set_valid_parameters_porofluid_elast(specs);
   EHL::set_valid_parameters(specs);
   Inpar::SSI::set_valid_parameters(specs);

@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::PoroMultiPhaseScaTraArtCouplNodeBased(
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::PoroMultiPhaseScaTraArtCouplNodeBased(
     std::shared_ptr<Core::FE::Discretization> arterydis,
     std::shared_ptr<Core::FE::Discretization> contdis,
     const Teuchos::ParameterList& meshtyingparams, const std::string& condname,
@@ -42,7 +42,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::PoroMultiPhaseScaTr
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::init()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::init()
 {
   // ARTERY COUPLING CONDITIONS
   std::vector<std::vector<int>> condIDs;
@@ -113,14 +113,14 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::init()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::setup()
 {
   // do nothing
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_map_extractor(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::setup_map_extractor(
     Core::LinAlg::MultiMapExtractor& mapextractor, Core::FE::Discretization& dis,
     const std::vector<int>& coupleddofs)
 {
@@ -157,7 +157,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_map_extr
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_system(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::setup_system(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs,
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_cont,
@@ -173,7 +173,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_system(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_rhs(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::setup_rhs(
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs,
     std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_cont,
     std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_art)
@@ -183,7 +183,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_rhs(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_vector(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::setup_vector(
     std::shared_ptr<Core::LinAlg::Vector<double>> vec,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art)
@@ -212,7 +212,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_vector(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_matrix(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::setup_matrix(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_cont, Core::LinAlg::SparseMatrix& sysmat_art)
 {
@@ -248,7 +248,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::setup_matrix(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::extract_single_field_vectors(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::extract_single_field_vectors(
     std::shared_ptr<const Core::LinAlg::Vector<double>> globalvec,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& vec_cont,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& vec_art)
@@ -278,7 +278,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::extract_single
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_dbc_on_coupled_dofs(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::check_dbc_on_coupled_dofs(
     Core::FE::Discretization& dis, const std::shared_ptr<const Core::LinAlg::Map>& coupleddofmap)
 {
   // object holds maps/subsets for DOFs subjected to Dirichlet BCs and otherwise
@@ -320,7 +320,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_dbc_on_c
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_initial_fields(
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::check_initial_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art)
 {
@@ -351,7 +351,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::check_initial_
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map>
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::artery_dof_row_map() const
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::artery_dof_row_map() const
 {
   return artex_->Map(0);
 }
@@ -359,14 +359,14 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::artery_dof_row_map(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map>
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::dof_row_map() const
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::dof_row_map() const
 {
   return fullmap_;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::apply_mesh_movement()
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::apply_mesh_movement()
 {
   if (!evaluate_in_ref_config_)
     FOUR_C_THROW("Evaluation in current configuration not possible for node-based coupling");
@@ -375,7 +375,7 @@ void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::apply_mesh_mov
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::blood_vessel_volume_fraction()
+PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::blood_vessel_volume_fraction()
 {
   FOUR_C_THROW("Output of vessel volume fraction not possible for node-based coupling");
 
@@ -384,7 +384,7 @@ PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::blood_vessel_volume
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplNodeBased::print_out_coupling_method() const
+void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::print_out_coupling_method() const
 {
   std::cout << "<   Coupling-Method : Nodebased                    >" << std::endl;
 }
