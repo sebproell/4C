@@ -352,7 +352,8 @@ int main(int argc, char* argv[])
       std::filesystem::path outputfile_name;
       if (argc == 3)
       {
-        outputfile_name = inputfile_name.replace_extension("4C.yaml");
+        outputfile_name = inputfile_name;
+        outputfile_name.replace_extension("4C.yaml");
         if (std::filesystem::exists(outputfile_name))
         {
           printf("You did not provide an output file name.\n");
