@@ -8,17 +8,10 @@
 #ifndef FOUR_C_UTILS_STRING_HPP
 #define FOUR_C_UTILS_STRING_HPP
 
-#if (BOOST_MAJOR_VERSION == 1) && (BOOST_MINOR_VERSION >= 47)
 #include "4C_config.hpp"
 
-#include <boost/algorithm/string/case_conv.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/trim_all.hpp>
-
-#include <cctype>
-#include <cstring>
-#endif
+#include <string>
+#include <vector>
 
 FOUR_C_NAMESPACE_OPEN
 

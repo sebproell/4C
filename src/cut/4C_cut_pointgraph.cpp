@@ -12,7 +12,6 @@
 #include "4C_cut_pointgraph_simple.hpp"
 #include "4C_cut_side.hpp"
 
-#include <boost/graph/boyer_myrvold_planar_test.hpp>
 #include <boost/graph/graphviz.hpp>
 
 #include <cmath>

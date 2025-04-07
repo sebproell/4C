@@ -5,31 +5,26 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
+# We are using the following Boost components:
+#  - graph (a compiled library, so we need to list the component)
+#  - stacktrace (a header-only library, so we don't need to list the component)
 find_package(
   Boost
-  COMPONENTS graph system
+  COMPONENTS graph
   REQUIRED
   )
 
 # post-process found targets
 if(Boost_FOUND)
   message(STATUS "Boost component libraries: ${Boost_LIBRARIES}")
-  message(STATUS "Boost libraries directory: ${Boost_LIBRARY_DIRS}")
 
   target_compile_definitions(
     Boost::graph
     INTERFACE "-DBOOST_MAJOR_VERSION=${Boost_MAJOR_VERSION}"
               "-DBOOST_MINOR_VERSION=${Boost_MINOR_VERSION}"
     )
-  target_compile_definitions(
-    Boost::system
-    INTERFACE "-DBOOST_MAJOR_VERSION=${Boost_MAJOR_VERSION}"
-              "-DBOOST_MINOR_VERSION=${Boost_MINOR_VERSION}"
-    )
 
-  target_link_libraries(
-    four_c_all_enabled_external_dependencies INTERFACE Boost::system Boost::graph
-    )
+  target_link_libraries(four_c_all_enabled_external_dependencies INTERFACE Boost::graph)
 
   configure_file(
     ${PROJECT_SOURCE_DIR}/cmake/templates/Boost.cmake.in
