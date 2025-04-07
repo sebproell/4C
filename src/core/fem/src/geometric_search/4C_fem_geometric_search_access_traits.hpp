@@ -68,7 +68,4 @@ namespace ArborX
 
 #endif
 
-FOUR_C_NAMESPACE_OPEN
-FOUR_C_NAMESPACE_CLOSE
-
 #endif
