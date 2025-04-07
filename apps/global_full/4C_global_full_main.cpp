@@ -349,6 +349,13 @@ int main(int argc, char* argv[])
     if (Core::Communication::my_mpi_rank(lcomm) == 0)
     {
       std::filesystem::path inputfile_name = argv[2];
+      // Always make the input file path relative to the working directory. This ensures that any
+      // absolute path encountered in the input file stays that way.
+      if (inputfile_name.is_absolute())
+      {
+        inputfile_name = std::filesystem::relative(inputfile_name);
+      }
+
       std::filesystem::path outputfile_name;
       if (argc == 3)
       {
@@ -370,7 +377,7 @@ int main(int argc, char* argv[])
       Core::IO::InputFile input_file = Global::set_up_input_file(lcomm);
       input_file.read(inputfile_name);
       std::ofstream output_file(outputfile_name);
-      input_file.write_as_yaml(output_file);
+      input_file.write_as_yaml(output_file, outputfile_name);
       printf("The input file has been converted to yaml format");
       if (argc == 3) printf(", saved as %s", outputfile_name.c_str());
       printf("\n");

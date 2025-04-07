@@ -7,8 +7,6 @@
 
 #include "4C_io_yaml.hpp"
 
-#include <iostream>
-
 FOUR_C_NAMESPACE_OPEN
 
 namespace
@@ -53,11 +51,11 @@ void Core::IO::emit_value_as_yaml(YamlNodeRef node, const bool& value)
 void Core::IO::emit_value_as_yaml(YamlNodeRef node, const std::filesystem::path& value)
 {
   node.node |= ryml::VAL_DQUO;
-  if (node.associated_file.empty())
+  if (node.associated_file.empty() || value.is_absolute())
   {
     node.node << value.string();
   }
-  // Make the path relative to the associated file.
+  // Make the relative path relative to the associated file.
   else
   {
     auto relative_path = std::filesystem::relative(value, node.associated_file.parent_path());

@@ -251,11 +251,12 @@ namespace Core::IO
 
     /**
      * Write the content of the input file to the given output stream @p out. The content is
-     * written in .yaml format.
+     * written in .yaml format. The optional @p file_name is used to construct correct relative
+     * paths for all path parameters.
      *
      * @note You probably only want to call this function on rank 0.
      */
-    void write_as_yaml(std::ostream& out) const;
+    void write_as_yaml(std::ostream& out, const std::filesystem::path& file_name = {}) const;
 
    private:
     std::unique_ptr<Internal::InputFileImpl> pimpl_;
