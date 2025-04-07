@@ -327,6 +327,8 @@ namespace Mat
       mat_->setup(numgp, container);
     }
 
+    void post_setup(Teuchos::ParameterList& params, const int eleGID) override;
+
     void update() override { mat_->update(); }
 
     void reset_step() override { mat_->reset_step(); }

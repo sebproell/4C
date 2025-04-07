@@ -210,6 +210,12 @@ void Mat::StructPoro::unpack(Core::Communication::UnpackBuffer& buffer)
   is_initialized_ = true;
 }
 
+void Mat::StructPoro::post_setup(Teuchos::ParameterList& params, const int eleGID)
+{
+  // Forward post_setup call to actual solid material
+  mat_->post_setup(params, eleGID);
+}
+
 void Mat::StructPoro::compute_porosity(const double& refporosity, const double& press,
     const double& J, const int& gp, double& porosity, double* dphi_dp, double* dphi_dJ,
     double* dphi_dJdp, double* dphi_dJJ, double* dphi_dpp, double* dphi_dphiref, bool save)
