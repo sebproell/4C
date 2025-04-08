@@ -518,8 +518,8 @@ function(four_c_test_framework name_of_input_file num_proc xml_filename)
   set(test_directory framework_test_output/${name_of_input_file})
 
   set(RUNPREEXODUS
-      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.e\ --bc=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.bc\ --head=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.head\ --dat=${test_directory}/xxx.dat
-      ) # pre_exodus is run to generate a Dat file
+      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.e\ --bc=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.bc\ --head=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.head\ --out=${test_directory}/xxx.4C.yaml
+      ) # pre_exodus is run to generate an input file
 
   if(NOT ${xml_filename} STREQUAL "")
     # if a XML file name is given, it is copied from the 4C input directory to the build directory
@@ -532,8 +532,8 @@ function(four_c_test_framework name_of_input_file num_proc xml_filename)
   endif()
 
   set(RUNFOURC
-      ${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${num_proc}\ $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>\ ${test_directory}/xxx.dat\ ${test_directory}/xxx
-      ) # 4C is run using the generated dat file
+      ${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${num_proc}\ $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>\ ${test_directory}/xxx.4C.yaml\ ${test_directory}/xxx
+      ) # 4C is run using the generated input file
 
   add_test(
     NAME ${name_of_test}
@@ -569,35 +569,6 @@ function(four_c_test_cut_test num_proc)
     )
 
   require_fixture(${name_of_test} test_cleanup)
-  set_fail_expression(${name_of_test})
-  set_processors(${name_of_test} ${num_proc})
-  set_timeout(${name_of_test})
-endfunction()
-
-###------------------------------------------------------------------ Preprocessing Test
-# Generate default header file and test pre_exo with it
-# Usage in tests/lists_of_tests.cmake: "four_c_test_pre_processing(<name_of_input_file> <num_proc>)"
-# <name_of_input_file>: must equal the name of .e/.bc/.head file in tests/pre_processing_test
-# <num_proc>: number of processors the test should use
-function(four_c_test_pre_processing name_of_input_file num_proc)
-  set(name_of_test ${name_of_input_file}-p${num_proc}-pre_processing)
-  set(test_directory ${PROJECT_BINARY_DIR}/framework_test_output/${name_of_input_file}-p${num_proc})
-
-  set(RUNPREEXODUS_NOHEAD
-      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/pre_processing_test/${name_of_input_file}.e
-      ) # run pre_exodus to generate default head and bc file
-  set(RUNPREEXODUS_DEFAULTHEAD
-      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/pre_processing_test/${name_of_input_file}.e\ --bc=${PROJECT_SOURCE_DIR}/tests/pre_processing_test/${name_of_input_file}.bc\ --head=default.head\ --dat=${test_directory}/xxx.dat
-      ) # run pre_exodus to generate dat file using the default head file
-
-  add_test(
-    NAME ${name_of_test}
-    COMMAND
-      bash -c "mkdir -p ${test_directory} && ${RUNPREEXODUS_NOHEAD} && ${RUNPREEXODUS_DEFAULTHEAD}"
-    )
-
-  require_fixture(${name_of_test} test_cleanup)
-  set_environment(${name_of_test})
   set_fail_expression(${name_of_test})
   set_processors(${name_of_test} ${num_proc})
   set_timeout(${name_of_test})

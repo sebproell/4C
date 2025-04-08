@@ -179,7 +179,7 @@ int main(int argc, char** argv)
     std::string exofile;
     std::string bcfile;
     std::string headfile;
-    std::string datfile;
+    std::string outfile;
     std::string cline;
 
     bool twodim = false;
@@ -188,15 +188,14 @@ int main(int argc, char** argv)
     bool quadtri = false;
 
     Teuchos::CommandLineProcessor My_CLP;
-    My_CLP.setDocString(
-        "This preprocessor converts Exodus2 files to the proprietary FourC format\n");
+    My_CLP.setDocString("This preprocessor converts Exodus2 files into 4C input files\n");
     My_CLP.throwExceptions(false);
     My_CLP.setOption("exo", &exofile, "exodus file to open");
-    My_CLP.setOption("bc", &bcfile, "bc's and ele's file to open");
-    My_CLP.setOption("head", &headfile, "4C header file to open");
-    My_CLP.setOption("dat", &datfile, "output .dat file name [defaults to exodus file name]");
+    My_CLP.setOption("bc", &bcfile, "bc's and ele's file to open (custom format)");
+    My_CLP.setOption("head", &headfile, "4C header file to open (yaml format)");
+    My_CLP.setOption("out", &outfile, "output file name, defaults to exodus file name");
 
-    // switch for generating a 2d .dat - file
+    // switch for generating a 2d file
     My_CLP.setOption("d2", "d3", &twodim, "space dimensions in .dat-file: d2: 2D, d3: 3D");
 
     // check for quad->tri conversion
@@ -214,9 +213,9 @@ int main(int argc, char** argv)
       FOUR_C_THROW("CommandLineProcessor reported an error");
     }
 
-    if (datfile != "")
+    if (outfile != "")
     {
-      const std::string basename = datfile.substr(0, datfile.find_last_of(".")) + "_pre";
+      const std::string basename = outfile.substr(0, outfile.find_last_of(".")) + "_pre";
       Core::IO::cout.setup(true, false, false, Core::IO::standard, comm, 0, 0,
           basename);  // necessary setup of Core::IO::cout
     }
@@ -232,10 +231,10 @@ int main(int argc, char** argv)
      **************************************************************************/
     if (exofile == "")
     {
-      if (datfile != "")
+      if (outfile != "")
       {
         // just validate a given 4C input file
-        EXODUS::validate_input_file(comm, datfile);
+        EXODUS::validate_input_file(comm, outfile);
         return 0;
       }
       else
@@ -292,111 +291,19 @@ int main(int argc, char** argv)
     }
 
     /**************************************************************************
-     * Read HeaderFile for 'header' parameters, e.g. solver, dynamic, material
-     * or create a default HeaderFile
-     **************************************************************************/
-    if (headfile == "")
-    {
-      const std::string defaultheadfilename = "default.head";
-      std::cout << "found no header file           --> creating " << defaultheadfilename
-                << std::endl;
-
-      // open default header file
-      std::ofstream defaulthead(defaultheadfilename.c_str());
-      if (!defaulthead) FOUR_C_THROW("failed to open file: {}", defaultheadfilename);
-
-      // get valid input parameters
-      auto parameters = Input::valid_parameters();
-
-      // write default .dat header into file
-      std::stringstream prelimhead;
-      Core::IO::print_dat(prelimhead, parameters);
-      std::string headstring = prelimhead.str();
-      size_t size_section = headstring.find("--PROBLEM SIZE");
-      if (size_section != std::string::npos)
-      {
-        size_t size_section_start = headstring.substr(0, size_section).rfind("\n");
-        size_t type_section = headstring.find("--PROBLEM TYPE");
-        size_t type_section_start = headstring.substr(0, type_section).rfind("\n");
-        headstring.erase(size_section_start, type_section_start - size_section_start);
-      }
-      defaulthead << headstring;
-
-      // get valid input materials
-      {
-        std::vector<Core::IO::InputSpec> possible_materials;
-        {
-          auto materials = global_legacy_module_callbacks().materials();
-          for (auto&& [type, spec] : materials)
-          {
-            possible_materials.emplace_back(std::move(spec));
-          }
-        }
-
-        using namespace Core::IO::InputSpecBuilders;
-        auto all_materials = all_of({
-            parameter<int>("MAT"),
-            one_of(possible_materials),
-        });
-
-        Core::IO::print_section(defaulthead, "MATERIALS", all_materials);
-      }
-
-
-      // print cloning material map default lines (right after the materials)
-      const auto lines = Core::FE::valid_cloning_material_map();
-      Core::IO::print_section(defaulthead, "CLONING MATERIAL MAP", lines);
-
-      // print spatial functions
-      defaulthead << "-------------------------------------------------------------FUNCT1"
-                  << std::endl
-                  << "-------------------------------------------------------------FUNCT2"
-                  << std::endl
-                  << "-------------------------------------------------------------FUNCT3"
-                  << std::endl
-                  << "-------------------------------------------------------------FUNCT4"
-                  << std::endl;
-      {
-        std::stringstream tmp;
-        Core::Utils::FunctionManager functionmanager;
-        global_legacy_module_callbacks().AttachFunctionDefinitions(functionmanager);
-        const auto flines = functionmanager.valid_function_lines();
-        Core::IO::print_section(tmp, "FUNCT", flines);
-        std::string tmpstring = tmp.str();
-        std::string removeit =
-            "--------------------------------------------------------------FUNCT\n";
-        size_t pos = tmpstring.find(removeit);
-        if (pos != std::string::npos)
-        {
-          tmpstring.erase(pos, removeit.length());
-        }
-        defaulthead << tmpstring;
-      }
-
-      // default result-test lines
-      {
-        const auto lines = global_legacy_module_callbacks().valid_result_description_lines();
-        Core::IO::print_section(defaulthead, "RESULT DESCRIPTION", lines);
-      }
-
-      // close default header file
-      if (defaulthead.is_open()) defaulthead.close();
-    }
-
-    /**************************************************************************
      * Finally, create and validate the 4C input file
      **************************************************************************/
     if ((headfile != "") && (bcfile != "") && (exofile != ""))
     {
       // set default dat-file name if needed
-      if (datfile == "")
+      if (outfile == "")
       {
         const std::string exofilebasename = exofile.substr(0, exofile.find_last_of("."));
-        datfile = exofilebasename + ".dat";
+        outfile = exofilebasename + ".4C.yaml";
       }
 
       // screen info
-      std::cout << "creating and checking 4C input file       --> " << datfile << std::endl;
+      std::cout << "creating and checking 4C input file       --> " << outfile << std::endl;
       auto timer = Teuchos::TimeMonitor::getNewTimer("pre-exodus timer");
 
       // check for positive Element-Center-Jacobians and otherwise rewind them
@@ -430,9 +337,9 @@ int main(int argc, char** argv)
       // write the 4C input file
       {
         if (twodim) mymesh.set_nsd(2);
-        std::cout << "...Writing dat-file";
+        std::cout << "...Writing file " << outfile;
         timer->start();
-        EXODUS::write_dat_file(datfile, mymesh, headfile, eledefs, condefs);
+        EXODUS::write_dat_file(outfile, mymesh, headfile, eledefs, condefs);
         timer->stop();
         std::cout << "                         in...." << timer->totalElapsedTime(true) << " secs"
                   << std::endl;
@@ -440,7 +347,7 @@ int main(int argc, char** argv)
       }
 
       // validate the generated 4C input file
-      EXODUS::validate_input_file(comm, datfile);
+      EXODUS::validate_input_file(comm, outfile);
     }
   }
   catch (Core::Exception& err)

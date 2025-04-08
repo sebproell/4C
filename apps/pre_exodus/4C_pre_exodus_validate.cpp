@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::validate_input_file(const MPI_Comm comm, const std::string datfile)
+void EXODUS::validate_input_file(const MPI_Comm comm, const std::string outfile)
 {
   using namespace FourC;
 
@@ -30,7 +30,7 @@ void EXODUS::validate_input_file(const MPI_Comm comm, const std::string datfile)
 
   // create a InputFile
   Core::IO::InputFile input_file = Global::set_up_input_file(comm);
-  input_file.read(datfile);
+  input_file.read(outfile);
 
   // read and validate dynamic and solver sections
   std::cout << "...Read parameters" << std::endl;

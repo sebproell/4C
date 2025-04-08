@@ -60,7 +60,7 @@ namespace EXODUS
     MeshEntity me;     ///< referring to underlying mesh entity
     std::string sec;   ///< see valid_condition 'sectionname'
     std::string desc;  ///< see valid_condition 'description'
-    int e_id;          ///< refers to datfile 'E num -'
+    int e_id;          ///< refers to outfile 'E num -'
     Core::Conditions::GeometryType gtype;
   };
 
