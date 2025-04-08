@@ -128,6 +128,7 @@ four_c_configure_dependency(MIRCO DEFAULT OFF)
 four_c_configure_dependency(Backtrace DEFAULT OFF)
 four_c_configure_dependency(ryml DEFAULT ON)
 four_c_configure_dependency(magic_enum DEFAULT ON)
+four_c_configure_dependency(ZLIB DEFAULT ON)
 
 ### end of configuration and feature detection
 

@@ -47,6 +47,10 @@ if(FOUR_C_WITH_HDF5)
     )
 endif()
 
+if(FOUR_C_WITH_ZLIB)
+  find_package(ZLIB REQUIRED)
+endif()
+
 if(FOUR_C_WITH_QHULL)
   find_package(Qhull REQUIRED)
 endif()
