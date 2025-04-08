@@ -53,6 +53,7 @@ $CMAKE_COMMAND \
   -D P4EST_DIR=$INSTALL_DIR/FAST \
   ..
 
-make -j${NPROCS} install
+# Use a limited number of processes to avoid overloading the system for expensive files
+make -j2 install
 cd ../..
 rm -rf dealii

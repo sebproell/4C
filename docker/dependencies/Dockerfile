@@ -86,6 +86,9 @@ RUN /dependencies/current/qhull/install.sh ${INSTALL_DIR}
 # Install Trilinos 2022_Q1
 RUN /dependencies/current/trilinos/install.sh ${INSTALL_DIR}
 
+# Install deal.II (needs to happen after Trilinos)
+RUN /dependencies/current/dealii/install.sh ${INSTALL_DIR}
+
 # Install (optional) backtrace library
 RUN /dependencies/current/backtrace/install.sh ${INSTALL_DIR}
 
