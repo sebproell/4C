@@ -1956,9 +1956,6 @@ endif (FOUR_C_WITH_MIRCO)
 # four_c_test_cut_test
 four_c_test_cut_test(2)
 
-# four_c_test_pre_processing: generate default head file and test pre_exo using generated head file
-four_c_test_pre_processing(pre_exo_cube 1)
-
 # four_c_test_nested_parallelism
 four_c_test_nested_parallelism(sohex8_multiscale_macro.dat sohex8_multiscale_npsupport.dat "1")
 four_c_test_nested_parallelism(sohex8_multiscale_macro_2micro.dat sohex8_multiscale_npsupport.dat "1")

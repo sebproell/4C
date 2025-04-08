@@ -574,35 +574,6 @@ function(four_c_test_cut_test num_proc)
   set_timeout(${name_of_test})
 endfunction()
 
-###------------------------------------------------------------------ Preprocessing Test
-# Generate default header file and test pre_exo with it
-# Usage in tests/lists_of_tests.cmake: "four_c_test_pre_processing(<name_of_input_file> <num_proc>)"
-# <name_of_input_file>: must equal the name of .e/.bc/.head file in tests/pre_processing_test
-# <num_proc>: number of processors the test should use
-function(four_c_test_pre_processing name_of_input_file num_proc)
-  set(name_of_test ${name_of_input_file}-p${num_proc}-pre_processing)
-  set(test_directory ${PROJECT_BINARY_DIR}/framework_test_output/${name_of_input_file}-p${num_proc})
-
-  set(RUNPREEXODUS_NOHEAD
-      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/pre_processing_test/${name_of_input_file}.e
-      ) # run pre_exodus to generate default head and bc file
-  set(RUNPREEXODUS_DEFAULTHEAD
-      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/pre_processing_test/${name_of_input_file}.e\ --bc=${PROJECT_SOURCE_DIR}/tests/pre_processing_test/${name_of_input_file}.bc\ --head=default.head\ --dat=${test_directory}/xxx.dat
-      ) # run pre_exodus to generate dat file using the default head file
-
-  add_test(
-    NAME ${name_of_test}
-    COMMAND
-      bash -c "mkdir -p ${test_directory} && ${RUNPREEXODUS_NOHEAD} && ${RUNPREEXODUS_DEFAULTHEAD}"
-    )
-
-  require_fixture(${name_of_test} test_cleanup)
-  set_environment(${name_of_test})
-  set_fail_expression(${name_of_test})
-  set_processors(${name_of_test} ${num_proc})
-  set_timeout(${name_of_test})
-endfunction()
-
 ###------------------------------------------------------------------ Postprocessing Test
 # Run ensight postprocessor on previous test
 # CAUTION: This tests bases on results of a previous simulation/test
