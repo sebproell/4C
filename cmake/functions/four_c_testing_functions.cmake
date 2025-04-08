@@ -518,8 +518,8 @@ function(four_c_test_framework name_of_input_file num_proc xml_filename)
   set(test_directory framework_test_output/${name_of_input_file})
 
   set(RUNPREEXODUS
-      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.e\ --bc=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.bc\ --head=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.head\ --dat=${test_directory}/xxx.dat
-      ) # pre_exodus is run to generate a Dat file
+      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.e\ --bc=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.bc\ --head=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.head\ --out=${test_directory}/xxx.4C.yaml
+      ) # pre_exodus is run to generate an input file
 
   if(NOT ${xml_filename} STREQUAL "")
     # if a XML file name is given, it is copied from the 4C input directory to the build directory
@@ -532,8 +532,8 @@ function(four_c_test_framework name_of_input_file num_proc xml_filename)
   endif()
 
   set(RUNFOURC
-      ${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${num_proc}\ $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>\ ${test_directory}/xxx.dat\ ${test_directory}/xxx
-      ) # 4C is run using the generated dat file
+      ${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${num_proc}\ $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>\ ${test_directory}/xxx.4C.yaml\ ${test_directory}/xxx
+      ) # 4C is run using the generated input file
 
   add_test(
     NAME ${name_of_test}
