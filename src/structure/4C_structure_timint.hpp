@@ -1006,9 +1006,6 @@ namespace Solid
     //@{
     std::shared_ptr<Core::FE::Discretization> discret_;  //!< attached discretisation
 
-    // face discretization (only initialized for edge-based stabilization)
-    std::shared_ptr<Core::FE::DiscretizationFaces> facediscret_;
-
     int myrank_;  //!< ID of actual processor in parallel
     std::shared_ptr<Core::LinAlg::Solver>
         solver_;  //!< linear algebraic solver (no contact/meshtying)
