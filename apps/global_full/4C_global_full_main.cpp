@@ -69,9 +69,6 @@ namespace
         << "\t\tRewrites a dat file to a yaml file. (default output: "
            "<in_file_name_without_suffix>.4C.yaml\n"
         << "\n"
-        << "\t--datfile or -d\n"
-        << "\t\tPrint example dat_file with all available parameters.\n"
-        << "\n"
         << "\t-ngroup=<x>\n"
         << "\t\tSpecify the number of groups for nested parallelism. (default: 1)\n"
         << "\n"
@@ -381,50 +378,6 @@ int main(int argc, char* argv[])
       printf("The input file has been converted to yaml format");
       if (argc == 3) printf(", saved as %s", outputfile_name.c_str());
       printf("\n");
-    }
-  }
-  else if ((argc == 2) && ((strcmp(argv[1], "-d") == 0) || (strcmp(argv[1], "--datfile") == 0)))
-  {
-    if (Core::Communication::my_mpi_rank(lcomm) == 0)
-    {
-      printf("\n\n");
-      print_default_dat_header();
-      print_condition_dat_header();
-
-      {
-        std::vector<Core::IO::InputSpec> possible_materials;
-        {
-          auto materials = global_legacy_module_callbacks().materials();
-          for (auto&& [type, spec] : materials)
-          {
-            possible_materials.emplace_back(std::move(spec));
-          }
-        }
-
-        using namespace Core::IO::InputSpecBuilders;
-        auto all_materials = all_of({
-            parameter<int>("MAT"),
-            one_of(possible_materials),
-        });
-
-        Core::IO::print_section(std::cout, "MATERIALS", all_materials);
-      }
-
-      {
-        auto valid_co_laws = CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws();
-        Core::IO::print_section_header(std::cout, "CONTACT CONSTITUTIVE LAWS");
-        valid_co_laws.print_as_dat(std::cout);
-      }
-
-      const auto lines = Core::FE::valid_cloning_material_map();
-      Core::IO::print_section(std::cout, "CLONING MATERIAL MAP", lines);
-
-      print_element_dat_header();
-
-      const auto result_spec = global_legacy_module_callbacks().valid_result_description_lines();
-      Core::IO::print_section(std::cout, "RESULT DESCRIPTION", result_spec);
-
-      printf("\n\n");
     }
   }
   else

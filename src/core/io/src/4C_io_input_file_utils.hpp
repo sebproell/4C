@@ -45,29 +45,6 @@ namespace Core::IO
   void print_section_header(std::ostream& out, const std::string& header);
 
   /**
-   * Print the values of parameter entries for a dat file based on the provided parameter list.
-   *
-   * This function prints key-value pairs in the dat file format, including parameter names and
-   * their values. It processes sublists and parameters, formatting them appropriately.
-   *
-   * @param stream      The output stream to which the information will be printed.
-   * @param list        The parameter list containing the parameters and sublists to be printed.
-   * @param comment     A flag indicating whether to print comments (default is true).
-   */
-  void print_dat(std::ostream& stream, const Teuchos::ParameterList& list, bool comment = true);
-
-
-  void print_dat(std::ostream& stream, const std::map<std::string, Core::IO::InputSpec>& map);
-
-  /**
-   * Return true if the @p list contains any parameter that has whitespace in the key name.
-   *
-   * @note This is needed for the NOX parameters whose keywords and value have white spaces and
-   * thus '=' are inserted to distinguish them.
-   */
-  bool need_to_print_equal_sign(const Teuchos::ParameterList& list);
-
-  /**
    * Print @p spec into a dat file section with given @p header.
    */
   void print_section(std::ostream& out, const std::string& header, const InputSpec& spec);

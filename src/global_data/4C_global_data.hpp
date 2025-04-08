@@ -188,9 +188,6 @@ namespace Global
     /// control file for normal output
     std::shared_ptr<Core::IO::OutputControl> output_control_file() { return outputcontrol_; }
 
-    /// write parameters read from input file for documentation
-    void write_input_parameters();
-
     //@}
 
     /// @name Parameters read from file

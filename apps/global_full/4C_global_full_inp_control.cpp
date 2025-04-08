@@ -86,9 +86,6 @@ void ntainp_ccadiscret(
       break;
   }
 
-  // all reading is done at this point!
-  if (Core::Communication::my_mpi_rank(lcomm) == 0) problem->write_input_parameters();
-
   // we wait till all procs are here. Otherwise a hang up might occur where
   // one proc ended with FOUR_C_THROW but other procs were not finished and waited...
   // we also want to have the printing above being finished.

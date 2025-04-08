@@ -47,15 +47,6 @@ void Input::print_empty_condition_definitions(
 }
 
 
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void print_condition_dat_header()
-{
-  std::vector<Core::Conditions::ConditionDefinition> condlist = Input::valid_conditions();
-  Input::print_empty_condition_definitions(std::cout, condlist);
-}
-
-
 namespace Input
 {
   // collect some problem-specific conditions that do not fit in the generic sections

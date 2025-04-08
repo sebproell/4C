@@ -15,15 +15,6 @@ FOUR_C_NAMESPACE_OPEN
 
 
 /*----------------------------------------------------------------------*/
-//! Print function
-/*----------------------------------------------------------------------*/
-void print_element_dat_header()
-{
-  Core::Elements::ElementDefinition ed;
-  ed.print_element_dat_header_to_stream(std::cout);
-}
-
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Core::Elements::ElementDefinition::print_element_dat_header_to_stream(std::ostream& stream)
 {
