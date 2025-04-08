@@ -179,7 +179,7 @@ namespace Core::IO
           auto entry = node["choices"].append_child();
           // Write every choice entry as a map to easily extend the information at a later point.
           entry |= ryml::MAP;
-          emit_value_as_yaml(entry["name"], choice_string);
+          emit_value_as_yaml(YamlNodeRef(entry["name"], ""), choice_string);
         }
       }
     };
@@ -225,7 +225,7 @@ namespace Core::IO
         // Pull up the std::optional aspect. The fact that this type wraps another type is specific
         // to C++ and not relevant to other tools. Simply knowing that a type can be empty is
         // enough for them.
-        emit_value_as_yaml(node["noneable"], true);
+        emit_value_as_yaml(YamlNodeRef{node["noneable"], ""}, true);
         YamlTypeEmitter<T>{}(node, size);
       }
     };
@@ -400,7 +400,7 @@ namespace Core::IO
 
       //! Emit metadata. This function always emits into a map, i.e., the implementation must
       //! insert keys and values into the yaml emitter.
-      virtual void emit_metadata(ryml::NodeRef node) const = 0;
+      virtual void emit_metadata(YamlNodeRef node) const = 0;
 
       virtual bool emit(YamlNodeRef node, const InputParameterContainer&,
           const InputSpecEmitOptions& options) const = 0;
@@ -473,7 +473,7 @@ namespace Core::IO
         }
       }
 
-      void emit_metadata(ryml::NodeRef node) const override { wrapped.emit_metadata(node); }
+      void emit_metadata(YamlNodeRef node) const override { wrapped.emit_metadata(node); }
 
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const override
@@ -751,7 +751,7 @@ namespace Core::IO
       void parse(ValueParser& parser, InputParameterContainer& container) const;
       bool match(ConstYamlNodeRef node, InputParameterContainer& container,
           IO::Internal::MatchEntry& match_entry) const;
-      void emit_metadata(ryml::NodeRef node) const;
+      void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
       [[nodiscard]] bool has_correct_size(
@@ -779,7 +779,7 @@ namespace Core::IO
       bool match(ConstYamlNodeRef node, InputParameterContainer& container,
           IO::Internal::MatchEntry& match_entry) const;
       void print(std::ostream& stream, std::size_t indent) const;
-      void emit_metadata(ryml::NodeRef node) const;
+      void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
     };
@@ -806,7 +806,7 @@ namespace Core::IO
       bool match(ConstYamlNodeRef node, InputParameterContainer& container,
           IO::Internal::MatchEntry& match_entry) const;
       void print(std::ostream& stream, std::size_t indent) const;
-      void emit_metadata(ryml::NodeRef node) const;
+      void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
       void set_default_value(InputParameterContainer& container) const;
@@ -823,7 +823,7 @@ namespace Core::IO
           IO::Internal::MatchEntry& match_entry) const;
       void set_default_value(InputParameterContainer& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
-      void emit_metadata(ryml::NodeRef node) const;
+      void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
     };
@@ -838,7 +838,7 @@ namespace Core::IO
           IO::Internal::MatchEntry& match_entry) const;
       void set_default_value(InputParameterContainer& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
-      void emit_metadata(ryml::NodeRef node) const;
+      void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
     };
@@ -863,7 +863,7 @@ namespace Core::IO
 
       void print(std::ostream& stream, std::size_t indent) const;
 
-      void emit_metadata(ryml::NodeRef node) const;
+      void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
     };
@@ -882,7 +882,7 @@ namespace Core::IO
           IO::Internal::MatchEntry& match_entry) const;
       void set_default_value(InputParameterContainer& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
-      void emit_metadata(ryml::NodeRef node) const;
+      void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
     };
@@ -1463,13 +1463,13 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
 
 
 template <Core::IO::SupportedType T>
-void Core::IO::Internal::ParameterSpec<T>::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::ParameterSpec<T>::emit_metadata(YamlNodeRef node) const
 {
-  node |= ryml::MAP;
-  node["name"] << name;
+  node.node |= ryml::MAP;
+  node.node["name"] << name;
 
   if constexpr (rank<T>() == 0)
-    IO::Internal::emit_type_as_yaml<StoredType>(node);
+    IO::Internal::emit_type_as_yaml<StoredType>(node.node);
   else
   {
     struct DynamicSizeVisitor
@@ -1486,17 +1486,17 @@ void Core::IO::Internal::ParameterSpec<T>::emit_metadata(ryml::NodeRef node) con
     {
       size_info[i] = std::visit(DynamicSizeVisitor{}, data.size[i]);
     }
-    IO::Internal::emit_type_as_yaml<StoredType>(node, size_info);
+    IO::Internal::emit_type_as_yaml<StoredType>(node.node, size_info);
   }
 
   if (!data.description.empty())
   {
-    emit_value_as_yaml(node["description"], data.description);
+    emit_value_as_yaml(node.wrap(node.node["description"]), data.description);
   }
-  emit_value_as_yaml(node["required"], !(data.default_value.index() == 1));
+  emit_value_as_yaml(node.wrap(node.node["required"]), !(data.default_value.index() == 1));
   if (data.default_value.index() == 1)
   {
-    emit_value_as_yaml(node["default"], std::get<1>(data.default_value));
+    emit_value_as_yaml(node.wrap(node.node["default"]), std::get<1>(data.default_value));
   }
 }
 
@@ -1513,7 +1513,7 @@ bool Core::IO::Internal::ParameterSpec<T>::emit(YamlNodeRef node,
     {
       auto value_node = node.node.append_child();
       value_node << ryml::key(name);
-      emit_value_as_yaml(value_node, *value);
+      emit_value_as_yaml(node.wrap(value_node), *value);
     }
     return true;
   }
@@ -1524,7 +1524,7 @@ bool Core::IO::Internal::ParameterSpec<T>::emit(YamlNodeRef node,
     {
       auto value_node = node.node.append_child();
       value_node << ryml::key(name);
-      emit_value_as_yaml(value_node, std::get<1>(data.default_value));
+      emit_value_as_yaml(node.wrap(value_node), std::get<1>(data.default_value));
     }
     return true;
   }
@@ -1689,19 +1689,19 @@ void Core::IO::Internal::DeprecatedSelectionSpec<T>::print(
 }
 
 template <typename T>
-void Core::IO::Internal::DeprecatedSelectionSpec<T>::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::DeprecatedSelectionSpec<T>::emit_metadata(YamlNodeRef node) const
 {
-  node |= ryml::MAP;
-  node["name"] << name;
+  node.node |= ryml::MAP;
+  node.node["name"] << name;
 
-  if constexpr (OptionalType<T>) emit_value_as_yaml(node["noneable"], true);
-  node["type"] = "enum";
+  if constexpr (OptionalType<T>) emit_value_as_yaml(node.wrap(node.node["noneable"]), true);
+  node.node["type"] = "enum";
 
   if (!data.description.empty())
   {
-    emit_value_as_yaml(node["description"], data.description);
+    emit_value_as_yaml(node.wrap(node.node["description"]), data.description);
   }
-  emit_value_as_yaml(node["required"], !(data.default_value.index() == 1));
+  emit_value_as_yaml(node.wrap(node.node["required"]), !(data.default_value.index() == 1));
   if (data.default_value.index() == 1)
   {
     // Find the choice that corresponds to the default value.
@@ -1709,15 +1709,15 @@ void Core::IO::Internal::DeprecatedSelectionSpec<T>::emit_metadata(ryml::NodeRef
         [&](const auto& choice) { return choice.second == std::get<1>(data.default_value); });
     FOUR_C_ASSERT(
         default_value_it != choices.end(), "Internal error: default value not found in choices.");
-    emit_value_as_yaml(node["default"], default_value_it->first);
+    emit_value_as_yaml(node.wrap(node.node["default"]), default_value_it->first);
   }
-  node["choices"] |= ryml::SEQ;
+  node.node["choices"] |= ryml::SEQ;
   for (const auto& [choice_string, _] : choices)
   {
-    auto entry = node["choices"].append_child();
+    auto entry = node.node["choices"].append_child();
     // Write every choice entry as a map to easily extend the information at a later point.
     entry |= ryml::MAP;
-    emit_value_as_yaml(entry["name"], choice_string);
+    emit_value_as_yaml(node.wrap(entry["name"]), choice_string);
   }
 }
 
@@ -1735,7 +1735,7 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::emit(YamlNodeRef node,
       {
         auto value_node = node.node.append_child();
         value_node << ryml::key(key);
-        emit_value_as_yaml(value_node, choice.first);
+        emit_value_as_yaml(node.wrap(value_node), choice.first);
         return true;
       }
     }
@@ -1858,28 +1858,28 @@ void Core::IO::Internal::SelectionSpec<T>::print(std::ostream& stream, std::size
 
 template <typename T>
   requires(std::is_enum_v<T>)
-void Core::IO::Internal::SelectionSpec<T>::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::SelectionSpec<T>::emit_metadata(YamlNodeRef node) const
 {
-  node |= ryml::MAP;
-  node["name"] << group_name;
+  node.node |= ryml::MAP;
+  node.node["name"] << group_name;
 
-  if constexpr (OptionalType<T>) emit_value_as_yaml(node["noneable"], true);
-  node["type"] = "selection";
+  if constexpr (OptionalType<T>) emit_value_as_yaml(node.wrap(node.node["noneable"]), true);
+  node.node["type"] = "selection";
 
   if (!data.description.empty())
   {
-    emit_value_as_yaml(node["description"], data.description);
+    emit_value_as_yaml(node.wrap(node.node["description"]), data.description);
   }
-  emit_value_as_yaml(node["required"], data.required);
-  node["selector"] << based_on.selector;
+  emit_value_as_yaml(node.wrap(node.node["required"]), data.required);
+  node.node["selector"] << based_on.selector;
 
-  node["choices"] |= ryml::SEQ;
+  node.node["choices"] |= ryml::SEQ;
   for (const auto& [choice, spec] : based_on.choices)
   {
-    auto entry = node["choices"].append_child();
+    auto entry = node.node["choices"].append_child();
     entry |= ryml::MAP;
-    emit_value_as_yaml(entry["name"], choice);
-    spec.impl().emit_metadata(entry["spec"]);
+    emit_value_as_yaml(node.wrap(entry["name"]), choice);
+    spec.impl().emit_metadata(node.wrap(entry["spec"]));
   }
 }
 

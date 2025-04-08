@@ -1032,7 +1032,7 @@ namespace Core::IO
     out << tree;
   }
 
-  void InputFile::write_as_yaml(std::ostream& out) const
+  void InputFile::write_as_yaml(std::ostream& out, const std::filesystem::path& file_name) const
   {
     auto tree = init_yaml_tree_with_exceptions();
     tree.rootref() |= ryml::MAP;
@@ -1048,7 +1048,8 @@ namespace Core::IO
       {
         auto& spec = pimpl_->valid_sections_.at(section_name);
         match_section(section_name, container);
-        YamlNodeRef section_node{tree.rootref(), ""};
+        YamlNodeRef section_node{
+            tree.rootref(), file_name.empty() ? std::filesystem::path{} : file_name};
         spec.emit(section_node, container);
       }
       else

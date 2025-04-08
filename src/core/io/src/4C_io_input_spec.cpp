@@ -88,8 +88,7 @@ void Core::IO::InputSpec::emit_metadata(YamlNodeRef yaml) const
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
 
-  auto root = yaml.node;
-  pimpl_->emit_metadata(root);
+  pimpl_->emit_metadata(yaml);
 }
 
 Core::IO::Internal::InputSpecImpl& Core::IO::InputSpec::impl()

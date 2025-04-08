@@ -10,7 +10,6 @@
 #include "4C_utils_string.hpp"
 
 #include <format>
-#include <iostream>
 #include <numeric>
 #include <set>
 #include <unordered_map>
@@ -751,25 +750,25 @@ void Core::IO::Internal::GroupSpec::print(std::ostream& stream, std::size_t inde
   }
 }
 
-void Core::IO::Internal::GroupSpec::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::GroupSpec::emit_metadata(YamlNodeRef node) const
 {
-  node |= ryml::MAP;
-  node["name"] << name;
+  node.node |= ryml::MAP;
+  node.node["name"] << name;
 
-  node["type"] = "group";
+  node.node["type"] = "group";
   if (!data.description.empty())
   {
-    node["description"] << data.description;
+    node.node["description"] << data.description;
   }
-  emit_value_as_yaml(node["required"], data.required.value());
-  emit_value_as_yaml(node["defaultable"], data.defaultable);
-  node["specs"] |= ryml::SEQ;
+  emit_value_as_yaml(node.wrap(node.node["required"]), data.required.value());
+  emit_value_as_yaml(node.wrap(node.node["defaultable"]), data.defaultable);
+  node.node["specs"] |= ryml::SEQ;
   {
     for (const auto& spec : specs)
     {
-      auto child = node["specs"].append_child();
+      auto child = node.node["specs"].append_child();
       child |= ryml::MAP;
-      spec.impl().emit_metadata(child);
+      spec.impl().emit_metadata(node.wrap(child));
     };
   }
 }
@@ -864,23 +863,23 @@ void Core::IO::Internal::AllOfSpec::print(std::ostream& stream, std::size_t inde
   }
 }
 
-void Core::IO::Internal::AllOfSpec::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::AllOfSpec::emit_metadata(YamlNodeRef node) const
 {
-  node |= ryml::MAP;
+  node.node |= ryml::MAP;
 
-  node["type"] = "all_of";
+  node.node["type"] = "all_of";
   if (!data.description.empty())
   {
-    node["description"] << data.description;
+    node.node["description"] << data.description;
   }
-  emit_value_as_yaml(node["required"], data.required.value());
-  node["specs"] |= ryml::SEQ;
+  emit_value_as_yaml(node.wrap(node.node["required"]), data.required.value());
+  node.node["specs"] |= ryml::SEQ;
   {
     for (const auto& spec : specs)
     {
-      auto child = node["specs"].append_child();
+      auto child = node.node["specs"].append_child();
       child |= ryml::MAP;
-      spec.impl().emit_metadata(child);
+      spec.impl().emit_metadata(node.wrap(child));
     }
   }
 }
@@ -1021,20 +1020,20 @@ void Core::IO::Internal::OneOfSpec::print(std::ostream& stream, std::size_t inde
   }
 }
 
-void Core::IO::Internal::OneOfSpec::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::OneOfSpec::emit_metadata(YamlNodeRef node) const
 {
-  node |= ryml::MAP;
+  node.node |= ryml::MAP;
 
-  node["type"] << "one_of";
+  node.node["type"] << "one_of";
   if (!data.description.empty())
   {
-    node["description"] << data.description;
+    node.node["description"] << data.description;
   }
-  node["specs"] |= ryml::SEQ;
+  node.node["specs"] |= ryml::SEQ;
   for (const auto& spec : specs)
   {
-    auto child = node["specs"].append_child();
-    spec.impl().emit_metadata(child);
+    auto child = node.node["specs"].append_child();
+    spec.impl().emit_metadata(node.wrap(child));
   }
 }
 
@@ -1153,21 +1152,21 @@ void Core::IO::Internal::ListSpec::print(std::ostream& stream, std::size_t inden
   spec.impl().print(stream, indent + 2);
 }
 
-void Core::IO::Internal::ListSpec::emit_metadata(ryml::NodeRef node) const
+void Core::IO::Internal::ListSpec::emit_metadata(YamlNodeRef node) const
 {
-  node |= ryml::MAP;
+  node.node |= ryml::MAP;
 
-  node["name"] << name;
+  node.node["name"] << name;
 
-  node["type"] << "list";
+  node.node["type"] << "list";
   if (!data.description.empty())
   {
-    node["description"] << Core::Utils::trim(data.description);
+    node.node["description"] << Core::Utils::trim(data.description);
   }
-  emit_value_as_yaml(node["required"], data.required);
-  if (data.size > 0) node["size"] << data.size;
-  node["spec"] |= ryml::MAP;
-  spec.impl().emit_metadata(node["spec"]);
+  emit_value_as_yaml(node.wrap(node.node["required"]), data.required);
+  if (data.size > 0) node.node["size"] << data.size;
+  node.node["spec"] |= ryml::MAP;
+  spec.impl().emit_metadata(node.wrap(node.node["spec"]));
 }
 
 
