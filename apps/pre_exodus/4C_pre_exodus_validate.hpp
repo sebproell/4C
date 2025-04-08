@@ -24,8 +24,8 @@ namespace EXODUS
   class Mesh;
   class ElementBlock;
 
-  //! validate a given datfile
-  void validate_input_file(const MPI_Comm comm, const std::string datfile);
+  //! validate a given outfile
+  void validate_input_file(const MPI_Comm comm, const std::string outfile);
 
   //! Check Elements for positive Jacobian and otherwise 'rewind' them
   void validate_mesh_element_jacobians(EXODUS::Mesh& mymesh);

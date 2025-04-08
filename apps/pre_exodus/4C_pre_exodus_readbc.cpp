@@ -75,7 +75,7 @@ void EXODUS::read_bc_file(const std::string& bcfile, std::vector<EXODUS::ElemDef
   const std::string marker("*");
 
   // necessary counters
-  int E_id = 0;  // the 'E num -' in the datfile
+  int E_id = 0;  // the 'E num -' in the outfile
   int ndp = 0;
   int ndl = 0;
   int nds = 0;

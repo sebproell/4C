@@ -16,8 +16,8 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace EXODUS
 {
-  //! write datfile
-  int write_dat_file(const std::string& datfile, const EXODUS::Mesh& mymesh,
+  //! write outfile
+  int write_dat_file(const std::string& outfile, const EXODUS::Mesh& mymesh,
       const std::string& headfile, const std::vector<EXODUS::ElemDef>& eledefs,
       const std::vector<EXODUS::CondDef>& condefs);
 
@@ -35,16 +35,16 @@ namespace EXODUS
   //! return set of nodes in bc_entity
   std::set<int> get_ns_from_bc_entity(const EXODUS::CondDef& e, const EXODUS::Mesh& m);
 
-  //! Nodes into datfile
+  //! Nodes into outfile
   void write_dat_nodes(const EXODUS::Mesh& mymesh, std::ostream& dat);
 
-  //! Elements into datfile
+  //! Elements into outfile
   void write_dat_eles(
       const std::vector<EXODUS::ElemDef>& eledefs, const EXODUS::Mesh& mymesh, std::ostream& dat);
 
   //! Elements from eblock
   void dat_eles(const EXODUS::ElementBlock& eb, const EXODUS::ElemDef& acte, int& startele,
-      std::ostream& dat, const int eb_id);
+      std::ostream& outfile, const int eb_id);
 
 }  // namespace EXODUS
 

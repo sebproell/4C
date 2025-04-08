@@ -21,17 +21,17 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-int EXODUS::write_dat_file(const std::string& datfile, const EXODUS::Mesh& mymesh,
+int EXODUS::write_dat_file(const std::string& outfile, const EXODUS::Mesh& mymesh,
     const std::string& headfile, const std::vector<EXODUS::ElemDef>& eledefs,
     const std::vector<EXODUS::CondDef>& condefs)
 {
-  // open datfile
-  std::ofstream dat(datfile.c_str());
-  if (!dat) FOUR_C_THROW("failed to open file: {}", datfile);
+  // open outfile
+  std::ofstream dat(outfile.c_str());
+  if (!dat) FOUR_C_THROW("failed to open file: {}", outfile);
 
   {
     // Write out the mesh information in the old dat style.
-    std::ofstream dat_fragment(datfile + ".fragment");
+    std::ofstream dat_fragment(outfile + ".fragment");
 
     // write conditions
     EXODUS::write_dat_conditions(condefs, mymesh, dat_fragment);
@@ -47,12 +47,12 @@ int EXODUS::write_dat_file(const std::string& datfile, const EXODUS::Mesh& mymes
   }
 
   auto input_file = Global::set_up_input_file(MPI_COMM_SELF);
-  input_file.read(datfile + ".fragment");
+  input_file.read(outfile + ".fragment");
   // Remove the temporary file
-  std::filesystem::remove(datfile + ".fragment");
+  std::filesystem::remove(outfile + ".fragment");
 
   std::stringstream temporary_yaml;
-  input_file.write_as_yaml(temporary_yaml, datfile);
+  input_file.write_as_yaml(temporary_yaml, outfile);
   std::string yaml_string = temporary_yaml.str();
 
   std::ifstream file(headfile);
@@ -87,7 +87,7 @@ int EXODUS::write_dat_file(const std::string& datfile, const EXODUS::Mesh& mymes
   ryml::parse_in_place(ryml::to_substr(yaml_string), &tree);
 
   // Write the merged tree.
-  std::ofstream out(datfile);
+  std::ofstream out(outfile);
   out << tree;
 
   return 0;
@@ -518,7 +518,7 @@ void EXODUS::write_dat_eles(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void EXODUS::dat_eles(const EXODUS::ElementBlock& eb, const EXODUS::ElemDef& acte, int& startele,
-    std::ostream& datfile, const int eb_id)
+    std::ostream& outfile, const int eb_id)
 {
   auto eles = eb.get_ele_conn();
   for (const auto& ele : *eles)
@@ -534,7 +534,7 @@ void EXODUS::dat_eles(const EXODUS::ElementBlock& eb, const EXODUS::ElemDef& act
     dat << std::endl;           // finish this element line
 
     startele++;
-    datfile << dat.str();  // only one access to the outfile (saves system time)
+    outfile << dat.str();  // only one access to the outfile (saves system time)
   }
 }
 
