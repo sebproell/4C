@@ -77,7 +77,6 @@ Solid::TimInt::TimInt(const Teuchos::ParameterList& timeparams,
     std::shared_ptr<Core::LinAlg::Solver> contactsolver,
     std::shared_ptr<Core::IO::DiscretizationWriter> output)
     : discret_(actdis),
-      facediscret_(nullptr),
       myrank_(Core::Communication::my_mpi_rank(actdis->get_comm())),
       solver_(solver),
       contactsolver_(contactsolver),
