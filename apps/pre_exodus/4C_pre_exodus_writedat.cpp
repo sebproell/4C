@@ -9,8 +9,10 @@
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_fem_general_cell_type_traits.hpp"
+#include "4C_global_data_read.hpp"
 #include "4C_inpar_validconditions.hpp"
 #include "4C_io_input_file_utils.hpp"
+#include "4C_io_yaml.hpp"
 #include "4C_pre_exodus_reader.hpp"
 
 #include <fstream>
@@ -27,94 +29,70 @@ int EXODUS::write_dat_file(const std::string& datfile, const EXODUS::Mesh& mymes
   std::ofstream dat(datfile.c_str());
   if (!dat) FOUR_C_THROW("failed to open file: {}", datfile);
 
-  // write dat-file intro
-  EXODUS::write_dat_intro(headfile, mymesh, dat);
+  {
+    // Write out the mesh information in the old dat style.
+    std::ofstream dat_fragment(datfile + ".fragment");
 
-  // write "header"
-  EXODUS::write_dat_head(headfile, dat);
+    // write conditions
+    EXODUS::write_dat_conditions(condefs, mymesh, dat_fragment);
 
-  // write conditions
-  EXODUS::write_dat_conditions(condefs, mymesh, dat);
+    // write design-topology
+    EXODUS::write_dat_design_topology(condefs, mymesh, dat_fragment);
 
-  // write design-topology
-  EXODUS::write_dat_design_topology(condefs, mymesh, dat);
+    // write nodal coordinates
+    EXODUS::write_dat_nodes(mymesh, dat_fragment);
 
-  // write nodal coordinates
-  EXODUS::write_dat_nodes(mymesh, dat);
+    // write elements
+    EXODUS::write_dat_eles(eledefs, mymesh, dat_fragment);
+  }
 
-  // write elements
-  EXODUS::write_dat_eles(eledefs, mymesh, dat);
+  auto input_file = Global::set_up_input_file(MPI_COMM_SELF);
+  input_file.read(datfile + ".fragment");
+  // Remove the temporary file
+  std::filesystem::remove(datfile + ".fragment");
 
-  // close datfile
-  if (dat.is_open()) dat.close();
+  std::stringstream temporary_yaml;
+  input_file.write_as_yaml(temporary_yaml, datfile);
+  std::string yaml_string = temporary_yaml.str();
+
+  std::ifstream file(headfile);
+  std::ostringstream ss;
+  ss << file.rdbuf();
+  std::string file_content = ss.str();
+
+  // Collect all the data in a single yaml tree.
+  ryml::Tree tree = Core::IO::init_yaml_tree_with_exceptions();
+  // Parse the header file.
+  try
+  {
+    ryml::parse_in_place(ryml::to_substr(file_content), &tree);
+  }
+  catch (const Core::IO::YamlException& e)
+  {
+    FOUR_C_THROW("The header file seems to not be valid yaml.\nDetails:\n\n{}", e.what());
+  }
+
+  // Write the problem dimension
+  {
+    // Remove the section "PROBLEM SIZE" from the content that was read from the header file.
+    if (tree.rootref().has_child("PROBLEM SIZE"))
+    {
+      tree.rootref().remove_child("PROBLEM SIZE");
+    }
+    tree.rootref()["PROBLEM SIZE"] |= ryml::MAP;
+    tree.rootref()["PROBLEM SIZE"]["DIM"] << mymesh.get_four_c_dim();
+  }
+
+  // Parse the generated mesh info.
+  ryml::parse_in_place(ryml::to_substr(yaml_string), &tree);
+
+  // Write the merged tree.
+  std::ofstream out(datfile);
+  out << tree;
 
   return 0;
 }
 
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void EXODUS::write_dat_intro(
-    const std::string& headfile, const EXODUS::Mesh& mymesh, std::ostream& dat)
-{
-  dat << "==================================================================\n"
-         "                   General Data File 4C\n"
-         "==================================================================\n"
-         "-------------------------------------------------------------TITLE\n"
-         "created by pre_exodus\n"
-         "------------------------------------------------------PROBLEM SIZE\n";
-  // print number of elements and nodes just as an comment instead of
-  // a valid parameter (prevents possible misuse of these parameters in 4C)
-  dat << "//ELEMENTS    " << mymesh.get_num_ele() << std::endl;
-  dat << "//NODES       " << mymesh.get_num_nodes() << std::endl;
-  // parameter for the number of spatial dimensions
-  dat << "DIM           " << mymesh.get_four_c_dim() << std::endl;
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void EXODUS::write_dat_head(const std::string& headfile, std::ostream& dat)
-{
-  std::stringstream head;
-  const char* headfilechar = headfile.c_str();
-  std::ifstream header(headfilechar, std::ifstream::in);
-  if (not header.good())
-  {
-    std::cout << std::endl << "Unable to open file: " << headfilechar << std::endl;
-    FOUR_C_THROW("Unable to open head-file");
-  }
-  while (header.good()) head << (char)header.get();
-  // while (!header.eof()) head << (char) header.get();
-  header.close();
-  std::string headstring = head.str();
-
-  // delete sections which has been written by WriteDatIntro already
-  remove_dat_section("PROBLEM SIZE", headstring);
-
-  // remove eof character
-  headstring.erase(headstring.end() - 1);
-
-  // now put everything to the input file
-  dat << headstring << std::endl;
-}
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void EXODUS::remove_dat_section(const std::string& secname, std::string& headstring)
-{
-  const size_t secpos = headstring.find(secname);
-  if (secpos != std::string::npos)
-  {
-    // where does this section line actually start?
-    const size_t endoflastline = headstring.substr(0, secpos).rfind('\n');
-    // want to keep the newline character of line before
-    const size_t sectionbegin = endoflastline + 1;
-    // now we remove the whole section
-    const size_t sectionend = headstring.find("---", secpos);
-    headstring.erase(sectionbegin, sectionend - sectionbegin);
-  }
-}
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/

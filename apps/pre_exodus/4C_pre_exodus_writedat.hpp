@@ -21,15 +21,6 @@ namespace EXODUS
       const std::string& headfile, const std::vector<EXODUS::ElemDef>& eledefs,
       const std::vector<EXODUS::CondDef>& condefs);
 
-  //! datfile Intro
-  void write_dat_intro(const std::string& headfile, const EXODUS::Mesh& mymesh, std::ostream& dat);
-
-  //! headfile content into datfile
-  void write_dat_head(const std::string& headfile, std::ostream& dat);
-
-  //! remove a specific input file section
-  void remove_dat_section(const std::string& secname, std::string& headstring);
-
   //! conditions
   void write_dat_conditions(
       const std::vector<EXODUS::CondDef>& condefs, const EXODUS::Mesh& mymesh, std::ostream& dat);

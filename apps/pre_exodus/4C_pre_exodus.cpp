@@ -430,7 +430,7 @@ int main(int argc, char** argv)
       // write the 4C input file
       {
         if (twodim) mymesh.set_nsd(2);
-        std::cout << "...Writing dat-file";
+        std::cout << "...Writing file " << datfile;
         timer->start();
         EXODUS::write_dat_file(datfile, mymesh, headfile, eledefs, condefs);
         timer->stop();
