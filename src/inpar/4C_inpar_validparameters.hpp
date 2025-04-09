@@ -28,10 +28,6 @@ namespace Input
 
 }  // namespace Input
 
-/*! print flag sections of dat file with default flags */
-void print_default_dat_header();
-
-
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

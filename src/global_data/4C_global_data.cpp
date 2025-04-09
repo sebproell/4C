@@ -149,18 +149,6 @@ void Global::Problem::open_control_file(MPI_Comm comm, const std::string& inputf
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Global::Problem::write_input_parameters()
-{
-  std::string s = output_control_file()->file_name();
-  s.append(".parameter");
-  std::ofstream stream(s.c_str());
-  Core::IO::print_dat(stream, *parameters_, false);
-}
-
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 void Global::Problem::set_parameter_list(
     std::shared_ptr<Teuchos::ParameterList> const& parameter_list)
 {

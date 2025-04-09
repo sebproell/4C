@@ -81,12 +81,6 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-void print_default_dat_header()
-{
-  auto map = Input::valid_parameters();
-  Core::IO::print_dat(std::cout, map);
-}
-
 std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
 {
   using namespace Core::IO::InputSpecBuilders;

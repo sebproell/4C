@@ -371,13 +371,6 @@ namespace RTD
           codelines.push_back("--" + std::string(std::max<int>(65 - l, 0), '-') + fullname);
           write_code(stream, codelines);
 
-          if (Core::IO::need_to_print_equal_sign(list.sublist(name)))
-          {
-            write_note(stream,
-                "   The parameters in this section need an equal sign (=) "
-                "between the parameter name and its value!");
-          }
-
           write_header_reference(stream, list.sublist(name), fullname);
         }
         else  // it is a parameter entry

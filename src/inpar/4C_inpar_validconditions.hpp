@@ -36,9 +36,6 @@ namespace Input
 
 }  // namespace Input
 
-/// print empty condition sections
-void print_condition_dat_header();
-
 FOUR_C_NAMESPACE_CLOSE
 
 #endif
