@@ -22,8 +22,8 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(std::map<std::string, Core::IO::In
   list["PROBLEM TYPE"] = group("PROBLEM TYPE",
       {
 
-          deprecated_selection<Core::ProblemType>("PROBLEMTYPE", string_to_problem_type_map(),
-              {.description = "Type of the problem", .default_value = Core::ProblemType::fsi}),
+          deprecated_selection<Core::ProblemType>(
+              "PROBLEMTYPE", string_to_problem_type_map(), {.description = "Type of the problem"}),
 
           deprecated_selection<Core::FE::ShapeFunctionType>("SHAPEFCT",
               Core::FE::string_to_shape_function_type_map(),
@@ -34,7 +34,7 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(std::map<std::string, Core::IO::In
           parameter<int>(
               "RANDSEED", {.description = "Set the random seed. If < 0 use current time.",
                               .default_value = -1})},
-      {.defaultable = true});
+      {.required = true});
 }
 
 /*----------------------------------------------------------------------*/
