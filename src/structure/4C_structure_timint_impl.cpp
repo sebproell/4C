@@ -1083,12 +1083,6 @@ void Solid::TimIntImpl::apply_force_stiff_beam_contact(Core::LinAlg::SparseOpera
     // *********** time measurement ***********
     dtcmt_ = timer_->wallTime() - dtcpu;
     // *********** time measurement ***********
-
-    // visualization of current Newton step
-#ifdef GMSHNEWTONSTEPS
-    beamcman_->GmshOutput(*disn_, stepn_, iter_);
-    beamcman_->ConsoleOutput();
-#endif  // #ifdef GMSHNEWTONSTEPS
   }
 
   return;
@@ -3234,18 +3228,6 @@ int Solid::TimIntImpl::beam_contact_nonlinear_solve()
 
     // update constraint norm
     beamcman_->update_constr_norm();
-  }
-  //**********************************************************************
-
-  //**********************************************************************
-  // misuse of beam contact module for GMSH output
-  // (nonlinear solution approach: ordinary NEWTON)
-  //**********************************************************************
-  else if (strategy == BeamContact::bstr_gmshonly)
-  {
-    // nonlinear iteration (Newton)
-    int error = newton_full();
-    if (error) return error;
   }
   //**********************************************************************
 

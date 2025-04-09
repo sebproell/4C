@@ -162,8 +162,6 @@ namespace CONTACT
     \brief Update beam contact
 
     Stores fc_ into fcold_ and clears fc_ as needed for generalized alpha time
-    integration scheme at the end of each time step. ASCII output files for
-    visualization in GMSH will be written. Also some output to screen is done.
 
     */
     void update(
@@ -187,17 +185,6 @@ namespace CONTACT
     void update_all_pairs();
 
     /*!
-    \brief Create output files for GMSH visualization
-
-    Create ASCII-files to visualize beams with GMSH. The circular cross section will
-    be approximated by prisms, which are rotated around the element's axis. This output
-    method only works safely for the serial case, the parallel case is not yet implemented!
-
-    */
-    void gmsh_output(const Core::LinAlg::Vector<double>& disrow, const int& timestep,
-        const int& newtonstep, bool endoftimestep = false);
-
-    /*!
     \brief Print active set
 
     Print some output data to screen at the end of each time step.
@@ -208,8 +195,7 @@ namespace CONTACT
       d) the current element coordinates of the contact point
 
     NOTE: This method can also be called after each newton-step (e.g. if you want to check
-    convergence problems). In this case, you have to uncomment the GMSHNEWTONSTEP preprocessor
-    flag in 'beam3contact_defines.h'.
+    convergence problems).
 
     */
     void console_output();
@@ -444,7 +430,7 @@ namespace CONTACT
     // step with contact)
     bool elementtypeset_;
 
-    // counts the number of gmsh-output files already written
+    // counts the number of output files already written
     int outputcounter_;
 
     // end time of current time step
@@ -601,94 +587,6 @@ namespace CONTACT
     */
     void fill_potential_pairs_vectors(
         const std::vector<std::vector<Core::Elements::Element*>> elementpairs);
-
-    /*!
-    \brief Compute coordinates for GMSH-Output for two-noded-elements
-
-    */
-    void gmsh_2_noded(const int& n, const Core::LinAlg::SerialDenseMatrix& coord,
-        const Core::Elements::Element* thisele, std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief Compute coordinates for GMSH-Output for three-noded-elements
-
-    */
-    void gmsh_3_noded(const int& n, const Core::LinAlg::SerialDenseMatrix& allcoord,
-        const Core::Elements::Element* thisele, std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief Compute coordinates for GMSH-Output for four-noded-elements
-
-    */
-    void gmsh_4_noded(const int& n, const Core::LinAlg::SerialDenseMatrix& allcoord,
-        const Core::Elements::Element* thisele, std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief Compute coordinates for GMSH-Output for N-noded-elements
-    */
-    void gmsh_n_noded(const int& n, int& n_axial, const Core::LinAlg::SerialDenseMatrix& allcoord,
-        const Core::Elements::Element* thisele, std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief Compute coordinates for GMSH-Line-Output for N-noded-elements
-    */
-    void gmsh_n_noded_line(const int& n, const int& n_axial,
-        const Core::LinAlg::SerialDenseMatrix& allcoord, const Core::Elements::Element* thisele,
-        std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief Compute coordinates for GMSH-Output of rigid sphere
-
-    */
-    void gmsh_sphere(const Core::LinAlg::SerialDenseMatrix& coord,
-        const Core::Elements::Element* thisele, std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief Print Gmsh Triangle to stringstream by specifying the vertices
-
-    */
-    void print_gmsh_triangle_to_stream(std::stringstream& gmshfilecontent,
-        const std::vector<std::vector<double>>& vertexlist, int i, int j, int k, double color,
-        const double centercoord[]);
-    /*!
-    \brief Refine the icosphere by subdivision of each face in four new triangles
-
-    */
-    void gmsh_refine_icosphere(std::vector<std::vector<double>>& vertexlist,
-        std::vector<std::vector<int>>& facelist, double radius);
-
-    //**********************Begin: Output-Methods for BTS-Contact****************************
-    /*!
-    \brief GMSH-Surface-Output for solid elements
-    */
-    void gmsh_solid(const Core::Elements::Element* element,
-        const Core::LinAlg::Vector<double>& disrow, std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief GMSH-Surface-Output for solid surfaces
-    */
-    void gmsh_solid_surface_element_numbers(const Core::Elements::Element* element,
-        const Core::LinAlg::Vector<double>& disrow, std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief Get color of solid element surfaces for GMSH-Output
-    */
-    void gmsh_get_surf_color(const Core::Elements::Element* element, const int& n_surfNodes,
-        const int surfNodes[6][9], double surfColor[6]);
-
-    /*!
-    \brief GMSH-Surface-Output for 4-noded quadrangle (SQ)
-    */
-    void gmsh_sq(
-        const double coords[3][4], const double color[4], std::stringstream& gmshfilecontent);
-
-    /*!
-    \brief GMSH-Surface-Output for 3-noded triangle (ST)
-    */
-    void gmsh_st(
-        const double coords[3][3], const double color[3], std::stringstream& gmshfilecontent);
-    //**********************End: Output-Methods for BTS-Contact****************************
-
     //@}
 
   };  // class Beam3cmanager

@@ -433,11 +433,6 @@ void Solid::TimInt::prepare_beam_contact(const Teuchos::ParameterList& sdynparam
 
     // create beam contact manager
     beamcman_ = std::make_shared<CONTACT::Beam3cmanager>(*discret_, alphaf);
-
-    // gmsh output at beginning of simulation
-#ifdef GMSHTIMESTEPS
-    beamcman_->GmshOutput(*disn_, 0, 0, true);
-#endif
   }
 }
 

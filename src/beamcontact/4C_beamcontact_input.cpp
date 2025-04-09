@@ -27,8 +27,6 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
               {"none", bstr_none},
               {"Penalty", bstr_penalty},
               {"penalty", bstr_penalty},
-              {"Gmshonly", bstr_gmshonly},
-              {"gmshonly", bstr_gmshonly},
           },
           {.description = "Type of employed solving strategy", .default_value = bstr_none}),
 

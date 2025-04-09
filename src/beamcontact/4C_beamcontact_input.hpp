@@ -31,9 +31,8 @@ namespace BeamContact
   /// (this enum represents the input file parameter BEAMS_STRATEGY)
   enum Strategy
   {
-    bstr_none,     ///< no beam contact
-    bstr_penalty,  ///< penalty method
-    bstr_gmshonly  ///< misuse of beam contact module for GMSH output
+    bstr_none,    ///< no beam contact
+    bstr_penalty  ///< penalty method
   };
 
   /// Type of employed solving strategy

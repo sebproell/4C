@@ -159,23 +159,6 @@ namespace CONTACT
     virtual void update_ele_smooth_tangents(
         std::map<int, Core::LinAlg::Matrix<3, 1>>& currentpositions) = 0;
 
-    //! brief Struct for debug data in Gmsh
-    struct GmshDebugPoint
-    {
-      Core::LinAlg::Matrix<3, 1, double> r1;
-      Core::LinAlg::Matrix<3, 1, double> x2;
-      Core::LinAlg::Matrix<3, 1, double> n2;
-      double gap;
-      double fp;
-      int type;
-    };
-
-    /*
-    \ brief Get debug data for Gmsh
-     */
-    virtual std::vector<GmshDebugPoint> get_gmsh_debug_points() = 0;
-
-
   };  // class Beam3tosolidcontactinterface
 
 
@@ -322,12 +305,6 @@ namespace CONTACT
     void update_ele_smooth_tangents(
         std::map<int, Core::LinAlg::Matrix<3, 1>>& currentpositions) override;
 
-    /*!
-    \brief Get debugging data at Gauss points for Gmsh
-    */
-    std::vector<GmshDebugPoint> get_gmsh_debug_points() override { return gmsh_debug_points_; };
-
-
     //@}
    private:
     //! @name member variables
@@ -423,10 +400,6 @@ namespace CONTACT
       // Compare eta
       return lhs.first < rhs;
     }
-
-    //! Vector containing structs for Gmsh debug
-    std::vector<GmshDebugPoint> gmsh_debug_points_;
-
 
     //@}
 

@@ -47,8 +47,7 @@ CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::Beam3tosoli
       elementscrossing_(false),
       shiftnodalvalues_(false),
       xi1_(0.0),
-      xi2_(0.0),
-      gmsh_debug_points_()
+      xi2_(0.0)
 {
   for (int i = 0; i < 3 * numnodes * numnodalvalues; i++) ele1pos_(i) = 0.0;
 
@@ -90,13 +89,6 @@ bool CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::evalua
 {
   const int dim1 = 3 * numnodes * numnodalvalues;
   const int dim2 = 3 * numnodessol;
-
-#if defined(GMSHDEBUG) || defined(SAVEFORCE) || defined(GMSHFORCE)
-  // Clear vector for Gmsh debug
-  gmshDebugPoints_.clear();
-  gmshDebugPoints_.resize(0);
-#endif
-
 
   // Find contact interval borders
   // -----------------------------------------------------------------
@@ -357,29 +349,6 @@ void CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::evalua
     normalset.second = nD;
     normalsets_.push_back(normalset);
 
-#if defined(GMSHDEBUG) || defined(GMSHFORCE) || defined(SAVEFORCE)
-    // Compute some variables at contact interval border
-    compute_surface_normal(x2_xi1, x2_xi2, a2, norm_a2, n2);
-    gap = Core::FADUtils::ScalarProduct(n2, rD) - radius1;
-    double fp = 0.0;
-    if (gap < 0)
-    {
-      TYPEBTS dfp = 0.0;
-      evaluate_penalty_force_law(pp, gap, fp, dfp);
-    }
-
-    // Store variables at contact interval border in gmshDebugPoints_
-    gmshDebugPoint gmshDebugPoint;
-    gmshDebugPoint.r1 = r1;
-    gmshDebugPoint.x2 = x2;
-    gmshDebugPoint.n2 = n2;
-    gmshDebugPoint.gap = gap;
-    gmshDebugPoint.fp = fp;
-    gmshDebugPoint.type =
-        -1 + 2 * i;  // -1: Left contact interval border, +1: Right contact interval border
-    gmshDebugPoints_.push_back(gmshDebugPoint);
-#endif
-
     // If eta is fixed then its linearization is zero, otherwise compute directional derivative
     if (fixed_par == 2)
     {
@@ -543,28 +512,6 @@ void CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::evalua
     {
       check_contact_status(pp, gap, contactflag);
     }
-
-#if defined(GMSHDEBUG) || defined(GMSHFORCE) || defined(SAVEFORCE)
-    if (sgn > 0 || contactflag)
-    {
-      // Insert variables at current Gauss point in gmshDebugPoints_ before variables of contact
-      // interval end
-      double fp = 0.0;
-      if (gap < 0)
-      {
-        TYPEBTS dfp = 0.0;
-        evaluate_penalty_force_law(pp, gap, fp, dfp);
-      }
-      gmshDebugPoint gmshDebugPoint;
-      gmshDebugPoint.r1 = r1;
-      gmshDebugPoint.x2 = x2;
-      gmshDebugPoint.n2 = n2;
-      gmshDebugPoint.gap = gap;
-      gmshDebugPoint.fp = fp;
-      gmshDebugPoint.type = 0;  // 0: Gauss point
-      gmshDebugPoints_.insert(gmshDebugPoints_.end() - 1, gmshDebugPoint);
-    }
-#endif
 
     // Evaluate and sum up contact forces and stiffness only if the current Gauss point has contact
     if (contactflag)
@@ -3486,12 +3433,6 @@ void CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::fd_che
   const bool use_stiffc_FD = false;
   const bool output = true;
 
-#ifdef GMSHDEBUG
-  // Store class variables before adding h
-  std::vector<gmshDebugPoint> gmshDebugPoints = gmshDebugPoints_;
-  std::vector<std::pair<TYPEBTS, Core::LinAlg::Matrix<3, 1, TYPEBTS>>> normalsets = normalsets_;
-#endif
-
   // Initialize matrices for contact stiffness
   Core::LinAlg::Matrix<dim1, dim1 + dim2, TYPEBTS> stiffc1_FD(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<dim2, dim1 + dim2, TYPEBTS> stiffc2_FD(Core::LinAlg::Initialization::zero);
@@ -3549,15 +3490,6 @@ void CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::fd_che
         Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<dim2, dim1 + dim2, TYPEBTS> stiffc2_FAD(
         Core::LinAlg::Initialization::zero);
-
-#ifdef GMSHDEBUG
-    // Clear class variables in each loop, because the information at positions with added h is not
-    // needed
-    gmshDebugPoints_.clear();
-    gmshDebugPoints_.resize(0);
-    normalsets_.clear();
-    normalsets_.resize(0);
-#endif
 
     // Loop over all contact intervals, calculate and sum up contact forces (fc1, fc2) and stiffness
     // (stiffc1, stiffc2)
@@ -3636,12 +3568,6 @@ void CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::fd_che
     stiffc1 = stiffc1_FD;
     stiffc2 = stiffc2_FD;
   }
-
-#ifdef GMSHDEBUG
-  // Restore class variables at position without added h
-  gmshDebugPoints_ = gmshDebugPoints;
-  normalsets_ = normalsets;
-#endif
 
   return;
 }
