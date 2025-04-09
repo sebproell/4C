@@ -105,6 +105,29 @@ if(FOUR_C_ENABLE_ADDRESS_SANITIZER)
   endif()
 endif()
 
+# If enabled, build all targets with undefined behavior sanitizer
+four_c_process_global_option(
+  FOUR_C_ENABLE_UNDEFINED_BEHAVIOR_SANITIZER "Compile with undefined behavior sanitizer" OFF
+  )
+if(FOUR_C_ENABLE_UNDEFINED_BEHAVIOR_SANITIZER)
+  # ASAN requires to check both flags at once.
+  four_c_check_compiles(
+    FOUR_C_COMPILER_LINKER_SUPPORT_UBSAN
+    COMPILE_OPTIONS
+    "-fsanitize=undefined"
+    LINK_OPTIONS
+    "-fsanitize=undefined"
+    APPEND_ON_SUCCESS
+    )
+
+  if(NOT FOUR_C_COMPILER_LINKER_SUPPORT_UBSAN)
+    message(
+      FATAL_ERROR
+        "Option FOUR_C_ENABLE_UNDEFINED_BEHAVIOR_SANITIZER is ON but the compiler does not support this feature."
+      )
+  endif()
+endif()
+
 four_c_process_global_option(
   FOUR_C_ENABLE_COVERAGE
   "Set up a build to gather coverage information with LLVM source based coverage"
