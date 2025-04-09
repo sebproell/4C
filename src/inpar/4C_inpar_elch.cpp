@@ -17,179 +17,190 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  list["ELCH CONTROL"] = all_of({
+  list["ELCH CONTROL"] = group("ELCH CONTROL",
+      {
 
-      parameter<int>("MOVBOUNDARYITEMAX",
-          {.description =
-                  "Maximum number of outer iterations in electrode shape change computations",
-              .default_value = 10}),
-      parameter<double>(
-          "MOVBOUNDARYCONVTOL", {.description = "Convergence check tolerance for outer loop in "
-                                                "electrode shape change computations",
-                                    .default_value = 1e-6}),
-      parameter<double>(
-          "TEMPERATURE", {.description = "Constant temperature (Kelvin)", .default_value = 298.0}),
-      parameter<int>("TEMPERATURE_FROM_FUNCT",
-          {.description = "Homogeneous temperature within electrochemistry field that can be time "
-                          "dependent according to function definition",
-              .default_value = -1}),
-      parameter<double>("FARADAY_CONSTANT",
-          {.description = "Faraday constant (in unit system as chosen in input file)",
-              .default_value = 9.64853399e4}),
-      parameter<double>("GAS_CONSTANT",
-          {.description = "(universal) gas constant (in unit system as chosen in input file)",
-              .default_value = 8.314472}),
-      // parameter for possible types of ELCH algorithms for deforming meshes
-      deprecated_selection<Inpar::ElCh::ElchMovingBoundary>("MOVINGBOUNDARY",
-          {
-              {"No", elch_mov_bndry_no},
-              {"pseudo-transient", elch_mov_bndry_pseudo_transient},
-              {"fully-transient", elch_mov_bndry_fully_transient},
-          },
-          {.description = "ELCH algorithm for deforming meshes",
-              .default_value = elch_mov_bndry_no}),
-      parameter<double>(
-          "MOLARVOLUME", {.description = "Molar volume for electrode shape change computations",
-                             .default_value = 0.0}),
-      parameter<double>("MOVBOUNDARYTHETA",
-          {.description = "One-step-theta factor in electrode shape change computations",
-              .default_value = 0.0}),
-      parameter<bool>(
-          "GALVANOSTATIC", {.description = "flag for galvanostatic mode", .default_value = false}),
+          parameter<int>("MOVBOUNDARYITEMAX",
+              {.description =
+                      "Maximum number of outer iterations in electrode shape change computations",
+                  .default_value = 10}),
+          parameter<double>(
+              "MOVBOUNDARYCONVTOL", {.description = "Convergence check tolerance for outer loop in "
+                                                    "electrode shape change computations",
+                                        .default_value = 1e-6}),
+          parameter<double>("TEMPERATURE",
+              {.description = "Constant temperature (Kelvin)", .default_value = 298.0}),
+          parameter<int>("TEMPERATURE_FROM_FUNCT",
+              {.description =
+                      "Homogeneous temperature within electrochemistry field that can be time "
+                      "dependent according to function definition",
+                  .default_value = -1}),
+          parameter<double>("FARADAY_CONSTANT",
+              {.description = "Faraday constant (in unit system as chosen in input file)",
+                  .default_value = 9.64853399e4}),
+          parameter<double>("GAS_CONSTANT",
+              {.description = "(universal) gas constant (in unit system as chosen in input file)",
+                  .default_value = 8.314472}),
+          // parameter for possible types of ELCH algorithms for deforming meshes
+          deprecated_selection<Inpar::ElCh::ElchMovingBoundary>("MOVINGBOUNDARY",
+              {
+                  {"No", elch_mov_bndry_no},
+                  {"pseudo-transient", elch_mov_bndry_pseudo_transient},
+                  {"fully-transient", elch_mov_bndry_fully_transient},
+              },
+              {.description = "ELCH algorithm for deforming meshes",
+                  .default_value = elch_mov_bndry_no}),
+          parameter<double>(
+              "MOLARVOLUME", {.description = "Molar volume for electrode shape change computations",
+                                 .default_value = 0.0}),
+          parameter<double>("MOVBOUNDARYTHETA",
+              {.description = "One-step-theta factor in electrode shape change computations",
+                  .default_value = 0.0}),
+          parameter<bool>("GALVANOSTATIC",
+              {.description = "flag for galvanostatic mode", .default_value = false}),
 
-      deprecated_selection<Inpar::ElCh::ApproxElectResist>("GSTAT_APPROX_ELECT_RESIST",
-          {
-              {"relation_pot_cur", approxelctresist_relpotcur},
-              {"effective_length_with_initial_cond", approxelctresist_effleninitcond},
-              {"effective_length_with_integrated_cond", approxelctresist_efflenintegcond},
-          },
-          {.description = "relation of potential and current flow",
-              .default_value = approxelctresist_relpotcur}),
-      parameter<int>("GSTATCONDID_CATHODE",
-          {.description = "condition id of electrode kinetics for cathode", .default_value = 0}),
-      parameter<int>("GSTATCONDID_ANODE",
-          {.description = "condition id of electrode kinetics for anode", .default_value = 1}),
-      parameter<double>(
-          "GSTATCONVTOL", {.description = "Convergence check tolerance for galvanostatic mode",
-                              .default_value = 1.e-5}),
-      parameter<double>(
-          "GSTATCURTOL", {.description = "Current Tolerance", .default_value = 1.e-15}),
-      parameter<int>(
-          "GSTATFUNCTNO", {.description = "function number defining the imposed current curve",
-                              .default_value = -1}),
-      parameter<int>(
-          "GSTATITEMAX", {.description = "maximum number of iterations for galvanostatic mode",
-                             .default_value = 10}),
-      parameter<double>("GSTAT_LENGTH_CURRENTPATH",
-          {.description = "average length of the current path", .default_value = 0.0}),
+          deprecated_selection<Inpar::ElCh::ApproxElectResist>("GSTAT_APPROX_ELECT_RESIST",
+              {
+                  {"relation_pot_cur", approxelctresist_relpotcur},
+                  {"effective_length_with_initial_cond", approxelctresist_effleninitcond},
+                  {"effective_length_with_integrated_cond", approxelctresist_efflenintegcond},
+              },
+              {.description = "relation of potential and current flow",
+                  .default_value = approxelctresist_relpotcur}),
+          parameter<int>("GSTATCONDID_CATHODE",
+              {.description = "condition id of electrode kinetics for cathode",
+                  .default_value = 0}),
+          parameter<int>("GSTATCONDID_ANODE",
+              {.description = "condition id of electrode kinetics for anode", .default_value = 1}),
+          parameter<double>(
+              "GSTATCONVTOL", {.description = "Convergence check tolerance for galvanostatic mode",
+                                  .default_value = 1.e-5}),
+          parameter<double>(
+              "GSTATCURTOL", {.description = "Current Tolerance", .default_value = 1.e-15}),
+          parameter<int>(
+              "GSTATFUNCTNO", {.description = "function number defining the imposed current curve",
+                                  .default_value = -1}),
+          parameter<int>(
+              "GSTATITEMAX", {.description = "maximum number of iterations for galvanostatic mode",
+                                 .default_value = 10}),
+          parameter<double>("GSTAT_LENGTH_CURRENTPATH",
+              {.description = "average length of the current path", .default_value = 0.0}),
 
-      deprecated_selection<Inpar::ElCh::EquPot>("EQUPOT",
-          {
-              {"Undefined", equpot_undefined},
-              {"ENC", equpot_enc},
-              {"ENC_PDE", equpot_enc_pde},
-              {"ENC_PDE_ELIM", equpot_enc_pde_elim},
-              {"Poisson", equpot_poisson},
-              {"Laplace", equpot_laplace},
-              {"divi", equpot_divi},
-          },
-          {.description = "type of closing equation for electric potential",
-              .default_value = equpot_undefined}),
-      parameter<bool>(
-          "DIFFCOND_FORMULATION", {.description = "Activation of diffusion-conduction formulation",
-                                      .default_value = false}),
-      parameter<bool>("INITPOTCALC",
-          {.description = "Automatically calculate initial field for electric potential",
-              .default_value = false}),
-      parameter<bool>("ONLYPOTENTIAL",
-          {.description = "Coupling of general ion transport equation with Laplace equation",
-              .default_value = false}),
-      parameter<bool>("COUPLE_BOUNDARY_FLUXES",
-          {.description = "Coupling of lithium-ion flux density and electric current density at "
-                          "Dirichlet and Neumann boundaries",
-              .default_value = true}),
-      parameter<double>("CYCLING_TIMESTEP",
-          {.description = "modified time step size for CCCV cell cycling", .default_value = -1.}),
-      parameter<bool>("ELECTRODE_INFO_EVERY_STEP",
-          {.description = "the cell voltage, SOC, and C-Rate will be written to the csv file every "
-                          "step, even if RESULTSEVERY is not 1",
-              .default_value =
-                  false})}); /*----------------------------------------------------------------------*/
+          deprecated_selection<Inpar::ElCh::EquPot>("EQUPOT",
+              {
+                  {"Undefined", equpot_undefined},
+                  {"ENC", equpot_enc},
+                  {"ENC_PDE", equpot_enc_pde},
+                  {"ENC_PDE_ELIM", equpot_enc_pde_elim},
+                  {"Poisson", equpot_poisson},
+                  {"Laplace", equpot_laplace},
+                  {"divi", equpot_divi},
+              },
+              {.description = "type of closing equation for electric potential",
+                  .default_value = equpot_undefined}),
+          parameter<bool>("DIFFCOND_FORMULATION",
+              {.description = "Activation of diffusion-conduction formulation",
+                  .default_value = false}),
+          parameter<bool>("INITPOTCALC",
+              {.description = "Automatically calculate initial field for electric potential",
+                  .default_value = false}),
+          parameter<bool>("ONLYPOTENTIAL",
+              {.description = "Coupling of general ion transport equation with Laplace equation",
+                  .default_value = false}),
+          parameter<bool>("COUPLE_BOUNDARY_FLUXES",
+              {.description =
+                      "Coupling of lithium-ion flux density and electric current density at "
+                      "Dirichlet and Neumann boundaries",
+                  .default_value = true}),
+          parameter<double>(
+              "CYCLING_TIMESTEP", {.description = "modified time step size for CCCV cell cycling",
+                                      .default_value = -1.}),
+          parameter<bool>("ELECTRODE_INFO_EVERY_STEP",
+              {.description =
+                      "the cell voltage, SOC, and C-Rate will be written to the csv file every "
+                      "step, even if RESULTSEVERY is not 1",
+                  .default_value = false})},
+      {.defaultable =
+              true}); /*----------------------------------------------------------------------*/
   // attention: this list is a sublist of elchcontrol
-  list["ELCH CONTROL/DIFFCOND"] = all_of({
+  list["ELCH CONTROL/DIFFCOND"] = group("ELCH CONTROL/DIFFCOND",
+      {
 
-      parameter<bool>("CURRENT_SOLUTION_VAR",
-          {.description = "Current as a solution variable", .default_value = false}),
-      parameter<bool>(
-          "MAT_DIFFCOND_DIFFBASED", {.description = "Coupling terms of chemical diffusion for "
-                                                    "current equation are based on t and kappa",
-                                        .default_value = true}),
+          parameter<bool>("CURRENT_SOLUTION_VAR",
+              {.description = "Current as a solution variable", .default_value = false}),
+          parameter<bool>(
+              "MAT_DIFFCOND_DIFFBASED", {.description = "Coupling terms of chemical diffusion for "
+                                                        "current equation are based on t and kappa",
+                                            .default_value = true}),
 
-      /// dilute solution theory (diffusion potential in current equation):
-      ///    A          B
-      ///   |--|  |----------|
-      ///   z_1 + (z_2 - z_1) t_1
-      /// ------------------------ (RT/F kappa (1+f+-) 1/c_k grad c_k)
-      ///      z_1 z_2
-      ///     |________|
-      ///         C
-      //
-      // default: concentrated solution theory according to Newman
-      parameter<double>("MAT_NEWMAN_CONST_A",
-          {.description =
-                  "Constant A for the Newman model(term for the concentration overpotential)",
-              .default_value = 2.0}),
-      parameter<double>("MAT_NEWMAN_CONST_B",
-          {.description =
-                  "Constant B for the Newman model(term for the concentration overpotential)",
-              .default_value = -2.0}),
-      parameter<double>("MAT_NEWMAN_CONST_C",
-          {.description =
-                  "Constant C for the Newman model(term for the concentration overpotential)",
-              .default_value = -1.0}),
-      parameter<double>("PERMITTIVITY_VACUUM",
-          {.description = "Vacuum permittivity", .default_value = 8.8541878128e-12})});
+          /// dilute solution theory (diffusion potential in current equation):
+          ///    A          B
+          ///   |--|  |----------|
+          ///   z_1 + (z_2 - z_1) t_1
+          /// ------------------------ (RT/F kappa (1+f+-) 1/c_k grad c_k)
+          ///      z_1 z_2
+          ///     |________|
+          ///         C
+          //
+          // default: concentrated solution theory according to Newman
+          parameter<double>("MAT_NEWMAN_CONST_A",
+              {.description =
+                      "Constant A for the Newman model(term for the concentration overpotential)",
+                  .default_value = 2.0}),
+          parameter<double>("MAT_NEWMAN_CONST_B",
+              {.description =
+                      "Constant B for the Newman model(term for the concentration overpotential)",
+                  .default_value = -2.0}),
+          parameter<double>("MAT_NEWMAN_CONST_C",
+              {.description =
+                      "Constant C for the Newman model(term for the concentration overpotential)",
+                  .default_value = -1.0}),
+          parameter<double>("PERMITTIVITY_VACUUM",
+              {.description = "Vacuum permittivity", .default_value = 8.8541878128e-12})},
+      {.defaultable = true});
 
   /*----------------------------------------------------------------------*/
   // sublist for space-charge layers
-  list["ELCH CONTROL/SCL"] = all_of({
+  list["ELCH CONTROL/SCL"] = group("ELCH CONTROL/SCL",
+      {
 
-      parameter<bool>("ADD_MICRO_MACRO_COUPLING",
-          {.description = "flag for micro macro coupling with scls", .default_value = false}),
-      parameter<bool>("COUPLING_OUTPUT",
-          {.description = "write coupled node gids and node coordinates to csv file",
-              .default_value = false}),
-      parameter<bool>("INITPOTCALC",
-          {.description = "calculate initial potential field?", .default_value = false}),
-      parameter<int>(
-          "SOLVER", {.description = "solver for coupled SCL problem", .default_value = -1}),
-      deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
-          {
-              {"undefined", Core::LinAlg::MatrixType::undefined},
-              {"block", Core::LinAlg::MatrixType::block_field},
-              {"sparse", Core::LinAlg::MatrixType::sparse},
-          },
-          {.description = "type of global system matrix in global system of equations",
-              .default_value = Core::LinAlg::MatrixType::undefined}),
-      parameter<int>("ADAPT_TIME_STEP",
-          {.description =
-                  "time step when time step size should be updated to 'ADAPTED_TIME_STEP_SIZE'.",
-              .default_value = -1}),
-      parameter<double>(
-          "ADAPTED_TIME_STEP_SIZE", {.description = "new time step size.", .default_value = -1.0}),
+          parameter<bool>("ADD_MICRO_MACRO_COUPLING",
+              {.description = "flag for micro macro coupling with scls", .default_value = false}),
+          parameter<bool>("COUPLING_OUTPUT",
+              {.description = "write coupled node gids and node coordinates to csv file",
+                  .default_value = false}),
+          parameter<bool>("INITPOTCALC",
+              {.description = "calculate initial potential field?", .default_value = false}),
+          parameter<int>(
+              "SOLVER", {.description = "solver for coupled SCL problem", .default_value = -1}),
+          deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
+              {
+                  {"undefined", Core::LinAlg::MatrixType::undefined},
+                  {"block", Core::LinAlg::MatrixType::block_field},
+                  {"sparse", Core::LinAlg::MatrixType::sparse},
+              },
+              {.description = "type of global system matrix in global system of equations",
+                  .default_value = Core::LinAlg::MatrixType::undefined}),
+          parameter<int>(
+              "ADAPT_TIME_STEP", {.description = "time step when time step size should be updated "
+                                                 "to 'ADAPTED_TIME_STEP_SIZE'.",
+                                     .default_value = -1}),
+          parameter<double>("ADAPTED_TIME_STEP_SIZE",
+              {.description = "new time step size.", .default_value = -1.0}),
 
-      deprecated_selection<ScaTra::InitialField>("INITIALFIELD",
-          {
-              {"zero_field", ScaTra::initfield_zero_field},
-              {"field_by_function", ScaTra::initfield_field_by_function},
-              {"field_by_condition", ScaTra::initfield_field_by_condition},
-          },
-          {.description = "Initial Field for scalar transport problem",
-              .default_value = ScaTra::initfield_zero_field}),
+          deprecated_selection<ScaTra::InitialField>("INITIALFIELD",
+              {
+                  {"zero_field", ScaTra::initfield_zero_field},
+                  {"field_by_function", ScaTra::initfield_field_by_function},
+                  {"field_by_condition", ScaTra::initfield_field_by_condition},
+              },
+              {.description = "Initial Field for scalar transport problem",
+                  .default_value = ScaTra::initfield_zero_field}),
 
-      parameter<int>(
-          "INITFUNCNO", {.description = "function number for scalar transport initial field",
-                            .default_value = -1})});
+          parameter<int>(
+              "INITFUNCNO", {.description = "function number for scalar transport initial field",
+                                .default_value = -1})},
+      {.defaultable = true});
 }
 
 

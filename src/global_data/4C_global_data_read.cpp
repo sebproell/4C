@@ -114,15 +114,7 @@ namespace
       spec = Core::IO::InputSpecBuilders::list(section_name, spec, {.required = false});
     }
 
-    // The so-called "parameters" are key-values which can only appear once. Wrap them up into
-    // groups.
-    auto valid_parameters = Input::valid_parameters();
-    for (auto& [section_name, spec] : valid_parameters)
-    {
-      spec = Core::IO::InputSpecBuilders::group(section_name, {spec}, {.defaultable = true});
-    }
-
-    section_specs.merge(valid_parameters);
+    section_specs.merge(Input::valid_parameters());
   }
 }  // namespace
 

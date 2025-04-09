@@ -18,73 +18,78 @@ void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  list["ALE DYNAMIC"] = all_of({
+  list["ALE DYNAMIC"] = group("ALE DYNAMIC",
+      {
 
-      parameter<double>("TIMESTEP", {.description = "time step size", .default_value = 0.1}),
+          parameter<double>("TIMESTEP", {.description = "time step size", .default_value = 0.1}),
 
-      parameter<int>("NUMSTEP", {.description = "max number of time steps", .default_value = 41}),
+          parameter<int>(
+              "NUMSTEP", {.description = "max number of time steps", .default_value = 41}),
 
-      parameter<double>("MAXTIME", {.description = "max simulation time", .default_value = 4.0}),
+          parameter<double>(
+              "MAXTIME", {.description = "max simulation time", .default_value = 4.0}),
 
-      parameter<ALE::AleDynamic>(
-          "ALE_TYPE", {.description = "ale mesh movement algorithm", .default_value = solid}),
+          parameter<ALE::AleDynamic>(
+              "ALE_TYPE", {.description = "ale mesh movement algorithm", .default_value = solid}),
 
-      parameter<bool>("ASSESSMESHQUALITY",
-          {.description = "Evaluate element quality measure according to [Oddy et al. 1988]",
-              .default_value = false}),
+          parameter<bool>("ASSESSMESHQUALITY",
+              {.description = "Evaluate element quality measure according to [Oddy et al. 1988]",
+                  .default_value = false}),
 
-      parameter<bool>("UPDATEMATRIX", {.description = "Update stiffness matrix in every time step "
-                                                      "(only for linear/material strategies)",
-                                          .default_value = false}),
+          parameter<bool>(
+              "UPDATEMATRIX", {.description = "Update stiffness matrix in every time step "
+                                              "(only for linear/material strategies)",
+                                  .default_value = false}),
 
-      parameter<int>(
-          "MAXITER", {.description = "Maximum number of newton iterations.", .default_value = 1}),
-      parameter<double>(
-          "TOLRES", {.description = "Absolute tolerance for length scaled L2 residual norm ",
-                        .default_value = 1.0e-06}),
-      parameter<double>(
-          "TOLDISP", {.description = "Absolute tolerance for length scaled L2 increment norm ",
-                         .default_value = 1.0e-06}),
+          parameter<int>("MAXITER",
+              {.description = "Maximum number of newton iterations.", .default_value = 1}),
+          parameter<double>(
+              "TOLRES", {.description = "Absolute tolerance for length scaled L2 residual norm ",
+                            .default_value = 1.0e-06}),
+          parameter<double>(
+              "TOLDISP", {.description = "Absolute tolerance for length scaled L2 increment norm ",
+                             .default_value = 1.0e-06}),
 
-      parameter<int>("NUM_INITSTEP", {.description = "", .default_value = 0}),
-      parameter<int>("RESTARTEVERY",
-          {.description = "write restart data every RESTARTEVERY steps", .default_value = 1}),
-      parameter<int>("RESULTSEVERY",
-          {.description = "write results every RESULTSTEVERY steps", .default_value = 0}),
-      deprecated_selection<ALE::DivContAct>("DIVERCONT",
-          {
-              {"stop", divcont_stop},
-              {"continue", divcont_continue},
-          },
-          {.description = "What to do if nonlinear solver does not converge?",
-              .default_value = divcont_continue}),
+          parameter<int>("NUM_INITSTEP", {.description = "", .default_value = 0}),
+          parameter<int>("RESTARTEVERY",
+              {.description = "write restart data every RESTARTEVERY steps", .default_value = 1}),
+          parameter<int>("RESULTSEVERY",
+              {.description = "write results every RESULTSTEVERY steps", .default_value = 0}),
+          deprecated_selection<ALE::DivContAct>("DIVERCONT",
+              {
+                  {"stop", divcont_stop},
+                  {"continue", divcont_continue},
+              },
+              {.description = "What to do if nonlinear solver does not converge?",
+                  .default_value = divcont_continue}),
 
-      deprecated_selection<ALE::MeshTying>("MESHTYING",
-          {
-              {"no", no_meshtying},
-              {"meshtying", meshtying},
-              {"meshsliding", meshsliding},
-          },
-          {.description = "Flag to (de)activate mesh tying and mesh sliding algorithm",
-              .default_value = no_meshtying}),
+          deprecated_selection<ALE::MeshTying>("MESHTYING",
+              {
+                  {"no", no_meshtying},
+                  {"meshtying", meshtying},
+                  {"meshsliding", meshsliding},
+              },
+              {.description = "Flag to (de)activate mesh tying and mesh sliding algorithm",
+                  .default_value = no_meshtying}),
 
-      // Initial displacement
-      deprecated_selection<ALE::InitialDisp>("INITIALDISP",
-          {
-              {"zero_displacement", initdisp_zero_disp},
-              {"displacement_by_function", initdisp_disp_by_function},
-          },
-          {.description = "Initial displacement for structure problem",
-              .default_value = initdisp_zero_disp}),
+          // Initial displacement
+          deprecated_selection<ALE::InitialDisp>("INITIALDISP",
+              {
+                  {"zero_displacement", initdisp_zero_disp},
+                  {"displacement_by_function", initdisp_disp_by_function},
+              },
+              {.description = "Initial displacement for structure problem",
+                  .default_value = initdisp_zero_disp}),
 
-      // Function to evaluate initial displacement
-      parameter<int>(
-          "STARTFUNCNO", {.description = "Function for Initial displacement", .default_value = -1}),
+          // Function to evaluate initial displacement
+          parameter<int>("STARTFUNCNO",
+              {.description = "Function for Initial displacement", .default_value = -1}),
 
-      // linear solver id used for scalar ale problems
-      parameter<int>(
-          "LINEAR_SOLVER", {.description = "number of linear solver used for ale problems...",
-                               .default_value = -1})});
+          // linear solver id used for scalar ale problems
+          parameter<int>(
+              "LINEAR_SOLVER", {.description = "number of linear solver used for ale problems...",
+                                   .default_value = -1})},
+      {.defaultable = true});
 }
 
 

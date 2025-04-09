@@ -21,106 +21,114 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   using namespace Core::IO::InputSpecBuilders;
 
   /* parameters for potential-based beam interaction */
-  list["BEAM POTENTIAL"] = all_of({
+  list["BEAM POTENTIAL"] = group("BEAM POTENTIAL",
+      {
 
-      // TODO change to vector and remove default value
-      parameter<std::string>(
-          "POT_LAW_EXPONENT", {.description = "negative(!) exponent(s)  $m_i$ of potential law  "
-                                              "$\\Phi(r) = \\sum_i (k_i * r^{-m_i}).$",
-                                  .default_value = "1.0"}),
+          // TODO change to vector and remove default value
+          parameter<std::string>("POT_LAW_EXPONENT",
+              {.description = "negative(!) exponent(s)  $m_i$ of potential law  "
+                              "$\\Phi(r) = \\sum_i (k_i * r^{-m_i}).$",
+                  .default_value = "1.0"}),
 
-      // TODO change to vector and remove default value
-      parameter<std::string>("POT_LAW_PREFACTOR",
-          {.description =
-                  "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.",
-              .default_value = "0.0"}),
+          // TODO change to vector and remove default value
+          parameter<std::string>("POT_LAW_PREFACTOR",
+              {.description =
+                      "prefactor(s) $k_i$ of potential law $\\Phi(r) = \\sum_i (k_i * r^{-m_i})$.",
+                  .default_value = "0.0"}),
 
-      // TODO remove default value
-      parameter<BeamPotential::Type>("TYPE",
-          {.description = "Type of potential interaction: surface (default) or volume potential",
-              .default_value = BeamPotential::Type::surface}),
+          // TODO remove default value
+          parameter<BeamPotential::Type>("TYPE",
+              {.description =
+                      "Type of potential interaction: surface (default) or volume potential",
+                  .default_value = BeamPotential::Type::surface}),
 
-      // TODO remove default value
-      parameter<BeamPotential::Strategy>("STRATEGY",
-          {.description =
-                  "strategy to evaluate interaction potential: double/single length specific, "
-                  "small/large separation approximation, ...",
-              .default_value = BeamPotential::Strategy::double_length_specific_large_separations}),
+          // TODO remove default value
+          parameter<BeamPotential::Strategy>("STRATEGY",
+              {.description =
+                      "strategy to evaluate interaction potential: double/single length specific, "
+                      "small/large separation approximation, ...",
+                  .default_value =
+                      BeamPotential::Strategy::double_length_specific_large_separations}),
 
-      parameter<std::optional<double>>(
-          "CUTOFF_RADIUS", {.description = "Neglect all potential contributions at separation "
-                                           "largerthan this cutoff radius"}),
+          parameter<std::optional<double>>(
+              "CUTOFF_RADIUS", {.description = "Neglect all potential contributions at separation "
+                                               "largerthan this cutoff radius"}),
 
-      // TODO subgroup regularization
-      parameter<BeamPotential::RegularizationType>(
-          "REGULARIZATION_TYPE", {.description = "Type of regularization applied to the force law",
-                                     .default_value = BeamPotential::RegularizationType::none}),
+          // TODO subgroup regularization
+          parameter<BeamPotential::RegularizationType>("REGULARIZATION_TYPE",
+              {.description = "Type of regularization applied to the force law",
+                  .default_value = BeamPotential::RegularizationType::none}),
 
-      parameter<double>("REGULARIZATION_SEPARATION",
-          {.description =
-                  "Use regularization of force law at separations smaller than this separation",
-              .default_value = -1.0}),
+          parameter<double>("REGULARIZATION_SEPARATION",
+              {.description =
+                      "Use regularization of force law at separations smaller than this separation",
+                  .default_value = -1.0}),
 
-      parameter<int>("N_INTEGRATION_SEGMENTS",
-          {.description = "Number of integration segments used per beam element",
-              .default_value = 1}),
+          parameter<int>("N_INTEGRATION_SEGMENTS",
+              {.description = "Number of integration segments used per beam element",
+                  .default_value = 1}),
 
-      parameter<int>(
-          "N_GAUSS_POINTS", {.description = "Number of Gauss points used per integration segment",
-                                .default_value = 10}),
+          parameter<int>("N_GAUSS_POINTS",
+              {.description = "Number of Gauss points used per integration segment",
+                  .default_value = 10}),
 
-      parameter<bool>("AUTOMATIC_DIFFERENTIATION",
-          {.description = "apply automatic differentiation via FAD?", .default_value = false}),
+          parameter<bool>("AUTOMATIC_DIFFERENTIATION",
+              {.description = "apply automatic differentiation via FAD?", .default_value = false}),
 
-      parameter<MasterSlaveChoice>("CHOICE_MASTER_SLAVE",
-          {.description = "According to which rule shall the role of master and "
-                          "slave be assigned to beam elements?",
-              .default_value = MasterSlaveChoice::smaller_eleGID_is_slave}),
+          parameter<MasterSlaveChoice>("CHOICE_MASTER_SLAVE",
+              {.description = "According to which rule shall the role of master and "
+                              "slave be assigned to beam elements?",
+                  .default_value = MasterSlaveChoice::smaller_eleGID_is_slave}),
 
-      parameter<std::optional<double>>("POTENTIAL_REDUCTION_LENGTH",
-          {.description =
-                  "Within this length of the master beam end point the potential is smoothly "
-                  "reduced to one half to account for infinitely long master beam "
-                  "surrogates."})}); /*------------------------------------------------------------------------*/
+          parameter<std::optional<double>>("POTENTIAL_REDUCTION_LENGTH",
+              {.description =
+                      "Within this length of the master beam end point the potential is smoothly "
+                      "reduced to one half to account for infinitely long master beam "
+                      "surrogates."})},
+      {.defaultable =
+              true}); /*------------------------------------------------------------------------*/
   /* parameters for visualization of potential-based beam interactions via output at runtime */
 
-  list["BEAM POTENTIAL/RUNTIME VTK OUTPUT"] = all_of({
+  list["BEAM POTENTIAL/RUNTIME VTK OUTPUT"] = group("BEAM POTENTIAL/RUNTIME VTK OUTPUT",
+      {
 
-      // whether to write visualization output for beam contact
-      parameter<bool>("VTK_OUTPUT_BEAM_POTENTIAL",
-          {.description = "write visualization output for potential-based beam interactions",
-              .default_value = false}),
+          // whether to write visualization output for beam contact
+          parameter<bool>("VTK_OUTPUT_BEAM_POTENTIAL",
+              {.description = "write visualization output for potential-based beam interactions",
+                  .default_value = false}),
 
-      // output interval regarding steps: write output every INTERVAL_STEPS steps
-      parameter<int>(
-          "INTERVAL_STEPS", {.description = "write output at runtime every INTERVAL_STEPS steps",
-                                .default_value = 1}),
+          // output interval regarding steps: write output every INTERVAL_STEPS steps
+          parameter<int>("INTERVAL_STEPS",
+              {.description = "write output at runtime every INTERVAL_STEPS steps",
+                  .default_value = 1}),
 
-      // whether to write output in every iteration of the nonlinear solver
-      parameter<bool>("EVERY_ITERATION",
-          {.description = "write output in every iteration of the nonlinear solver",
-              .default_value = false}),
+          // whether to write output in every iteration of the nonlinear solver
+          parameter<bool>("EVERY_ITERATION",
+              {.description = "write output in every iteration of the nonlinear solver",
+                  .default_value = false}),
 
-      // whether to write visualization output for forces
-      parameter<bool>("FORCES",
-          {.description = "write visualization output for forces", .default_value = false}),
+          // whether to write visualization output for forces
+          parameter<bool>("FORCES",
+              {.description = "write visualization output for forces", .default_value = false}),
 
-      // whether to write visualization output for moments
-      parameter<bool>("MOMENTS",
-          {.description = "write visualization output for moments", .default_value = false}),
+          // whether to write visualization output for moments
+          parameter<bool>("MOMENTS",
+              {.description = "write visualization output for moments", .default_value = false}),
 
-      // whether to write visualization output for forces/moments separately for each element pair
-      parameter<bool>("WRITE_FORCE_MOMENT_PER_ELEMENTPAIR",
-          {.description =
-                  "write visualization output for forces/moments separately for each element pair",
-              .default_value = false}),
+          // whether to write visualization output for forces/moments separately for each element
+          // pair
+          parameter<bool>("WRITE_FORCE_MOMENT_PER_ELEMENTPAIR",
+              {.description = "write visualization output for forces/moments separately for each "
+                              "element pair",
+                  .default_value = false}),
 
-      // whether to write out the UIDs (uid_0_beam_1_gid, uid_1_beam_2_gid, uid_2_gp_id)
-      parameter<bool>("WRITE_UIDS",
-          {.description = "write out the unique ID's for each visualization point,i.e., "
-                          "master and slave beam element global ID (uid_0_beam_1_gid, "
-                          "uid_1_beam_2_gid) and local Gauss point ID (uid_2_gp_id)",
-              .default_value = false})});
+          // whether to write out the UIDs (uid_0_beam_1_gid, uid_1_beam_2_gid, uid_2_gp_id)
+          parameter<bool>("WRITE_UIDS",
+              {.description = "write out the unique ID's for each visualization point,i.e., "
+                              "master and slave beam element global ID (uid_0_beam_1_gid, "
+                              "uid_1_beam_2_gid) and local Gauss point ID (uid_2_gp_id)",
+                  .default_value = false})},
+      {.defaultable = true});
 }
 
 void BeamPotential::set_valid_conditions(

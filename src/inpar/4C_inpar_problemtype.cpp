@@ -19,19 +19,22 @@ void Inpar::PROBLEMTYPE::set_valid_parameters(std::map<std::string, Core::IO::In
   using namespace Core::IO::InputSpecBuilders;
 
   /*----------------------------------------------------------------------*/
-  list["PROBLEM TYPE"] = all_of({
+  list["PROBLEM TYPE"] = group("PROBLEM TYPE",
+      {
 
-      deprecated_selection<Core::ProblemType>("PROBLEMTYPE", string_to_problem_type_map(),
-          {.description = "Type of the problem", .default_value = Core::ProblemType::fsi}),
+          deprecated_selection<Core::ProblemType>("PROBLEMTYPE", string_to_problem_type_map(),
+              {.description = "Type of the problem", .default_value = Core::ProblemType::fsi}),
 
-      deprecated_selection<Core::FE::ShapeFunctionType>("SHAPEFCT",
-          Core::FE::string_to_shape_function_type_map(),
-          {.description = "Defines the function spaces for the spatial approximation",
-              .default_value = Core::FE::ShapeFunctionType::polynomial}),
+          deprecated_selection<Core::FE::ShapeFunctionType>("SHAPEFCT",
+              Core::FE::string_to_shape_function_type_map(),
+              {.description = "Defines the function spaces for the spatial approximation",
+                  .default_value = Core::FE::ShapeFunctionType::polynomial}),
 
-      parameter<int>("RESTART", {.description = "", .default_value = 0}),
-      parameter<int>("RANDSEED",
-          {.description = "Set the random seed. If < 0 use current time.", .default_value = -1})});
+          parameter<int>("RESTART", {.description = "", .default_value = 0}),
+          parameter<int>(
+              "RANDSEED", {.description = "Set the random seed. If < 0 use current time.",
+                              .default_value = -1})},
+      {.defaultable = true});
 }
 
 /*----------------------------------------------------------------------*/

@@ -104,54 +104,61 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
   // Add the geometry pair input parameters.
   Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(beam_to_solid_volume_mestying);
 
-  list["BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING"] = all_of(beam_to_solid_volume_mestying);
+  list["BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING"] =
+      group("BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING", beam_to_solid_volume_mestying,
+          {.defaultable = true});
 
 
   // Beam to solid volume mesh tying output parameters.
-  list["BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING/RUNTIME VTK OUTPUT"] = all_of({
-      // Whether to write visualization output at all for btsvmt.
-      parameter<bool>("WRITE_OUTPUT",
-          {.description = "Enable / disable beam-to-solid volume mesh tying output.",
-              .default_value = false}),
+  list["BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING/RUNTIME VTK OUTPUT"] = group(
+      "BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING/RUNTIME VTK OUTPUT",
+      {
+          // Whether to write visualization output at all for btsvmt.
+          parameter<bool>("WRITE_OUTPUT",
+              {.description = "Enable / disable beam-to-solid volume mesh tying output.",
+                  .default_value = false}),
 
-      parameter<bool>("NODAL_FORCES",
-          {.description = "Enable / disable output of the resulting nodal forces due "
-                          "to beam to solid interaction.",
-              .default_value = false}),
+          parameter<bool>("NODAL_FORCES",
+              {.description = "Enable / disable output of the resulting nodal forces due "
+                              "to beam to solid interaction.",
+                  .default_value = false}),
 
-      parameter<bool>("MORTAR_LAMBDA_DISCRET",
-          {.description =
-                  "Enable / disable output of the discrete Lagrange multipliers at the node "
-                  "of the Lagrange multiplier shape functions.",
-              .default_value = false}),
+          parameter<bool>("MORTAR_LAMBDA_DISCRET",
+              {.description =
+                      "Enable / disable output of the discrete Lagrange multipliers at the node "
+                      "of the Lagrange multiplier shape functions.",
+                  .default_value = false}),
 
-      parameter<bool>("MORTAR_LAMBDA_CONTINUOUS",
-          {.description = "Enable / disable output of the continuous "
-                          "Lagrange multipliers function along the beam.",
-              .default_value = false}),
+          parameter<bool>("MORTAR_LAMBDA_CONTINUOUS",
+              {.description = "Enable / disable output of the continuous "
+                              "Lagrange multipliers function along the beam.",
+                  .default_value = false}),
 
-      parameter<int>("MORTAR_LAMBDA_CONTINUOUS_SEGMENTS",
-          {.description = "Number of segments for continuous mortar output", .default_value = 5}),
+          parameter<int>("MORTAR_LAMBDA_CONTINUOUS_SEGMENTS",
+              {.description = "Number of segments for continuous mortar output",
+                  .default_value = 5}),
 
-      parameter<int>("MORTAR_LAMBDA_CONTINUOUS_SEGMENTS_CIRCUMFERENCE",
-          {.description = "Number of segments for continuous mortar output along the beam "
-                          "cross-section circumference",
-              .default_value = 8}),
+          parameter<int>("MORTAR_LAMBDA_CONTINUOUS_SEGMENTS_CIRCUMFERENCE",
+              {.description = "Number of segments for continuous mortar output along the beam "
+                              "cross-section circumference",
+                  .default_value = 8}),
 
-      parameter<bool>(
-          "SEGMENTATION", {.description = "Enable / disable output of segmentation points.",
-                              .default_value = false}),
+          parameter<bool>(
+              "SEGMENTATION", {.description = "Enable / disable output of segmentation points.",
+                                  .default_value = false}),
 
-      parameter<bool>("INTEGRATION_POINTS",
-          {.description =
-                  "Enable / disable output of used integration points. If the contact method "
-                  "has 'forces' at the integration point, they will also be output.",
-              .default_value = false}),
+          parameter<bool>("INTEGRATION_POINTS",
+              {.description =
+                      "Enable / disable output of used integration points. If the contact method "
+                      "has 'forces' at the integration point, they will also be output.",
+                  .default_value = false}),
 
-      parameter<bool>("UNIQUE_IDS", {.description = "Enable / disable output of unique IDs (mainly "
-                                                    "for testing of created VTK files).",
-                                        .default_value = false}),
-  });
+          parameter<bool>(
+              "UNIQUE_IDS", {.description = "Enable / disable output of unique IDs (mainly "
+                                            "for testing of created VTK files).",
+                                .default_value = false}),
+      },
+      {.defaultable = true});
 
 
   // Beam to solid surface mesh tying parameters.
@@ -195,7 +202,8 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
   // Add the surface options.
   Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(beam_to_solid_surface_meshtying);
   list["BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING"] =
-      all_of(beam_to_solid_surface_meshtying);
+      group("BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING", beam_to_solid_surface_meshtying,
+          {.defaultable = true});
 
 
   // Beam to solid surface contact parameters.
@@ -242,53 +250,60 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
   // Add the surface options.
   Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(beam_to_solid_surface_contact);
 
-  list["BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT"] = all_of(beam_to_solid_surface_contact);
+  list["BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT"] =
+      group("BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT", beam_to_solid_surface_contact,
+          {.defaultable = true});
 
 
   // Beam to solid surface output parameters.
-  list["BEAM INTERACTION/BEAM TO SOLID SURFACE/RUNTIME VTK OUTPUT"] = all_of({
-      // Whether to write visualization output at all.
-      parameter<bool>("WRITE_OUTPUT",
-          {.description = "Enable / disable beam-to-solid volume mesh tying output.",
-              .default_value = false}),
+  list["BEAM INTERACTION/BEAM TO SOLID SURFACE/RUNTIME VTK OUTPUT"] = group(
+      "BEAM INTERACTION/BEAM TO SOLID SURFACE/RUNTIME VTK OUTPUT",
+      {
+          // Whether to write visualization output at all.
+          parameter<bool>("WRITE_OUTPUT",
+              {.description = "Enable / disable beam-to-solid volume mesh tying output.",
+                  .default_value = false}),
 
-      parameter<bool>("NODAL_FORCES",
-          {.description = "Enable / disable output of the resulting nodal forces due "
-                          "to beam to solid interaction.",
-              .default_value = false}),
+          parameter<bool>("NODAL_FORCES",
+              {.description = "Enable / disable output of the resulting nodal forces due "
+                              "to beam to solid interaction.",
+                  .default_value = false}),
 
-      parameter<bool>("AVERAGED_NORMALS",
-          {.description = "Enable / disable output of averaged nodal normals on the surface.",
-              .default_value = false}),
+          parameter<bool>("AVERAGED_NORMALS",
+              {.description = "Enable / disable output of averaged nodal normals on the surface.",
+                  .default_value = false}),
 
-      parameter<bool>("MORTAR_LAMBDA_DISCRET",
-          {.description =
-                  "Enable / disable output of the discrete Lagrange multipliers at the node "
-                  "of the Lagrange multiplier shape functions.",
-              .default_value = false}),
+          parameter<bool>("MORTAR_LAMBDA_DISCRET",
+              {.description =
+                      "Enable / disable output of the discrete Lagrange multipliers at the node "
+                      "of the Lagrange multiplier shape functions.",
+                  .default_value = false}),
 
-      parameter<bool>("MORTAR_LAMBDA_CONTINUOUS",
-          {.description = "Enable / disable output of the continuous "
-                          "Lagrange multipliers function along the beam.",
-              .default_value = false}),
+          parameter<bool>("MORTAR_LAMBDA_CONTINUOUS",
+              {.description = "Enable / disable output of the continuous "
+                              "Lagrange multipliers function along the beam.",
+                  .default_value = false}),
 
-      parameter<int>("MORTAR_LAMBDA_CONTINUOUS_SEGMENTS",
-          {.description = "Number of segments for continuous mortar output", .default_value = 5}),
+          parameter<int>("MORTAR_LAMBDA_CONTINUOUS_SEGMENTS",
+              {.description = "Number of segments for continuous mortar output",
+                  .default_value = 5}),
 
-      parameter<bool>(
-          "SEGMENTATION", {.description = "Enable / disable output of segmentation points.",
-                              .default_value = false}),
+          parameter<bool>(
+              "SEGMENTATION", {.description = "Enable / disable output of segmentation points.",
+                                  .default_value = false}),
 
-      parameter<bool>("INTEGRATION_POINTS",
-          {.description =
-                  "Enable / disable output of used integration points. If the contact method "
-                  "has 'forces' at the integration point, they will also be output.",
-              .default_value = false}),
+          parameter<bool>("INTEGRATION_POINTS",
+              {.description =
+                      "Enable / disable output of used integration points. If the contact method "
+                      "has 'forces' at the integration point, they will also be output.",
+                  .default_value = false}),
 
-      parameter<bool>("UNIQUE_IDS", {.description = "Enable / disable output of unique IDs (mainly "
-                                                    "for testing of created VTK files).",
-                                        .default_value = false}),
-  });
+          parameter<bool>(
+              "UNIQUE_IDS", {.description = "Enable / disable output of unique IDs (mainly "
+                                            "for testing of created VTK files).",
+                                .default_value = false}),
+      },
+      {.defaultable = true});
 }
 
 /**

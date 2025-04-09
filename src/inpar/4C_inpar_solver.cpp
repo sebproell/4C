@@ -16,10 +16,10 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Inpar::SOLVER
 {
-  void set_valid_solver_parameters(Core::IO::InputSpec& spec)
+  Core::IO::InputSpec make_valid_solver_parameters()
   {
     using namespace Core::IO::InputSpecBuilders;
-    spec = Core::IO::InputSpecBuilders::all_of({
+    return all_of({
         // Solver options
         deprecated_selection<Core::LinearSolver::SolverType>("SOLVER",
             {
@@ -138,13 +138,15 @@ namespace Inpar::SOLVER
 
     // Note: the maximum number of solver blocks is hardwired here. If you change this,
     // don't forget to edit the corresponding parts in globalproblems.cpp, too.
+    auto spec_solver = make_valid_solver_parameters();
     for (int i = 1; i < 10; i++)
     {
       std::stringstream ss;
       ss << "SOLVER " << i;
       std::stringstream ss_description;
       ss_description << "solver parameters for solver block " << i;
-      set_valid_solver_parameters(list[ss.str()]);
+      list[ss.str()] = Core::IO::InputSpecBuilders::group(
+          ss.str(), {spec_solver}, {.description = ss_description.str(), .defaultable = true});
     }
   }
 

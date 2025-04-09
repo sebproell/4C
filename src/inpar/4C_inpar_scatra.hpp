@@ -259,6 +259,8 @@ namespace Inpar
     void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
     std::string impltype_to_string(ImplType impltype);
+
+    Core::IO::InputSpec all_specs_for_scatra_stabilization();
   }  // namespace ScaTra
 }  // namespace Inpar
 

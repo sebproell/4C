@@ -18,27 +18,30 @@ void Inpar::CONSTRAINTS::set_valid_parameters(std::map<std::string, Core::IO::In
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  list["EMBEDDED MESH COUPLING"] = all_of({
+  list["EMBEDDED MESH COUPLING"] = group("EMBEDDED MESH COUPLING",
+      {
 
-      parameter<EmbeddedMeshCouplingStrategy>(
-          "COUPLING_STRATEGY", {.description = "Strategy to couple background and overlapping mesh",
-                                   .default_value = EmbeddedMeshCouplingStrategy::none}),
-
-
-      parameter<SolidToSolidMortarShapefunctions>("MORTAR_SHAPE_FUNCTION",
-          {.description = "Shape functions that should be use in case of coupling using the "
-                          "Mortar/Lagrange  Multiplier method ",
-              .default_value = SolidToSolidMortarShapefunctions::none}),
+          parameter<EmbeddedMeshCouplingStrategy>("COUPLING_STRATEGY",
+              {.description = "Strategy to couple background and overlapping mesh",
+                  .default_value = EmbeddedMeshCouplingStrategy::none}),
 
 
-      parameter<EmbeddedMeshConstraintEnforcement>("CONSTRAINT_ENFORCEMENT",
-          {.description = "Apply a constraint enforcement in the embedded mesh coupling strategy",
-              .default_value = EmbeddedMeshConstraintEnforcement::none}),
+          parameter<SolidToSolidMortarShapefunctions>("MORTAR_SHAPE_FUNCTION",
+              {.description = "Shape functions that should be use in case of coupling using the "
+                              "Mortar/Lagrange  Multiplier method ",
+                  .default_value = SolidToSolidMortarShapefunctions::none}),
 
-      parameter<double>("CONSTRAINT_ENFORCEMENT_PENALTYPARAM",
-          {.description =
-                  "Penalty parameter for the constraint enforcement in embedded mesh coupling",
-              .default_value = 0.0})});
+
+          parameter<EmbeddedMeshConstraintEnforcement>("CONSTRAINT_ENFORCEMENT",
+              {.description =
+                      "Apply a constraint enforcement in the embedded mesh coupling strategy",
+                  .default_value = EmbeddedMeshConstraintEnforcement::none}),
+
+          parameter<double>("CONSTRAINT_ENFORCEMENT_PENALTYPARAM",
+              {.description =
+                      "Penalty parameter for the constraint enforcement in embedded mesh coupling",
+                  .default_value = 0.0})},
+      {.defaultable = true});
 }
 
 FOUR_C_NAMESPACE_CLOSE
