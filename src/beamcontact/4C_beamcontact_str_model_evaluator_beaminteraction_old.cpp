@@ -49,11 +49,6 @@ void Solid::ModelEvaluator::BeamInteractionOld::setup()
   // create beam contact manager
   beamcman_ = std::make_shared<CONTACT::Beam3cmanager>(*discret_ptr(), 0.0);
 
-  // gmsh output at beginning of simulation
-#ifdef GMSHTIMESTEPS
-  beamcman_->GmshOutput(*disnp_ptr_, 0, 0, true);
-#endif
-
   // set flag
   issetup_ = true;
 }
@@ -123,12 +118,6 @@ bool Solid::ModelEvaluator::BeamInteractionOld::evaluate_force_stiff()
 
   beamcman_->evaluate(*stiff_beaminteract_ptr_, *f_beaminteract_np_ptr_, *disnp_ptr_,
       beamcontactparams, true, eval_data().get_total_time());
-
-  // visualization of current Newton step
-#ifdef GMSHNEWTONSTEPS
-  beamcman_->GmshOutput(*disnp_ptr_, EvalData().get_step_np(), EvalData().GetNlnIter());
-  beamcman_->ConsoleOutput();
-#endif
 
   // update constraint norm
   beamcman_->update_constr_norm();  // ToDo

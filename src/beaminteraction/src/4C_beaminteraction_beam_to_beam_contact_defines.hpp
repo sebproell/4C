@@ -67,10 +67,6 @@ FOUR_C_NAMESPACE_OPEN
   1.0 /* with this parameter the geometrical radius used for contact evaluation can be          \
 //default: 1                         chosen different from the physical radius appearing in the \
 bending stiffness */
-#define MANIPULATERADIUSVIS                                                                     \
-  1.0 /* with this parameter the geometrical radius used for gmsh visualization can be          \
-//default: 1                         chosen different from the physical radius appearing in the \
-bending stiffness */
 #define NEIGHBORTOL                                                                                \
   2 /* parameter that allows to also evaluate the contact normal of neighbor elements              \
 //default: 3                         needed for new gap function. It has proven useful that        \
@@ -200,18 +196,9 @@ FOUR_C_THROW("CONSISTENTTRANSITION does not work in combination with ENDPOINTSEG
 /************************************************************************/
 /* Debugging options                                                    */
 /************************************************************************/
-#define N_CIRCUMFERENTIAL \
-  10 /* number of gmsh visualization devisions of beam element in circumferential direction*/
-#define N_Axial 10 /* number of gmsh visualization devisions of beam element in axial direction*/
-
 // #define DISTINGUISHCONTACTCOLOR
 // #define CONTACTPAIRSPECIFICOUTPUT
 // #define OUTPUTALLPROCS
-// #define OUTPUTEVERY 0.000001        //Write gmsh output in time intervals of size OUTPUTEVERY
-// #define OUTPUTEVERYNEWTONSTEP      //Write output also after each Newton step
-// #define GMSHTIMESTEPS              /*write gmsh output in each time step */
-// #define GMSHNEWTONSTEPS            /*write gmsh and console output in each Newton step */
-// #define REACTIONFORCES             /* output of reaction forces and moments */
 // #define BEAMCONTACTFDCHECKS        /* perform finite difference checks */
 
 // #define PRINTGAPFILE //print file with gap/gap error
@@ -257,15 +244,6 @@ typedef double TYPEBTS;
 // #define FDCHECKSTIFFNESS                        // Decide if differentiation via finite
 // difference
 //  for calculating contact stiffness is used default: Off
-
-#ifndef AUTOMATICDIFFBTS
-// #define BTSOLGMSH                           // gmsh output of solids
-// #define GMSHDEBUG                             // Draw gap as 3D text at each Gauss point in Gmsh
-// #define GMSHFORCE                             // Create extra Gmsh file with contact forces
-// acting
-//  on solid element #define SAVEFORCE                             // Create text file with contact
-//  forces at all contact interval borders and Gauss points
-#endif
 
 // -----------------------------------------------------------------
 
