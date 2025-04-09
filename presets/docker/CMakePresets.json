@@ -68,6 +68,7 @@
       ],
       "cacheVariables": {
         "FOUR_C_ENABLE_ADDRESS_SANITIZER": "ON",
+        "FOUR_C_ENABLE_UNDEFINED_BEHAVIOR_SANITIZER": "ON",
         "FOUR_C_TEST_TIMEOUT_SCALE": "10"
       }
     },
