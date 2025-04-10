@@ -349,18 +349,15 @@ std::set<int> EXODUS::get_ns_from_bc_entity(
   {
     std::set<int> allnodes;
     Core::IO::Exodus::SideSet ss = m.get_side_set(e.id);
-    const std::map<int, std::vector<int>> eles = ss.get_side_set();
-    for (const auto& ele : eles)
+    const std::map<int, std::vector<int>>& eles = ss.get_side_set();
+    for (const auto& nodes : eles | std::views::values)
     {
-      const std::vector<int> nodes = ele.second;
       for (auto node : nodes) allnodes.insert(node);
     }
     return allnodes;
   }
   else
     FOUR_C_THROW("Cannot identify mesh_entity");
-  std::set<int> n;
-  return n;
 }
 
 
@@ -501,7 +498,7 @@ void EXODUS::dat_eles(const Core::IO::Exodus::ElementBlock& eb, const EXODUS::El
     const std::vector<int> nodes = ele.second;
     dat << "   " << startele;
     dat << " " << acte.ename;  // e.g. "SOLID"
-    dat << " " << Core::FE::cell_type_to_string(pre_shape_to_drt(eb.get_shape()));
+    dat << " " << Core::FE::cell_type_to_string(shape_to_cell_type(eb.get_shape()));
     dat << "  ";
     for (auto node : nodes) dat << node << " ";
     dat << "   " << acte.desc;  // e.g. "MAT 1"

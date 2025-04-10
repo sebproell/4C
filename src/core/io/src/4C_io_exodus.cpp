@@ -338,19 +338,18 @@ Core::IO::Exodus::ElementBlock::ElementBlock(ElementBlock::Shape Distype,
   for (std::map<int, std::vector<int>>::const_iterator elem = eleconn->begin();
       elem != eleconn->end(); ++elem)
   {
-    if (Core::FE::get_number_of_element_nodes(pre_shape_to_drt(Distype)) !=
+    if (Core::FE::get_number_of_element_nodes(shape_to_cell_type(Distype)) !=
         (int)elem->second.size())
     {
       FOUR_C_THROW("number of read nodes does not fit the distype");
     }
   }
-  return;
 }
 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<int> Core::IO::Exodus::ElementBlock::get_ele_nodes(int i) const
+const std::vector<int>& Core::IO::Exodus::ElementBlock::get_ele_nodes(int i) const
 {
   std::map<int, std::vector<int>>::const_iterator it = eleconn_->find(i);
   return it->second;
@@ -362,8 +361,7 @@ int Core::IO::Exodus::ElementBlock::get_ele_node(int ele, int node) const
 {
   std::map<int, std::vector<int>>::const_iterator it = eleconn_->find(ele);
   if (it == eleconn_->end()) FOUR_C_THROW("Element not found");
-  std::vector<int> elenodes = get_ele_nodes(ele);
-  return elenodes[node];
+  return get_ele_nodes(ele)[node];
 }
 
 
@@ -438,6 +436,195 @@ void Core::IO::Exodus::SideSet::print(std::ostream& os, bool verbose) const
       os << "Side " << it->first << ": ";
       os << "Ele: " << it->second.at(0) << ", Side: " << it->second.at(1) << std::endl;
     }
+  }
+}
+
+Core::IO::Exodus::ElementBlock::Shape Core::IO::Exodus::string_to_shape(const std::string shape)
+{
+  if (shape.compare("SPHERE") == 0)
+    return ElementBlock::point1;
+  else if (shape.compare("QUAD4") == 0)
+    return ElementBlock::quad4;
+  else if (shape.compare("QUAD8") == 0)
+    return ElementBlock::quad8;
+  else if (shape.compare("QUAD9") == 0)
+    return ElementBlock::quad9;
+  else if (shape.compare("SHELL4") == 0)
+    return ElementBlock::shell4;
+  else if (shape.compare("SHELL8") == 0)
+    return ElementBlock::shell8;
+  else if (shape.compare("SHELL9") == 0)
+    return ElementBlock::shell9;
+  else if (shape.compare("TRI3") == 0)
+    return ElementBlock::tri3;
+  else if (shape.compare("TRI6") == 0)
+    return ElementBlock::tri6;
+  else if (shape.compare("HEX8") == 0)
+    return ElementBlock::hex8;
+  else if (shape.compare("HEX20") == 0)
+    return ElementBlock::hex20;
+  else if (shape.compare("HEX27") == 0)
+    return ElementBlock::hex27;
+  else if (shape.compare("HEX") == 0)
+    return ElementBlock::hex8;  // really needed????? a.g. 08/08
+  else if (shape.compare("TET4") == 0)
+    return ElementBlock::tet4;  // really needed?
+  else if (shape.compare("TETRA4") == 0)
+    return ElementBlock::tet4;
+  else if (shape.compare("TETRA10") == 0)
+    return ElementBlock::tet10;
+  else if (shape.compare("TETRA") == 0)
+    return ElementBlock::tet4;  // really needed????? a.g. 08/08
+  else if (shape.compare("WEDGE6") == 0)
+    return ElementBlock::wedge6;
+  else if (shape.compare("WEDGE15") == 0)
+    return ElementBlock::wedge15;
+  else if (shape.compare("WEDGE") == 0)
+    return ElementBlock::wedge6;  // really needed????? a.g. 08/08
+  else if (shape.compare("PYRAMID5") == 0)
+    return ElementBlock::pyramid5;
+  else if (shape.compare("PYRAMID") == 0)
+    return ElementBlock::pyramid5;  // really needed????? a.g. 08/08
+  else if (shape.compare("BAR2") == 0)
+    return ElementBlock::bar2;
+  else if (shape.compare("BAR3") == 0)
+    return ElementBlock::bar3;
+  else
+  {
+    FOUR_C_THROW("Unknown Exodus Element Shape Name!");
+  }
+}
+
+std::string Core::IO::Exodus::shape_to_string(const ElementBlock::Shape shape)
+{
+  switch (shape)
+  {
+    case ElementBlock::point1:
+      return "SPHERE";
+      break;
+    case ElementBlock::quad4:
+      return "QUAD4";
+      break;
+    case ElementBlock::quad8:
+      return "QUAD8";
+      break;
+    case ElementBlock::quad9:
+      return "QUAD9";
+      break;
+    case ElementBlock::shell4:
+      return "SHELL4";
+      break;
+    case ElementBlock::shell8:
+      return "SHELL8";
+      break;
+    case ElementBlock::shell9:
+      return "SHELL9";
+      break;
+    case ElementBlock::tri3:
+      return "TRI3";
+      break;
+    case ElementBlock::tri6:
+      return "TRI6";
+      break;
+    case ElementBlock::hex8:
+      return "HEX8";
+      break;
+    case ElementBlock::hex20:
+      return "HEX20";
+      break;
+    case ElementBlock::hex27:
+      return "HEX27";
+      break;
+    case ElementBlock::tet4:
+      return "TET4";
+      break;
+    case ElementBlock::tet10:
+      return "TET10";
+      break;
+    case ElementBlock::wedge6:
+      return "WEDGE6";
+      break;
+    case ElementBlock::wedge15:
+      return "WEDGE15";
+      break;
+    case ElementBlock::pyramid5:
+      return "PYRAMID5";
+      break;
+    case ElementBlock::bar2:
+      return "BAR2";
+      break;
+    case ElementBlock::bar3:
+      return "BAR3";
+      break;
+    default:
+      FOUR_C_THROW("Unknown ElementBlock::Shape");
+  }
+}
+
+
+Core::FE::CellType Core::IO::Exodus::shape_to_cell_type(const ElementBlock::Shape shape)
+{
+  switch (shape)
+  {
+    case ElementBlock::point1:
+      return Core::FE::CellType::point1;
+      break;
+    case ElementBlock::quad4:
+      return Core::FE::CellType::quad4;
+      break;
+    case ElementBlock::quad8:
+      return Core::FE::CellType::quad8;
+      break;
+    case ElementBlock::quad9:
+      return Core::FE::CellType::quad9;
+      break;
+    case ElementBlock::shell4:
+      return Core::FE::CellType::quad4;
+      break;
+    case ElementBlock::shell8:
+      return Core::FE::CellType::quad8;
+      break;
+    case ElementBlock::shell9:
+      return Core::FE::CellType::quad9;
+      break;
+    case ElementBlock::tri3:
+      return Core::FE::CellType::tri3;
+      break;
+    case ElementBlock::tri6:
+      return Core::FE::CellType::tri6;
+      break;
+    case ElementBlock::hex8:
+      return Core::FE::CellType::hex8;
+      break;
+    case ElementBlock::hex20:
+      return Core::FE::CellType::hex20;
+      break;
+    case ElementBlock::hex27:
+      return Core::FE::CellType::hex27;
+      break;
+    case ElementBlock::tet4:
+      return Core::FE::CellType::tet4;
+      break;
+    case ElementBlock::tet10:
+      return Core::FE::CellType::tet10;
+      break;
+    case ElementBlock::wedge6:
+      return Core::FE::CellType::wedge6;
+      break;
+    case ElementBlock::wedge15:
+      return Core::FE::CellType::wedge15;
+      break;
+    case ElementBlock::pyramid5:
+      return Core::FE::CellType::pyramid5;
+      break;
+    case ElementBlock::bar2:
+      return Core::FE::CellType::line2;
+      break;
+    case ElementBlock::bar3:
+      return Core::FE::CellType::line3;
+      break;
+    default:
+      FOUR_C_THROW("Unknown ElementBlock::Shape");
   }
 }
 

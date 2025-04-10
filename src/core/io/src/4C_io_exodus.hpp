@@ -11,9 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_fem_general_element.hpp"
-#include "4C_utils_exceptions.hpp"
 
-#include <iostream>
 #include <set>
 #include <string>
 #include <vector>
@@ -27,10 +25,9 @@ namespace Core::IO::Exodus
   class NodeSet;
   class SideSet;
 
-  /*!
-  \brief Mesh will in future store all information necessary to build a mesh
-
-  */
+  /**
+   * A class that stores the mesh information read from an Exodus file.
+   */
   class Mesh
   {
    public:
@@ -166,7 +163,7 @@ namespace Core::IO::Exodus
 
     std::shared_ptr<std::map<int, std::vector<int>>> get_ele_conn() const { return eleconn_; }
 
-    std::vector<int> get_ele_nodes(int i) const;
+    const std::vector<int>& get_ele_nodes(int i) const;
 
     std::string get_name() const { return name_; }
 
@@ -188,7 +185,7 @@ namespace Core::IO::Exodus
    public:
     NodeSet(const std::set<int>& nodeids, const std::string& name);
 
-    std::set<int> get_node_set() const { return nodeids_; };
+    const std::set<int>& get_node_set() const { return nodeids_; };
 
     std::string get_name() const { return name_; };
 
@@ -210,7 +207,7 @@ namespace Core::IO::Exodus
 
     std::string get_name() const { return name_; }
 
-    std::map<int, std::vector<int>> get_side_set() const { return sides_; }
+    const std::map<int, std::vector<int>>& get_side_set() const { return sides_; }
 
     void print(std::ostream& os, bool verbose = false) const;
 
@@ -219,198 +216,11 @@ namespace Core::IO::Exodus
     std::string name_;
   };
 
+  ElementBlock::Shape string_to_shape(const std::string shape);
 
-  inline ElementBlock::Shape string_to_shape(const std::string shape)
-  {
-    if (shape.compare("SPHERE") == 0)
-      return ElementBlock::point1;
-    else if (shape.compare("QUAD4") == 0)
-      return ElementBlock::quad4;
-    else if (shape.compare("QUAD8") == 0)
-      return ElementBlock::quad8;
-    else if (shape.compare("QUAD9") == 0)
-      return ElementBlock::quad9;
-    else if (shape.compare("SHELL4") == 0)
-      return ElementBlock::shell4;
-    else if (shape.compare("SHELL8") == 0)
-      return ElementBlock::shell8;
-    else if (shape.compare("SHELL9") == 0)
-      return ElementBlock::shell9;
-    else if (shape.compare("TRI3") == 0)
-      return ElementBlock::tri3;
-    else if (shape.compare("TRI6") == 0)
-      return ElementBlock::tri6;
-    else if (shape.compare("HEX8") == 0)
-      return ElementBlock::hex8;
-    else if (shape.compare("HEX20") == 0)
-      return ElementBlock::hex20;
-    else if (shape.compare("HEX27") == 0)
-      return ElementBlock::hex27;
-    else if (shape.compare("HEX") == 0)
-      return ElementBlock::hex8;  // really needed????? a.g. 08/08
-    else if (shape.compare("TET4") == 0)
-      return ElementBlock::tet4;  // TODO:: gibts das eigentlich?
-    else if (shape.compare("TETRA4") == 0)
-      return ElementBlock::tet4;
-    else if (shape.compare("TETRA10") == 0)
-      return ElementBlock::tet10;
-    else if (shape.compare("TETRA") == 0)
-      return ElementBlock::tet4;  // really needed????? a.g. 08/08
-    else if (shape.compare("WEDGE6") == 0)
-      return ElementBlock::wedge6;
-    else if (shape.compare("WEDGE15") == 0)
-      return ElementBlock::wedge15;
-    else if (shape.compare("WEDGE") == 0)
-      return ElementBlock::wedge6;  // really needed????? a.g. 08/08
-    else if (shape.compare("PYRAMID5") == 0)
-      return ElementBlock::pyramid5;
-    else if (shape.compare("PYRAMID") == 0)
-      return ElementBlock::pyramid5;  // really needed????? a.g. 08/08
-    else if (shape.compare("BAR2") == 0)
-      return ElementBlock::bar2;
-    else if (shape.compare("BAR3") == 0)
-      return ElementBlock::bar3;
-    else
-    {
-      std::cout << "Unknown Exodus Element Shape Name: " << shape;
-      FOUR_C_THROW("Unknown Exodus Element Shape Name!");
-      return ElementBlock::dis_none;
-    }
-  }
+  std::string shape_to_string(const ElementBlock::Shape shape);
 
-  inline std::string shape_to_string(const ElementBlock::Shape shape)
-  {
-    switch (shape)
-    {
-      case ElementBlock::point1:
-        return "SPHERE";
-        break;
-      case ElementBlock::quad4:
-        return "QUAD4";
-        break;
-      case ElementBlock::quad8:
-        return "QUAD8";
-        break;
-      case ElementBlock::quad9:
-        return "QUAD9";
-        break;
-      case ElementBlock::shell4:
-        return "SHELL4";
-        break;
-      case ElementBlock::shell8:
-        return "SHELL8";
-        break;
-      case ElementBlock::shell9:
-        return "SHELL9";
-        break;
-      case ElementBlock::tri3:
-        return "TRI3";
-        break;
-      case ElementBlock::tri6:
-        return "TRI6";
-        break;
-      case ElementBlock::hex8:
-        return "HEX8";
-        break;
-      case ElementBlock::hex20:
-        return "HEX20";
-        break;
-      case ElementBlock::hex27:
-        return "HEX27";
-        break;
-      case ElementBlock::tet4:
-        return "TET4";
-        break;
-      case ElementBlock::tet10:
-        return "TET10";
-        break;
-      case ElementBlock::wedge6:
-        return "WEDGE6";
-        break;
-      case ElementBlock::wedge15:
-        return "WEDGE15";
-        break;
-      case ElementBlock::pyramid5:
-        return "PYRAMID5";
-        break;
-      case ElementBlock::bar2:
-        return "BAR2";
-        break;
-      case ElementBlock::bar3:
-        return "BAR3";
-        break;
-      default:
-        FOUR_C_THROW("Unknown ElementBlock::Shape");
-    }
-    return "xxx";
-  }
-
-  inline Core::FE::CellType pre_shape_to_drt(const ElementBlock::Shape shape)
-  {
-    switch (shape)
-    {
-      case ElementBlock::point1:
-        return Core::FE::CellType::point1;
-        break;
-      case ElementBlock::quad4:
-        return Core::FE::CellType::quad4;
-        break;
-      case ElementBlock::quad8:
-        return Core::FE::CellType::quad8;
-        break;
-      case ElementBlock::quad9:
-        return Core::FE::CellType::quad9;
-        break;
-      case ElementBlock::shell4:
-        return Core::FE::CellType::quad4;
-        break;
-      case ElementBlock::shell8:
-        return Core::FE::CellType::quad8;
-        break;
-      case ElementBlock::shell9:
-        return Core::FE::CellType::quad9;
-        break;
-      case ElementBlock::tri3:
-        return Core::FE::CellType::tri3;
-        break;
-      case ElementBlock::tri6:
-        return Core::FE::CellType::tri6;
-        break;
-      case ElementBlock::hex8:
-        return Core::FE::CellType::hex8;
-        break;
-      case ElementBlock::hex20:
-        return Core::FE::CellType::hex20;
-        break;
-      case ElementBlock::hex27:
-        return Core::FE::CellType::hex27;
-        break;
-      case ElementBlock::tet4:
-        return Core::FE::CellType::tet4;
-        break;
-      case ElementBlock::tet10:
-        return Core::FE::CellType::tet10;
-        break;
-      case ElementBlock::wedge6:
-        return Core::FE::CellType::wedge6;
-        break;
-      case ElementBlock::wedge15:
-        return Core::FE::CellType::wedge15;
-        break;
-      case ElementBlock::pyramid5:
-        return Core::FE::CellType::pyramid5;
-        break;
-      case ElementBlock::bar2:
-        return Core::FE::CellType::line2;
-        break;
-      case ElementBlock::bar3:
-        return Core::FE::CellType::line3;
-        break;
-      default:
-        FOUR_C_THROW("Unknown ElementBlock::Shape");
-    }
-    return Core::FE::CellType::max_distype;
-  }
+  Core::FE::CellType shape_to_cell_type(const ElementBlock::Shape shape);
 
 }  // namespace Core::IO::Exodus
 

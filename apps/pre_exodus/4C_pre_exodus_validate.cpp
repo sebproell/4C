@@ -80,7 +80,7 @@ void EXODUS::validate_mesh_element_jacobians(Core::IO::Exodus::Mesh& mymesh)
 
   for (const auto& [eb_id, eb] : mymesh.get_element_blocks())
   {
-    const Core::FE::CellType distype = pre_shape_to_drt(eb.get_shape());
+    const Core::FE::CellType distype = shape_to_cell_type(eb.get_shape());
     // check and rewind if necessary
     validate_element_jacobian(mymesh, distype, eb);
     // full check at all gausspoints
