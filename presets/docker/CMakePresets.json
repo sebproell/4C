@@ -67,6 +67,8 @@
         ".docker_base"
       ],
       "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_C_COMPILER": "clang",
         "FOUR_C_ENABLE_UNDEFINED_BEHAVIOR_SANITIZER": "ON",
         "FOUR_C_TEST_TIMEOUT_SCALE": "10"
       }
