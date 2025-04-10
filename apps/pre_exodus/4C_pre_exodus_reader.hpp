@@ -37,12 +37,6 @@ namespace EXODUS
     //! constructor
     Mesh(std::string exofilename);
 
-    //! extension constructor, adds Elementblock and nodes to a basemesh
-    Mesh(const Mesh& basemesh, const std::shared_ptr<std::map<int, std::vector<double>>> extNodes,
-        const std::map<int, std::shared_ptr<ElementBlock>>& extBlocks,
-        const std::map<int, NodeSet>& extNodesets, const std::map<int, SideSet>& extSidesets,
-        const std::string newtitle);
-
     //! Print mesh info
     void print(std::ostream& os, bool verbose = false) const;
 
@@ -60,12 +54,6 @@ namespace EXODUS
 
     //! Get number of dimensions
     int get_four_c_dim() const { return four_c_dim_; }
-
-    //! Get exodus file id
-    int get_exo_id() const { return exoid_; }
-
-    //! Get mesh title
-    std::string get_title() const;
 
     //! Get ElementBlock map
     std::map<int, std::shared_ptr<ElementBlock>> get_element_blocks() const
@@ -115,24 +103,6 @@ namespace EXODUS
     //! Set number of space dimensions
     void set_nsd(const int nsd);
 
-    //! Close Exodus File
-    void close_exo() const;
-
-    //! Write Mesh into exodus file
-    void write_mesh(const std::string newexofilename) const;
-
-    //! Add Element Block to mesh
-    void add_element_block(const std::shared_ptr<EXODUS::ElementBlock> eblock) const;
-
-    //! Erase Element Block from mesh
-    void erase_element_block(const int id);
-
-    //! Erase SideSet from mesh
-    void erase_side_set(const int id);
-
-    //! Adjust local element ids referenced in SideSet to global ids
-    std::map<int, std::vector<int>> globalify_s_seleids(const int ssid) const;
-
    private:
     std::shared_ptr<std::map<int, std::vector<double>>> nodes_;
 
@@ -144,13 +114,14 @@ namespace EXODUS
 
     //! number of dimensions
     int num_dim_;
+
     //! number of dimensions for 4C problem (wall and fluid2 elements require 2d, although we have
     //! spatial dimensions)
     int four_c_dim_;
+
     //! number of elements
     int num_elem_;
-    //! exoid
-    int exoid_;
+
     //! title
     std::string title_;
   };
@@ -207,8 +178,6 @@ namespace EXODUS
 
     int get_ele_node(int ele, int node) const;
 
-    void fill_econn_array(int* connarray) const;
-
     void print(std::ostream& os, bool verbose = false) const;
 
    private:
@@ -231,8 +200,6 @@ namespace EXODUS
 
     std::string get_prop_name() const { return propname_; };
 
-    void fill_nodelist_array(int* nodelist) const;
-
     inline int get_num_nodes() const { return nodeids_.size(); }
 
     void print(std::ostream& os, bool verbose = false) const;
@@ -254,18 +221,6 @@ namespace EXODUS
 
     std::map<int, std::vector<int>> get_side_set() const { return sides_; }
 
-    void replace_sides(std::map<int, std::vector<int>> newsides)
-    {
-      sides_ = newsides;
-      return;
-    };
-
-    std::vector<int> get_first_side_set() const { return sides_.begin()->second; }
-
-    void fill_side_lists(int* elemlist, int* sidelist) const;
-    void fill_side_lists(
-        int* elemlist, int* sidelist, const std::map<int, std::vector<int>>& sides) const;
-
     void print(std::ostream& os, bool verbose = false) const;
 
    private:
@@ -273,8 +228,6 @@ namespace EXODUS
     std::string name_;
   };
 
-
-  Mesh quadto_tri(EXODUS::Mesh& basemesh);
 
   inline ElementBlock::Shape string_to_shape(const std::string shape)
   {
@@ -467,9 +420,6 @@ namespace EXODUS
     }
     return Core::FE::CellType::max_distype;
   }
-
-  int hex_side_number_exo_to_four_c(const int exoface);
-  int pyr_side_number_exo_to_four_c(const int exoface);
 
 }  // namespace EXODUS
 

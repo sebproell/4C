@@ -184,8 +184,6 @@ int main(int argc, char** argv)
 
     bool twodim = false;
 
-    // related to quad->tri conversion
-    bool quadtri = false;
 
     Teuchos::CommandLineProcessor My_CLP;
     My_CLP.setDocString("This preprocessor converts Exodus2 files into 4C input files\n");
@@ -197,10 +195,6 @@ int main(int argc, char** argv)
 
     // switch for generating a 2d file
     My_CLP.setOption("d2", "d3", &twodim, "space dimensions in .dat-file: d2: 2D, d3: 3D");
-
-    // check for quad->tri conversion
-    My_CLP.setOption(
-        "quadtri", "noquadtri", &quadtri, "transform quads to tris by cutting in two halves");
 
     Teuchos::CommandLineProcessor::EParseCommandLineReturn parseReturn = My_CLP.parse(argc, argv);
 
@@ -248,18 +242,6 @@ int main(int argc, char** argv)
     EXODUS::Mesh mymesh(exofile);
     // print infos to std::cout
     mymesh.print(std::cout);
-
-    /**************************************************************************
-     * Edit a existing Mesh, e.g. extrusion of surface
-     **************************************************************************/
-
-    // transform quads->tris
-    if (quadtri)
-    {
-      EXODUS::Mesh trimesh = EXODUS::quadto_tri(mymesh);
-      trimesh.write_mesh("tri_" + exofile);
-      exit(0);
-    }
 
     /**************************************************************************
      * Read ControlFile for Boundary and Element descriptions
