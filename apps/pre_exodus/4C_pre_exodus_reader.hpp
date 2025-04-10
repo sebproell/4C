@@ -37,18 +37,6 @@ namespace EXODUS
     //! constructor
     Mesh(std::string exofilename);
 
-    //! extension constructor, adds Elementblock and nodes to a basemesh
-    Mesh(const Mesh& basemesh, const std::shared_ptr<std::map<int, std::vector<double>>> extNodes,
-        const std::map<int, std::shared_ptr<ElementBlock>>& extBlocks,
-        const std::map<int, NodeSet>& extNodesets, const std::map<int, SideSet>& extSidesets,
-        const std::string newtitle);
-
-    //! empty constructor
-    Mesh();
-
-    //! destructor
-    virtual ~Mesh() = default;
-
     //! Print mesh info
     void print(std::ostream& os, bool verbose = false) const;
 
@@ -66,12 +54,6 @@ namespace EXODUS
 
     //! Get number of dimensions
     int get_four_c_dim() const { return four_c_dim_; }
-
-    //! Get exodus file id
-    int get_exo_id() const { return exoid_; }
-
-    //! Get mesh title
-    std::string get_title() const;
 
     //! Get ElementBlock map
     std::map<int, std::shared_ptr<ElementBlock>> get_element_blocks() const
@@ -103,34 +85,11 @@ namespace EXODUS
     //! Get one SideSet
     SideSet get_side_set(const int id) const;
 
-    //! Get Side Set Connectivity with Global Nodes
-    std::map<int, std::vector<int>> get_side_set_conn(const SideSet sideset) const;
-
-    //! Get Side Set Connectivity with Global Nodes
-    std::map<int, std::vector<int>> get_side_set_conn(
-        const SideSet sideset, bool checkoutside) const;
-
-    //! Make sure child ele (SideSet) is outward oriented w.r.t. parent ele
-    std::vector<int> outside_oriented_side(
-        const std::vector<int> parentele, const std::vector<int> sidemap) const;
-
     //! Get edge Normal at node
     std::vector<double> normal(const int head1, const int origin, const int head2) const;
 
     //! Get normalized Vector between 2 nodes
     std::vector<double> node_vec(const int tail, const int head) const;
-
-    //! Transform SideSet into ElementBlock
-    std::vector<ElementBlock> side_set_to_e_blocks(
-        const SideSet& sideset, const std::map<int, std::vector<int>>& sidesetconn) const;
-
-    //! Transform SideSet into NodeSet
-    NodeSet side_set_to_node_set(
-        const SideSet& sideset, const std::map<int, std::vector<int>>& sidesetconn) const;
-
-    //! Get Set of Nodes in SideSet
-    std::set<int> get_side_set_nodes(
-        const EXODUS::SideSet& sideset, const std::map<int, std::vector<int>>& sidesetconn) const;
 
     //! Get Node map
     std::shared_ptr<std::map<int, std::vector<double>>> get_nodes() const { return nodes_; }
@@ -144,40 +103,6 @@ namespace EXODUS
     //! Set number of space dimensions
     void set_nsd(const int nsd);
 
-    //! Close Exodus File
-    void close_exo() const;
-
-    //! Write Mesh into exodus file
-    void write_mesh(const std::string newexofilename) const;
-
-    //! Add Element Block to mesh
-    void add_element_block(const std::shared_ptr<EXODUS::ElementBlock> eblock) const;
-
-    //! Erase Element Block from mesh
-    void erase_element_block(const int id);
-
-    //! Erase SideSet from mesh
-    void erase_side_set(const int id);
-
-    //! Calculate the midpoint of all elements and return map<midpoint,map<eb,ele> >
-    std::map<int, std::pair<int, int>> create_midpoints(
-        std::map<int, std::vector<double>>& midpoints, const std::vector<int>& eb_ids) const;
-
-    //! Adjust local element ids referenced in SideSet to global ids
-    std::map<int, std::vector<int>> globalify_s_seleids(const int ssid) const;
-
-    //! Plot Nodes in Gmsh-file
-    void plot_nodes_gmsh() const;
-
-    //! Plot all ElementBlocks into Gmsh-file
-    void plot_element_blocks_gmsh(const std::string fname, const EXODUS::Mesh& mymesh) const;
-    void plot_element_blocks_gmsh(
-        const std::string fname, const EXODUS::Mesh& mymesh, const std::vector<int>& ebids) const;
-
-    //! Plot Connectivity into Gmsh-file
-    void plot_conn_gmsh(const std::string fname, const EXODUS::Mesh& mymesh,
-        const std::map<int, std::vector<int>>& conn) const;
-
    private:
     std::shared_ptr<std::map<int, std::vector<double>>> nodes_;
 
@@ -189,13 +114,14 @@ namespace EXODUS
 
     //! number of dimensions
     int num_dim_;
+
     //! number of dimensions for 4C problem (wall and fluid2 elements require 2d, although we have
     //! spatial dimensions)
     int four_c_dim_;
+
     //! number of elements
     int num_elem_;
-    //! exoid
-    int exoid_;
+
     //! title
     std::string title_;
   };
@@ -240,8 +166,6 @@ namespace EXODUS
         std::shared_ptr<std::map<int, std::vector<int>>>& eleconn,  // Element connectivity
         std::string name);
 
-    virtual ~ElementBlock() = default;
-
     ElementBlock::Shape get_shape() const { return distype_; }
 
     int get_num_ele() const { return eleconn_->size(); }
@@ -253,8 +177,6 @@ namespace EXODUS
     std::string get_name() const { return name_; }
 
     int get_ele_node(int ele, int node) const;
-
-    void fill_econn_array(int* connarray) const;
 
     void print(std::ostream& os, bool verbose = false) const;
 
@@ -272,15 +194,11 @@ namespace EXODUS
    public:
     NodeSet(const std::set<int>& nodeids, const std::string& name, const std::string& propname);
 
-    virtual ~NodeSet() = default;
-
     std::set<int> get_node_set() const { return nodeids_; };
 
     std::string get_name() const { return name_; };
 
     std::string get_prop_name() const { return propname_; };
-
-    void fill_nodelist_array(int* nodelist) const;
 
     inline int get_num_nodes() const { return nodeids_.size(); }
 
@@ -297,25 +215,11 @@ namespace EXODUS
    public:
     SideSet(const std::map<int, std::vector<int>>& sides, const std::string& name);
 
-    virtual ~SideSet() = default;
-
     inline int get_num_sides() const { return sides_.size(); }
 
     std::string get_name() const { return name_; }
 
     std::map<int, std::vector<int>> get_side_set() const { return sides_; }
-
-    void replace_sides(std::map<int, std::vector<int>> newsides)
-    {
-      sides_ = newsides;
-      return;
-    };
-
-    std::vector<int> get_first_side_set() const { return sides_.begin()->second; }
-
-    void fill_side_lists(int* elemlist, int* sidelist) const;
-    void fill_side_lists(
-        int* elemlist, int* sidelist, const std::map<int, std::vector<int>>& sides) const;
 
     void print(std::ostream& os, bool verbose = false) const;
 
@@ -323,9 +227,7 @@ namespace EXODUS
     std::map<int, std::vector<int>> sides_;
     std::string name_;
   };
-  // *********** end of classes
 
-  Mesh quadto_tri(EXODUS::Mesh& basemesh);
 
   inline ElementBlock::Shape string_to_shape(const std::string shape)
   {
@@ -518,22 +420,6 @@ namespace EXODUS
     }
     return Core::FE::CellType::max_distype;
   }
-
-  void print_map(std::ostream& os, const std::map<int, std::vector<int>> mymap);
-  void print_map(std::ostream& os, const std::map<int, std::vector<double>> mymap);
-  void print_map(std::ostream& os, const std::map<int, std::set<int>> mymap);
-  void print_map(std::ostream& os, const std::map<int, std::map<int, int>> mymap);
-  void print_map(std::ostream& os, const std::map<int, std::pair<int, int>> mymap);
-  void print_map(std::ostream& os, const std::map<int, int> mymap);
-  void print_map(std::ostream& os, const std::map<int, double> mymap);
-  void print_map(std::ostream& os, const std::map<double, int> mymap);
-  void print_vec(std::ostream& os, const std::vector<int> actvec);
-  void print_vec(std::ostream& os, const std::vector<double> actvec);
-  void print_set(std::ostream& os, const std::set<int> actset);
-
-
-  int hex_side_number_exo_to_four_c(const int exoface);
-  int pyr_side_number_exo_to_four_c(const int exoface);
 
 }  // namespace EXODUS
 
