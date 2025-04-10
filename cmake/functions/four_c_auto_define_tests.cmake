@@ -213,6 +213,12 @@ endfunction()
 ##
 # Copy support files to the test directory. The support files are copied to a directory that is shared by all tests
 # that use the given test base name.
+#
+# Usage: four_c_add_support_files_to_test(TEST_NAME_BASE [SUPPORT_FILES <file1> <file2> ...])
+#
+# TEST_NAME_BASE: The base name of the test. Returned by four_c_auto_define_tests().
+# SUPPORT_FILES: A list of files to be copied. The files are copied to the test directory. If any of the files
+#                have an .in suffix, they are configured (replacing all @VAR@ expressions) before copying.
 ##
 function(four_c_add_support_files_to_test _test_name_base)
   if(NOT FOUR_C_WITH_GOOGLETEST)
@@ -245,7 +251,15 @@ function(four_c_add_support_files_to_test _test_name_base)
       "Copying support file ${_support_file} to ${FOUR_C_TEST_SUPPORT_FILE_DIR}/${_support_file}"
       )
 
-    configure_file(${_support_file} ${FOUR_C_TEST_SUPPORT_FILE_DIR}/${_support_file})
+    # If the file is an .in file that requires configuration, do so.
+    if(_support_file MATCHES ".in$")
+      # Strip the .in suffix
+      string(REGEX REPLACE ".in$" "" _support_file_wo_in ${_support_file})
+      configure_file(${_support_file} ${FOUR_C_TEST_SUPPORT_FILE_DIR}/${_support_file_wo_in} @ONLY)
+      # Otherwise, just copy the file
+    else()
+      configure_file(${_support_file} ${FOUR_C_TEST_SUPPORT_FILE_DIR}/${_support_file} COPYONLY)
+    endif()
   endforeach()
 
 endfunction()
