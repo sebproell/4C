@@ -124,34 +124,6 @@ void EXODUS::write_dat_conditions(
     for (i_c = (count->second).begin(); i_c != (count->second).end(); ++i_c)
     {
       EXODUS::CondDef actcon = condefs[*i_c];
-      std::string name;
-      std::string pname;
-      if (actcon.me == EXODUS::bcns)
-      {
-        name = (mymesh.get_node_set(actcon.id).get_name());
-        pname = (mymesh.get_node_set(actcon.id).get_prop_name());
-      }
-      else if (actcon.me == EXODUS::bceb)
-      {
-        name = (mymesh.get_element_block(actcon.id)->get_name());
-      }
-      else if (actcon.me == EXODUS::bcss)
-      {
-        name = (mymesh.get_side_set(actcon.id).get_name());
-      }
-      else
-        FOUR_C_THROW("Unidentified Actcon");
-      if ((name != ""))
-      {
-        dat << "// " << name;
-        if (pname != "none")
-        {
-          dat << " " << pname;
-        }
-        dat << std::endl;
-      }
-      else if (pname != "none")
-        dat << "// " << pname << std::endl;
 
       // write the condition
       if (actcon.desc == "" and actcon.sec == "DESIGN SURF LOCSYS CONDITIONS" and
@@ -361,8 +333,8 @@ std::set<int> EXODUS::get_ns_from_bc_entity(const EXODUS::CondDef& e, const EXOD
   else if (e.me == EXODUS::bceb)
   {
     std::set<int> allnodes;
-    std::shared_ptr<EXODUS::ElementBlock> eb = m.get_element_block(e.id);
-    std::shared_ptr<const std::map<int, std::vector<int>>> eles = eb->get_ele_conn();
+    const auto& eb = m.get_element_block(e.id);
+    std::shared_ptr<const std::map<int, std::vector<int>>> eles = eb.get_ele_conn();
     for (const auto& ele : *eles)
     {
       const std::vector<int> nodes = ele.second;
@@ -395,9 +367,8 @@ void EXODUS::write_dat_nodes(const EXODUS::Mesh& mymesh, std::ostream& dat)
 {
   dat << "-------------------------------------------------------NODE COORDS" << std::endl;
   dat.precision(16);
-  std::shared_ptr<std::map<int, std::vector<double>>> nodes = mymesh.get_nodes();
 
-  for (const auto& node : *nodes)
+  for (const auto& node : mymesh.get_nodes())
   {
     std::vector<double> coords = node.second;
     dat << "NODE " << std::setw(9) << node.first << " COORD";
@@ -477,8 +448,8 @@ void EXODUS::write_dat_eles(
 
     for (const auto& ele : ele_vector)
     {
-      std::shared_ptr<EXODUS::ElementBlock> eb = mymesh.get_element_block(ele.id);
-      EXODUS::dat_eles(*eb, ele, startele, dat, ele.id);
+      const auto& eb = mymesh.get_element_block(ele.id);
+      EXODUS::dat_eles(eb, ele, startele, dat, ele.id);
     }
   };
 

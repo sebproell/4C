@@ -92,13 +92,10 @@ namespace
               << std::endl;
 
     // write ElementBlocks with specification proposal
-    const std::map<int, std::shared_ptr<EXODUS::ElementBlock>> myblocks =
-        mymesh.get_element_blocks();
-    std::map<int, std::shared_ptr<EXODUS::ElementBlock>>::const_iterator it;
-    for (it = myblocks.begin(); it != myblocks.end(); ++it)
+    for (const auto& [eb_id, eb] : mymesh.get_element_blocks())
     {
-      it->second->print(defaultbc);
-      defaultbc << "*eb" << it->first << "=\"ELEMENT\"" << std::endl
+      eb.print(defaultbc);
+      defaultbc << "*eb" << eb_id << "=\"ELEMENT\"" << std::endl
                 << "sectionname=\"\"" << std::endl
                 << "description=\"\"" << std::endl
                 << "elementname=\"\"" << std::endl

@@ -28,11 +28,11 @@ EXODUS::Mesh::Mesh(const std::string exofilename)
   CPU_word_size = sizeof(double); /* size of a double */
   IO_word_size = 0;               /* use what is stored in file */
 
-  const char* exofilenamechar = exofilename.c_str();
 
   // open EXODUS II file
-  int exo_handle = ex_open(exofilenamechar, EX_READ, &CPU_word_size, &IO_word_size, &exoversion);
-  if (exo_handle <= 0) FOUR_C_THROW("Error while opening EXODUS II file {}", exofilenamechar);
+  int exo_handle =
+      ex_open(exofilename.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &exoversion);
+  if (exo_handle <= 0) FOUR_C_THROW("Error while opening EXODUS II file {}", exofilename);
 
   // print version
   std::cout << "File " << exofilename << " was created with EXODUS II library version "
@@ -55,18 +55,12 @@ EXODUS::Mesh::Mesh(const std::string exofilename)
     error = ex_get_coord(exo_handle, x.data(), y.data(), z.data());
     if (error != 0) FOUR_C_THROW("exo error returned");
 
-    // store nodes in map
-    nodes_ = std::make_shared<std::map<int, std::vector<double>>>();
     for (int i = 0; i < num_nodes; ++i)
     {
-      std::vector<double> coords;
-      coords.push_back(x[i]);
-      coords.push_back(y[i]);
-      coords.push_back(z[i]);
-      nodes_->insert(std::pair<int, std::vector<double>>(
-          i + 1, coords));  // to store the EXO-ID starting with 1
+      // Node numbering starts at one in 4C
+      nodes_[i + 1] = {x[i], y[i], z[i]};
     }
-  }  // free coordinate vectors x, y ,z
+  }
 
   // Get all ElementBlocks
   {
@@ -81,8 +75,6 @@ EXODUS::Mesh::Mesh(const std::string exofilename)
       // Read Element Blocks into Map
       char mychar[MAX_STR_LENGTH + 1];
       int num_el_in_blk, num_nod_per_elem, num_attr;
-      // error = ex_get_elem_block (exo_handle, epropID[i], mychar, &num_el_in_blk,
-      // &num_nod_per_elem, &num_attr);
       error = ex_get_block(exo_handle, EX_ELEM_BLOCK, ebids[i], mychar, &num_el_in_blk,
           &num_nod_per_elem, nullptr, nullptr, &num_attr);
       if (error != 0) FOUR_C_THROW("exo error returned");
@@ -111,17 +103,14 @@ EXODUS::Mesh::Mesh(const std::string exofilename)
         }
         eleconn->insert(std::pair<int, std::vector<int>>(j, actconn));
       }
-      std::shared_ptr<ElementBlock> actEleBlock =
-          std::make_shared<ElementBlock>(string_to_shape(ele_type), eleconn, blockname);
 
-      // Add this ElementBlock into Mesh map
-      element_blocks_.insert(std::pair<int, std::shared_ptr<ElementBlock>>(ebids[i], actEleBlock));
+      element_blocks_.emplace(
+          ebids[i], ElementBlock{string_to_shape(ele_type), eleconn, blockname});
     }
   }  // end of element section
 
   // get all NodeSets
   {
-    std::map<int, NodeSet> prelimNodeSets;  // prelim due to possible prop names
     std::vector<int> npropID(num_node_sets);
     error = ex_get_prop_array(exo_handle, EX_NODE_SET, "ID", npropID.data());
     for (int i = 0; i < num_node_sets; ++i)
@@ -147,55 +136,11 @@ EXODUS::Mesh::Mesh(const std::string exofilename)
         FOUR_C_THROW("error reading node set");
       std::set<int> nodes_in_set;
       for (int j = 0; j < num_nodes_in_set; ++j) nodes_in_set.insert(node_set_node_list[j]);
-      NodeSet actNodeSet(nodes_in_set, nodesetname, "none");
+      NodeSet actNodeSet(nodes_in_set, nodesetname);
 
       // Add this NodeSet into Mesh map (here prelim due to pro names)
-      prelimNodeSets.insert(std::pair<int, NodeSet>(npropID[i], actNodeSet));
+      node_sets_.insert(std::pair<int, NodeSet>(npropID[i], actNodeSet));
     }
-
-    /* Read NodeSet property names ***********************************************
-     * They are assigned by ICEM and provide recognition */
-    int num_props;
-    float fdum;
-    char cdum;  // dummy argument
-    error = ex_inquire(exo_handle, EX_INQ_NS_PROP, &num_props, &fdum, &cdum);
-    // allocate memory for NodeSet property names
-    char** prop_names = new char*[num_props];
-    for (int i = 0; i < num_props; ++i)
-    {
-      prop_names[i] = new char[MAX_STR_LENGTH + 1];
-    }
-    // get prop names of node sets
-    error = ex_get_prop_names(exo_handle, EX_NODE_SET, prop_names);
-
-    // Add prop names to final Mesh NodeSet if available
-    std::map<int, NodeSet>::const_iterator i_ns;
-    if ((num_props - 1) == num_node_sets)
-    {
-      int i = 1;  // id of propname, starts with 1 because 0 is "ID"
-      for (i_ns = prelimNodeSets.begin(); i_ns != prelimNodeSets.end(); ++i_ns)
-      {
-        std::string propname(prop_names[i]);
-        const NodeSet actNodeSet = i_ns->second;
-        std::string ns_name = actNodeSet.get_name();
-        if (ns_name.size() == 0) ns_name = propname;
-        const NodeSet newNodeSet(actNodeSet.get_node_set(), ns_name, propname);
-        node_sets_.insert(std::pair<int, NodeSet>(i_ns->first, newNodeSet));
-        ++i;  // next propname refers to next NodeSet
-      }
-    }
-    else
-    {
-      // this is the standard case without prop names
-      node_sets_ = prelimNodeSets;
-    }
-
-    // clean up node set names
-    for (int i = 0; i < num_props; i++)
-    {
-      delete[] prop_names[i];
-    }
-    delete[] prop_names;
   }  // end of nodeset section
   // ***************************************************************************
 
@@ -260,11 +205,10 @@ void EXODUS::Mesh::print(std::ostream& os, bool verbose) const
   {
     os << "ElementBlocks" << std::endl;
     std::map<int, std::shared_ptr<ElementBlock>>::const_iterator it;
-    std::map<int, std::shared_ptr<ElementBlock>> eleBlocks = get_element_blocks();
-    for (it = eleBlocks.begin(); it != eleBlocks.end(); it++)
+    for (const auto& [eb_id, eb] : get_element_blocks())
     {
-      os << it->first << ": ";
-      it->second->print(os);
+      os << eb_id << ": ";
+      eb.print(os);
     }
     os << std::endl << "NodeSets" << std::endl;
     std::map<int, NodeSet>::const_iterator it2;
@@ -289,7 +233,7 @@ void EXODUS::Mesh::print(std::ostream& os, bool verbose) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<EXODUS::ElementBlock> EXODUS::Mesh::get_element_block(const int id) const
+const EXODUS::ElementBlock& EXODUS::Mesh::get_element_block(const int id) const
 {
   if (element_blocks_.find(id) == element_blocks_.end())
     FOUR_C_THROW("ElementBlock {} not found.", id);
@@ -315,44 +259,17 @@ EXODUS::SideSet EXODUS::Mesh::get_side_set(const int id) const
   return (side_sets_.find(id))->second;
 }
 
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void EXODUS::Mesh::print_nodes(std::ostream& os, bool storeid) const
-{
-  std::map<int, std::vector<double>>::const_iterator it;
-  for (it = nodes_->begin(); it != nodes_->end(); it++)
-  {
-    if (storeid) os << "MapID: " << it->first;
-    int exoid = it->first + 1;
-    os << " ExoID: " << exoid << " : ";
-    const std::vector<double> mycoords = it->second;
-    for (int i = 0; i < signed(mycoords.size()); i++)
-    {
-      os << mycoords[i] << ",";
-    }
-    os << std::endl;
-  }
-}
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<double> EXODUS::Mesh::get_node(const int NodeID) const
-{
-  std::map<int, std::vector<double>>::const_iterator it = nodes_->find(NodeID);
-  return it->second;
-}
+std::vector<double> EXODUS::Mesh::get_node(const int NodeID) const { return nodes_.at(NodeID); }
 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void EXODUS::Mesh::set_node(const int NodeID, const std::vector<double> coord)
 {
-  // if entry exits already , delete it first and the insert the new value
-  // other wise nothing is inserted
-  if (nodes_->find(NodeID) != nodes_->end()) nodes_->erase(NodeID);
-
-  nodes_->insert(std::make_pair(NodeID, coord));
-  return;
+  nodes_[NodeID] = coord;
 }
 
 
@@ -471,11 +388,9 @@ void EXODUS::ElementBlock::print(std::ostream& os, bool verbose) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-EXODUS::NodeSet::NodeSet(
-    const std::set<int>& nodeids, const std::string& name, const std::string& propname)
-    : nodeids_(nodeids), name_(name.c_str()), propname_(propname.c_str())
+EXODUS::NodeSet::NodeSet(const std::set<int>& nodeids, const std::string& name)
+    : nodeids_(nodeids), name_(name.c_str())
 {
-  return;
 }
 
 
@@ -484,7 +399,6 @@ EXODUS::NodeSet::NodeSet(
 void EXODUS::NodeSet::print(std::ostream& os, bool verbose) const
 {
   os << "Node Set, named: " << name_ << std::endl
-     << "Property Name: " << propname_ << std::endl
      << "has " << get_num_nodes() << " Nodes" << std::endl;
   if (verbose)
   {

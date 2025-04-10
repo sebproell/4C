@@ -40,11 +40,8 @@ namespace EXODUS
     //! Print mesh info
     void print(std::ostream& os, bool verbose = false) const;
 
-    //! Print Nodes and Coords
-    void print_nodes(std::ostream& os, bool storeid = false) const;
-
     //! Get number of nodes in mesh
-    int get_num_nodes() const { return nodes_->size(); }
+    int get_num_nodes() const { return nodes_.size(); }
 
     //! Get number of elements in mesh
     int get_num_ele() const { return num_elem_; }
@@ -56,16 +53,13 @@ namespace EXODUS
     int get_four_c_dim() const { return four_c_dim_; }
 
     //! Get ElementBlock map
-    std::map<int, std::shared_ptr<ElementBlock>> get_element_blocks() const
-    {
-      return element_blocks_;
-    }
+    const std::map<int, ElementBlock>& get_element_blocks() const { return element_blocks_; }
 
     //! Get Number of ElementBlocks
     int get_num_element_blocks() const { return element_blocks_.size(); }
 
     //! Get one ElementBlock
-    std::shared_ptr<ElementBlock> get_element_block(const int id) const;
+    const ElementBlock& get_element_block(const int id) const;
 
     //! Get NodeSet map
     std::map<int, NodeSet> get_node_sets() const { return node_sets_; }
@@ -92,7 +86,7 @@ namespace EXODUS
     std::vector<double> node_vec(const int tail, const int head) const;
 
     //! Get Node map
-    std::shared_ptr<std::map<int, std::vector<double>>> get_nodes() const { return nodes_; }
+    const std::map<int, std::vector<double>>& get_nodes() const { return nodes_; }
 
     //! Get one nodal coords
     std::vector<double> get_node(const int NodeID) const;
@@ -104,9 +98,9 @@ namespace EXODUS
     void set_nsd(const int nsd);
 
    private:
-    std::shared_ptr<std::map<int, std::vector<double>>> nodes_;
+    std::map<int, std::vector<double>> nodes_;
 
-    std::map<int, std::shared_ptr<ElementBlock>> element_blocks_;
+    std::map<int, ElementBlock> element_blocks_;
 
     std::map<int, NodeSet> node_sets_;
 
@@ -192,13 +186,11 @@ namespace EXODUS
   class NodeSet
   {
    public:
-    NodeSet(const std::set<int>& nodeids, const std::string& name, const std::string& propname);
+    NodeSet(const std::set<int>& nodeids, const std::string& name);
 
     std::set<int> get_node_set() const { return nodeids_; };
 
     std::string get_name() const { return name_; };
-
-    std::string get_prop_name() const { return propname_; };
 
     inline int get_num_nodes() const { return nodeids_.size(); }
 
@@ -207,7 +199,6 @@ namespace EXODUS
    private:
     std::set<int> nodeids_;  // nodids in NodeSet
     std::string name_;       // NodeSet name
-    std::string propname_;   // Icem assigns part names as property names
   };
 
   class SideSet
