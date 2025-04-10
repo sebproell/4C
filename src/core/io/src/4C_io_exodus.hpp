@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_PRE_EXODUS_READER_HPP
-#define FOUR_C_PRE_EXODUS_READER_HPP
+#ifndef FOUR_C_IO_EXODUS_HPP
+#define FOUR_C_IO_EXODUS_HPP
 
 #include "4C_config.hpp"
 
@@ -20,7 +20,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace EXODUS
+namespace Core::IO::Exodus
 {
   // forward declaration
   class ElementBlock;
@@ -412,7 +412,7 @@ namespace EXODUS
     return Core::FE::CellType::max_distype;
   }
 
-}  // namespace EXODUS
+}  // namespace Core::IO::Exodus
 
 FOUR_C_NAMESPACE_CLOSE
 

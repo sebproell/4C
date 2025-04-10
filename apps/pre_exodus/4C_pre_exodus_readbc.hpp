@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_exodus.hpp"
 #include "4C_legacy_enum_definitions_conditions.hpp"
-#include "4C_pre_exodus_reader.hpp"
 #include "4C_utils_exceptions.hpp"
 
 #include <iostream>
@@ -91,19 +91,19 @@ namespace EXODUS
 
   // ! Correct nodal coordinates for periodic boundary conditions
   void correct_nodal_coordinates_for_periodic_boundary_conditions(
-      EXODUS::Mesh& mesh, std::vector<EXODUS::CondDef> condefs);
+      Core::IO::Exodus::Mesh& mesh, std::vector<EXODUS::CondDef> condefs);
 
   // ! Correct nodal coordinates in the YZ plane for periodic boundary conditions
   void correct_yz_plane_for_periodic_boundary_conditions(
-      EXODUS::Mesh& mesh, const std::vector<EXODUS::CondDef>& condefs);
+      Core::IO::Exodus::Mesh& mesh, const std::vector<EXODUS::CondDef>& condefs);
 
   // ! Correct nodal coordinates in the XZ plane for periodic boundary conditions
   void correct_xz_plane_for_periodic_boundary_conditions(
-      EXODUS::Mesh& mesh, const std::vector<EXODUS::CondDef>& condefs);
+      Core::IO::Exodus::Mesh& mesh, const std::vector<EXODUS::CondDef>& condefs);
 
   // ! Correct nodal coordinates in the XY plane for periodic boundary conditions
   void correct_xy_plane_for_periodic_boundary_conditions(
-      EXODUS::Mesh& mesh, const std::vector<EXODUS::CondDef>& condefs);
+      Core::IO::Exodus::Mesh& mesh, const std::vector<EXODUS::CondDef>& condefs);
 
 }  // namespace EXODUS
 

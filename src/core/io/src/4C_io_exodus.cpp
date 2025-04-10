@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_pre_exodus_reader.hpp"
+#include "4C_io_exodus.hpp"
 
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
 
@@ -20,7 +20,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  |  ctor (public)                                              maf 12/07|
  *----------------------------------------------------------------------*/
-EXODUS::Mesh::Mesh(const std::string exofilename)
+Core::IO::Exodus::Mesh::Mesh(const std::string exofilename)
 {
   int error;
   int CPU_word_size, IO_word_size;
@@ -192,7 +192,7 @@ EXODUS::Mesh::Mesh(const std::string exofilename)
 /*----------------------------------------------------------------------*
  |  Print method (public)                                      maf 12/07|
  *----------------------------------------------------------------------*/
-void EXODUS::Mesh::print(std::ostream& os, bool verbose) const
+void Core::IO::Exodus::Mesh::print(std::ostream& os, bool verbose) const
 {
   os << "Mesh consists of ";
   os << get_num_nodes() << " Nodes, ";
@@ -233,7 +233,7 @@ void EXODUS::Mesh::print(std::ostream& os, bool verbose) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-const EXODUS::ElementBlock& EXODUS::Mesh::get_element_block(const int id) const
+const Core::IO::Exodus::ElementBlock& Core::IO::Exodus::Mesh::get_element_block(const int id) const
 {
   if (element_blocks_.find(id) == element_blocks_.end())
     FOUR_C_THROW("ElementBlock {} not found.", id);
@@ -243,7 +243,7 @@ const EXODUS::ElementBlock& EXODUS::Mesh::get_element_block(const int id) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-EXODUS::NodeSet EXODUS::Mesh::get_node_set(const int id) const
+Core::IO::Exodus::NodeSet Core::IO::Exodus::Mesh::get_node_set(const int id) const
 {
   if (node_sets_.find(id) == node_sets_.end()) FOUR_C_THROW("NodeSet {} not found.", id);
 
@@ -252,7 +252,7 @@ EXODUS::NodeSet EXODUS::Mesh::get_node_set(const int id) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-EXODUS::SideSet EXODUS::Mesh::get_side_set(const int id) const
+Core::IO::Exodus::SideSet Core::IO::Exodus::Mesh::get_side_set(const int id) const
 {
   if (side_sets_.find(id) == side_sets_.end()) FOUR_C_THROW("SideSet {} not found.", id);
 
@@ -262,12 +262,15 @@ EXODUS::SideSet EXODUS::Mesh::get_side_set(const int id) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<double> EXODUS::Mesh::get_node(const int NodeID) const { return nodes_.at(NodeID); }
+std::vector<double> Core::IO::Exodus::Mesh::get_node(const int NodeID) const
+{
+  return nodes_.at(NodeID);
+}
 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::Mesh::set_node(const int NodeID, const std::vector<double> coord)
+void Core::IO::Exodus::Mesh::set_node(const int NodeID, const std::vector<double> coord)
 {
   nodes_[NodeID] = coord;
 }
@@ -275,7 +278,7 @@ void EXODUS::Mesh::set_node(const int NodeID, const std::vector<double> coord)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::Mesh::set_nsd(const int nsd)
+void Core::IO::Exodus::Mesh::set_nsd(const int nsd)
 {
   if (nsd != 2 && nsd != 3) return;
 
@@ -287,7 +290,8 @@ void EXODUS::Mesh::set_nsd(const int nsd)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<double> EXODUS::Mesh::normal(const int head1, const int origin, const int head2) const
+std::vector<double> Core::IO::Exodus::Mesh::normal(
+    const int head1, const int origin, const int head2) const
 {
   std::vector<double> normal(3);
   std::vector<double> h1 = get_node(head1);
@@ -308,7 +312,7 @@ std::vector<double> EXODUS::Mesh::normal(const int head1, const int origin, cons
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<double> EXODUS::Mesh::node_vec(const int tail, const int head) const
+std::vector<double> Core::IO::Exodus::Mesh::node_vec(const int tail, const int head) const
 {
   std::vector<double> nv(3);
   std::vector<double> t = get_node(tail);
@@ -326,7 +330,7 @@ std::vector<double> EXODUS::Mesh::node_vec(const int tail, const int head) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-EXODUS::ElementBlock::ElementBlock(ElementBlock::Shape Distype,
+Core::IO::Exodus::ElementBlock::ElementBlock(ElementBlock::Shape Distype,
     std::shared_ptr<std::map<int, std::vector<int>>>& eleconn, std::string name)
     : distype_(Distype), eleconn_(eleconn), name_(name.c_str())
 {
@@ -346,7 +350,7 @@ EXODUS::ElementBlock::ElementBlock(ElementBlock::Shape Distype,
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<int> EXODUS::ElementBlock::get_ele_nodes(int i) const
+std::vector<int> Core::IO::Exodus::ElementBlock::get_ele_nodes(int i) const
 {
   std::map<int, std::vector<int>>::const_iterator it = eleconn_->find(i);
   return it->second;
@@ -354,7 +358,7 @@ std::vector<int> EXODUS::ElementBlock::get_ele_nodes(int i) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-int EXODUS::ElementBlock::get_ele_node(int ele, int node) const
+int Core::IO::Exodus::ElementBlock::get_ele_node(int ele, int node) const
 {
   std::map<int, std::vector<int>>::const_iterator it = eleconn_->find(ele);
   if (it == eleconn_->end()) FOUR_C_THROW("Element not found");
@@ -365,7 +369,7 @@ int EXODUS::ElementBlock::get_ele_node(int ele, int node) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::ElementBlock::print(std::ostream& os, bool verbose) const
+void Core::IO::Exodus::ElementBlock::print(std::ostream& os, bool verbose) const
 {
   os << "Element Block, named: " << name_ << std::endl
      << "of Shape: " << shape_to_string(distype_) << std::endl
@@ -388,7 +392,7 @@ void EXODUS::ElementBlock::print(std::ostream& os, bool verbose) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-EXODUS::NodeSet::NodeSet(const std::set<int>& nodeids, const std::string& name)
+Core::IO::Exodus::NodeSet::NodeSet(const std::set<int>& nodeids, const std::string& name)
     : nodeids_(nodeids), name_(name.c_str())
 {
 }
@@ -396,7 +400,7 @@ EXODUS::NodeSet::NodeSet(const std::set<int>& nodeids, const std::string& name)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::NodeSet::print(std::ostream& os, bool verbose) const
+void Core::IO::Exodus::NodeSet::print(std::ostream& os, bool verbose) const
 {
   os << "Node Set, named: " << name_ << std::endl
      << "has " << get_num_nodes() << " Nodes" << std::endl;
@@ -412,7 +416,8 @@ void EXODUS::NodeSet::print(std::ostream& os, bool verbose) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-EXODUS::SideSet::SideSet(const std::map<int, std::vector<int>>& sides, const std::string& name)
+Core::IO::Exodus::SideSet::SideSet(
+    const std::map<int, std::vector<int>>& sides, const std::string& name)
     : sides_(sides), name_(name.c_str())
 {
   return;
@@ -421,7 +426,7 @@ EXODUS::SideSet::SideSet(const std::map<int, std::vector<int>>& sides, const std
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::SideSet::print(std::ostream& os, bool verbose) const
+void Core::IO::Exodus::SideSet::print(std::ostream& os, bool verbose) const
 {
   os << "SideSet, named: " << name_ << std::endl
      << "has " << get_num_sides() << " Sides" << std::endl;

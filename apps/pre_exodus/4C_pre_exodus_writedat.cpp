@@ -11,9 +11,9 @@
 #include "4C_fem_general_cell_type_traits.hpp"
 #include "4C_global_data_read.hpp"
 #include "4C_inpar_validconditions.hpp"
+#include "4C_io_exodus.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_yaml.hpp"
-#include "4C_pre_exodus_reader.hpp"
 
 #include <fstream>
 
@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-int EXODUS::write_dat_file(const std::string& outfile, const EXODUS::Mesh& mymesh,
+int EXODUS::write_dat_file(const std::string& outfile, const Core::IO::Exodus::Mesh& mymesh,
     const std::string& headfile, const std::vector<EXODUS::ElemDef>& eledefs,
     const std::vector<EXODUS::CondDef>& condefs)
 {
@@ -96,8 +96,8 @@ int EXODUS::write_dat_file(const std::string& outfile, const EXODUS::Mesh& mymes
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::write_dat_conditions(
-    const std::vector<EXODUS::CondDef>& condefs, const EXODUS::Mesh& mymesh, std::ostream& dat)
+void EXODUS::write_dat_conditions(const std::vector<EXODUS::CondDef>& condefs,
+    const Core::IO::Exodus::Mesh& mymesh, std::ostream& dat)
 {
   using namespace FourC;
 
@@ -155,10 +155,11 @@ void EXODUS::write_dat_conditions(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<double> EXODUS::calc_normal_surf_locsys(const int ns_id, const EXODUS::Mesh& m)
+std::vector<double> EXODUS::calc_normal_surf_locsys(
+    const int ns_id, const Core::IO::Exodus::Mesh& m)
 {
   std::vector<double> normaltangent;
-  EXODUS::NodeSet ns = m.get_node_set(ns_id);
+  Core::IO::Exodus::NodeSet ns = m.get_node_set(ns_id);
 
   std::set<int> nodes_from_nodeset = ns.get_node_set();
   std::set<int>::iterator it;
@@ -172,7 +173,8 @@ std::vector<double> EXODUS::calc_normal_surf_locsys(const int ns_id, const EXODU
 
   std::set<int>::iterator thirdnode;
 
-  const auto compute_normal = [](int head1, int origin, int head2, const EXODUS::Mesh& basemesh)
+  const auto compute_normal =
+      [](int head1, int origin, int head2, const Core::IO::Exodus::Mesh& basemesh)
   {
     std::vector<double> normal(3);
     std::vector<double> h1 = basemesh.get_node(head1);
@@ -242,8 +244,8 @@ std::vector<double> EXODUS::calc_normal_surf_locsys(const int ns_id, const EXODU
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::write_dat_design_topology(
-    const std::vector<EXODUS::CondDef>& condefs, const EXODUS::Mesh& mymesh, std::ostream& dat)
+void EXODUS::write_dat_design_topology(const std::vector<EXODUS::CondDef>& condefs,
+    const Core::IO::Exodus::Mesh& mymesh, std::ostream& dat)
 {
   using namespace FourC;
 
@@ -323,11 +325,12 @@ void EXODUS::write_dat_design_topology(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::set<int> EXODUS::get_ns_from_bc_entity(const EXODUS::CondDef& e, const EXODUS::Mesh& m)
+std::set<int> EXODUS::get_ns_from_bc_entity(
+    const EXODUS::CondDef& e, const Core::IO::Exodus::Mesh& m)
 {
   if (e.me == EXODUS::bcns)
   {
-    EXODUS::NodeSet ns = m.get_node_set(e.id);
+    Core::IO::Exodus::NodeSet ns = m.get_node_set(e.id);
     return ns.get_node_set();
   }
   else if (e.me == EXODUS::bceb)
@@ -345,7 +348,7 @@ std::set<int> EXODUS::get_ns_from_bc_entity(const EXODUS::CondDef& e, const EXOD
   else if (e.me == EXODUS::bcss)
   {
     std::set<int> allnodes;
-    EXODUS::SideSet ss = m.get_side_set(e.id);
+    Core::IO::Exodus::SideSet ss = m.get_side_set(e.id);
     const std::map<int, std::vector<int>> eles = ss.get_side_set();
     for (const auto& ele : eles)
     {
@@ -363,7 +366,7 @@ std::set<int> EXODUS::get_ns_from_bc_entity(const EXODUS::CondDef& e, const EXOD
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::write_dat_nodes(const EXODUS::Mesh& mymesh, std::ostream& dat)
+void EXODUS::write_dat_nodes(const Core::IO::Exodus::Mesh& mymesh, std::ostream& dat)
 {
   dat << "-------------------------------------------------------NODE COORDS" << std::endl;
   dat.precision(16);
@@ -381,7 +384,7 @@ void EXODUS::write_dat_nodes(const EXODUS::Mesh& mymesh, std::ostream& dat)
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void EXODUS::write_dat_eles(
-    const std::vector<ElemDef>& eledefs, const EXODUS::Mesh& mymesh, std::ostream& dat)
+    const std::vector<ElemDef>& eledefs, const Core::IO::Exodus::Mesh& mymesh, std::ostream& dat)
 {
   // sort elements w.r.t. structure, fluid, ale, scalar transport, thermo, etc.
   std::vector<EXODUS::ElemDef> structure_elements;
@@ -488,8 +491,8 @@ void EXODUS::write_dat_eles(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::dat_eles(const EXODUS::ElementBlock& eb, const EXODUS::ElemDef& acte, int& startele,
-    std::ostream& outfile, const int eb_id)
+void EXODUS::dat_eles(const Core::IO::Exodus::ElementBlock& eb, const EXODUS::ElemDef& acte,
+    int& startele, std::ostream& outfile, const int eb_id)
 {
   auto eles = eb.get_ele_conn();
   for (const auto& ele : *eles)
