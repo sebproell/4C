@@ -115,8 +115,10 @@ if(FOUR_C_ENABLE_UNDEFINED_BEHAVIOR_SANITIZER)
     FOUR_C_COMPILER_LINKER_SUPPORT_UBSAN
     COMPILE_OPTIONS
     "-fsanitize=undefined"
+    "-fsanitize-trap=undefined"
     LINK_OPTIONS
     "-fsanitize=undefined"
+    "-fsanitize-trap=undefined"
     APPEND_ON_SUCCESS
     )
 
