@@ -13,16 +13,12 @@
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
 #include "4C_global_legacy_module.hpp"
-#include "4C_global_legacy_module_validmaterials.hpp"
 #include "4C_inpar_validconditions.hpp"
-#include "4C_inpar_validparameters.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_pre_exodus_readbc.hpp"
-#include "4C_pre_exodus_reader.hpp"
 #include "4C_pre_exodus_validate.hpp"
 #include "4C_pre_exodus_writedat.hpp"
-#include "4C_utils_result_test.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
 #include <Teuchos_CommandLineProcessor.hpp>
@@ -39,7 +35,7 @@ namespace
   /*----------------------------------------------------------------------*/
   /* create default bc file                                               */
   /*----------------------------------------------------------------------*/
-  int create_default_bc_file(EXODUS::Mesh& mymesh)
+  int create_default_bc_file(Core::IO::Exodus::Mesh& mymesh)
   {
     using namespace FourC;
 
@@ -92,13 +88,10 @@ namespace
               << std::endl;
 
     // write ElementBlocks with specification proposal
-    const std::map<int, std::shared_ptr<EXODUS::ElementBlock>> myblocks =
-        mymesh.get_element_blocks();
-    std::map<int, std::shared_ptr<EXODUS::ElementBlock>>::const_iterator it;
-    for (it = myblocks.begin(); it != myblocks.end(); ++it)
+    for (const auto& [eb_id, eb] : mymesh.get_element_blocks())
     {
-      it->second->print(defaultbc);
-      defaultbc << "*eb" << it->first << "=\"ELEMENT\"" << std::endl
+      eb.print(defaultbc);
+      defaultbc << "*eb" << eb_id << "=\"ELEMENT\"" << std::endl
                 << "sectionname=\"\"" << std::endl
                 << "description=\"\"" << std::endl
                 << "elementname=\"\"" << std::endl
@@ -106,8 +99,8 @@ namespace
     }
 
     // write NodeSets with specification proposal
-    const std::map<int, EXODUS::NodeSet> mynodesets = mymesh.get_node_sets();
-    std::map<int, EXODUS::NodeSet>::const_iterator ins;
+    const std::map<int, Core::IO::Exodus::NodeSet> mynodesets = mymesh.get_node_sets();
+    std::map<int, Core::IO::Exodus::NodeSet>::const_iterator ins;
     for (ins = mynodesets.begin(); ins != mynodesets.end(); ++ins)
     {
       ins->second.print(defaultbc);
@@ -118,8 +111,8 @@ namespace
     }
 
     // write SideSets with specification proposal
-    const std::map<int, EXODUS::SideSet> mysidesets = mymesh.get_side_sets();
-    std::map<int, EXODUS::SideSet>::const_iterator iss;
+    const std::map<int, Core::IO::Exodus::SideSet> mysidesets = mymesh.get_side_sets();
+    std::map<int, Core::IO::Exodus::SideSet>::const_iterator iss;
     for (iss = mysidesets.begin(); iss != mysidesets.end(); ++iss)
     {
       iss->second.print(defaultbc);
@@ -239,7 +232,7 @@ int main(int argc, char** argv)
     }
 
     // create mesh object based on given exodus II file
-    EXODUS::Mesh mymesh(exofile);
+    Core::IO::Exodus::Mesh mymesh(exofile);
     // print infos to std::cout
     mymesh.print(std::cout);
 
@@ -292,7 +285,7 @@ int main(int argc, char** argv)
       {
         std::cout << "...Ensure positive element jacobians";
         timer->start();
-        validate_mesh_element_jacobians(mymesh);
+        EXODUS::validate_mesh_element_jacobians(mymesh);
         timer->stop();
         std::cout << "        in...." << timer->totalElapsedTime(true) << " secs" << std::endl;
         timer->reset();

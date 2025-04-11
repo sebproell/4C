@@ -15,7 +15,6 @@
 #include "4C_global_legacy_module.hpp"
 #include "4C_io_input_file.hpp"
 #include "4C_linalg_utils_densematrix_multiply.hpp"
-#include "4C_pre_exodus_reader.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -74,32 +73,29 @@ void EXODUS::validate_input_file(const MPI_Comm comm, const std::string outfile)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::validate_mesh_element_jacobians(Mesh& mymesh)
+void EXODUS::validate_mesh_element_jacobians(Core::IO::Exodus::Mesh& mymesh)
 {
   if (mymesh.get_num_dim() != 3) FOUR_C_THROW("Element Validation only for 3 Dimensions");
 
-  std::map<int, std::shared_ptr<ElementBlock>> myebs = mymesh.get_element_blocks();
-  std::map<int, std::shared_ptr<ElementBlock>>::iterator i_eb;
 
-  for (i_eb = myebs.begin(); i_eb != myebs.end(); ++i_eb)
+  for (const auto& [eb_id, eb] : mymesh.get_element_blocks())
   {
-    std::shared_ptr<ElementBlock> eb = i_eb->second;
-    const Core::FE::CellType distype = pre_shape_to_drt(eb->get_shape());
+    const Core::FE::CellType distype = shape_to_cell_type(eb.get_shape());
     // check and rewind if necessary
-    validate_element_jacobian(mymesh, distype, *eb);
+    validate_element_jacobian(mymesh, distype, eb);
     // full check at all gausspoints
-    int invalid_dets = validate_element_jacobian_fullgp(mymesh, distype, *eb);
+    int invalid_dets = validate_element_jacobian_fullgp(mymesh, distype, eb);
     if (invalid_dets > 0)
       std::cout << invalid_dets << " negative Jacobian determinants in EB of shape "
-                << shape_to_string(eb->get_shape()) << std::endl;
+                << shape_to_string(eb.get_shape()) << std::endl;
   }
   return;
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void EXODUS::validate_element_jacobian(
-    Mesh& mymesh, const Core::FE::CellType distype, ElementBlock& eb)
+void EXODUS::validate_element_jacobian(Core::IO::Exodus::Mesh& mymesh,
+    const Core::FE::CellType distype, const Core::IO::Exodus::ElementBlock& eb)
 {
   using namespace FourC;
 
@@ -182,8 +178,8 @@ void EXODUS::validate_element_jacobian(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-int EXODUS::validate_element_jacobian_fullgp(
-    Mesh& mymesh, const Core::FE::CellType distype, ElementBlock& eb)
+int EXODUS::validate_element_jacobian_fullgp(Core::IO::Exodus::Mesh& mymesh,
+    const Core::FE::CellType distype, const Core::IO::Exodus::ElementBlock& eb)
 {
   using namespace FourC;
 
@@ -254,8 +250,8 @@ int EXODUS::validate_element_jacobian_fullgp(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-bool EXODUS::positive_ele(const int& eleid, const std::vector<int>& nodes, const Mesh& mymesh,
-    const Core::LinAlg::SerialDenseMatrix& deriv)
+bool EXODUS::positive_ele(const int& eleid, const std::vector<int>& nodes,
+    const Core::IO::Exodus::Mesh& mymesh, const Core::LinAlg::SerialDenseMatrix& deriv)
 {
   using namespace FourC;
 
