@@ -102,6 +102,9 @@ namespace
             parameter<int>(
                 "E", {.description = "ID of the condition. This ID refers to the respective "
                                      "topological entity of the condition."}),
+            parameter<Core::Conditions::EntityType>(
+                "ENTITY_TYPE", {.description = "The type of entity that E refers to.",
+                                   .default_value = Core::Conditions::EntityType::legacy_id}),
             all_of(cond.specs()),
         });
         section_specs.emplace(cond.section_name(), std::move(condition_spec));

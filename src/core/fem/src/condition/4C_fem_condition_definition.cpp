@@ -74,9 +74,11 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
   {
     // Read a one-based condition number but convert it to zero-based for internal use.
     const int dobjid = condition_data.get<int>("E") - 1;
+    auto entity_type = condition_data.get<EntityType>("ENTITY_TYPE");
 
     std::shared_ptr<Core::Conditions::Condition> condition =
-        std::make_shared<Core::Conditions::Condition>(dobjid, condtype_, buildgeometry_, gtype_);
+        std::make_shared<Core::Conditions::Condition>(
+            dobjid, condtype_, buildgeometry_, gtype_, entity_type);
     condition->parameters() = condition_data;
 
     //------------------------------- put condition in map of conditions

@@ -112,8 +112,8 @@ void Solid::MonitorDbc::create_reaction_force_condition(
   const int new_id = get_unique_id(tagged_cond.id(), tagged_cond.g_type());
 
   std::shared_ptr<Core::Conditions::Condition> rcond_ptr =
-      std::make_shared<Core::Conditions::Condition>(
-          new_id, Core::Conditions::ElementTag, true, tagged_cond.g_type());
+      std::make_shared<Core::Conditions::Condition>(new_id, Core::Conditions::ElementTag, true,
+          tagged_cond.g_type(), Core::Conditions::EntityType::legacy_id);
 
   rcond_ptr->parameters().add("ONOFF", (tagged_cond.parameters().get<std::vector<int>>("ONOFF")));
   rcond_ptr->set_nodes(*tagged_cond.get_nodes());
