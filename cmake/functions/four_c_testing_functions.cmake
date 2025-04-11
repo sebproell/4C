@@ -509,29 +509,55 @@ endfunction()
 
 ###------------------------------------------------------------------ Framework Tests
 # Testing the whole framework: pre_exodus, 4C, and post-filter
-# Usage in tests/lists_of_tests.cmake: "four_c_test_framework(<name_of_input_file> <num_proc> <xml_filename>)"
-# <name_of_input_file>: must equal the name of a .e/.bc/.head file in directory tests/framework-test
-# <num_proc>: number of processors the test should use
-# <xml_filename>: copy any xml-file to the build directory. May also be ""
-function(four_c_test_framework name_of_input_file num_proc xml_filename)
+#
+# Usage in tests/lists_of_tests.cmake:
+#
+#  four_c_test_framework(PREFIX <prefix> NP <NP> [COPY_FILES <file1> <file2> ...])"
+#
+#  PREFIX: must equal the name of a .e/.bc/.head file in directory tests/framework-test
+#  NP: number of MPI ranks for this test
+#  COPY_FILES: copy any additional files to the test directory
+function(four_c_test_framework)
+  set(options "")
+  set(oneValueArgs PREFIX NP)
+  set(multiValueArgs COPY_FILES)
+  cmake_parse_arguments(
+    _parsed
+    "${options}"
+    "${oneValueArgs}"
+    "${multiValueArgs}"
+    ${ARGN}
+    )
+
+  # validate input arguments
+  if(DEFINED _parsed_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "There are unparsed arguments: ${_parsed_UNPARSED_ARGUMENTS}!")
+  endif()
+
+  set(name_of_input_file ${_parsed_PREFIX})
+  set(num_proc ${_parsed_NP})
   set(name_of_test ${name_of_input_file}-p${num_proc}-fw)
   set(test_directory framework_test_output/${name_of_input_file})
 
-  set(RUNPREEXODUS
+  set(_run_pre_exodus
       ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./pre_exodus\ --exo=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.e\ --bc=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.bc\ --head=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.head\ --out=${test_directory}/xxx.4C.yaml
       ) # pre_exodus is run to generate an input file
 
-  if(NOT ${xml_filename} STREQUAL "")
-    # if a XML file name is given, it is copied from the 4C input directory to the build directory
-    set(RUNCOPYXML
-        "cp ${PROJECT_SOURCE_DIR}/tests/input_files/${xml_filename} ./${test_directory}/"
-        )
+  # copy additional files to the test directory
+  if(_parsed_COPY_FILES)
+    foreach(_file_name IN LISTS _parsed_COPY_FILES)
+      if(NOT EXISTS ${_file_name})
+        message(FATAL_ERROR "File ${_file_name} does not exist!")
+      endif()
+      list(APPEND _run_copy_files "cp ${_file_name} ${test_directory}")
+    endforeach()
+    list(JOIN _run_copy_files " && " _run_copy_files)
   else()
     # no-op command to do nothing
-    set(RUNCOPYXML :)
+    set(_run_copy_files ":")
   endif()
 
-  set(RUNFOURC
+  set(_run_4C
       ${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${num_proc}\ $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>\ ${test_directory}/xxx.4C.yaml\ ${test_directory}/xxx
       ) # 4C is run using the generated input file
 
@@ -539,7 +565,7 @@ function(four_c_test_framework name_of_input_file num_proc xml_filename)
     NAME ${name_of_test}
     COMMAND
       bash -c
-      "mkdir -p ${PROJECT_BINARY_DIR}/${test_directory} && ${RUNCOPYXML} && ${RUNPREEXODUS} && ${RUNFOURC}"
+      "mkdir -p ${PROJECT_BINARY_DIR}/${test_directory} && ${_run_copy_files} && ${_run_pre_exodus} && ${_run_4C}"
     )
 
   require_fixture(${name_of_test} test_cleanup)
