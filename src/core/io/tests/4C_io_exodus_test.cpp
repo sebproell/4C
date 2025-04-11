@@ -23,6 +23,7 @@ namespace
     EXPECT_EQ(mesh.get_num_node_sets(), 1);
     EXPECT_EQ(mesh.get_num_side_sets(), 1);
     EXPECT_EQ(mesh.get_num_nodes(), 27);
+    EXPECT_EQ(mesh.get_num_ele(), 8);
     EXPECT_EQ(mesh.get_element_block(1).get_num_ele(), 4);
     EXPECT_EQ(mesh.get_element_block(2).get_num_ele(), 4);
 

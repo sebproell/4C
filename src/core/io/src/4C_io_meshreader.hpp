@@ -23,6 +23,26 @@ namespace Core::IO
 {
   class InputFile;
 
+  namespace Internal
+  {
+    /**
+     * Support class to read a mesh from an exodus file.
+     */
+    struct ExodusReader
+    {
+      /**
+       *The discretization that should be filled with the information from the exodus file.
+       */
+      Core::FE::Discretization& target_discretization;
+
+      /**
+       * The section in the input file that has the necessary data for the reader (e.g. the file
+       * name).
+       */
+      std::string section_name;
+    };
+  }  // namespace Internal
+
   /*!
     \brief helper class to read a mesh
 
@@ -117,6 +137,9 @@ namespace Core::IO
     */
     void read_mesh_from_dat_file(int& max_node_id);
 
+    //! Read all mesh information from exodus files.
+    void read_mesh_from_exodus();
+
     /*!
     \brief Rebalance discretizations built in read_mesh_from_dat_file()
     */
@@ -144,6 +167,8 @@ namespace Core::IO
 
     /// my domain readers
     std::vector<DomainReader> domain_readers_;
+
+    std::vector<Internal::ExodusReader> exodus_readers_;
 
     /// Input file contents
     Core::IO::InputFile& input_;
