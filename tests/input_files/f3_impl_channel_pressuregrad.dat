@@ -63,6 +63,7 @@ AZTOL                           1.0E-4
 AZCONV                          AZ_r0
 AZREUSE                         5
 AZOUTPUT                        10
+THROW_IF_UNCONVERGED            No
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_fluid DYNVISCOSITY 0.5 DENSITY 10.0 GAMMA 1.0
 ----------------------------------------------------------------------FUNCT1

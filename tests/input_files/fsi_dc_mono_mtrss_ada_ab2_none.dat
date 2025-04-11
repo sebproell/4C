@@ -100,6 +100,7 @@ SOLVER_XML_FILE                 xml/linear_solver/iterative_gmres_template.xml
 AZPREC                          Teko
 TEKO_XML_FILE                   xml/block_preconditioner/fluid_solid_ale.xml
 AZREUSE                         10
+THROW_IF_UNCONVERGED            No
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_fluid DYNVISCOSITY 0.01 DENSITY 1.0
 MAT 2 MAT_ElastHyper NUMMAT 1 MATIDS 3 DENS 500

@@ -286,6 +286,8 @@ Teuchos::ParameterList translate_four_c_to_belos(const Teuchos::ParameterList& i
   beloslist.set("reuse", inparams.get<int>("AZREUSE"));
   beloslist.set("ncall", 0);
 
+  beloslist.set("THROW_IF_UNCONVERGED", inparams.get<bool>("THROW_IF_UNCONVERGED"));
+
   // try to get an xml file if possible
   auto xmlfile = inparams.get<std::optional<std::filesystem::path>>("SOLVER_XML_FILE");
   if (xmlfile)

@@ -96,6 +96,7 @@ MUELU_XML_FILE                  xml/multigrid/fluid_template.xml
 AZTOL                           1.0E-12
 AZCONV                          AZ_r0
 AZITER                          100
+THROW_IF_UNCONVERGED            No
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_fluid DYNVISCOSITY 0.0007431 DENSITY 1.0
 ----------------------------------------------------------RESULT DESCRIPTION

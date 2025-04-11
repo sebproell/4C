@@ -49,6 +49,7 @@ SOLVER                          Belos
 AZPREC                          MueLu
 MUELU_XML_FILE                  xml/multigrid/sti_template.xml
 AZSUB                           100
+THROW_IF_UNCONVERGED            No
 -----------------------------------------------------------SOLVER 2
 SOLVER                          UMFPACK
 ----------------------------------------------------------MATERIALS

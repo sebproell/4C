@@ -73,6 +73,7 @@ MUELU_XML_FILE                  xml/multigrid/fluid_template.xml
 AZTOL                           1.0E-12
 AZCONV                          AZ_r0
 AZREUSE                         5
+THROW_IF_UNCONVERGED            No
 -----------------------------------------------------------SOLVER 2
 NAME                            Fluid_Solver
 SOLVER                          Belos
@@ -82,6 +83,7 @@ MUELU_XML_FILE                  xml/multigrid/fluid_template.xml
 AZTOL                           1.0E-12
 AZCONV                          AZ_r0
 AZREUSE                         5
+THROW_IF_UNCONVERGED            No
 ----------------------------------------------------------MATERIALS
 MAT 1   MAT_fluid   DYNVISCOSITY 0.5 DENSITY 1.0
 -------------------------------------------------------------FUNCT1
