@@ -26,495 +26,416 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  list["SCALAR TRANSPORT DYNAMIC"] = all_of({
+  list["SCALAR TRANSPORT DYNAMIC"] = group("SCALAR TRANSPORT DYNAMIC",
+      {
 
-      deprecated_selection<Inpar::ScaTra::SolverType>("SOLVERTYPE",
-          {
-              {"linear_full", solvertype_linear_full},
-              {"linear_incremental", solvertype_linear_incremental},
-              {"nonlinear", solvertype_nonlinear},
-              {"nonlinear_multiscale_macrotomicro", solvertype_nonlinear_multiscale_macrotomicro},
-              {"nonlinear_multiscale_macrotomicro_aitken",
-                  solvertype_nonlinear_multiscale_macrotomicro_aitken},
-              {"nonlinear_multiscale_macrotomicro_aitken_dofsplit",
-                  solvertype_nonlinear_multiscale_macrotomicro_aitken_dofsplit},
-              {"nonlinear_multiscale_microtomacro", solvertype_nonlinear_multiscale_microtomacro},
-          },
-          {.description = "type of scalar transport solver",
-              .default_value = solvertype_linear_full}),
-
-
-      deprecated_selection<Inpar::ScaTra::TimeIntegrationScheme>("TIMEINTEGR",
-          {
-              {"Stationary", timeint_stationary},
-              {"One_Step_Theta", timeint_one_step_theta},
-              {"BDF2", timeint_bdf2},
-              {"Gen_Alpha", timeint_gen_alpha},
-          },
-          {.description = "Time Integration Scheme", .default_value = timeint_one_step_theta}),
-
-      parameter<double>(
-          "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}),
-      parameter<int>("NUMSTEP", {.description = "Total number of time steps", .default_value = 20}),
-
-      parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}),
-      parameter<double>(
-          "THETA", {.description = "One-step-theta time integration factor", .default_value = 0.5}),
-      parameter<double>("ALPHA_M",
-          {.description = "Generalized-alpha time integration factor", .default_value = 0.5}),
-      parameter<double>("ALPHA_F",
-          {.description = "Generalized-alpha time integration factor", .default_value = 0.5}),
-      parameter<double>("GAMMA",
-          {.description = "Generalized-alpha time integration factor", .default_value = 0.5}),
-      parameter<int>(
-          "RESULTSEVERY", {.description = "Increment for writing solution", .default_value = 1}),
-      parameter<int>(
-          "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}),
-      parameter<int>("MATID",
-          {.description = "Material ID for automatic mesh generation", .default_value = -1}),
-
-      deprecated_selection<Inpar::ScaTra::VelocityField>("VELOCITYFIELD",
-          {
-              {"zero", velocity_zero},
-              {"function", velocity_function},
-              {"Navier_Stokes", velocity_Navier_Stokes},
-          },
-          {.description = "type of velocity field used for scalar transport problems",
-              .default_value = velocity_zero}),
-
-      parameter<int>(
-          "VELFUNCNO", {.description = "function number for scalar transport velocity field",
-                           .default_value = -1}),
+          deprecated_selection<Inpar::ScaTra::SolverType>("SOLVERTYPE",
+              {
+                  {"linear_full", solvertype_linear_full},
+                  {"linear_incremental", solvertype_linear_incremental},
+                  {"nonlinear", solvertype_nonlinear},
+                  {"nonlinear_multiscale_macrotomicro",
+                      solvertype_nonlinear_multiscale_macrotomicro},
+                  {"nonlinear_multiscale_macrotomicro_aitken",
+                      solvertype_nonlinear_multiscale_macrotomicro_aitken},
+                  {"nonlinear_multiscale_macrotomicro_aitken_dofsplit",
+                      solvertype_nonlinear_multiscale_macrotomicro_aitken_dofsplit},
+                  {"nonlinear_multiscale_microtomacro",
+                      solvertype_nonlinear_multiscale_microtomacro},
+              },
+              {.description = "type of scalar transport solver",
+                  .default_value = solvertype_linear_full}),
 
 
+          deprecated_selection<Inpar::ScaTra::TimeIntegrationScheme>("TIMEINTEGR",
+              {
+                  {"Stationary", timeint_stationary},
+                  {"One_Step_Theta", timeint_one_step_theta},
+                  {"BDF2", timeint_bdf2},
+                  {"Gen_Alpha", timeint_gen_alpha},
+              },
+              {.description = "Time Integration Scheme", .default_value = timeint_one_step_theta}),
 
-      deprecated_selection<Inpar::ScaTra::InitialField>("INITIALFIELD",
-          {
-              {"zero_field", initfield_zero_field},
-              {"field_by_function", initfield_field_by_function},
-              {"field_by_condition", initfield_field_by_condition},
-              {"disturbed_field_by_function", initfield_disturbed_field_by_function},
-              {"1D_DISCONTPV", initfield_discontprogvar_1D},
-              {"FLAME_VORTEX_INTERACTION", initfield_flame_vortex_interaction},
-              {"RAYTAYMIXFRAC", initfield_raytaymixfrac},
-              {"L_shaped_domain", initfield_Lshapeddomain},
-              {"facing_flame_fronts", initfield_facing_flame_fronts},
-              {"oracles_flame", initfield_oracles_flame},
-              {"high_forced_hit", initialfield_forced_hit_high_Sc},
-              {"low_forced_hit", initialfield_forced_hit_low_Sc},
-              {"algebraic_field_dependence", initialfield_algebraic_field_dependence},
-          },
-          {.description = "Initial Field for transport problem",
-              .default_value = initfield_zero_field}),
+          parameter<double>(
+              "MAXTIME", {.description = "Total simulation time", .default_value = 1000.0}),
+          parameter<int>(
+              "NUMSTEP", {.description = "Total number of time steps", .default_value = 20}),
 
-      parameter<int>(
-          "INITFUNCNO", {.description = "function number for scalar transport initial field",
-                            .default_value = -1}),
+          parameter<double>("TIMESTEP", {.description = "Time increment dt", .default_value = 0.1}),
+          parameter<double>("THETA",
+              {.description = "One-step-theta time integration factor", .default_value = 0.5}),
+          parameter<double>("ALPHA_M",
+              {.description = "Generalized-alpha time integration factor", .default_value = 0.5}),
+          parameter<double>("ALPHA_F",
+              {.description = "Generalized-alpha time integration factor", .default_value = 0.5}),
+          parameter<double>("GAMMA",
+              {.description = "Generalized-alpha time integration factor", .default_value = 0.5}),
+          parameter<int>("RESULTSEVERY",
+              {.description = "Increment for writing solution", .default_value = 1}),
+          parameter<int>(
+              "RESTARTEVERY", {.description = "Increment for writing restart", .default_value = 1}),
+          parameter<int>("MATID",
+              {.description = "Material ID for automatic mesh generation", .default_value = -1}),
 
-      parameter<bool>("SPHERICALCOORDS",
-          {.description = "use of spherical coordinates", .default_value = false}),
+          deprecated_selection<Inpar::ScaTra::VelocityField>("VELOCITYFIELD",
+              {
+                  {"zero", velocity_zero},
+                  {"function", velocity_function},
+                  {"Navier_Stokes", velocity_Navier_Stokes},
+              },
+              {.description = "type of velocity field used for scalar transport problems",
+                  .default_value = velocity_zero}),
 
-      deprecated_selection<Inpar::ScaTra::CalcError>("CALCERROR",
-          {
-              {"No", calcerror_no},
-              {"Kwok_Wu", calcerror_Kwok_Wu},
-              {"ConcentricCylinders", calcerror_cylinder},
-              {"Electroneutrality", calcerror_electroneutrality},
-              {"error_by_function", calcerror_byfunction},
-              {"error_by_condition", calcerror_bycondition},
-              {"SphereDiffusion", calcerror_spherediffusion},
-              {"AnalyticSeries", calcerror_AnalyticSeries},
-          },
-          {.description = "compute error compared to analytical solution",
-              .default_value = calcerror_no}),
-
-      parameter<int>(
-          "CALCERRORNO", {.description = "function number for scalar transport error computation",
-                             .default_value = -1}),
-
-      deprecated_selection<Inpar::ScaTra::FluxType>("CALCFLUX_DOMAIN",
-          {
-              {"No", flux_none},
-              {"total", flux_total},
-              {"diffusive", flux_diffusive},
-          },
-          {.description = "output of diffusive/total flux vectors inside domain",
-              .default_value = flux_none}),
-
-      parameter<bool>("CALCFLUX_DOMAIN_LUMPED",
-          {.description = "perform approximate domain flux calculation involving matrix lumping",
-              .default_value = true}),
-
-      deprecated_selection<Inpar::ScaTra::FluxType>("CALCFLUX_BOUNDARY",
-          {
-              {"No", flux_none},
-              {"total", flux_total},
-              {"diffusive", flux_diffusive},
-              {"convective", flux_convective},
-          },
-          {.description = "output of convective/diffusive/total flux vectors on boundary",
-              .default_value = flux_none}),
-
-      parameter<bool>("CALCFLUX_BOUNDARY_LUMPED",
-          {.description = "perform approximate boundary flux calculation involving matrix lumping",
-              .default_value = true}),
-
-      parameter<std::string>("WRITEFLUX_IDS",
-          {.description = "Write diffusive/total flux vector fields for these scalar "
-                          "fields only (starting with 1)",
-              .default_value = "-1"}),
+          parameter<int>(
+              "VELFUNCNO", {.description = "function number for scalar transport velocity field",
+                               .default_value = -1}),
 
 
-      deprecated_selection<Inpar::ScaTra::OutputScalarType>("OUTPUTSCALARS",
-          {
-              {"none", outputscalars_none},
-              {"entire_domain", outputscalars_entiredomain},
-              {"by_condition", outputscalars_condition},
-              {"entire_domain_and_by_condition", outputscalars_entiredomain_condition},
-          },
-          {.description = "Output of total and mean values for transported scalars",
-              .default_value = outputscalars_none}),
-      parameter<bool>("OUTPUTSCALARSMEANGRAD",
-          {.description = "Output of mean gradient of scalars", .default_value = false}),
-      parameter<bool>("OUTINTEGRREAC",
-          {.description = "Output of integral reaction values", .default_value = false}),
-      parameter<bool>(
-          "OUTPUT_GMSH", {.description = "Do you want to write Gmsh postprocessing files?",
-                             .default_value = false}),
 
-      parameter<bool>("MATLAB_STATE_OUTPUT",
-          {.description = "Do you want to write the state solution to Matlab file?",
-              .default_value = false}),
+          deprecated_selection<Inpar::ScaTra::InitialField>("INITIALFIELD",
+              {
+                  {"zero_field", initfield_zero_field},
+                  {"field_by_function", initfield_field_by_function},
+                  {"field_by_condition", initfield_field_by_condition},
+                  {"disturbed_field_by_function", initfield_disturbed_field_by_function},
+                  {"1D_DISCONTPV", initfield_discontprogvar_1D},
+                  {"FLAME_VORTEX_INTERACTION", initfield_flame_vortex_interaction},
+                  {"RAYTAYMIXFRAC", initfield_raytaymixfrac},
+                  {"L_shaped_domain", initfield_Lshapeddomain},
+                  {"facing_flame_fronts", initfield_facing_flame_fronts},
+                  {"oracles_flame", initfield_oracles_flame},
+                  {"high_forced_hit", initialfield_forced_hit_high_Sc},
+                  {"low_forced_hit", initialfield_forced_hit_low_Sc},
+                  {"algebraic_field_dependence", initialfield_algebraic_field_dependence},
+              },
+              {.description = "Initial Field for transport problem",
+                  .default_value = initfield_zero_field}),
 
-      deprecated_selection<Inpar::ScaTra::ConvForm>("CONVFORM",
-          {
-              {"convective", convform_convective},
-              {"conservative", convform_conservative},
-          },
-          {.description = "form of convective term", .default_value = convform_convective}),
+          parameter<int>(
+              "INITFUNCNO", {.description = "function number for scalar transport initial field",
+                                .default_value = -1}),
 
-      parameter<bool>(
-          "NEUMANNINFLOW", {.description = "Flag to (de)activate potential Neumann inflow term(s)",
-                               .default_value = false}),
+          parameter<bool>("SPHERICALCOORDS",
+              {.description = "use of spherical coordinates", .default_value = false}),
 
-      parameter<bool>("CONV_HEAT_TRANS",
-          {.description =
-                  "Flag to (de)activate potential convective heat transfer boundary conditions",
-              .default_value = false}),
+          deprecated_selection<Inpar::ScaTra::CalcError>("CALCERROR",
+              {
+                  {"No", calcerror_no},
+                  {"Kwok_Wu", calcerror_Kwok_Wu},
+                  {"ConcentricCylinders", calcerror_cylinder},
+                  {"Electroneutrality", calcerror_electroneutrality},
+                  {"error_by_function", calcerror_byfunction},
+                  {"error_by_condition", calcerror_bycondition},
+                  {"SphereDiffusion", calcerror_spherediffusion},
+                  {"AnalyticSeries", calcerror_AnalyticSeries},
+              },
+              {.description = "compute error compared to analytical solution",
+                  .default_value = calcerror_no}),
 
-      parameter<bool>(
-          "SKIPINITDER", {.description = "Flag to skip computation of initial time derivative",
-                             .default_value = false}),
+          parameter<int>("CALCERRORNO",
+              {.description = "function number for scalar transport error computation",
+                  .default_value = -1}),
 
-      deprecated_selection<Inpar::ScaTra::FSSUGRDIFF>("FSSUGRDIFF",
-          {
-              {"No", fssugrdiff_no},
-              {"artificial", fssugrdiff_artificial},
-              {"Smagorinsky_all", fssugrdiff_smagorinsky_all},
-              {"Smagorinsky_small", fssugrdiff_smagorinsky_small},
-          },
-          {.description = "fine-scale subgrid diffusivity", .default_value = fssugrdiff_no}),
+          deprecated_selection<Inpar::ScaTra::FluxType>("CALCFLUX_DOMAIN",
+              {
+                  {"No", flux_none},
+                  {"total", flux_total},
+                  {"diffusive", flux_diffusive},
+              },
+              {.description = "output of diffusive/total flux vectors inside domain",
+                  .default_value = flux_none}),
 
-      deprecated_selection<Inpar::FLUID::MeshTying>("MESHTYING",
-          {
-              {"no", Inpar::FLUID::no_meshtying},
-              {"Condensed_Smat", Inpar::FLUID::condensed_smat},
-              {"Condensed_Bmat", Inpar::FLUID::condensed_bmat},
-              {"Condensed_Bmat_merged", Inpar::FLUID::condensed_bmat_merged},
-          },
-          {.description = "Flag to (de)activate mesh tying algorithm",
-              .default_value = Inpar::FLUID::no_meshtying}),
+          parameter<bool>("CALCFLUX_DOMAIN_LUMPED",
+              {.description =
+                      "perform approximate domain flux calculation involving matrix lumping",
+                  .default_value = true}),
 
-      // Type of coupling strategy between the two fields
-      deprecated_selection<Inpar::ScaTra::FieldCoupling>("FIELDCOUPLING",
-          {
-              {"matching", coupling_match},
-              {"volmortar", coupling_volmortar},
-          },
-          {.description = "Type of coupling strategy between fields",
-              .default_value = coupling_match}),
+          deprecated_selection<Inpar::ScaTra::FluxType>("CALCFLUX_BOUNDARY",
+              {
+                  {"No", flux_none},
+                  {"total", flux_total},
+                  {"diffusive", flux_diffusive},
+                  {"convective", flux_convective},
+              },
+              {.description = "output of convective/diffusive/total flux vectors on boundary",
+                  .default_value = flux_none}),
 
-      // linear solver id used for scalar transport/elch problems
-      parameter<int>("LINEAR_SOLVER",
-          {.description = "number of linear solver used for scalar transport/elch...",
-              .default_value = -1}),
-      // linear solver id used for l2 projection problems (e.g. gradient projections)
-      parameter<int>("L2_PROJ_LINEAR_SOLVER",
-          {.description = "number of linear solver used for l2-projection sub-problems",
-              .default_value = -1}),
+          parameter<bool>("CALCFLUX_BOUNDARY_LUMPED",
+              {.description =
+                      "perform approximate boundary flux calculation involving matrix lumping",
+                  .default_value = true}),
 
-      // flag for equilibration of global system of equations
-      parameter<Core::LinAlg::EquilibrationMethod>(
-          "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
-                               .default_value = Core::LinAlg::EquilibrationMethod::none}),
+          parameter<std::string>("WRITEFLUX_IDS",
+              {.description = "Write diffusive/total flux vector fields for these scalar "
+                              "fields only (starting with 1)",
+                  .default_value = "-1"}),
 
-      // type of global system matrix in global system of equations
-      parameter<Core::LinAlg::MatrixType>("MATRIXTYPE",
-          {.description = "type of global system matrix in global system of equations",
-              .default_value = Core::LinAlg::MatrixType::sparse}),
 
-      // flag for natural convection effects
-      parameter<bool>("NATURAL_CONVECTION",
-          {.description = "Include natural convection effects", .default_value = false}),
+          deprecated_selection<Inpar::ScaTra::OutputScalarType>("OUTPUTSCALARS",
+              {
+                  {"none", outputscalars_none},
+                  {"entire_domain", outputscalars_entiredomain},
+                  {"by_condition", outputscalars_condition},
+                  {"entire_domain_and_by_condition", outputscalars_entiredomain_condition},
+              },
+              {.description = "Output of total and mean values for transported scalars",
+                  .default_value = outputscalars_none}),
+          parameter<bool>("OUTPUTSCALARSMEANGRAD",
+              {.description = "Output of mean gradient of scalars", .default_value = false}),
+          parameter<bool>("OUTINTEGRREAC",
+              {.description = "Output of integral reaction values", .default_value = false}),
+          parameter<bool>(
+              "OUTPUT_GMSH", {.description = "Do you want to write Gmsh postprocessing files?",
+                                 .default_value = false}),
 
-      // parameters for finite difference check
-      deprecated_selection<Inpar::ScaTra::FdCheck>("FDCHECK",
-          {
-              {"none", fdcheck_none},
-              {"global", fdcheck_global},
-              {"global_extended", fdcheck_global_extended},
-              {"local", fdcheck_local},
-          },
-          {.description = "flag for finite difference check: none, local, or global",
-              .default_value = fdcheck_none}),
-      parameter<double>("FDCHECKEPS",
-          {.description = "dof perturbation magnitude for finite difference check (1.e-6 "
-                          "seems to work very well, whereas smaller values don't)",
-              .default_value = 1.e-6}),
-      parameter<double>(
-          "FDCHECKTOL", {.description = "relative tolerance for finite difference check",
-                            .default_value = 1.e-6}),
+          parameter<bool>("MATLAB_STATE_OUTPUT",
+              {.description = "Do you want to write the state solution to Matlab file?",
+                  .default_value = false}),
 
-      // parameter for optional computation of domain and boundary integrals, i.e., of surface areas
-      // and volumes associated with specified nodesets
-      deprecated_selection<Inpar::ScaTra::ComputeIntegrals>("COMPUTEINTEGRALS",
-          {
-              {"none", computeintegrals_none},
-              {"initial", computeintegrals_initial},
-              {"repeated", computeintegrals_repeated},
-          },
-          {.description = "flag for optional computation of domain integrals",
-              .default_value = computeintegrals_none}),
+          deprecated_selection<Inpar::ScaTra::ConvForm>("CONVFORM",
+              {
+                  {"convective", convform_convective},
+                  {"conservative", convform_conservative},
+              },
+              {.description = "form of convective term", .default_value = convform_convective}),
 
-      // parameter for using p-adpativity and semi-implicit evaluation of the reaction term (at the
-      // moment only used for HDG and cardiac monodomain problems)
-      parameter<bool>("PADAPTIVITY",
-          {.description = "Flag to (de)activate p-adativity", .default_value = false}),
-      parameter<double>("PADAPTERRORTOL",
-          {.description = "The error tolerance to calculate the variation of the elemental degree",
-              .default_value = 1e-6}),
-      parameter<double>("PADAPTERRORBASE",
-          {.description =
-                  "The error tolerance base to calculate the variation of the elemental degree",
-              .default_value = 1.66}),
-      parameter<int>("PADAPTDEGREEMAX",
-          {.description = "The max. degree of the shape functions", .default_value = 4}),
-      parameter<bool>("SEMIIMPLICIT",
-          {.description = "Flag to (de)activate semi-implicit calculation of the reaction term",
-              .default_value = false}),
+          parameter<bool>("NEUMANNINFLOW",
+              {.description = "Flag to (de)activate potential Neumann inflow term(s)",
+                  .default_value = false}),
 
-      // flag for output of performance statistics associated with linear solver into *.csv file
-      parameter<bool>(
-          "OUTPUTLINSOLVERSTATS", {.description = "flag for output of performance statistics "
-                                                  "associated with linear solver into csv file",
-                                      .default_value = false}),
+          parameter<bool>("CONV_HEAT_TRANS",
+              {.description =
+                      "Flag to (de)activate potential convective heat transfer boundary conditions",
+                  .default_value = false}),
 
-      // flag for output of performance statistics associated with nonlinear solver into *.csv file
-      parameter<bool>("OUTPUTNONLINSOLVERSTATS",
-          {.description = "flag for output of performance statistics "
-                          "associated with nonlinear solver into csv file",
-              .default_value = false}),
+          parameter<bool>(
+              "SKIPINITDER", {.description = "Flag to skip computation of initial time derivative",
+                                 .default_value = false}),
 
-      // flag for point-based null space calculation
-      parameter<bool>("NULLSPACE_POINTBASED",
-          {.description = "flag for point-based null space calculation", .default_value = false}),
+          deprecated_selection<Inpar::ScaTra::FSSUGRDIFF>("FSSUGRDIFF",
+              {
+                  {"No", fssugrdiff_no},
+                  {"artificial", fssugrdiff_artificial},
+                  {"Smagorinsky_all", fssugrdiff_smagorinsky_all},
+                  {"Smagorinsky_small", fssugrdiff_smagorinsky_small},
+              },
+              {.description = "fine-scale subgrid diffusivity", .default_value = fssugrdiff_no}),
 
-      // flag for adaptive time stepping
-      parameter<bool>("ADAPTIVE_TIMESTEPPING",
-          {.description = "flag for adaptive time stepping",
-              .default_value =
-                  false})}); /*----------------------------------------------------------------------*/
-  list["SCALAR TRANSPORT DYNAMIC/NONLINEAR"] = all_of({
+          deprecated_selection<Inpar::FLUID::MeshTying>("MESHTYING",
+              {
+                  {"no", Inpar::FLUID::no_meshtying},
+                  {"Condensed_Smat", Inpar::FLUID::condensed_smat},
+                  {"Condensed_Bmat", Inpar::FLUID::condensed_bmat},
+                  {"Condensed_Bmat_merged", Inpar::FLUID::condensed_bmat_merged},
+              },
+              {.description = "Flag to (de)activate mesh tying algorithm",
+                  .default_value = Inpar::FLUID::no_meshtying}),
 
-      parameter<int>(
-          "ITEMAX", {.description = "max. number of nonlin. iterations", .default_value = 10}),
-      parameter<double>(
-          "CONVTOL", {.description = "Tolerance for convergence check", .default_value = 1e-6}),
-      parameter<int>("ITEMAX_OUTER",
-          {.description = "Maximum number of outer iterations in partitioned coupling "
-                          "schemes (natural convection, multi-scale simulations etc.)",
-              .default_value = 10}),
-      parameter<double>("CONVTOL_OUTER",
-          {.description =
-                  "Convergence check tolerance for outer loop in partitioned coupling schemes "
-                  "(natural convection, multi-scale simulations etc.)",
-              .default_value = 1e-6}),
-      parameter<bool>("EXPLPREDICT",
-          {.description = "do an explicit predictor step before starting nonlinear iteration",
-              .default_value = false}),
-      parameter<double>("ABSTOLRES", {.description = "Absolute tolerance for deciding if residual "
-                                                     "of nonlinear problem is already zero",
-                                         .default_value = 1e-14}),
+          // Type of coupling strategy between the two fields
+          deprecated_selection<Inpar::ScaTra::FieldCoupling>("FIELDCOUPLING",
+              {
+                  {"matching", coupling_match},
+                  {"volmortar", coupling_volmortar},
+              },
+              {.description = "Type of coupling strategy between fields",
+                  .default_value = coupling_match}),
 
-      // convergence criteria adaptivity
-      parameter<bool>("ADAPTCONV",
-          {.description =
-                  "Switch on adaptive control of linear solver tolerance for nonlinear solution",
-              .default_value = false}),
-      parameter<double>("ADAPTCONV_BETTER",
-          {.description = "The linear solver shall be this much better than the current nonlinear "
-                          "residual in the nonlinear convergence limit",
-              .default_value = 0.1})});
+          // linear solver id used for scalar transport/elch problems
+          parameter<int>("LINEAR_SOLVER",
+              {.description = "number of linear solver used for scalar transport/elch...",
+                  .default_value = -1}),
+          // linear solver id used for l2 projection problems (e.g. gradient projections)
+          parameter<int>("L2_PROJ_LINEAR_SOLVER",
+              {.description = "number of linear solver used for l2-projection sub-problems",
+                  .default_value = -1}),
+
+          // flag for equilibration of global system of equations
+          parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+              {.description = "flag for equilibration of global system of equations",
+                  .default_value = Core::LinAlg::EquilibrationMethod::none}),
+
+          // type of global system matrix in global system of equations
+          parameter<Core::LinAlg::MatrixType>("MATRIXTYPE",
+              {.description = "type of global system matrix in global system of equations",
+                  .default_value = Core::LinAlg::MatrixType::sparse}),
+
+          // flag for natural convection effects
+          parameter<bool>("NATURAL_CONVECTION",
+              {.description = "Include natural convection effects", .default_value = false}),
+
+          // parameters for finite difference check
+          deprecated_selection<Inpar::ScaTra::FdCheck>("FDCHECK",
+              {
+                  {"none", fdcheck_none},
+                  {"global", fdcheck_global},
+                  {"global_extended", fdcheck_global_extended},
+                  {"local", fdcheck_local},
+              },
+              {.description = "flag for finite difference check: none, local, or global",
+                  .default_value = fdcheck_none}),
+          parameter<double>("FDCHECKEPS",
+              {.description = "dof perturbation magnitude for finite difference check (1.e-6 "
+                              "seems to work very well, whereas smaller values don't)",
+                  .default_value = 1.e-6}),
+          parameter<double>(
+              "FDCHECKTOL", {.description = "relative tolerance for finite difference check",
+                                .default_value = 1.e-6}),
+
+          // parameter for optional computation of domain and boundary integrals, i.e., of surface
+          // areas and volumes associated with specified nodesets
+          deprecated_selection<Inpar::ScaTra::ComputeIntegrals>("COMPUTEINTEGRALS",
+              {
+                  {"none", computeintegrals_none},
+                  {"initial", computeintegrals_initial},
+                  {"repeated", computeintegrals_repeated},
+              },
+              {.description = "flag for optional computation of domain integrals",
+                  .default_value = computeintegrals_none}),
+
+          // parameter for using p-adpativity and semi-implicit evaluation of the reaction term (at
+          // the moment only used for HDG and cardiac monodomain problems)
+          parameter<bool>("PADAPTIVITY",
+              {.description = "Flag to (de)activate p-adativity", .default_value = false}),
+          parameter<double>("PADAPTERRORTOL",
+              {.description =
+                      "The error tolerance to calculate the variation of the elemental degree",
+                  .default_value = 1e-6}),
+          parameter<double>("PADAPTERRORBASE",
+              {.description =
+                      "The error tolerance base to calculate the variation of the elemental degree",
+                  .default_value = 1.66}),
+          parameter<int>("PADAPTDEGREEMAX",
+              {.description = "The max. degree of the shape functions", .default_value = 4}),
+          parameter<bool>("SEMIIMPLICIT",
+              {.description = "Flag to (de)activate semi-implicit calculation of the reaction term",
+                  .default_value = false}),
+
+          // flag for output of performance statistics associated with linear solver into *.csv file
+          parameter<bool>(
+              "OUTPUTLINSOLVERSTATS", {.description = "flag for output of performance statistics "
+                                                      "associated with linear solver into csv file",
+                                          .default_value = false}),
+
+          // flag for output of performance statistics associated with nonlinear solver into *.csv
+          // file
+          parameter<bool>("OUTPUTNONLINSOLVERSTATS",
+              {.description = "flag for output of performance statistics "
+                              "associated with nonlinear solver into csv file",
+                  .default_value = false}),
+
+          // flag for point-based null space calculation
+          parameter<bool>(
+              "NULLSPACE_POINTBASED", {.description = "flag for point-based null space calculation",
+                                          .default_value = false}),
+
+          // flag for adaptive time stepping
+          parameter<bool>("ADAPTIVE_TIMESTEPPING",
+              {.description = "flag for adaptive time stepping", .default_value = false})},
+      {.defaultable =
+              true}); /*----------------------------------------------------------------------*/
+  list["SCALAR TRANSPORT DYNAMIC/NONLINEAR"] = group("SCALAR TRANSPORT DYNAMIC/NONLINEAR",
+      {
+
+          parameter<int>(
+              "ITEMAX", {.description = "max. number of nonlin. iterations", .default_value = 10}),
+          parameter<double>(
+              "CONVTOL", {.description = "Tolerance for convergence check", .default_value = 1e-6}),
+          parameter<int>("ITEMAX_OUTER",
+              {.description = "Maximum number of outer iterations in partitioned coupling "
+                              "schemes (natural convection, multi-scale simulations etc.)",
+                  .default_value = 10}),
+          parameter<double>("CONVTOL_OUTER",
+              {.description =
+                      "Convergence check tolerance for outer loop in partitioned coupling schemes "
+                      "(natural convection, multi-scale simulations etc.)",
+                  .default_value = 1e-6}),
+          parameter<bool>("EXPLPREDICT",
+              {.description = "do an explicit predictor step before starting nonlinear iteration",
+                  .default_value = false}),
+          parameter<double>(
+              "ABSTOLRES", {.description = "Absolute tolerance for deciding if residual "
+                                           "of nonlinear problem is already zero",
+                               .default_value = 1e-14}),
+
+          // convergence criteria adaptivity
+          parameter<bool>("ADAPTCONV", {.description = "Switch on adaptive control of linear "
+                                                       "solver tolerance for nonlinear solution",
+                                           .default_value = false}),
+          parameter<double>("ADAPTCONV_BETTER",
+              {.description =
+                      "The linear solver shall be this much better than the current nonlinear "
+                      "residual in the nonlinear convergence limit",
+                  .default_value = 0.1})},
+      {.defaultable = true});
 
   /*----------------------------------------------------------------------*/
-  list["SCALAR TRANSPORT DYNAMIC/STABILIZATION"] = all_of({
-
-      // this parameter governs type of stabilization
-      deprecated_selection<Inpar::ScaTra::StabType>("STABTYPE",
-          {
-              {"no_stabilization", stabtype_no_stabilization},
-              {"SUPG", stabtype_SUPG},
-              {"GLS", stabtype_GLS},
-              {"USFEM", stabtype_USFEM},
-              {"centered", stabtype_hdg_centered},
-              {"upwind", stabtype_hdg_upwind},
-          },
-          {.description = "Type of stabilization (if any). No stabilization is only reasonable for "
-                          "low-Peclet-number.",
-              .default_value = stabtype_SUPG}),
-
-      // this parameter governs whether subgrid-scale velocity is included
-      parameter<bool>(
-          "SUGRVEL", {.description = "potential incorporation of subgrid-scale velocity",
-                         .default_value = false}),
-
-      // this parameter governs whether all-scale subgrid diffusivity is included
-      parameter<bool>(
-          "ASSUGRDIFF", {.description = "potential incorporation of all-scale subgrid diffusivity "
-                                        "(a.k.a. discontinuity-capturing) term",
-                            .default_value = false}),
-
-      // this parameter selects the tau definition applied
-      deprecated_selection<Inpar::ScaTra::TauType>("DEFINITION_TAU",
-          {
-              {"Taylor_Hughes_Zarins", tau_taylor_hughes_zarins},
-              {"Taylor_Hughes_Zarins_wo_dt", tau_taylor_hughes_zarins_wo_dt},
-              {"Franca_Valentin", tau_franca_valentin},
-              {"Franca_Valentin_wo_dt", tau_franca_valentin_wo_dt},
-              {"Shakib_Hughes_Codina", tau_shakib_hughes_codina},
-              {"Shakib_Hughes_Codina_wo_dt", tau_shakib_hughes_codina_wo_dt},
-              {"Codina", tau_codina},
-              {"Codina_wo_dt", tau_codina_wo_dt},
-              {"Franca_Madureira_Valentin", tau_franca_madureira_valentin},
-              {"Franca_Madureira_Valentin_wo_dt", tau_franca_madureira_valentin_wo_dt},
-              {"Exact_1D", tau_exact_1d},
-              {"Zero", tau_zero},
-              {"Numerical_Value", tau_numerical_value},
-          },
-          {.description = "Definition of tau", .default_value = tau_franca_valentin}),
-
-      // this parameter selects the characteristic element length for tau for all
-      // stabilization parameter definitions requiring such a length
-      parameter<Inpar::ScaTra::CharEleLength>("CHARELELENGTH",
-          {.description = "Characteristic element length for tau", .default_value = streamlength}),
-
-      // this parameter selects the all-scale subgrid-diffusivity definition applied
-      deprecated_selection<Inpar::ScaTra::AssgdType>("DEFINITION_ASSGD",
-          {
-              {"artificial_linear", assgd_artificial},
-              {"artificial_linear_reinit", assgd_lin_reinit},
-              {"Hughes_etal_86_nonlinear", assgd_hughes},
-              {"Tezduyar_Park_86_nonlinear", assgd_tezduyar},
-              {"Tezduyar_Park_86_nonlinear_wo_phizero", assgd_tezduyar_wo_phizero},
-              {"doCarmo_Galeao_91_nonlinear", assgd_docarmo},
-              {"Almeida_Silva_97_nonlinear", assgd_almeida},
-              {"YZbeta_nonlinear", assgd_yzbeta},
-              {"Codina_nonlinear", assgd_codina},
-          },
-          {.description = "Definition of (all-scale) subgrid diffusivity",
-              .default_value = assgd_artificial}),
-
-      // this parameter selects the location where tau is evaluated
-      deprecated_selection<Inpar::ScaTra::EvalTau>("EVALUATION_TAU",
-          {
-              {"element_center", evaltau_element_center},
-              {"integration_point", evaltau_integration_point},
-          },
-          {.description = "Location where tau is evaluated",
-              .default_value = evaltau_element_center}),
-
-      // this parameter selects the location where the material law is evaluated
-      // (does not fit here very well, but parameter transfer is easier)
-      deprecated_selection<Inpar::ScaTra::EvalMat>("EVALUATION_MAT",
-          {
-              {"element_center", evalmat_element_center},
-              {"integration_point", evalmat_integration_point},
-          },
-          {.description = "Location where material law is evaluated",
-              .default_value = evalmat_element_center}),
-
-      // this parameter selects methods for improving consistency of stabilization terms
-      deprecated_selection<Inpar::ScaTra::Consistency>("CONSISTENCY",
-          {
-              {"no", consistency_no},
-              {"L2_projection_lumped", consistency_l2_projection_lumped},
-          },
-          {.description = "improvement of consistency for stabilization",
-              .default_value = consistency_no}),
-
-      // this parameter defines the numerical value, if stabilization with numerical values is used
-      parameter<double>("TAU_VALUE",
-          {.description = "Numerical value for tau for stabilization", .default_value = 0.0})});
+  list["SCALAR TRANSPORT DYNAMIC/STABILIZATION"] = group("SCALAR TRANSPORT DYNAMIC/STABILIZATION",
+      {all_specs_for_scatra_stabilization()}, {.defaultable = true});
 
   // ----------------------------------------------------------------------
   // artery mesh tying
-  list["SCALAR TRANSPORT DYNAMIC/ARTERY COUPLING"] = all_of({
+  list["SCALAR TRANSPORT DYNAMIC/ARTERY COUPLING"] = group(
+      "SCALAR TRANSPORT DYNAMIC/ARTERY COUPLING",
+      {
 
-      deprecated_selection<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
-          "ARTERY_COUPLING_METHOD",
-          {
-              {"None", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none},
-              {"Nodal", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::nodal},
-              {"GPTS", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::gpts},
-              {"MP", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp},
-              {"NTP", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp},
-          },
-          {.description = "Coupling method for artery coupling.",
-              .default_value =
-                  Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none}),
+          deprecated_selection<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
+              "ARTERY_COUPLING_METHOD",
+              {
+                  {"None", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none},
+                  {"Nodal", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::nodal},
+                  {"GPTS", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::gpts},
+                  {"MP", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp},
+                  {"NTP", Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp},
+              },
+              {.description = "Coupling method for artery coupling.",
+                  .default_value =
+                      Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none}),
 
-      // penalty parameter
-      parameter<double>("PENALTY",
-          {.description = "Penalty parameter for line-based coupling", .default_value = 1000.0}),
+          // penalty parameter
+          parameter<double>("PENALTY", {.description = "Penalty parameter for line-based coupling",
+                                           .default_value = 1000.0}),
 
-      // coupled artery dofs for mesh tying
-      parameter<std::string>("COUPLEDDOFS_ARTSCATRA",
-          {.description = "coupled artery dofs for mesh tying", .default_value = "-1.0"}),
+          // coupled artery dofs for mesh tying
+          parameter<std::string>("COUPLEDDOFS_ARTSCATRA",
+              {.description = "coupled artery dofs for mesh tying", .default_value = "-1.0"}),
 
-      // coupled porofluid dofs for mesh tying
-      parameter<std::string>("COUPLEDDOFS_SCATRA",
-          {.description = "coupled porofluid dofs for mesh tying", .default_value = "-1.0"}),
+          // coupled porofluid dofs for mesh tying
+          parameter<std::string>("COUPLEDDOFS_SCATRA",
+              {.description = "coupled porofluid dofs for mesh tying", .default_value = "-1.0"}),
 
-      // functions for coupling (arteryscatra part)
-      parameter<std::string>("REACFUNCT_ART",
-          {.description = "functions for coupling (arteryscatra part)", .default_value = "-1"}),
+          // functions for coupling (arteryscatra part)
+          parameter<std::string>("REACFUNCT_ART",
+              {.description = "functions for coupling (arteryscatra part)", .default_value = "-1"}),
 
-      // scale for coupling (arteryscatra part)
-      parameter<std::string>("SCALEREAC_ART",
-          {.description = "scale for coupling (arteryscatra part)", .default_value = "0"}),
+          // scale for coupling (arteryscatra part)
+          parameter<std::string>("SCALEREAC_ART",
+              {.description = "scale for coupling (arteryscatra part)", .default_value = "0"}),
 
-      // functions for coupling (scatra part)
-      parameter<std::string>("REACFUNCT_CONT",
-          {.description = "functions for coupling (scatra part)", .default_value = "-1"}),
+          // functions for coupling (scatra part)
+          parameter<std::string>("REACFUNCT_CONT",
+              {.description = "functions for coupling (scatra part)", .default_value = "-1"}),
 
-      // scale for coupling (scatra part)
-      parameter<std::string>("SCALEREAC_CONT",
-          {.description = "scale for coupling (scatra part)", .default_value = "0"})});
+          // scale for coupling (scatra part)
+          parameter<std::string>("SCALEREAC_CONT",
+              {.description = "scale for coupling (scatra part)", .default_value = "0"})},
+      {.defaultable = true});
 
   // ----------------------------------------------------------------------
-  list["SCALAR TRANSPORT DYNAMIC/EXTERNAL FORCE"] = all_of({
+  list["SCALAR TRANSPORT DYNAMIC/EXTERNAL FORCE"] = group("SCALAR TRANSPORT DYNAMIC/EXTERNAL FORCE",
+      {
 
-      // Flag for external force
-      parameter<bool>("EXTERNAL_FORCE",
-          {.description = "Flag to activate external force", .default_value = false}),
+          // Flag for external force
+          parameter<bool>("EXTERNAL_FORCE",
+              {.description = "Flag to activate external force", .default_value = false}),
 
-      // Function ID for external force
-      parameter<int>("FORCE_FUNCTION_ID",
-          {.description = "Function ID for external force", .default_value = -1}),
+          // Function ID for external force
+          parameter<int>("FORCE_FUNCTION_ID",
+              {.description = "Function ID for external force", .default_value = -1}),
 
-      // Function ID for mobility of the scalar
-      parameter<int>("INTRINSIC_MOBILITY_FUNCTION_ID",
-          {.description = "Function ID for intrinsic mobility", .default_value = -1})});
+          // Function ID for mobility of the scalar
+          parameter<int>("INTRINSIC_MOBILITY_FUNCTION_ID",
+              {.description = "Function ID for intrinsic mobility", .default_value = -1})},
+      {.defaultable = true});
 }
 
 
@@ -804,5 +725,108 @@ std::string Inpar::ScaTra::impltype_to_string(ImplType impltype)
 
   FOUR_C_THROW("Unknown implementation type given: {}", impltype);
 }
+
+Core::IO::InputSpec Inpar::ScaTra::all_specs_for_scatra_stabilization()
+{
+  using namespace Core::IO::InputSpecBuilders;
+  return all_of({// this parameter governs type of stabilization
+      deprecated_selection<Inpar::ScaTra::StabType>("STABTYPE",
+          {
+              {"no_stabilization", stabtype_no_stabilization},
+              {"SUPG", stabtype_SUPG},
+              {"GLS", stabtype_GLS},
+              {"USFEM", stabtype_USFEM},
+              {"centered", stabtype_hdg_centered},
+              {"upwind", stabtype_hdg_upwind},
+          },
+          {.description = "Type of stabilization (if any). No stabilization is only reasonable for "
+                          "low-Peclet-number.",
+              .default_value = stabtype_SUPG}),
+
+      // this parameter governs whether subgrid-scale velocity is included
+      parameter<bool>(
+          "SUGRVEL", {.description = "potential incorporation of subgrid-scale velocity",
+                         .default_value = false}),
+
+      // this parameter governs whether all-scale subgrid diffusivity is included
+      parameter<bool>(
+          "ASSUGRDIFF", {.description = "potential incorporation of all-scale subgrid diffusivity "
+                                        "(a.k.a. discontinuity-capturing) term",
+                            .default_value = false}),
+
+      // this parameter selects the tau definition applied
+      deprecated_selection<Inpar::ScaTra::TauType>("DEFINITION_TAU",
+          {
+              {"Taylor_Hughes_Zarins", tau_taylor_hughes_zarins},
+              {"Taylor_Hughes_Zarins_wo_dt", tau_taylor_hughes_zarins_wo_dt},
+              {"Franca_Valentin", tau_franca_valentin},
+              {"Franca_Valentin_wo_dt", tau_franca_valentin_wo_dt},
+              {"Shakib_Hughes_Codina", tau_shakib_hughes_codina},
+              {"Shakib_Hughes_Codina_wo_dt", tau_shakib_hughes_codina_wo_dt},
+              {"Codina", tau_codina},
+              {"Codina_wo_dt", tau_codina_wo_dt},
+              {"Franca_Madureira_Valentin", tau_franca_madureira_valentin},
+              {"Franca_Madureira_Valentin_wo_dt", tau_franca_madureira_valentin_wo_dt},
+              {"Exact_1D", tau_exact_1d},
+              {"Zero", tau_zero},
+              {"Numerical_Value", tau_numerical_value},
+          },
+          {.description = "Definition of tau", .default_value = tau_franca_valentin}),
+
+      // this parameter selects the characteristic element length for tau for all
+      // stabilization parameter definitions requiring such a length
+      parameter<Inpar::ScaTra::CharEleLength>("CHARELELENGTH",
+          {.description = "Characteristic element length for tau", .default_value = streamlength}),
+
+      // this parameter selects the all-scale subgrid-diffusivity definition applied
+      deprecated_selection<Inpar::ScaTra::AssgdType>("DEFINITION_ASSGD",
+          {
+              {"artificial_linear", assgd_artificial},
+              {"artificial_linear_reinit", assgd_lin_reinit},
+              {"Hughes_etal_86_nonlinear", assgd_hughes},
+              {"Tezduyar_Park_86_nonlinear", assgd_tezduyar},
+              {"Tezduyar_Park_86_nonlinear_wo_phizero", assgd_tezduyar_wo_phizero},
+              {"doCarmo_Galeao_91_nonlinear", assgd_docarmo},
+              {"Almeida_Silva_97_nonlinear", assgd_almeida},
+              {"YZbeta_nonlinear", assgd_yzbeta},
+              {"Codina_nonlinear", assgd_codina},
+          },
+          {.description = "Definition of (all-scale) subgrid diffusivity",
+              .default_value = assgd_artificial}),
+
+      // this parameter selects the location where tau is evaluated
+      deprecated_selection<Inpar::ScaTra::EvalTau>("EVALUATION_TAU",
+          {
+              {"element_center", evaltau_element_center},
+              {"integration_point", evaltau_integration_point},
+          },
+          {.description = "Location where tau is evaluated",
+              .default_value = evaltau_element_center}),
+
+      // this parameter selects the location where the material law is evaluated
+      // (does not fit here very well, but parameter transfer is easier)
+      deprecated_selection<Inpar::ScaTra::EvalMat>("EVALUATION_MAT",
+          {
+              {"element_center", evalmat_element_center},
+              {"integration_point", evalmat_integration_point},
+          },
+          {.description = "Location where material law is evaluated",
+              .default_value = evalmat_element_center}),
+
+      // this parameter selects methods for improving consistency of stabilization terms
+      deprecated_selection<Inpar::ScaTra::Consistency>("CONSISTENCY",
+          {
+              {"no", consistency_no},
+              {"L2_projection_lumped", consistency_l2_projection_lumped},
+          },
+          {.description = "improvement of consistency for stabilization",
+              .default_value = consistency_no}),
+
+      // this parameter defines the numerical value, if stabilization with numerical values is
+      // used
+      parameter<double>("TAU_VALUE",
+          {.description = "Numerical value for tau for stabilization", .default_value = 0.0})});
+}
+
 
 FOUR_C_NAMESPACE_CLOSE

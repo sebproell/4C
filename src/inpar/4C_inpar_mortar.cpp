@@ -18,194 +18,200 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
   using namespace Core::IO::InputSpecBuilders;
 
   /* parameters for mortar coupling */
-  list["MORTAR COUPLING"] = all_of({
+  list["MORTAR COUPLING"] = group("MORTAR COUPLING",
+      {
 
-      deprecated_selection<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN",
-          {
-              {"Dual", shape_dual},
-              {"dual", shape_dual},
-              {"Standard", shape_standard},
-              {"standard", shape_standard},
-              {"std", shape_standard},
-              {"PetrovGalerkin", shape_petrovgalerkin},
-              {"petrovgalerkin", shape_petrovgalerkin},
-              {"pg", shape_petrovgalerkin},
-          },
-          {.description = "Type of employed set of shape functions", .default_value = shape_dual}),
+          deprecated_selection<Inpar::Mortar::ShapeFcn>("LM_SHAPEFCN",
+              {
+                  {"Dual", shape_dual},
+                  {"dual", shape_dual},
+                  {"Standard", shape_standard},
+                  {"standard", shape_standard},
+                  {"std", shape_standard},
+                  {"PetrovGalerkin", shape_petrovgalerkin},
+                  {"petrovgalerkin", shape_petrovgalerkin},
+                  {"pg", shape_petrovgalerkin},
+              },
+              {.description = "Type of employed set of shape functions",
+                  .default_value = shape_dual}),
 
-      deprecated_selection<Inpar::Mortar::SearchAlgorithm>("SEARCH_ALGORITHM",
-          {
-              {"BruteForce", search_bfele},
-              {"bruteforce", search_bfele},
-              {"BruteForceEleBased", search_bfele},
-              {"bruteforceelebased", search_bfele},
-              {"BinaryTree", search_binarytree},
-              {"Binarytree", search_binarytree},
-              {"binarytree", search_binarytree},
-          },
-          {.description = "Type of contact search", .default_value = search_binarytree}),
-
-
-      deprecated_selection<Inpar::Mortar::BinaryTreeUpdateType>("BINARYTREE_UPDATETYPE",
-          {
-              {"BottomUp", binarytree_bottom_up},
-              {"TopDown", binarytree_top_down},
-          },
-          {.description =
-                  "Type of binary tree update, which is either a bottom up or a top down approach.",
-              .default_value = binarytree_bottom_up}),
-
-      parameter<double>(
-          "SEARCH_PARAM", {.description = "Radius / Bounding volume inflation for contact search",
-                              .default_value = 0.3}),
-
-      parameter<bool>("SEARCH_USE_AUX_POS",
-          {.description = "If chosen auxiliary position is used for computing dops",
-              .default_value = true}),
-
-      deprecated_selection<Inpar::Mortar::LagMultQuad>("LM_QUAD",
-          {
-              {"undefined", lagmult_undefined},
-              {"quad", lagmult_quad},
-              {"quadratic", lagmult_quad},
-              {"pwlin", lagmult_pwlin},
-              {"piecewiselinear", lagmult_pwlin},
-              {"lin", lagmult_lin},
-              {"linear", lagmult_lin},
-              {"const", lagmult_const},
-          },
-          {.description = "Type of LM interpolation for quadratic FE",
-              .default_value = lagmult_undefined}),
-
-      parameter<bool>("CROSSPOINTS",
-          {.description = "If chosen, multipliers are removed from crosspoints / edge nodes",
-              .default_value = false}),
+          deprecated_selection<Inpar::Mortar::SearchAlgorithm>("SEARCH_ALGORITHM",
+              {
+                  {"BruteForce", search_bfele},
+                  {"bruteforce", search_bfele},
+                  {"BruteForceEleBased", search_bfele},
+                  {"bruteforceelebased", search_bfele},
+                  {"BinaryTree", search_binarytree},
+                  {"Binarytree", search_binarytree},
+                  {"binarytree", search_binarytree},
+              },
+              {.description = "Type of contact search", .default_value = search_binarytree}),
 
 
-      deprecated_selection<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT",
-          {
-              {"none", consistent_none},
-              {"boundary", consistent_boundary},
-              {"all", consistent_all},
-          },
-          {.description = "For which elements should the dual basis be calculated on EXACTLY the "
-                          "same GPs as the contact terms",
-              .default_value = consistent_boundary}),
+          deprecated_selection<Inpar::Mortar::BinaryTreeUpdateType>("BINARYTREE_UPDATETYPE",
+              {
+                  {"BottomUp", binarytree_bottom_up},
+                  {"TopDown", binarytree_top_down},
+              },
+              {.description = "Type of binary tree update, which is either a bottom up or a top "
+                              "down approach.",
+                  .default_value = binarytree_bottom_up}),
 
-      deprecated_selection<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION",
-          {
-              {"Initial", relocation_initial},
-              {"Every_Timestep", relocation_timestep},
-              {"None", relocation_none},
-          },
-          {.description = "Type of mesh relocation", .default_value = relocation_initial}),
+          parameter<double>("SEARCH_PARAM",
+              {.description = "Radius / Bounding volume inflation for contact search",
+                  .default_value = 0.3}),
 
-      deprecated_selection<Inpar::Mortar::AlgorithmType>("ALGORITHM",
-          {
-              {"mortar", algorithm_mortar},
-              {"Mortar", algorithm_mortar},
-              {"nts", algorithm_nts},
-              {"NTS", algorithm_nts},
-              {"gpts", algorithm_gpts},
-              {"GPTS", algorithm_gpts},
-              {"lts", algorithm_lts},
-              {"LTS", algorithm_lts},
-              {"ltl", algorithm_ltl},
-              {"LTL", algorithm_ltl},
-              {"stl", algorithm_stl},
-              {"STL", algorithm_stl},
-          },
-          {.description = "Type of meshtying/contact algorithm",
-              .default_value = algorithm_mortar}),
+          parameter<bool>("SEARCH_USE_AUX_POS",
+              {.description = "If chosen auxiliary position is used for computing dops",
+                  .default_value = true}),
 
-      deprecated_selection<Inpar::Mortar::IntType>("INTTYPE",
-          {
-              {"Segments", inttype_segments},
-              {"segments", inttype_segments},
-              {"Elements", inttype_elements},
-              {"elements", inttype_elements},
-              {"Elements_BS", inttype_elements_BS},
-              {"elements_BS", inttype_elements_BS},
-          },
-          {.description = "Type of numerical integration scheme",
-              .default_value = inttype_segments}),
+          deprecated_selection<Inpar::Mortar::LagMultQuad>("LM_QUAD",
+              {
+                  {"undefined", lagmult_undefined},
+                  {"quad", lagmult_quad},
+                  {"quadratic", lagmult_quad},
+                  {"pwlin", lagmult_pwlin},
+                  {"piecewiselinear", lagmult_pwlin},
+                  {"lin", lagmult_lin},
+                  {"linear", lagmult_lin},
+                  {"const", lagmult_const},
+              },
+              {.description = "Type of LM interpolation for quadratic FE",
+                  .default_value = lagmult_undefined}),
 
-      parameter<int>(
-          "NUMGP_PER_DIM", {.description = "Number of employed integration points per dimension",
-                               .default_value = 0}),
+          parameter<bool>("CROSSPOINTS",
+              {.description = "If chosen, multipliers are removed from crosspoints / edge nodes",
+                  .default_value = false}),
 
-      deprecated_selection<Inpar::Mortar::Triangulation>("TRIANGULATION",
-          {
-              {"Delaunay", triangulation_delaunay},
-              {"delaunay", triangulation_delaunay},
-              {"Center", triangulation_center},
-              {"center", triangulation_center},
-          },
-          {.description = "Type of triangulation for segment-based integration",
-              .default_value = triangulation_delaunay}),
 
-      parameter<bool>("RESTART_WITH_MESHTYING",
-          {.description =
-                  "Must be chosen if a non-meshtying simulation is to be restarted with meshtying",
-              .default_value = false}),
+          deprecated_selection<Inpar::Mortar::ConsistentDualType>("LM_DUAL_CONSISTENT",
+              {
+                  {"none", consistent_none},
+                  {"boundary", consistent_boundary},
+                  {"all", consistent_all},
+              },
+              {.description =
+                      "For which elements should the dual basis be calculated on EXACTLY the "
+                      "same GPs as the contact terms",
+                  .default_value = consistent_boundary}),
 
-      parameter<bool>("OUTPUT_INTERFACES",
-          {.description =
-                  "Write output for each mortar interface separately.\nThis is an additional "
-                  "feature, purely to enhance visualization. Currently, this is limited to "
-                  "solid meshtying and contact w/o friction.",
-              .default_value =
-                  false})}); /*--------------------------------------------------------------------*/
+          deprecated_selection<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION",
+              {
+                  {"Initial", relocation_initial},
+                  {"Every_Timestep", relocation_timestep},
+                  {"None", relocation_none},
+              },
+              {.description = "Type of mesh relocation", .default_value = relocation_initial}),
+
+          deprecated_selection<Inpar::Mortar::AlgorithmType>("ALGORITHM",
+              {
+                  {"mortar", algorithm_mortar},
+                  {"Mortar", algorithm_mortar},
+                  {"nts", algorithm_nts},
+                  {"NTS", algorithm_nts},
+                  {"gpts", algorithm_gpts},
+                  {"GPTS", algorithm_gpts},
+                  {"lts", algorithm_lts},
+                  {"LTS", algorithm_lts},
+                  {"ltl", algorithm_ltl},
+                  {"LTL", algorithm_ltl},
+                  {"stl", algorithm_stl},
+                  {"STL", algorithm_stl},
+              },
+              {.description = "Type of meshtying/contact algorithm",
+                  .default_value = algorithm_mortar}),
+
+          deprecated_selection<Inpar::Mortar::IntType>("INTTYPE",
+              {
+                  {"Segments", inttype_segments},
+                  {"segments", inttype_segments},
+                  {"Elements", inttype_elements},
+                  {"elements", inttype_elements},
+                  {"Elements_BS", inttype_elements_BS},
+                  {"elements_BS", inttype_elements_BS},
+              },
+              {.description = "Type of numerical integration scheme",
+                  .default_value = inttype_segments}),
+
+          parameter<int>("NUMGP_PER_DIM",
+              {.description = "Number of employed integration points per dimension",
+                  .default_value = 0}),
+
+          deprecated_selection<Inpar::Mortar::Triangulation>("TRIANGULATION",
+              {
+                  {"Delaunay", triangulation_delaunay},
+                  {"delaunay", triangulation_delaunay},
+                  {"Center", triangulation_center},
+                  {"center", triangulation_center},
+              },
+              {.description = "Type of triangulation for segment-based integration",
+                  .default_value = triangulation_delaunay}),
+
+          parameter<bool>("RESTART_WITH_MESHTYING",
+              {.description = "Must be chosen if a non-meshtying simulation is to be restarted "
+                              "with meshtying",
+                  .default_value = false}),
+
+          parameter<bool>("OUTPUT_INTERFACES",
+              {.description =
+                      "Write output for each mortar interface separately.\nThis is an additional "
+                      "feature, purely to enhance visualization. Currently, this is limited to "
+                      "solid meshtying and contact w/o friction.",
+                  .default_value = false})},
+      {.defaultable =
+              true}); /*--------------------------------------------------------------------*/
   // parameters for parallel redistribution of mortar interfaces
-  list["MORTAR COUPLING/PARALLEL REDISTRIBUTION"] = all_of({
+  list["MORTAR COUPLING/PARALLEL REDISTRIBUTION"] = group("MORTAR COUPLING/PARALLEL REDISTRIBUTION",
+      {
 
-      parameter<bool>("EXPLOIT_PROXIMITY",
-          {.description = "Exploit information on geometric proximity to split slave interface "
-                          "into close and "
-                          "non-close parts and redistribute them independently. [Contact only]",
-              .default_value = true}),
+          parameter<bool>("EXPLOIT_PROXIMITY",
+              {.description = "Exploit information on geometric proximity to split slave interface "
+                              "into close and "
+                              "non-close parts and redistribute them independently. [Contact only]",
+                  .default_value = true}),
 
-      deprecated_selection<ExtendGhosting>("GHOSTING_STRATEGY",
-          {
-              {"redundant_all", ExtendGhosting::redundant_all},
-              {"redundant_master", ExtendGhosting::redundant_master},
-              {"round_robin", ExtendGhosting::roundrobin},
-              {"binning", ExtendGhosting::binning},
-          },
-          {.description = "Type of interface ghosting and ghosting extension algorithm",
-              .default_value = ExtendGhosting::redundant_master}),
+          deprecated_selection<ExtendGhosting>("GHOSTING_STRATEGY",
+              {
+                  {"redundant_all", ExtendGhosting::redundant_all},
+                  {"redundant_master", ExtendGhosting::redundant_master},
+                  {"round_robin", ExtendGhosting::roundrobin},
+                  {"binning", ExtendGhosting::binning},
+              },
+              {.description = "Type of interface ghosting and ghosting extension algorithm",
+                  .default_value = ExtendGhosting::redundant_master}),
 
-      parameter<double>("IMBALANCE_TOL",
-          {.description = "Max. relative imbalance of subdomain size after redistribution",
-              .default_value = 1.1}),
+          parameter<double>("IMBALANCE_TOL",
+              {.description = "Max. relative imbalance of subdomain size after redistribution",
+                  .default_value = 1.1}),
 
-      parameter<double>("MAX_BALANCE_EVAL_TIME",
-          {.description = "Max-to-min ratio of contact evaluation time per "
-                          "processor to trigger parallel redistribution",
-              .default_value = 2.0}),
+          parameter<double>("MAX_BALANCE_EVAL_TIME",
+              {.description = "Max-to-min ratio of contact evaluation time per "
+                              "processor to trigger parallel redistribution",
+                  .default_value = 2.0}),
 
-      parameter<double>(
-          "MAX_BALANCE_SLAVE_ELES", {.description = "Max-to-min ratio of mortar slave elements per "
-                                                    "processor to trigger parallel redistribution",
-                                        .default_value = 0.5}),
+          parameter<double>("MAX_BALANCE_SLAVE_ELES",
+              {.description = "Max-to-min ratio of mortar slave elements per "
+                              "processor to trigger parallel redistribution",
+                  .default_value = 0.5}),
 
-      parameter<int>("MIN_ELEPROC",
-          {.description = "Minimum no. of elements per processor for parallel redistribution",
-              .default_value = 0}),
+          parameter<int>("MIN_ELEPROC",
+              {.description = "Minimum no. of elements per processor for parallel redistribution",
+                  .default_value = 0}),
 
-      deprecated_selection<ParallelRedist>("PARALLEL_REDIST",
-          {
-              {"None", ParallelRedist::redist_none},
-              {"Static", ParallelRedist::redist_static},
-              {"Dynamic", ParallelRedist::redist_dynamic},
-          },
-          {.description = "Type of redistribution algorithm",
-              .default_value = ParallelRedist::redist_static}),
+          deprecated_selection<ParallelRedist>("PARALLEL_REDIST",
+              {
+                  {"None", ParallelRedist::redist_none},
+                  {"Static", ParallelRedist::redist_static},
+                  {"Dynamic", ParallelRedist::redist_dynamic},
+              },
+              {.description = "Type of redistribution algorithm",
+                  .default_value = ParallelRedist::redist_static}),
 
-      parameter<bool>(
-          "PRINT_DISTRIBUTION", {.description = "Print details of the parallel distribution, i.e. "
-                                                "number of nodes/elements for each rank.",
-                                    .default_value = true})});
+          parameter<bool>("PRINT_DISTRIBUTION",
+              {.description = "Print details of the parallel distribution, i.e. "
+                              "number of nodes/elements for each rank.",
+                  .default_value = true})},
+      {.defaultable = true});
 }
 
 void Inpar::Mortar::set_valid_conditions(

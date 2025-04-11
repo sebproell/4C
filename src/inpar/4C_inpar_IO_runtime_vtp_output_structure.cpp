@@ -24,37 +24,39 @@ namespace Inpar
       using namespace Core::IO::InputSpecBuilders;
 
       // related sublist
-      list["IO/RUNTIME VTP OUTPUT STRUCTURE"] = all_of({
+      list["IO/RUNTIME VTP OUTPUT STRUCTURE"] = group("IO/RUNTIME VTP OUTPUT STRUCTURE",
+          {
 
-          // output interval regarding steps: write output every INTERVAL_STEPS steps
-          parameter<int>("INTERVAL_STEPS",
-              {.description = "write VTP output at runtime every INTERVAL_STEPS steps",
-                  .default_value = -1}),
-          parameter<int>("STEP_OFFSET",
-              {.description =
-                      "An offset added to the current step to shift the steps to be written.",
-                  .default_value = 0}),
+              // output interval regarding steps: write output every INTERVAL_STEPS steps
+              parameter<int>("INTERVAL_STEPS",
+                  {.description = "write VTP output at runtime every INTERVAL_STEPS steps",
+                      .default_value = -1}),
+              parameter<int>("STEP_OFFSET",
+                  {.description =
+                          "An offset added to the current step to shift the steps to be written.",
+                      .default_value = 0}),
 
-          // whether to write output in every iteration of the nonlinear solver
-          parameter<bool>("EVERY_ITERATION",
-              {.description = "write output in every iteration of the nonlinear solver",
-                  .default_value = false}),
+              // whether to write output in every iteration of the nonlinear solver
+              parameter<bool>("EVERY_ITERATION",
+                  {.description = "write output in every iteration of the nonlinear solver",
+                      .default_value = false}),
 
-          // write owner at every visualization point
-          parameter<bool>(
-              "OWNER", {.description = "write owner of every point", .default_value = false}),
+              // write owner at every visualization point
+              parameter<bool>(
+                  "OWNER", {.description = "write owner of every point", .default_value = false}),
 
-          // write orientation at every visualization point
-          parameter<bool>("ORIENTATIONANDLENGTH",
-              {.description = "write orientation at every point", .default_value = false}),
+              // write orientation at every visualization point
+              parameter<bool>("ORIENTATIONANDLENGTH",
+                  {.description = "write orientation at every point", .default_value = false}),
 
-          // write number of bonds at every visualization point
-          parameter<bool>("NUMBEROFBONDS",
-              {.description = "write number of bonds of every point", .default_value = false}),
+              // write number of bonds at every visualization point
+              parameter<bool>("NUMBEROFBONDS",
+                  {.description = "write number of bonds of every point", .default_value = false}),
 
-          // write force actin in linker
-          parameter<bool>("LINKINGFORCE",
-              {.description = "write force acting in linker", .default_value = false})});
+              // write force actin in linker
+              parameter<bool>("LINKINGFORCE",
+                  {.description = "write force acting in linker", .default_value = false})},
+          {.defaultable = true});
     }
 
 

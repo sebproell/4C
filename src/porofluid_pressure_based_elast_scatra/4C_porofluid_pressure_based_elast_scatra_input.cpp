@@ -21,120 +21,128 @@ void PoroMultiPhaseScaTra::set_valid_parameters(std::map<std::string, Core::IO::
 
   // ----------------------------------------------------------------------
   // (1) general control parameters
-  list["POROMULTIPHASESCATRA DYNAMIC"] = all_of({
+  list["POROMULTIPHASESCATRA DYNAMIC"] = group("POROMULTIPHASESCATRA DYNAMIC",
+      {
 
-      // Output type
-      parameter<int>(
-          "RESTARTEVERY", {.description = "write restart possibility every RESTARTEVERY steps",
-                              .default_value = 1}),
-      // Time loop control
-      parameter<int>(
-          "NUMSTEP", {.description = "maximum number of Timesteps", .default_value = 200}),
-      parameter<double>(
-          "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}),
+          // Output type
+          parameter<int>(
+              "RESTARTEVERY", {.description = "write restart possibility every RESTARTEVERY steps",
+                                  .default_value = 1}),
+          // Time loop control
+          parameter<int>(
+              "NUMSTEP", {.description = "maximum number of Timesteps", .default_value = 200}),
+          parameter<double>(
+              "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}),
 
-      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = 0.05}),
-      parameter<int>(
-          "RESULTSEVERY", {.description = "increment for writing solution", .default_value = 1}),
-      parameter<int>("ITEMAX",
-          {.description = "maximum number of iterations over fields", .default_value = 10}),
-      parameter<int>("ITEMIN",
-          {.description = "minimal number of iterations over fields", .default_value = 1}),
+          parameter<double>(
+              "TIMESTEP", {.description = "time step size dt", .default_value = 0.05}),
+          parameter<int>("RESULTSEVERY",
+              {.description = "increment for writing solution", .default_value = 1}),
+          parameter<int>("ITEMAX",
+              {.description = "maximum number of iterations over fields", .default_value = 10}),
+          parameter<int>("ITEMIN",
+              {.description = "minimal number of iterations over fields", .default_value = 1}),
 
-      // Coupling strategy for poroscatra solvers
-      deprecated_selection<SolutionSchemeOverFields>("COUPALGO",
-          {
-              {"twoway_partitioned_nested", solscheme_twoway_partitioned_nested},
-              {"twoway_partitioned_sequential", solscheme_twoway_partitioned_sequential},
-              {"twoway_monolithic", solscheme_twoway_monolithic},
-          },
-          {.description = "Coupling strategies for poroscatra solvers",
-              .default_value = solscheme_twoway_partitioned_nested}),
+          // Coupling strategy for poroscatra solvers
+          deprecated_selection<SolutionSchemeOverFields>("COUPALGO",
+              {
+                  {"twoway_partitioned_nested", solscheme_twoway_partitioned_nested},
+                  {"twoway_partitioned_sequential", solscheme_twoway_partitioned_sequential},
+                  {"twoway_monolithic", solscheme_twoway_monolithic},
+              },
+              {.description = "Coupling strategies for poroscatra solvers",
+                  .default_value = solscheme_twoway_partitioned_nested}),
 
-      // coupling with 1D artery network active
-      parameter<bool>("ARTERY_COUPLING",
-          {.description = "Coupling with 1D blood vessels.", .default_value = false}),
+          // coupling with 1D artery network active
+          parameter<bool>("ARTERY_COUPLING",
+              {.description = "Coupling with 1D blood vessels.", .default_value = false}),
 
-      // no convergence of coupling scheme
-      deprecated_selection<DivContAct>("DIVERCONT",
-          {
-              {"stop", divcont_stop},
-              {"continue", divcont_continue},
-          },
-          {.description =
-                  "What to do with time integration when Poromultiphase-Scatra iteration failed",
-              .default_value =
-                  divcont_stop})});  // ----------------------------------------------------------------------
+          // no convergence of coupling scheme
+          deprecated_selection<DivContAct>("DIVERCONT",
+              {
+                  {"stop", divcont_stop},
+                  {"continue", divcont_continue},
+              },
+              {.description = "What to do with time integration when Poromultiphase-Scatra "
+                              "iteration failed",
+                  .default_value = divcont_stop})},
+      {.defaultable =
+              true});  // ----------------------------------------------------------------------
   // (2) monolithic parameters
-  list["POROMULTIPHASESCATRA DYNAMIC/MONOLITHIC"] = all_of({
+  list["POROMULTIPHASESCATRA DYNAMIC/MONOLITHIC"] = group("POROMULTIPHASESCATRA DYNAMIC/MONOLITHIC",
+      {
 
-      deprecated_selection<VectorNorm>("VECTORNORM_RESF",
-          {
-              {"L1", PoroMultiPhaseScaTra::norm_l1},
-              {"L1_Scaled", PoroMultiPhaseScaTra::norm_l1_scaled},
-              {"L2", PoroMultiPhaseScaTra::norm_l2},
-              {"Rms", PoroMultiPhaseScaTra::norm_rms},
-              {"Inf", PoroMultiPhaseScaTra::norm_inf},
-          },
-          {.description = "type of norm to be applied to residuals",
-              .default_value = PoroMultiPhaseScaTra::norm_l2}),
+          deprecated_selection<VectorNorm>("VECTORNORM_RESF",
+              {
+                  {"L1", PoroMultiPhaseScaTra::norm_l1},
+                  {"L1_Scaled", PoroMultiPhaseScaTra::norm_l1_scaled},
+                  {"L2", PoroMultiPhaseScaTra::norm_l2},
+                  {"Rms", PoroMultiPhaseScaTra::norm_rms},
+                  {"Inf", PoroMultiPhaseScaTra::norm_inf},
+              },
+              {.description = "type of norm to be applied to residuals",
+                  .default_value = PoroMultiPhaseScaTra::norm_l2}),
 
-      deprecated_selection<VectorNorm>("VECTORNORM_INC",
-          {
-              {"L1", PoroMultiPhaseScaTra::norm_l1},
-              {"L1_Scaled", PoroMultiPhaseScaTra::norm_l1_scaled},
-              {"L2", PoroMultiPhaseScaTra::norm_l2},
-              {"Rms", PoroMultiPhaseScaTra::norm_rms},
-              {"Inf", PoroMultiPhaseScaTra::norm_inf},
-          },
-          {.description = "type of norm to be applied to residuals",
-              .default_value = PoroMultiPhaseScaTra::norm_l2}),
+          deprecated_selection<VectorNorm>("VECTORNORM_INC",
+              {
+                  {"L1", PoroMultiPhaseScaTra::norm_l1},
+                  {"L1_Scaled", PoroMultiPhaseScaTra::norm_l1_scaled},
+                  {"L2", PoroMultiPhaseScaTra::norm_l2},
+                  {"Rms", PoroMultiPhaseScaTra::norm_rms},
+                  {"Inf", PoroMultiPhaseScaTra::norm_inf},
+              },
+              {.description = "type of norm to be applied to residuals",
+                  .default_value = PoroMultiPhaseScaTra::norm_l2}),
 
-      // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
-      parameter<bool>("ADAPTCONV",
-          {.description =
-                  "Switch on adaptive control of linear solver tolerance for nonlinear solution",
-              .default_value = false}),
-      parameter<double>("ADAPTCONV_BETTER",
-          {.description = "The linear solver shall be this much better than the current nonlinear "
-                          "residual in the nonlinear convergence limit",
-              .default_value = 0.001}),
+          // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
+          parameter<bool>("ADAPTCONV", {.description = "Switch on adaptive control of linear "
+                                                       "solver tolerance for nonlinear solution",
+                                           .default_value = false}),
+          parameter<double>("ADAPTCONV_BETTER",
+              {.description =
+                      "The linear solver shall be this much better than the current nonlinear "
+                      "residual in the nonlinear convergence limit",
+                  .default_value = 0.001}),
 
-      // Iterationparameters
-      parameter<double>("TOLRES_GLOBAL",
-          {.description = "tolerance in the residual norm for the Newton iteration",
-              .default_value = 1e-8}),
-      parameter<double>("TOLINC_GLOBAL",
-          {.description = "tolerance in the increment norm for the Newton iteration",
-              .default_value = 1e-8}),
+          // Iterationparameters
+          parameter<double>("TOLRES_GLOBAL",
+              {.description = "tolerance in the residual norm for the Newton iteration",
+                  .default_value = 1e-8}),
+          parameter<double>("TOLINC_GLOBAL",
+              {.description = "tolerance in the increment norm for the Newton iteration",
+                  .default_value = 1e-8}),
 
-      // number of linear solver used for poroelasticity
-      parameter<int>("LINEAR_SOLVER",
-          {.description = "number of linear solver used for monolithic poroscatra problems",
-              .default_value = -1}),
+          // number of linear solver used for poroelasticity
+          parameter<int>("LINEAR_SOLVER",
+              {.description = "number of linear solver used for monolithic poroscatra problems",
+                  .default_value = -1}),
 
-      // parameters for finite difference check
-      deprecated_selection<FdCheck>("FDCHECK",
-          {
-              {"none", fdcheck_none},
-              {"global", fdcheck_global},
-          },
-          {.description = "flag for finite difference check: none or global",
-              .default_value = fdcheck_none}),
+          // parameters for finite difference check
+          deprecated_selection<FdCheck>("FDCHECK",
+              {
+                  {"none", fdcheck_none},
+                  {"global", fdcheck_global},
+              },
+              {.description = "flag for finite difference check: none or global",
+                  .default_value = fdcheck_none}),
 
-      // flag for equilibration of global system of equations
-      parameter<Core::LinAlg::EquilibrationMethod>(
-          "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
-                               .default_value = Core::LinAlg::EquilibrationMethod::none})});
+          // flag for equilibration of global system of equations
+          parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+              {.description = "flag for equilibration of global system of equations",
+                  .default_value = Core::LinAlg::EquilibrationMethod::none})},
+      {.defaultable = true});
 
   // ----------------------------------------------------------------------
   // (3) partitioned parameters
-  list["POROMULTIPHASESCATRA DYNAMIC/PARTITIONED"] = all_of({
+  list["POROMULTIPHASESCATRA DYNAMIC/PARTITIONED"] =
+      group("POROMULTIPHASESCATRA DYNAMIC/PARTITIONED",
+          {
 
-      // convergence tolerance of outer iteration loop
-      parameter<double>(
-          "CONVTOL", {.description = "tolerance for convergence check of outer iteration",
-                         .default_value = 1e-6})});
+              // convergence tolerance of outer iteration loop
+              parameter<double>(
+                  "CONVTOL", {.description = "tolerance for convergence check of outer iteration",
+                                 .default_value = 1e-6})},
+          {.defaultable = true});
 }
 
 void PoroMultiPhaseScaTra::set_valid_conditions(

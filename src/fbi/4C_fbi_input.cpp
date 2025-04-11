@@ -19,25 +19,28 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 
   /*----------------------------------------------------------------------*/
   /* parameters for beam to fluid meshtying */
-  list["FLUID BEAM INTERACTION"] = all_of({
-      deprecated_selection<BeamToFluidCoupling>("COUPLING",
-          {
-              {"two-way", BeamToFluidCoupling::twoway},
-              {"fluid", BeamToFluidCoupling::fluid},
-              {"solid", BeamToFluidCoupling::solid},
-          },
-          {.description = "Type of FBI coupling", .default_value = BeamToFluidCoupling::twoway}),
+  list["FLUID BEAM INTERACTION"] = group("FLUID BEAM INTERACTION",
+      {
+          deprecated_selection<BeamToFluidCoupling>("COUPLING",
+              {
+                  {"two-way", BeamToFluidCoupling::twoway},
+                  {"fluid", BeamToFluidCoupling::fluid},
+                  {"solid", BeamToFluidCoupling::solid},
+              },
+              {.description = "Type of FBI coupling",
+                  .default_value = BeamToFluidCoupling::twoway}),
 
-      parameter<int>("STARTSTEP",
-          {.description = "Time Step at which to begin the fluid beam coupling. Usually "
-                          "this will be the first step.",
-              .default_value = 0}),
+          parameter<int>("STARTSTEP",
+              {.description = "Time Step at which to begin the fluid beam coupling. Usually "
+                              "this will be the first step.",
+                  .default_value = 0}),
 
-      parameter<BeamToFluidPreSortStrategy>(
-          "PRESORT_STRATEGY", {.description = "Presort strategy for the beam elements",
-                                  .default_value = BeamToFluidPreSortStrategy::bruteforce}),
+          parameter<BeamToFluidPreSortStrategy>(
+              "PRESORT_STRATEGY", {.description = "Presort strategy for the beam elements",
+                                      .default_value = BeamToFluidPreSortStrategy::bruteforce}),
 
-  });
+      },
+      {.defaultable = true});
 
   /*----------------------------------------------------------------------*/
   std::vector<Core::IO::InputSpec> beam_to_fluid_meshtying = {
@@ -68,55 +71,61 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
   // Add the geometry pair input parameters.
   Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(beam_to_fluid_meshtying);
 
-  list["FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING"] = all_of(beam_to_fluid_meshtying);
+  list["FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING"] =
+      group("FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING", beam_to_fluid_meshtying,
+          {.defaultable = true});
 
 
 
   /*----------------------------------------------------------------------*/
 
   // Create subsection for runtime output.
-  list["FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING/RUNTIME VTK OUTPUT"] = all_of({
-      // Whether to write visualization output at all for beam to fluid meshtying.
-      parameter<bool>(
-          "WRITE_OUTPUT", {.description = "Enable / disable beam-to-fluid mesh tying output.",
-                              .default_value = false}),
+  list["FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING/RUNTIME VTK OUTPUT"] = group(
+      "FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING/RUNTIME VTK OUTPUT",
+      {
+          // Whether to write visualization output at all for beam to fluid meshtying.
+          parameter<bool>(
+              "WRITE_OUTPUT", {.description = "Enable / disable beam-to-fluid mesh tying output.",
+                                  .default_value = false}),
 
-      parameter<bool>("NODAL_FORCES",
-          {.description = "Enable / disable output of the resulting nodal forces due "
-                          "to beam to Fluid interaction.",
-              .default_value = false}),
+          parameter<bool>("NODAL_FORCES",
+              {.description = "Enable / disable output of the resulting nodal forces due "
+                              "to beam to Fluid interaction.",
+                  .default_value = false}),
 
-      parameter<bool>(
-          "SEGMENTATION", {.description = "Enable / disable output of segmentation points.",
-                              .default_value = false}),
+          parameter<bool>(
+              "SEGMENTATION", {.description = "Enable / disable output of segmentation points.",
+                                  .default_value = false}),
 
-      parameter<bool>("INTEGRATION_POINTS",
-          {.description =
-                  "Enable / disable output of used integration points. If the meshtying method "
-                  "has 'forces' at the integration point, they will also be output.",
-              .default_value = false}),
+          parameter<bool>("INTEGRATION_POINTS",
+              {.description =
+                      "Enable / disable output of used integration points. If the meshtying method "
+                      "has 'forces' at the integration point, they will also be output.",
+                  .default_value = false}),
 
-      parameter<bool>("CONSTRAINT_VIOLATION",
-          {.description = "Enable / disable output of the constraint violation "
-                          "into a output_name.penalty csv file.",
-              .default_value = false}),
+          parameter<bool>("CONSTRAINT_VIOLATION",
+              {.description = "Enable / disable output of the constraint violation "
+                              "into a output_name.penalty csv file.",
+                  .default_value = false}),
 
-      parameter<bool>("MORTAR_LAMBDA_DISCRET",
-          {.description =
-                  "Enable / disable output of the discrete Lagrange multipliers at the node of "
-                  "the Lagrange multiplier shape functions.",
-              .default_value = false}),
+          parameter<bool>("MORTAR_LAMBDA_DISCRET",
+              {.description =
+                      "Enable / disable output of the discrete Lagrange multipliers at the node of "
+                      "the Lagrange multiplier shape functions.",
+                  .default_value = false}),
 
-      parameter<bool>("MORTAR_LAMBDA_CONTINUOUS",
-          {.description = "Enable / disable output of the continuous "
-                          "Lagrange multipliers function along the beam.",
-              .default_value = false}),
+          parameter<bool>("MORTAR_LAMBDA_CONTINUOUS",
+              {.description = "Enable / disable output of the continuous "
+                              "Lagrange multipliers function along the beam.",
+                  .default_value = false}),
 
 
-      parameter<int>("MORTAR_LAMBDA_CONTINUOUS_SEGMENTS",
-          {.description = "Number of segments for continuous mortar output", .default_value = 5}),
+          parameter<int>("MORTAR_LAMBDA_CONTINUOUS_SEGMENTS",
+              {.description = "Number of segments for continuous mortar output",
+                  .default_value = 5}),
 
-  });
+      },
+      {.defaultable = true});
 }
 
 void FBI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)

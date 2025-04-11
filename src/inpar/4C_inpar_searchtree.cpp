@@ -16,16 +16,18 @@ void Inpar::Geo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  list["SEARCH TREE"] = all_of({
+  list["SEARCH TREE"] = group("SEARCH TREE",
+      {
 
-      deprecated_selection<Inpar::Geo::TreeType>("TREE_TYPE",
-          {
-              {"notree", Inpar::Geo::Notree},
-              {"octree3d", Inpar::Geo::Octree3D},
-              {"quadtree3d", Inpar::Geo::Quadtree3D},
-              {"quadtree2d", Inpar::Geo::Quadtree2D},
-          },
-          {.description = "set tree type", .default_value = Inpar::Geo::Notree})});
+          deprecated_selection<Inpar::Geo::TreeType>("TREE_TYPE",
+              {
+                  {"notree", Inpar::Geo::Notree},
+                  {"octree3d", Inpar::Geo::Octree3D},
+                  {"quadtree3d", Inpar::Geo::Quadtree3D},
+                  {"quadtree2d", Inpar::Geo::Quadtree2D},
+              },
+              {.description = "set tree type", .default_value = Inpar::Geo::Notree})},
+      {.defaultable = true});
 }
 
 FOUR_C_NAMESPACE_CLOSE

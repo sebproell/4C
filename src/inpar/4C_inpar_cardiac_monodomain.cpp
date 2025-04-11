@@ -16,20 +16,21 @@ void Inpar::ElectroPhysiology::set_valid_parameters(
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  list["CARDIAC MONODOMAIN CONTROL"] = all_of({
+  list["CARDIAC MONODOMAIN CONTROL"] = group("CARDIAC MONODOMAIN CONTROL",
+      {
 
-      // Parameters for reaction-diffusion systems (for example cardiac electrophysiology)
-      parameter<int>("WRITEMAXINTSTATE",
-          {.description = "number of maximal internal state variables to be postprocessed",
-              .default_value = 0}),
-      parameter<int>("WRITEMAXIONICCURRENTS",
-          {.description = "number of maximal ionic currents to be postprocessed",
-              .default_value = 0}),
+          // Parameters for reaction-diffusion systems (for example cardiac electrophysiology)
+          parameter<int>("WRITEMAXINTSTATE",
+              {.description = "number of maximal internal state variables to be postprocessed",
+                  .default_value = 0}),
+          parameter<int>("WRITEMAXIONICCURRENTS",
+              {.description = "number of maximal ionic currents to be postprocessed",
+                  .default_value = 0}),
 
-      parameter<double>("ACTTHRES",
-          {.description =
-                  "threshold for the potential for computing and postprocessing activation time ",
-              .default_value = 1.0})});
+          parameter<double>("ACTTHRES", {.description = "threshold for the potential for computing "
+                                                        "and postprocessing activation time ",
+                                            .default_value = 1.0})},
+      {.defaultable = true});
 }
 
 

@@ -20,72 +20,76 @@ void Inpar::Plasticity::set_valid_parameters(std::map<std::string, Core::IO::Inp
 
   /*----------------------------------------------------------------------*/
   /* parameters for semi-smooth Newton plasticity algorithm */
-  list["SEMI-SMOOTH PLASTICITY"] = all_of({
+  list["SEMI-SMOOTH PLASTICITY"] = group("SEMI-SMOOTH PLASTICITY",
+      {
 
-      parameter<double>("SEMI_SMOOTH_CPL",
-          {.description = "Weighting factor cpl for semi-smooth PDASS", .default_value = 1.0}),
-      parameter<double>("STABILIZATION_S",
-          {.description = "Stabilization factor s for semi-smooth PDASS", .default_value = 1.0}),
+          parameter<double>("SEMI_SMOOTH_CPL",
+              {.description = "Weighting factor cpl for semi-smooth PDASS", .default_value = 1.0}),
+          parameter<double>(
+              "STABILIZATION_S", {.description = "Stabilization factor s for semi-smooth PDASS",
+                                     .default_value = 1.0}),
 
-      // solver convergence test parameters for semi-smooth plasticity formulation
-      deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_RESFPLASTCONSTR",
-          {
-              {"And", Inpar::Solid::bop_and},
-              {"Or", Inpar::Solid::bop_or},
-          },
-          {.description =
-                  "binary operator to combine plasticity constraints and residual force values",
-              .default_value = Inpar::Solid::bop_and}),
+          // solver convergence test parameters for semi-smooth plasticity formulation
+          deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_RESFPLASTCONSTR",
+              {
+                  {"And", Inpar::Solid::bop_and},
+                  {"Or", Inpar::Solid::bop_or},
+              },
+              {.description =
+                      "binary operator to combine plasticity constraints and residual force values",
+                  .default_value = Inpar::Solid::bop_and}),
 
-      deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_DISPPLASTINCR",
-          {
-              {"And", Inpar::Solid::bop_and},
-              {"Or", Inpar::Solid::bop_or},
-          },
-          {.description =
-                  "binary operator to combine displacement increments and plastic flow (Delta "
-                  "Lp) increment values",
-              .default_value = Inpar::Solid::bop_and}),
+          deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_DISPPLASTINCR",
+              {
+                  {"And", Inpar::Solid::bop_and},
+                  {"Or", Inpar::Solid::bop_or},
+              },
+              {.description =
+                      "binary operator to combine displacement increments and plastic flow (Delta "
+                      "Lp) increment values",
+                  .default_value = Inpar::Solid::bop_and}),
 
-      parameter<double>("TOLPLASTCONSTR",
-          {.description = "tolerance in the plastic constraint norm for the newton iteration",
-              .default_value = 1.0E-8}),
-      parameter<double>("TOLDELTALP",
-          {.description = "tolerance in the plastic flow (Delta Lp) norm for the Newton iteration",
-              .default_value = 1.0E-8}),
+          parameter<double>("TOLPLASTCONSTR",
+              {.description = "tolerance in the plastic constraint norm for the newton iteration",
+                  .default_value = 1.0E-8}),
+          parameter<double>("TOLDELTALP",
+              {.description =
+                      "tolerance in the plastic flow (Delta Lp) norm for the Newton iteration",
+                  .default_value = 1.0E-8}),
 
-      deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_EASRES",
-          {
-              {"And", Inpar::Solid::bop_and},
-              {"Or", Inpar::Solid::bop_or},
-          },
-          {.description = "binary operator to combine EAS-residual and residual force values",
-              .default_value = Inpar::Solid::bop_and}),
+          deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_EASRES",
+              {
+                  {"And", Inpar::Solid::bop_and},
+                  {"Or", Inpar::Solid::bop_or},
+              },
+              {.description = "binary operator to combine EAS-residual and residual force values",
+                  .default_value = Inpar::Solid::bop_and}),
 
-      deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_EASINCR",
-          {
-              {"And", Inpar::Solid::bop_and},
-              {"Or", Inpar::Solid::bop_or},
-          },
-          {.description =
-                  "binary operator to combine displacement increments and EAS increment values",
-              .default_value = Inpar::Solid::bop_and}),
+          deprecated_selection<Inpar::Solid::BinaryOp>("NORMCOMBI_EASINCR",
+              {
+                  {"And", Inpar::Solid::bop_and},
+                  {"Or", Inpar::Solid::bop_or},
+              },
+              {.description =
+                      "binary operator to combine displacement increments and EAS increment values",
+                  .default_value = Inpar::Solid::bop_and}),
 
-      parameter<double>("TOLEASRES",
-          {.description = "tolerance in the EAS residual norm for the newton iteration",
-              .default_value = 1.0E-8}),
-      parameter<double>("TOLEASINCR",
-          {.description = "tolerance in the EAS increment norm for the Newton iteration",
-              .default_value = 1.0E-8}),
+          parameter<double>("TOLEASRES",
+              {.description = "tolerance in the EAS residual norm for the newton iteration",
+                  .default_value = 1.0E-8}),
+          parameter<double>("TOLEASINCR",
+              {.description = "tolerance in the EAS increment norm for the Newton iteration",
+                  .default_value = 1.0E-8}),
 
-      deprecated_selection<Inpar::TSI::DissipationMode>("DISSIPATION_MODE",
-          {
-              {"pl_multiplier", Inpar::TSI::pl_multiplier},
-              {"pl_flow", Inpar::TSI::pl_flow},
-              {"Taylor_Quinney", Inpar::TSI::Taylor_Quinney},
-          },
-          {.description = "method to calculate the plastic dissipation",
-              .default_value = Inpar::TSI::pl_multiplier})});
+          deprecated_selection<Inpar::TSI::DissipationMode>("DISSIPATION_MODE",
+              {
+                  {"pl_multiplier", Inpar::TSI::pl_multiplier},
+                  {"pl_flow", Inpar::TSI::pl_flow},
+                  {"Taylor_Quinney", Inpar::TSI::Taylor_Quinney},
+              },
+              {.description = "method to calculate the plastic dissipation",
+                  .default_value = Inpar::TSI::pl_multiplier})},
+      {.defaultable = true});
 }
 
 FOUR_C_NAMESPACE_CLOSE

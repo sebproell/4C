@@ -19,107 +19,116 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 {
   using namespace Core::IO::InputSpecBuilders;
 
-  list["SSTI CONTROL"] = all_of({
+  list["SSTI CONTROL"] = group("SSTI CONTROL",
+      {
 
-      parameter<double>(
-          "RESTARTEVERYTIME", {.description = "write restart possibility every RESTARTEVERY steps",
-                                  .default_value = 0.0}),
-      parameter<int>(
-          "RESTARTEVERY", {.description = "write restart possibility every RESTARTEVERY steps",
-                              .default_value = 1}),
-      parameter<int>(
-          "NUMSTEP", {.description = "maximum number of Timesteps", .default_value = 200}),
+          parameter<double>("RESTARTEVERYTIME",
+              {.description = "write restart possibility every RESTARTEVERY steps",
+                  .default_value = 0.0}),
+          parameter<int>(
+              "RESTARTEVERY", {.description = "write restart possibility every RESTARTEVERY steps",
+                                  .default_value = 1}),
+          parameter<int>(
+              "NUMSTEP", {.description = "maximum number of Timesteps", .default_value = 200}),
 
-      parameter<double>(
-          "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}),
+          parameter<double>(
+              "MAXTIME", {.description = "total simulation time", .default_value = 1000.0}),
 
-      parameter<double>("TIMESTEP", {.description = "time step size dt", .default_value = -1.0}),
-      parameter<double>("RESULTSEVERYTIME",
-          {.description = "increment for writing solution", .default_value = 0.0}),
-      parameter<int>(
-          "RESULTSEVERY", {.description = "increment for writing solution", .default_value = 1}),
-      parameter<int>("ITEMAX",
-          {.description = "maximum number of iterations over fields", .default_value = 10}),
-      parameter<bool>("SCATRA_FROM_RESTART_FILE",
-          {.description =
-                  "read scatra result from restart files (use option 'restartfromfile' during "
-                  "execution of 4C)",
-              .default_value = false}),
-      parameter<std::string>(
-          "SCATRA_FILENAME", {.description = "Control-file name for reading scatra results in SSTI",
-                                 .default_value = "nil"}),
-      deprecated_selection<SolutionScheme>("COUPALGO",
-          {
-              {"ssti_Monolithic", SolutionScheme::monolithic},
-          },
-          {.description = "Coupling strategies for SSTI solvers",
-              .default_value = SolutionScheme::monolithic}),
-      deprecated_selection<ScaTraTimIntType>("SCATRATIMINTTYPE",
-          {
-              {"Elch", ScaTraTimIntType::elch},
-          },
-          {.description = "scalar transport time integration type is needed to instantiate correct "
-                          "scalar transport time integration scheme for ssi problems",
-              .default_value = ScaTraTimIntType::elch}),
-      parameter<bool>("ADAPTIVE_TIMESTEPPING",
-          {.description = "flag for adaptive time stepping",
-              .default_value =
-                  false})}); /*----------------------------------------------------------------------*/
+          parameter<double>(
+              "TIMESTEP", {.description = "time step size dt", .default_value = -1.0}),
+          parameter<double>("RESULTSEVERYTIME",
+              {.description = "increment for writing solution", .default_value = 0.0}),
+          parameter<int>("RESULTSEVERY",
+              {.description = "increment for writing solution", .default_value = 1}),
+          parameter<int>("ITEMAX",
+              {.description = "maximum number of iterations over fields", .default_value = 10}),
+          parameter<bool>("SCATRA_FROM_RESTART_FILE",
+              {.description =
+                      "read scatra result from restart files (use option 'restartfromfile' during "
+                      "execution of 4C)",
+                  .default_value = false}),
+          parameter<std::string>("SCATRA_FILENAME",
+              {.description = "Control-file name for reading scatra results in SSTI",
+                  .default_value = "nil"}),
+          deprecated_selection<SolutionScheme>("COUPALGO",
+              {
+                  {"ssti_Monolithic", SolutionScheme::monolithic},
+              },
+              {.description = "Coupling strategies for SSTI solvers",
+                  .default_value = SolutionScheme::monolithic}),
+          deprecated_selection<ScaTraTimIntType>("SCATRATIMINTTYPE",
+              {
+                  {"Elch", ScaTraTimIntType::elch},
+              },
+              {.description =
+                      "scalar transport time integration type is needed to instantiate correct "
+                      "scalar transport time integration scheme for ssi problems",
+                  .default_value = ScaTraTimIntType::elch}),
+          parameter<bool>("ADAPTIVE_TIMESTEPPING",
+              {.description = "flag for adaptive time stepping", .default_value = false})},
+      {.defaultable =
+              true}); /*----------------------------------------------------------------------*/
   /* parameters for monolithic SSTI                                       */
   /*----------------------------------------------------------------------*/
-  list["SSTI CONTROL/MONOLITHIC"] = all_of({
+  list["SSTI CONTROL/MONOLITHIC"] = group("SSTI CONTROL/MONOLITHIC",
+      {
 
-      parameter<double>(
-          "ABSTOLRES", {.description = "absolute tolerance for deciding if global residual of "
-                                       "nonlinear problem is already zero",
-                           .default_value = 1.0e-14}),
-      parameter<double>("CONVTOL", {.description = "tolerance for convergence check of "
-                                                   "Newton-Raphson iteration within monolithic SSI",
-                                       .default_value = 1.0e-6}),
-      parameter<int>(
-          "LINEAR_SOLVER", {.description = "ID of linear solver for global system of equations",
-                               .default_value = -1}),
-      deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
-          {
-              {"undefined", Core::LinAlg::MatrixType::undefined},
-              {"block", Core::LinAlg::MatrixType::block_field},
-              {"sparse", Core::LinAlg::MatrixType::sparse},
-          },
-          {.description = "type of global system matrix in global system of equations",
-              .default_value = Core::LinAlg::MatrixType::undefined}),
-      parameter<Core::LinAlg::EquilibrationMethod>(
-          "EQUILIBRATION", {.description = "flag for equilibration of global system of equations",
-                               .default_value = Core::LinAlg::EquilibrationMethod::none}),
-      parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION_STRUCTURE",
-          {.description = "flag for equilibration of structural equations",
-              .default_value = Core::LinAlg::EquilibrationMethod::none}),
-      parameter<Core::LinAlg::EquilibrationMethod>(
-          "EQUILIBRATION_SCATRA", {.description = "flag for equilibration of scatra equations",
-                                      .default_value = Core::LinAlg::EquilibrationMethod::none}),
-      parameter<Core::LinAlg::EquilibrationMethod>(
-          "EQUILIBRATION_THERMO", {.description = "flag for equilibration of scatra equations",
-                                      .default_value = Core::LinAlg::EquilibrationMethod::none}),
-      parameter<bool>("EQUILIBRATION_INIT_SCATRA",
-          {.description = "use equilibration method of ScaTra to equilibrate initial calculation "
-                          "of potential",
-              .default_value = false})});
+          parameter<double>(
+              "ABSTOLRES", {.description = "absolute tolerance for deciding if global residual of "
+                                           "nonlinear problem is already zero",
+                               .default_value = 1.0e-14}),
+          parameter<double>(
+              "CONVTOL", {.description = "tolerance for convergence check of "
+                                         "Newton-Raphson iteration within monolithic SSI",
+                             .default_value = 1.0e-6}),
+          parameter<int>(
+              "LINEAR_SOLVER", {.description = "ID of linear solver for global system of equations",
+                                   .default_value = -1}),
+          deprecated_selection<Core::LinAlg::MatrixType>("MATRIXTYPE",
+              {
+                  {"undefined", Core::LinAlg::MatrixType::undefined},
+                  {"block", Core::LinAlg::MatrixType::block_field},
+                  {"sparse", Core::LinAlg::MatrixType::sparse},
+              },
+              {.description = "type of global system matrix in global system of equations",
+                  .default_value = Core::LinAlg::MatrixType::undefined}),
+          parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
+              {.description = "flag for equilibration of global system of equations",
+                  .default_value = Core::LinAlg::EquilibrationMethod::none}),
+          parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION_STRUCTURE",
+              {.description = "flag for equilibration of structural equations",
+                  .default_value = Core::LinAlg::EquilibrationMethod::none}),
+          parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION_SCATRA",
+              {.description = "flag for equilibration of scatra equations",
+                  .default_value = Core::LinAlg::EquilibrationMethod::none}),
+          parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION_THERMO",
+              {.description = "flag for equilibration of scatra equations",
+                  .default_value = Core::LinAlg::EquilibrationMethod::none}),
+          parameter<bool>("EQUILIBRATION_INIT_SCATRA",
+              {.description =
+                      "use equilibration method of ScaTra to equilibrate initial calculation "
+                      "of potential",
+                  .default_value = false})},
+      {.defaultable = true});
 
   /*----------------------------------------------------------------------*/
   /* parameters for thermo                                                */
   /*----------------------------------------------------------------------*/
-  list["SSTI CONTROL/THERMO"] = all_of({
+  list["SSTI CONTROL/THERMO"] = group("SSTI CONTROL/THERMO",
+      {
 
-      parameter<int>("INITTHERMOFUNCT",
-          {.description = "initial function for thermo field", .default_value = -1}),
-      parameter<int>(
-          "LINEAR_SOLVER", {.description = "linear solver for thermo field", .default_value = -1}),
-      deprecated_selection<Inpar::ScaTra::InitialField>("INITIALFIELD",
-          {
-              {"field_by_function", Inpar::ScaTra::InitialField::initfield_field_by_function},
-              {"field_by_condition", Inpar::ScaTra::InitialField::initfield_field_by_condition},
-          },
-          {.description = "defines, how to set the initial field",
-              .default_value = Inpar::ScaTra::InitialField::initfield_field_by_function})});
+          parameter<int>("INITTHERMOFUNCT",
+              {.description = "initial function for thermo field", .default_value = -1}),
+          parameter<int>("LINEAR_SOLVER",
+              {.description = "linear solver for thermo field", .default_value = -1}),
+          deprecated_selection<Inpar::ScaTra::InitialField>("INITIALFIELD",
+              {
+                  {"field_by_function", Inpar::ScaTra::InitialField::initfield_field_by_function},
+                  {"field_by_condition", Inpar::ScaTra::InitialField::initfield_field_by_condition},
+              },
+              {.description = "defines, how to set the initial field",
+                  .default_value = Inpar::ScaTra::InitialField::initfield_field_by_function})},
+      {.defaultable = true});
 }
 
 
