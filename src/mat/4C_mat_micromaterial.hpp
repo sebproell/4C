@@ -75,7 +75,7 @@ namespace Mat
   {
    public:
     /// construct empty material object
-    MicroMaterial();
+    MicroMaterial() = default;
 
     /// construct the material object given material parameters
     explicit MicroMaterial(Mat::PAR::MicroMaterial* params);
@@ -154,6 +154,16 @@ namespace Mat
 
     double density() const override;
 
+    /*!
+     * @brief Initialize the density based on the micromaterial
+     *
+     * @note Since we can assign only one material per element, all Gauss points have the same
+     * density -> arbitrarily ask the micromaterial at gp=0
+     *
+     * @param[in] gp Gauss point id
+     */
+    void initialize_density(int gp);
+
     /// Calculate stresses and strains on the micro-scale
     void prepare_output();
 
@@ -190,10 +200,10 @@ namespace Mat
    private:
     std::map<int, std::shared_ptr<MicroMaterialGP>> matgp_;
 
-    double density_;
+    double density_{0.0};
 
     /// my material parameters
-    Mat::PAR::MicroMaterial* params_;
+    Mat::PAR::MicroMaterial* params_{nullptr};
   };
 
 }  // namespace Mat

@@ -50,12 +50,6 @@ Core::Communication::ParObject* Mat::MicroMaterialType::create(
   return micro;
 }
 
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-Mat::MicroMaterial::MicroMaterial() : params_(nullptr) {}
-
-
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 Mat::MicroMaterial::MicroMaterial(Mat::PAR::MicroMaterial* params) : params_(params) {}

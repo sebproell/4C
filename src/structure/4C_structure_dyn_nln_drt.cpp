@@ -124,11 +124,11 @@ void dyn_nlnstructural_drt()
   {
     structadapter->read_restart(restart);
   }
-  // write output at beginning of calc
+  // post_setup tasks for the structural adapter
   else
   {
-    // post_setup tasks for the structural adapter
     structadapter->post_setup();
+    // write output at beginning of calc
     if (write_initial_state)
     {
       constexpr bool force_prepare = true;
