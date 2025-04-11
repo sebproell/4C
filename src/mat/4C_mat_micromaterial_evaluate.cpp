@@ -137,15 +137,7 @@ void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   if (matgp_.find(gp) == matgp_.end())
   {
     matgp_[gp] = std::make_shared<MicroMaterialGP>(gp, eleGID, eleowner, microdisnum, V0);
-
-    /// save density of this micromaterial
-    /// -> since we can assign only one material per element, all Gauss points have
-    /// the same density -> arbitrarily ask micromaterialgp at gp=0
-    if (gp == 0)
-    {
-      std::shared_ptr<MicroMaterialGP> actmicromatgp = matgp_[gp];
-      density_ = actmicromatgp->density();
-    }
+    initialize_density(gp);
   }
 
   std::shared_ptr<MicroMaterialGP> actmicromatgp = matgp_[gp];
@@ -245,6 +237,14 @@ void Mat::MicroMaterial::prepare_output()
   }
 }
 
+void Mat::MicroMaterial::initialize_density(const int gp)
+{
+  if (gp == 0)
+  {
+    density_ = matgp_[gp]->density();
+  }
+}
+
 // output for all procs
 void Mat::MicroMaterial::output_step_state()
 {
@@ -323,6 +323,7 @@ void Mat::MicroMaterial::read_restart(const int gp, const int eleID, const bool 
   if (matgp_.find(gp) == matgp_.end())
   {
     matgp_[gp] = std::make_shared<MicroMaterialGP>(gp, eleID, eleowner, microdisnum, V0);
+    initialize_density(gp);
   }
 
   std::shared_ptr<MicroMaterialGP> actmicromatgp = matgp_[gp];
@@ -337,6 +338,7 @@ void Mat::MicroMaterial::read_restart(
   if (matgp_.find(gp) == matgp_.end())
   {
     matgp_[gp] = std::make_shared<MicroMaterialGP>(gp, eleID, eleowner, microdisnum, V0);
+    initialize_density(gp);
   }
 
   std::shared_ptr<MicroMaterialGP> actmicromatgp = matgp_[gp];
