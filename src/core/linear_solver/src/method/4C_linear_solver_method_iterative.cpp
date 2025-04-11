@@ -157,19 +157,33 @@ int Core::LinearSolver::IterativeSolver<MatrixType, VectorType>::solve()
 
   Belos::ReturnType ret = newSolver->solve();
 
-  int my_error = 0;
-  if (ret != Belos::Converged) my_error = 1;
-  int glob_error = 0;
-  Core::Communication::sum_all(&my_error, &glob_error, 1, comm_);
-
-  if (glob_error > 0 and Core::Communication::my_mpi_rank(this->comm_) == 0)
-    std::cout << std::endl
-              << "Core::LinearSolver::BelosSolver: WARNING: Iterative solver did not converge!"
-              << std::endl;
-
   numiters_ = newSolver->getNumIters();
-
   ncall_ += 1;
+
+  // Check and communicate failed convergence to user
+  {
+    int my_error = 0;
+    if (ret != Belos::Converged) my_error = 1;
+    int glob_error = 0;
+    Core::Communication::sum_all(&my_error, &glob_error, 1, comm_);
+
+    if (glob_error > 0)
+    {
+      if (belist.get<bool>("THROW_IF_UNCONVERGED"))
+      {
+        FOUR_C_THROW("Core::LinearSolver::BelosSolver: Iterative solver did not converge.");
+      }
+      else
+      {
+        if (Core::Communication::my_mpi_rank(comm_) == 0)
+        {
+          std::cout
+              << "Core::LinearSolver::BelosSolver: WARNING: Iterative solver did not converge."
+              << std::endl;
+        }
+      }
+    }
+  }
 
   return 0;
 }

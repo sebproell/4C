@@ -105,6 +105,7 @@ AZREUSE                         0
 AZSOLVE                         GMRES
 AZSUB                           300
 AZTOL                           1e-10
+THROW_IF_UNCONVERGED            No
 AZPREC                          Teko
 TEKO_XML_FILE                   xml/block_preconditioner/thermo_solid.xml
 -------------------------------------------------------------------MATERIALS

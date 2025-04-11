@@ -96,6 +96,7 @@ AZTOL                           1.0E-12
 AZCONV                          AZ_r0
 AZREUSE                         10
 AZOUTPUT                        0
+THROW_IF_UNCONVERGED            No
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_fluid DYNVISCOSITY 0.004 DENSITY 0.001 GAMMA 1.0
 MAT 2 MAT_ElastHyper NUMMAT 1 MATIDS 5 DENS 0.001

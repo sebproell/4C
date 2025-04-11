@@ -103,6 +103,14 @@ namespace Inpar::SOLVER
                                      "before\n a restart is performed.",
                          .default_value = 50}),
 
+        parameter<bool>("THROW_IF_UNCONVERGED",
+            {.description =
+                    "If set to true, the iterative linear solver "
+                    "will throw an exception if it does not "
+                    "converge. To only issue a warning without stopping the simulation, set "
+                    "this parameter to false.",
+                .default_value = true}),
+
 
         parameter<std::optional<std::filesystem::path>>(
             "SOLVER_XML_FILE", {.description = "xml file defining any iterative solver"}),

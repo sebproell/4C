@@ -76,6 +76,7 @@ AZPREC                          MueLu
 MUELU_XML_FILE                  xml/multigrid/fluid_template.xml
 AZTOL                           1.0E-8
 AZCONV                          AZ_r0
+THROW_IF_UNCONVERGED            No
 ---------------------------------------------------------MATERIALS
 MAT       1 MAT_fluid  DYNVISCOSITY 1.0 DENSITY 1.0 GAMMA 1.0
 MAT       2 MAT_Struct_StVenantKirchhoff  YOUNG 1.0 NUE 0.0 DENS 1.0
