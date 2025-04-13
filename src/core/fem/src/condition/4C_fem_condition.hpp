@@ -136,6 +136,12 @@ namespace Core::Conditions
     */
     [[nodiscard]] inline Core::Conditions::GeometryType g_type() const { return gtype_; }
 
+    /**
+     * Which entity does the condition refer to? The interpretation of the ID depends on this
+     * entity type.
+     */
+    [[nodiscard]] inline EntityType entity_type() const { return entity_type_; }
+
     /*!
     \brief Print this Condition
     */

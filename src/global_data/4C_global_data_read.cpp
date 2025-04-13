@@ -22,6 +22,7 @@
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io.hpp"
 #include "4C_io_elementreader.hpp"
+#include "4C_io_exodus.hpp"
 #include "4C_io_geometry_type.hpp"
 #include "4C_io_input_file.hpp"
 #include "4C_io_input_file_utils.hpp"
@@ -189,7 +190,8 @@ Core::IO::InputFile Global::set_up_input_file(MPI_Comm comm)
       std::move(legacy_partial_specs), comm};
 }
 
-void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, const bool read_mesh)
+std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
+    Global::Problem& problem, Core::IO::InputFile& input, const bool read_mesh)
 {
   std::shared_ptr<Core::FE::Discretization> structdis = nullptr;
   std::shared_ptr<Core::FE::Discretization> fluiddis = nullptr;
@@ -216,10 +218,13 @@ void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, c
   auto output_control = problem.output_control_file();
 
   // the basic mesh reader. now add desired node and element readers to it!
-  Core::IO::MeshReader meshreader(input, "NODE COORDS",
-      {.mesh_partitioning_parameters = Problem::instance()->mesh_partitioning_params(),
+  auto meshreader_out = std::make_unique<Core::IO::MeshReader>(input, "NODE COORDS",
+      Core::IO::MeshReader::MeshReaderParameters{
+          .mesh_partitioning_parameters = Problem::instance()->mesh_partitioning_params(),
           .geometric_search_parameters = Problem::instance()->geometric_search_params(),
-          .io_parameters = Problem::instance()->io_params()});
+          .io_parameters = Problem::instance()->io_params(),
+      });
+  auto& meshreader = *meshreader_out;
 
   MPI_Comm comm = problem.get_communicators()->local_comm();
   switch (problem.get_problem_type())
@@ -1453,7 +1458,8 @@ void Global::read_fields(Global::Problem& problem, Core::IO::InputFile& input, c
       default:
         break;
     }
-  }  // if(read_mesh)
+  }
+  return meshreader_out;
 }
 
 void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::path& input_path)
@@ -1720,7 +1726,7 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
         micromeshreader.read_and_partition();
 
 
-        read_conditions(*micro_problem, micro_input_file);
+        read_conditions(*micro_problem, micro_input_file, micromeshreader);
 
         {
           Core::Utils::FunctionManager function_manager;
@@ -1846,7 +1852,7 @@ void Global::read_microfields_np_support(Global::Problem& problem)
         Core::IO::ElementReader(structdis_micro, micro_input_file, "STRUCTURE ELEMENTS"));
     micromeshreader.read_and_partition();
 
-    read_conditions(*micro_problem, micro_input_file);
+    read_conditions(*micro_problem, micro_input_file, micromeshreader);
 
     {
       Core::Utils::FunctionManager function_manager;
@@ -2050,9 +2056,40 @@ void Global::read_result(Global::Problem& problem, Core::IO::InputFile& input)
   if (result_descriptions) problem.get_result_test_manager().set_parsed_lines(*result_descriptions);
 }
 
+namespace
+{
+  void get_node_sets_from_mesh(
+      std::map<int, std::vector<int>>& node_sets, const Core::IO::MeshReader& mesh_reader)
+  {
+    node_sets.clear();
+    const int my_rank = Core::Communication::my_mpi_rank(mesh_reader.get_comm());
+
+    // Data is available on rank zero: bring it into the right shape and broadcast it.
+    if (my_rank == 0)
+    {
+      auto* exodus_mesh = mesh_reader.get_exodus_mesh_on_rank_zero();
+      if (exodus_mesh)
+      {
+        const auto& node_sets_from_mesh = exodus_mesh->get_node_sets();
+        for (const auto& [id, node_set] : node_sets_from_mesh)
+        {
+          const auto& set = node_set.get_node_set();
+          node_sets[id] = std::vector<int>(set.begin(), set.end());
+        }
+      }
+      Core::Communication::broadcast(node_sets, 0, mesh_reader.get_comm());
+    }
+    else
+    {
+      Core::Communication::broadcast(node_sets, 0, mesh_reader.get_comm());
+    }
+  }
+}  // namespace
+
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& input)
+void Global::read_conditions(
+    Global::Problem& problem, Core::IO::InputFile& input, const Core::IO::MeshReader& mesh_reader)
 {
   Teuchos::Time time("", true);
   if (Core::Communication::my_mpi_rank(input.get_comm()) == 0)
@@ -2081,6 +2118,9 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
   std::vector<std::vector<int>> dvol_fenode;
   Core::IO::read_design(input, "DVOL", dvol_fenode, get_discretization_callback);
 
+  std::map<int, std::vector<int>> node_sets;
+  get_node_sets_from_mesh(node_sets, mesh_reader);
+
   // check for meshfree discretisation to add node set topologies
   std::vector<std::vector<std::vector<int>>*> nodeset(4);
   nodeset[0] = &dnode_fenode;
@@ -2097,62 +2137,86 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
   // - add the conditions to the appropriate discretizations
   //
   // Note that this will reset (un-fill_complete) the discretizations.
-  for (const auto& condition : valid_conditions)
+  for (const auto& condition_definition : valid_conditions)
   {
     std::multimap<int, std::shared_ptr<Core::Conditions::Condition>> cond;
 
     // read conditions from the input file
-    condition.read(input, cond);
+    condition_definition.read(input, cond);
 
     // add nodes to conditions
-    std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>::const_iterator curr;
-    for (curr = cond.begin(); curr != cond.end(); ++curr)
+    for (const auto& [entity_id, condition] : cond)
     {
-      switch (curr->second->g_type())
+      switch (condition->entity_type())
       {
-        case Core::Conditions::geometry_type_point:
-          if (curr->first < 0 or static_cast<unsigned>(curr->first) >= dnode_fenode.size())
+        case Core::Conditions::EntityType::legacy_id:
+        {
+          switch (condition->g_type())
           {
-            FOUR_C_THROW(
-                "DPoint {} not in range [0:{}[\n"
-                "DPoint condition on non existent DPoint?",
-                curr->first, dnode_fenode.size());
+            case Core::Conditions::geometry_type_point:
+              if (entity_id < 0 or static_cast<unsigned>(entity_id) >= dnode_fenode.size())
+              {
+                FOUR_C_THROW(
+                    "DPoint {} not in range [0:{}[\n"
+                    "DPoint condition on non existent DPoint?",
+                    entity_id, dnode_fenode.size());
+              }
+              condition->set_nodes(dnode_fenode[entity_id]);
+              break;
+            case Core::Conditions::geometry_type_line:
+              if (entity_id < 0 or static_cast<unsigned>(entity_id) >= dline_fenode.size())
+              {
+                FOUR_C_THROW(
+                    "DLine {} not in range [0:{}[\n"
+                    "DLine condition on non existent DLine?",
+                    entity_id, dline_fenode.size());
+              }
+              condition->set_nodes(dline_fenode[entity_id]);
+              break;
+            case Core::Conditions::geometry_type_surface:
+              if (entity_id < 0 or static_cast<unsigned>(entity_id) >= dsurf_fenode.size())
+              {
+                FOUR_C_THROW(
+                    "DSurface {} not in range [0:{}[\n"
+                    "DSurface condition on non existent DSurface?",
+                    entity_id, dsurf_fenode.size());
+              }
+              condition->set_nodes(dsurf_fenode[entity_id]);
+              break;
+            case Core::Conditions::geometry_type_volume:
+              if (entity_id < 0 or static_cast<unsigned>(entity_id) >= dvol_fenode.size())
+              {
+                FOUR_C_THROW(
+                    "DVolume {} not in range [0:{}[\n"
+                    "DVolume condition on non existent DVolume?",
+                    entity_id, dvol_fenode.size());
+              }
+              condition->set_nodes(dvol_fenode[entity_id]);
+              break;
+            default:
+              FOUR_C_THROW("geometry type unspecified");
+              break;
           }
-          curr->second->set_nodes(dnode_fenode[curr->first]);
+
           break;
-        case Core::Conditions::geometry_type_line:
-          if (curr->first < 0 or static_cast<unsigned>(curr->first) >= dline_fenode.size())
-          {
-            FOUR_C_THROW(
-                "DLine {} not in range [0:{}[\n"
-                "DLine condition on non existent DLine?",
-                curr->first, dline_fenode.size());
-          }
-          curr->second->set_nodes(dline_fenode[curr->first]);
+        }
+        case Core::Conditions::EntityType::node_set_id:
+        {
+          // We are rather inconsistent with +/-1 here. The condition internally subtracts 1 from
+          // the ID but this is wrong for the node set ID. For node sets, the ID is meant to
+          // exactly refer to the ID in the mesh file, so we need to add the 1 back.
+          const int node_set_id = entity_id + 1;
+          FOUR_C_ASSERT_ALWAYS(node_sets.contains(node_set_id),
+              "Cannot apply condition '{}' to node set {} which is not specified in the mesh file.",
+              condition_definition.name(), node_set_id);
+          condition->set_nodes(node_sets[node_set_id]);
           break;
-        case Core::Conditions::geometry_type_surface:
-          if (curr->first < 0 or static_cast<unsigned>(curr->first) >= dsurf_fenode.size())
-          {
-            FOUR_C_THROW(
-                "DSurface {} not in range [0:{}[\n"
-                "DSurface condition on non existent DSurface?",
-                curr->first, dsurf_fenode.size());
-          }
-          curr->second->set_nodes(dsurf_fenode[curr->first]);
+        }
+        case Core::Conditions::EntityType::element_block_id:
+        {
+          FOUR_C_THROW("Not implemented.");
           break;
-        case Core::Conditions::geometry_type_volume:
-          if (curr->first < 0 or static_cast<unsigned>(curr->first) >= dvol_fenode.size())
-          {
-            FOUR_C_THROW(
-                "DVolume {} not in range [0:{}[\n"
-                "DVolume condition on non existent DVolume?",
-                curr->first, dvol_fenode.size());
-          }
-          curr->second->set_nodes(dvol_fenode[curr->first]);
-          break;
-        default:
-          FOUR_C_THROW("geometry type unspecified");
-          break;
+        }
       }
 
       // Iterate through all discretizations and sort the appropriate condition
@@ -2160,10 +2224,10 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
 
       for (const auto& [name, dis] : problem.discretization_range())
       {
-        const std::vector<int>* nodes = curr->second->get_nodes();
+        const std::vector<int>* nodes = condition->get_nodes();
         if (nodes->size() == 0)
-          FOUR_C_THROW(
-              "{} condition {} has no nodal cloud", condition.description(), curr->second->id());
+          FOUR_C_THROW("{} condition {} has no nodal cloud", condition_definition.description(),
+              condition->id());
 
         int foundit = 0;
         for (int node : *nodes)
@@ -2176,7 +2240,7 @@ void Global::read_conditions(Global::Problem& problem, Core::IO::InputFile& inpu
         if (found)
         {
           // Insert a copy since we might insert the same condition in many discretizations.
-          dis->set_condition(condition.name(), curr->second->copy_without_geometry());
+          dis->set_condition(condition_definition.name(), condition->copy_without_geometry());
         }
       }
     }

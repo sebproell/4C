@@ -12,6 +12,7 @@
 
 #include "4C_io_domainreader.hpp"
 #include "4C_io_elementreader.hpp"
+#include "4C_io_exodus.hpp"
 #include "4C_io_geometry_type.hpp"
 #include "4C_linalg_graph.hpp"
 
@@ -40,6 +41,11 @@ namespace Core::IO
        * name).
        */
       std::string section_name;
+
+      /**
+       * The actual exodus mesh object. This is only created on rank 0.
+       */
+      std::unique_ptr<Exodus::Mesh> mesh_on_rank_zero{};
     };
   }  // namespace Internal
 
@@ -126,6 +132,17 @@ namespace Core::IO
 
      */
     void read_and_partition();
+
+    /**
+     * Get MPI communicator of this mesh reader.
+     */
+    MPI_Comm get_comm() const;
+
+    /**
+     * Access the exodus mesh on rank 0. This is only available if an exodus file was actually read.
+     * On ranks other than 0, this will always return a nullptr.
+     */
+    const Exodus::Mesh* get_exodus_mesh_on_rank_zero() const;
 
    private:
     /*!

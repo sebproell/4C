@@ -57,13 +57,6 @@ void Core::Conditions::ConditionDefinition::add_component(const Core::IO::InputS
 void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
     std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>& cmap) const
 {
-  using namespace Core::IO::InputSpecBuilders;
-  auto condition_spec = all_of({
-      parameter<int>("E", {.description = "ID of the condition. This ID refers to the respective "
-                                          "topological entity of the condition."}),
-      all_of(specs_),
-  });
-
   Core::IO::InputParameterContainer container;
   try
   {

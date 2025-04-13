@@ -112,6 +112,19 @@ void Core::IO::MeshReader::read_and_partition()
   }
 }
 
+
+MPI_Comm Core::IO::MeshReader::get_comm() const { return comm_; }
+
+
+const Core::IO::Exodus::Mesh* Core::IO::MeshReader::get_exodus_mesh_on_rank_zero() const
+{
+  if (exodus_readers_.size() == 1)
+  {
+    return exodus_readers_.front().mesh_on_rank_zero.get();
+  }
+  return nullptr;
+}
+
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Core::IO::MeshReader::read_mesh_from_dat_file(int& max_node_id)
@@ -280,7 +293,6 @@ void Core::IO::MeshReader::read_mesh_from_exodus()
 
   auto my_rank = Core::Communication::my_mpi_rank(comm_);
 
-
   for (auto& exodus_reader : exodus_readers_)
   {
     // We cannot create the map right away. First, we need to figure out how many elements there
@@ -288,6 +300,7 @@ void Core::IO::MeshReader::read_mesh_from_exodus()
     // to nullptr and create it later.
     std::unique_ptr<Core::LinAlg::Map> linear_element_map;
 
+    // All the work is done on rank 0. The other ranks will receive the data.
     if (my_rank == 0)
     {
       if (!input_.has_section(exodus_reader.section_name)) return;
@@ -297,8 +310,8 @@ void Core::IO::MeshReader::read_mesh_from_exodus()
 
       const auto& geometry_data = data.group(exodus_reader.section_name);
       const auto& exodus_file = geometry_data.get<std::filesystem::path>("FILE");
-      Exodus::Mesh mesh(exodus_file.string());
-
+      exodus_reader.mesh_on_rank_zero = std::make_unique<Exodus::Mesh>(exodus_file.string());
+      const auto& mesh = *exodus_reader.mesh_on_rank_zero;
 
       // Initial implementation:
       // - read all information on rank 0, construct discretization, rebalance afterwards
