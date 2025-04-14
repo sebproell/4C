@@ -67,20 +67,23 @@ void ntainp_ccadiscret(
     case Core::Communication::NestedParallelismType::no_nested_parallelism:
     case Core::Communication::NestedParallelismType::every_group_read_dat_file:
     case Core::Communication::NestedParallelismType::separate_dat_files:
+    {
       // input of fields
-      Global::read_fields(*problem, input_file);
+      auto mesh_reader = Global::read_discretization(*problem, input_file);
+      FOUR_C_ASSERT(mesh_reader, "Internal error: nullptr.");
 
       // read result tests
       Global::read_result(*problem, input_file);
 
       // read all types of geometry related conditions (e.g. boundary conditions)
       // Also read time and space functions and local coord systems
-      Global::read_conditions(*problem, input_file);
+      Global::read_conditions(*problem, input_file, *mesh_reader);
 
       // read all knot information for isogeometric analysis
       // and add it to the (derived) nurbs discretization
       Global::read_knots(*problem, input_file);
       break;
+    }
     default:
       FOUR_C_THROW("nptype (nested parallelity type) not recognized");
       break;

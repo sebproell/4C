@@ -57,13 +57,6 @@ void Core::Conditions::ConditionDefinition::add_component(const Core::IO::InputS
 void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
     std::multimap<int, std::shared_ptr<Core::Conditions::Condition>>& cmap) const
 {
-  using namespace Core::IO::InputSpecBuilders;
-  auto condition_spec = all_of({
-      parameter<int>("E", {.description = "ID of the condition. This ID refers to the respective "
-                                          "topological entity of the condition."}),
-      all_of(specs_),
-  });
-
   Core::IO::InputParameterContainer container;
   try
   {
@@ -81,9 +74,11 @@ void Core::Conditions::ConditionDefinition::read(Core::IO::InputFile& input,
   {
     // Read a one-based condition number but convert it to zero-based for internal use.
     const int dobjid = condition_data.get<int>("E") - 1;
+    auto entity_type = condition_data.get<EntityType>("ENTITY_TYPE");
 
     std::shared_ptr<Core::Conditions::Condition> condition =
-        std::make_shared<Core::Conditions::Condition>(dobjid, condtype_, buildgeometry_, gtype_);
+        std::make_shared<Core::Conditions::Condition>(
+            dobjid, condtype_, buildgeometry_, gtype_, entity_type);
     condition->parameters() = condition_data;
 
     //------------------------------- put condition in map of conditions

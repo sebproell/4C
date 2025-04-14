@@ -32,6 +32,27 @@ namespace Core::Elements
 
 namespace Core::Conditions
 {
+  /**
+   * Which type of entity is the ID of a condition referring to?
+   */
+  enum class EntityType
+  {
+    /**
+     * Refers to a numbering of nodes specified in the input file directly. Note that an ID is only
+     * unique within a GeometryType. The same ID may be used across different GeometryTypes.
+     */
+    legacy_id,
+
+    /**
+     * Refers to a node set ID.
+     */
+    node_set_id,
+
+    /**
+     * Refers to an element block ID.
+     */
+    element_block_id,
+  };
 
   /*!
    * A condition is mainly used to realize boundary conditions. Parameters for the condition
@@ -73,9 +94,10 @@ namespace Core::Conditions
     \param buildgeometry (in): flag indicating whether explicit condition geometry
                                (elements) have to be build
     \param gtype (in): type of geometric entity this condition lives on
+    \param entity_type (in): type of entity this condition is associated with
     */
     Condition(const int id, const Core::Conditions::ConditionType type, const bool buildgeometry,
-        const Core::Conditions::GeometryType gtype);
+        const Core::Conditions::GeometryType gtype, EntityType entity_type);
 
     /*!
     \brief Default constructor with type condition_none
@@ -135,6 +157,12 @@ namespace Core::Conditions
 
     */
     [[nodiscard]] inline Core::Conditions::GeometryType g_type() const { return gtype_; }
+
+    /**
+     * Which entity does the condition refer to? The interpretation of the ID depends on this
+     * entity type.
+     */
+    [[nodiscard]] inline EntityType entity_type() const { return entity_type_; }
 
     /*!
     \brief Print this Condition
@@ -233,6 +261,9 @@ namespace Core::Conditions
 
     //! Type of geometry the condition lives on
     Core::Conditions::GeometryType gtype_{};
+
+    //! Type of entity this condition is associated with
+    EntityType entity_type_{};
 
     //! Geometry description of this condition
     std::shared_ptr<std::map<int, std::shared_ptr<Core::Elements::Element>>> geometry_{};

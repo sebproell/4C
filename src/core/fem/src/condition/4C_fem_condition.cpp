@@ -15,8 +15,8 @@ FOUR_C_NAMESPACE_OPEN
 
 
 Core::Conditions::Condition::Condition(const int id, const Core::Conditions::ConditionType type,
-    const bool buildgeometry, const Core::Conditions::GeometryType gtype)
-    : id_(id), buildgeometry_(buildgeometry), type_(type), gtype_(gtype)
+    const bool buildgeometry, const Core::Conditions::GeometryType gtype, EntityType entity_type)
+    : id_(id), buildgeometry_(buildgeometry), type_(type), gtype_(gtype), entity_type_(entity_type)
 {
 }
 

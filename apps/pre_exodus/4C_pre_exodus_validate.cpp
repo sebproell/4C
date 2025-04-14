@@ -44,7 +44,8 @@ void EXODUS::validate_input_file(const MPI_Comm comm, const std::string outfile)
   // But, we have to perform at least the problem-specific setup since
   // some reading procedures depend on the number of fields (e.g., ReadKnots())
   std::cout << "...Read field setup" << std::endl;
-  Global::read_fields(*problem, input_file, false);  // option false is important here!
+  auto mesh =
+      Global::read_discretization(*problem, input_file, false);  // option false is important here!
 
   std::cout << "...";
   {
@@ -54,7 +55,7 @@ void EXODUS::validate_input_file(const MPI_Comm comm, const std::string outfile)
   }
 
   Global::read_result(*problem, input_file);
-  Global::read_conditions(*problem, input_file);
+  Global::read_conditions(*problem, input_file, *mesh);
 
   // input of materials of cloned fields (if needed)
   Global::read_cloning_material_map(*problem, input_file);

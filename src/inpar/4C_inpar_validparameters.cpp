@@ -84,9 +84,9 @@ FOUR_C_NAMESPACE_OPEN
 std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
 {
   using namespace Core::IO::InputSpecBuilders;
-  std::map<std::string, Core::IO::InputSpec> list;
+  std::map<std::string, Core::IO::InputSpec> specs;
   /*----------------------------------------------------------------------*/
-  list["DISCRETISATION"] = group("DISCRETISATION",
+  specs["DISCRETISATION"] = group("DISCRETISATION",
       {
 
           parameter<int>("NUMFLUIDDIS",
@@ -104,7 +104,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
                   .default_value = 1})},
       {.defaultable = true});
 
-  list["PROBLEM SIZE"] = group("PROBLEM SIZE",
+  specs["PROBLEM SIZE"] = group("PROBLEM SIZE",
       {
 
           parameter<int>("DIM", {.description = "2d or 3d problem", .default_value = 3}),
@@ -124,11 +124,11 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
           parameter<int>("NUMDF",
               {.description = "maximum number of degrees of freedom", .default_value = 3})},
       {.defaultable = true});
-  Inpar::PROBLEMTYPE::set_valid_parameters(list);
+  Inpar::PROBLEMTYPE::set_valid_parameters(specs);
 
   /*----------------------------------------------------------------------*/
 
-  list["NURBS"] = group("NURBS",
+  specs["NURBS"] = group("NURBS",
       {
 
           parameter<bool>("DO_LS_DBC_PROJECTION",
@@ -142,75 +142,94 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
                   .default_value = -1})},
       {.defaultable = true});
 
-  Inpar::Solid::set_valid_parameters(list);
-  Inpar::IO::set_valid_parameters(list);
-  Inpar::IOMonitorStructureDBC::set_valid_parameters(list);
-  Inpar::IORuntimeOutput::set_valid_parameters(list);
-  Inpar::IORuntimeVTPStructure::set_valid_parameters(list);
-  Inpar::Mortar::set_valid_parameters(list);
-  CONTACT::set_valid_parameters(list);
-  Inpar::VolMortar::set_valid_parameters(list);
-  Inpar::Wear::set_valid_parameters(list);
-  Inpar::IORuntimeOutput::FLUID::set_valid_parameters(list);
-  Inpar::IORuntimeOutput::Solid::set_valid_parameters(list);
-  Inpar::IORuntimeOutput::Beam::set_valid_parameters(list);
-  BeamContact::set_valid_parameters(list);
-  BeamPotential::set_valid_parameters(list);
-  Inpar::BeamInteraction::set_valid_parameters(list);
-  Inpar::RveMpc::set_valid_parameters(list);
-  BrownianDynamics::set_valid_parameters(list);
+  specs["STRUCTURE GEOMETRY"] = group("STRUCTURE GEOMETRY",
+      {
+          parameter<std::filesystem::path>(
+              "FILE", {.description = "Path to the exodus geometry file. Either absolute or "
+                                      "relative to the input file."}),
+          // Once we support more format, we should add a "TYPE" parameter for the file format.
+          list("ELEMENT_BLOCKS",
+              all_of({
+                  parameter<int>(
+                      "ID", {.description = "ID of the element block in the exodus file."}),
+                  parameter<std::string>("ELEMENT_NAME",
+                      {.description =
+                              "The name of the element that should be assigned to the block."}),
+                  parameter<std::string>("ELEMENT_DATA",
+                      {.description = "A dat-style string of parameters for the element."}),
+              })),
+      },
+      {.required = false});
 
-  Inpar::Plasticity::set_valid_parameters(list);
+  Inpar::Solid::set_valid_parameters(specs);
+  Inpar::IO::set_valid_parameters(specs);
+  Inpar::IOMonitorStructureDBC::set_valid_parameters(specs);
+  Inpar::IORuntimeOutput::set_valid_parameters(specs);
+  Inpar::IORuntimeVTPStructure::set_valid_parameters(specs);
+  Inpar::Mortar::set_valid_parameters(specs);
+  CONTACT::set_valid_parameters(specs);
+  Inpar::VolMortar::set_valid_parameters(specs);
+  Inpar::Wear::set_valid_parameters(specs);
+  Inpar::IORuntimeOutput::FLUID::set_valid_parameters(specs);
+  Inpar::IORuntimeOutput::Solid::set_valid_parameters(specs);
+  Inpar::IORuntimeOutput::Beam::set_valid_parameters(specs);
+  BeamContact::set_valid_parameters(specs);
+  BeamPotential::set_valid_parameters(specs);
+  Inpar::BeamInteraction::set_valid_parameters(specs);
+  Inpar::RveMpc::set_valid_parameters(specs);
+  BrownianDynamics::set_valid_parameters(specs);
 
-  Thermo::set_valid_parameters(list);
-  Inpar::TSI::set_valid_parameters(list);
+  Inpar::Plasticity::set_valid_parameters(specs);
 
-  Inpar::FLUID::set_valid_parameters(list);
-  Inpar::LowMach::set_valid_parameters(list);
-  Cut::set_valid_parameters(list);
-  Inpar::XFEM::set_valid_parameters(list);
-  Inpar::CONSTRAINTS::set_valid_parameters(list);
+  Thermo::set_valid_parameters(specs);
+  Inpar::TSI::set_valid_parameters(specs);
 
-  Lubrication::set_valid_parameters(list);
-  Inpar::ScaTra::set_valid_parameters(list);
-  Inpar::LevelSet::set_valid_parameters(list);
-  Inpar::ElCh::set_valid_parameters(list);
-  Inpar::ElectroPhysiology::set_valid_parameters(list);
-  Inpar::STI::set_valid_parameters(list);
+  Inpar::FLUID::set_valid_parameters(specs);
+  Inpar::LowMach::set_valid_parameters(specs);
+  Cut::set_valid_parameters(specs);
+  Inpar::XFEM::set_valid_parameters(specs);
+  Inpar::CONSTRAINTS::set_valid_parameters(specs);
 
-  Inpar::S2I::set_valid_parameters(list);
-  Inpar::FS3I::set_valid_parameters(list);
-  Inpar::PoroElast::set_valid_parameters(list);
-  Inpar::PoroScaTra::set_valid_parameters(list);
-  POROMULTIPHASE::set_valid_parameters(list);
-  PoroMultiPhaseScaTra::set_valid_parameters(list);
-  POROFLUIDMULTIPHASE::set_valid_parameters(list);
-  EHL::set_valid_parameters(list);
-  Inpar::SSI::set_valid_parameters(list);
-  Inpar::SSTI::set_valid_parameters(list);
-  ALE::set_valid_parameters(list);
-  Inpar::FSI::set_valid_parameters(list);
+  Lubrication::set_valid_parameters(specs);
+  Inpar::ScaTra::set_valid_parameters(specs);
+  Inpar::LevelSet::set_valid_parameters(specs);
+  Inpar::ElCh::set_valid_parameters(specs);
+  Inpar::ElectroPhysiology::set_valid_parameters(specs);
+  Inpar::STI::set_valid_parameters(specs);
 
-  Inpar::ArtDyn::set_valid_parameters(list);
-  Inpar::ArteryNetwork::set_valid_parameters(list);
-  Inpar::BioFilm::set_valid_parameters(list);
-  Inpar::ReducedLung::set_valid_parameters(list);
-  Inpar::Cardiovascular0D::set_valid_parameters(list);
-  Inpar::FPSI::set_valid_parameters(list);
-  FBI::set_valid_parameters(list);
+  Inpar::S2I::set_valid_parameters(specs);
+  Inpar::FS3I::set_valid_parameters(specs);
+  Inpar::PoroElast::set_valid_parameters(specs);
+  Inpar::PoroScaTra::set_valid_parameters(specs);
+  POROMULTIPHASE::set_valid_parameters(specs);
+  PoroMultiPhaseScaTra::set_valid_parameters(specs);
+  POROFLUIDMULTIPHASE::set_valid_parameters(specs);
+  EHL::set_valid_parameters(specs);
+  Inpar::SSI::set_valid_parameters(specs);
+  Inpar::SSTI::set_valid_parameters(specs);
+  ALE::set_valid_parameters(specs);
+  Inpar::FSI::set_valid_parameters(specs);
 
-  Inpar::PARTICLE::set_valid_parameters(list);
+  Inpar::ArtDyn::set_valid_parameters(specs);
+  Inpar::ArteryNetwork::set_valid_parameters(specs);
+  Inpar::BioFilm::set_valid_parameters(specs);
+  Inpar::ReducedLung::set_valid_parameters(specs);
+  Inpar::Cardiovascular0D::set_valid_parameters(specs);
+  Inpar::FPSI::set_valid_parameters(specs);
+  FBI::set_valid_parameters(specs);
 
-  Inpar::Geo::set_valid_parameters(list);
-  Inpar::BINSTRATEGY::set_valid_parameters(list);
-  Inpar::GeometricSearch::set_valid_parameters(list);
-  Inpar::PaSI::set_valid_parameters(list);
+  Inpar::PARTICLE::set_valid_parameters(specs);
 
-  Inpar::Rebalance::set_valid_parameters(list);
-  Inpar::SOLVER::set_valid_parameters(list);
-  Inpar::NlnSol::set_valid_parameters(list);
+  Inpar::Geo::set_valid_parameters(specs);
+  Inpar::BINSTRATEGY::set_valid_parameters(specs);
+  Inpar::GeometricSearch::set_valid_parameters(specs);
+  Inpar::PaSI::set_valid_parameters(specs);
 
-  return list;
+  Inpar::Rebalance::set_valid_parameters(specs);
+  Inpar::SOLVER::set_valid_parameters(specs);
+  Inpar::NlnSol::set_valid_parameters(specs);
+
+  return specs;
 }
 
 

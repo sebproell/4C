@@ -346,7 +346,8 @@ void SSI::SSIBase::init_discretizations(MPI_Comm comm, const std::string& struct
         const int num_conditions =
             static_cast<int>(scatra_manifold_dis->get_all_conditions().size());
         auto cond = std::make_shared<Core::Conditions::Condition>(num_conditions + 1,
-            Core::Conditions::ScatraPartitioning, true, Core::Conditions::geometry_type_surface);
+            Core::Conditions::ScatraPartitioning, true, Core::Conditions::geometry_type_surface,
+            Core::Conditions::EntityType::legacy_id);
         cond->parameters().add("ConditionID", 0);
         cond->set_nodes(glob_node_ids);
 

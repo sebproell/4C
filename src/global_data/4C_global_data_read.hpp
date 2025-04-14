@@ -12,6 +12,7 @@
 
 #include "4C_global_data.hpp"
 #include "4C_io_input_file.hpp"
+#include "4C_io_meshreader.hpp"
 
 #include <filesystem>
 
@@ -25,8 +26,9 @@ namespace Global
    */
   [[nodiscard]] Core::IO::InputFile set_up_input_file(MPI_Comm comm);
 
-  /// setup the discretizations
-  void read_fields(
+  /// Read the discretization. This mainly means the mesh. The MeshReader is returned to the caller
+  /// in case it needs to be used for further processing.
+  std::unique_ptr<Core::IO::MeshReader> read_discretization(
       Global::Problem& problem, Core::IO::InputFile& input, const bool read_mesh = true);
 
   void read_micro_fields(Global::Problem& problem, const std::filesystem::path& input_path);
@@ -47,7 +49,8 @@ namespace Global
   void read_cloning_material_map(Global::Problem& problem, Core::IO::InputFile& input);
 
   /// input of conditions
-  void read_conditions(Global::Problem& problem, Core::IO::InputFile& input);
+  void read_conditions(Global::Problem& problem, Core::IO::InputFile& input,
+      const Core::IO::MeshReader& mesh_reader);
 
   /// input of result tests
   void read_result(Global::Problem& problem, Core::IO::InputFile& input);

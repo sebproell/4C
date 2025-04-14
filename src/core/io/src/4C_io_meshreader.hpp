@@ -12,6 +12,7 @@
 
 #include "4C_io_domainreader.hpp"
 #include "4C_io_elementreader.hpp"
+#include "4C_io_exodus.hpp"
 #include "4C_io_geometry_type.hpp"
 #include "4C_linalg_graph.hpp"
 
@@ -22,6 +23,31 @@ FOUR_C_NAMESPACE_OPEN
 namespace Core::IO
 {
   class InputFile;
+
+  namespace Internal
+  {
+    /**
+     * Support class to read a mesh from an exodus file.
+     */
+    struct ExodusReader
+    {
+      /**
+       *The discretization that should be filled with the information from the exodus file.
+       */
+      Core::FE::Discretization& target_discretization;
+
+      /**
+       * The section in the input file that has the necessary data for the reader (e.g. the file
+       * name).
+       */
+      std::string section_name;
+
+      /**
+       * The actual exodus mesh object. This is only created on rank 0.
+       */
+      std::unique_ptr<Exodus::Mesh> mesh_on_rank_zero{};
+    };
+  }  // namespace Internal
 
   /*!
     \brief helper class to read a mesh
@@ -107,6 +133,17 @@ namespace Core::IO
      */
     void read_and_partition();
 
+    /**
+     * Get MPI communicator of this mesh reader.
+     */
+    MPI_Comm get_comm() const;
+
+    /**
+     * Access the exodus mesh on rank 0. This is only available if an exodus file was actually read.
+     * On ranks other than 0, this will always return a nullptr.
+     */
+    const Exodus::Mesh* get_exodus_mesh_on_rank_zero() const;
+
    private:
     /*!
     \brief Read pre-generated mesh from input file and generate related FillCompleted()
@@ -116,6 +153,9 @@ namespace Core::IO
                                offset to start node numbering (based on already existing nodes)
     */
     void read_mesh_from_dat_file(int& max_node_id);
+
+    //! Read all mesh information from exodus files.
+    void read_mesh_from_exodus();
 
     /*!
     \brief Rebalance discretizations built in read_mesh_from_dat_file()
@@ -144,6 +184,8 @@ namespace Core::IO
 
     /// my domain readers
     std::vector<DomainReader> domain_readers_;
+
+    std::vector<Internal::ExodusReader> exodus_readers_;
 
     /// Input file contents
     Core::IO::InputFile& input_;
