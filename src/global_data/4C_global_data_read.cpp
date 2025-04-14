@@ -419,8 +419,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       problem.add_dis("structure", structdis);
       meshreader.add_advanced_reader(structdis, input, "STRUCTURE",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.structural_dynamic_params(), "GEOMETRY"),
-          nullptr);
+              problem.structural_dynamic_params(), "GEOMETRY"));
 
       if (problem.x_fluid_dynamic_params().sublist("GENERAL").get<bool>("XFLUIDFLUID"))
       {
@@ -434,8 +433,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
             std::make_shared<Core::IO::DiscretizationWriter>(xfluiddis, output_control, distype));
         problem.add_dis("xfluid", xfluiddis);
 
-        meshreader.add_element_reader(
-            Core::IO::ElementReader(xfluiddis, input, "FLUID ELEMENTS", "FLUID"));
+        meshreader.add_element_reader(Core::IO::ElementReader(xfluiddis, input, "FLUID ELEMENTS"));
       }
       else
       {
@@ -446,8 +444,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
         meshreader.add_advanced_reader(fluiddis, input, "FLUID",
             Teuchos::getIntegralValue<Core::IO::GeometryType>(
-                problem.fluid_dynamic_params(), "GEOMETRY"),
-            nullptr);
+                problem.fluid_dynamic_params(), "GEOMETRY"));
       }
 
       aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
@@ -485,8 +482,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
       meshreader.add_advanced_reader(fluiddis, input, "FLUID",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.fluid_dynamic_params(), "GEOMETRY"),
-          nullptr);
+              problem.fluid_dynamic_params(), "GEOMETRY"));
 
       meshreader.add_element_reader(Core::IO::ElementReader(aledis, input, "ALE ELEMENTS"));
 
@@ -562,8 +558,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
       meshreader.add_advanced_reader(fluiddis, input, "FLUID",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.fluid_dynamic_params(), "GEOMETRY"),
-          nullptr);
+              problem.fluid_dynamic_params(), "GEOMETRY"));
 
       break;
     }
@@ -746,12 +741,10 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
       meshreader.add_advanced_reader(structdis, input, "STRUCTURE",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.structural_dynamic_params(), "GEOMETRY"),
-          nullptr);
+              problem.structural_dynamic_params(), "GEOMETRY"));
       meshreader.add_advanced_reader(thermdis, input, "THERMO",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.thermal_dynamic_params(), "GEOMETRY"),
-          nullptr);
+              problem.thermal_dynamic_params(), "GEOMETRY"));
 
       break;
     }
@@ -809,8 +802,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
       meshreader.add_advanced_reader(structdis, input, "STRUCTURE",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.structural_dynamic_params(), "GEOMETRY"),
-          nullptr);
+              problem.structural_dynamic_params(), "GEOMETRY"));
 
       break;
     }
@@ -886,8 +878,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
           Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
       meshreader.add_advanced_reader(fluiddis, input, "FLUID",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.fluid_dynamic_params(), "GEOMETRY"),
-          nullptr);
+              problem.fluid_dynamic_params(), "GEOMETRY"));
       // meshreader.AddElementReader(Teuchos::rcp(new Core::IO::ElementReader(fluiddis, input,
       // "FLUID ELEMENTS")));
       meshreader.add_element_reader(
@@ -1197,8 +1188,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
           Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
       meshreader.add_advanced_reader(fluiddis, input, "FLUID",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.fluid_dynamic_params(), "GEOMETRY"),
-          nullptr);
+              problem.fluid_dynamic_params(), "GEOMETRY"));
 
       break;
     }

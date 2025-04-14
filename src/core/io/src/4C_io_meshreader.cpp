@@ -188,15 +188,14 @@ Core::IO::MeshReader::MeshReader(
 /*----------------------------------------------------------------------*/
 void Core::IO::MeshReader::add_advanced_reader(std::shared_ptr<Core::FE::Discretization> dis,
     Core::IO::InputFile& input, const std::string& sectionname,
-    const Core::IO::GeometryType geometrysource, const std::string* geofilepath)
+    const Core::IO::GeometryType geometrysource)
 {
-  std::set<std::string> elementtypes;
   switch (geometrysource)
   {
     case Core::IO::geometry_full:
     {
       std::string fullsectionname(sectionname + " ELEMENTS");
-      ElementReader er = ElementReader(dis, input, fullsectionname, elementtypes);
+      ElementReader er = ElementReader(dis, input, fullsectionname);
       element_readers_.emplace_back(er);
       break;
     }

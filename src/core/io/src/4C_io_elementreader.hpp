@@ -75,34 +75,6 @@ namespace Core::IO
     ElementReader(std::shared_ptr<Core::FE::Discretization> dis, Core::IO::InputFile& input,
         std::string sectionname);
 
-    /*!
-    \brief Construct element reader for a given field that reads a given section
-
-    Create empty discretization and append it to given field.
-
-    \param dis (i) the new discretization
-    \param comm (i) our communicator
-    \param sectionname (i) the section that contains the element lines
-    \param elementtype (i) element type name to read in this discretization
-    */
-    ElementReader(std::shared_ptr<Core::FE::Discretization> dis, Core::IO::InputFile& input,
-        std::string sectionname, std::string elementtype);
-
-    /*!
-    \brief Construct element reader for a given field that reads a given section
-
-    Create empty discretization and append it to given field.
-
-    \param dis (i) the new discretization
-    \param comm (i) our communicator
-    \param sectionname (i) the section that contains the element lines
-    \param elementtypes (i) element type names to read in this discretization
-    */
-    ElementReader(std::shared_ptr<Core::FE::Discretization> dis, Core::IO::InputFile& input,
-        std::string sectionname, const std::set<std::string>& elementtypes);
-
-    //! Destructor
-    virtual ~ElementReader() = default;
     // Return list of unique nodes
     std::set<int> get_unique_nodes() const { return nodes_; }
 
@@ -136,7 +108,7 @@ namespace Core::IO
       Results are distributed to other procs using two global vectors!
     - build final nodal row map, export graph to the new map
     */
-    virtual void read_and_distribute();
+    void read_and_distribute();
 
     /*!
     \brief Tell whether the given node belongs to us
@@ -187,9 +159,6 @@ namespace Core::IO
 
     /// element col map
     std::shared_ptr<Core::LinAlg::Map> coleles_;
-
-    /// element type names to read
-    std::set<std::string> elementtypes_;
   };
 }  // namespace Core::IO
 
