@@ -23,8 +23,8 @@ cd <project_root>
 ./docker/dependencies/compute_dependencies_hash.sh
 ```
 
-1. Update the `FOUR_C_DOCKER_DEPENDENCIES_HASH` variable in `docker.yml` and all mentions of the old hash (search and replace) in all workflows `.github/workflows` file (The hash should only occur in `container.image`).
-1. Push a branch directly to the 4C repo (not your fork)
+1. Update all explicit mentions of the old `DEPENDENCIES_HASH` variable by search and replace in all workflows `.github/workflows` file.
+1. Push a branch directly to the 4C repo (not your fork). The branch has to start with `docker-update`, e.g., `docker-update-issue-number-update-some-dependency`.
 1. Open a PR (the automatically triggered workflows will fail)
 1. Trigger the docker workflow manually on the branch in the 4C repo to build the docker image.
 1. Update the branch such that the workflows are triggered again.
