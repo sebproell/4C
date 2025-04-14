@@ -120,7 +120,7 @@ namespace Core::IO
     /*!
     \brief Rebalance discretizations built in read_mesh_from_dat_file()
     */
-    void rebalance();
+    void rebalance() const;
 
     /*!
     \brief Create inline mesh
@@ -131,7 +131,7 @@ namespace Core::IO
     \param[in/out] max_node_id Maximum node id in a given discretization. To be used as global
                                offset to start node numbering (based on already existing nodes)
     */
-    void create_inline_mesh(int& max_node_id);
+    void create_inline_mesh(int& max_node_id) const;
 
     /// my comm
     MPI_Comm comm_;
