@@ -205,15 +205,12 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
   std::shared_ptr<Core::FE::Discretization> lubricationdis = nullptr;
   std::shared_ptr<Core::FE::Discretization> scatradis = nullptr;
   std::shared_ptr<Core::FE::Discretization> scatra_micro_dis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> cellscatradis = nullptr;
   std::shared_ptr<Core::FE::Discretization> fluidscatradis = nullptr;
   std::shared_ptr<Core::FE::Discretization> structscatradis = nullptr;
   std::shared_ptr<Core::FE::Discretization> artscatradis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> arterydis = nullptr;  //_1D_ARTERY_
+  std::shared_ptr<Core::FE::Discretization> arterydis = nullptr;
   std::shared_ptr<Core::FE::Discretization> airwaydis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> optidis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> porofluiddis = nullptr;  // fpsi, poroelast
-  std::shared_ptr<Core::FE::Discretization> celldis = nullptr;
+  std::shared_ptr<Core::FE::Discretization> porofluiddis = nullptr;
   std::shared_ptr<Core::FE::Discretization> pboxdis = nullptr;
 
   // decide which kind of spatial representation is required
@@ -340,10 +337,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       meshreader.add_element_reader(
           Core::IO::ElementReader(structscatradis, input, "TRANSPORT2 ELEMENTS"));
 
-#ifdef EXTENDEDPARALLELOVERLAP
-      structdis->CreateExtendedOverlap(false, false, false);
-#endif
-
       break;
     }
     case Core::ProblemType::biofilm_fsi:
@@ -388,9 +381,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
           Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
       meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
 
-#ifdef EXTENDEDPARALLELOVERLAP
-      structdis->CreateExtendedOverlap(false, false, false);
-#endif
 
       // fluid scatra field
       fluidscatradis = std::make_shared<Core::FE::Discretization>("scatra1", comm, problem.n_dim());

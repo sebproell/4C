@@ -411,10 +411,6 @@ void EXODUS::write_dat_eles(
       transport2_elements.push_back(element_definition);
     else if (element_definition.sec == "THERMO")
       thermo_elements.push_back(element_definition);
-    else if (element_definition.sec == "CELL")
-      cell_elements.push_back(element_definition);
-    else if (element_definition.sec == "CELLSCATRA")
-      cellscatra_elements.push_back(element_definition);
     else if (element_definition.sec == "ARTERY")
       artery_elements.push_back(element_definition);
     else if (element_definition.sec == "")
@@ -474,12 +470,6 @@ void EXODUS::write_dat_eles(
 
   // print thermo elements
   if (!thermo_elements.empty()) printElementSection(thermo_elements, "THERMO ELEMENTS");
-
-  // print cell elements
-  if (!cell_elements.empty()) printElementSection(cell_elements, "CELL ELEMENTS");
-
-  // print cellscatra elements
-  if (!cellscatra_elements.empty()) printElementSection(cellscatra_elements, "CELLSCATRA ELEMENTS");
 
   // print artery elements
   if (!artery_elements.empty()) printElementSection(artery_elements, "ARTERY ELEMENTS");
