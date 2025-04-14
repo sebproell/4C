@@ -256,17 +256,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      if (xfluiddis != nullptr)
-        xfluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(xfluiddis, output_control, distype));
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
-
       problem.add_dis("structure", structdis);
       problem.add_dis("fluid", fluiddis);
       if (xfluiddis != nullptr) problem.add_dis("xfluid", xfluiddis);
@@ -311,18 +300,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
-      fluidscatradis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          fluidscatradis, output_control, distype));
-      structscatradis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          structscatradis, output_control, distype));
-
       problem.add_dis("structure", structdis);
       problem.add_dis("fluid", fluiddis);
       problem.add_dis("ale", aledis);
@@ -361,16 +338,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
-      structaledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structaledis, output_control, distype));
-
       problem.add_dis("structure", structdis);
       problem.add_dis("fluid", fluiddis);
       problem.add_dis("ale", aledis);
@@ -384,17 +351,12 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
       // fluid scatra field
       fluidscatradis = std::make_shared<Core::FE::Discretization>("scatra1", comm, problem.n_dim());
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      fluidscatradis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          fluidscatradis, output_control, distype));
       problem.add_dis("scatra1", fluidscatradis);
 
       // structure scatra field
       structscatradis =
           std::make_shared<Core::FE::Discretization>("scatra2", comm, problem.n_dim());
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structscatradis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          structscatradis, output_control, distype));
+
       problem.add_dis("scatra2", structscatradis);
 
       break;
@@ -403,9 +365,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     case Core::ProblemType::fluid_xfem:
     {
       structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
+
       problem.add_dis("structure", structdis);
       meshreader.add_advanced_reader(structdis, input, "STRUCTURE",
           Teuchos::getIntegralValue<Core::IO::GeometryType>(
@@ -414,13 +374,9 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       if (problem.x_fluid_dynamic_params().sublist("GENERAL").get<bool>("XFLUIDFLUID"))
       {
         fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-        fluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
         problem.add_dis("fluid", fluiddis);
 
         xfluiddis = std::make_shared<XFEM::DiscretizationXFEM>("xfluid", comm, problem.n_dim());
-        xfluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(xfluiddis, output_control, distype));
         problem.add_dis("xfluid", xfluiddis);
 
         meshreader.add_element_reader(Core::IO::ElementReader(xfluiddis, input, "FLUID ELEMENTS"));
@@ -428,8 +384,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       else
       {
         fluiddis = std::make_shared<XFEM::DiscretizationXFEM>("fluid", comm, problem.n_dim());
-        fluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
         problem.add_dis("fluid", fluiddis);
 
         meshreader.add_advanced_reader(fluiddis, input, "FLUID",
@@ -438,8 +392,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       }
 
       aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
       problem.add_dis("ale", aledis);
       meshreader.add_element_reader(Core::IO::ElementReader(aledis, input, "ALE ELEMENTS"));
       break;
@@ -452,15 +404,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
           std::make_shared<Core::FE::DiscretizationFaces>("porofluid", comm, problem.n_dim());
       aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      porofluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(porofluiddis, output_control, distype));
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
+
 
       problem.add_dis("structure", structdis);
       problem.add_dis("porofluid", porofluiddis);
@@ -495,9 +439,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
+
 
       problem.add_dis("ale", aledis);
 
@@ -511,10 +453,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       if (distype == Core::FE::ShapeFunctionType::hdg)
       {
         fluiddis = std::make_shared<Core::FE::DiscretizationHDG>("fluid", comm, problem.n_dim());
-
-        // create discretization writer - in constructor set into and owned by corresponding discret
-        fluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
       }
       else if (distype == Core::FE::ShapeFunctionType::nurbs)
       {
@@ -523,25 +461,14 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
         // create discretization writer - in constructor set ingto and owned by corresponding
         // discret
-        fluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
       }
       else if (problem.fluid_dynamic_params().sublist("WALL MODEL").get<bool>("X_WALL"))
       {
         fluiddis = std::make_shared<XFEM::DiscretizationXWall>("fluid", comm, problem.n_dim());
-
-        // create discretization writer - in constructor set into and owned by corresponding discret
-        fluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
       }
       else
       {
-        // fluiddis  = Teuchos::rcp(new Core::FE::Discretization("fluid",reader.Comm()));
         fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-
-        // create discretization writer - in constructor set into and owned by corresponding discret
-        fluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
       }
 
       problem.add_dis("fluid", fluiddis);
@@ -557,10 +484,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       // create empty discretizations
       lubricationdis =
           std::make_shared<Core::FE::Discretization>("lubrication", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      lubricationdis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          lubricationdis, output_control, distype));
 
       problem.add_dis("lubrication", lubricationdis);
 
@@ -599,13 +522,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
-
-
       problem.add_dis("fluid", fluiddis);
       problem.add_dis("scatra", scatradis);
 
@@ -624,12 +540,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       // create empty discretizations for scalar and thermo fields
       scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
       thermdis = std::make_shared<Core::FE::Discretization>("thermo", comm, problem.n_dim());
-
-      // create discretization writers
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
-      thermdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(thermdis, output_control, distype));
 
       // add empty discretizations to global problem
       problem.add_dis("scatra", scatradis);
@@ -667,19 +577,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
           xfluiddis = std::make_shared<XFEM::DiscretizationXFEM>("xfluid", comm, problem.n_dim());
         aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
       }
-
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      if (xfluiddis != nullptr)
-      {
-        xfluiddis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(xfluiddis, output_control, distype));
-      }
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
-
 
       problem.add_dis("fluid", fluiddis);
       if (xfluiddis != nullptr)
@@ -720,11 +617,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      thermdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(thermdis, output_control, distype));
 
       problem.add_dis("structure", structdis);
       problem.add_dis("thermo", thermdis);
@@ -755,10 +647,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      thermdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(thermdis, output_control, distype));
-
       problem.add_dis("thermo", thermdis);
 
       meshreader.add_element_reader(Core::IO::ElementReader(thermdis, input, "THERMO ELEMENTS"));
@@ -784,10 +672,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-
       problem.add_dis("structure", structdis);
 
       meshreader.add_advanced_reader(structdis, input, "STRUCTURE",
@@ -802,12 +686,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       // create empty discretizations
       structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
       pboxdis = std::make_shared<Core::FE::Discretization>("boundingbox", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      pboxdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(pboxdis, output_control, distype));
 
       problem.add_dis("structure", structdis);
       problem.add_dis("boundingbox", pboxdis);
@@ -825,12 +703,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       // create empty discretizations
       fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
       scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
 
       problem.add_dis("fluid", fluiddis);
       problem.add_dis("scatra", scatradis);
@@ -851,14 +723,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       else
         fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
       scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
 
       problem.add_dis("structure", structdis);
       problem.add_dis("fluid", fluiddis);
@@ -905,16 +769,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
-      scatra_micro_dis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          scatra_micro_dis, output_control, distype));
-
       problem.add_dis("fluid", fluiddis);
       problem.add_dis("scatra", scatradis);
       problem.add_dis("ale", aledis);
@@ -953,12 +807,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       problem.add_dis("artery", arterydis);
       problem.add_dis("artery_scatra", scatradis);
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      arterydis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(arterydis, output_control, distype));
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
-
       meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
       meshreader.add_element_reader(
           Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
@@ -970,10 +818,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     {
       // create empty discretizations
       airwaydis = std::make_shared<Core::FE::Discretization>("red_airway", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      airwaydis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(airwaydis, output_control, distype));
 
       problem.add_dis("red_airway", airwaydis);
 
@@ -1006,12 +850,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      porofluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(porofluiddis, output_control, distype));
-
       problem.add_dis("structure", structdis);
       problem.add_dis("porofluid", porofluiddis);
 
@@ -1022,8 +860,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       if (problem.poro_multi_phase_dynamic_params().get<bool>("ARTERY_COUPLING"))
       {
         arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
-        arterydis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(arterydis, output_control, distype));
         problem.add_dis("artery", arterydis);
         meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
       }
@@ -1056,14 +892,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      porofluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(porofluiddis, output_control, distype));
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
-
       problem.add_dis("structure", structdis);
       problem.add_dis("porofluid", porofluiddis);
       problem.add_dis("scatra", scatradis);
@@ -1077,15 +905,11 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       if (problem.poro_multi_phase_scatra_dynamic_params().get<bool>("ARTERY_COUPLING"))
       {
         arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
-        arterydis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(arterydis, output_control, distype));
         problem.add_dis("artery", arterydis);
         meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
 
         artscatradis =
             std::make_shared<Core::FE::Discretization>("artery_scatra", comm, problem.n_dim());
-        artscatradis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-            artscatradis, output_control, distype));
         problem.add_dis("artery_scatra", artscatradis);
         meshreader.add_element_reader(
             Core::IO::ElementReader(artscatradis, input, "TRANSPORT ELEMENTS"));
@@ -1112,10 +936,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
       }
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      porofluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(porofluiddis, output_control, distype));
-
       problem.add_dis("porofluid", porofluiddis);
 
       meshreader.add_element_reader(Core::IO::ElementReader(porofluiddis, input, "FLUID ELEMENTS"));
@@ -1123,8 +943,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       if (problem.poro_fluid_multi_phase_dynamic_params().get<bool>("ARTERY_COUPLING"))
       {
         arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
-        arterydis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(arterydis, output_control, distype));
         problem.add_dis("artery", arterydis);
         meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
       }
@@ -1137,16 +955,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       porofluiddis = std::make_shared<Core::FE::Discretization>("porofluid", comm, problem.n_dim());
       fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
       aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      porofluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(porofluiddis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
 
       problem.add_dis("structure", structdis);
       problem.add_dis("porofluid", porofluiddis);
@@ -1165,11 +973,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
       fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
 
       problem.add_dis("structure", structdis);
       problem.add_dis("fluid", fluiddis);
@@ -1190,16 +993,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
       aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      porofluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(porofluiddis, output_control, distype));
-      fluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(fluiddis, output_control, distype));
-      aledis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(aledis, output_control, distype));
-
       problem.add_dis("structure", structdis);
       problem.add_dis("porofluid", porofluiddis);
       problem.add_dis("fluid", fluiddis);
@@ -1212,17 +1005,11 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
       // fluid scatra field
       fluidscatradis = std::make_shared<Core::FE::Discretization>("scatra1", comm, problem.n_dim());
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      fluidscatradis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          fluidscatradis, output_control, distype));
       problem.add_dis("scatra1", fluidscatradis);
 
       // poro structure scatra field
       structscatradis =
           std::make_shared<Core::FE::Discretization>("scatra2", comm, problem.n_dim());
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structscatradis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          structscatradis, output_control, distype));
       problem.add_dis("scatra2", structscatradis);
 
       break;
@@ -1233,14 +1020,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
       porofluiddis = std::make_shared<Core::FE::Discretization>("porofluid", comm, problem.n_dim());
       scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      porofluiddis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(porofluiddis, output_control, distype));
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
 
       problem.add_dis("structure", structdis);
       problem.add_dis("porofluid", porofluiddis);
@@ -1260,12 +1039,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       lubricationdis =
           std::make_shared<Core::FE::Discretization>("lubrication", comm, problem.n_dim());
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      lubricationdis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-          lubricationdis, output_control, distype));
-
       problem.add_dis("structure", structdis);
       problem.add_dis("lubrication", lubricationdis);
 
@@ -1283,12 +1056,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
       scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
-
       problem.add_dis("structure", structdis);
       problem.add_dis("scatra", scatradis);
 
@@ -1297,8 +1064,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         auto scatra_manifold_dis =
             std::make_shared<Core::FE::Discretization>("scatra_manifold", comm, problem.n_dim());
-        scatra_manifold_dis->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(
-            scatra_manifold_dis, output_control, distype));
         problem.add_dis("scatra_manifold", scatra_manifold_dis);
       }
 
@@ -1310,8 +1075,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       if (problem.get_problem_type() == Core::ProblemType::ssti)
       {
         thermdis = std::make_shared<Core::FE::Discretization>("thermo", comm, problem.n_dim());
-        thermdis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(thermdis, output_control, distype));
         problem.add_dis("thermo", thermdis);
         meshreader.add_element_reader(
             Core::IO::ElementReader(thermdis, input, "TRANSPORT ELEMENTS"));
@@ -1325,10 +1088,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       // create empty discretizations
       structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-
       problem.add_dis("structure", structdis);
 
       meshreader.add_element_reader(
@@ -1340,10 +1099,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     {
       // create empty discretizations
       scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      scatradis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(scatradis, output_control, distype));
 
       problem.add_dis("scatra", scatradis);
 
@@ -1362,11 +1117,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
       airwaydis = std::make_shared<Core::FE::Discretization>("red_airway", comm, problem.n_dim());
 
-      // create discretization writer - in constructor set into and owned by corresponding discret
-      structdis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(structdis, output_control, distype));
-      airwaydis->set_writer(
-          std::make_shared<Core::IO::DiscretizationWriter>(airwaydis, output_control, distype));
 
       problem.add_dis("structure", structdis);
       problem.add_dis("red_airway", airwaydis);
@@ -1393,16 +1143,12 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         // create empty discretizations
         arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
-        // create discretization writer - in constructor set into and owned by corresponding discret
-        arterydis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(arterydis, output_control, distype));
+
         problem.add_dis("artery", arterydis);
         meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
 
         airwaydis = std::make_shared<Core::FE::Discretization>("red_airway", comm, problem.n_dim());
-        // create discretization writer - in constructor set into and owned by corresponding discret
-        airwaydis->set_writer(
-            std::make_shared<Core::IO::DiscretizationWriter>(airwaydis, output_control, distype));
+
         problem.add_dis("red_airway", airwaydis);
         meshreader.add_element_reader(
             Core::IO::ElementReader(airwaydis, input, "REDUCED D AIRWAYS ELEMENTS"));
@@ -1411,6 +1157,13 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     break;
     default:
       break;
+  }
+
+  // Set the output writer for all discretizations that have been allocated and attached to the
+  // global data.
+  for (const auto& dis : problem.discretization_range() | std::views::values)
+  {
+    dis->set_writer(std::make_unique<Core::IO::DiscretizationWriter>(dis, output_control, distype));
   }
 
   if (read_mesh)  // now read and allocate!
@@ -1808,7 +1561,6 @@ void Global::read_microfields_np_support(Global::Problem& problem)
     std::shared_ptr<Core::FE::Discretization> structdis_micro =
         std::make_shared<Core::FE::Discretization>("structure", subgroupcomm, problem.n_dim());
 
-    // create discretization writer - in constructor set into and owned by corresponding discret
     structdis_micro->set_writer(std::make_shared<Core::IO::DiscretizationWriter>(structdis_micro,
         micro_problem->output_control_file(), micro_problem->spatial_approximation_type()));
 
