@@ -407,7 +407,7 @@ int main(int argc, char* argv[])
       std::cout << std::string(box_width, '*') << '\n';
       std::cout << '\n';
 
-      std::cout << "Trilinos Version: " << FOUR_C_TRILINOS_HASH << "(git SHA1 %s)\n";
+      std::cout << "Trilinos Version: " << FOUR_C_TRILINOS_HASH << " (git SHA1)\n";
       std::cout << "Total number of MPI ranks: " << Core::Communication::num_mpi_ranks(gcomm)
                 << '\n';
     }
