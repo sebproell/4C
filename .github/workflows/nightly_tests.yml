@@ -115,6 +115,20 @@ jobs:
         with:
           build-directory: ${{ github.workspace }}/build
           retention-days: 1
+      - name: Upload 4C schema
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}-schema
+          path: |
+            ${{ github.workspace }}/build/4C_schema.json
+          retention-days: 30
+      - name: Upload 4C metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }}-metadata
+          path: |
+            ${{ github.workspace }}/build/4C_metadata.yaml
+          retention-days: 30
       - uses: ./.github/actions/chunk_test_suite
         id: set-matrix
         with:
