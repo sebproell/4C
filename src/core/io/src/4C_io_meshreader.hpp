@@ -103,13 +103,10 @@ namespace Core::IO
      *
      * \param dis            [in] This discretization will be passed on
      * \param input          [in] The input file.
-     * \param sectionname    [in] This will be passed on element/domain readers only (not used for
-     *                            file reader)
-     * \param geometrysource [in] selects which reader will be created
+     * \param sectionname    [in] The section name in the input file.
      */
-    void add_advanced_reader(std::shared_ptr<Core::FE::Discretization> dis,
-        Core::IO::InputFile& input, const std::string& sectionname,
-        const Core::IO::GeometryType geometrysource);
+    void add_advanced_reader(
+        std::shared_ptr<Core::FE::Discretization> dis, const std::string& sectionname);
 
     /// do the actual reading
     /*!
@@ -194,6 +191,11 @@ namespace Core::IO
 
     /// Additional parameters for reading meshes.
     MeshReaderParameters parameters_;
+
+    /// The discretizations to be filled. The key is an identifier for the sections in the input.
+    /// Multiple discretizations might be filled from the same section.
+    std::vector<std::pair<std::string, std::shared_ptr<Core::FE::Discretization>>>
+        target_discretizations_;
   };
 }  // namespace Core::IO
 

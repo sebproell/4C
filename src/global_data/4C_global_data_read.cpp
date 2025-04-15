@@ -158,7 +158,6 @@ Core::IO::InputFile Global::set_up_input_file(MPI_Comm comm)
       "THERMO KNOTVECTORS",
   };
 
-
   std::map<std::string, Core::IO::InputSpec> legacy_partial_specs;
   // We know quite a lot about the legacy sections. Even though we cannot parse them via
   // the InputSpec engine, we can still emit as much information as possible to the metadata.
@@ -196,23 +195,6 @@ Core::IO::InputFile Global::set_up_input_file(MPI_Comm comm)
 std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     Global::Problem& problem, Core::IO::InputFile& input, const bool read_mesh)
 {
-  std::shared_ptr<Core::FE::Discretization> structdis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> fluiddis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> xfluiddis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> aledis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> structaledis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> thermdis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> lubricationdis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> scatradis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> scatra_micro_dis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> fluidscatradis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> structscatradis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> artscatradis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> arterydis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> airwaydis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> porofluiddis = nullptr;
-  std::shared_ptr<Core::FE::Discretization> pboxdis = nullptr;
-
   // decide which kind of spatial representation is required
   const Core::FE::ShapeFunctionType distype = problem.spatial_approximation_type();
   auto output_control = problem.output_control_file();
@@ -227,6 +209,22 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
   auto& meshreader = *meshreader_out;
 
   MPI_Comm comm = problem.get_communicators()->local_comm();
+
+  enum class DiscretizationType
+  {
+    plain,
+    faces,
+    nurbs,
+    xwall,
+    xfem,
+    hdg,
+  };
+
+  // Store the name of a discretization along with its type and the identifier in the input file.
+  // The identifier may be an empty string to indicate that this discretization is not read from
+  // input for a specific problem.
+  std::map<std::string, std::pair<DiscretizationType, std::string>> discretization_types;
+
   switch (problem.get_problem_type())
   {
     case Core::ProblemType::fsi:
@@ -234,44 +232,31 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     {
       if (distype == Core::FE::ShapeFunctionType::nurbs)
       {
-        structdis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-            "structure", comm, problem.n_dim());
-        fluiddis =
-            std::make_shared<Core::FE::Nurbs::NurbsDiscretization>("fluid", comm, problem.n_dim());
-        aledis =
-            std::make_shared<Core::FE::Nurbs::NurbsDiscretization>("ale", comm, problem.n_dim());
+        discretization_types["structure"] = {DiscretizationType::nurbs, "STRUCTURE"};
+        discretization_types["fluid"] = {DiscretizationType::nurbs, "FLUID"};
+        discretization_types["ale"] = {DiscretizationType::nurbs, "ALE"};
       }
       else if (problem.fluid_dynamic_params().sublist("WALL MODEL").get<bool>("X_WALL"))
       {
-        structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-        fluiddis = std::make_shared<XFEM::DiscretizationXWall>("fluid", comm, problem.n_dim());
-        aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
+        discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+        discretization_types["fluid"] = {DiscretizationType::xwall, "FLUID"};
+        discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
       }
       else
       {
-        structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-        fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
+        discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
         if (problem.x_fluid_dynamic_params().sublist("GENERAL").get<bool>("XFLUIDFLUID"))
-          xfluiddis = std::make_shared<XFEM::DiscretizationXFEM>("xfluid", comm, problem.n_dim());
-        aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
+        {
+          discretization_types["xfluid"] = {DiscretizationType::xfem, "FLUID"};
+          // No input for fluid in this case.
+          discretization_types["fluid"] = {DiscretizationType::faces, ""};
+        }
+        else
+        {
+          discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+        }
+        discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
       }
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("fluid", fluiddis);
-      if (xfluiddis != nullptr) problem.add_dis("xfluid", xfluiddis);
-      problem.add_dis("ale", aledis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-
-      if (xfluiddis != nullptr)
-      {
-        meshreader.add_element_reader(Core::IO::ElementReader(xfluiddis, input, "FLUID ELEMENTS"));
-      }
-      else
-        meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-
-      meshreader.add_element_reader(Core::IO::ElementReader(aledis, input, "ALE ELEMENTS"));
 
       break;
     }
@@ -287,33 +272,14 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
         default:
         {
-          structdis =
-              std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-          fluiddis =
-              std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-          aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
-          fluidscatradis =
-              std::make_shared<Core::FE::Discretization>("scatra1", comm, problem.n_dim());
-          structscatradis =
-              std::make_shared<Core::FE::Discretization>("scatra2", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+          discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+          discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
+          discretization_types["scatra1"] = {DiscretizationType::plain, "TRANSPORT"};
+          discretization_types["scatra2"] = {DiscretizationType::plain, "TRANSPORT2"};
           break;
         }
       }
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("ale", aledis);
-      problem.add_dis("scatra1", fluidscatradis);
-      problem.add_dis("scatra2", structscatradis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(fluidscatradis, input, "TRANSPORT ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structscatradis, input, "TRANSPORT2 ELEMENTS"));
-
       break;
     }
     case Core::ProblemType::biofilm_fsi:
@@ -327,99 +293,46 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
         default:
         {
-          structdis =
-              std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-          fluiddis =
-              std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-          aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
-          structaledis =
-              std::make_shared<Core::FE::Discretization>("structale", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+          discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+          discretization_types["ale"] = {DiscretizationType::plain, ""};
+          discretization_types["structale"] = {DiscretizationType::plain, ""};
           break;
         }
       }
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("ale", aledis);
-      problem.add_dis("structale", structaledis);
-
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-
-
       // fluid scatra field
-      fluidscatradis = std::make_shared<Core::FE::Discretization>("scatra1", comm, problem.n_dim());
-      problem.add_dis("scatra1", fluidscatradis);
+      discretization_types["scatra1"] = {DiscretizationType::plain, "TRANSPORT"};
 
       // structure scatra field
-      structscatradis =
-          std::make_shared<Core::FE::Discretization>("scatra2", comm, problem.n_dim());
-
-      problem.add_dis("scatra2", structscatradis);
+      discretization_types["scatra2"] = {DiscretizationType::plain, "TRANSPORT2"};
 
       break;
     }
     case Core::ProblemType::fsi_xfem:
     case Core::ProblemType::fluid_xfem:
     {
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-
-      problem.add_dis("structure", structdis);
-      meshreader.add_advanced_reader(structdis, input, "STRUCTURE",
-          Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.structural_dynamic_params(), "GEOMETRY"));
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
 
       if (problem.x_fluid_dynamic_params().sublist("GENERAL").get<bool>("XFLUIDFLUID"))
       {
-        fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-        problem.add_dis("fluid", fluiddis);
+        discretization_types["fluid"] = {DiscretizationType::faces, ""};
 
-        xfluiddis = std::make_shared<XFEM::DiscretizationXFEM>("xfluid", comm, problem.n_dim());
-        problem.add_dis("xfluid", xfluiddis);
-
-        meshreader.add_element_reader(Core::IO::ElementReader(xfluiddis, input, "FLUID ELEMENTS"));
+        discretization_types["xfluid"] = {DiscretizationType::xfem, "FLUID"};
       }
       else
       {
-        fluiddis = std::make_shared<XFEM::DiscretizationXFEM>("fluid", comm, problem.n_dim());
-        problem.add_dis("fluid", fluiddis);
-
-        meshreader.add_advanced_reader(fluiddis, input, "FLUID",
-            Teuchos::getIntegralValue<Core::IO::GeometryType>(
-                problem.fluid_dynamic_params(), "GEOMETRY"));
+        discretization_types["fluid"] = {DiscretizationType::xfem, "FLUID"};
       }
 
-      aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
-      problem.add_dis("ale", aledis);
-      meshreader.add_element_reader(Core::IO::ElementReader(aledis, input, "ALE ELEMENTS"));
+      discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
       break;
     }
     case Core::ProblemType::fpsi_xfem:
     {
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      fluiddis = std::make_shared<XFEM::DiscretizationXFEM>("fluid", comm, problem.n_dim());
-      porofluiddis =
-          std::make_shared<Core::FE::DiscretizationFaces>("porofluid", comm, problem.n_dim());
-      aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
-
-
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("porofluid", porofluiddis);
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("ale", aledis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-
-      meshreader.add_advanced_reader(fluiddis, input, "FLUID",
-          Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.fluid_dynamic_params(), "GEOMETRY"));
-
-      meshreader.add_element_reader(Core::IO::ElementReader(aledis, input, "ALE ELEMENTS"));
-
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["fluid"] = {DiscretizationType::xfem, "FLUID"};
+      discretization_types["porofluid"] = {DiscretizationType::faces, ""};
+      discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
       break;
     }
     case Core::ProblemType::ale:
@@ -428,23 +341,15 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          aledis =
-              std::make_shared<Core::FE::Nurbs::NurbsDiscretization>("ale", comm, problem.n_dim());
+          discretization_types["ale"] = {DiscretizationType::nurbs, "ALE"};
           break;
         }
         default:
         {
-          aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
+          discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
           break;
         }
       }
-
-
-
-      problem.add_dis("ale", aledis);
-
-      meshreader.add_element_reader(Core::IO::ElementReader(aledis, input, "ALE ELEMENTS"));
-
       break;
     }
     case Core::ProblemType::fluid:
@@ -452,44 +357,27 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     {
       if (distype == Core::FE::ShapeFunctionType::hdg)
       {
-        fluiddis = std::make_shared<Core::FE::DiscretizationHDG>("fluid", comm, problem.n_dim());
+        discretization_types["fluid"] = {DiscretizationType::hdg, "FLUID"};
       }
       else if (distype == Core::FE::ShapeFunctionType::nurbs)
       {
-        fluiddis =
-            std::make_shared<Core::FE::Nurbs::NurbsDiscretization>("fluid", comm, problem.n_dim());
-
-        // create discretization writer - in constructor set ingto and owned by corresponding
-        // discret
+        discretization_types["fluid"] = {DiscretizationType::nurbs, "FLUID"};
       }
       else if (problem.fluid_dynamic_params().sublist("WALL MODEL").get<bool>("X_WALL"))
       {
-        fluiddis = std::make_shared<XFEM::DiscretizationXWall>("fluid", comm, problem.n_dim());
+        discretization_types["fluid"] = {DiscretizationType::xwall, "FLUID"};
       }
       else
       {
-        fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
+        discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
       }
-
-      problem.add_dis("fluid", fluiddis);
-
-      meshreader.add_advanced_reader(fluiddis, input, "FLUID",
-          Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.fluid_dynamic_params(), "GEOMETRY"));
 
       break;
     }
     case Core::ProblemType::lubrication:
     {
       // create empty discretizations
-      lubricationdis =
-          std::make_shared<Core::FE::Discretization>("lubrication", comm, problem.n_dim());
-
-      problem.add_dis("lubrication", lubricationdis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(lubricationdis, input, "LUBRICATION ELEMENTS"));
-
+      discretization_types["lubrication"] = {DiscretizationType::plain, "LUBRICATION"};
       break;
     }
     case Core::ProblemType::cardiac_monodomain:
@@ -499,36 +387,23 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          fluiddis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "fluid", comm, problem.n_dim());
-          scatradis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "scatra", comm, problem.n_dim());
+          discretization_types["fluid"] = {DiscretizationType::nurbs, "FLUID"};
+          discretization_types["scatra"] = {DiscretizationType::nurbs, "TRANSPORT"};
           break;
         }
         case Core::FE::ShapeFunctionType::hdg:
         {
-          fluiddis =
-              std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-          scatradis =
-              std::make_shared<Core::FE::DiscretizationHDG>("scatra", comm, problem.n_dim());
+          discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+          discretization_types["scatra"] = {DiscretizationType::hdg, "TRANSPORT"};
           break;
         }
         default:
         {
-          fluiddis =
-              std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-          scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
+          discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+          discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
           break;
         }
       }
-
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("scatra", scatradis);
-
-      meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
-
       break;
     }
     case Core::ProblemType::sti:
@@ -538,16 +413,8 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         FOUR_C_THROW("Scatra-thermo interaction does not work for nurbs discretizations yet!");
 
       // create empty discretizations for scalar and thermo fields
-      scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-      thermdis = std::make_shared<Core::FE::Discretization>("thermo", comm, problem.n_dim());
-
-      // add empty discretizations to global problem
-      problem.add_dis("scatra", scatradis);
-      problem.add_dis("thermo", thermdis);
-
-      // add element input to node input
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
+      discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
+      discretization_types["thermo"] = {DiscretizationType::plain, "THERMO"};
 
       break;
     }
@@ -555,44 +422,32 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     {
       if (distype == Core::FE::ShapeFunctionType::hdg)
       {
-        fluiddis = std::make_shared<Core::FE::DiscretizationHDG>("fluid", comm, problem.n_dim());
-        aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
+        discretization_types["fluid"] = {DiscretizationType::hdg, "FLUID"};
+        discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
       }
       else if (distype == Core::FE::ShapeFunctionType::nurbs)
       {
-        fluiddis =
-            std::make_shared<Core::FE::Nurbs::NurbsDiscretization>("fluid", comm, problem.n_dim());
-        aledis =
-            std::make_shared<Core::FE::Nurbs::NurbsDiscretization>("ale", comm, problem.n_dim());
+        discretization_types["fluid"] = {DiscretizationType::nurbs, "FLUID"};
+        discretization_types["ale"] = {DiscretizationType::nurbs, "ALE"};
       }
       else if (problem.fluid_dynamic_params().sublist("WALL MODEL").get<bool>("X_WALL"))
       {
-        fluiddis = std::make_shared<XFEM::DiscretizationXWall>("fluid", comm, problem.n_dim());
-        aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
+        discretization_types["fluid"] = {DiscretizationType::xwall, "FLUID"};
+        discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
       }
       else
       {
-        fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
         if (problem.x_fluid_dynamic_params().sublist("GENERAL").get<bool>("XFLUIDFLUID"))
-          xfluiddis = std::make_shared<XFEM::DiscretizationXFEM>("xfluid", comm, problem.n_dim());
-        aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
+        {
+          discretization_types["xfluid"] = {DiscretizationType::xfem, "FLUID"};
+          discretization_types["fluid"] = {DiscretizationType::faces, ""};
+        }
+        else
+        {
+          discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+        }
+        discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
       }
-
-      problem.add_dis("fluid", fluiddis);
-      if (xfluiddis != nullptr)
-      {
-        problem.add_dis("xfluid", xfluiddis);  // xfem discretization on slot 1
-      }
-      problem.add_dis("ale", aledis);
-
-      if (xfluiddis != nullptr)
-      {
-        meshreader.add_element_reader(Core::IO::ElementReader(xfluiddis, input, "FLUID ELEMENTS"));
-      }
-      else
-        meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-
-      meshreader.add_element_reader(Core::IO::ElementReader(aledis, input, "ALE ELEMENTS"));
 
       break;
     }
@@ -602,31 +457,17 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          structdis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "structure", comm, problem.n_dim());
-          thermdis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "thermo", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::nurbs, "STRUCTURE"};
+          discretization_types["thermo"] = {DiscretizationType::nurbs, "THERMO"};
           break;
         }
         default:
         {
-          structdis =
-              std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-          thermdis = std::make_shared<Core::FE::Discretization>("thermo", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+          discretization_types["thermo"] = {DiscretizationType::plain, "THERMO"};
           break;
         }
       }
-
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("thermo", thermdis);
-
-      meshreader.add_advanced_reader(structdis, input, "STRUCTURE",
-          Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.structural_dynamic_params(), "GEOMETRY"));
-      meshreader.add_advanced_reader(thermdis, input, "THERMO",
-          Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.thermal_dynamic_params(), "GEOMETRY"));
 
       break;
     }
@@ -636,20 +477,15 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          thermdis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "thermo", comm, problem.n_dim());
+          discretization_types["thermo"] = {DiscretizationType::nurbs, "THERMO"};
           break;
         }
         default:
         {
-          thermdis = std::make_shared<Core::FE::Discretization>("thermo", comm, problem.n_dim());
+          discretization_types["thermo"] = {DiscretizationType::plain, "THERMO"};
           break;
         }
       }
-
-      problem.add_dis("thermo", thermdis);
-
-      meshreader.add_element_reader(Core::IO::ElementReader(thermdis, input, "THERMO ELEMENTS"));
 
       break;
     }
@@ -660,23 +496,15 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          structdis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "structure", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::nurbs, "STRUCTURE"};
           break;
         }
         default:
         {
-          structdis =
-              std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
           break;
         }
       }
-
-      problem.add_dis("structure", structdis);
-
-      meshreader.add_advanced_reader(structdis, input, "STRUCTURE",
-          Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.structural_dynamic_params(), "GEOMETRY"));
 
       break;
     }
@@ -684,59 +512,28 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     case Core::ProblemType::polymernetwork:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      pboxdis = std::make_shared<Core::FE::Discretization>("boundingbox", comm, problem.n_dim());
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("boundingbox", pboxdis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(pboxdis, input, "PERIODIC BOUNDINGBOX ELEMENTS"));
-
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["boundingbox"] = {DiscretizationType::plain, "PERIODIC BOUNDINGBOX"};
       break;
     }
 
     case Core::ProblemType::loma:
     {
       // create empty discretizations
-      fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-      scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("scatra", scatradis);
-
-      meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
-
+      discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+      discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
       break;
     }
 
     case Core::ProblemType::fluid_xfem_ls:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
       if (problem.get_problem_type() == Core::ProblemType::fluid_xfem_ls)
-        fluiddis = std::make_shared<XFEM::DiscretizationXFEM>("fluid", comm, problem.n_dim());
+        discretization_types["fluid"] = {DiscretizationType::xfem, "FLUID"};
       else
-        fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-      scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("scatra", scatradis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_advanced_reader(fluiddis, input, "FLUID",
-          Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.fluid_dynamic_params(), "GEOMETRY"));
-      // meshreader.AddElementReader(Teuchos::rcp(new Core::IO::ElementReader(fluiddis, input,
-      // "FLUID ELEMENTS")));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
+        discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+      discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
       break;
     }
 
@@ -747,46 +544,27 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          fluiddis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "fluid", comm, problem.n_dim());
-          scatradis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "scatra", comm, problem.n_dim());
-          aledis =
-              std::make_shared<Core::FE::Nurbs::NurbsDiscretization>("ale", comm, problem.n_dim());
-          scatra_micro_dis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "scatra_micro", comm, problem.n_dim());
+          discretization_types["fluid"] = {DiscretizationType::nurbs, "FLUID"};
+          discretization_types["scatra"] = {DiscretizationType::nurbs, "TRANSPORT"};
+          discretization_types["ale"] = {DiscretizationType::nurbs, "ALE"};
+          discretization_types["scatra_micro"] = {DiscretizationType::nurbs, "TRANSPORT2"};
           break;
         }
         default:
         {
-          fluiddis =
-              std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-          scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-          aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
-          scatra_micro_dis =
-              std::make_shared<Core::FE::Discretization>("scatra_micro", comm, problem.n_dim());
+          discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
+          discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
+          discretization_types["ale"] = {DiscretizationType::plain, "ALE"};
+          discretization_types["scatra_micro"] = {DiscretizationType::plain, "TRANSPORT2"};
           break;
         }
       }
-
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("scatra", scatradis);
-      problem.add_dis("ale", aledis);
-      problem.add_dis("scatra_micro", scatra_micro_dis);
-
-      meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
-      meshreader.add_element_reader(Core::IO::ElementReader(aledis, input, "ALE ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatra_micro_dis, input, "TRANSPORT2 ELEMENTS"));
-
       break;
     }
     case Core::ProblemType::art_net:  // _1D_ARTERY_
     {
       // create empty discretizations
-      arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
+      discretization_types["artery"] = {DiscretizationType::plain, "ARTERY"};
 
       // create empty discretizations
       switch (distype)
@@ -798,32 +576,17 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
         }
         default:
         {
-          scatradis =
-              std::make_shared<Core::FE::Discretization>("artery_scatra", comm, problem.n_dim());
+          discretization_types["artery_scatra"] = {DiscretizationType::plain, "TRANSPORT"};
           break;
         }
       }
-
-      problem.add_dis("artery", arterydis);
-      problem.add_dis("artery_scatra", scatradis);
-
-      meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
-
       break;
     }
     case Core::ProblemType::reduced_lung:
     case Core::ProblemType::red_airways:  // _reduced D airways
     {
       // create empty discretizations
-      airwaydis = std::make_shared<Core::FE::Discretization>("red_airway", comm, problem.n_dim());
-
-      problem.add_dis("red_airway", airwaydis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(airwaydis, input, "REDUCED D AIRWAYS ELEMENTS"));
-
+      discretization_types["red_airway"] = {DiscretizationType::plain, "REDUCED D AIRWAYS"};
       break;
     }
     case Core::ProblemType::poroelast:
@@ -834,34 +597,20 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          structdis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "structure", comm, problem.n_dim());
-          porofluiddis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "porofluid", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::nurbs, "STRUCTURE"};
+          discretization_types["porofluid"] = {DiscretizationType::nurbs, "FLUID"};
           break;
         }
         default:
         {
-          structdis =
-              std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-          porofluiddis =
-              std::make_shared<Core::FE::Discretization>("porofluid", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+          discretization_types["porofluid"] = {DiscretizationType::plain, "FLUID"};
           break;
         }
       }
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("porofluid", porofluiddis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(Core::IO::ElementReader(porofluiddis, input, "FLUID ELEMENTS"));
-
       if (problem.poro_multi_phase_dynamic_params().get<bool>("ARTERY_COUPLING"))
       {
-        arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
-        problem.add_dis("artery", arterydis);
-        meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
+        discretization_types["artery"] = {DiscretizationType::plain, "ARTERY"};
       }
 
       break;
@@ -873,46 +622,24 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          structdis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "structure", comm, problem.n_dim());
-          porofluiddis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "porofluid", comm, problem.n_dim());
-          scatradis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "scatra", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::nurbs, "STRUCTURE"};
+          discretization_types["porofluid"] = {DiscretizationType::nurbs, "FLUID"};
+          discretization_types["scatra"] = {DiscretizationType::nurbs, "TRANSPORT"};
           break;
         }
         default:
         {
-          structdis =
-              std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-          porofluiddis =
-              std::make_shared<Core::FE::Discretization>("porofluid", comm, problem.n_dim());
-          scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
+          discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+          discretization_types["porofluid"] = {DiscretizationType::plain, "FLUID"};
+          discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
           break;
         }
       }
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("porofluid", porofluiddis);
-      problem.add_dis("scatra", scatradis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(Core::IO::ElementReader(porofluiddis, input, "FLUID ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
-
       if (problem.poro_multi_phase_scatra_dynamic_params().get<bool>("ARTERY_COUPLING"))
       {
-        arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
-        problem.add_dis("artery", arterydis);
-        meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
+        discretization_types["artery"] = {DiscretizationType::plain, "ARTERY"};
 
-        artscatradis =
-            std::make_shared<Core::FE::Discretization>("artery_scatra", comm, problem.n_dim());
-        problem.add_dis("artery_scatra", artscatradis);
-        meshreader.add_element_reader(
-            Core::IO::ElementReader(artscatradis, input, "TRANSPORT ELEMENTS"));
+        discretization_types["artery_scatra"] = {DiscretizationType::plain, "TRANSPORT"};
       }
 
       break;
@@ -924,160 +651,85 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       {
         case Core::FE::ShapeFunctionType::nurbs:
         {
-          porofluiddis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(
-              "porofluid", comm, problem.n_dim());
+          discretization_types["porofluid"] = {DiscretizationType::nurbs, "FLUID"};
           break;
         }
         default:
         {
-          porofluiddis =
-              std::make_shared<Core::FE::Discretization>("porofluid", comm, problem.n_dim());
+          discretization_types["porofluid"] = {DiscretizationType::plain, "FLUID"};
           break;
         }
       }
-
-      problem.add_dis("porofluid", porofluiddis);
-
-      meshreader.add_element_reader(Core::IO::ElementReader(porofluiddis, input, "FLUID ELEMENTS"));
-
       if (problem.poro_fluid_multi_phase_dynamic_params().get<bool>("ARTERY_COUPLING"))
       {
-        arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
-        problem.add_dis("artery", arterydis);
-        meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
+        discretization_types["artery"] = {DiscretizationType::plain, "ARTERY"};
       }
       break;
     }
     case Core::ProblemType::fpsi:
     {
-      // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      porofluiddis = std::make_shared<Core::FE::Discretization>("porofluid", comm, problem.n_dim());
-      fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-      aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
 
-      problem.add_dis("structure", structdis);
-      problem.add_dis("porofluid", porofluiddis);
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("ale", aledis);
-
-      meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-
+      // No input for these discretizations
+      discretization_types["porofluid"] = {DiscretizationType::plain, ""};
+      discretization_types["ale"] = {DiscretizationType::plain, ""};
       break;
     }
     case Core::ProblemType::fbi:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("fluid", fluiddis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_advanced_reader(fluiddis, input, "FLUID",
-          Teuchos::getIntegralValue<Core::IO::GeometryType>(
-              problem.fluid_dynamic_params(), "GEOMETRY"));
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
 
       break;
     }
     case Core::ProblemType::fps3i:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      porofluiddis = std::make_shared<Core::FE::Discretization>("porofluid", comm, problem.n_dim());
-      fluiddis = std::make_shared<Core::FE::DiscretizationFaces>("fluid", comm, problem.n_dim());
-      aledis = std::make_shared<Core::FE::Discretization>("ale", comm, problem.n_dim());
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
 
-      problem.add_dis("structure", structdis);
-      problem.add_dis("porofluid", porofluiddis);
-      problem.add_dis("fluid", fluiddis);
-      problem.add_dis("ale", aledis);
-
-
-      meshreader.add_element_reader(Core::IO::ElementReader(fluiddis, input, "FLUID ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-
-      // fluid scatra field
-      fluidscatradis = std::make_shared<Core::FE::Discretization>("scatra1", comm, problem.n_dim());
-      problem.add_dis("scatra1", fluidscatradis);
-
-      // poro structure scatra field
-      structscatradis =
-          std::make_shared<Core::FE::Discretization>("scatra2", comm, problem.n_dim());
-      problem.add_dis("scatra2", structscatradis);
+      // No input for these discretizations
+      discretization_types["porofluid"] = {DiscretizationType::plain, ""};
+      discretization_types["ale"] = {DiscretizationType::plain, ""};
+      discretization_types["scatra1"] = {DiscretizationType::plain, ""};
+      discretization_types["scatra2"] = {DiscretizationType::plain, ""};
 
       break;
     }
     case Core::ProblemType::poroscatra:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      porofluiddis = std::make_shared<Core::FE::Discretization>("porofluid", comm, problem.n_dim());
-      scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["porofluid"] = {DiscretizationType::plain, "FLUID"};
+      discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
 
-      problem.add_dis("structure", structdis);
-      problem.add_dis("porofluid", porofluiddis);
-      problem.add_dis("scatra", scatradis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(Core::IO::ElementReader(porofluiddis, input, "FLUID ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
       break;
     }
     case Core::ProblemType::ehl:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      lubricationdis =
-          std::make_shared<Core::FE::Discretization>("lubrication", comm, problem.n_dim());
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("lubrication", lubricationdis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(lubricationdis, input, "LUBRICATION ELEMENTS"));
-
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["lubrication"] = {DiscretizationType::plain, "LUBRICATION"};
       break;
     }
     case Core::ProblemType::ssi:
     case Core::ProblemType::ssti:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("scatra", scatradis);
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
 
       // consider case of additional scatra manifold
       if (problem.ssi_control_params().sublist("MANIFOLD").get<bool>("ADD_MANIFOLD"))
       {
-        auto scatra_manifold_dis =
-            std::make_shared<Core::FE::Discretization>("scatra_manifold", comm, problem.n_dim());
-        problem.add_dis("scatra_manifold", scatra_manifold_dis);
+        discretization_types["scatra_manifold"] = {DiscretizationType::plain, ""};
       }
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
 
       if (problem.get_problem_type() == Core::ProblemType::ssti)
       {
-        thermdis = std::make_shared<Core::FE::Discretization>("thermo", comm, problem.n_dim());
-        problem.add_dis("thermo", thermdis);
-        meshreader.add_element_reader(
-            Core::IO::ElementReader(thermdis, input, "TRANSPORT ELEMENTS"));
+        discretization_types["thermo"] = {DiscretizationType::plain, "THERMO"};
       }
 
       break;
@@ -1086,24 +738,14 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     case Core::ProblemType::pasi:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-
-      problem.add_dis("structure", structdis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
       break;
     }
     case Core::ProblemType::level_set:
     {
       // create empty discretizations
-      scatradis = std::make_shared<Core::FE::Discretization>("scatra", comm, problem.n_dim());
+      discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
 
-      problem.add_dis("scatra", scatradis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(scatradis, input, "TRANSPORT ELEMENTS"));
       break;
     }
     case Core::ProblemType::np_support:
@@ -1114,17 +756,8 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
     case Core::ProblemType::redairways_tissue:
     {
       // create empty discretizations
-      structdis = std::make_shared<Core::FE::Discretization>("structure", comm, problem.n_dim());
-      airwaydis = std::make_shared<Core::FE::Discretization>("red_airway", comm, problem.n_dim());
-
-
-      problem.add_dis("structure", structdis);
-      problem.add_dis("red_airway", airwaydis);
-
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(structdis, input, "STRUCTURE ELEMENTS"));
-      meshreader.add_element_reader(
-          Core::IO::ElementReader(airwaydis, input, "REDUCED D AIRWAYS ELEMENTS"));
+      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
+      discretization_types["red_airway"] = {DiscretizationType::plain, "REDUCED D AIRWAYS"};
     }
     break;
     default:
@@ -1142,21 +775,58 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       if (distype == Core::FE::ShapeFunctionType::polynomial)
       {
         // create empty discretizations
-        arterydis = std::make_shared<Core::FE::Discretization>("artery", comm, problem.n_dim());
-
-        problem.add_dis("artery", arterydis);
-        meshreader.add_element_reader(Core::IO::ElementReader(arterydis, input, "ARTERY ELEMENTS"));
-
-        airwaydis = std::make_shared<Core::FE::Discretization>("red_airway", comm, problem.n_dim());
-
-        problem.add_dis("red_airway", airwaydis);
-        meshreader.add_element_reader(
-            Core::IO::ElementReader(airwaydis, input, "REDUCED D AIRWAYS ELEMENTS"));
+        discretization_types["artery"] = {DiscretizationType::plain, "ARTERY"};
+        discretization_types["red_airway"] = {DiscretizationType::plain, "REDUCED D AIRWAYS"};
       }
     }
     break;
     default:
       break;
+  }
+
+  // Result tests in 4C use the internal node numbering. This means that we need to construct
+  // the generated "DOMAIN" discretizations in a defined order. Specifically, "structure" needs to
+  // come before all other discretizations. Also, "fluid" is expected before other fields. Sort the
+  // info from the map in an equivalent vector.
+  std::vector<std::pair<std::string, std::pair<DiscretizationType, std::string>>>
+      discretization_types_ordered(discretization_types.begin(), discretization_types.end());
+  std::vector<std::string> magical_ordering_of_field_input{"structure", "fluid"};
+  for (const auto& field : magical_ordering_of_field_input | std::views::reverse)
+  {
+    std::ranges::stable_partition(
+        discretization_types_ordered, [&](const auto& pair) { return pair.first == field; });
+  }
+
+  // Instantiate all the enabled discretizations
+  for (const auto& [name, dis_info] : discretization_types_ordered)
+  {
+    const auto& [dis_type, input_file_keyword] = dis_info;
+    std::shared_ptr<Core::FE::Discretization> dis;
+    switch (dis_type)
+    {
+      case DiscretizationType::plain:
+        dis = std::make_shared<Core::FE::Discretization>(name, comm, problem.n_dim());
+        break;
+      case DiscretizationType::faces:
+        dis = std::make_shared<Core::FE::DiscretizationFaces>(name, comm, problem.n_dim());
+        break;
+      case DiscretizationType::nurbs:
+        dis = std::make_shared<Core::FE::Nurbs::NurbsDiscretization>(name, comm, problem.n_dim());
+        break;
+      case DiscretizationType::xwall:
+        dis = std::make_shared<XFEM::DiscretizationXWall>(name, comm, problem.n_dim());
+        break;
+      case DiscretizationType::xfem:
+        dis = std::make_shared<XFEM::DiscretizationXFEM>(name, comm, problem.n_dim());
+        break;
+      case DiscretizationType::hdg:
+        dis = std::make_shared<Core::FE::DiscretizationHDG>(name, comm, problem.n_dim());
+        break;
+    }
+
+    problem.add_dis(name, dis);
+
+    if (!input_file_keyword.empty()) meshreader.add_advanced_reader(dis, input_file_keyword);
   }
 
   // Set the output writer for all discretizations that have been allocated and attached to the
@@ -1398,7 +1068,6 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
           micro_problem = Global::Problem::instance(microdisnum);
         }
 
-
         if (micro_inputfile_name[0] != '/')
         {
           micro_inputfile_name = input_path / micro_inputfile_name;
@@ -1461,7 +1130,6 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
 
         micromeshreader.read_and_partition();
 
-
         read_conditions(*micro_problem, micro_input_file, micromeshreader);
 
         {
@@ -1490,7 +1158,6 @@ void Global::read_micro_fields(Global::Problem& problem, const std::filesystem::
     problem.materials()->reset_read_from_problem();
   }
 }
-
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
@@ -1678,7 +1345,6 @@ void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input
   }
 }
 
-
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Global::read_materials(Global::Problem& problem, Core::IO::InputFile& input)
@@ -1767,7 +1433,6 @@ void Global::read_cloning_material_map(Global::Problem& problem, Core::IO::Input
     problem.cloning_material_map()[fields].insert(matmap);
   }
 }
-
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
@@ -1987,7 +1652,6 @@ void Global::read_conditions(
   }
 }
 
-
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Global::read_knots(Global::Problem& problem, Core::IO::InputFile& input)
@@ -2042,7 +1706,6 @@ void Global::read_knots(Global::Problem& problem, Core::IO::InputFile& input)
     }
   }  // loop fields
 }
-
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
