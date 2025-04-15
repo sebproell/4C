@@ -129,8 +129,7 @@ void SSI::SSICouplingMatchingVolume::set_mechanical_stress_state(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void SSI::SSICouplingMatchingVolume::set_mesh_disp(
-    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> disp)
+    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra, const Core::LinAlg::Vector<double>& disp)
 {
   scatra->scatra_field()->apply_mesh_movement(disp);
 }
@@ -278,11 +277,10 @@ void SSI::SSICouplingNonMatchingBoundary::assign_material_pointers(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void SSI::SSICouplingNonMatchingBoundary::set_mesh_disp(
-    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> disp)
+    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra, const Core::LinAlg::Vector<double>& disp)
 {
   scatra->scatra_field()->apply_mesh_movement(
-      adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(*disp)));
+      *adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(disp)));
 }
 
 /*----------------------------------------------------------------------*/
@@ -402,11 +400,10 @@ void SSI::SSICouplingNonMatchingVolume::assign_material_pointers(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void SSI::SSICouplingNonMatchingVolume::set_mesh_disp(
-    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> disp)
+    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra, const Core::LinAlg::Vector<double>& disp)
 {
   scatra->scatra_field()->apply_mesh_movement(
-      volcoupl_structurescatra_->apply_vector_mapping21(*disp));
+      *volcoupl_structurescatra_->apply_vector_mapping21(disp));
 }
 
 /*----------------------------------------------------------------------*/
@@ -604,8 +601,7 @@ void SSI::SSICouplingMatchingVolumeAndBoundary::assign_material_pointers(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void SSI::SSICouplingMatchingVolumeAndBoundary::set_mesh_disp(
-    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> disp)
+    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra, const Core::LinAlg::Vector<double>& disp)
 {
   scatra->scatra_field()->apply_mesh_movement(disp);
 }

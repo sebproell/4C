@@ -615,11 +615,11 @@ void FS3I::PartFPS3I::set_struct_scatra_solution()
 void FS3I::PartFPS3I::set_mesh_disp()
 {
   // fluid field
-  scatravec_[0]->scatra_field()->apply_mesh_movement(fpsi_->fluid_field()->dispnp());
+  scatravec_[0]->scatra_field()->apply_mesh_movement(*fpsi_->fluid_field()->dispnp());
 
   // Poro field
   scatravec_[1]->scatra_field()->apply_mesh_movement(
-      fpsi_->poro_field()->structure_field()->dispnp());
+      *fpsi_->poro_field()->structure_field()->dispnp());
 }
 
 

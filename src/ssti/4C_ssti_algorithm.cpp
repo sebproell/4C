@@ -281,10 +281,10 @@ void SSTI::SSTIAlgorithm::test_results(MPI_Comm comm) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSTI::SSTIAlgorithm::distribute_structure_solution()
+void SSTI::SSTIAlgorithm::distribute_structure_solution() const
 {
-  scatra_field()->apply_mesh_movement(structure_->dispnp());
-  thermo_field()->apply_mesh_movement(structure_->dispnp());
+  scatra_field()->apply_mesh_movement(*structure_->dispnp());
+  thermo_field()->apply_mesh_movement(*structure_->dispnp());
 
   // convective velocity is set to zero
   const auto convective_velocity = Core::LinAlg::create_vector(*structure_->dof_row_map());
@@ -295,7 +295,7 @@ void SSTI::SSTIAlgorithm::distribute_structure_solution()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSTI::SSTIAlgorithm::distribute_scatra_solution()
+void SSTI::SSTIAlgorithm::distribute_scatra_solution() const
 {
   structure_field()->discretization()->set_state(
       1, "scalarfield", *scatra_->scatra_field()->phinp());

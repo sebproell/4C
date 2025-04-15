@@ -81,7 +81,7 @@ void ElCh::MovingBoundaryAlgorithm::setup()
   }
 
   // transfer moving mesh data
-  scatra_field()->apply_mesh_movement(ale_field()->dispnp());
+  scatra_field()->apply_mesh_movement(*ale_field()->dispnp());
 
   // initialize the multivector for all possible cases
   fluxn_ = scatra_field()->calc_flux_at_boundary(false);
@@ -116,7 +116,7 @@ void ElCh::MovingBoundaryAlgorithm::time_loop()
   }
 
   // transfer moving mesh data
-  scatra_field()->apply_mesh_movement(ale_field()->dispnp());
+  scatra_field()->apply_mesh_movement(*ale_field()->dispnp());
 
   // time loop
   while (not_finished())
@@ -278,7 +278,7 @@ void ElCh::MovingBoundaryAlgorithm::solve_scatra()
   }
 
   // transfer moving mesh data
-  scatra_field()->apply_mesh_movement(ale_field()->dispnp());
+  scatra_field()->apply_mesh_movement(*ale_field()->dispnp());
 
   // solve coupled electrochemistry equations
   scatra_field()->solve();

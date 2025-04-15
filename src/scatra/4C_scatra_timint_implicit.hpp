@@ -383,7 +383,7 @@ namespace ScaTra
      *
      * @param[in] dispnp  displacement vector
      */
-    void apply_mesh_movement(std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp);
+    void apply_mesh_movement(const Core::LinAlg::Vector<double>& dispnp) const;
 
     //! calculate fluxes inside domain and/or on boundary
     void calc_flux(const bool writetofile  //!< flag for writing flux info to file

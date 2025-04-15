@@ -203,7 +203,7 @@ void PoroElastScaTra::PoroScatraBase::set_mesh_disp()
     dispnp = volcoupl_fluidscatra_->apply_vector_mapping21(*fluid_field()->dispnp());
   }
 
-  scatra_->scatra_field()->apply_mesh_movement(dispnp);
+  scatra_->scatra_field()->apply_mesh_movement(*dispnp);
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> sdispnp = nullptr;
 

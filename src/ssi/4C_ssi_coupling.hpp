@@ -69,7 +69,7 @@ namespace SSI
     //! \param scatra    underlying scatra problem of the SSI problem
     //! \param disp      displacement field to set
     virtual void set_mesh_disp(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> disp) = 0;
+        const Core::LinAlg::Vector<double>& disp) = 0;
 
     //! \brief set structure velocity fields on other field
     //!
@@ -119,7 +119,7 @@ namespace SSI
         unsigned nds) override;
 
     void set_mesh_disp(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> disp) override;
+        const Core::LinAlg::Vector<double>& disp) override;
 
     void set_velocity_fields(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
         std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
@@ -172,8 +172,8 @@ namespace SSI
   class SSICouplingNonMatchingBoundary : public SSICouplingBase
   {
    public:
-    SSICouplingNonMatchingBoundary()
-        : adaptermeshtying_(nullptr), extractor_(nullptr), issetup_(false), isinit_(false) {};
+    SSICouplingNonMatchingBoundary() = default;
+
     void init(const int ndim, std::shared_ptr<Core::FE::Discretization> structdis,
         std::shared_ptr<SSI::SSIBase> ssi_base) override;
 
@@ -189,7 +189,7 @@ namespace SSI
     }
 
     void set_mesh_disp(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> disp) override;
+        const Core::LinAlg::Vector<double>& disp) override;
 
     void set_velocity_fields(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
         std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
@@ -278,7 +278,7 @@ namespace SSI
     }
 
     void set_mesh_disp(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> disp) override;
+        const Core::LinAlg::Vector<double>& disp) override;
 
     void set_velocity_fields(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
         std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
@@ -355,7 +355,7 @@ namespace SSI
     }
 
     void set_mesh_disp(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> disp) override;
+        const Core::LinAlg::Vector<double>& disp) override;
 
     void set_velocity_fields(std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra,
         std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,

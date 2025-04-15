@@ -683,12 +683,12 @@ void FS3I::PartFS3I::set_mesh_disp() const
   // fluid field
   std::shared_ptr<Adapter::ScaTraBaseAlgorithm> fluidscatra = scatravec_[0];
   fluidscatra->scatra_field()->apply_mesh_movement(
-      fluid_to_fluid_scalar(fsi_->fluid_field()->dispnp()));
+      *fluid_to_fluid_scalar(fsi_->fluid_field()->dispnp()));
 
   // structure field
   std::shared_ptr<Adapter::ScaTraBaseAlgorithm> structscatra = scatravec_[1];
   structscatra->scatra_field()->apply_mesh_movement(
-      structure_to_structure_scalar(fsi_->structure_field()->dispnp()));
+      *structure_to_structure_scalar(fsi_->structure_field()->dispnp()));
 }
 
 

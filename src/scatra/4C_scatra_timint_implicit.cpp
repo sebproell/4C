@@ -1644,8 +1644,7 @@ void ScaTra::ScaTraTimIntImpl::update()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::apply_mesh_movement(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp)
+void ScaTra::ScaTraTimIntImpl::apply_mesh_movement(const Core::LinAlg::Vector<double>& dispnp) const
 {
   //---------------------------------------------------------------------------
   // only required in ALE case
@@ -1654,12 +1653,9 @@ void ScaTra::ScaTraTimIntImpl::apply_mesh_movement(
   {
     TEUCHOS_FUNC_TIME_MONITOR("SCATRA: apply mesh movement");
 
-    // check existence of displacement vector
-    if (dispnp == nullptr) FOUR_C_THROW("Got null pointer for displacements!");
-
     // provide scatra discretization with displacement field
-    discret_->set_state(nds_disp(), "dispnp", *dispnp);
-  }  // if (isale_)
+    discret_->set_state(nds_disp(), "dispnp", dispnp);
+  }
 }
 
 /*----------------------------------------------------------------------*

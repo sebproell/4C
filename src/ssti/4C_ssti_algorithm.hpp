@@ -133,8 +133,8 @@ namespace SSTI
     //! distribute states between subproblems
     //@{
     void distribute_solution_all_fields();
-    void distribute_scatra_solution();
-    void distribute_structure_solution();
+    void distribute_scatra_solution() const;
+    void distribute_structure_solution() const;
     void distribute_thermo_solution();
     //@}
 
