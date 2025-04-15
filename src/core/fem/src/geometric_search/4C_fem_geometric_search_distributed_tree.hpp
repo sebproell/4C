@@ -22,8 +22,8 @@ namespace Core::GeometricSearch
 {
   struct BoundingVolume;
 
-  /*! \brief Structure to hold the resulting global/local ID pairings that are found during a global
-   * collision search
+  /*! \brief Structure to hold a resulting global/local ID pair found during a global collision
+   * search
    */
   struct GlobalCollisionSearchResult
   {
@@ -31,8 +31,6 @@ namespace Core::GeometricSearch
     int lid_predicate;
     //! Global ID of the predicate
     int gid_predicate;
-    //! Local ID of the primitives (on the primitives rank)
-    int lid_primitive;
     //! Global ID of the primitives
     int gid_primitive;
     //! Processor ID owning the primitive

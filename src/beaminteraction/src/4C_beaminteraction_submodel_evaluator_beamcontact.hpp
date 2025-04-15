@@ -238,7 +238,8 @@ namespace BeamInteraction
        * - elements sharing nodes don't interact
        */
       void select_eles_to_be_considered_for_contact_evaluation(
-          Core::Elements::Element* currele, std::set<Core::Elements::Element*>& neighbors) const;
+          const Core::Elements::Element* currele,
+          std::set<Core::Elements::Element*>& neighbors) const;
 
       /// create instances of class BeamContactPair that will be evaluated
       //  to get force and stiffness contributions from beam interactions

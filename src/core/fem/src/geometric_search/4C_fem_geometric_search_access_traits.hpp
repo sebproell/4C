@@ -55,7 +55,10 @@ namespace ArborX
     static KOKKOS_FUNCTION auto get(
         const BoundingVolumeVectorPlaceholder<PrimitivesTag>& placeholder, size_type i)
     {
-      return placeholder.bounding_volumes_[i].second.bounding_volume_;
+      // We are interested in the gid of the primitive, not the id in the bounding volume vector,
+      // thus we attach the gid here.
+      return ArborX::PairValueIndex{placeholder.bounding_volumes_[i].second.bounding_volume_,
+          placeholder.bounding_volumes_[i].first};
     }
 
     static KOKKOS_FUNCTION auto get(
