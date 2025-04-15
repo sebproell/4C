@@ -107,7 +107,7 @@ namespace SSI
      * @note in case an equilibration method (scaling of rows and columns) is defined this is also
      * performed within this call
      */
-    void solve_linear_system();
+    void solve_linear_system() const;
 
     //! this object holds all maps relevant to monolithic scalar transport - structure interaction
     std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps() const { return ssi_maps_; }
@@ -125,28 +125,28 @@ namespace SSI
     class ConvCheckStrategyStd;
 
     //! apply the contact contributions to matrices and residuals of the sub problems
-    void apply_contact_to_sub_problems();
+    void apply_contact_to_sub_problems() const;
 
     //! apply the Dirichlet boundary conditions to the ssi system, i.e. matrices and residuals
-    void apply_dbc_to_system();
+    void apply_dbc_to_system() const;
 
     //! apply mesh tying between manifold domains on matrices and residuals
-    void apply_manifold_meshtying();
+    void apply_manifold_meshtying() const;
 
     //! perform mesh tying on matrices and residuals as obtained from sub problems
-    void apply_meshtying_to_sub_problems();
+    void apply_meshtying_to_sub_problems() const;
 
     //! assemble global system of equations
-    void assemble_mat_and_rhs();
+    void assemble_mat_and_rhs() const;
 
     //! assemble linearization of scatra residuals to system matrix
-    void assemble_mat_scatra();
+    void assemble_mat_scatra() const;
 
     //! assemble linearization of scatra on manifold residuals to system matrix
-    void assemble_mat_scatra_manifold();
+    void assemble_mat_scatra_manifold() const;
 
     //! assemble linearization of structural residuals to system matrix
-    void assemble_mat_structure();
+    void assemble_mat_structure() const;
 
     //! build null spaces associated with blocks of global system matrix
     void build_null_spaces() const;
@@ -160,26 +160,26 @@ namespace SSI
     void calc_initial_time_derivative();
 
     //! call complete on the sub problem matrices
-    void complete_subproblem_matrices();
+    void complete_subproblem_matrices() const;
 
     //! distribute solution to all other fields
     //! \param restore_velocity   restore velocity when structure_field()->set_state() is called
     void distribute_solution_all_fields(bool restore_velocity = false);
 
     //! evaluate all off-diagonal matrix contributions
-    void evaluate_off_diag_contributions();
+    void evaluate_off_diag_contributions() const;
 
     //! Evaluate ScaTra including copy to corresponding ssi matrix
-    void evaluate_scatra();
+    void evaluate_scatra() const;
 
     //! Evaluate ScaTra on manifold incl. coupling with scatra
-    void evaluate_scatra_manifold();
+    void evaluate_scatra_manifold() const;
 
     //! get matrix and right-hand-side for all subproblems incl. coupling
     void evaluate_subproblems();
 
     //! build and return vector of equilibration methods for each block of system matrix
-    std::vector<Core::LinAlg::EquilibrationMethod> get_block_equilibration();
+    std::vector<Core::LinAlg::EquilibrationMethod> get_block_equilibration() const;
 
     /*!
      * @note This is only necessary in the first iteration of the simulation, since only there the
@@ -201,13 +201,13 @@ namespace SSI
     void prepare_output();
 
     //! print system matrix, rhs, and map of system matrix to file
-    void print_system_matrix_rhs_to_mat_lab_format();
+    void print_system_matrix_rhs_to_mat_lab_format() const;
 
     //! print time step size, time, and number of time step
-    void print_time_step_info();
+    void print_time_step_info() const;
 
     //! set scatra manifold solution on scatra field
-    void set_scatra_manifold_solution(const Core::LinAlg::Vector<double>& phi);
+    void set_scatra_manifold_solution(const Core::LinAlg::Vector<double>& phi) const;
 
     //! evaluate time step using Newton-Raphson iteration
     void newton_loop();
@@ -215,10 +215,10 @@ namespace SSI
     void update() override;
 
     //! update ScaTra state within Newton iteration
-    void update_iter_scatra();
+    void update_iter_scatra() const;
 
     //! update structure state within Newton iteration
-    void update_iter_structure();
+    void update_iter_structure() const;
 
     //! Dirichlet boundary condition handler
     std::shared_ptr<SSI::DBCHandlerBase> dbc_handler_;

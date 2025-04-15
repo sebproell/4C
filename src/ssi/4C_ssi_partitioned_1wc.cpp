@@ -166,9 +166,9 @@ void SSI::SSIPart1WCSolidToScatra::prepare_time_step(bool printheader)
 
   if (structure_field()->step() % diffsteps == 0)
   {
-    if (is_s2_i_kinetics_with_pseudo_contact()) structure_field()->determine_stress_strain();
+    if (is_s2i_kinetics_with_pseudo_contact()) structure_field()->determine_stress_strain();
     set_struct_solution(structure_field()->dispn(), structure_field()->veln(),
-        is_s2_i_kinetics_with_pseudo_contact());
+        is_s2i_kinetics_with_pseudo_contact());
     scatra_field()->prepare_time_step();
   }
 }
@@ -237,9 +237,9 @@ void SSI::SSIPart1WCSolidToScatra::timeloop()
                        // itself.
     if (structure_field()->step() % diffsteps == 0)
     {
-      if (is_s2_i_kinetics_with_pseudo_contact()) structure_field()->determine_stress_strain();
+      if (is_s2i_kinetics_with_pseudo_contact()) structure_field()->determine_stress_strain();
       set_struct_solution(structure_field()->dispnp(), structure_field()->velnp(),
-          is_s2_i_kinetics_with_pseudo_contact());
+          is_s2i_kinetics_with_pseudo_contact());
       do_scatra_step();  // It has its own time and timestep variables, and it increments them by
                          // itself.
     }

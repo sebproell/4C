@@ -68,7 +68,7 @@ void SSI::SSICouplingMatchingVolume::init(const int ndim,
       FOUR_C_THROW("unexpected dof sets in structure field");
   }
 
-  if (ssi_base->is_s2_i_kinetics_with_pseudo_contact())
+  if (ssi_base->is_s2i_kinetics_with_pseudo_contact())
   {
     const int numDofsPerNodeStresses = 6;
     std::shared_ptr<Core::DOFSets::DofSetInterface> dofsetstresses =
