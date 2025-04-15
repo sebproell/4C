@@ -106,11 +106,10 @@ namespace Core::IO
      * \param sectionname    [in] This will be passed on element/domain readers only (not used for
      *                            file reader)
      * \param geometrysource [in] selects which reader will be created
-     * \param geofilepath    [in] path to the file for the file reader (not used for the others)
      */
     void add_advanced_reader(std::shared_ptr<Core::FE::Discretization> dis,
         Core::IO::InputFile& input, const std::string& sectionname,
-        const Core::IO::GeometryType geometrysource, const std::string* geofilepath);
+        const Core::IO::GeometryType geometrysource);
 
     /// do the actual reading
     /*!

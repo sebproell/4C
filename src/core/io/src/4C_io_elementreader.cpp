@@ -14,7 +14,6 @@
 #include "4C_fem_general_element_definition.hpp"
 #include "4C_io_input_file.hpp"
 #include "4C_io_value_parser.hpp"
-#include "4C_rebalance_print.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -29,35 +28,6 @@ Core::IO::ElementReader::ElementReader(std::shared_ptr<Core::FE::Discretization>
       sectionname_(sectionname),
       dis_(dis)
 {
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-Core::IO::ElementReader::ElementReader(std::shared_ptr<Core::FE::Discretization> dis,
-    Core::IO::InputFile& input, std::string sectionname, std::string elementtype)
-    : name_(dis->name()),
-      input_(input),
-      comm_(dis->get_comm()),
-      sectionname_(sectionname),
-      dis_(dis)
-{
-  elementtypes_.insert(elementtype);
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-Core::IO::ElementReader::ElementReader(std::shared_ptr<Core::FE::Discretization> dis,
-    Core::IO::InputFile& input, std::string sectionname, const std::set<std::string>& elementtypes)
-    : name_(dis->name()),
-      input_(input),
-      comm_(dis->get_comm()),
-      sectionname_(sectionname),
-      dis_(dis)
-{
-  std::copy(elementtypes.begin(), elementtypes.end(),
-      std::inserter(elementtypes_, elementtypes_.begin()));
 }
 
 
@@ -138,7 +108,7 @@ std::pair<int, std::vector<int>> Core::IO::ElementReader::get_element_size_and_i
       elenumber -= 1;
 
       // only read registered element types or all elements if nothing is registered
-      if (elementtypes_.size() == 0 or elementtypes_.count(eletype) > 0) eids.push_back(elenumber);
+      eids.push_back(elenumber);
     }
     numele = static_cast<int>(eids.size());
   }
@@ -191,51 +161,46 @@ void Core::IO::ElementReader::get_and_distribute_elements(const int nblock, cons
       // Only peek at the distype since the elements later want to parse this value themselves.
       const std::string distype = std::string(parser.peek());
 
-      // only read registered element types or all elements if nothing is
-      // registered
-      if (elementtypes_.size() == 0 or elementtypes_.count(eletype) > 0)
+      // let the factory create a matching empty element
+      std::shared_ptr<Core::Elements::Element> ele =
+          Core::Communication::factory(eletype, distype, elenumber, 0);
+      if (!ele) FOUR_C_THROW("element creation failed");
+
+      // For the time being we support old and new input facilities. To
+      // smooth transition.
+
+      const auto& linedef = ed.element_lines(eletype, distype);
+
+      Core::IO::ValueParser element_parser{
+          parser.get_unparsed_remainder(), {.user_scope_message = "While reading element data: "}};
+      Core::IO::InputParameterContainer data;
+      linedef.fully_parse(element_parser, data);
+
+      ele->set_node_ids(distype, data);
+      ele->read_element(eletype, distype, data);
+
+      // add element to discretization
+      dis_->add_element(ele);
+
+      // get the node ids of this element
+      const int numnode = ele->num_node();
+      const int* nodeids = ele->node_ids();
+
+      // all node gids of this element are inserted into a set of
+      // node ids --- it will be used later during reading of nodes
+      // to add the node to one or more discretisations
+      std::copy(nodeids, nodeids + numnode, std::inserter(nodes_, nodes_.begin()));
+
+      ++bcount;
+
+      // Distribute the block if it is full. Never distribute the last block here because it
+      // could be longer than expected and is therefore always distributed at the end.
+      if (block != nblock - 1 && bcount == bsize)
       {
-        // let the factory create a matching empty element
-        std::shared_ptr<Core::Elements::Element> ele =
-            Core::Communication::factory(eletype, distype, elenumber, 0);
-        if (!ele) FOUR_C_THROW("element creation failed");
-
-        // For the time being we support old and new input facilities. To
-        // smooth transition.
-
-        const auto& linedef = ed.element_lines(eletype, distype);
-
-        Core::IO::ValueParser element_parser{parser.get_unparsed_remainder(),
-            {.user_scope_message = "While reading element data: "}};
-        Core::IO::InputParameterContainer data;
-        linedef.fully_parse(element_parser, data);
-
-        ele->set_node_ids(distype, data);
-        ele->read_element(eletype, distype, data);
-
-        // add element to discretization
-        dis_->add_element(ele);
-
-        // get the node ids of this element
-        const int numnode = ele->num_node();
-        const int* nodeids = ele->node_ids();
-
-        // all node gids of this element are inserted into a set of
-        // node ids --- it will be used later during reading of nodes
-        // to add the node to one or more discretisations
-        std::copy(nodeids, nodeids + numnode, std::inserter(nodes_, nodes_.begin()));
-
-        ++bcount;
-
-        // Distribute the block if it is full. Never distribute the last block here because it
-        // could be longer than expected and is therefore always distributed at the end.
-        if (block != nblock - 1 && bcount == bsize)
-        {
-          dis_->proc_zero_distribute_elements_to_all(*roweles_, gidlist);
-          gidlist.clear();
-          bcount = 0;
-          ++block;
-        }
+        dis_->proc_zero_distribute_elements_to_all(*roweles_, gidlist);
+        gidlist.clear();
+        bcount = 0;
+        ++block;
       }
     }
 
