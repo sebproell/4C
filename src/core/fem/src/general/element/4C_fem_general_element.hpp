@@ -721,12 +721,11 @@ might become invalid after a redistribution of the discretization.
     */
     void set_node_ids(const int nnode, const int* nodes);
 
-    /*!
-    \brief Set a list of node ids this element is connected to
-
-    Here the node ids are directly taken from an input line.
-    */
-    void set_node_ids(
+    /**
+     * Set the list of node ids this element is connected to. Here, the index
+     * starts at 1, not 0. This is used for the legacy element input.
+     */
+    void set_node_ids_one_based_index(
         const std::string& distype, const Core::IO::InputParameterContainer& container);
 
     /*!
