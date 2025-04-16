@@ -637,10 +637,9 @@ void FS3I::PartFPS3I::set_velocity_fields()
     case Inpar::ScaTra::velocity_zero:
     case Inpar::ScaTra::velocity_function:
     {
-      for (unsigned i = 0; i < scatravec_.size(); ++i)
+      for (auto scatra : scatravec_)
       {
-        std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-        scatra->scatra_field()->set_velocity_field();
+        scatra->scatra_field()->set_velocity_field_from_function();
       }
       break;
     }

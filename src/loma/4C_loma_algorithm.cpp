@@ -532,8 +532,6 @@ void LowMach::Algorithm::mono_loop()
     // check convergence and stop iteration loop if convergence is achieved
     stopnonliniter = convergence_check(itnum);
   }
-
-  return;
 }
 
 
@@ -548,21 +546,19 @@ void LowMach::Algorithm::set_fluid_values_in_scatra()
     case Inpar::FLUID::timeint_afgenalpha:
     {
       scatra_field()->set_velocity_field(
-          fluid_field()->velaf(), fluid_field()->accam(), nullptr, fluid_field()->fs_vel(), true);
+          fluid_field()->velaf(), fluid_field()->accam(), nullptr, fluid_field()->fs_vel());
     }
     break;
     case Inpar::FLUID::timeint_one_step_theta:
     case Inpar::FLUID::timeint_bdf2:
     {
       scatra_field()->set_velocity_field(
-          fluid_field()->velnp(), fluid_field()->hist(), nullptr, fluid_field()->fs_vel(), true);
+          fluid_field()->velnp(), fluid_field()->hist(), nullptr, fluid_field()->fs_vel());
     }
     break;
     default:
       FOUR_C_THROW("Time integration scheme not supported");
-      break;
   }
-  return;
 }
 
 

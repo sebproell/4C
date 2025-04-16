@@ -141,11 +141,7 @@ void SSI::SSICouplingMatchingVolume::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
-  scatra->scatra_field()->set_velocity_field(convvel,  // convective vel.
-      nullptr,                                         // acceleration
-      vel,                                             // velocity
-      nullptr                                          // fsvel
-  );
+  scatra->scatra_field()->set_velocity_field(convvel, nullptr, vel, nullptr);
 }
 
 /*----------------------------------------------------------------------*/
@@ -291,12 +287,8 @@ void SSI::SSICouplingNonMatchingBoundary::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
   scatra->scatra_field()->set_velocity_field(
-      adaptermeshtying_->master_to_slave(
-          *extractor_->extract_cond_vector(*convvel)),  // convective vel.
-      nullptr,                                          // acceleration
-      adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(*vel)),  // velocity
-      nullptr                                                                      // fsvel
-  );
+      adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(*convvel)), nullptr,
+      adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(*vel)), nullptr);
 }
 
 /*----------------------------------------------------------------------*/
@@ -414,11 +406,8 @@ void SSI::SSICouplingNonMatchingVolume::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
   scatra->scatra_field()->set_velocity_field(
-      volcoupl_structurescatra_->apply_vector_mapping21(*convvel),  // convective vel.
-      nullptr,                                                      // acceleration
-      volcoupl_structurescatra_->apply_vector_mapping21(*vel),      // velocity
-      nullptr                                                       // fsvel
-  );
+      volcoupl_structurescatra_->apply_vector_mapping21(*convvel), nullptr,
+      volcoupl_structurescatra_->apply_vector_mapping21(*vel), nullptr);
 }
 
 /*----------------------------------------------------------------------*/
@@ -613,11 +602,7 @@ void SSI::SSICouplingMatchingVolumeAndBoundary::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
-  scatra->scatra_field()->set_velocity_field(convvel,  // convective vel.
-      nullptr,                                         // acceleration
-      vel,                                             // velocity
-      nullptr                                          // fsvel
-  );
+  scatra->scatra_field()->set_velocity_field(convvel, nullptr, vel, nullptr);
 }
 
 /*----------------------------------------------------------------------*/

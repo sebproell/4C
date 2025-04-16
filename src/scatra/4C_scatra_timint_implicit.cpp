@@ -1146,7 +1146,7 @@ void ScaTra::ScaTraTimIntImpl::prepare_time_step()
   // -------------------------------------------------------------------
   //     update velocity field if given by function (it might depend on time)
   // -------------------------------------------------------------------
-  if (velocity_field_type_ == Inpar::ScaTra::velocity_function) set_velocity_field();
+  if (velocity_field_type_ == Inpar::ScaTra::velocity_function) set_velocity_field_from_function();
 
   // -------------------------------------------------------------------
   //     update external force given by function (it might depend on time)
@@ -1225,7 +1225,7 @@ void ScaTra::ScaTraTimIntImpl::prepare_linear_solve()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::set_velocity_field()
+void ScaTra::ScaTraTimIntImpl::set_velocity_field_from_function()
 {
   // safety check
   if (nds_vel() >= discret_->num_dof_sets())
@@ -1233,9 +1233,9 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field()
 
   // initialize velocity vectors
   std::shared_ptr<Core::LinAlg::Vector<double>> convel =
-      Core::LinAlg::create_vector(*discret_->dof_row_map(nds_vel()), true);
+      create_vector(*discret_->dof_row_map(nds_vel()), true);
   std::shared_ptr<Core::LinAlg::Vector<double>> vel =
-      Core::LinAlg::create_vector(*discret_->dof_row_map(nds_vel()), true);
+      create_vector(*discret_->dof_row_map(nds_vel()), true);
 
   switch (velocity_field_type_)
   {
@@ -1254,7 +1254,7 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field()
       for (int lnodeid = 0; lnodeid < discret_->num_my_row_nodes(); lnodeid++)
       {
         // get the processor local node
-        Core::Nodes::Node* lnode = discret_->l_row_node(lnodeid);
+        const Core::Nodes::Node* lnode = discret_->l_row_node(lnodeid);
 
         // get dofs associated with current node
         std::vector<int> nodedofs = discret_->dof(nds_vel(), lnode);
@@ -1467,7 +1467,7 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field(
     std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> acc,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> fsvel, const bool setpressure)
+    std::shared_ptr<const Core::LinAlg::Vector<double>> fsvel)
 {
   // time measurement
   TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set convective velocity field");

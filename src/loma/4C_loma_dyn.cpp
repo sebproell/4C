@@ -104,10 +104,10 @@ void loma_dyn(int restart)
       if (restart) (scatraonly.scatra_field())->read_restart(restart);
 
       // set initial velocity field
-      // note: The order read_restart() before set_velocity_field() is important here!!
-      // for time-dependent velocity fields, set_velocity_field() is additionally called in each
-      // prepare_time_step()-call
-      (scatraonly.scatra_field())->set_velocity_field();
+      // note: The order read_restart() before set_velocity_field_from_function() is important
+      // here!! for time-dependent velocity fields, set_velocity_field_from_function() is
+      // additionally called in each prepare_time_step()-call
+      (scatraonly.scatra_field())->set_velocity_field_from_function();
 
       // enter time loop to solve problem with given convective velocity field
       (scatraonly.scatra_field())->time_loop();

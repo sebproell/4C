@@ -179,12 +179,7 @@ void PoroElastScaTra::PoroScatraBase::set_velocity_fields()
     velnp = volcoupl_fluidscatra_->apply_vector_mapping21(*poro_->fluid_field()->velnp());
   }
 
-  scatra_->scatra_field()->set_velocity_field(convel,  // convective vel.
-      nullptr,                                         // acceleration
-      velnp,                                           // velocity
-      nullptr,                                         // fsvel
-      true                                             // set pressure
-  );
+  scatra_->scatra_field()->set_velocity_field(convel, nullptr, velnp, nullptr);
 }
 
 /*----------------------------------------------------------------------*
