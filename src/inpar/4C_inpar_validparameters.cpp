@@ -142,24 +142,37 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
                   .default_value = -1})},
       {.defaultable = true});
 
-  specs["STRUCTURE GEOMETRY"] = group("STRUCTURE GEOMETRY",
-      {
-          parameter<std::filesystem::path>(
-              "FILE", {.description = "Path to the exodus geometry file. Either absolute or "
-                                      "relative to the input file."}),
-          // Once we support more format, we should add a "TYPE" parameter for the file format.
-          list("ELEMENT_BLOCKS",
-              all_of({
-                  parameter<int>(
-                      "ID", {.description = "ID of the element block in the exodus file."}),
-                  parameter<std::string>("ELEMENT_NAME",
-                      {.description =
-                              "The name of the element that should be assigned to the block."}),
-                  parameter<std::string>("ELEMENT_DATA",
-                      {.description = "A dat-style string of parameters for the element."}),
-              })),
-      },
-      {.required = false});
+  const auto add_geometry_section = [](auto& specs, const std::string& field_identifier)
+  {
+    specs[field_identifier + " GEOMETRY"] = group(field_identifier + " GEOMETRY",
+        {
+            parameter<std::filesystem::path>(
+                "FILE", {.description = "Path to the exodus geometry file. Either absolute or "
+                                        "relative to the input file."}),
+            // Once we support more format, we should add a "TYPE" parameter for the file format.
+            list("ELEMENT_BLOCKS",
+                all_of({
+                    parameter<int>(
+                        "ID", {.description = "ID of the element block in the exodus file."}),
+                    parameter<std::string>("ELEMENT_NAME",
+                        {.description =
+                                "The name of the element that should be assigned to the block."}),
+                    parameter<std::string>("ELEMENT_DATA",
+                        {.description = "A dat-style string of parameters for the element."}),
+                })),
+        },
+        {.description = "Settings related to the geometry of discretization " + field_identifier,
+            .required = false});
+  };
+
+  const std::vector known_fields = {"STRUCTURE", "FLUID", "LUBRICATION", "TRANSPORT", "TRANSPORT2",
+      "ALE", "ARTERY", "REDUCED D AIRWAYS", "THERMO", "PERIODIC BOUNDINGBOX"};
+  for (const auto& field : known_fields)
+  {
+    add_geometry_section(specs, field);
+  }
+
+
 
   Inpar::Solid::set_valid_parameters(specs);
   Inpar::IO::set_valid_parameters(specs);
