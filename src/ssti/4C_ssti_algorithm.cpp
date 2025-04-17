@@ -289,8 +289,10 @@ void SSTI::SSTIAlgorithm::distribute_structure_solution() const
   // convective velocity is set to zero
   const auto convective_velocity = Core::LinAlg::create_vector(*structure_->dof_row_map());
 
-  scatra_field()->set_velocity_field(convective_velocity, nullptr, structure_->velnp(), nullptr);
-  thermo_field()->set_velocity_field(convective_velocity, nullptr, structure_->velnp(), nullptr);
+  scatra_field()->set_convective_velocity(*convective_velocity);
+  scatra_field()->set_velocity_field(nullptr, structure_->velnp(), nullptr);
+  thermo_field()->set_convective_velocity(*convective_velocity);
+  thermo_field()->set_velocity_field(nullptr, structure_->velnp(), nullptr);
 }
 
 /*----------------------------------------------------------------------*/

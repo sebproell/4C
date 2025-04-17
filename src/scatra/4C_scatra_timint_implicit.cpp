@@ -1463,26 +1463,36 @@ void ScaTra::ScaTraTimIntImpl::set_mean_concentration(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
+void ScaTra::ScaTraTimIntImpl::set_convective_velocity(
+    const Core::LinAlg::Vector<double>& convective_velocity) const
+{
+  // time measurement
+  TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set convective velocity field");
+
+  // checks
+  FOUR_C_ASSERT(velocity_field_type_ == Inpar::ScaTra::velocity_Navier_Stokes,
+      "Wrong set_velocity_field() called for velocity field type {}!", velocity_field_type_);
+  FOUR_C_ASSERT(nds_vel() < discret_->num_dof_sets(), "Too few dof sets on scatra discretization!");
+
+  // provide scatra discretization with convective velocity
+  discret_->set_state(nds_vel(), "convective velocity field", convective_velocity);
+}
+
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::set_velocity_field(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> acc,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> fsvel)
 {
   // time measurement
-  TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set convective velocity field");
+  TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set velocity fields");
 
-  //---------------------------------------------------------------------------
-  // preliminaries
-  //---------------------------------------------------------------------------
-  if (convvel == nullptr) FOUR_C_THROW("Velocity state is nullptr");
-
-  if (velocity_field_type_ != Inpar::ScaTra::velocity_Navier_Stokes)
-    FOUR_C_THROW(
-        "Wrong set_velocity_field() called for velocity field type {}!", velocity_field_type_);
-
-  if (nds_vel() >= discret_->num_dof_sets())
-    FOUR_C_THROW("Too few dofsets on scatra discretization!");
+  // checks
+  FOUR_C_ASSERT(velocity_field_type_ == Inpar::ScaTra::velocity_Navier_Stokes,
+      "Wrong set_velocity_field() called for velocity field type {}!", velocity_field_type_);
+  FOUR_C_ASSERT(nds_vel() < discret_->num_dof_sets(), "Too few dof sets on scatra discretization!");
 
   // boolean indicating whether fine-scale velocity vector exists
   // -> if yes, multifractal subgrid-scale modeling is applied
@@ -1503,18 +1513,8 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field(
   if (turbmodel_ == Inpar::FLUID::no_model and fssgd_ == Inpar::ScaTra::fssugrdiff_no)
     fsvelswitch = false;
 
-  // provide scatra discretization with convective velocity
-  discret_->set_state(nds_vel(), "convective velocity field", *convvel);
-
   // provide scatra discretization with velocity
-  if (vel != nullptr)
-    discret_->set_state(nds_vel(), "velocity field", *vel);
-  else
-  {
-    // if velocity vector is not provided by the respective algorithm, we
-    // assume that it equals the given convective velocity:
-    discret_->set_state(nds_vel(), "velocity field", *convvel);
-  }
+  if (vel != nullptr) discret_->set_state(nds_vel(), "velocity field", *vel);
 
   // provide scatra discretization with acceleration field if required
   if (acc != nullptr) discret_->set_state(nds_vel(), "acceleration field", *acc);

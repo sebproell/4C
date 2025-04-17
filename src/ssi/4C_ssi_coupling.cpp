@@ -141,7 +141,8 @@ void SSI::SSICouplingMatchingVolume::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
-  scatra->scatra_field()->set_velocity_field(convvel, nullptr, vel, nullptr);
+  scatra->scatra_field()->set_convective_velocity(*convvel);
+  scatra->scatra_field()->set_velocity_field(nullptr, vel, nullptr);
 }
 
 /*----------------------------------------------------------------------*/
@@ -286,9 +287,10 @@ void SSI::SSICouplingNonMatchingBoundary::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
+  scatra->scatra_field()->set_convective_velocity(
+      *adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(*convvel)));
   scatra->scatra_field()->set_velocity_field(
-      adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(*convvel)), nullptr,
-      adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(*vel)), nullptr);
+      nullptr, adaptermeshtying_->master_to_slave(*extractor_->extract_cond_vector(*vel)), nullptr);
 }
 
 /*----------------------------------------------------------------------*/
@@ -405,9 +407,10 @@ void SSI::SSICouplingNonMatchingVolume::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
+  scatra->scatra_field()->set_convective_velocity(
+      *volcoupl_structurescatra_->apply_vector_mapping21(*convvel));
   scatra->scatra_field()->set_velocity_field(
-      volcoupl_structurescatra_->apply_vector_mapping21(*convvel), nullptr,
-      volcoupl_structurescatra_->apply_vector_mapping21(*vel), nullptr);
+      nullptr, volcoupl_structurescatra_->apply_vector_mapping21(*vel), nullptr);
 }
 
 /*----------------------------------------------------------------------*/
@@ -602,7 +605,8 @@ void SSI::SSICouplingMatchingVolumeAndBoundary::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
-  scatra->scatra_field()->set_velocity_field(convvel, nullptr, vel, nullptr);
+  scatra->scatra_field()->set_convective_velocity(*convvel);
+  scatra->scatra_field()->set_velocity_field(nullptr, vel, nullptr);
 }
 
 /*----------------------------------------------------------------------*/

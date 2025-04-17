@@ -651,8 +651,8 @@ void FS3I::PartFPS3I::set_velocity_fields()
 
       for (unsigned i = 0; i < scatravec_.size(); ++i)
       {
-        std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-        scatra->scatra_field()->set_velocity_field(convel[i], nullptr, vel[i], nullptr);
+        scatravec_[i]->scatra_field()->set_convective_velocity(*convel[i]);
+        scatravec_[i]->scatra_field()->set_velocity_field(nullptr, vel[i], nullptr);
       }
       break;
     }

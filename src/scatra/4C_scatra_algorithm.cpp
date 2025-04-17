@@ -225,7 +225,6 @@ void ScaTra::ScaTraAlgorithm::prepare_time_step_convection()
     default:
     {
       FOUR_C_THROW("Selected time integration scheme is not available!");
-      break;
     }
   }
 
@@ -234,8 +233,10 @@ void ScaTra::ScaTraAlgorithm::prepare_time_step_convection()
   // transfer the initial(!!) convective velocity
   //(fluid initial field was set inside the constructor of fluid base class)
   if (step() == 1)
-    scatra_field()->set_velocity_field(
-        fluid_field()->velnp(), fluid_field()->hist(), nullptr, nullptr);
+  {
+    scatra_field()->set_convective_velocity(*fluid_field()->velnp());
+    scatra_field()->set_velocity_field(fluid_field()->hist(), fluid_field()->velnp(), nullptr);
+  }
 
   // prepare time step (+ initialize one-step-theta scheme correctly with
   // velocity given above)
@@ -243,7 +244,6 @@ void ScaTra::ScaTraAlgorithm::prepare_time_step_convection()
 }
 
 /*----------------------------------------------------------------------*
- | Print scatra solver type to screen                        fang 08/14 |
  *----------------------------------------------------------------------*/
 void ScaTra::ScaTraAlgorithm::print_scatra_solver()
 {
@@ -305,7 +305,8 @@ void ScaTra::ScaTraAlgorithm::set_velocity_field()
     case Inpar::FLUID::timeint_npgenalpha:
     case Inpar::FLUID::timeint_afgenalpha:
     {
-      scatra_field()->set_velocity_field(fluid_to_scatra(fluid_field()->velaf()),
+      scatra_field()->set_convective_velocity(*fluid_to_scatra(fluid_field()->velaf()));
+      scatra_field()->set_velocity_field(
           fluid_to_scatra(fluid_field()->accam()), fluid_to_scatra(fluid_field()->velaf()), fsvel);
       break;
     }
@@ -313,7 +314,8 @@ void ScaTra::ScaTraAlgorithm::set_velocity_field()
     case Inpar::FLUID::timeint_bdf2:
     case Inpar::FLUID::timeint_stationary:
     {
-      scatra_field()->set_velocity_field(fluid_to_scatra(fluid_field()->velnp()),
+      scatra_field()->set_convective_velocity(*fluid_to_scatra(fluid_field()->velnp()));
+      scatra_field()->set_velocity_field(
           fluid_to_scatra(fluid_field()->hist()), fluid_to_scatra(fluid_field()->velnp()), fsvel);
       break;
     }
