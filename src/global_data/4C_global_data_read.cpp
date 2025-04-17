@@ -1484,6 +1484,37 @@ namespace
       Core::Communication::broadcast(node_sets, 0, mesh_reader.get_comm());
     }
   }
+
+  void get_element_block_nodes_from_mesh(
+      std::map<int, std::vector<int>>& element_block_nodes, const Core::IO::MeshReader& mesh_reader)
+  {
+    element_block_nodes.clear();
+    const int my_rank = Core::Communication::my_mpi_rank(mesh_reader.get_comm());
+
+    // Data is available on rank zero: bring it into the right shape and broadcast it.
+    if (my_rank == 0)
+    {
+      auto* exodus_mesh = mesh_reader.get_exodus_mesh_on_rank_zero();
+      if (exodus_mesh)
+      {
+        const auto& element_blocks = exodus_mesh->get_element_blocks();
+        for (const auto& [id, eb] : element_blocks)
+        {
+          std::set<int> nodes;
+          for (const auto& connectivity : *eb.get_ele_conn() | std::views::values)
+          {
+            nodes.insert(connectivity.begin(), connectivity.end());
+          }
+          element_block_nodes[id] = std::vector<int>(nodes.begin(), nodes.end());
+        }
+      }
+      Core::Communication::broadcast(element_block_nodes, 0, mesh_reader.get_comm());
+    }
+    else
+    {
+      Core::Communication::broadcast(element_block_nodes, 0, mesh_reader.get_comm());
+    }
+  }
 }  // namespace
 
 /*----------------------------------------------------------------------*/
@@ -1520,6 +1551,9 @@ void Global::read_conditions(
 
   std::map<int, std::vector<int>> node_sets;
   get_node_sets_from_mesh(node_sets, mesh_reader);
+
+  std::map<int, std::vector<int>> element_block_nodes;
+  get_element_block_nodes_from_mesh(element_block_nodes, mesh_reader);
 
   // check for meshfree discretisation to add node set topologies
   std::vector<std::vector<std::vector<int>>*> nodeset(4);
@@ -1614,7 +1648,12 @@ void Global::read_conditions(
         }
         case Core::Conditions::EntityType::element_block_id:
         {
-          FOUR_C_THROW("Not implemented.");
+          const int eb_id = entity_id + 1;
+          FOUR_C_ASSERT_ALWAYS(element_block_nodes.contains(eb_id),
+              "Cannot apply condition '{}' to element block {} which is not specified in the mesh "
+              "file.",
+              condition_definition.name(), eb_id);
+          condition->set_nodes(element_block_nodes[eb_id]);
           break;
         }
       }
