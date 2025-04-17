@@ -835,7 +835,7 @@ SSI::ManifoldMeshTyingStrategyBase::ManifoldMeshTyingStrategyBase(
   if (is_manifold_meshtying_)
   {
     ssi_meshtying_ = std::make_shared<SSI::Utils::SSIMeshTying>(
-        "SSISurfaceManifold", scatra_manifold_dis, false, false);
+        "SSISurfaceManifold", *scatra_manifold_dis, false, false);
 
     if (ssi_meshtying_->mesh_tying_handlers().empty())
     {

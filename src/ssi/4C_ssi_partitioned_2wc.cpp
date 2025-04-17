@@ -142,11 +142,11 @@ void SSI::SSIPart2WC::do_struct_step()
   // Newton-Raphson iteration
   structure_field()->solve();
 
-  if (is_s2_i_kinetics_with_pseudo_contact()) structure_field()->determine_stress_strain();
+  if (is_s2i_kinetics_with_pseudo_contact()) structure_field()->determine_stress_strain();
 
   //  set mesh displacement and velocity fields
   return set_struct_solution(structure_field()->dispnp(), structure_field()->velnp(),
-      is_s2_i_kinetics_with_pseudo_contact());
+      is_s2i_kinetics_with_pseudo_contact());
 }
 
 /*----------------------------------------------------------------------*
@@ -503,7 +503,7 @@ void SSI::SSIPart2WCSolidToScatraRelax::outer_loop()
     // begin nonlinear solver / outer iteration ***************************
 
     // set relaxed mesh displacements and velocity field
-    set_struct_solution(dispnp, velnp, is_s2_i_kinetics_with_pseudo_contact());
+    set_struct_solution(dispnp, velnp, is_s2i_kinetics_with_pseudo_contact());
 
     // solve scalar transport equation
     do_scatra_step();

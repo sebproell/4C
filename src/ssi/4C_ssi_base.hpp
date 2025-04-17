@@ -15,6 +15,8 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_ssi_str_model_evaluator_base.hpp"
 
+#include <utility>
+
 FOUR_C_NAMESPACE_OPEN
 
 // forward declarations
@@ -73,7 +75,7 @@ namespace SSI
 
     //! return counter for Newton-Raphson iterations (monolithic algorithm) or outer coupling
     //! iterations (partitioned algorithm)
-    int iteration_count() const { return iter_; }
+    [[nodiscard]] int iteration_count() const { return iter_; }
 
     //! reset the counter for Newton-Raphson iterations (monolithic algorithm) or outer coupling
     //! iterations (partitioned algorithm)
@@ -106,7 +108,7 @@ namespace SSI
     */
     virtual void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
-        const std::string& struct_disname, const std::string& scatra_disname, bool isAle) = 0;
+        const std::string& struct_disname, const std::string& scatra_disname, bool is_ale) = 0;
 
     /*! \brief Setup all class internal objects and members
 
@@ -132,19 +134,19 @@ namespace SSI
      * @brief Perform all necessary tasks after setting up the object.
      * Currently, this only calls the post_setup routine of the structure field.
      */
-    void post_setup();
+    void post_setup() const;
 
     //! returns true if setup() was called and is still valid
-    bool is_setup() const { return issetup_; };
+    [[nodiscard]] bool is_setup() const { return issetup_; }
 
     /*!
      * @brief checks whether simulation is restarted or not
      *
      * @return  flag indicating if simulation is restarted
      */
-    bool is_restart() const;
+    [[nodiscard]] bool is_restart() const;
 
-    [[nodiscard]] bool is_s2_i_kinetics_with_pseudo_contact() const
+    [[nodiscard]] bool is_s2i_kinetics_with_pseudo_contact() const
     {
       return is_s2i_kinetic_with_pseudo_contact_;
     }
@@ -165,7 +167,7 @@ namespace SSI
 
     */
     virtual void init_discretizations(MPI_Comm comm, const std::string& struct_disname,
-        const std::string& scatra_disname, const bool redistribute_struct_dis);
+        const std::string& scatra_disname, bool redistribute_struct_dis);
 
     /// setup
     virtual void setup_system();
@@ -180,34 +182,36 @@ namespace SSI
     void read_restart(int restart) override;
 
     //! access to structural field
-    const std::shared_ptr<Adapter::SSIStructureWrapper>& structure_field() const
+    [[nodiscard]] std::shared_ptr<Adapter::SSIStructureWrapper> structure_field() const
     {
       return structure_;
     }
 
     /// pointer to the underlying structure problem base algorithm
-    std::shared_ptr<Adapter::StructureBaseAlgorithmNew> structure_base_algorithm() const
+    [[nodiscard]] std::shared_ptr<Adapter::StructureBaseAlgorithmNew> structure_base_algorithm()
+        const
     {
       return struct_adapterbase_ptr_;
     }
 
     //! access the scalar transport base algorithm
-    const std::shared_ptr<Adapter::ScaTraBaseAlgorithm>& scatra_base_algorithm() const
+    [[nodiscard]] std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_base_algorithm() const
     {
       return scatra_base_algorithm_;
     }
 
     //! access the scalar transport base algorithm on manifolds
-    const std::shared_ptr<Adapter::ScaTraBaseAlgorithm>& scatra_manifold_base_algorithm() const
+    [[nodiscard]] std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_manifold_base_algorithm()
+        const
     {
       return scatra_manifold_base_algorithm_;
     }
 
     //! access the scalar transport field
-    std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra_field() const;
+    [[nodiscard]] std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra_field() const;
 
     //! access the scalar transport field on manifolds
-    std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra_manifold() const;
+    [[nodiscard]] std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra_manifold() const;
 
     /// set structure solution on other fields
     void set_struct_solution(std::shared_ptr<const Core::LinAlg::Vector<double>> disp,
@@ -231,50 +235,50 @@ namespace SSI
     void evaluate_and_set_temperature_field();
 
     //! get bool indicating if we have at least one ssi interface meshtying condition
-    bool ssi_interface_meshtying() const { return ssiinterfacemeshtying_; }
+    [[nodiscard]] bool ssi_interface_meshtying() const { return ssi_interface_meshtying_; }
 
     //! return the scatra-scatra interface meshtying strategy
-    std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2_i() const
+    [[nodiscard]] std::shared_ptr<const ScaTra::MeshtyingStrategyS2I> meshtying_strategy_s2i() const
     {
       return meshtying_strategy_s2i_;
     }
 
     //! returns whether calculation of the initial potential field is performed
-    bool do_calculate_initial_potential_field() const;
+    [[nodiscard]] bool do_calculate_initial_potential_field() const;
 
     //! returns if the scalar transport time integration is of type electrochemistry
-    bool is_elch_scatra_tim_int_type() const;
+    [[nodiscard]] bool is_elch_scatra_time_int_type() const;
 
     //! solve additional scatra field on manifolds
-    bool is_scatra_manifold() const { return is_scatra_manifold_; }
+    [[nodiscard]] bool is_scatra_manifold() const { return is_scatra_manifold_; }
 
     //! activate mesh tying between overlapping manifold fields
-    bool is_scatra_manifold_meshtying() const { return is_manifold_meshtying_; }
+    [[nodiscard]] bool is_scatra_manifold_meshtying() const { return is_manifold_meshtying_; }
 
     //! Redistribute nodes and elements on processors
     void redistribute(RedistributionType redistribution_type);
 
     //! get bool indicating if we have at least one ssi interface contact condition
-    bool ssi_interface_contact() const { return ssiinterfacecontact_; }
+    [[nodiscard]] bool ssi_interface_contact() const { return ssi_interface_contact_; }
 
     //! set up a pointer to the contact strategy of the structural field and store it
     void setup_contact_strategy();
 
     //! SSI structure meshtying object containing coupling adapters, converters and maps
-    std::shared_ptr<SSI::Utils::SSIMeshTying> ssi_structure_mesh_tying() const
+    [[nodiscard]] std::shared_ptr<Utils::SSIMeshTying> ssi_structure_mesh_tying() const
     {
       return ssi_structure_meshtying_;
     }
 
     //! return contact nitsche strategy for ssi problems
-    std::shared_ptr<CONTACT::NitscheStrategySsi> nitsche_strategy_ssi() const
+    [[nodiscard]] std::shared_ptr<CONTACT::NitscheStrategySsi> nitsche_strategy_ssi() const
     {
       return contact_strategy_nitsche_;
     }
 
    protected:
     //! get bool indicating if old structural time integration is used
-    bool use_old_structure_time_int() const { return use_old_structure_; }
+    [[nodiscard]] bool use_old_structure_time_int() const { return use_old_structure_; }
 
     //! check if \ref setup() was called
     void check_is_setup() const
@@ -304,7 +308,7 @@ namespace SSI
     void set_modelevaluator_base_ssi(
         std::shared_ptr<Solid::ModelEvaluator::Generic> modelevaluator_ssi_base)
     {
-      modelevaluator_ssi_base_ = modelevaluator_ssi_base;
+      modelevaluator_ssi_base_ = std::move(modelevaluator_ssi_base);
     }
 
     //! set flag true after setup or false if setup became invalid
@@ -317,10 +321,10 @@ namespace SSI
     virtual void setup_model_evaluator();
 
     //! macro-micro scatra problem?
-    bool macro_scale() const { return macro_scale_; }
+    [[nodiscard]] bool macro_scale() const { return macro_scale_; }
 
     //! different time step size between scatra field and structure field
-    bool diff_time_step_size() const { return diff_time_step_size_; }
+    [[nodiscard]] bool diff_time_step_size() const { return diff_time_step_size_; }
 
     //! store contact nitsche strategy for ssi problems
     std::shared_ptr<CONTACT::NitscheStrategySsi> contact_strategy_nitsche_;
@@ -344,11 +348,11 @@ namespace SSI
      * @param[in] structparams      parameter list containing the STRUCTURAL DYNAMIC parameters
      * @param[in] struct_disname    name of structure discretization
      * @param[in] scatra_disname    name of scalar transport discretization
-     * @param[in] isAle             flag indicating if ALE is activated
+     * @param[in] is_ale            flag indicating if ALE is activated
      */
     void init_time_integrators(const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
-        const std::string& struct_disname, const std::string& scatra_disname, const bool isAle);
+        const std::string& struct_disname, const std::string& scatra_disname, bool is_ale);
 
     /*!
      * @brief check whether pseudo contact is activated for at least one of the s2i kinetics
@@ -356,7 +360,7 @@ namespace SSI
      *
      * @param[in] struct_disname  name of structure discretization
      */
-    [[nodiscard]] bool check_s2_i_kinetics_condition_for_pseudo_contact(
+    [[nodiscard]] bool check_s2i_kinetics_condition_for_pseudo_contact(
         const std::string& struct_disname) const;
 
     //! check whether scatra-structure interaction flags are set correctly
@@ -370,7 +374,7 @@ namespace SSI
     void check_ssi_interface_conditions(const std::string& struct_disname) const;
 
     //! returns true if init(..) was called and is still valid
-    bool is_init() const { return isinit_; }
+    [[nodiscard]] bool is_init() const { return isinit_; }
 
     /// set structure mesh displacement on scatra field
     void set_mesh_disp(std::shared_ptr<const Core::LinAlg::Vector<double>> disp);
@@ -419,16 +423,16 @@ namespace SSI
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_manifold_base_algorithm_;
 
     //! SSI structure mesh tying object containing coupling adapters, converters and maps
-    std::shared_ptr<SSI::Utils::SSIMeshTying> ssi_structure_meshtying_;
+    std::shared_ptr<Utils::SSIMeshTying> ssi_structure_meshtying_;
 
     /// helper class for applying SSI couplings
     std::shared_ptr<SSICouplingBase> ssicoupling_;
 
     //! bool indicating if we have at least one ssi interface contact condition
-    const bool ssiinterfacecontact_;
+    const bool ssi_interface_contact_;
 
     //! bool indicating if we have at least one ssi interface meshtying condition
-    const bool ssiinterfacemeshtying_;
+    const bool ssi_interface_meshtying_;
 
     /// ptr to underlying structure
     std::shared_ptr<Adapter::SSIStructureWrapper> structure_;

@@ -31,10 +31,6 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-/*                                                        AN,JH 09/2014 */
-/* Function for checking that the different time steps are a
- multiplicative of each other                                           */
-
 int SSI::Utils::check_time_stepping(double dt1, double dt2)
 {
   const double workdt1 = std::min(dt1, dt2);
@@ -46,9 +42,8 @@ int SSI::Utils::check_time_stepping(double dt1, double dt2)
     i++;
     const double t1 = i * workdt1;
 
-    if (std::abs(t1 - workdt2) < 10E-10)
-      break;
-    else if (t1 > workdt2)
+    if (std::abs(t1 - workdt2) < 10E-10) break;
+    if (t1 > workdt2)
       FOUR_C_THROW("Chosen time steps {} and {} are not a multiplicative of each other", dt1, dt2);
   }
   return i;
@@ -56,21 +51,17 @@ int SSI::Utils::check_time_stepping(double dt1, double dt2)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-/*                                                        AN,JH 10/2014 */
-// Modification of time parameter list for problem with different time step size
-
 void SSI::Utils::change_time_parameter(MPI_Comm comm, Teuchos::ParameterList& ssiparams,
     Teuchos::ParameterList& scatradyn, Teuchos::ParameterList& sdyn)
 {
-  bool difftimestep = ssiparams.get<bool>("DIFFTIMESTEPSIZE");
-
-  if (difftimestep)  // Create subproblems with different time steps
+  // Create sub problems with different time steps
+  if (ssiparams.get<bool>("DIFFTIMESTEPSIZE"))
   {
     // Check correct choice of time stepping for single fields
     double scatrastep = scatradyn.get<double>("TIMESTEP");
     double solidstep = sdyn.get<double>("TIMESTEP");
 
-    SSI::Utils::check_time_stepping(scatrastep, solidstep);
+    check_time_stepping(scatrastep, solidstep);
 
     // modify global time step size
     ssiparams.set<double>("TIMESTEP", std::min(scatrastep, solidstep));
@@ -111,8 +102,8 @@ void SSI::Utils::change_time_parameter(MPI_Comm comm, Teuchos::ParameterList& ss
 
   if (restarttime > 0.0)
   {
-    scatrarestart = SSI::Utils::check_time_stepping(scatradyn.get<double>("TIMESTEP"), restarttime);
-    structurerestart = SSI::Utils::check_time_stepping(sdyn.get<double>("TIMESTEP"), restarttime);
+    scatrarestart = check_time_stepping(scatradyn.get<double>("TIMESTEP"), restarttime);
+    structurerestart = check_time_stepping(sdyn.get<double>("TIMESTEP"), restarttime);
   }
   else
   {
@@ -127,8 +118,8 @@ void SSI::Utils::change_time_parameter(MPI_Comm comm, Teuchos::ParameterList& ss
 
   if (updatetime > 0.0)
   {
-    scatraupres = SSI::Utils::check_time_stepping(scatradyn.get<double>("TIMESTEP"), updatetime);
-    structureupres = SSI::Utils::check_time_stepping(sdyn.get<double>("TIMESTEP"), updatetime);
+    scatraupres = check_time_stepping(scatradyn.get<double>("TIMESTEP"), updatetime);
+    structureupres = check_time_stepping(sdyn.get<double>("TIMESTEP"), updatetime);
   }
   else
   {
@@ -161,7 +152,7 @@ void SSI::Utils::change_time_parameter(MPI_Comm comm, Teuchos::ParameterList& ss
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Teuchos::ParameterList SSI::Utils::clone_sca_tra_manifold_params(
+Teuchos::ParameterList SSI::Utils::clone_scatra_manifold_params(
     const Teuchos::ParameterList& scatraparams,
     const Teuchos::ParameterList& sublist_manifold_params)
 {
@@ -185,7 +176,6 @@ Teuchos::ParameterList SSI::Utils::clone_sca_tra_manifold_params(
     }
     default:
       FOUR_C_THROW("Initial field type on manifold not supported.");
-      break;
   }
 
   if (Teuchos::getIntegralValue<Inpar::ScaTra::OutputScalarType>(scatraparams, "OUTPUTSCALARS") !=
@@ -201,7 +191,7 @@ Teuchos::ParameterList SSI::Utils::clone_sca_tra_manifold_params(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Teuchos::ParameterList SSI::Utils::modify_sca_tra_params(const Teuchos::ParameterList& scatraparams)
+Teuchos::ParameterList SSI::Utils::modify_scatra_params(const Teuchos::ParameterList& scatraparams)
 {
   auto scatraparams_mutable = Teuchos::ParameterList(scatraparams);
 
@@ -214,27 +204,27 @@ Teuchos::ParameterList SSI::Utils::modify_sca_tra_params(const Teuchos::Paramete
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-SSI::Utils::SSIMatrices::SSIMatrices(std::shared_ptr<const SSI::Utils::SSIMaps> ssi_maps,
+SSI::Utils::SSIMatrices::SSIMatrices(const SSIMaps& ssi_maps,
     const Core::LinAlg::MatrixType ssi_matrixtype, const Core::LinAlg::MatrixType scatra_matrixtype,
     const bool is_scatra_manifold)
     : is_scatra_manifold_(is_scatra_manifold),
       scatra_matrixtype_(scatra_matrixtype),
-      scatra_dofrowmap_(ssi_maps->scatra_dof_row_map()),
-      structure_dofrowmap_(ssi_maps->structure_dof_row_map())
+      scatra_dofrowmap_(ssi_maps.scatra_dof_row_map()),
+      structure_dofrowmap_(ssi_maps.structure_dof_row_map())
 {
   // fill maps related to scalar transport manifold if relevant
-  if (is_scatra_manifold_) scatramanifold_dofrowmap_ = ssi_maps->scatra_manifold_dof_row_map();
+  if (is_scatra_manifold_) scatramanifold_dofrowmap_ = ssi_maps.scatra_manifold_dof_row_map();
 
-  initialize_system_matrix(*ssi_maps, ssi_matrixtype);
+  initialize_system_matrix(ssi_maps, ssi_matrixtype);
 
-  initialize_main_diag_matrices(*ssi_maps);
+  initialize_main_diag_matrices(ssi_maps);
 
-  initialize_off_diag_matrices(*ssi_maps);
+  initialize_off_diag_matrices(ssi_maps);
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-void SSI::Utils::SSIMatrices::initialize_main_diag_matrices(const SSI::Utils::SSIMaps& ssi_maps)
+void SSI::Utils::SSIMatrices::initialize_main_diag_matrices(const SSIMaps& ssi_maps)
 {
   structure_matrix_ = setup_sparse_matrix(*structure_dofrowmap_);
 
@@ -264,14 +254,13 @@ void SSI::Utils::SSIMatrices::initialize_main_diag_matrices(const SSI::Utils::SS
     default:
     {
       FOUR_C_THROW("Invalid matrix type associated with scalar transport field!");
-      break;
     }
   }
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-void SSI::Utils::SSIMatrices::initialize_off_diag_matrices(const SSI::Utils::SSIMaps& ssi_maps)
+void SSI::Utils::SSIMatrices::initialize_off_diag_matrices(const SSIMaps& ssi_maps)
 {
   switch (scatra_matrixtype_)
   {
@@ -315,7 +304,6 @@ void SSI::Utils::SSIMatrices::initialize_off_diag_matrices(const SSI::Utils::SSI
     default:
     {
       FOUR_C_THROW("Invalid matrix type associated with scalar transport field!");
-      break;
     }
   }
 }
@@ -335,7 +323,6 @@ void SSI::Utils::SSIMatrices::complete_scatra_manifold_scatra_matrix()
       break;
     default:
       FOUR_C_THROW("Not supported Core::LinAlg::MatrixType!");
-      break;
   }
 }
 
@@ -355,7 +342,6 @@ void SSI::Utils::SSIMatrices::complete_scatra_manifold_structure_matrix()
       break;
     default:
       FOUR_C_THROW("Not supported Core::LinAlg::MatrixType!");
-      break;
   }
 }
 
@@ -374,7 +360,6 @@ void SSI::Utils::SSIMatrices::complete_scatra_scatra_manifold_matrix()
       break;
     default:
       FOUR_C_THROW("Not supported Core::LinAlg::MatrixType!");
-      break;
   }
 }
 
@@ -393,7 +378,6 @@ void SSI::Utils::SSIMatrices::complete_scatra_structure_matrix()
       break;
     default:
       FOUR_C_THROW("Not supported Core::LinAlg::MatrixType!");
-      break;
   }
 }
 
@@ -412,13 +396,12 @@ void SSI::Utils::SSIMatrices::complete_structure_scatra_matrix()
       break;
     default:
       FOUR_C_THROW("Not supported Core::LinAlg::MatrixType!");
-      break;
   }
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::Utils::SSIMatrices::clear_matrices()
+void SSI::Utils::SSIMatrices::clear_matrices() const
 {
   system_matrix_->zero();
   scatra_matrix_->zero();
@@ -437,26 +420,25 @@ void SSI::Utils::SSIMatrices::clear_matrices()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-SSI::Utils::SSIVectors::SSIVectors(
-    std::shared_ptr<const SSI::Utils::SSIMaps> ssi_maps, const bool is_scatra_manifold)
-    : increment_(Core::LinAlg::create_vector(*(ssi_maps->maps_sub_problems()->full_map()), true)),
+SSI::Utils::SSIVectors::SSIVectors(const SSIMaps& ssi_maps, const bool is_scatra_manifold)
+    : increment_(create_vector(*ssi_maps.maps_sub_problems()->full_map(), true)),
       is_scatra_manifold_(is_scatra_manifold),
-      manifold_residual_(is_scatra_manifold ? Core::LinAlg::create_vector(
-                                                  *(ssi_maps->scatra_manifold_dof_row_map()), true)
-                                            : nullptr),
-      residual_(Core::LinAlg::create_vector(*(ssi_maps->maps_sub_problems()->full_map()), true)),
-      scatra_residual_(Core::LinAlg::create_vector(*(ssi_maps->scatra_dof_row_map()), true)),
-      structure_residual_(Core::LinAlg::create_vector(*(ssi_maps->structure_dof_row_map()), true))
+      manifold_residual_(is_scatra_manifold
+                             ? create_vector(*ssi_maps.scatra_manifold_dof_row_map(), true)
+                             : nullptr),
+      residual_(create_vector(*ssi_maps.maps_sub_problems()->full_map(), true)),
+      scatra_residual_(create_vector(*ssi_maps.scatra_dof_row_map(), true)),
+      structure_residual_(create_vector(*ssi_maps.structure_dof_row_map(), true))
 {
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::Utils::SSIVectors::clear_increment() { increment_->put_scalar(0.0); }
+void SSI::Utils::SSIVectors::clear_increment() const { increment_->put_scalar(0.0); }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::Utils::SSIVectors::clear_residuals()
+void SSI::Utils::SSIVectors::clear_residuals() const
 {
   residual_->put_scalar(0.0);
   scatra_residual_->put_scalar(0.0);
@@ -467,7 +449,7 @@ void SSI::Utils::SSIVectors::clear_residuals()
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 void SSI::Utils::SSIMatrices::initialize_system_matrix(
-    const SSI::Utils::SSIMaps& ssi_maps, const Core::LinAlg::MatrixType ssi_matrixtype)
+    const SSIMaps& ssi_maps, const Core::LinAlg::MatrixType ssi_matrixtype)
 {
   switch (ssi_matrixtype)
   {
@@ -487,7 +469,6 @@ void SSI::Utils::SSIMatrices::initialize_system_matrix(
     default:
     {
       FOUR_C_THROW("Type of global system matrix for scalar-structure interaction not recognized!");
-      break;
     }
   }
 }
@@ -497,9 +478,9 @@ void SSI::Utils::SSIMatrices::initialize_system_matrix(
 std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> SSI::Utils::SSIMatrices::setup_block_matrix(
     const Core::LinAlg::MultiMapExtractor& row_map, const Core::LinAlg::MultiMapExtractor& col_map)
 {
-  const int expected_entries_per_row = 81;
-  const bool explicitdirichlet = false;
-  const bool savegraph = true;
+  constexpr int expected_entries_per_row = 81;
+  constexpr bool explicitdirichlet = false;
+  constexpr bool savegraph = true;
 
   return std::make_shared<
       Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>>(
@@ -511,9 +492,9 @@ std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> SSI::Utils::SSIMatrices::se
 std::shared_ptr<Core::LinAlg::SparseMatrix> SSI::Utils::SSIMatrices::setup_sparse_matrix(
     const Core::LinAlg::Map& row_map)
 {
-  const int expected_entries_per_row = 27;
-  const bool explicitdirichlet = false;
-  const bool savegraph = true;
+  constexpr int expected_entries_per_row = 27;
+  constexpr bool explicitdirichlet = false;
+  constexpr bool savegraph = true;
 
   return std::make_shared<Core::LinAlg::SparseMatrix>(
       row_map, expected_entries_per_row, explicitdirichlet, savegraph);
@@ -521,9 +502,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> SSI::Utils::SSIMatrices::setup_spars
 
 /* ----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
-    : block_maps_sub_problems_(),
-      scatra_matrixtype_(ssi_mono_algorithm.scatra_field()->matrix_type()),
+SSI::Utils::SSIMaps::SSIMaps(const SsiMono& ssi_mono_algorithm)
+    : scatra_matrixtype_(ssi_mono_algorithm.scatra_field()->matrix_type()),
       scatra_manifold_matrixtype_(ssi_mono_algorithm.is_scatra_manifold()
                                       ? ssi_mono_algorithm.scatra_manifold()->matrix_type()
                                       : Core::LinAlg::MatrixType::undefined),
@@ -541,11 +521,13 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
   {
     partial_maps[get_problem_position(Subproblem::manifold)] =
         std::make_shared<Core::LinAlg::Map>(*ssi_mono_algorithm.scatra_manifold()->dof_row_map());
-    auto temp_map = Core::LinAlg::merge_map(partial_maps[0], partial_maps[1], false);
-    merged_map = Core::LinAlg::merge_map(temp_map, partial_maps[2], false);
+    auto temp_map = merge_map(partial_maps[0], partial_maps[1], false);
+    merged_map = merge_map(temp_map, partial_maps[2], false);
   }
   else
-    merged_map = Core::LinAlg::merge_map(partial_maps[0], partial_maps[1], false);
+  {
+    merged_map = merge_map(partial_maps[0], partial_maps[1], false);
+  }
 
   maps_sub_problems_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(*merged_map, partial_maps);
   // check global map extractor
@@ -557,8 +539,7 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
     {
       auto block_map_structure = std::make_shared<Core::LinAlg::MultiMapExtractor>(
           *ssi_mono_algorithm.structure_field()->discretization()->dof_row_map(),
-          std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
-              1, ssi_mono_algorithm.structure_field()->dof_row_map()));
+          std::vector(1, ssi_mono_algorithm.structure_field()->dof_row_map()));
 
       block_map_structure->check_for_valid_map_extractor();
 
@@ -570,8 +551,7 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
         {
           auto block_map_scatra = std::make_shared<Core::LinAlg::MultiMapExtractor>(
               *ssi_mono_algorithm.scatra_field()->discretization()->dof_row_map(),
-              std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
-                  1, ssi_mono_algorithm.scatra_field()->dof_row_map()));
+              std::vector(1, ssi_mono_algorithm.scatra_field()->dof_row_map()));
 
           block_map_scatra->check_for_valid_map_extractor();
 
@@ -582,8 +562,7 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
           {
             auto block_map_scatra_manifold = std::make_shared<Core::LinAlg::MultiMapExtractor>(
                 *ssi_mono_algorithm.scatra_manifold()->discretization()->dof_row_map(),
-                std::vector<std::shared_ptr<const Core::LinAlg::Map>>(
-                    1, ssi_mono_algorithm.scatra_manifold()->dof_row_map()));
+                std::vector(1, ssi_mono_algorithm.scatra_manifold()->dof_row_map()));
 
             block_map_scatra_manifold->check_for_valid_map_extractor();
 
@@ -613,7 +592,6 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
         default:
         {
           FOUR_C_THROW("Invalid matrix type associated with scalar transport field!");
-          break;
         }
       }
 
@@ -633,7 +611,6 @@ SSI::Utils::SSIMaps::SSIMaps(const SSI::SsiMono& ssi_mono_algorithm)
     default:
     {
       FOUR_C_THROW("Type of global system matrix for scalar-structure interaction not recognized!");
-      break;
     }
   }
 
@@ -685,7 +662,6 @@ std::vector<int> SSI::Utils::SSIMaps::get_block_positions(Subproblem subproblem)
     default:
     {
       FOUR_C_THROW("Unknown type of subproblem");
-      break;
     }
   }
 
@@ -696,39 +672,31 @@ std::vector<int> SSI::Utils::SSIMaps::get_block_positions(Subproblem subproblem)
  *--------------------------------------------------------------------------------------*/
 int SSI::Utils::SSIMaps::get_problem_position(Subproblem subproblem)
 {
-  int position = -1;
-
   switch (subproblem)
   {
-    case Subproblem::structure:
-    {
-      position = 1;
-      break;
-    }
     case Subproblem::scalar_transport:
     {
-      position = 0;
-      break;
+      return 0;
+    }
+    case Subproblem::structure:
+    {
+      return 1;
     }
     case Subproblem::manifold:
     {
-      position = 2;
-      break;
+      return 2;
     }
     default:
     {
       FOUR_C_THROW("Unknown type of sub problem");
-      break;
     }
   }
-
-  return position;
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 void SSI::Utils::SSIMaps::create_and_check_block_maps_sub_problems(
-    const SSI::SsiMono& ssi_mono_algorithm)
+    const SsiMono& ssi_mono_algorithm)
 {
   const int num_blocks_systemmatrix =
       block_map_scatra()->num_maps() + block_map_structure()->num_maps() +
@@ -790,34 +758,34 @@ std::shared_ptr<const Core::LinAlg::MultiMapExtractor> SSI::Utils::SSIMaps::bloc
  *---------------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::scatra_dof_row_map() const
 {
-  return maps_sub_problems()->Map(SSIMaps::get_problem_position(Subproblem::scalar_transport));
+  return maps_sub_problems()->Map(get_problem_position(Subproblem::scalar_transport));
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::scatra_manifold_dof_row_map() const
 {
-  return maps_sub_problems()->Map(SSIMaps::get_problem_position(Subproblem::manifold));
+  return maps_sub_problems()->Map(get_problem_position(Subproblem::manifold));
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::structure_dof_row_map() const
 {
-  return maps_sub_problems()->Map(SSIMaps::get_problem_position(Subproblem::structure));
+  return maps_sub_problems()->Map(get_problem_position(Subproblem::structure));
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 void SSI::Utils::check_consistency_of_ssi_interface_contact_condition(
     const std::vector<Core::Conditions::Condition*>& conditionsToBeTested,
-    std::shared_ptr<Core::FE::Discretization>& structdis)
+    const Core::FE::Discretization& structdis)
 {
   // get conditions to check against
   std::vector<Core::Conditions::Condition*> s2ikinetics_conditions;
-  structdis->get_condition("S2IKinetics", s2ikinetics_conditions);
+  structdis.get_condition("S2IKinetics", s2ikinetics_conditions);
   std::vector<Core::Conditions::Condition*> contactconditions;
-  structdis->get_condition("Contact", contactconditions);
+  structdis.get_condition("Contact", contactconditions);
 
   // loop over all ssi conditions and check them
   for (const auto* conditionToBeTested : conditionsToBeTested)
@@ -834,8 +802,7 @@ void SSI::Utils::check_consistency_of_ssi_interface_contact_condition(
       FOUR_C_THROW(
           "For the 'SSIInterfaceContact' condition we have to demand, that the 'S2ICouplingID' and "
           "the 'CONTACT_CONDITION_ID' have the same value as the contact strategy factory relies "
-          "on "
-          "this to set the scatra interface parameters correctly.");
+          "on this to set the scatra interface parameters correctly.");
     }
 
     // loop over all scatra-scatra interface conditions and add them to the vector, if IDs match
@@ -865,9 +832,8 @@ void SSI::Utils::check_consistency_of_ssi_interface_contact_condition(
     // now get the nodes
     std::vector<int> InterfaceS2INodes;
     std::vector<int> InterfaceContactNodes;
-    Core::Conditions::find_conditioned_nodes(*structdis, InterfaceS2IConditions, InterfaceS2INodes);
-    Core::Conditions::find_conditioned_nodes(
-        *structdis, InterfaceContactConditions, InterfaceContactNodes);
+    find_conditioned_nodes(structdis, InterfaceS2IConditions, InterfaceS2INodes);
+    find_conditioned_nodes(structdis, InterfaceContactConditions, InterfaceContactNodes);
 
     // and compare whether same nodes are defined
     for (const auto InterfaceS2INode : InterfaceS2INodes)
@@ -899,13 +865,12 @@ void SSI::Utils::check_consistency_of_ssi_interface_contact_condition(
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 SSI::Utils::SSIMeshTying::SSIMeshTying(const std::string& conditionname_coupling,
-    std::shared_ptr<Core::FE::Discretization> dis, const bool build_slave_slave_transformation,
+    const Core::FE::Discretization& dis, const bool build_slave_slave_transformation,
     const bool check_over_constrained)
-    : comm_(dis->get_comm()),
-      do_print_(Core::Communication::my_mpi_rank(dis->get_comm()) == 0),
-      meshtying_handlers_(),
-      my_rank_(Core::Communication::my_mpi_rank(dis->get_comm())),
-      num_proc_(Core::Communication::num_mpi_ranks(dis->get_comm()))
+    : comm_(dis.get_comm()),
+      do_print_(Core::Communication::my_mpi_rank(dis.get_comm()) == 0),
+      my_rank_(Core::Communication::my_mpi_rank(dis.get_comm())),
+      num_proc_(Core::Communication::num_mpi_ranks(dis.get_comm()))
 {
   setup_mesh_tying_handlers(
       dis, conditionname_coupling, build_slave_slave_transformation, check_over_constrained);
@@ -921,36 +886,36 @@ SSI::Utils::SSIMeshTying::SSIMeshTying(const std::string& conditionname_coupling
 
   full_master_side_map_ = Core::LinAlg::MultiMapExtractor::merge_maps(master_maps);
   full_slave_side_map_ = Core::LinAlg::MultiMapExtractor::merge_maps(slave_maps);
-  auto interface_map = Core::LinAlg::merge_map(full_master_side_map_, full_slave_side_map_);
+  auto interface_map = merge_map(full_master_side_map_, full_slave_side_map_);
 
-  interior_map_ = Core::LinAlg::split_map(*dis->dof_row_map(), *interface_map);
+  interior_map_ = split_map(*dis.dof_row_map(), *interface_map);
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
-    std::shared_ptr<Core::FE::Discretization> dis, const std::string& name_meshtying_condition,
-    const bool build_slave_slave_transformation, const bool check_over_constrained)
+void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(const Core::FE::Discretization& dis,
+    const std::string& name_meshtying_condition, const bool build_slave_slave_transformation,
+    const bool check_over_constrained)
 {
   Teuchos::Time timer("MeshtypingHandlers", true);
   const double t0 = timer.wallTime();
 
   if (do_print_)
   {
-    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
-    std::cout << "| Starting to setup mesh tying   |" << std::endl;
+    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << '\n';
+    std::cout << "| Starting to setup mesh tying   |" << '\n';
   }
 
   // find pairwise matching nodes
   std::vector<std::pair<int, int>> coupling_pairs;
-  find_matching_node_pairs(*dis, name_meshtying_condition, coupling_pairs);
+  find_matching_node_pairs(dis, name_meshtying_condition, coupling_pairs);
 
   // all nodes on one geometrical point: outer vector defines geometric position, and inner vector
   // all nodes there
   std::vector<std::vector<int>> grouped_matching_nodes;
   group_matching_nodes(coupling_pairs, grouped_matching_nodes);
 
-  if (do_print_) std::cout << "| Finished: group nodes          |" << std::endl;
+  if (do_print_) std::cout << "| Finished: group nodes          |" << '\n';
 
   // define master gids and pair them with the remaining (slave) nodes
   std::vector<int> master_gids;
@@ -958,7 +923,7 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
   define_master_slave_pairing(
       dis, grouped_matching_nodes, master_gids, slave_master_pair, check_over_constrained);
 
-  if (do_print_) std::cout << "| Finished: master-slave pairing |" << std::endl;
+  if (do_print_) std::cout << "| Finished: master-slave pairing |" << '\n';
 
   // get number of slave nodes per master node -> max. number gives number of needed adapters
   std::map<int, int> num_assigned_slave_to_master_nodes;
@@ -971,8 +936,8 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
   // - map extractor
   // - slave_slave_transformation
   std::map<int, int> created_adapters;  // numbers of created coupling adapters per master node
-  for (const auto& item : num_assigned_slave_to_master_nodes)
-    created_adapters.insert(std::make_pair(item.first, 0));
+  for (const auto& key : num_assigned_slave_to_master_nodes | std::views::keys)
+    created_adapters.insert(std::make_pair(key, 0));
 
   for (int iadapter = 0; iadapter < glob_max_adapters; ++iadapter)
   {
@@ -990,8 +955,8 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
             num_created_adapters == iadapter)
         {
           const int slave_gid = pair.first;
-          Core::Communication::add_owned_node_gid(*dis, master_gid, inodegidvec_master);
-          Core::Communication::add_owned_node_gid(*dis, slave_gid, inodegidvec_slave);
+          Core::Communication::add_owned_node_gid(dis, master_gid, inodegidvec_master);
+          Core::Communication::add_owned_node_gid(dis, slave_gid, inodegidvec_slave);
 
           pair.second = -1;  // do not consider this pair in next iteration
           created_adapters[master_gid] = num_created_adapters + 1;
@@ -1002,16 +967,15 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
     // setup coupling adapter
     auto coupling_adapter = std::make_shared<Coupling::Adapter::Coupling>();
     const int num_dofs =
-        static_cast<int>(static_cast<double>(dis->dof_row_map()->NumGlobalElements()) /
-                         static_cast<double>(dis->node_row_map()->NumGlobalElements()));
+        static_cast<int>(static_cast<double>(dis.dof_row_map()->NumGlobalElements()) /
+                         static_cast<double>(dis.node_row_map()->NumGlobalElements()));
     coupling_adapter->setup_coupling(
-        *dis, *dis, inodegidvec_master, inodegidvec_slave, num_dofs, true, 1.0e-8);
+        dis, dis, inodegidvec_master, inodegidvec_slave, num_dofs, true, 1.0e-8);
 
     // setup multimap extractor for each coupling adapter
     auto slave_map = coupling_adapter->slave_dof_map();
     auto master_map = coupling_adapter->master_dof_map();
-    auto interior_map = Core::LinAlg::split_map(
-        *dis->dof_row_map(), *Core::LinAlg::merge_map(slave_map, master_map));
+    auto interior_map = split_map(*dis.dof_row_map(), *merge_map(slave_map, master_map));
 
     std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(0, nullptr);
     maps.emplace_back(interior_map);
@@ -1019,7 +983,7 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
     maps.emplace_back(master_map);
 
     auto coupling_map_extractor =
-        std::make_shared<Core::LinAlg::MultiMapExtractor>(*dis->dof_row_map(), maps);
+        std::make_shared<Core::LinAlg::MultiMapExtractor>(*dis.dof_row_map(), maps);
     coupling_map_extractor->check_for_valid_map_extractor();
 
     auto slave_slave_transformation = std::make_shared<Coupling::Adapter::Coupling>();
@@ -1029,13 +993,13 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
       // (slave). Needed, to map the lineariaztion dphi/du at the interface to the correct dofs
       std::vector<int> all_coupled_original_slave_gids;
       find_slave_slave_transformation_nodes(
-          *dis, name_meshtying_condition, inodegidvec_slave, all_coupled_original_slave_gids);
+          dis, name_meshtying_condition, inodegidvec_slave, all_coupled_original_slave_gids);
 
       std::vector<int> my_coupled_original_slave_gids;
       for (const int& slave_gid : all_coupled_original_slave_gids)
-        Core::Communication::add_owned_node_gid(*dis, slave_gid, my_coupled_original_slave_gids);
+        Core::Communication::add_owned_node_gid(dis, slave_gid, my_coupled_original_slave_gids);
 
-      slave_slave_transformation->setup_coupling(*dis, *dis, inodegidvec_slave,
+      slave_slave_transformation->setup_coupling(dis, dis, inodegidvec_slave,
           my_coupled_original_slave_gids, Global::Problem::instance()->n_dim(), true, 1.0e-8);
     }
 
@@ -1047,11 +1011,11 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(
   const double total_time = timer.wallTime() - t0;
   if (do_print_)
   {
-    std::cout << "|--------------------------------|" << std::endl;
-    std::cout << "|  Mesh tying setup successful   |" << std::endl;
+    std::cout << "|--------------------------------|" << '\n';
+    std::cout << "|  Mesh tying setup successful   |" << '\n';
     std::cout << std::scientific << std::setprecision(3);
-    std::cout << "|        (" << total_time << " sec.)        |" << std::endl;
-    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl << std::endl;
+    std::cout << "|        (" << total_time << " sec.)        |" << '\n';
+    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << '\n' << '\n';
   }
 }
 
@@ -1090,7 +1054,7 @@ int SSI::Utils::SSIMeshTying::has_gid_partial(const int gid, const int start, co
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-void SSI::Utils::SSIMeshTying::find_matching_node_pairs(Core::FE::Discretization& dis,
+void SSI::Utils::SSIMeshTying::find_matching_node_pairs(const Core::FE::Discretization& dis,
     const std::string& name_meshtying_condition,
     std::vector<std::pair<int, int>>& coupling_pairs) const
 {
@@ -1139,7 +1103,7 @@ void SSI::Utils::SSIMeshTying::find_matching_node_pairs(Core::FE::Discretization
           const int gid1 = pair.first;
           const int gid2 = pair.second.first;
 
-          my_coupling_pairs.emplace_back(std::make_pair(gid1, gid2));
+          my_coupling_pairs.emplace_back(gid1, gid2);
         }
       }
     }
@@ -1161,11 +1125,8 @@ void SSI::Utils::SSIMeshTying::group_matching_nodes(
 {
   // all nodes on one geometrical point: outer vector defines geometric position, and inner vector
   // all nodes there
-  for (const auto& pair : coupling_pairs)
+  for (const auto& [gid1, gid2] : coupling_pairs)
   {
-    const int gid1 = pair.first;
-    const int gid2 = pair.second;
-
     std::vector<int> nodes_at_same_point;
 
     // initial fill of grouped_matching_nodes
@@ -1216,7 +1177,9 @@ void SSI::Utils::SSIMeshTying::group_matching_nodes(
         grouped_matching_nodes.erase(std::next(grouped_matching_nodes.begin(), index1));
       }
       else
+      {
         FOUR_C_THROW("This should not be the case");
+      }
     }
   }
 }
@@ -1227,9 +1190,9 @@ void SSI::Utils::SSIMeshTying::get_num_assigned_slave_to_master_nodes(
     const std::map<int, int>& slave_master_pair,
     std::map<int, int>& num_assigned_slave_to_master_nodes, int& max_assigned_slave_nodes) const
 {
-  for (const auto& pair : slave_master_pair)
+  for (const auto& val : slave_master_pair | std::views::values)
   {
-    const int master_node_gid = pair.second;
+    const int master_node_gid = val;
 
     // initial fill
     if (num_assigned_slave_to_master_nodes.empty())
@@ -1240,8 +1203,7 @@ void SSI::Utils::SSIMeshTying::get_num_assigned_slave_to_master_nodes(
     else
     {
       // master node not in map so far -> create entry
-      if (num_assigned_slave_to_master_nodes.find(master_node_gid) !=
-          num_assigned_slave_to_master_nodes.end())
+      if (num_assigned_slave_to_master_nodes.contains(master_node_gid))
       {
         num_assigned_slave_to_master_nodes[master_node_gid]++;
         if (max_assigned_slave_nodes < num_assigned_slave_to_master_nodes[master_node_gid])
@@ -1249,21 +1211,22 @@ void SSI::Utils::SSIMeshTying::get_num_assigned_slave_to_master_nodes(
       }
       // master node already in map-> increase counter by one
       else
+      {
         num_assigned_slave_to_master_nodes.insert(std::make_pair(master_node_gid, 1));
+      }
     }
   }
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-void SSI::Utils::SSIMeshTying::define_master_slave_pairing(
-    std::shared_ptr<Core::FE::Discretization> dis,
+void SSI::Utils::SSIMeshTying::define_master_slave_pairing(const Core::FE::Discretization& dis,
     const std::vector<std::vector<int>>& grouped_matching_nodes, std::vector<int>& master_gids,
     std::map<int, int>& slave_master_pair, const bool check_over_constrained) const
 {
   // get Dirichlet nodes -> they define the master side
   std::vector<Core::Conditions::Condition*> dbc_conds;
-  dis->get_condition("Dirichlet", dbc_conds);
+  dis.get_condition("Dirichlet", dbc_conds);
   std::set<int> dbc_nodes;
   for (auto* dbc_cond : dbc_conds)
     for (const int& dbc_node : *dbc_cond->get_nodes()) dbc_nodes.insert(dbc_node);
@@ -1330,8 +1293,9 @@ void SSI::Utils::SSIMeshTying::define_master_slave_pairing(
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
-void SSI::Utils::SSIMeshTying::find_slave_slave_transformation_nodes(Core::FE::Discretization& dis,
-    const std::string& name_meshtying_condition, const std::vector<int>& inodegidvec_slave,
+void SSI::Utils::SSIMeshTying::find_slave_slave_transformation_nodes(
+    const Core::FE::Discretization& dis, const std::string& name_meshtying_condition,
+    const std::vector<int>& inodegidvec_slave,
     std::vector<int>& all_coupled_original_slave_gids) const
 {
   // store nodes that are slave nodes from the input
@@ -1357,10 +1321,8 @@ void SSI::Utils::SSIMeshTying::find_slave_slave_transformation_nodes(Core::FE::D
 
   // find matches if distance < 1.0e-16
   std::vector<int> my_coupled_original_slave_gids;
-  for (const auto& pair : coupled_gid_nodes)
+  for (const auto& [gid, distance] : coupled_gid_nodes | std::views::values)
   {
-    const double distance = pair.second.second;
-    const int gid = pair.second.first;
     if (distance < 1.0e-16) my_coupled_original_slave_gids.emplace_back(gid);
   }
 
@@ -1376,7 +1338,7 @@ void SSI::Utils::SSIMeshTying::check_slave_side_has_dirichlet_conditions(
 {
   // check if slave side dofs are part of DBC maps
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2, nullptr);
-  maps[0] = struct_dbc_map;
+  maps[0] = std::move(struct_dbc_map);
   for (const auto& meshtying : meshtying_handlers_)
   {
     maps[1] = meshtying->slave_master_coupling()->slave_dof_map();

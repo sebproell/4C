@@ -15,8 +15,6 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
-#include <set>
-
 FOUR_C_NAMESPACE_OPEN
 
 namespace Coupling::Adapter
@@ -59,18 +57,18 @@ namespace SSI
     //! check for a consistent input file definition of the SSIInterfaceContact condition
     void check_consistency_of_ssi_interface_contact_condition(
         const std::vector<Core::Conditions::Condition*>& conditionsToBeTested,
-        std::shared_ptr<Core::FE::Discretization>& structdis);
+        const Core::FE::Discretization& structdis);
 
     /// Function for checking that the different time steps are a
     /// multiplicative of each other
     int check_time_stepping(double dt1, double dt2);
 
     //! clone scatra specific parameters for solver of manifold. Add manifold specific parameters
-    Teuchos::ParameterList clone_sca_tra_manifold_params(const Teuchos::ParameterList& scatraparams,
+    Teuchos::ParameterList clone_scatra_manifold_params(const Teuchos::ParameterList& scatraparams,
         const Teuchos::ParameterList& sublist_manifold_params);
 
     //! modify scatra parameters for ssi specific values
-    Teuchos::ParameterList modify_sca_tra_params(const Teuchos::ParameterList& scatraparams);
+    Teuchos::ParameterList modify_scatra_params(const Teuchos::ParameterList& scatraparams);
 
 
     /*---------------------------------------------------------------------------------*
@@ -82,14 +80,13 @@ namespace SSI
       /*!
        * @brief constructor
        *
-       * @param[in] ssi_maps            pointer to the ssi maps object containing all relevant maps
+       * @param[in] ssi_maps            ssi maps object containing all relevant maps
        * @param[in] ssi_matrixtype      the ssi matrix type
        * @param[in] scatra_matrixtype   the scalar transport matrix type
        * @param[in] is_scatra_manifold  flag indicating if a scatra manifold is used
        */
-      SSIMatrices(std::shared_ptr<const SSI::Utils::SSIMaps> ssi_maps,
-          Core::LinAlg::MatrixType ssi_matrixtype, Core::LinAlg::MatrixType scatra_matrixtype,
-          bool is_scatra_manifold);
+      SSIMatrices(const SSIMaps& ssi_maps, Core::LinAlg::MatrixType ssi_matrixtype,
+          Core::LinAlg::MatrixType scatra_matrixtype, bool is_scatra_manifold);
 
       void complete_scatra_manifold_scatra_matrix();
 
@@ -105,33 +102,48 @@ namespace SSI
       void complete_structure_scatra_matrix();
 
       //! method that clears all ssi matrices
-      void clear_matrices();
+      void clear_matrices() const;
 
       //! return the system matrix
-      std::shared_ptr<Core::LinAlg::SparseOperator> system_matrix() { return system_matrix_; }
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> system_matrix() const
+      {
+        return system_matrix_;
+      }
 
       //! return sub blocks of system matrix
       //@{
-      std::shared_ptr<Core::LinAlg::SparseOperator> scatra_matrix() { return scatra_matrix_; }
-      std::shared_ptr<Core::LinAlg::SparseOperator> scatra_manifold_structure_matrix()
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> scatra_matrix() const
+      {
+        return scatra_matrix_;
+      }
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> scatra_manifold_structure_matrix()
+          const
       {
         return scatramanifold_structure_matrix_;
       }
-      std::shared_ptr<Core::LinAlg::SparseOperator> scatra_structure_matrix()
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> scatra_structure_matrix() const
       {
         return scatra_structure_matrix_;
       }
-      std::shared_ptr<Core::LinAlg::SparseOperator> structure_scatra_matrix()
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> structure_scatra_matrix() const
       {
         return structure_scatra_matrix_;
       }
-      std::shared_ptr<Core::LinAlg::SparseMatrix> structure_matrix() { return structure_matrix_; }
-      std::shared_ptr<Core::LinAlg::SparseOperator> manifold_matrix() { return manifold_matrix_; }
-      std::shared_ptr<Core::LinAlg::SparseOperator> scatra_scatra_manifold_matrix()
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseMatrix> structure_matrix() const
+      {
+        return structure_matrix_;
+      }
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> manifold_matrix() const
+      {
+        return manifold_matrix_;
+      }
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> scatra_scatra_manifold_matrix()
+          const
       {
         return scatra_scatramanifold_matrix_;
       }
-      std::shared_ptr<Core::LinAlg::SparseOperator> scatra_manifold_scatra_matrix()
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> scatra_manifold_scatra_matrix()
+          const
       {
         return scatramanifold_scatra_matrix_;
       }
@@ -163,14 +175,14 @@ namespace SSI
        *
        * @param[in] ssi_maps            pointer to the ssi maps object containing all relevant maps
        */
-      void initialize_main_diag_matrices(const SSI::Utils::SSIMaps& ssi_maps);
+      void initialize_main_diag_matrices(const SSIMaps& ssi_maps);
 
       /*!
        * @brief initialize the scatra-structure interaction off-diagonal matrices
        *
        * @param[in] ssi_maps            pointer to the ssi maps object containing all relevant maps
        */
-      void initialize_off_diag_matrices(const SSI::Utils::SSIMaps& ssi_maps);
+      void initialize_off_diag_matrices(const SSIMaps& ssi_maps);
 
       /*!
        * @brief initialize the system matrix
@@ -179,7 +191,7 @@ namespace SSI
        * @param[in] ssi_matrixtype   the ssi matrix type
        */
       void initialize_system_matrix(
-          const SSI::Utils::SSIMaps& ssi_maps, Core::LinAlg::MatrixType ssi_matrixtype);
+          const SSIMaps& ssi_maps, Core::LinAlg::MatrixType ssi_matrixtype);
 
       //! flag indicating if we have a scatra manifold
       const bool is_scatra_manifold_;
@@ -220,34 +232,42 @@ namespace SSI
       /*!
        * @brief constructor
        *
-       * @param[in] ssi_maps  pointer to the ssi maps object containing all relevant maps
+       * @param[in] ssi_maps            ssi maps object containing all relevant maps
        * @param[in] is_scatra_manifold  flag indicating if a scatra manifold is used
        */
-      explicit SSIVectors(
-          std::shared_ptr<const SSI::Utils::SSIMaps> ssi_maps, bool is_scatra_manifold);
+      explicit SSIVectors(const SSIMaps& ssi_maps, bool is_scatra_manifold);
 
       //! clear the increment vector
-      void clear_increment();
+      void clear_increment() const;
 
       //! clear all residual vectors
-      void clear_residuals();
+      void clear_residuals() const;
 
       //! global increment vector for Newton-Raphson iteration
-      std::shared_ptr<Core::LinAlg::Vector<double>> increment() { return increment_; }
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> increment() const
+      {
+        return increment_;
+      }
 
       //! residual vector on right-hand side of global system of equations
-      std::shared_ptr<Core::LinAlg::Vector<double>> residual() { return residual_; }
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> residual() const
+      {
+        return residual_;
+      }
 
       //! residual vector on right-hand side of scalar transport system
-      std::shared_ptr<Core::LinAlg::Vector<double>> scatra_residual() { return scatra_residual_; }
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> scatra_residual() const
+      {
+        return scatra_residual_;
+      }
 
       //! residual vector on right-hand side of structure system
-      std::shared_ptr<Core::LinAlg::Vector<double>> structure_residual()
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> structure_residual() const
       {
         return structure_residual_;
       }
 
-      std::shared_ptr<Core::LinAlg::Vector<double>> manifold_residual()
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> manifold_residual() const
       {
         return manifold_residual_;
       }
@@ -278,31 +298,34 @@ namespace SSI
     {
      public:
       //! constructor
-      explicit SSIMaps(const SSI::SsiMono& ssi_mono_algorithm);
+      explicit SSIMaps(const SsiMono& ssi_mono_algorithm);
 
       //! get vector containing positions within system matrix for specific subproblem
-      std::vector<int> get_block_positions(Subproblem subproblem) const;
+      [[nodiscard]] std::vector<int> get_block_positions(Subproblem subproblem) const;
 
       //! get position within global dof map for specific sub problem
       static int get_problem_position(Subproblem subproblem);
 
       //! the multi map extractor of the scalar transport field
-      std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_scatra() const;
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_scatra() const;
 
       //! the multi map extractor of the scalar transport on manifold field
-      std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_scatra_manifold() const;
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor>
+      block_map_scatra_manifold() const;
 
       //! the multi map extractor of the structure field
-      std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure() const;
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure()
+          const;
 
       //! map extractor associated with blocks of global system matrix
-      std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_system_matrix() const
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_system_matrix()
+          const
       {
         return block_map_system_matrix_;
       }
 
       //! all dofs of the SSI algorithm
-      std::shared_ptr<const Core::LinAlg::Map> map_system_matrix() const
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> map_system_matrix() const
       {
         return map_system_matrix_;
       }
@@ -311,19 +334,19 @@ namespace SSI
        * @brief global map extractor
        * @note only access with GetProblemPosition method
        */
-      std::shared_ptr<const Core::LinAlg::MultiMapExtractor> maps_sub_problems() const
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> maps_sub_problems() const
       {
         return maps_sub_problems_;
       }
 
       //! the scalar transport dof row map
-      std::shared_ptr<const Core::LinAlg::Map> scatra_dof_row_map() const;
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> scatra_dof_row_map() const;
 
       //! the scalar transport on manifolds dof row map
-      std::shared_ptr<const Core::LinAlg::Map> scatra_manifold_dof_row_map() const;
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> scatra_manifold_dof_row_map() const;
 
       //! the structure dof row map
-      std::shared_ptr<const Core::LinAlg::Map> structure_dof_row_map() const;
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> structure_dof_row_map() const;
 
      private:
       //! create and check the block maps of all sub problems
@@ -364,25 +387,26 @@ namespace SSI
           std::shared_ptr<Coupling::Adapter::Coupling> slave_slave_transformation);
 
       //! coupling adapter between master and slave coupling
-      std::shared_ptr<Coupling::Adapter::Coupling> slave_master_coupling() const
+      [[nodiscard]] std::shared_ptr<Coupling::Adapter::Coupling> slave_master_coupling() const
       {
         return slave_master_coupling_;
       }
 
       //! map extractor for coupling adapter: 0: interior, 1: slave, 2: master
-      std::shared_ptr<Core::LinAlg::MultiMapExtractor> slave_master_extractor() const
+      [[nodiscard]] std::shared_ptr<Core::LinAlg::MultiMapExtractor> slave_master_extractor() const
       {
         return slave_master_extractor_;
       }
 
       //! converter to convert slave dofs to master side
-      std::shared_ptr<Coupling::Adapter::CouplingSlaveConverter> slave_side_converter() const
+      [[nodiscard]] std::shared_ptr<Coupling::Adapter::CouplingSlaveConverter>
+      slave_side_converter() const
       {
         return slave_side_converter_;
       }
 
       //! coupling adapter between new slave nodes and slave nodes from input file
-      std::shared_ptr<Coupling::Adapter::Coupling> slave_slave_transformation() const
+      [[nodiscard]] std::shared_ptr<Coupling::Adapter::Coupling> slave_slave_transformation() const
       {
         return slave_slave_transformation_;
       }
@@ -405,7 +429,7 @@ namespace SSI
     {
      public:
       explicit SSIMeshTying(const std::string& conditionname_coupling,
-          std::shared_ptr<Core::FE::Discretization> dis, bool build_slave_slave_transformation,
+          const Core::FE::Discretization& dis, bool build_slave_slave_transformation,
           bool check_over_constrained);
 
       //! check if one dof has slave side conditions and Dirichlet conditions
@@ -413,22 +437,25 @@ namespace SSI
           std::shared_ptr<const Core::LinAlg::Map> struct_dbc_map) const;
 
       //! all master side dofs
-      std::shared_ptr<const Core::LinAlg::Map> full_master_side_map() const
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> full_master_side_map() const
       {
         return full_master_side_map_;
       }
 
       //! all slave side dofs
-      std::shared_ptr<const Core::LinAlg::Map> full_slave_side_map() const
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> full_slave_side_map() const
       {
         return full_slave_side_map_;
       }
 
       //! all interior dofs
-      std::shared_ptr<const Core::LinAlg::Map> interior_map() const { return interior_map_; }
+      [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> interior_map() const
+      {
+        return interior_map_;
+      }
 
       //! vector of all mesh tying handlers
-      std::vector<std::shared_ptr<SSIMeshTyingHandler>> mesh_tying_handlers() const
+      [[nodiscard]] std::vector<std::shared_ptr<SSIMeshTyingHandler>> mesh_tying_handlers() const
       {
         return meshtying_handlers_;
       }
@@ -442,7 +469,7 @@ namespace SSI
       //!                                 (value)
       //! \param check_over_constrained   [in] check if two DBCs are set on two dofs at the same
       //! position
-      void define_master_slave_pairing(std::shared_ptr<Core::FE::Discretization> dis,
+      void define_master_slave_pairing(const Core::FE::Discretization& dis,
           const std::vector<std::vector<int>>& grouped_matching_nodes,
           std::vector<int>& master_gids, std::map<int, int>& slave_master_pair,
           bool check_over_constrained) const;
@@ -451,7 +478,7 @@ namespace SSI
       //! \param dis                 [in] discretization
       //! \param name_meshtying_condition   [in] name of meshtying condition
       //! \param coupling_pairs         [out] vector of pairs of matching nodes
-      void find_matching_node_pairs(Core::FE::Discretization& dis,
+      void find_matching_node_pairs(const Core::FE::Discretization& dis,
           const std::string& name_meshtying_condition,
           std::vector<std::pair<int, int>>& coupling_pairs) const;
 
@@ -460,7 +487,7 @@ namespace SSI
       //! \param name_meshtying_condition          [in] name of meshtying condition
       //! \param inodegidvec_slave                 [in] new slave nodes on this proc
       //! \param all_coupled_original_slave_gids   [out] old slave nodes that match new slave nodes
-      void find_slave_slave_transformation_nodes(Core::FE::Discretization& dis,
+      void find_slave_slave_transformation_nodes(const Core::FE::Discretization& dis,
           const std::string& name_meshtying_condition, const std::vector<int>& inodegidvec_slave,
           std::vector<int>& all_coupled_original_slave_gids) const;
 
@@ -486,7 +513,7 @@ namespace SSI
       //! \param gid             [in] gid to be checked
       //! \param matching_nodes  [in] grouped node gids
       //! \return                index in matching_nodes (outer vector) where gid is, otherwise -1
-      int has_gid(int gid, const std::vector<std::vector<int>>& matching_nodes) const;
+      [[nodiscard]] int has_gid(int gid, const std::vector<std::vector<int>>& matching_nodes) const;
 
       //! Check if subset of matching_nodes has this gid.
       //! \param gid             [in] gid to be checked
@@ -495,7 +522,7 @@ namespace SSI
       //! \param matching_nodes  [in] grouped node gids
       //! \return                index in matching_nodes (outer vector) between start and end where
       //!                        gid is, otherwise -1
-      int has_gid_partial(
+      [[nodiscard]] int has_gid_partial(
           int gid, int start, int end, const std::vector<std::vector<int>>& matching_nodes) const;
 
       //! Construct mesh tying handlers based on conditions with name conditionname_coupling
@@ -503,7 +530,7 @@ namespace SSI
       //! \param name_meshtying_condition    [in] name of meshtying condition
       //! \param build_slave_slave_transformation [in] is a map required that defines the
       //! transformation from slave nodes at the input and matched slave nodes
-      void setup_mesh_tying_handlers(std::shared_ptr<Core::FE::Discretization> dis,
+      void setup_mesh_tying_handlers(const Core::FE::Discretization& dis,
           const std::string& name_meshtying_condition, bool build_slave_slave_transformation,
           bool check_over_constrained);
 

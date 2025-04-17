@@ -8,7 +8,6 @@
 #include "4C_ssi_partitioned.hpp"
 
 #include "4C_adapter_scatra_base_algorithm.hpp"
-#include "4C_adapter_str_ssiwrapper.hpp"
 #include "4C_adapter_str_structure_new.hpp"
 #include "4C_contact_nitsche_strategy_ssi.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
@@ -77,7 +76,7 @@ void SSI::SSIPart::setup_model_evaluator()
           Core::Utils::shared_ptr_from_ref(*this));
   structure_base_algorithm()->register_model_evaluator("Partitioned Coupling Model", ssi_model_ptr);
 
-  if (is_s2_i_kinetics_with_pseudo_contact()) set_modelevaluator_base_ssi(ssi_model_ptr);
+  if (is_s2i_kinetics_with_pseudo_contact()) set_modelevaluator_base_ssi(ssi_model_ptr);
 }
 
 /*----------------------------------------------------------------------*
