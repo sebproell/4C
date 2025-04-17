@@ -186,39 +186,10 @@ Core::IO::MeshReader::MeshReader(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::IO::MeshReader::add_advanced_reader(std::shared_ptr<Core::FE::Discretization> dis,
-    Core::IO::InputFile& input, const std::string& sectionname,
-    const Core::IO::GeometryType geometrysource)
+void Core::IO::MeshReader::add_advanced_reader(
+    std::shared_ptr<Core::FE::Discretization> dis, const std::string& sectionname)
 {
-  switch (geometrysource)
-  {
-    case Core::IO::geometry_full:
-    {
-      std::string fullsectionname(sectionname + " ELEMENTS");
-      ElementReader er = ElementReader(dis, input, fullsectionname);
-      element_readers_.emplace_back(er);
-      break;
-    }
-    case Core::IO::geometry_box:
-    {
-      std::string fullsectionname(sectionname + " DOMAIN");
-      DomainReader dr = DomainReader(dis, input, fullsectionname);
-      domain_readers_.emplace_back(dr);
-      break;
-    }
-    case Core::IO::geometry_file:
-    {
-      std::string fullsectionname(sectionname + " GEOMETRY");
-      exodus_readers_.emplace_back(Internal::ExodusReader{
-          .target_discretization = *dis,
-          .section_name = fullsectionname,
-      });
-      break;
-    }
-    default:
-      FOUR_C_THROW("Unknown geometry source");
-      break;
-  }
+  target_discretizations_.emplace_back(sectionname, dis);
 }
 
 /*----------------------------------------------------------------------*/
@@ -227,6 +198,68 @@ void Core::IO::MeshReader::read_and_partition()
 {
   // We need to track the max global node ID to offset node numbering and for sanity checks
   int max_node_id = 0;
+
+  for (const auto& [section_name, dis] : target_discretizations_)
+  {
+    // Find out which section we have available for input. We can only do this on rank zero due
+    // to large legacy sections that are not available everywhere. Communicate the result to all
+    // ranks.
+    std::map<std::string, bool> available_section;
+    const int my_rank = Core::Communication::my_mpi_rank(comm_);
+    if (my_rank == 0)
+    {
+      available_section[section_name + " ELEMENTS"] =
+          input_.has_section(section_name + " ELEMENTS");
+      available_section[section_name + " DOMAIN"] = input_.has_section(section_name + " DOMAIN");
+      available_section[section_name + " GEOMETRY"] =
+          input_.has_section(section_name + " GEOMETRY");
+      Core::Communication::broadcast(available_section, 0, comm_);
+    }
+    else
+    {
+      Core::Communication::broadcast(available_section, 0, comm_);
+    }
+
+    const int num_sections_in_file =
+        std::ranges::count_if(available_section, [](const auto& pair) { return pair.second; });
+    if (num_sections_in_file > 1)
+    {
+      std::string found_sections;
+      for (const auto& [section, exists] : available_section)
+      {
+        if (exists) found_sections += "'" + section + "' ";
+      }
+      FOUR_C_THROW(
+          "Multiple options to read mesh for discretization '{}'. Only one is allowed.\n Found "
+          "sections: {}",
+          dis->name(), found_sections);
+    }
+
+    if (num_sections_in_file == 0)
+    {
+      // This used to be the default, so we use it for backwards compatibility.
+      element_readers_.emplace_back(
+          Core::IO::ElementReader(dis, input_, section_name + " ELEMENTS"));
+      continue;
+    }
+
+    if (available_section[section_name + " ELEMENTS"])
+    {
+      element_readers_.emplace_back(
+          Core::IO::ElementReader(dis, input_, section_name + " ELEMENTS"));
+    }
+    if (available_section[section_name + " DOMAIN"])
+    {
+      domain_readers_.emplace_back(Core::IO::DomainReader(dis, input_, section_name + " DOMAIN"));
+    }
+    if (available_section[section_name + " GEOMETRY"])
+    {
+      exodus_readers_.emplace_back(Internal::ExodusReader{
+          .target_discretization = *dis,
+          .section_name = section_name + " GEOMETRY",
+      });
+    }
+  }
 
   graph_.resize(element_readers_.size());
 

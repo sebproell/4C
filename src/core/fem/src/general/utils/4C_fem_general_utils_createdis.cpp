@@ -20,8 +20,10 @@ void Core::FE::DiscretizationCreatorBase::initial_checks(
     const Core::FE::Discretization& sourcedis, const Core::FE::Discretization& targetdis) const
 {
   // are the source and target discretizations ready?
-  if (!sourcedis.filled()) FOUR_C_THROW("The source discretization is not filled!");
-  if (!targetdis.filled()) FOUR_C_THROW("The target discretization is not filled!");
+  if (!sourcedis.filled())
+    FOUR_C_THROW("The source discretization '{}' is not filled!", sourcedis.name());
+  if (!targetdis.filled())
+    FOUR_C_THROW("The target discretization '{}' is not filled!", targetdis.name());
 
   // is the target discretization really empty?
   if (targetdis.num_global_elements() or targetdis.num_global_nodes())
