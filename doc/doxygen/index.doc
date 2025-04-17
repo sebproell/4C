@@ -13,11 +13,11 @@ Building on more than 20 years of research and development, 4C can model a pleth
 
 This document / web page provides source code documentation via Doxygen. It documents code constructs such as classes, functions, or class members.
 
-A high-level documentation of 4C (including a user guide and a developer guide) can be found in our user manual: https://4c-multiphysics.github.io/4C/readthedocs/
+A high-level documentation of 4C (including a user guide and a developer guide) can be found in our user manual: https://4c-multiphysics.github.io/4C/documentation/
 
 \section mainpagepurposefurtherresources Further resources
 
 - Website: https://www.4c-multiphysics.org
 - Source Code Repository on GitHub: https://github.com/4C-multiphysics/4C
-- Readthedocs: https://4c-multiphysics.github.io/4C/readthedocs/
+- High-level documentation: https://4c-multiphysics.github.io/4C/documentation/
 */
