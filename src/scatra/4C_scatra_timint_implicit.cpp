@@ -1478,13 +1478,46 @@ void ScaTra::ScaTraTimIntImpl::set_convective_velocity(
   discret_->set_state(nds_vel(), "convective velocity field", convective_velocity);
 }
 
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+void ScaTra::ScaTraTimIntImpl::set_fine_scale_velocity(
+    const Core::LinAlg::Vector<double>& fine_scale_velocity) const
+{
+  // time measurement
+  TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set fine scale velocity field");
+
+  // checks
+  FOUR_C_ASSERT(velocity_field_type_ == Inpar::ScaTra::velocity_Navier_Stokes,
+      "Wrong set_velocity_field() called for velocity field type {}!", velocity_field_type_);
+  FOUR_C_ASSERT(nds_vel() < discret_->num_dof_sets(), "Too few dof sets on scatra discretization!");
+
+  // provide scatra discretization with fine-scale convective velocity if required
+  discret_->set_state(nds_vel(), "fine-scale velocity field", fine_scale_velocity);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+bool ScaTra::ScaTraTimIntImpl::fine_scale_velocity_field_required() const
+{
+  // for smagorinsky_all, the fine scale velocity is not necessary
+  if (fssgd_ == Inpar::ScaTra::fssugrdiff_smagorinsky_all) return false;
+
+  // in case the fine-scale subgrid-viscosity is turned off in the scalar field, the fine scale
+  // velocity is not necessary
+  if (turbmodel_ == Inpar::FLUID::no_model and fssgd_ == Inpar::ScaTra::fssugrdiff_no) return false;
+
+  // do not communicate the fine scale velocity field before it was calculated, i.e., in the initial
+  // step
+  if (step_ < 1) return false;
+
+  return true;
+}
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::set_velocity_field(
     std::shared_ptr<const Core::LinAlg::Vector<double>> acc,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> vel,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> fsvel)
+    std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
   // time measurement
   TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set velocity fields");
@@ -1494,33 +1527,11 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field(
       "Wrong set_velocity_field() called for velocity field type {}!", velocity_field_type_);
   FOUR_C_ASSERT(nds_vel() < discret_->num_dof_sets(), "Too few dof sets on scatra discretization!");
 
-  // boolean indicating whether fine-scale velocity vector exists
-  // -> if yes, multifractal subgrid-scale modeling is applied
-  bool fsvelswitch = (fsvel != nullptr);
-
-  // some thing went wrong if we want to use multifractal subgrid-scale modeling
-  // and have not got the fine-scale velocity
-  if (step_ >= 1 and
-      (turbmodel_ == Inpar::FLUID::multifractal_subgrid_scales or
-          fssgd_ == Inpar::ScaTra::fssugrdiff_smagorinsky_small) and
-      not fsvelswitch)
-    FOUR_C_THROW("Fine-scale velocity expected for multifractal subgrid-scale modeling!");
-  // as fsvelswitch is also true for smagorinsky_all, we have to reset fsvelswitch
-  // as the corresponding vector, which is not necessary, is not provided in scatra
-  if (fssgd_ == Inpar::ScaTra::fssugrdiff_smagorinsky_all and fsvelswitch) fsvelswitch = false;
-  // as fsvelswitch is true in case of turned-off model in scalar field,
-  // we have to ensure false
-  if (turbmodel_ == Inpar::FLUID::no_model and fssgd_ == Inpar::ScaTra::fssugrdiff_no)
-    fsvelswitch = false;
-
   // provide scatra discretization with velocity
   if (vel != nullptr) discret_->set_state(nds_vel(), "velocity field", *vel);
 
   // provide scatra discretization with acceleration field if required
   if (acc != nullptr) discret_->set_state(nds_vel(), "acceleration field", *acc);
-
-  // provide scatra discretization with fine-scale convective velocity if required
-  if (fsvelswitch) discret_->set_state(nds_vel(), "fine-scale velocity field", *fsvel);
 }
 
 /*----------------------------------------------------------------------*

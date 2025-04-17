@@ -652,7 +652,7 @@ void FS3I::PartFPS3I::set_velocity_fields()
       for (unsigned i = 0; i < scatravec_.size(); ++i)
       {
         scatravec_[i]->scatra_field()->set_convective_velocity(*convel[i]);
-        scatravec_[i]->scatra_field()->set_velocity_field(nullptr, vel[i], nullptr);
+        scatravec_[i]->scatra_field()->set_velocity_field(nullptr, vel[i]);
       }
       break;
     }

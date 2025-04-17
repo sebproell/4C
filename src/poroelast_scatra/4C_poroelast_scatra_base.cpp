@@ -180,7 +180,7 @@ void PoroElastScaTra::PoroScatraBase::set_velocity_fields()
   }
 
   scatra_->scatra_field()->set_convective_velocity(*convel);
-  scatra_->scatra_field()->set_velocity_field(nullptr, velnp, nullptr);
+  scatra_->scatra_field()->set_velocity_field(nullptr, velnp);
 }
 
 /*----------------------------------------------------------------------*
