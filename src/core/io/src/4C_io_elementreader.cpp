@@ -176,7 +176,7 @@ void Core::IO::ElementReader::get_and_distribute_elements(const int nblock, cons
       Core::IO::InputParameterContainer data;
       linedef.fully_parse(element_parser, data);
 
-      ele->set_node_ids(distype, data);
+      ele->set_node_ids_one_based_index(distype, data);
       ele->read_element(eletype, distype, data);
 
       // add element to discretization
