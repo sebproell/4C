@@ -101,7 +101,6 @@ GAMMA                           1
 THETA                           0.66
 START_THETA                     1
 STRONG_REDD_3D_COUPLING_TYPE    no
-GEOMETRY                        box
 -----------------------------------FLUID DYNAMIC/NONLINEAR SOLVER TOLERANCES
 TOL_VEL_RES	  1e-12
 TOL_VEL_INC	  1e-12

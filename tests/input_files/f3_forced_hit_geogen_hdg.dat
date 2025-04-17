@@ -34,7 +34,6 @@ RESULTSEVERY                           1
 //INITIALFIELD                    forced_hit_numeric_spectrum
 INITIALFIELD                    forced_hit_simple_algebraic_spectrum
 LINEAR_SOLVER                   1
-GEOMETRY                        box
 CALCERROR                       beltrami_flow
 -----------------------------------FLUID DYNAMIC/NONLINEAR SOLVER TOLERANCES
 TOL_VEL_RES	  1e-05

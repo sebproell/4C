@@ -36,7 +36,6 @@ TIMEINTEGR                      One_Step_Theta
 TIMESTEP                        0.1
 INFNORMSCALING                  no
 PREDICTOR                       steady_state
-GEOMETRY                        box
 -----------------------------------FLUID DYNAMIC/NONLINEAR SOLVER TOLERANCES
 TOL_VEL_RES	  1e-8
 TOL_VEL_INC	  1e-8

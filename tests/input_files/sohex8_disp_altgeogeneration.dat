@@ -40,7 +40,6 @@ NORM_DISP                       Abs
 NORMCOMBI_RESFDISP              Or
 MAXITER                         1
 DIVERCONT                       continue
-GEOMETRY                        box
 ---------------------------------------------------------------FLUID DYNAMIC
 TIMEINTEGR                      One_Step_Theta
 RESULTSEVERY                           1
