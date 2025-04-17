@@ -74,7 +74,6 @@ WSS_TYPE                        Standard
 WSS_ML_AGR_SOLVER               -1
 TIMEINTEGR                      Af_Gen_Alpha
 OST_CONT_PRESS                  Cont_normal_Press_normal
-GEOMETRY                        full
 NONLINITER                      fixed_point_like
 PREDICTOR                       steady_state
 CONVCHECK                       L_2_norm

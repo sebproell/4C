@@ -67,7 +67,6 @@ MAXTIME                         1
 NUMSTEP                         1
 TIMESTEP                        0.01
 GMSH_OUTPUT                     No
-GEOMETRY                        box
 CALCERROR                       byfunct
 CALCERRORFUNCNO                 5
 //                                                             // // VELGRAD_PROJ_SOLVER 1

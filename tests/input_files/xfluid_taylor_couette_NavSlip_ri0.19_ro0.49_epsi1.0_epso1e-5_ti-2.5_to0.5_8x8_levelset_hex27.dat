@@ -26,7 +26,6 @@ PREDICTOR                       steady_state
 MAXTIME                         1
 NUMSTEP                         1
 GMSH_OUTPUT                     No
-GEOMETRY                        box
 CALCERROR                       byfunct
 CALCERRORFUNCNO                 5
 -----------------------------------FLUID DYNAMIC/NONLINEAR SOLVER TOLERANCES

@@ -8,7 +8,6 @@
 #include "4C_inpar_fluid.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_geometry_type.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_legacy_enum_definitions_conditions.hpp"
 FOUR_C_NAMESPACE_OPEN
@@ -88,15 +87,6 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
               "OST_CONT_PRESS", {.description = "One step theta option for time discretization of "
                                                 "continuity eq. and pressure",
                                     .default_value = Cont_normal_Press_normal}),
-
-          deprecated_selection<Core::IO::GeometryType>("GEOMETRY",
-              {
-                  {"full", Core::IO::geometry_full},
-                  {"box", Core::IO::geometry_box},
-                  {"file", Core::IO::geometry_file},
-              },
-              {.description = "How the geometry is specified",
-                  .default_value = Core::IO::geometry_full}),
 
           parameter<Inpar::FLUID::LinearisationAction>("NONLINITER",
               {.description = "Nonlinear iteration scheme", .default_value = fixed_point_like}),

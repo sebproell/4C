@@ -23,7 +23,6 @@
 #include "4C_io.hpp"
 #include "4C_io_elementreader.hpp"
 #include "4C_io_exodus.hpp"
-#include "4C_io_geometry_type.hpp"
 #include "4C_io_input_file.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec_builders.hpp"

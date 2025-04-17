@@ -60,7 +60,6 @@ RESTARTEVERY                     10
 NUMSTEP                         7
 THETA                           1
 START_THETA                     1
-GEOMETRY                        box
 -----------------------------------------------------------------FSI DYNAMIC
 MAXTIME                         5
 TIMESTEP                        0.5

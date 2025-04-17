@@ -13,7 +13,6 @@
 #include "4C_io_domainreader.hpp"
 #include "4C_io_elementreader.hpp"
 #include "4C_io_exodus.hpp"
-#include "4C_io_geometry_type.hpp"
 #include "4C_linalg_graph.hpp"
 
 #include <Teuchos_ParameterList.hpp>

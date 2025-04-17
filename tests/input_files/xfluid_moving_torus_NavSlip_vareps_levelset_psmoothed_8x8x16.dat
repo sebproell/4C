@@ -39,7 +39,6 @@ MAXTIME                         20.0
 NUMSTEP                         4
 TIMESTEP                        0.18
 GMSH_OUTPUT                     No
-GEOMETRY                        box
 -----------------------------------FLUID DYNAMIC/NONLINEAR SOLVER TOLERANCES
 TOL_VEL_RES	  1.0E-10
 TOL_VEL_INC	  1.0E-10

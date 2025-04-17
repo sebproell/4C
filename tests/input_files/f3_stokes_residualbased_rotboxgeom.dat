@@ -27,7 +27,6 @@ ITEMAX                          2
 CONVCHECK                       L_2_norm
 NUMSTASTEPS                     0
 INITIALFIELD                    zero_field
-GEOMETRY                        box
 -----------------------------------FLUID DYNAMIC/NONLINEAR SOLVER TOLERANCES
 TOL_VEL_RES	  1.0E-9
 TOL_VEL_INC	  1.0E-9
