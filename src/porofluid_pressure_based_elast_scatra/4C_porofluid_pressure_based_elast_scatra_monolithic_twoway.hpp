@@ -35,7 +35,7 @@ namespace Core::LinearSolver
   enum class SolverType;
 }
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   //! monolithic coupling algorithm of poromultiphasescatra framework
   class PoroMultiPhaseScaTraMonolithicTwoWay : public PoroMultiPhaseScaTraMonolithic
@@ -281,15 +281,15 @@ namespace PoroMultiPhaseScaTra
     double maxinc_;  //!< maximum increment
     double maxres_;  //!< maximum residual
 
-    enum PoroMultiPhaseScaTra::VectorNorm vectornormfres_;  //!< type of norm for residual
-    enum PoroMultiPhaseScaTra::VectorNorm vectornorminc_;   //!< type of norm for increments
+    enum PoroPressureBased::VectorNorm vectornormfres_;  //!< type of norm for residual
+    enum PoroPressureBased::VectorNorm vectornorminc_;   //!< type of norm for increments
 
     Teuchos::Time timernewton_;  //!< timer for measurement of solution time of newton iterations
     double dtsolve_;             //!< linear solver time
     double dtele_;               //!< time for element evaluation + build-up of system matrix
 
     //! flag for finite difference check
-    PoroMultiPhaseScaTra::FdCheck fdcheck_;
+    PoroPressureBased::FdCheck fdcheck_;
 
 
   };  // PoroMultiPhaseScatraMonolithic
@@ -372,7 +372,7 @@ namespace PoroMultiPhaseScaTra
   };  // PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling
 
 
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 

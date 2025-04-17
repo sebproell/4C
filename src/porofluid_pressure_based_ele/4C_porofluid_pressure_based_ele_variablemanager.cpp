@@ -23,7 +23,7 @@ template <int nsd, int nen>
 std::shared_ptr<Discret::Elements::PoroFluidManager::VariableManagerInterface<nsd, nen>>
 Discret::Elements::PoroFluidManager::VariableManagerInterface<nsd, nen>::create_variable_manager(
     const Discret::Elements::PoroFluidMultiPhaseEleParameter& para,
-    const POROFLUIDMULTIPHASE::Action& action, std::shared_ptr<Core::Mat::Material> mat,
+    const PoroPressureBased::Action& action, std::shared_ptr<Core::Mat::Material> mat,
     int numdofpernode, int numfluidphases)
 {
   std::shared_ptr<VariableManagerInterface<nsd, nen>> varmanager = nullptr;
@@ -37,7 +37,7 @@ Discret::Elements::PoroFluidManager::VariableManagerInterface<nsd, nen>::create_
   switch (action)
   {
     // calculate true pressures and saturation
-    case POROFLUIDMULTIPHASE::calc_pres_and_sat:
+    case PoroPressureBased::calc_pres_and_sat:
     {
       // only phi values are needed
       varmanager = std::make_shared<VariableManagerPhi<nsd, nen>>(numdofpernode);
@@ -45,8 +45,8 @@ Discret::Elements::PoroFluidManager::VariableManagerInterface<nsd, nen>::create_
       break;
     }
     // calculate solid pressure
-    case POROFLUIDMULTIPHASE::calc_solidpressure:
-    case POROFLUIDMULTIPHASE::calc_porosity:
+    case PoroPressureBased::calc_solidpressure:
+    case PoroPressureBased::calc_porosity:
     {
       // only phi values are needed
       varmanager = std::make_shared<VariableManagerPhi<nsd, nen>>(numdofpernode);
@@ -59,7 +59,7 @@ Discret::Elements::PoroFluidManager::VariableManagerInterface<nsd, nen>::create_
       break;
     }
     // calculate the valid dofs
-    case POROFLUIDMULTIPHASE::calc_valid_dofs:
+    case PoroPressureBased::calc_valid_dofs:
     {
       // only phi values are needed
       varmanager = std::make_shared<VariableManagerPhi<nsd, nen>>(numdofpernode);
@@ -70,8 +70,8 @@ Discret::Elements::PoroFluidManager::VariableManagerInterface<nsd, nen>::create_
 
       break;
     }
-    case POROFLUIDMULTIPHASE::recon_flux_at_nodes:
-    case POROFLUIDMULTIPHASE::calc_phase_velocities:
+    case PoroPressureBased::recon_flux_at_nodes:
+    case PoroPressureBased::calc_phase_velocities:
     {
       // state vector and gradients are needed
       varmanager = std::make_shared<VariableManagerPhiGradPhi<nsd, nen>>(numdofpernode);
@@ -83,8 +83,8 @@ Discret::Elements::PoroFluidManager::VariableManagerInterface<nsd, nen>::create_
       break;
     }
     // read data from scatra
-    case POROFLUIDMULTIPHASE::get_access_from_scatra:
-    case POROFLUIDMULTIPHASE::get_access_from_artcoupling:
+    case PoroPressureBased::get_access_from_scatra:
+    case PoroPressureBased::get_access_from_artcoupling:
     {
       // NOTE: we do not need the variable manager struct here, since the call
       // ExtractElementsAndNodeValues will
@@ -456,7 +456,7 @@ void Discret::Elements::PoroFluidManager::VariableManagerMaximumNodalVolFracValu
   {
     // get the volfrac pressure material
     const Mat::FluidPoroVolFracPressure& volfracpressmat =
-        POROFLUIDMULTIPHASE::ElementUtils::get_vol_frac_pressure_mat_from_material(
+        PoroPressureBased::ElementUtils::get_vol_frac_pressure_mat_from_material(
             *multiphasemat_, k + numvolfrac_ + numfluidphases);
 
     // this approach proved to be the most stable one

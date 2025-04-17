@@ -12,6 +12,7 @@
 #include "4C_porofluid_pressure_based_elast_adapter.hpp"
 #include "4C_porofluid_pressure_based_elast_input.hpp"
 #include "4C_porofluid_pressure_based_elast_utils.hpp"
+#include "4C_porofluid_pressure_based_utils.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 #include <Teuchos_TimeMonitor.hpp>
@@ -36,7 +37,6 @@ void poromultiphase_dyn(int restart)
   // print problem type
   if (Core::Communication::my_mpi_rank(comm) == 0)
   {
-    POROMULTIPHASE::print_logo();
     std::cout << "###################################################" << std::endl;
     std::cout << "# YOUR PROBLEM TYPE: " << problem->problem_name() << std::endl;
     std::cout << "###################################################" << std::endl;
@@ -49,7 +49,7 @@ void poromultiphase_dyn(int restart)
 
   // Setup discretizations and coupling. Assign the dof sets and return the numbers
   std::map<int, std::set<int>> nearbyelepairs =
-      POROMULTIPHASE::Utils::setup_discretizations_and_field_coupling(
+      PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(
           comm, struct_disname, fluid_disname, nds_disp, nds_vel, nds_solidpressure);
 
   // Parameter reading
@@ -63,11 +63,11 @@ void poromultiphase_dyn(int restart)
   // algorithm construction depending on
   // coupling scheme
   // -------------------------------------------------------------------
-  auto solscheme =
-      Teuchos::getIntegralValue<POROMULTIPHASE::SolutionSchemeOverFields>(poroparams, "COUPALGO");
+  auto solscheme = Teuchos::getIntegralValue<PoroPressureBased::SolutionSchemePorofluidElast>(
+      poroparams, "COUPALGO");
 
-  std::shared_ptr<POROMULTIPHASE::PoroMultiPhase> algo =
-      POROMULTIPHASE::Utils::create_poro_multi_phase_algorithm(solscheme, poroparams, comm);
+  std::shared_ptr<PoroPressureBased::PoroMultiPhase> algo =
+      PoroPressureBased::create_algorithm_porofluid_elast(solscheme, poroparams, comm);
 
   // initialize
   algo->init(poroparams, poroparams, structdyn, fluiddyn, struct_disname, fluid_disname, true,
@@ -88,7 +88,7 @@ void poromultiphase_dyn(int restart)
   // assign poro material for evaluation of porosity
   // note: to be done after potential restart, as in read_restart()
   //       the secondary material is destroyed
-  POROMULTIPHASE::Utils::assign_material_pointers(struct_disname, fluid_disname);
+  PoroPressureBased::assign_material_pointers_porofluid_elast(struct_disname, fluid_disname);
 
   // Setup the solver (only for the monolithic problem)
   algo->setup_solver();

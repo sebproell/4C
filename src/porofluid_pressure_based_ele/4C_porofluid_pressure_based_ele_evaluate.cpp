@@ -30,23 +30,23 @@ int Discret::Elements::PoroFluidMultiPhase::evaluate(Teuchos::ParameterList& par
   const int numdofpernode = num_dof_per_node(*(nodes()[0]));
 
   // check for the action parameter
-  const auto action = Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::Action>(params, "action");
+  const auto action = Teuchos::getIntegralValue<PoroPressureBased::Action>(params, "action");
   switch (action)
   {
     // all physics-related stuff is included in the implementation class(es) that can
     // be used in principle inside any element (at the moment: only PoroFluidMultiPhase element)
-    case POROFLUIDMULTIPHASE::calc_mat_and_rhs:
-    case POROFLUIDMULTIPHASE::calc_fluid_struct_coupl_mat:
-    case POROFLUIDMULTIPHASE::calc_fluid_scatra_coupl_mat:
-    case POROFLUIDMULTIPHASE::calc_error:
-    case POROFLUIDMULTIPHASE::calc_pres_and_sat:
-    case POROFLUIDMULTIPHASE::calc_solidpressure:
-    case POROFLUIDMULTIPHASE::calc_porosity:
-    case POROFLUIDMULTIPHASE::recon_flux_at_nodes:
-    case POROFLUIDMULTIPHASE::calc_phase_velocities:
-    case POROFLUIDMULTIPHASE::calc_initial_time_deriv:
-    case POROFLUIDMULTIPHASE::calc_valid_dofs:
-    case POROFLUIDMULTIPHASE::calc_domain_integrals:
+    case PoroPressureBased::calc_mat_and_rhs:
+    case PoroPressureBased::calc_fluid_struct_coupl_mat:
+    case PoroPressureBased::calc_fluid_scatra_coupl_mat:
+    case PoroPressureBased::calc_error:
+    case PoroPressureBased::calc_pres_and_sat:
+    case PoroPressureBased::calc_solidpressure:
+    case PoroPressureBased::calc_porosity:
+    case PoroPressureBased::recon_flux_at_nodes:
+    case PoroPressureBased::calc_phase_velocities:
+    case PoroPressureBased::calc_initial_time_deriv:
+    case PoroPressureBased::calc_valid_dofs:
+    case PoroPressureBased::calc_domain_integrals:
     {
       std::vector<Core::LinAlg::SerialDenseMatrix*> elemat(2);
       elemat[0] = &elemat1;

@@ -289,7 +289,7 @@ namespace
     Discret::Utils::add_valid_combust_functions(function_manager);
     Discret::Utils::add_valid_xfluid_functions(function_manager);
     add_valid_library_functions(function_manager);
-    PoroMultiPhaseScaTra::add_valid_poro_functions(function_manager);
+    PoroPressureBased::add_valid_poro_functions(function_manager);
     ScaTra::add_valid_scatra_functions(function_manager);
   }
 

@@ -10,12 +10,14 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_utils_parameter_list.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 
-void PoroMultiPhaseScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void PoroPressureBased::set_valid_parameters_porofluid_elast_scatra(
+    std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -44,28 +46,30 @@ void PoroMultiPhaseScaTra::set_valid_parameters(std::map<std::string, Core::IO::
               {.description = "minimal number of iterations over fields", .default_value = 1}),
 
           // Coupling strategy for poroscatra solvers
-          deprecated_selection<SolutionSchemeOverFields>("COUPALGO",
+          deprecated_selection<SolutionSchemePorofluidElastScatra>("COUPALGO",
               {
-                  {"twoway_partitioned_nested", solscheme_twoway_partitioned_nested},
-                  {"twoway_partitioned_sequential", solscheme_twoway_partitioned_sequential},
-                  {"twoway_monolithic", solscheme_twoway_monolithic},
+                  {"twoway_partitioned_nested",
+                      SolutionSchemePorofluidElastScatra::twoway_partitioned_nested},
+                  {"twoway_partitioned_sequential",
+                      SolutionSchemePorofluidElastScatra::twoway_partitioned_sequential},
+                  {"twoway_monolithic", SolutionSchemePorofluidElastScatra::twoway_monolithic},
               },
               {.description = "Coupling strategies for poroscatra solvers",
-                  .default_value = solscheme_twoway_partitioned_nested}),
+                  .default_value = SolutionSchemePorofluidElastScatra::twoway_partitioned_nested}),
 
           // coupling with 1D artery network active
           parameter<bool>("ARTERY_COUPLING",
               {.description = "Coupling with 1D blood vessels.", .default_value = false}),
 
           // no convergence of coupling scheme
-          deprecated_selection<DivContAct>("DIVERCONT",
+          deprecated_selection<DivergenceAction>("DIVERCONT",
               {
-                  {"stop", divcont_stop},
-                  {"continue", divcont_continue},
+                  {"stop", DivergenceAction::stop},
+                  {"continue", DivergenceAction::continue_anyway},
               },
               {.description = "What to do with time integration when Poromultiphase-Scatra "
                               "iteration failed",
-                  .default_value = divcont_stop})},
+                  .default_value = DivergenceAction::stop})},
       {.defaultable =
               true});  // ----------------------------------------------------------------------
   // (2) monolithic parameters
@@ -74,25 +78,25 @@ void PoroMultiPhaseScaTra::set_valid_parameters(std::map<std::string, Core::IO::
 
           deprecated_selection<VectorNorm>("VECTORNORM_RESF",
               {
-                  {"L1", PoroMultiPhaseScaTra::norm_l1},
-                  {"L1_Scaled", PoroMultiPhaseScaTra::norm_l1_scaled},
-                  {"L2", PoroMultiPhaseScaTra::norm_l2},
-                  {"Rms", PoroMultiPhaseScaTra::norm_rms},
-                  {"Inf", PoroMultiPhaseScaTra::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = PoroMultiPhaseScaTra::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_INC",
               {
-                  {"L1", PoroMultiPhaseScaTra::norm_l1},
-                  {"L1_Scaled", PoroMultiPhaseScaTra::norm_l1_scaled},
-                  {"L2", PoroMultiPhaseScaTra::norm_l2},
-                  {"Rms", PoroMultiPhaseScaTra::norm_rms},
-                  {"Inf", PoroMultiPhaseScaTra::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = PoroMultiPhaseScaTra::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
           parameter<bool>("ADAPTCONV", {.description = "Switch on adaptive control of linear "
@@ -120,11 +124,11 @@ void PoroMultiPhaseScaTra::set_valid_parameters(std::map<std::string, Core::IO::
           // parameters for finite difference check
           deprecated_selection<FdCheck>("FDCHECK",
               {
-                  {"none", fdcheck_none},
-                  {"global", fdcheck_global},
+                  {"none", FdCheck::none},
+                  {"global", FdCheck::global},
               },
               {.description = "flag for finite difference check: none or global",
-                  .default_value = fdcheck_none}),
+                  .default_value = FdCheck::none}),
 
           // flag for equilibration of global system of equations
           parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
@@ -145,7 +149,7 @@ void PoroMultiPhaseScaTra::set_valid_parameters(std::map<std::string, Core::IO::
           {.defaultable = true});
 }
 
-void PoroMultiPhaseScaTra::set_valid_conditions(
+void PoroPressureBased::set_valid_conditions_porofluid_elast_scatra(
     std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   using namespace Core::IO::InputSpecBuilders;

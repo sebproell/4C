@@ -15,7 +15,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   class TimIntOneStepTheta : public TimIntImpl
   {
@@ -84,7 +84,7 @@ namespace POROFLUIDMULTIPHASE
 
   };  // class TimIntOneStepTheta
 
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

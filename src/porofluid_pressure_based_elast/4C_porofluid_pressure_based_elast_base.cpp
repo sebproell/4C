@@ -25,7 +25,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | constructor                                              vuong 08/16  |
  *----------------------------------------------------------------------*/
-POROMULTIPHASE::PoroMultiPhaseBase::PoroMultiPhaseBase(
+PoroPressureBased::PoroMultiPhaseBase::PoroMultiPhaseBase(
     MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams)
     : AlgorithmBase(comm, globaltimeparams),
       structure_(nullptr),
@@ -39,7 +39,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::PoroMultiPhaseBase(
 /*----------------------------------------------------------------------*
  | initialize algorithm                                    vuong 08/16  |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::init(const Teuchos::ParameterList& globaltimeparams,
+void PoroPressureBased::PoroMultiPhaseBase::init(const Teuchos::ParameterList& globaltimeparams,
     const Teuchos::ParameterList& algoparams, const Teuchos::ParameterList& structparams,
     const Teuchos::ParameterList& fluidparams, const std::string& struct_disname,
     const std::string& fluid_disname, bool isale, int nds_disp, int nds_vel, int nds_solidpressure,
@@ -90,13 +90,12 @@ void POROMULTIPHASE::PoroMultiPhaseBase::init(const Teuchos::ParameterList& glob
   // algorithm construction depending on
   // time-integration (or stationary) scheme
   // -------------------------------------------------------------------
-  auto timintscheme = Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::TimeIntegrationScheme>(
+  auto timintscheme = Teuchos::getIntegralValue<PoroPressureBased::TimeIntegrationScheme>(
       fluidparams, "TIMEINTEGR");
 
   // build poro fluid time integrator
-  std::shared_ptr<Adapter::PoroFluidMultiphase> porofluid =
-      POROFLUIDMULTIPHASE::Utils::create_algorithm(
-          timintscheme, fluiddis, linsolvernumber, globaltimeparams, fluidparams, output);
+  std::shared_ptr<Adapter::PoroFluidMultiphase> porofluid = PoroPressureBased::create_algorithm(
+      timintscheme, fluiddis, linsolvernumber, globaltimeparams, fluidparams, output);
 
   // wrap it
   fluid_ = std::make_shared<Adapter::PoroFluidMultiphaseWrapper>(porofluid);
@@ -109,7 +108,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::init(const Teuchos::ParameterList& glob
 
 /*----------------------------------------------------------------------*
 ----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::post_init()
+void PoroPressureBased::PoroMultiPhaseBase::post_init()
 {
   // call post_setup routine of the structure field
   structure_->post_setup();
@@ -119,7 +118,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::post_init()
 /*----------------------------------------------------------------------*
  | read restart information for given time step (public)   vuong 08/16  |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::read_restart(int restart)
+void PoroPressureBased::PoroMultiPhaseBase::read_restart(int restart)
 {
   if (restart)
   {
@@ -140,7 +139,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::read_restart(int restart)
 /*----------------------------------------------------------------------*
  | time loop                                            kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::timeloop()
+void PoroPressureBased::PoroMultiPhaseBase::timeloop()
 {
   // prepare the loop
   prepare_time_loop();
@@ -161,7 +160,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::timeloop()
 /*----------------------------------------------------------------------*
  | prepare the time loop                                     vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::prepare_time_loop()
+void PoroPressureBased::PoroMultiPhaseBase::prepare_time_loop()
 {
   // initial output
   if (solve_structure_)
@@ -186,7 +185,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::prepare_time_loop()
 /*----------------------------------------------------------------------*
  | prepare one time step                                     vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::prepare_time_step()
+void PoroPressureBased::PoroMultiPhaseBase::prepare_time_step()
 {
   increment_time_and_step();
 
@@ -207,7 +206,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::prepare_time_step()
 /*----------------------------------------------------------------------*
  | Test the results of all subproblems                       vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::create_field_test()
+void PoroPressureBased::PoroMultiPhaseBase::create_field_test()
 {
   Global::Problem* problem = Global::Problem::instance();
 
@@ -218,7 +217,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::create_field_test()
 /*------------------------------------------------------------------------*
  | communicate the solution of the structure to the fluid    vuong 08/16  |
  *------------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::set_struct_solution(
+void PoroPressureBased::PoroMultiPhaseBase::set_struct_solution(
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
@@ -229,7 +228,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::set_struct_solution(
 /*------------------------------------------------------------------------*
  | communicate the structure velocity  to the fluid           vuong 08/16  |
  *------------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::set_velocity_fields(
+void PoroPressureBased::PoroMultiPhaseBase::set_velocity_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
 {
   fluid_->set_velocity_field(vel);
@@ -238,7 +237,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::set_velocity_fields(
 /*------------------------------------------------------------------------*
  | communicate the scatra solution to the fluid             vuong 08/16  |
  *------------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::set_scatra_solution(
+void PoroPressureBased::PoroMultiPhaseBase::set_scatra_solution(
     unsigned nds, std::shared_ptr<const Core::LinAlg::Vector<double>> scalars)
 {
   fluid_->set_scatra_solution(nds, scalars);
@@ -248,7 +247,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::set_scatra_solution(
 /*------------------------------------------------------------------------*
  | communicate the structure displacement to the fluid        vuong 08/16  |
  *------------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::set_mesh_disp(
+void PoroPressureBased::PoroMultiPhaseBase::set_mesh_disp(
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp)
 {
   fluid_->apply_mesh_movement(disp);
@@ -257,7 +256,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::set_mesh_disp(
 /*----------------------------------------------------------------------*
  | update fields and output results                         vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::update_and_output()
+void PoroPressureBased::PoroMultiPhaseBase::update_and_output()
 {
   // prepare the output
   constexpr bool force_prepare = false;
@@ -281,7 +280,7 @@ void POROMULTIPHASE::PoroMultiPhaseBase::update_and_output()
 /*------------------------------------------------------------------------*
  | dof map of vector of unknowns of structure field           vuong 08/16  |
  *------------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::struct_dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::PoroMultiPhaseBase::struct_dof_row_map()
     const
 {
   return structure_->dof_row_map();
@@ -290,7 +289,7 @@ std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::str
 /*------------------------------------------------------------------------*
  | dof map of vector of unknowns of fluid field           vuong 08/16  |
  *------------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::fluid_dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::PoroMultiPhaseBase::fluid_dof_row_map()
     const
 {
   return fluid_->dof_row_map();
@@ -300,7 +299,7 @@ std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::flu
  | coupled artery-porofluid system matrix                kremheller 05/18 |
  *------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase>
-POROMULTIPHASE::PoroMultiPhaseBase::artery_porofluid_sysmat() const
+PoroPressureBased::PoroMultiPhaseBase::artery_porofluid_sysmat() const
 {
   return fluid_->artery_porofluid_sysmat();
 }
@@ -308,7 +307,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::artery_porofluid_sysmat() const
 /*------------------------------------------------------------------------*
  | dof map of vector of unknowns of artery field         kremheller 05/18 |
  *------------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::artery_dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::PoroMultiPhaseBase::artery_dof_row_map()
     const
 {
   return fluid_->artery_dof_row_map();
@@ -318,7 +317,7 @@ std::shared_ptr<const Core::LinAlg::Map> POROMULTIPHASE::PoroMultiPhaseBase::art
  | return structure displacements                             vuong 08/16  |
  *------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-POROMULTIPHASE::PoroMultiPhaseBase::struct_dispnp() const
+PoroPressureBased::PoroMultiPhaseBase::struct_dispnp() const
 {
   return structure_->dispnp();
 }
@@ -327,7 +326,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::struct_dispnp() const
  | return structure velocities                               vuong 08/16  |
  *------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-POROMULTIPHASE::PoroMultiPhaseBase::struct_velnp() const
+PoroPressureBased::PoroMultiPhaseBase::struct_velnp() const
 {
   return structure_->velnp();
 }
@@ -336,7 +335,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::struct_velnp() const
  | return fluid Flux                                         vuong 08/16  |
  *------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::MultiVector<double>>
-POROMULTIPHASE::PoroMultiPhaseBase::fluid_flux() const
+PoroPressureBased::PoroMultiPhaseBase::fluid_flux() const
 {
   return fluid_->flux();
 }
@@ -345,7 +344,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::fluid_flux() const
  | return fluid Flux                                         vuong 08/16  |
  *------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-POROMULTIPHASE::PoroMultiPhaseBase::fluid_phinp() const
+PoroPressureBased::PoroMultiPhaseBase::fluid_phinp() const
 {
   return fluid_->phinp();
 }
@@ -354,7 +353,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::fluid_phinp() const
  | return fluid Flux                                         vuong 08/16  |
  *------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-POROMULTIPHASE::PoroMultiPhaseBase::fluid_saturation() const
+PoroPressureBased::PoroMultiPhaseBase::fluid_saturation() const
 {
   return fluid_->saturation();
 }
@@ -363,7 +362,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::fluid_saturation() const
  | return fluid Flux                                         vuong 08/16  |
  *------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-POROMULTIPHASE::PoroMultiPhaseBase::fluid_pressure() const
+PoroPressureBased::PoroMultiPhaseBase::fluid_pressure() const
 {
   return fluid_->pressure();
 }
@@ -372,7 +371,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::fluid_pressure() const
  | return fluid Flux                                         vuong 08/16  |
  *------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-POROMULTIPHASE::PoroMultiPhaseBase::solid_pressure() const
+PoroPressureBased::PoroMultiPhaseBase::solid_pressure() const
 {
   return fluid_->solid_pressure();
 }
@@ -380,7 +379,7 @@ POROMULTIPHASE::PoroMultiPhaseBase::solid_pressure() const
 /*----------------------------------------------------------------------*
  | inform user that structure is not solved            kremheller 04/17 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhaseBase::print_structure_disabled_info()
+void PoroPressureBased::PoroMultiPhaseBase::print_structure_disabled_info()
 {
   // print out Info
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)

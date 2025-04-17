@@ -174,7 +174,7 @@ namespace Discret
         //! factory method
         static std::shared_ptr<EvaluatorInterface<nsd, nen>> create_evaluator(
             const Discret::Elements::PoroFluidMultiPhaseEleParameter& para,
-            const POROFLUIDMULTIPHASE::Action& action, int numdofpernode, int numfluidphases,
+            const PoroPressureBased::Action& action, int numdofpernode, int numfluidphases,
             const PoroFluidManager::PhaseManagerInterface& phasemanager);
 
         //! evaluate matrixes (stiffness)

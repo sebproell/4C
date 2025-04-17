@@ -846,7 +846,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
   Inpar::RveMpc::set_valid_conditions(condlist);
   Inpar::BeamInteraction::set_valid_conditions(condlist);
   EHL::set_valid_conditions(condlist);
-  PoroMultiPhaseScaTra::set_valid_conditions(condlist);
+  PoroPressureBased::set_valid_conditions_porofluid_elast_scatra(condlist);
 
   // finally some conditions that do not have their own files yet are problem-specific
   set_miscellaneous_conditions(condlist);

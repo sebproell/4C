@@ -81,7 +81,7 @@ int Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::evaluate(Core::Eleme
     std::vector<Core::LinAlg::SerialDenseVector*>& elevec)
 {
   // check for the action parameter
-  const auto action = Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::Action>(params, "action");
+  const auto action = Teuchos::getIntegralValue<PoroPressureBased::Action>(params, "action");
 
   // setup
   if (setup_calc(ele, discretization, action) == -1) return -1;
@@ -101,35 +101,35 @@ int Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::evaluate(Core::Eleme
 template <Core::FE::CellType distype>
 int Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::evaluate_action(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, const POROFLUIDMULTIPHASE::Action& action,
+    Core::FE::Discretization& discretization, const PoroPressureBased::Action& action,
     Core::Elements::LocationArray& la, std::vector<Core::LinAlg::SerialDenseMatrix*>& elemat,
     std::vector<Core::LinAlg::SerialDenseVector*>& elevec)
 {
   // determine and evaluate action
   switch (action)
   {
-    case POROFLUIDMULTIPHASE::calc_mat_and_rhs:
-    case POROFLUIDMULTIPHASE::calc_initial_time_deriv:
-    case POROFLUIDMULTIPHASE::recon_flux_at_nodes:
-    case POROFLUIDMULTIPHASE::calc_domain_integrals:
+    case PoroPressureBased::calc_mat_and_rhs:
+    case PoroPressureBased::calc_initial_time_deriv:
+    case PoroPressureBased::recon_flux_at_nodes:
+    case PoroPressureBased::calc_domain_integrals:
     {
       // loop over gauss points and evaluate terms (standard call)
       gauss_point_loop(ele, elemat, elevec, discretization, la);
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_fluid_struct_coupl_mat:
+    case PoroPressureBased::calc_fluid_struct_coupl_mat:
     {
       // loop over gauss points and evaluate off-diagonal terms
       gauss_point_loop_od_struct(ele, elemat, elevec, discretization, la);
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_fluid_scatra_coupl_mat:
+    case PoroPressureBased::calc_fluid_scatra_coupl_mat:
     {
       // loop over gauss points and evaluate off-diagonal terms
       gauss_point_loop_od_scatra(ele, elemat, elevec, discretization, la);
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_pres_and_sat:
+    case PoroPressureBased::calc_pres_and_sat:
     {
       // loop over nodes and evaluate terms
       node_loop(ele, elemat, elevec, discretization, la,
@@ -137,8 +137,8 @@ int Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::evaluate_action(
       );
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_porosity:
-    case POROFLUIDMULTIPHASE::calc_solidpressure:
+    case PoroPressureBased::calc_porosity:
+    case PoroPressureBased::calc_solidpressure:
     {
       // loop over nodes and evaluate terms
       node_loop(ele, elemat, elevec, discretization, la,
@@ -147,13 +147,13 @@ int Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::evaluate_action(
       );
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_valid_dofs:
+    case PoroPressureBased::calc_valid_dofs:
     {
       // evaluate the element
       evaluate_only_element(ele, elemat, elevec, discretization, la);
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_phase_velocities:
+    case PoroPressureBased::calc_phase_velocities:
     {
       // loop over gauss points and average
       gauss_point_loop_average(ele, elemat, elevec, discretization, la);
@@ -184,7 +184,7 @@ void Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::gauss_point_loop(
 
   // integration points and weights
   const Core::FE::IntPointsAndWeights<nsd_> intpoints(
-      POROFLUIDMULTIPHASE::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
+      PoroPressureBased::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
 
   // start loop over gauss points
   gauss_point_loop(intpoints, ele, elemat, elevec, discretization, la);
@@ -202,7 +202,7 @@ void Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::gauss_point_loop_av
   prepare_gauss_point_loop(ele);
 
   const Core::FE::IntPointsAndWeights<nsd_> intpoints(
-      POROFLUIDMULTIPHASE::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
+      PoroPressureBased::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
 
   gauss_point_loop(intpoints, ele, elemat, elevec, discretization, la);
 
@@ -228,7 +228,7 @@ void Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::gauss_point_loop_od
 
   // integration points and weights
   const Core::FE::IntPointsAndWeights<nsd_> intpoints(
-      POROFLUIDMULTIPHASE::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
+      PoroPressureBased::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
 
   // start loop over gauss points
   gauss_point_loop_od_struct(intpoints, ele, elemat, elevec, discretization, la);
@@ -250,7 +250,7 @@ void Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::gauss_point_loop_od
 
   // integration points and weights
   const Core::FE::IntPointsAndWeights<nsd_> intpoints(
-      POROFLUIDMULTIPHASE::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
+      PoroPressureBased::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
 
   // start loop over gauss points
   gauss_point_loop_od_scatra(intpoints, ele, elemat, elevec, discretization, la);
@@ -481,7 +481,7 @@ void Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::evaluate_only_eleme
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
 int Discret::Elements::PoroFluidMultiPhaseEleCalc<distype>::setup_calc(Core::Elements::Element* ele,
-    Core::FE::Discretization& discretization, const POROFLUIDMULTIPHASE::Action& action)
+    Core::FE::Discretization& discretization, const PoroPressureBased::Action& action)
 {
   // get element coordinates
   Core::Geo::fill_initial_position_array<distype, nsd_, Core::LinAlg::Matrix<nsd_, nen_>>(

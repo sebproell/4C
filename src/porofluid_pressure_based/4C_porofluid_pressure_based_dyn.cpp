@@ -38,10 +38,9 @@ void porofluidmultiphase_dyn(int restart)
   // access the problem
   Global::Problem* problem = Global::Problem::instance();
 
-  // print problem type and logo
+  // print problem type
   if (Core::Communication::my_mpi_rank(comm) == 0)
   {
-    POROFLUIDMULTIPHASE::print_logo();
     std::cout << "###################################################" << std::endl;
     std::cout << "# YOUR PROBLEM TYPE: " << Global::Problem::instance()->problem_name()
               << std::endl;
@@ -86,7 +85,7 @@ void porofluidmultiphase_dyn(int restart)
       case Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp:
       {
         actdis->fill_complete();
-        nearbyelepairs = POROFLUIDMULTIPHASE::Utils::extended_ghosting_artery_discretization(
+        nearbyelepairs = PoroPressureBased::extended_ghosting_artery_discretization(
             *actdis, arterydis, evaluate_on_lateral_surface, arterycoupl);
         break;
       }
@@ -120,10 +119,10 @@ void porofluidmultiphase_dyn(int restart)
   // time-integration (or stationary) scheme
   // -------------------------------------------------------------------
   auto timintscheme =
-      Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::TimeIntegrationScheme>(porodyn, "TIMEINTEGR");
+      Teuchos::getIntegralValue<PoroPressureBased::TimeIntegrationScheme>(porodyn, "TIMEINTEGR");
 
   // build poro fluid time integrator
-  std::shared_ptr<Adapter::PoroFluidMultiphase> algo = POROFLUIDMULTIPHASE::Utils::create_algorithm(
+  std::shared_ptr<Adapter::PoroFluidMultiphase> algo = PoroPressureBased::create_algorithm(
       timintscheme, actdis, linsolvernumber, porodyn, porodyn, output);
 
   // initialize
@@ -140,7 +139,7 @@ void porofluidmultiphase_dyn(int restart)
   // assign poro material for evaluation of porosity
   // note: to be done after potential restart, as in read_restart()
   //       the secondary material is destroyed
-  POROFLUIDMULTIPHASE::Utils::setup_material(comm, struct_disname, fluid_disname);
+  PoroPressureBased::setup_material(comm, struct_disname, fluid_disname);
 
   // 4.- Run of the actual problem.
   algo->time_loop();

@@ -4,17 +4,18 @@
 // See the LICENSE.md file in the top-level for license information.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
-
 #include "4C_porofluid_pressure_based_elast_input.hpp"
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_equilibrate.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 
-void POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void PoroPressureBased::set_valid_parameters_porofluid_elast(
+    std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -49,13 +50,13 @@ void POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputS
 
 
           // Coupling strategy for solvers
-          deprecated_selection<SolutionSchemeOverFields>("COUPALGO",
+          deprecated_selection<SolutionSchemePorofluidElast>("COUPALGO",
               {
-                  {"twoway_partitioned", solscheme_twoway_partitioned},
-                  {"twoway_monolithic", solscheme_twoway_monolithic},
+                  {"twoway_partitioned", SolutionSchemePorofluidElast::twoway_partitioned},
+                  {"twoway_monolithic", SolutionSchemePorofluidElast::twoway_monolithic},
               },
-              {.description = "Coupling strategies for poro multiphase solvers",
-                  .default_value = solscheme_twoway_partitioned}),
+              {.description = "Coupling strategies for porofluid-elasticity solvers",
+                  .default_value = SolutionSchemePorofluidElast::twoway_partitioned}),
 
           // coupling with 1D artery network active
           parameter<bool>("ARTERY_COUPLING",
@@ -82,33 +83,33 @@ void POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputS
           // parameters for finite difference check
           deprecated_selection<FdCheck>("FDCHECK",
               {
-                  {"none", fdcheck_none},
-                  {"global", fdcheck_global},
+                  {"none", FdCheck::none},
+                  {"global", FdCheck::global},
               },
               {.description = "flag for finite difference check: none or global",
-                  .default_value = fdcheck_none}),
+                  .default_value = FdCheck::none}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_RESF",
               {
-                  {"L1", POROMULTIPHASE::norm_l1},
-                  {"L1_Scaled", POROMULTIPHASE::norm_l1_scaled},
-                  {"L2", POROMULTIPHASE::norm_l2},
-                  {"Rms", POROMULTIPHASE::norm_rms},
-                  {"Inf", POROMULTIPHASE::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = POROMULTIPHASE::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_INC",
               {
-                  {"L1", POROMULTIPHASE::norm_l1},
-                  {"L1_Scaled", POROMULTIPHASE::norm_l1_scaled},
-                  {"L2", POROMULTIPHASE::norm_l2},
-                  {"Rms", POROMULTIPHASE::norm_rms},
-                  {"Inf", POROMULTIPHASE::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = POROMULTIPHASE::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           // flag for equilibration of global system of equations
           parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
@@ -139,12 +140,12 @@ void POROMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputS
           // flag for relaxation of partitioned scheme
           deprecated_selection<RelaxationMethods>("RELAXATION",
               {
-                  {"none", relaxation_none},
-                  {"Constant", relaxation_constant},
-                  {"Aitken", relaxation_aitken},
+                  {"none", RelaxationMethods::none},
+                  {"Constant", RelaxationMethods::constant},
+                  {"Aitken", RelaxationMethods::aitken},
               },
               {.description = "flag for relaxation of partitioned scheme",
-                  .default_value = relaxation_none}),
+                  .default_value = RelaxationMethods::none}),
 
           // parameters for relaxation of partitioned coupling
           parameter<double>(

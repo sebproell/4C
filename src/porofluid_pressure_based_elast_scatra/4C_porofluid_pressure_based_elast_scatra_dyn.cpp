@@ -35,7 +35,6 @@ void poromultiphasescatra_dyn(int restart)
   // print problem type
   if (Core::Communication::my_mpi_rank(comm) == 0)
   {
-    PoroMultiPhaseScaTra::print_logo();
     std::cout << "###################################################" << std::endl;
     std::cout << "# YOUR PROBLEM TYPE: " << problem->problem_name() << std::endl;
     std::cout << "###################################################" << std::endl;
@@ -65,20 +64,19 @@ void poromultiphasescatra_dyn(int restart)
 
   // Setup discretizations and coupling. Assign the dof sets and return the numbers
   std::map<int, std::set<int>> nearbyelepairs =
-      PoroMultiPhaseScaTra::Utils::setup_discretizations_and_field_coupling(comm, struct_disname,
-          fluid_disname, scatra_disname, ndsporo_disp, ndsporo_vel, ndsporo_solidpressure,
-          ndsporofluid_scatra, artery_coupl);
+      PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast_scatra(comm,
+          struct_disname, fluid_disname, scatra_disname, ndsporo_disp, ndsporo_vel,
+          ndsporo_solidpressure, ndsporofluid_scatra, artery_coupl);
 
   // -------------------------------------------------------------------
   // algorithm construction depending on
   // coupling scheme
   // -------------------------------------------------------------------
-  auto solscheme = Teuchos::getIntegralValue<PoroMultiPhaseScaTra::SolutionSchemeOverFields>(
+  auto solscheme = Teuchos::getIntegralValue<PoroPressureBased::SolutionSchemePorofluidElastScatra>(
       poroscatraparams, "COUPALGO");
 
-  std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraBase> algo =
-      PoroMultiPhaseScaTra::Utils::create_poro_multi_phase_scatra_algorithm(
-          solscheme, poroscatraparams, comm);
+  std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraBase> algo =
+      PoroPressureBased::create_algorithm_porofluid_elast_scatra(solscheme, poroscatraparams, comm);
 
   algo->init(poroscatraparams, poroscatraparams, poroparams, structparams, fluidparams,
       scatraparams, struct_disname, fluid_disname, scatra_disname, true, ndsporo_disp, ndsporo_vel,
@@ -97,7 +95,7 @@ void poromultiphasescatra_dyn(int restart)
   // assign materials
   // note: to be done after potential restart, as in read_restart()
   //       the secondary material is destroyed
-  PoroMultiPhaseScaTra::Utils::assign_material_pointers(
+  PoroPressureBased::assign_material_pointers_porofluid_elast_scatra(
       struct_disname, fluid_disname, scatra_disname, artery_coupl);
 
   // Setup Solver (necessary if poro-structure coupling solved monolithically)

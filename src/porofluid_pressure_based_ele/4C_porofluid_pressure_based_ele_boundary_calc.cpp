@@ -98,7 +98,7 @@ int Discret::Elements::PoroFluidMultiPhaseEleBoundaryCalc<distype>::evaluate(
 
   // check for the action parameter
   const auto action =
-      Teuchos::getIntegralValue<POROFLUIDMULTIPHASE::BoundaryAction>(params, "action");
+      Teuchos::getIntegralValue<PoroPressureBased::BoundaryAction>(params, "action");
   // evaluate action
   evaluate_action(ele, params, discretization, action, la, elemat, elevec);
 
@@ -149,14 +149,14 @@ void Discret::Elements::PoroFluidMultiPhaseEleBoundaryCalc<
 template <Core::FE::CellType distype>
 int Discret::Elements::PoroFluidMultiPhaseEleBoundaryCalc<distype>::evaluate_action(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, POROFLUIDMULTIPHASE::BoundaryAction action,
+    Core::FE::Discretization& discretization, PoroPressureBased::BoundaryAction action,
     Core::Elements::LocationArray& la, std::vector<Core::LinAlg::SerialDenseMatrix*>& elemat,
     std::vector<Core::LinAlg::SerialDenseVector*>& elevec)
 {
   // switch over action type
   switch (action)
   {
-    case POROFLUIDMULTIPHASE::bd_calc_Neumann:
+    case PoroPressureBased::bd_calc_Neumann:
     {
       // check if the neumann conditions were set
       Core::Conditions::Condition* condition =
@@ -184,7 +184,7 @@ int Discret::Elements::PoroFluidMultiPhaseEleBoundaryCalc<distype>::evaluate_neu
 {
   // integration points and weights
   const Core::FE::IntPointsAndWeights<nsd_> intpoints(
-      POROFLUIDMULTIPHASE::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
+      PoroPressureBased::ElementUtils::DisTypeToOptGaussRule<distype>::rule);
 
   // find out whether we will use a time curve
   const double time = params_->time();

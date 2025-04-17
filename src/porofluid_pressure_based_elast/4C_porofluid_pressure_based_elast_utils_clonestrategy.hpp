@@ -21,42 +21,37 @@ namespace Core::Elements
   class Element;
 }
 
-namespace POROMULTIPHASE
+namespace PoroPressureBased
 {
-  namespace Utils
+  /*!
+  \brief implementation of special clone strategy for automatic generation
+         of scatra from a given fluid discretization
+
+   */
+  class PoroFluidMultiPhaseCloneStrategy
   {
-    /*!
-    \brief implementation of special clone strategy for automatic generation
-           of scatra from a given fluid discretization
+   public:
+    /// constructor
+    explicit PoroFluidMultiPhaseCloneStrategy() {}
+    /// destructor
+    virtual ~PoroFluidMultiPhaseCloneStrategy() = default;
+    /// returns conditions names to be copied (source and target name)
+    virtual std::map<std::string, std::string> conditions_to_copy() const;
 
-     */
-    class PoroFluidMultiPhaseCloneStrategy
-    {
-     public:
-      /// constructor
-      explicit PoroFluidMultiPhaseCloneStrategy() {}
-      /// destructor
-      virtual ~PoroFluidMultiPhaseCloneStrategy() = default;
-      /// returns conditions names to be copied (source and target name)
-      virtual std::map<std::string, std::string> conditions_to_copy() const;
+   protected:
+    /// determine element type std::string and whether element is copied or not
+    virtual bool determine_ele_type(
+        Core::Elements::Element* actele, const bool ismyele, std::vector<std::string>& eletype);
 
-     protected:
-      /// determine element type std::string and whether element is copied or not
-      virtual bool determine_ele_type(
-          Core::Elements::Element* actele, const bool ismyele, std::vector<std::string>& eletype);
+    /// set element-specific data (material etc.)
+    void set_element_data(std::shared_ptr<Core::Elements::Element> newele,
+        Core::Elements::Element* oldele, const int matid, const bool isnurbs);
 
-      /// set element-specific data (material etc.)
-      void set_element_data(std::shared_ptr<Core::Elements::Element> newele,
-          Core::Elements::Element* oldele, const int matid, const bool isnurbs);
+    /// check for correct material
+    void check_material_type(const int matid);
+  };  // class PoroFluidMultiPhaseCloneStrategy
 
-      /// check for correct material
-      void check_material_type(const int matid);
-
-     private:
-    };  // class PoroFluidMultiPhaseCloneStrategy
-
-  }  // namespace Utils
-}  // namespace POROMULTIPHASE
+}  // namespace PoroPressureBased
 
 FOUR_C_NAMESPACE_CLOSE
 

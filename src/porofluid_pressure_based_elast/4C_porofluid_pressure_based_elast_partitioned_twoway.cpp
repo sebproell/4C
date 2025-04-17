@@ -22,7 +22,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | constructor                                              vuong 08/16 |
  *----------------------------------------------------------------------*/
-POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::PoroMultiPhasePartitionedTwoWay(
+PoroPressureBased::PoroMultiPhasePartitionedTwoWay::PoroMultiPhasePartitionedTwoWay(
     MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams)
     : PoroMultiPhasePartitioned(comm, globaltimeparams),
       phiincnp_(nullptr),
@@ -39,14 +39,14 @@ POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::PoroMultiPhasePartitionedTwoWay
       itnum_(0),
       writerestartevery_(-1),
       artery_coupling_active_(false),
-      relaxationmethod_(POROMULTIPHASE::RelaxationMethods::relaxation_none)
+      relaxationmethod_(PoroPressureBased::RelaxationMethods::none)
 {
 }
 
 /*----------------------------------------------------------------------*
  | initialization                                            vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::init(
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::init(
     const Teuchos::ParameterList& globaltimeparams, const Teuchos::ParameterList& algoparams,
     const Teuchos::ParameterList& structparams, const Teuchos::ParameterList& fluidparams,
     const std::string& struct_disname, const std::string& fluid_disname, bool isale, int nds_disp,
@@ -54,7 +54,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::init(
     const std::map<int, std::set<int>>* nearbyelepairs)
 {
   // call base class
-  POROMULTIPHASE::PoroMultiPhasePartitioned::init(globaltimeparams, algoparams, structparams,
+  PoroPressureBased::PoroMultiPhasePartitioned::init(globaltimeparams, algoparams, structparams,
       fluidparams, struct_disname, fluid_disname, isale, nds_disp, nds_vel, nds_solidpressure,
       ndsporofluid_scatra, nearbyelepairs);
 
@@ -87,14 +87,14 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::init(
   omegamin_ = algoparams.sublist("PARTITIONED").get<double>("MINOMEGA");
   omegamax_ = algoparams.sublist("PARTITIONED").get<double>("MAXOMEGA");
 
-  relaxationmethod_ = Teuchos::getIntegralValue<POROMULTIPHASE::RelaxationMethods>(
+  relaxationmethod_ = Teuchos::getIntegralValue<PoroPressureBased::RelaxationMethods>(
       algoparams.sublist("PARTITIONED"), "RELAXATION");
 }
 
 /*----------------------------------------------------------------------*
  | setup the system if necessary                             vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::setup_system()
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::setup_system()
 {
   // Do nothing, just monolithic coupling needs this method
   return;
@@ -103,7 +103,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::setup_system()
 /*----------------------------------------------------------------------*
  | Outer Timeloop  without relaxation                        vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::outer_loop()
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::outer_loop()
 {
   // reset counter
   itnum_ = 0;
@@ -167,7 +167,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::outer_loop()
 /*----------------------------------------------------------------------*
  | convergence check for both fields (copied form tsi)       vuong 08/16 |
  *----------------------------------------------------------------------*/
-bool POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::convergence_check(int itnum)
+bool PoroPressureBased::PoroMultiPhasePartitionedTwoWay::convergence_check(int itnum)
 {
   // convergence check based on the scalar increment
   bool stopnonliniter = false;
@@ -279,7 +279,7 @@ bool POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::convergence_check(int itnu
 /*----------------------------------------------------------------------*
  | Solve structure filed                                     vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::do_struct_step()
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::do_struct_step()
 {
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
@@ -300,7 +300,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::do_struct_step()
 /*----------------------------------------------------------------------*
  | Solve poro fluid field                                    vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::do_fluid_step()
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::do_fluid_step()
 {
   // -------------------------------------------------------------------
   //                  solve nonlinear / linear equation
@@ -313,7 +313,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::do_fluid_step()
 /*----------------------------------------------------------------------*
  | Set relaxed fluid solution on structure             kremheller 09/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::set_relaxed_fluid_solution()
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::set_relaxed_fluid_solution()
 {
   // set fluid solution on structure
   structure_field()->discretization()->set_state(1, "porofluid", *fluidphinp_);
@@ -324,7 +324,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::set_relaxed_fluid_solution
 /*----------------------------------------------------------------------*
  | Calculate relaxation parameter omega                kremheller 09/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
     std::shared_ptr<const Core::LinAlg::Vector<double>> phi, const int itnum)
 {
   // get the increment vector
@@ -333,14 +333,14 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
   // perform relaxation
   switch (relaxationmethod_)
   {
-    case POROMULTIPHASE::RelaxationMethods::relaxation_none:
+    case PoroPressureBased::RelaxationMethods::none:
     {
       // no relaxation
       omega_ = 1.0;
       break;
     }
 
-    case POROMULTIPHASE::RelaxationMethods::relaxation_constant:
+    case PoroPressureBased::RelaxationMethods::constant:
     {
       // constant relaxation parameter omega
       omega_ = startomega_;
@@ -349,7 +349,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
       break;
     }
 
-    case POROMULTIPHASE::RelaxationMethods::relaxation_aitken:
+    case PoroPressureBased::RelaxationMethods::aitken:
     {
       // Aitken
       aitken_relaxation(omega_, itnum);
@@ -378,7 +378,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
 /*----------------------------------------------------------------------*
  | Perform Aitken relaxation                           kremheller 09/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::aitken_relaxation(
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::aitken_relaxation(
     double& omega, const int itnum)
 {
   // fluidphiincnpdiff =  r^{i+1}_{n+1} - r^i_{n+1}
@@ -433,7 +433,7 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::aitken_relaxation(
 /*----------------------------------------------------------------------*
  | update the current states in every iteration             vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::iter_update_states()
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::iter_update_states()
 {
   // store last solutions (current states).
   // will be compared in convergence_check to the solutions,
@@ -449,12 +449,12 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::iter_update_states()
 /*-------------------------------------------------------------------------*
  | read restart information for given time step (public) kremheller 09/17  |
  *-------------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::read_restart(int restart)
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::read_restart(int restart)
 {
   if (restart)
   {
     // call base class
-    POROMULTIPHASE::PoroMultiPhaseBase::read_restart(restart);
+    PoroPressureBased::PoroMultiPhaseBase::read_restart(restart);
 
     Core::IO::DiscretizationReader reader(fluid_field()->discretization(),
         Global::Problem::instance()->input_control_file(), restart);
@@ -475,10 +475,10 @@ void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::read_restart(int restart)
 /*----------------------------------------------------------------------*
  | update fields and output results                    kremheller 09/17 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay::update_and_output()
+void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::update_and_output()
 {
   // call base class
-  POROMULTIPHASE::PoroMultiPhaseBase::update_and_output();
+  PoroPressureBased::PoroMultiPhaseBase::update_and_output();
 
   // write interface force and relaxation parameter in restart
   if (writerestartevery_ and step() % writerestartevery_ == 0)

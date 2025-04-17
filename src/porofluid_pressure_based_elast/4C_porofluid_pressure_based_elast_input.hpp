@@ -23,46 +23,28 @@ namespace Core::Conditions
   class ConditionDefinition;
 }  // namespace Core::Conditions
 
-namespace POROMULTIPHASE
+namespace PoroPressureBased
 {
-  /// Type of coupling strategy for POROMULTIPHASE problems
-  enum SolutionSchemeOverFields
+  /// type of coupling strategy for porofluid-elasticity problems
+  enum class SolutionSchemePorofluidElast
   {
-    solscheme_undefined,
-    solscheme_twoway_partitioned,
-    solscheme_twoway_monolithic
-  };
-
-  /// type of finite difference check
-  enum FdCheck
-  {
-    fdcheck_none,
-    fdcheck_global
-  };
-
-  /// type of norm to be calculated
-  enum VectorNorm
-  {
-    norm_undefined,
-    norm_l1,         //!< L1/linear norm
-    norm_l1_scaled,  //!< L1/linear norm scaled by length of vector
-    norm_l2,         //!< L2/Euclidean norm
-    norm_rms,        //!< root mean square (RMS) norm
-    norm_inf         //!< Maximum/infinity norm
+    undefined,
+    twoway_partitioned,
+    twoway_monolithic
   };
 
   //! relaxation methods for partitioned coupling
-  enum RelaxationMethods
+  enum class RelaxationMethods
   {
-    relaxation_none,
-    relaxation_constant,
-    relaxation_aitken
+    none,
+    constant,
+    aitken
   };
 
-  /// set the POROMULTIPHASE parameters
-  void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
+  /// set the valid parameters for porofluid-elasticity problems
+  void set_valid_parameters_porofluid_elast(std::map<std::string, Core::IO::InputSpec>& list);
 
-}  // namespace POROMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

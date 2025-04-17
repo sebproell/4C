@@ -23,14 +23,14 @@ template <int nsd, int nen>
 std::shared_ptr<Discret::Elements::PoroFluidEvaluator::EvaluatorInterface<nsd, nen>>
 Discret::Elements::PoroFluidEvaluator::EvaluatorInterface<nsd, nen>::create_evaluator(
     const Discret::Elements::PoroFluidMultiPhaseEleParameter& para,
-    const POROFLUIDMULTIPHASE::Action& action, int numdofpernode, int numfluidphases,
+    const PoroPressureBased::Action& action, int numdofpernode, int numfluidphases,
     const PoroFluidManager::PhaseManagerInterface& phasemanager)
 {
   // the evaluator
   std::shared_ptr<EvaluatorInterface<nsd, nen>> evaluator = nullptr;
 
   bool inittimederiv = false;
-  if (action == POROFLUIDMULTIPHASE::calc_initial_time_deriv) inittimederiv = true;
+  if (action == PoroPressureBased::calc_initial_time_deriv) inittimederiv = true;
 
   // check if fluidphases present
   const bool hasfluidphases = (numfluidphases > 0);
@@ -42,10 +42,10 @@ Discret::Elements::PoroFluidEvaluator::EvaluatorInterface<nsd, nen>::create_eval
   switch (action)
   {
     // calculate true pressures and saturation
-    case POROFLUIDMULTIPHASE::calc_initial_time_deriv:
-    case POROFLUIDMULTIPHASE::calc_mat_and_rhs:
-    case POROFLUIDMULTIPHASE::calc_fluid_struct_coupl_mat:
-    case POROFLUIDMULTIPHASE::calc_fluid_scatra_coupl_mat:
+    case PoroPressureBased::calc_initial_time_deriv:
+    case PoroPressureBased::calc_mat_and_rhs:
+    case PoroPressureBased::calc_fluid_struct_coupl_mat:
+    case PoroPressureBased::calc_fluid_scatra_coupl_mat:
     {
       // initialize the evaluator for the multi phase element
       std::shared_ptr<MultiEvaluator<nsd, nen>> evaluator_multiphase =
@@ -296,7 +296,7 @@ Discret::Elements::PoroFluidEvaluator::EvaluatorInterface<nsd, nen>::create_eval
       evaluator = evaluator_multiphase;
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_pres_and_sat:
+    case PoroPressureBased::calc_pres_and_sat:
     {
       // initialize the evaluator for the multi phase element
       std::shared_ptr<MultiEvaluator<nsd, nen>> evaluator_multiphase =
@@ -321,21 +321,21 @@ Discret::Elements::PoroFluidEvaluator::EvaluatorInterface<nsd, nen>::create_eval
 
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_solidpressure:
+    case PoroPressureBased::calc_solidpressure:
     {
       std::shared_ptr<AssembleInterface> assembler = std::make_shared<AssembleStandard>(-1, false);
       evaluator = std::make_shared<EvaluatorSolidPressure<nsd, nen>>(assembler, -1);
 
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_porosity:
+    case PoroPressureBased::calc_porosity:
     {
       std::shared_ptr<AssembleInterface> assembler = std::make_shared<AssembleStandard>(-1, false);
       evaluator = std::make_shared<EvaluatorPorosity<nsd, nen>>(assembler, -1);
 
       break;
     }
-    case POROFLUIDMULTIPHASE::recon_flux_at_nodes:
+    case PoroPressureBased::recon_flux_at_nodes:
     {
       // initialize the evaluator for the multi phase element
       std::shared_ptr<MultiEvaluator<nsd, nen>> evaluator_multiphase =
@@ -362,7 +362,7 @@ Discret::Elements::PoroFluidEvaluator::EvaluatorInterface<nsd, nen>::create_eval
 
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_phase_velocities:
+    case PoroPressureBased::calc_phase_velocities:
     {
       std::shared_ptr<MultiEvaluator<nsd, nen>> evaluator_multiphase =
           std::make_shared<MultiEvaluator<nsd, nen>>();
@@ -382,14 +382,14 @@ Discret::Elements::PoroFluidEvaluator::EvaluatorInterface<nsd, nen>::create_eval
 
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_valid_dofs:
+    case PoroPressureBased::calc_valid_dofs:
     {
       std::shared_ptr<AssembleInterface> assembler = std::make_shared<AssembleStandard>(-1, false);
       evaluator = std::make_shared<EvaluatorValidVolFracPressures<nsd, nen>>(assembler, -1);
 
       break;
     }
-    case POROFLUIDMULTIPHASE::calc_domain_integrals:
+    case PoroPressureBased::calc_domain_integrals:
     {
       int numscal = 0;
       if (para.has_scalar()) numscal = phasemanager.num_scal();

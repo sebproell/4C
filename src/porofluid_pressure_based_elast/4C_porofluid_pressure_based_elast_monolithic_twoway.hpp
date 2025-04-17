@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
-#include "4C_porofluid_pressure_based_elast_input.hpp"
 #include "4C_porofluid_pressure_based_elast_monolithic.hpp"
+#include "4C_porofluid_pressure_based_input.hpp"
 
 #include <Teuchos_Time.hpp>
 
@@ -39,7 +39,7 @@ namespace Core::Conditions
   class LocsysManager;
 }
 
-namespace POROMULTIPHASE
+namespace PoroPressureBased
 {
   //! Base class of all solid-scatra algorithms
   class PoroMultiPhaseMonolithicTwoWay : public PoroMultiPhaseMonolithic
@@ -276,8 +276,8 @@ namespace POROMULTIPHASE
     double maxinc_;  //!< maximum increment
     double maxres_;  //!< maximum residual
 
-    enum POROMULTIPHASE::VectorNorm vectornormfres_;  //!< type of norm for residual
-    enum POROMULTIPHASE::VectorNorm vectornorminc_;   //!< type of norm for increments
+    enum PoroPressureBased::VectorNorm vectornormfres_;  //!< type of norm for residual
+    enum PoroPressureBased::VectorNorm vectornorminc_;   //!< type of norm for increments
 
     Teuchos::Time timernewton_;  //!< timer for measurement of solution time of newton iterations
     double dtsolve_;             //!< linear solver time
@@ -287,7 +287,7 @@ namespace POROMULTIPHASE
     std::shared_ptr<Core::Conditions::LocsysManager> locsysman_;
 
     //! flag for finite difference check
-    POROMULTIPHASE::FdCheck fdcheck_;
+    PoroPressureBased::FdCheck fdcheck_;
 
   };  // PoroMultiPhasePartitioned
 
@@ -342,7 +342,7 @@ namespace POROMULTIPHASE
   };
 
 
-}  // namespace POROMULTIPHASE
+}  // namespace PoroPressureBased
 
 FOUR_C_NAMESPACE_CLOSE
 

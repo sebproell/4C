@@ -39,7 +39,7 @@ namespace FSI
   }  // namespace Utils
 }  // namespace FSI
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   class PoroMultiPhaseScaTraArtCouplBase;
 }
@@ -172,7 +172,7 @@ namespace ScaTra
     std::shared_ptr<Adapter::ArtNet> arttimint_;
 
     //! mesh tying object
-    std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase> arttoscatracoupling_;
+    std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase> arttoscatracoupling_;
 
     //! the two discretizations
     std::shared_ptr<Core::FE::Discretization> artscatradis_;

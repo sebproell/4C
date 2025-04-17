@@ -23,7 +23,7 @@ namespace FSI
 }  // namespace FSI
 
 
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   //! Node based coupling between artery network and poromultiphasescatra algorithm
   class PoroMultiPhaseScaTraArtCouplNodeBased : public PoroMultiPhaseScaTraArtCouplBase
@@ -152,7 +152,7 @@ namespace PoroMultiPhaseScaTra
     std::shared_ptr<Coupling::Adapter::MatrixColTransform> sibtransform_;
   };
 
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

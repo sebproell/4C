@@ -15,18 +15,18 @@
 FOUR_C_NAMESPACE_OPEN
 
 // forward declaration
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   class PoroMultiPhaseScaTraArtCouplBase;
 }
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   class MeshtyingStrategyArtery : public MeshtyingStrategyBase
   {
    public:
     //! constructor
-    explicit MeshtyingStrategyArtery(POROFLUIDMULTIPHASE::TimIntImpl* porofluidmultitimint,
+    explicit MeshtyingStrategyArtery(PoroPressureBased::TimIntImpl* porofluidmultitimint,
         const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams);
 
 
@@ -110,7 +110,7 @@ namespace POROFLUIDMULTIPHASE
     std::shared_ptr<Core::FE::Discretization> arterydis_;
 
     //! the mesh tying object
-    std::shared_ptr<PoroMultiPhaseScaTra::PoroMultiPhaseScaTraArtCouplBase> arttoporofluidcoupling_;
+    std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase> arttoporofluidcoupling_;
 
     //! block systemmatrix
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> comb_systemmatrix_;
@@ -125,7 +125,7 @@ namespace POROFLUIDMULTIPHASE
     std::shared_ptr<Core::LinAlg::Vector<double>> comb_phinp_;
   };
 
-}  // namespace POROFLUIDMULTIPHASE
+}  // namespace PoroPressureBased
 
 
 

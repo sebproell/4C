@@ -10,9 +10,12 @@
 #include "4C_inpar_bio.hpp"
 #include "4C_io_input_spec_builders.hpp"
 
+#include <Teuchos_Time.hpp>
+
 FOUR_C_NAMESPACE_OPEN
 
-void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void PoroPressureBased::set_valid_parameters_porofluid(
+    std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -36,17 +39,18 @@ void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::I
 
           deprecated_selection<TimeIntegrationScheme>("TIMEINTEGR",
               {
-                  {"One_Step_Theta", timeint_one_step_theta},
+                  {"One_Step_Theta", TimeIntegrationScheme::one_step_theta},
               },
-              {.description = "Time Integration Scheme", .default_value = timeint_one_step_theta}),
+              {.description = "Time Integration Scheme",
+                  .default_value = TimeIntegrationScheme::one_step_theta}),
 
           deprecated_selection<CalcError>("CALCERROR",
               {
-                  {"No", calcerror_no},
-                  {"error_by_function", calcerror_byfunction},
+                  {"No", CalcError::no},
+                  {"error_by_function", CalcError::by_function},
               },
               {.description = "compute error compared to analytical solution",
-                  .default_value = calcerror_no}),
+                  .default_value = CalcError::no}),
 
           parameter<int>("CALCERRORNO",
               {.description = "function number for porofluidmultiphase error computation",
@@ -76,11 +80,11 @@ void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::I
           // parameters for finite difference check
           deprecated_selection<FdCheck>("FDCHECK",
               {
-                  {"none", fdcheck_none},
-                  {"global", fdcheck_global},
+                  {"none", FdCheck::none},
+                  {"global", FdCheck::global},
               },
               {.description = "flag for finite difference check: none, local, or global",
-                  .default_value = fdcheck_none}),
+                  .default_value = FdCheck::none}),
           parameter<double>("FDCHECKEPS",
               {.description = "dof perturbation magnitude for finite difference check (1.e-6 "
                               "seems to work very well, whereas smaller values don't)",
@@ -114,25 +118,25 @@ void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::I
 
           deprecated_selection<VectorNorm>("VECTORNORM_RESF",
               {
-                  {"L1", POROFLUIDMULTIPHASE::norm_l1},
-                  {"L1_Scaled", POROFLUIDMULTIPHASE::norm_l1_scaled},
-                  {"L2", POROFLUIDMULTIPHASE::norm_l2},
-                  {"Rms", POROFLUIDMULTIPHASE::norm_rms},
-                  {"Inf", POROFLUIDMULTIPHASE::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = POROFLUIDMULTIPHASE::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_INC",
               {
-                  {"L1", POROFLUIDMULTIPHASE::norm_l1},
-                  {"L1_Scaled", POROFLUIDMULTIPHASE::norm_l1_scaled},
-                  {"L2", POROFLUIDMULTIPHASE::norm_l2},
-                  {"Rms", POROFLUIDMULTIPHASE::norm_rms},
-                  {"Inf", POROFLUIDMULTIPHASE::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = POROFLUIDMULTIPHASE::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           // Iterationparameters
           parameter<double>(
@@ -144,25 +148,25 @@ void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::I
 
           deprecated_selection<InitialField>("INITIALFIELD",
               {
-                  {"zero_field", initfield_zero_field},
-                  {"field_by_function", initfield_field_by_function},
-                  {"field_by_condition", initfield_field_by_condition},
+                  {"zero_field", InitialField::zero},
+                  {"field_by_function", InitialField::by_function},
+                  {"field_by_condition", InitialField::by_condition},
               },
-              {.description = "Initial Field for transport problem",
-                  .default_value = initfield_zero_field}),
+              {.description = "Initial Field for the porofluid problem",
+                  .default_value = InitialField::zero}),
 
           parameter<int>(
               "INITFUNCNO", {.description = "function number for scalar transport initial field",
                                 .default_value = -1}),
 
-          deprecated_selection<DivContAct>("DIVERCONT",
+          deprecated_selection<DivergenceAction>("DIVERCONT",
               {
-                  {"stop", divcont_stop},
-                  {"continue", divcont_continue},
+                  {"stop", DivergenceAction::stop},
+                  {"continue", DivergenceAction::continue_anyway},
               },
               {.description =
                       "What to do with time integration when Newton-Raphson iteration failed",
-                  .default_value = divcont_stop}),
+                  .default_value = DivergenceAction::stop}),
 
           parameter<int>(
               "FLUX_PROJ_SOLVER", {.description = "Number of linear solver used for L2 projection",
@@ -171,11 +175,11 @@ void POROFLUIDMULTIPHASE::set_valid_parameters(std::map<std::string, Core::IO::I
 
           deprecated_selection<FluxReconstructionMethod>("FLUX_PROJ_METHOD",
               {
-                  {"none", gradreco_none},
-                  {"L2_projection", gradreco_l2},
+                  {"none", FluxReconstructionMethod::none},
+                  {"L2_projection", FluxReconstructionMethod::l2},
               },
               {.description = "Flag to (de)activate flux reconstruction.",
-                  .default_value = gradreco_none}),
+                  .default_value = FluxReconstructionMethod::none}),
 
           // functions used for domain integrals
           parameter<std::string>("DOMAININT_FUNCT",

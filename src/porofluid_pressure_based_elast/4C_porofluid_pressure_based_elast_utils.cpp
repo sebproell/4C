@@ -26,9 +26,10 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | setup discretizations and dofsets                         vuong 08/16 |
  *----------------------------------------------------------------------*/
-std::map<int, std::set<int>> POROMULTIPHASE::Utils::setup_discretizations_and_field_coupling(
-    MPI_Comm comm, const std::string& struct_disname, const std::string& fluid_disname,
-    int& nds_disp, int& nds_vel, int& nds_solidpressure)
+std::map<int, std::set<int>>
+PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(MPI_Comm comm,
+    const std::string& struct_disname, const std::string& fluid_disname, int& nds_disp,
+    int& nds_vel, int& nds_solidpressure)
 {
   // Scheme   : the structure discretization is received from the input.
   //            Then, a poro fluid disc. is cloned.
@@ -78,7 +79,7 @@ std::map<int, std::set<int>> POROMULTIPHASE::Utils::setup_discretizations_and_fi
       case Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp:
       {
         // perform extended ghosting on artery discretization
-        nearbyelepairs = POROFLUIDMULTIPHASE::Utils::extended_ghosting_artery_discretization(
+        nearbyelepairs = PoroPressureBased::extended_ghosting_artery_discretization(
             *structdis, arterydis, evaluate_on_lateral_surface, arterycoupl);
         break;
       }
@@ -97,7 +98,7 @@ std::map<int, std::set<int>> POROMULTIPHASE::Utils::setup_discretizations_and_fi
   if (fluiddis->num_global_nodes() == 0)
   {
     // fill poro fluid discretization by cloning structure discretization
-    Core::FE::clone_discretization<POROMULTIPHASE::Utils::PoroFluidMultiPhaseCloneStrategy>(
+    Core::FE::clone_discretization<PoroPressureBased::PoroFluidMultiPhaseCloneStrategy>(
         *structdis, *fluiddis, Global::Problem::instance()->cloning_material_map());
   }
   else
@@ -138,7 +139,7 @@ std::map<int, std::set<int>> POROMULTIPHASE::Utils::setup_discretizations_and_fi
 /*----------------------------------------------------------------------*
  | exchange material pointers of both discretizations       vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROMULTIPHASE::Utils::assign_material_pointers(
+void PoroPressureBased::assign_material_pointers_porofluid_elast(
     const std::string& struct_disname, const std::string& fluid_disname)
 {
   Global::Problem* problem = Global::Problem::instance();
@@ -152,34 +153,35 @@ void POROMULTIPHASE::Utils::assign_material_pointers(
 /*----------------------------------------------------------------------*
  | create algorithm                                                      |
  *----------------------------------------------------------------------*/
-std::shared_ptr<POROMULTIPHASE::PoroMultiPhase>
-POROMULTIPHASE::Utils::create_poro_multi_phase_algorithm(
-    POROMULTIPHASE::SolutionSchemeOverFields solscheme, const Teuchos::ParameterList& timeparams,
-    MPI_Comm comm)
+std::shared_ptr<PoroPressureBased::PoroMultiPhase>
+PoroPressureBased::create_algorithm_porofluid_elast(
+    PoroPressureBased::SolutionSchemePorofluidElast solscheme,
+    const Teuchos::ParameterList& timeparams, MPI_Comm comm)
 {
   // Creation of Coupled Problem algorithm.
-  std::shared_ptr<POROMULTIPHASE::PoroMultiPhase> algo = nullptr;
+  std::shared_ptr<PoroPressureBased::PoroMultiPhase> algo = nullptr;
 
   switch (solscheme)
   {
-    case POROMULTIPHASE::solscheme_twoway_partitioned:
+    case SolutionSchemePorofluidElast::twoway_partitioned:
     {
       // call constructor
-      algo = std::make_shared<POROMULTIPHASE::PoroMultiPhasePartitionedTwoWay>(comm, timeparams);
+      algo = std::make_shared<PoroPressureBased::PoroMultiPhasePartitionedTwoWay>(comm, timeparams);
       break;
     }
-    case POROMULTIPHASE::solscheme_twoway_monolithic:
+    case SolutionSchemePorofluidElast::twoway_monolithic:
     {
       const bool artery_coupl = timeparams.get<bool>("ARTERY_COUPLING");
       if (!artery_coupl)
       {
         // call constructor
-        algo = std::make_shared<POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWay>(comm, timeparams);
+        algo =
+            std::make_shared<PoroPressureBased::PoroMultiPhaseMonolithicTwoWay>(comm, timeparams);
       }
       else
       {
         // call constructor
-        algo = std::make_shared<POROMULTIPHASE::PoroMultiPhaseMonolithicTwoWayArteryCoupling>(
+        algo = std::make_shared<PoroPressureBased::PoroMultiPhaseMonolithicTwoWayArteryCoupling>(
             comm, timeparams);
       }
       break;
@@ -192,81 +194,5 @@ POROMULTIPHASE::Utils::create_poro_multi_phase_algorithm(
   return algo;
 }
 
-/*----------------------------------------------------------------------*
- | calculate vector norm                             kremheller 07/17   |
- *----------------------------------------------------------------------*/
-double POROMULTIPHASE::Utils::calculate_vector_norm(
-    const enum POROMULTIPHASE::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
-{
-  // L1 norm
-  // norm = sum_0^i vect[i]
-  if (norm == POROMULTIPHASE::norm_l1)
-  {
-    double vectnorm;
-    vect.norm_1(&vectnorm);
-    return vectnorm;
-  }
-  // L2/Euclidian norm
-  // norm = sqrt{sum_0^i vect[i]^2 }
-  else if (norm == POROMULTIPHASE::norm_l2)
-  {
-    double vectnorm;
-    vect.norm_2(&vectnorm);
-    return vectnorm;
-  }
-  // RMS norm
-  // norm = sqrt{sum_0^i vect[i]^2 }/ sqrt{length_vect}
-  else if (norm == POROMULTIPHASE::norm_rms)
-  {
-    double vectnorm;
-    vect.norm_2(&vectnorm);
-    return vectnorm / sqrt((double)vect.global_length());
-  }
-  // infinity/maximum norm
-  // norm = max( vect[i] )
-  else if (norm == POROMULTIPHASE::norm_inf)
-  {
-    double vectnorm;
-    vect.norm_inf(&vectnorm);
-    return vectnorm;
-  }
-  // norm = sum_0^i vect[i]/length_vect
-  else if (norm == POROMULTIPHASE::norm_l1_scaled)
-  {
-    double vectnorm;
-    vect.norm_1(&vectnorm);
-    return vectnorm / ((double)vect.global_length());
-  }
-  else
-  {
-    FOUR_C_THROW("Cannot handle vector norm");
-    return 0;
-  }
-}  // calculate_vector_norm()
-
-/*----------------------------------------------------------------------*
- |                                                    kremheller 03/17  |
- *----------------------------------------------------------------------*/
-void POROMULTIPHASE::print_logo()
-{
-  std::cout << "This is a Porous Media problem with multiphase flow and deformation" << std::endl;
-  std::cout << "" << std::endl;
-  std::cout << "              +----------+" << std::endl;
-  std::cout << "              |  Krebs-  |" << std::endl;
-  std::cout << "              |  Model  |" << std::endl;
-  std::cout << "              +----------+" << std::endl;
-  std::cout << "              |          |" << std::endl;
-  std::cout << "              |          |" << std::endl;
-  std::cout << " /\\           |          /\\" << std::endl;
-  std::cout << "( /   @ @    (|)        ( /   @ @    ()" << std::endl;
-  std::cout << " \\  __| |__  /           \\  __| |__  /" << std::endl;
-  std::cout << "  \\/   \"   \\/             \\/   \"   \\/" << std::endl;
-  std::cout << " /-|       |-\\           /-|       |-\\" << std::endl;
-  std::cout << "/ /-\\     /-\\ \\         / /-\\     /-\\ \\" << std::endl;
-  std::cout << " / /-`---'-\\ \\           / /-`---'-\\ \\" << std::endl;
-  std::cout << "  /         \\             /         \\" << std::endl;
-
-  return;
-}
 
 FOUR_C_NAMESPACE_CLOSE

@@ -57,7 +57,7 @@ namespace Core
     class FunctionOfAnything;
   }
 }  // namespace Core
-namespace PoroMultiPhaseScaTra
+namespace PoroPressureBased
 {
   class PoroMultiPhaseScatraArteryCouplingPairBase
   {
@@ -732,7 +732,7 @@ namespace PoroMultiPhaseScaTra
     std::shared_ptr<Mat::Cnst1dArt> arterymat_;
   };
 
-}  // namespace PoroMultiPhaseScaTra
+}  // namespace PoroPressureBased
 
 
 FOUR_C_NAMESPACE_CLOSE

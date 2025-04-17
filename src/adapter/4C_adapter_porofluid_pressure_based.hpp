@@ -26,7 +26,7 @@ namespace Core::FE
   class Discretization;
 }  // namespace Core::FE
 
-namespace POROFLUIDMULTIPHASE
+namespace PoroPressureBased
 {
   class TimIntImpl;
 }

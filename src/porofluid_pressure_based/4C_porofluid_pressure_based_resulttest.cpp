@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | ctor                                                     vuong 08/16 |
  *----------------------------------------------------------------------*/
-POROFLUIDMULTIPHASE::ResultTest::ResultTest(TimIntImpl& porotimint)
+PoroPressureBased::ResultTest::ResultTest(TimIntImpl& porotimint)
     : Core::Utils::ResultTest("POROFLUIDMULTIPHASE"), porotimint_(porotimint)
 {
   return;
@@ -31,7 +31,7 @@ POROFLUIDMULTIPHASE::ResultTest::ResultTest(TimIntImpl& porotimint)
 /*----------------------------------------------------------------------*
  | test node                                                vuong 08/16 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::ResultTest::test_node(
+void PoroPressureBased::ResultTest::test_node(
     const Core::IO::InputParameterContainer& container, int& nerr, int& test_count)
 {
   // care for the case of multiple discretizations of the same field type
@@ -79,7 +79,7 @@ void POROFLUIDMULTIPHASE::ResultTest::test_node(
 /*----------------------------------------------------------------------*
  | test element                                        kremheller 10/19 |
  *----------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::ResultTest::test_element(
+void PoroPressureBased::ResultTest::test_element(
     const Core::IO::InputParameterContainer& container, int& nerr, int& test_count)
 {
   // care for the case of multiple discretizations of the same field type
@@ -127,7 +127,7 @@ void POROFLUIDMULTIPHASE::ResultTest::test_element(
 /*----------------------------------------------------------------------*
  | get nodal result to be tested                            vuong 08/16 |
  *----------------------------------------------------------------------*/
-double POROFLUIDMULTIPHASE::ResultTest::result_node(
+double PoroPressureBased::ResultTest::result_node(
     const std::string quantity, Core::Nodes::Node* node) const
 {
   // initialize variable for result
@@ -208,7 +208,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_node(
 /*----------------------------------------------------------------------*
  | get element result to be tested                     kremheller 10/19 |
  *----------------------------------------------------------------------*/
-double POROFLUIDMULTIPHASE::ResultTest::result_element(
+double PoroPressureBased::ResultTest::result_element(
     const std::string quantity, const Core::Elements::Element* element) const
 {
   // initialize variable for result
@@ -253,7 +253,7 @@ double POROFLUIDMULTIPHASE::ResultTest::result_element(
 /*-------------------------------------------------------------------------------------*
  | test special quantity not associated with a particular element or node  vuong 08/16 |
  *-------------------------------------------------------------------------------------*/
-void POROFLUIDMULTIPHASE::ResultTest::test_special(
+void PoroPressureBased::ResultTest::test_special(
     const Core::IO::InputParameterContainer& container, int& nerr, int& test_count)
 {
   // make sure that quantity is tested only once
@@ -276,7 +276,7 @@ void POROFLUIDMULTIPHASE::ResultTest::test_special(
 /*----------------------------------------------------------------------*
  | get special result to be tested                          vuong 08/16 |
  *----------------------------------------------------------------------*/
-double POROFLUIDMULTIPHASE::ResultTest::result_special(
+double PoroPressureBased::ResultTest::result_special(
     const std::string quantity  //! name of quantity to be tested
 ) const
 {

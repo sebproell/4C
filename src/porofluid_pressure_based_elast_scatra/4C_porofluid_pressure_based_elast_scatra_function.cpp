@@ -27,8 +27,8 @@ namespace
 
     if (type == "TUMOR_GROWTH_LAW_HEAVISIDE")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>>(
-          PoroMultiPhaseScaTra::TumorGrowthLawHeavisideParameters{
+      return std::make_shared<PoroPressureBased::TumorGrowthLawHeaviside<dim>>(
+          PoroPressureBased::TumorGrowthLawHeavisideParameters{
               .gamma_T_growth = parameters.get<double>("gamma_T_growth"),
               .w_nl_crit = parameters.get<double>("w_nl_crit"),
               .w_nl_env = parameters.get<double>("w_nl_env"),
@@ -38,8 +38,8 @@ namespace
     }
     if (type == "NECROSIS_LAW_HEAVISIDE")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>>(
-          PoroMultiPhaseScaTra::NecrosisLawHeavisideParameters{
+      return std::make_shared<PoroPressureBased::NecrosisLawHeaviside<dim>>(
+          PoroPressureBased::NecrosisLawHeavisideParameters{
               .gamma_t_necr = parameters.get<double>("gamma_t_necr"),
               .w_nl_crit = parameters.get<double>("w_nl_crit"),
               .w_nl_env = parameters.get<double>("w_nl_env"),
@@ -49,8 +49,8 @@ namespace
     }
     if (type == "OXYGEN_CONSUMPTION_LAW_HEAVISIDE")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>>(
-          PoroMultiPhaseScaTra::OxygenConsumptionLawHeavisideParameters{
+      return std::make_shared<PoroPressureBased::OxygenConsumptionLawHeaviside<dim>>(
+          PoroPressureBased::OxygenConsumptionLawHeavisideParameters{
               .gamma_nl_growth = parameters.get<double>("gamma_nl_growth"),
               .gamma_0_nl = parameters.get<double>("gamma_0_nl"),
               .w_nl_crit = parameters.get<double>("w_nl_crit"),
@@ -60,8 +60,8 @@ namespace
     }
     if (type == "TUMOR_GROWTH_LAW_HEAVISIDE_OXY")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>>(
-          PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecroOxyParameters{
+      return std::make_shared<PoroPressureBased::TumorGrowthLawHeavisideOxy<dim>>(
+          PoroPressureBased::TumorGrowthLawHeavisideNecroOxyParameters{
               .gamma_T_growth = parameters.get<double>("gamma_T_growth"),
               .w_nl_crit = parameters.get<double>("w_nl_crit"),
               .w_nl_env = parameters.get<double>("w_nl_env"),
@@ -71,8 +71,8 @@ namespace
     }
     if (type == "TUMOR_GROWTH_LAW_HEAVISIDE_NECRO")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>>(
-          PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecroOxyParameters{
+      return std::make_shared<PoroPressureBased::TumorGrowthLawHeavisideNecro<dim>>(
+          PoroPressureBased::TumorGrowthLawHeavisideNecroOxyParameters{
               .gamma_T_growth = parameters.get<double>("gamma_T_growth"),
               .w_nl_crit = parameters.get<double>("w_nl_crit"),
               .w_nl_env = parameters.get<double>("w_nl_env"),
@@ -82,8 +82,8 @@ namespace
     }
     if (type == "OXYGEN_TRANSVASCULAR_EXCHANGE_LAW_CONT")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>>(
-          PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawContParameters{
+      return std::make_shared<PoroPressureBased::OxygenTransvascularExchangeLawCont<dim>>(
+          PoroPressureBased::OxygenTransvascularExchangeLawContParameters{
               .n = parameters.get<double>("n"),
               .Pb50 = parameters.get<double>("Pb50"),
               .CaO2_max = parameters.get<double>("CaO2_max"),
@@ -97,8 +97,8 @@ namespace
     }
     if (type == "OXYGEN_TRANSVASCULAR_EXCHANGE_LAW_DISC")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>>(
-          PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDiscParameters{
+      return std::make_shared<PoroPressureBased::OxygenTransvascularExchangeLawDisc<dim>>(
+          PoroPressureBased::OxygenTransvascularExchangeLawDiscParameters{
               .n = parameters.get<double>("n"),
               .Pb50 = parameters.get<double>("Pb50"),
               .CaO2_max = parameters.get<double>("CaO2_max"),
@@ -113,8 +113,8 @@ namespace
     }
     if (type == "LUNG_OXYGEN_EXCHANGE_LAW")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>>(
-          PoroMultiPhaseScaTra::LungOxygenExchangeLawParameters{
+      return std::make_shared<PoroPressureBased::LungOxygenExchangeLaw<dim>>(
+          PoroPressureBased::LungOxygenExchangeLawParameters{
               .rho_oxy = parameters.get<double>("rho_oxy"),
               .DiffAdVTLC = parameters.get<double>("DiffAdVTLC"),
               .alpha_oxy = parameters.get<double>("alpha_oxy"),
@@ -129,8 +129,8 @@ namespace
     }
     if (type == "LUNG_CARBONDIOXIDE_EXCHANGE_LAW")
     {
-      return std::make_shared<PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>>(
-          PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLawParameters{
+      return std::make_shared<PoroPressureBased::LungCarbonDioxideExchangeLaw<dim>>(
+          PoroPressureBased::LungCarbonDioxideExchangeLawParameters{
               .rho_CO2 = parameters.get<double>("rho_CO2"),
               .DiffsolAdVTLC = parameters.get<double>("DiffsolAdVTLC"),
               .pH = parameters.get<double>("pH"),
@@ -186,14 +186,14 @@ namespace
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::PoroMultiPhaseScaTraFunction<dim>::PoroMultiPhaseScaTraFunction()
+PoroPressureBased::PoroMultiPhaseScaTraFunction<dim>::PoroMultiPhaseScaTraFunction()
     : order_checked_(false)
 {
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager& function_manager)
+void PoroPressureBased::add_valid_poro_functions(Core::Utils::FunctionManager& function_manager)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -314,7 +314,7 @@ void PoroMultiPhaseScaTra::add_valid_poro_functions(Core::Utils::FunctionManager
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::TumorGrowthLawHeaviside(
+PoroPressureBased::TumorGrowthLawHeaviside<dim>::TumorGrowthLawHeaviside(
     const TumorGrowthLawHeavisideParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters)
 {
@@ -324,7 +324,7 @@ PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::TumorGrowthLawHeaviside(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::check_order(
+void PoroPressureBased::TumorGrowthLawHeaviside<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -349,7 +349,7 @@ void PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::evaluate(
+double PoroPressureBased::TumorGrowthLawHeaviside<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -378,7 +378,7 @@ double PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::TumorGrowthLawHeaviside<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -425,7 +425,7 @@ std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<dim>::evaluate
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::NecrosisLawHeaviside(
+PoroPressureBased::NecrosisLawHeaviside<dim>::NecrosisLawHeaviside(
     const NecrosisLawHeavisideParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters)
 {
@@ -435,7 +435,7 @@ PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::NecrosisLawHeaviside(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::check_order(
+void PoroPressureBased::NecrosisLawHeaviside<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -460,7 +460,7 @@ void PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::evaluate(
+double PoroPressureBased::NecrosisLawHeaviside<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -490,7 +490,7 @@ double PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double> PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::NecrosisLawHeaviside<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -560,7 +560,7 @@ std::vector<double> PoroMultiPhaseScaTra::NecrosisLawHeaviside<dim>::evaluate_de
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::OxygenConsumptionLawHeaviside(
+PoroPressureBased::OxygenConsumptionLawHeaviside<dim>::OxygenConsumptionLawHeaviside(
     const OxygenConsumptionLawHeavisideParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters)
 {
@@ -569,7 +569,7 @@ PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::OxygenConsumptionLawHe
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::check_order(
+void PoroPressureBased::OxygenConsumptionLawHeaviside<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -594,7 +594,7 @@ void PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::evaluate(
+double PoroPressureBased::OxygenConsumptionLawHeaviside<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -626,7 +626,7 @@ double PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double> PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::OxygenConsumptionLawHeaviside<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -702,7 +702,7 @@ std::vector<double> PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<dim>::ev
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::TumorGrowthLawHeavisideOxy(
+PoroPressureBased::TumorGrowthLawHeavisideOxy<dim>::TumorGrowthLawHeavisideOxy(
     const TumorGrowthLawHeavisideNecroOxyParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters)
 {
@@ -711,7 +711,7 @@ PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::TumorGrowthLawHeavisideOx
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::check_order(
+void PoroPressureBased::TumorGrowthLawHeavisideOxy<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -736,7 +736,7 @@ void PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::evaluate(
+double PoroPressureBased::TumorGrowthLawHeavisideOxy<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -767,7 +767,7 @@ double PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::TumorGrowthLawHeavisideOxy<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -839,7 +839,7 @@ std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<dim>::evalu
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::TumorGrowthLawHeavisideNecro(
+PoroPressureBased::TumorGrowthLawHeavisideNecro<dim>::TumorGrowthLawHeavisideNecro(
     const TumorGrowthLawHeavisideNecroOxyParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters)
 {
@@ -848,7 +848,7 @@ PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::TumorGrowthLawHeaviside
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::check_order(
+void PoroPressureBased::TumorGrowthLawHeavisideNecro<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -873,7 +873,7 @@ void PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::evaluate(
+double PoroPressureBased::TumorGrowthLawHeavisideNecro<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -906,7 +906,7 @@ double PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::TumorGrowthLawHeavisideNecro<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -982,7 +982,7 @@ std::vector<double> PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<dim>::eva
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::OxygenTransvascularExchangeLawCont(
+PoroPressureBased::OxygenTransvascularExchangeLawCont<dim>::OxygenTransvascularExchangeLawCont(
     const OxygenTransvascularExchangeLawContParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters)
 {
@@ -991,7 +991,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::OxygenTransvascul
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::check_order(
+void PoroPressureBased::OxygenTransvascularExchangeLawCont<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -1016,7 +1016,7 @@ void PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate(
+double PoroPressureBased::OxygenTransvascularExchangeLawCont<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -1035,7 +1035,7 @@ double PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate(
   // safety check --> should not be larger than CaO2_max, which already corresponds to partial
   // pressures of ~250Pa
   CaO2 = std::max(0.0, std::min(CaO2, 1.0 * parameters_.CaO2_max));
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(
+  PoroPressureBased::get_oxy_partial_pressure_from_concentration<double>(
       Pb, CaO2, parameters_.CaO2_max, parameters_.Pb50, parameters_.n, parameters_.alpha_bl_eff);
 
   // evaluate function
@@ -1049,8 +1049,7 @@ double PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double>
-PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::OxygenTransvascularExchangeLawCont<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -1089,7 +1088,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate_derivati
   // safety check --> should not be larger than CaO2_max, which already corresponds to partial
   // pressures of ~250Pa
   CaO2 = std::max(0.0, std::min(CaO2, 1.0 * parameters_.CaO2_max));
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<FAD>(
+  PoroPressureBased::get_oxy_partial_pressure_from_concentration<FAD>(
       Pb, CaO2, parameters_.CaO2_max, parameters_.Pb50, parameters_.n, parameters_.alpha_bl_eff);
   const double heaviside_oxy((Pb - oxy_mass_frac_if / fac_if) > 0. ? 1. : 0.);
 
@@ -1113,7 +1112,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<dim>::evaluate_derivati
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::OxygenTransvascularExchangeLawDisc(
+PoroPressureBased::OxygenTransvascularExchangeLawDisc<dim>::OxygenTransvascularExchangeLawDisc(
     const OxygenTransvascularExchangeLawDiscParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters), pos_oxy_art_(-1), pos_diam_(-1)
 {
@@ -1122,7 +1121,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::OxygenTransvascul
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::check_order(
+void PoroPressureBased::OxygenTransvascularExchangeLawDisc<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -1159,7 +1158,7 @@ void PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate(
+double PoroPressureBased::OxygenTransvascularExchangeLawDisc<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -1179,7 +1178,7 @@ double PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate(
   // safety check --> should not be larger than CaO2_max, which already corresponds to partial
   // pressures of ~250Pa
   CaO2 = std::max(0.0, std::min(CaO2, 1.0 * parameters_.CaO2_max));
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(
+  PoroPressureBased::get_oxy_partial_pressure_from_concentration<double>(
       Pb, CaO2, parameters_.CaO2_max, parameters_.Pb50, parameters_.n, parameters_.alpha_bl_eff);
 
   // evaluate function
@@ -1193,8 +1192,7 @@ double PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double>
-PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::OxygenTransvascularExchangeLawDisc<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -1218,7 +1216,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate_derivati
   // safety check --> should not be larger than CaO2_max, which already corresponds to partial
   // pressures of ~250Pa
   CaO2 = std::max(0.0, std::min(CaO2, 1.0 * parameters_.CaO2_max));
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<FAD>(
+  PoroPressureBased::get_oxy_partial_pressure_from_concentration<FAD>(
       Pb, CaO2, parameters_.CaO2_max, parameters_.Pb50, parameters_.n, parameters_.alpha_bl_eff);
 
   // evaluate function
@@ -1233,7 +1231,7 @@ PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<dim>::evaluate_derivati
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::LungOxygenExchangeLaw(
+PoroPressureBased::LungOxygenExchangeLaw<dim>::LungOxygenExchangeLaw(
     const LungOxygenExchangeLawParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters)
 {
@@ -1242,7 +1240,7 @@ PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::LungOxygenExchangeLaw(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::check_order(
+void PoroPressureBased::LungOxygenExchangeLaw<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -1289,7 +1287,7 @@ void PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate(
+double PoroPressureBased::LungOxygenExchangeLaw<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -1321,7 +1319,7 @@ double PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate(
   double P_oB = 0.0;
 
   // Calculate partial pressure of oxygen in blood
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(
+  PoroPressureBased::get_oxy_partial_pressure_from_concentration<double>(
       P_oB, CoB_total, parameters_.NC_Hb, parameters_.P_oB50, parameters_.n, parameters_.alpha_oxy);
 
   // evaluate function
@@ -1334,7 +1332,7 @@ double PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::LungOxygenExchangeLaw<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -1381,7 +1379,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_d
   FAD P_oB = 0.0;
   FAD C_oB_total = oxy_mass_frac_bl * parameters_.rho_bl / parameters_.rho_oxy;
 
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<FAD>(P_oB, C_oB_total,
+  PoroPressureBased::get_oxy_partial_pressure_from_concentration<FAD>(P_oB, C_oB_total,
       parameters_.NC_Hb, parameters_.P_oB50, parameters_.n, parameters_.alpha_oxy);
 
 
@@ -1416,7 +1414,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungOxygenExchangeLaw<dim>::evaluate_d
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::LungCarbonDioxideExchangeLaw(
+PoroPressureBased::LungCarbonDioxideExchangeLaw<dim>::LungCarbonDioxideExchangeLaw(
     const LungCarbonDioxideExchangeLawParameters& parameters)
     : PoroMultiPhaseScaTraFunction<dim>(), parameters_(parameters)
 {
@@ -1425,7 +1423,7 @@ PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::LungCarbonDioxideExchan
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-void PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::check_order(
+void PoroPressureBased::LungCarbonDioxideExchangeLaw<dim>::check_order(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants) const
 {
@@ -1474,7 +1472,7 @@ void PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::check_order(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-double PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::evaluate(
+double PoroPressureBased::LungCarbonDioxideExchangeLaw<dim>::evaluate(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -1507,7 +1505,7 @@ double PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::evaluate(
   double P_O2B = 0.0;
 
   // Calculate partial pressure of oxygen in blood
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<double>(P_O2B, CoB_total,
+  PoroPressureBased::get_oxy_partial_pressure_from_concentration<double>(P_O2B, CoB_total,
       parameters_.NC_Hb, parameters_.P_oB50, parameters_.n, parameters_.alpha_oxy);
 
   // saturation of hemoglobin with oxygen from hill equation
@@ -1535,7 +1533,7 @@ double PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::evaluate(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 template <int dim>
-std::vector<double> PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::evaluate_derivative(
+std::vector<double> PoroPressureBased::LungCarbonDioxideExchangeLaw<dim>::evaluate_derivative(
     const std::vector<std::pair<std::string, double>>& variables,
     const std::vector<std::pair<std::string, double>>& constants, const size_t component) const
 {
@@ -1585,7 +1583,7 @@ std::vector<double> PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::eva
   FAD P_O2B = 0.0;
   FAD C_oB_total = O2_mass_frac_bl * parameters_.rho_bl / parameters_.rho_oxy;
 
-  PoroMultiPhaseScaTra::Utils::get_oxy_partial_pressure_from_concentration<FAD>(P_O2B, C_oB_total,
+  PoroPressureBased::get_oxy_partial_pressure_from_concentration<FAD>(P_O2B, C_oB_total,
       parameters_.NC_Hb, parameters_.P_oB50, parameters_.n, parameters_.alpha_oxy);
 
   // saturation of hemoglobin with oxygen from hill equation
@@ -1647,40 +1645,40 @@ std::vector<double> PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<dim>::eva
 
 // explicit instantiations
 
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<1>;
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<2>;
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeaviside<3>;
+template class PoroPressureBased::TumorGrowthLawHeaviside<1>;
+template class PoroPressureBased::TumorGrowthLawHeaviside<2>;
+template class PoroPressureBased::TumorGrowthLawHeaviside<3>;
 
-template class PoroMultiPhaseScaTra::NecrosisLawHeaviside<1>;
-template class PoroMultiPhaseScaTra::NecrosisLawHeaviside<2>;
-template class PoroMultiPhaseScaTra::NecrosisLawHeaviside<3>;
+template class PoroPressureBased::NecrosisLawHeaviside<1>;
+template class PoroPressureBased::NecrosisLawHeaviside<2>;
+template class PoroPressureBased::NecrosisLawHeaviside<3>;
 
-template class PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<1>;
-template class PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<2>;
-template class PoroMultiPhaseScaTra::OxygenConsumptionLawHeaviside<3>;
+template class PoroPressureBased::OxygenConsumptionLawHeaviside<1>;
+template class PoroPressureBased::OxygenConsumptionLawHeaviside<2>;
+template class PoroPressureBased::OxygenConsumptionLawHeaviside<3>;
 
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<1>;
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<2>;
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeavisideOxy<3>;
+template class PoroPressureBased::TumorGrowthLawHeavisideOxy<1>;
+template class PoroPressureBased::TumorGrowthLawHeavisideOxy<2>;
+template class PoroPressureBased::TumorGrowthLawHeavisideOxy<3>;
 
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<1>;
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<2>;
-template class PoroMultiPhaseScaTra::TumorGrowthLawHeavisideNecro<3>;
+template class PoroPressureBased::TumorGrowthLawHeavisideNecro<1>;
+template class PoroPressureBased::TumorGrowthLawHeavisideNecro<2>;
+template class PoroPressureBased::TumorGrowthLawHeavisideNecro<3>;
 
-template class PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<1>;
-template class PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<2>;
-template class PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawCont<3>;
+template class PoroPressureBased::OxygenTransvascularExchangeLawCont<1>;
+template class PoroPressureBased::OxygenTransvascularExchangeLawCont<2>;
+template class PoroPressureBased::OxygenTransvascularExchangeLawCont<3>;
 
-template class PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<1>;
-template class PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<2>;
-template class PoroMultiPhaseScaTra::OxygenTransvascularExchangeLawDisc<3>;
+template class PoroPressureBased::OxygenTransvascularExchangeLawDisc<1>;
+template class PoroPressureBased::OxygenTransvascularExchangeLawDisc<2>;
+template class PoroPressureBased::OxygenTransvascularExchangeLawDisc<3>;
 
-template class PoroMultiPhaseScaTra::LungOxygenExchangeLaw<1>;
-template class PoroMultiPhaseScaTra::LungOxygenExchangeLaw<2>;
-template class PoroMultiPhaseScaTra::LungOxygenExchangeLaw<3>;
+template class PoroPressureBased::LungOxygenExchangeLaw<1>;
+template class PoroPressureBased::LungOxygenExchangeLaw<2>;
+template class PoroPressureBased::LungOxygenExchangeLaw<3>;
 
-template class PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<1>;
-template class PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<2>;
-template class PoroMultiPhaseScaTra::LungCarbonDioxideExchangeLaw<3>;
+template class PoroPressureBased::LungCarbonDioxideExchangeLaw<1>;
+template class PoroPressureBased::LungCarbonDioxideExchangeLaw<2>;
+template class PoroPressureBased::LungCarbonDioxideExchangeLaw<3>;
 
 FOUR_C_NAMESPACE_CLOSE

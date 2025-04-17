@@ -85,13 +85,13 @@ namespace Discret
         //! factory method
         static std::shared_ptr<Discret::Elements::PoroFluidManager::PhaseManagerInterface>
         create_phase_manager(const Discret::Elements::PoroFluidMultiPhaseEleParameter& para,
-            int nsd, Core::Materials::MaterialType mattype,
-            const POROFLUIDMULTIPHASE::Action& action, int totalnumdofpernode, int numfluidphases);
+            int nsd, Core::Materials::MaterialType mattype, const PoroPressureBased::Action& action,
+            int totalnumdofpernode, int numfluidphases);
 
         //! factory method
         static std::shared_ptr<Discret::Elements::PoroFluidManager::PhaseManagerInterface>
         wrap_phase_manager(const Discret::Elements::PoroFluidMultiPhaseEleParameter& para, int nsd,
-            Core::Materials::MaterialType mattype, const POROFLUIDMULTIPHASE::Action& action,
+            Core::Materials::MaterialType mattype, const PoroPressureBased::Action& action,
             std::shared_ptr<PhaseManagerInterface> corephasemanager);
 
         //! setup (matnum is the material number of the porofluid-material on the current element)

@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
  * get the single phase material from the element multiphase reaction material   vuong 08/16 |
  *-------------------------------------------------------------------------------------------*/
 Mat::FluidPoroSingleReaction&
-POROFLUIDMULTIPHASE::ElementUtils::get_single_reaction_mat_from_multi_reactions_material(
+PoroPressureBased::ElementUtils::get_single_reaction_mat_from_multi_reactions_material(
     const Mat::FluidPoroMultiPhaseReactions& multiphasereacmat, int phasenum)
 {
   // get the single phase material by its ID
@@ -36,7 +36,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_single_reaction_mat_from_multi_reactions_
  * get the single phase material from the element multiphase material    vuong 08/16 |
  *-----------------------------------------------------------------------------------*/
 const Mat::FluidPoroSinglePhase&
-POROFLUIDMULTIPHASE::ElementUtils::get_single_phase_mat_from_multi_material(
+PoroPressureBased::ElementUtils::get_single_phase_mat_from_multi_material(
     const Mat::FluidPoroMultiPhase& multiphasemat, int phasenum)
 {
   // get the single phase material by its ID
@@ -55,7 +55,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_single_phase_mat_from_multi_material(
  *  get the single phase material from the element material   vuong 08/16 |
  *-------------------------------------------------------------------------*/
 const Mat::FluidPoroSinglePhase&
-POROFLUIDMULTIPHASE::ElementUtils::get_single_phase_mat_from_material(
+PoroPressureBased::ElementUtils::get_single_phase_mat_from_material(
     const Core::Mat::Material& material, int phasenum)
 {
   // safety check
@@ -74,7 +74,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_single_phase_mat_from_material(
  * get the single volfrac material from the element multiphase material kremheller 08/17 |
  *----------------------------------------------------------------------------------------*/
 const Mat::FluidPoroSingleVolFrac&
-POROFLUIDMULTIPHASE::ElementUtils::get_single_vol_frac_mat_from_multi_material(
+PoroPressureBased::ElementUtils::get_single_vol_frac_mat_from_multi_material(
     const Mat::FluidPoroMultiPhase& multiphasemat, int volfracnum)
 {
   // get the single phase material by its ID
@@ -93,7 +93,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_single_vol_frac_mat_from_multi_material(
  *  get the single volfrac material from the element material   kremheller 08/17 |
  *--------------------------------------------------------------------------------*/
 const Mat::FluidPoroSingleVolFrac&
-POROFLUIDMULTIPHASE::ElementUtils::get_single_vol_frac_mat_from_material(
+PoroPressureBased::ElementUtils::get_single_vol_frac_mat_from_material(
     const Core::Mat::Material& material, int volfracnum)
 {
   // safety check
@@ -112,7 +112,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_single_vol_frac_mat_from_material(
  * get the volume fraction pressure material from the element multiphase material kremheller 02/18 |
  *--------------------------------------------------------------------------------------------------*/
 const Mat::FluidPoroVolFracPressure&
-POROFLUIDMULTIPHASE::ElementUtils::get_vol_frac_pressure_mat_from_multi_material(
+PoroPressureBased::ElementUtils::get_vol_frac_pressure_mat_from_multi_material(
     const Mat::FluidPoroMultiPhase& multiphasemat, int volfracnum)
 {
   // get the single phase material by its ID
@@ -131,7 +131,7 @@ POROFLUIDMULTIPHASE::ElementUtils::get_vol_frac_pressure_mat_from_multi_material
  *  get the volume fraction pressure material from the element material   kremheller 02/18 |
  *------------------------------------------------------------------------------------------*/
 const Mat::FluidPoroVolFracPressure&
-POROFLUIDMULTIPHASE::ElementUtils::get_vol_frac_pressure_mat_from_material(
+PoroPressureBased::ElementUtils::get_vol_frac_pressure_mat_from_material(
     const Core::Mat::Material& material, int volfracnum)
 {
   // safety check
