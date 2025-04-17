@@ -9,7 +9,6 @@
 
 #include "4C_constraint_springdashpot.hpp"
 #include "4C_fem_condition_definition.hpp"
-#include "4C_io_geometry_type.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_enum.hpp"
 FOUR_C_NAMESPACE_OPEN
@@ -403,16 +402,6 @@ namespace Inpar
               parameter<int>("LINEAR_SOLVER",
                   {.description = "number of linear solver used for structural problems",
                       .default_value = -1}),
-
-              // where the geometry comes from
-              deprecated_selection<Core::IO::GeometryType>("GEOMETRY",
-                  {
-                      {"full", Core::IO::geometry_full},
-                      {"box", Core::IO::geometry_box},
-                      {"file", Core::IO::geometry_file},
-                  },
-                  {.description = "How the geometry is specified",
-                      .default_value = Core::IO::geometry_full}),
 
               deprecated_selection<Solid::MidAverageEnum>("MIDTIME_ENERGY_TYPE",
                   {

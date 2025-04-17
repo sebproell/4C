@@ -7,7 +7,6 @@
 
 #include "4C_inpar_IO_monitor_structure_dbc.hpp"
 
-#include "4C_io_geometry_type.hpp"
 #include "4C_io_input_spec_builders.hpp"
 
 
