@@ -39,7 +39,7 @@ PoroPressureBased::PoroMultiPhasePartitionedTwoWay::PoroMultiPhasePartitionedTwo
       itnum_(0),
       writerestartevery_(-1),
       artery_coupling_active_(false),
-      relaxationmethod_(PoroPressureBased::RelaxationMethods::relaxation_none)
+      relaxationmethod_(PoroPressureBased::RelaxationMethods::none)
 {
 }
 
@@ -333,14 +333,14 @@ void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
   // perform relaxation
   switch (relaxationmethod_)
   {
-    case PoroPressureBased::RelaxationMethods::relaxation_none:
+    case PoroPressureBased::RelaxationMethods::none:
     {
       // no relaxation
       omega_ = 1.0;
       break;
     }
 
-    case PoroPressureBased::RelaxationMethods::relaxation_constant:
+    case PoroPressureBased::RelaxationMethods::constant:
     {
       // constant relaxation parameter omega
       omega_ = startomega_;
@@ -349,7 +349,7 @@ void PoroPressureBased::PoroMultiPhasePartitionedTwoWay::perform_relaxation(
       break;
     }
 
-    case PoroPressureBased::RelaxationMethods::relaxation_aitken:
+    case PoroPressureBased::RelaxationMethods::aitken:
     {
       // Aitken
       aitken_relaxation(omega_, itnum);

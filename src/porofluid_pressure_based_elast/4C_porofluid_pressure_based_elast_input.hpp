@@ -25,7 +25,7 @@ namespace Core::Conditions
 
 namespace PoroPressureBased
 {
-  /// Type of coupling strategy for POROMULTIPHASE problems
+  /// type of coupling strategy for porofluid-elasticity problems
   enum class SolutionSchemePorofluidElast
   {
     undefined,
@@ -34,14 +34,14 @@ namespace PoroPressureBased
   };
 
   //! relaxation methods for partitioned coupling
-  enum RelaxationMethods
+  enum class RelaxationMethods
   {
-    relaxation_none,
-    relaxation_constant,
-    relaxation_aitken
+    none,
+    constant,
+    aitken
   };
 
-  /// set the valid parameters
+  /// set the valid parameters for porofluid-elasticity problems
   void set_valid_parameters_porofluid_elast(std::map<std::string, Core::IO::InputSpec>& list);
 
 }  // namespace PoroPressureBased

@@ -62,14 +62,14 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast_scatra(
               {.description = "Coupling with 1D blood vessels.", .default_value = false}),
 
           // no convergence of coupling scheme
-          deprecated_selection<DivContAct>("DIVERCONT",
+          deprecated_selection<DivergenceAction>("DIVERCONT",
               {
-                  {"stop", divcont_stop},
-                  {"continue", divcont_continue},
+                  {"stop", DivergenceAction::stop},
+                  {"continue", DivergenceAction::continue_anyway},
               },
               {.description = "What to do with time integration when Poromultiphase-Scatra "
                               "iteration failed",
-                  .default_value = divcont_stop})},
+                  .default_value = DivergenceAction::stop})},
       {.defaultable =
               true});  // ----------------------------------------------------------------------
   // (2) monolithic parameters
@@ -78,25 +78,25 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast_scatra(
 
           deprecated_selection<VectorNorm>("VECTORNORM_RESF",
               {
-                  {"L1", PoroPressureBased::norm_l1},
-                  {"L1_Scaled", PoroPressureBased::norm_l1_scaled},
-                  {"L2", PoroPressureBased::norm_l2},
-                  {"Rms", PoroPressureBased::norm_rms},
-                  {"Inf", PoroPressureBased::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = PoroPressureBased::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_INC",
               {
-                  {"L1", PoroPressureBased::norm_l1},
-                  {"L1_Scaled", PoroPressureBased::norm_l1_scaled},
-                  {"L2", PoroPressureBased::norm_l2},
-                  {"Rms", PoroPressureBased::norm_rms},
-                  {"Inf", PoroPressureBased::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = PoroPressureBased::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           // convergence criteria adaptivity --> note ADAPTCONV_BETTER set pretty small
           parameter<bool>("ADAPTCONV", {.description = "Switch on adaptive control of linear "
@@ -124,11 +124,11 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast_scatra(
           // parameters for finite difference check
           deprecated_selection<FdCheck>("FDCHECK",
               {
-                  {"none", fdcheck_none},
-                  {"global", fdcheck_global},
+                  {"none", FdCheck::none},
+                  {"global", FdCheck::global},
               },
               {.description = "flag for finite difference check: none or global",
-                  .default_value = fdcheck_none}),
+                  .default_value = FdCheck::none}),
 
           // flag for equilibration of global system of equations
           parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",

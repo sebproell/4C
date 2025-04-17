@@ -55,7 +55,7 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast(
                   {"twoway_partitioned", SolutionSchemePorofluidElast::twoway_partitioned},
                   {"twoway_monolithic", SolutionSchemePorofluidElast::twoway_monolithic},
               },
-              {.description = "Coupling strategies for poro multiphase solvers",
+              {.description = "Coupling strategies for porofluid-elasticity solvers",
                   .default_value = SolutionSchemePorofluidElast::twoway_partitioned}),
 
           // coupling with 1D artery network active
@@ -83,33 +83,33 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast(
           // parameters for finite difference check
           deprecated_selection<FdCheck>("FDCHECK",
               {
-                  {"none", fdcheck_none},
-                  {"global", fdcheck_global},
+                  {"none", FdCheck::none},
+                  {"global", FdCheck::global},
               },
               {.description = "flag for finite difference check: none or global",
-                  .default_value = fdcheck_none}),
+                  .default_value = FdCheck::none}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_RESF",
               {
-                  {"L1", PoroPressureBased::norm_l1},
-                  {"L1_Scaled", PoroPressureBased::norm_l1_scaled},
-                  {"L2", PoroPressureBased::norm_l2},
-                  {"Rms", PoroPressureBased::norm_rms},
-                  {"Inf", PoroPressureBased::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = PoroPressureBased::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           deprecated_selection<VectorNorm>("VECTORNORM_INC",
               {
-                  {"L1", PoroPressureBased::norm_l1},
-                  {"L1_Scaled", PoroPressureBased::norm_l1_scaled},
-                  {"L2", PoroPressureBased::norm_l2},
-                  {"Rms", PoroPressureBased::norm_rms},
-                  {"Inf", PoroPressureBased::norm_inf},
+                  {"L1", VectorNorm::l1},
+                  {"L1_Scaled", VectorNorm::l1_scaled},
+                  {"L2", VectorNorm::l2},
+                  {"Rms", VectorNorm::rms},
+                  {"Inf", VectorNorm::inf},
               },
               {.description = "type of norm to be applied to residuals",
-                  .default_value = PoroPressureBased::norm_l2}),
+                  .default_value = VectorNorm::l2}),
 
           // flag for equilibration of global system of equations
           parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
@@ -140,12 +140,12 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast(
           // flag for relaxation of partitioned scheme
           deprecated_selection<RelaxationMethods>("RELAXATION",
               {
-                  {"none", relaxation_none},
-                  {"Constant", relaxation_constant},
-                  {"Aitken", relaxation_aitken},
+                  {"none", RelaxationMethods::none},
+                  {"Constant", RelaxationMethods::constant},
+                  {"Aitken", RelaxationMethods::aitken},
               },
               {.description = "flag for relaxation of partitioned scheme",
-                  .default_value = relaxation_none}),
+                  .default_value = RelaxationMethods::none}),
 
           // parameters for relaxation of partitioned coupling
           parameter<double>(

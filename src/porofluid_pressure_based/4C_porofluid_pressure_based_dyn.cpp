@@ -38,7 +38,7 @@ void porofluidmultiphase_dyn(int restart)
   // access the problem
   Global::Problem* problem = Global::Problem::instance();
 
-  // print problem type and logo
+  // print problem type
   if (Core::Communication::my_mpi_rank(comm) == 0)
   {
     std::cout << "###################################################" << std::endl;

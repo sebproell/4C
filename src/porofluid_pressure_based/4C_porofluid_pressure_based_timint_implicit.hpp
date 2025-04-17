@@ -230,27 +230,26 @@ namespace PoroPressureBased
 
     /*--- set, prepare, and predict ------------------------------------------*/
 
-    //! set the initial scalar field phi
-    virtual void set_initial_field(
-        const PoroPressureBased::InitialField init,  //!< type of initial field
-        const int startfuncno                        //!< number of spatial function
+    //! set the initial field
+    virtual void set_initial_field(InitialField init,  //!< type of initial field
+        int startfuncno                                //!< number of spatial function
     );
 
     /*--- query and output ---------------------------------------------------*/
 
-    //! return pressure field at time n+1
+    //! return primary variable at time n+1
     std::shared_ptr<const Core::LinAlg::Vector<double>> phinp() const override { return phinp_; }
 
-    //! return scalar field phi at time n
+    //! return primary variable at time n
     std::shared_ptr<const Core::LinAlg::Vector<double>> phin() const override { return phin_; }
 
-    //! return time derivative of scalar field phi at time n
+    //! return time derivative of the primary variable at time n
     std::shared_ptr<const Core::LinAlg::Vector<double>> phidtn() const { return phidtn_; }
 
-    //! return time derivative of scalar field phi at time n+1
+    //! return time derivative of the primary variable at time n+1
     std::shared_ptr<const Core::LinAlg::Vector<double>> phidtnp() const { return phidtnp_; }
 
-    //! return scalar field history
+    //! return primary variable history
     std::shared_ptr<const Core::LinAlg::Vector<double>> hist() const { return hist_; }
 
     //! return solid pressure field
@@ -526,7 +525,7 @@ namespace PoroPressureBased
     const int fluxreconsolvernum_;
 
     //! what to do when nonlinear solution fails
-    enum PoroPressureBased::DivContAct divcontype_;
+    enum PoroPressureBased::DivergenceAction divcontype_;
 
     //! flag for finite difference check
     const PoroPressureBased::FdCheck fdcheck_;

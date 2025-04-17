@@ -174,10 +174,10 @@ std::shared_ptr<Adapter::PoroFluidMultiphase> PoroPressureBased::create_algorith
 
   switch (timintscheme)
   {
-    case PoroPressureBased::timeint_one_step_theta:
+    case TimeIntegrationScheme::one_step_theta:
     {
       // create algorithm
-      algo = std::make_shared<PoroPressureBased::TimIntOneStepTheta>(
+      algo = std::make_shared<TimIntOneStepTheta>(
           dis, linsolvernumber, probparams, poroparams, output);
       break;
     }
@@ -498,7 +498,7 @@ double PoroPressureBased::calculate_vector_norm(
 {
   // L1 norm
   // norm = sum_0^i vect[i]
-  if (norm == PoroPressureBased::norm_l1)
+  if (norm == VectorNorm::l1)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);
@@ -506,7 +506,7 @@ double PoroPressureBased::calculate_vector_norm(
   }
   // L2/Euclidian norm
   // norm = sqrt{sum_0^i vect[i]^2 }
-  else if (norm == PoroPressureBased::norm_l2)
+  else if (norm == VectorNorm::l2)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -514,7 +514,7 @@ double PoroPressureBased::calculate_vector_norm(
   }
   // RMS norm
   // norm = sqrt{sum_0^i vect[i]^2 }/ sqrt{length_vect}
-  else if (norm == PoroPressureBased::norm_rms)
+  else if (norm == VectorNorm::rms)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -522,14 +522,14 @@ double PoroPressureBased::calculate_vector_norm(
   }
   // infinity/maximum norm
   // norm = max( vect[i] )
-  else if (norm == PoroPressureBased::norm_inf)
+  else if (norm == VectorNorm::inf)
   {
     double vectnorm;
     vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   // norm = sum_0^i vect[i]/length_vect
-  else if (norm == PoroPressureBased::norm_l1_scaled)
+  else if (norm == VectorNorm::l1_scaled)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);

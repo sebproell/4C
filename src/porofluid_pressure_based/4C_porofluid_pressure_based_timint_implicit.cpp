@@ -68,7 +68,7 @@ PoroPressureBased::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretizati
           poroparams_, "FLUX_PROJ_METHOD")),
       fluxreconsolvernum_(poroparams_.get<int>("FLUX_PROJ_SOLVER")),
       divcontype_(
-          Teuchos::getIntegralValue<PoroPressureBased::DivContAct>(poroparams_, "DIVERCONT")),
+          Teuchos::getIntegralValue<PoroPressureBased::DivergenceAction>(poroparams_, "DIVERCONT")),
       fdcheck_(Teuchos::getIntegralValue<PoroPressureBased::FdCheck>(poroparams_, "FDCHECK")),
       fdcheckeps_(poroparams_.get<double>("FDCHECKEPS")),
       fdchecktol_(poroparams_.get<double>("FDCHECKTOL")),
@@ -498,7 +498,7 @@ void PoroPressureBased::TimIntImpl::time_loop()
     // -------------------------------------------------------------------
     // evaluate error for problems with analytical solution
     // -------------------------------------------------------------------
-    if (calcerr_ != PoroPressureBased::calcerror_no) evaluate_error_compared_to_analytical_sol();
+    if (calcerr_ != CalcError::no) evaluate_error_compared_to_analytical_sol();
 
     // -------------------------------------------------------------------
     //                         output of solution
@@ -1357,7 +1357,7 @@ bool PoroPressureBased::TimIntImpl::abort_nonlin_iter(
   {
     switch (divcontype_)
     {
-      case PoroPressureBased::divcont_continue:
+      case DivergenceAction::continue_anyway:
       {
         // warn if itemax is reached without convergence, but proceed to
         // next timestep...
@@ -1373,7 +1373,7 @@ bool PoroPressureBased::TimIntImpl::abort_nonlin_iter(
         }
         break;
       }
-      case PoroPressureBased::divcont_stop:
+      case DivergenceAction::stop:
       {
         FOUR_C_THROW("Porofluid multiphase solver not converged in itemax steps!");
         break;
@@ -1509,7 +1509,7 @@ void PoroPressureBased::TimIntImpl::reconstruct_solid_pressures()
  *--------------------------------------------------------------------------*/
 void PoroPressureBased::TimIntImpl::reconstruct_flux()
 {
-  if (fluxrecon_ == PoroPressureBased::gradreco_none) return;
+  if (fluxrecon_ == FluxReconstructionMethod::none) return;
 
   // create the parameters for the discretization
   Teuchos::ParameterList eleparams;
@@ -1527,7 +1527,7 @@ void PoroPressureBased::TimIntImpl::reconstruct_flux()
 
   switch (fluxrecon_)
   {
-    case PoroPressureBased::gradreco_l2:
+    case FluxReconstructionMethod::l2:
     {
       const auto& solverparams = Global::Problem::instance()->solver_params(fluxreconsolvernum_);
       flux_ = Core::FE::compute_nodal_l2_projection(*discret_, "phinp_fluid", numvec, eleparams,
@@ -1804,7 +1804,7 @@ inline void PoroPressureBased::TimIntImpl::increment_time_and_step()
  *----------------------------------------------------------------------*/
 void PoroPressureBased::TimIntImpl::evaluate_error_compared_to_analytical_sol()
 {
-  if (calcerr_ == PoroPressureBased::calcerror_no) return;
+  if (calcerr_ == CalcError::no) return;
   FOUR_C_THROW("Error calculation not yet implemented! Element evaluation is missing.");
 
   // create the parameters for the error calculation
@@ -1815,7 +1815,7 @@ void PoroPressureBased::TimIntImpl::evaluate_error_compared_to_analytical_sol()
 
   switch (calcerr_)
   {
-    case PoroPressureBased::calcerror_byfunction:
+    case CalcError::by_function:
     {
       const int errorfunctnumber = poroparams_.get<int>("CALCERRORNO");
       if (errorfunctnumber < 1)
@@ -1898,7 +1898,7 @@ void PoroPressureBased::TimIntImpl::evaluate()
   assemble_mat_and_rhs();
 
   // perform finite difference check on time integrator level
-  if (fdcheck_ == PoroPressureBased::fdcheck_global) fd_check();
+  if (fdcheck_ == FdCheck::global) fd_check();
 
   // Apply Dirichlet Boundary Condition
   prepare_system_for_newton_solve();
@@ -2005,13 +2005,13 @@ void PoroPressureBased::TimIntImpl::set_initial_field(
 {
   switch (init)
   {
-    case PoroPressureBased::initfield_zero_field:
+    case InitialField::zero:
     {
       phin_->put_scalar(0.0);
       phinp_->put_scalar(0.0);
       break;
     }
-    case PoroPressureBased::initfield_field_by_function:
+    case InitialField::by_function:
     {
       const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
@@ -2043,7 +2043,7 @@ void PoroPressureBased::TimIntImpl::set_initial_field(
 
       break;
     }
-    case PoroPressureBased::initfield_field_by_condition:
+    case InitialField::by_condition:
     {
       // set initial field for ALL existing scatra fields in condition
       const std::string field = "PoroMultiFluid";

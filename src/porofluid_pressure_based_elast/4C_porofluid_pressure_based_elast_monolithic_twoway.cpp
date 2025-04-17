@@ -66,12 +66,12 @@ PoroPressureBased::PoroMultiPhaseMonolithicTwoWay::PoroMultiPhaseMonolithicTwoWa
       arterypressnorm_(0.0),
       maxinc_(0.0),
       maxres_(0.0),
-      vectornormfres_(PoroPressureBased::norm_undefined),
-      vectornorminc_(PoroPressureBased::norm_undefined),
+      vectornormfres_(VectorNorm::undefined),
+      vectornorminc_(VectorNorm::undefined),
       timernewton_("", true),
       dtsolve_(0.0),
       dtele_(0.0),
-      fdcheck_(PoroPressureBased::FdCheck::fdcheck_none)
+      fdcheck_(PoroPressureBased::FdCheck::none)
 {
 }
 
@@ -209,7 +209,7 @@ void PoroPressureBased::PoroMultiPhaseMonolithicTwoWay::time_step()
       evaluate(iterinc_);
 
       // perform FD Check of monolithic system matrix
-      if (fdcheck_ == PoroPressureBased::fdcheck_global) poro_fd_check();
+      if (fdcheck_ == FdCheck::global) poro_fd_check();
     }
     else
     {

@@ -32,12 +32,12 @@ PoroPressureBased::PoroMultiPhaseScaTraBase::PoroMultiPhaseScaTraBase(
     : AlgorithmBase(comm, globaltimeparams),
       poromulti_(nullptr),
       scatra_(nullptr),
-      fluxreconmethod_(PoroPressureBased::gradreco_none),
+      fluxreconmethod_(FluxReconstructionMethod::none),
       ndsporofluid_scatra_(-1),
       timertimestep_("PoroMultiPhaseScaTraBase", true),
       dttimestep_(0.0),
-      divcontype_(
-          Teuchos::getIntegralValue<PoroPressureBased::DivContAct>(globaltimeparams, "DIVERCONT")),
+      divcontype_(Teuchos::getIntegralValue<PoroPressureBased::DivergenceAction>(
+          globaltimeparams, "DIVERCONT")),
       artery_coupl_(globaltimeparams.get<bool>("ARTERY_COUPLING"))
 {
 }
@@ -95,7 +95,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraBase::init(
       fluidparams, "FLUX_PROJ_METHOD");
 
   if (solschemescatraporo == SolutionSchemePorofluidElastScatra::twoway_monolithic &&
-      fluxreconmethod_ == PoroPressureBased::FluxReconstructionMethod::gradreco_l2)
+      fluxreconmethod_ == PoroPressureBased::FluxReconstructionMethod::l2)
   {
     FOUR_C_THROW(
         "Monolithic porofluidmultiphase-scatra coupling does not work with L2-projection!\n"
@@ -299,7 +299,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraBase::set_poro_solution()
       poromulti_->relaxed_fluid_phinp(), poromulti_->fluid_field()->phin());
 
   // additionally, set nodal flux if L2-projection is desired
-  if (fluxreconmethod_ == PoroPressureBased::FluxReconstructionMethod::gradreco_l2)
+  if (fluxreconmethod_ == PoroPressureBased::FluxReconstructionMethod::l2)
     poroscatra->set_l2_flux_of_multi_fluid(poromulti_->fluid_flux());
 
   if (artery_coupl_)
@@ -447,7 +447,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraBase::handle_divergence() const
 {
   switch (divcontype_)
   {
-    case PoroPressureBased::divcont_continue:
+    case DivergenceAction::continue_anyway:
     {
       // warn if itemax is reached without convergence, but proceed to
       // next timestep...
@@ -463,7 +463,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraBase::handle_divergence() const
       }
       break;
     }
-    case PoroPressureBased::divcont_stop:
+    case DivergenceAction::stop:
     {
       FOUR_C_THROW("POROMULTIPHASESCATRA nonlinear solver not converged in ITEMAX steps!");
       break;

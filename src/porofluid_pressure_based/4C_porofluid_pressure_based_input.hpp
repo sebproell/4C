@@ -24,65 +24,57 @@ FOUR_C_NAMESPACE_OPEN
 namespace PoroPressureBased
 {
   /// time integration schemes
-  enum TimeIntegrationScheme
+  enum class TimeIntegrationScheme
   {
-    timeint_one_step_theta
+    one_step_theta
   };
 
   /// compute error compared to analytical solution
-  enum CalcError
+  enum class CalcError
   {
-    calcerror_no,
-    calcerror_byfunction
-  };
-
-  //! type of norm to check for convergence
-  enum ConvNorm
-  {
-    convnorm_abs,  //!< absolute norm
-    convnorm_rel,  //!< relative norm
-    convnorm_mix   //!< mixed absolute-relative norm
+    no,
+    by_function
   };
 
   //! type of vector norm used for error/residual vectors
-  enum VectorNorm
+  enum class VectorNorm
   {
-    norm_undefined,
-    norm_l1,         //!< L1/linear norm
-    norm_l1_scaled,  //!< L1/linear norm scaled by length of vector
-    norm_l2,         //!< L2/Euclidean norm
-    norm_rms,        //!< root mean square (RMS) norm
-    norm_inf         //!< Maximum/infinity norm
+    undefined,
+    l1,         //!< L1/linear norm
+    l1_scaled,  //!< L1/linear norm scaled by length of vector
+    l2,         //!< L2/Euclidean norm
+    rms,        //!< root mean square (RMS) norm
+    inf         //!< Maximum/infinity norm
   };
 
   /// type of finite difference check
-  enum FdCheck
+  enum class FdCheck
   {
-    fdcheck_none,
-    fdcheck_global
+    none,
+    global
   };
 
-  /// initial field for scalar transport problem
-  enum InitialField
+  /// initial field
+  enum class InitialField
   {
-    initfield_zero_field,
-    initfield_field_by_function,
-    initfield_field_by_condition
+    zero,
+    by_function,
+    by_condition
   };
 
   /// Handling of non-converged nonlinear solver
-  enum DivContAct
+  enum class DivergenceAction
   {
-    divcont_stop,     ///< abort simulation
-    divcont_continue  ///< continue nevertheless
+    stop,            ///< abort simulation
+    continue_anyway  ///< continue anyway
   };
 
   //! reconstruction type of gradients (e.g. velocity gradient)
-  enum FluxReconstructionMethod
+  enum class FluxReconstructionMethod
   {
-    gradreco_none,
+    none,
     // gradreco_spr, super-convergent patch recovery not activated yet
-    gradreco_l2
+    l2
   };
 
   /// set the valid parameters

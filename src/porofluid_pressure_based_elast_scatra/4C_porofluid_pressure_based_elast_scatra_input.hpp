@@ -28,7 +28,7 @@ namespace Core::Conditions
  *----------------------------------------------------------------------*/
 namespace PoroPressureBased
 {
-  /// Type of coupling strategy for poro scatra problems
+  /// type of coupling strategy for porofluid-elasticity with scalar transport problems
   enum class SolutionSchemePorofluidElastScatra
   {
     twoway_partitioned_nested,
@@ -36,11 +36,11 @@ namespace PoroPressureBased
     twoway_monolithic
   };
 
-  /// set the poromultiphasescatra parameters
+  /// set valid parameters for porofluid-elasticity with scalar transport problems
   void set_valid_parameters_porofluid_elast_scatra(
       std::map<std::string, Core::IO::InputSpec>& list);
 
-  /// set the poromultiphasescatra conditions
+  /// set valid conditions for porofluid-elasticity with scalar transport problems
   void set_valid_conditions_porofluid_elast_scatra(
       std::vector<Core::Conditions::ConditionDefinition>& condlist);
 
