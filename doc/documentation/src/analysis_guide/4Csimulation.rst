@@ -23,7 +23,7 @@ For further information, see :ref:`Postprocessing`.
 
 All available options when starting |FOURC| from the command line are shown by an output of ``./4C --help``:
 
-.. literalinclude:: 4C-help.txt
+.. literalinclude:: /4C-help.txt
 
 
 Running examples

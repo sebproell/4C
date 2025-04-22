@@ -22,9 +22,9 @@ and documentation.
 
    referenceintroduction
    elementreference
-   materialreference
-   conditionreference
-   furtherreference
-   headerreference
+   /materialreference
+   /conditionreference
+   /furtherreference
+   /headerreference
 
 .. bcreference

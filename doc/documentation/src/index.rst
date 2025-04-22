@@ -67,12 +67,12 @@ This guide to |FOURC| is structured as follows:
    :hidden:
    :caption: Contents:
 
-   about
-   4Ccommunity
-   installation
-   tutorials
-   analysisguide
-   developmentguide
-   parameterreference
-   tools
-   appendix
+   about/about
+   community/4Ccommunity
+   installation/installation
+   tutorials/tutorials
+   analysis_guide/analysisguide
+   developer_guide/developmentguide
+   input_parameter_reference/parameterreference
+   tools/tools
+   appendix/appendix

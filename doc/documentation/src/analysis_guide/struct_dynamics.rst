@@ -709,7 +709,7 @@ Therefore the basic requirement for the local discretisation error is
 whereby the dimensionless tolerance :math:`\varepsilon>` is user-prescribed.
 The above described procedure is contained in the following figure:
 
-.. figure:: _assets/adap-sch.jpg
+.. figure:: /_assets/adap-sch.jpg
    :alt: Diagram of LDE-based step size adaptivity
    :name: strdyn:fig:adap-sch
    :width: 60.0%
