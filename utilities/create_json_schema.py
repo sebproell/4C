@@ -681,6 +681,7 @@ def main(metadata_path, json_schema_path):
         metadata_path (str, pathlib.Path): 4C emitted metadata file path
         json_schema_path (str, pathlib.Path): JSON schema file path
     """
+    json_schema_path = Path(json_schema_path)
     metadata_4C, title_section, code_metadata = metadata_object_from_file(metadata_path)
     schema = get_schema(metadata_4C)
     schema["properties"].update(
@@ -690,6 +691,14 @@ def main(metadata_path, json_schema_path):
         "^FUNCT[1-9][0-9]*$": schema["properties"].pop("FUNCT<n>")
     }
     create_json_schema(schema, code_metadata["commit_hash"], json_schema_path)
+
+    # Create partial schema
+    # Remove required section
+    schema.pop("required")
+    json_schema_partial_path = json_schema_path.parent / (
+        json_schema_path.name + "_partial" + json_schema_path.suffix
+    )
+    create_json_schema(schema, code_metadata["commit_hash"], json_schema_partial_path)
 
 
 if __name__ == "__main__":
