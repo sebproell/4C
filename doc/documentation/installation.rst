@@ -141,8 +141,6 @@ This is a good practice to keep your source directory clean. Instead, create a b
 Many development tools work well when the build directory is a subdirectory of the source directory.
 A possible directory structure could look like this::
 
-::
-
     <4C_home>/
        build/
          debug/
