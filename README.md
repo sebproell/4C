@@ -14,7 +14,7 @@
 <div align="center">
 
 [![website](./utilities/assets/badges/website_badge.svg)](https://4C-multiphysics.org)
-[![docs/rtd](./utilities/assets/badges/documentation_documentation.svg)](https://4c-multiphysics.github.io/4C/documentation/)
+[![docs/documentation](./utilities/assets/badges/documentation_documentation.svg)](https://4c-multiphysics.github.io/4C/documentation/)
 [![docs/doxygen](./utilities/assets/badges/documentation_doxygen.svg)](https://4c-multiphysics.github.io/4C/doxygen/)
 [![coverage report](https://4c-multiphysics.github.io/4C/coverage_report/badge_coverage.svg)](https://4c-multiphysics.github.io/4C/coverage_report)
 
