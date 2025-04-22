@@ -142,7 +142,7 @@ void ntacal()
       porofluidmultiphase_dyn(restart);
       break;
     case Core::ProblemType::poromultiphase:
-      poromultiphase_dyn(restart);
+      porofluid_elast_dyn(restart);
       break;
     case Core::ProblemType::poromultiphasescatra:
       poromultiphasescatra_dyn(restart);

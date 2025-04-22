@@ -12,10 +12,11 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_poroelast_utils.hpp"
-#include "4C_porofluid_pressure_based_elast_adapter.hpp"
-#include "4C_porofluid_pressure_based_elast_monolithic_twoway.hpp"
-#include "4C_porofluid_pressure_based_elast_partitioned_twoway.hpp"
-#include "4C_porofluid_pressure_based_elast_utils_clonestrategy.hpp"
+#include "4C_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_artery_coupling.hpp"
+#include "4C_porofluid_pressure_based_elast_clonestrategy.hpp"
+#include "4C_porofluid_pressure_based_elast_monolithic.hpp"
+#include "4C_porofluid_pressure_based_elast_partitioned.hpp"
 #include "4C_porofluid_pressure_based_ele.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
@@ -98,7 +99,7 @@ PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(MPI_
   if (fluiddis->num_global_nodes() == 0)
   {
     // fill poro fluid discretization by cloning structure discretization
-    Core::FE::clone_discretization<PoroPressureBased::PoroFluidMultiPhaseCloneStrategy>(
+    Core::FE::clone_discretization<PorofluidCloneStrategy>(
         *structdis, *fluiddis, Global::Problem::instance()->cloning_material_map());
   }
   else
@@ -153,20 +154,20 @@ void PoroPressureBased::assign_material_pointers_porofluid_elast(
 /*----------------------------------------------------------------------*
  | create algorithm                                                      |
  *----------------------------------------------------------------------*/
-std::shared_ptr<PoroPressureBased::PoroMultiPhase>
+std::shared_ptr<PoroPressureBased::PorofluidElast>
 PoroPressureBased::create_algorithm_porofluid_elast(
     PoroPressureBased::SolutionSchemePorofluidElast solscheme,
     const Teuchos::ParameterList& timeparams, MPI_Comm comm)
 {
   // Creation of Coupled Problem algorithm.
-  std::shared_ptr<PoroPressureBased::PoroMultiPhase> algo = nullptr;
+  std::shared_ptr<PoroPressureBased::PorofluidElast> algo = nullptr;
 
   switch (solscheme)
   {
     case SolutionSchemePorofluidElast::twoway_partitioned:
     {
       // call constructor
-      algo = std::make_shared<PoroPressureBased::PoroMultiPhasePartitionedTwoWay>(comm, timeparams);
+      algo = std::make_shared<PoroPressureBased::PorofluidElastPartitioned>(comm, timeparams);
       break;
     }
     case SolutionSchemePorofluidElast::twoway_monolithic:
@@ -175,14 +176,12 @@ PoroPressureBased::create_algorithm_porofluid_elast(
       if (!artery_coupl)
       {
         // call constructor
-        algo =
-            std::make_shared<PoroPressureBased::PoroMultiPhaseMonolithicTwoWay>(comm, timeparams);
+        algo = std::make_shared<PoroPressureBased::PorofluidElastMonolithic>(comm, timeparams);
       }
       else
       {
         // call constructor
-        algo = std::make_shared<PoroPressureBased::PoroMultiPhaseMonolithicTwoWayArteryCoupling>(
-            comm, timeparams);
+        algo = std::make_shared<PoroPressureBased::PorofluidElastArteryCoupling>(comm, timeparams);
       }
       break;
     }

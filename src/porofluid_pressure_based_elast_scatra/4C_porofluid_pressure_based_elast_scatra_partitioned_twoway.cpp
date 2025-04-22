@@ -13,7 +13,7 @@
 #include "4C_adapter_str_wrapper.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_porofluid_pressure_based_elast_base.hpp"
+#include "4C_porofluid_pressure_based_elast.hpp"
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_scatra_timint_meshtying_strategy_artery.hpp"
 

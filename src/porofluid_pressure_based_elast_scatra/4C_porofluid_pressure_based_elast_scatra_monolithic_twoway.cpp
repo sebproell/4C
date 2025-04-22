@@ -20,7 +20,7 @@
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_linear_solver_method_parameters.hpp"
-#include "4C_porofluid_pressure_based_elast_base.hpp"
+#include "4C_porofluid_pressure_based_elast.hpp"
 #include "4C_scatra_ele_action.hpp"
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_scatra_timint_meshtying_strategy_artery.hpp"

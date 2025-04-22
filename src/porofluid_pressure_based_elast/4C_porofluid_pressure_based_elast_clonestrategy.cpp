@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_porofluid_pressure_based_elast_utils_clonestrategy.hpp"
+#include "4C_porofluid_pressure_based_elast_clonestrategy.hpp"
 
 #include "4C_fem_general_element.hpp"
 #include "4C_global_data.hpp"
@@ -20,8 +20,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | define conditions to copy to the cloned discretization    vuong 08/16 |
  *----------------------------------------------------------------------*/
-std::map<std::string, std::string>
-PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::conditions_to_copy() const
+std::map<std::string, std::string> PoroPressureBased::PorofluidCloneStrategy::conditions_to_copy()
 {
   return {{"PoroDirichlet", "Dirichlet"}, {"PoroPointNeumann", "PointNeumann"},
       {"PoroLineNeumann", "LineNeumann"}, {"PoroSurfaceNeumann", "SurfaceNeumann"},
@@ -34,7 +33,7 @@ PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::conditions_to_copy() const
 /*----------------------------------------------------------------------*
  | check for correct material                               vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::check_material_type(const int matid)
+void PoroPressureBased::PorofluidCloneStrategy::check_material_type(const int matid)
 {
   // We take the material with the ID specified by the user
   // Here we check first, whether this material is of admissible type
@@ -49,17 +48,16 @@ void PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::check_material_type(co
 /*----------------------------------------------------------------------*
  | set element-specific data (material etc.)                 vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::set_element_data(
+void PoroPressureBased::PorofluidCloneStrategy::set_element_data(
     std::shared_ptr<Core::Elements::Element> newele, Core::Elements::Element* oldele,
     const int matid, const bool isnurbsdis)
 {
   // We need to set material and possibly other things to complete element setup.
-  // This is again really ugly as we have to extract the actual
-  // element type in order to access the material property
+  // This is again ugly as we have to extract the actual element type to access the material
+  // property.
 
   // note: set_material() was reimplemented by the PoroFluidMultiPhase element!
-  Discret::Elements::PoroFluidMultiPhase* porofluidele =
-      dynamic_cast<Discret::Elements::PoroFluidMultiPhase*>(newele.get());
+  auto* porofluidele = dynamic_cast<Discret::Elements::PoroFluidMultiPhase*>(newele.get());
   if (porofluidele != nullptr)
   {
     porofluidele->set_material(0, Mat::factory(matid));
@@ -69,20 +67,19 @@ void PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::set_element_data(
   {
     FOUR_C_THROW("unsupported element type '{}'", Core::Utils::get_dynamic_type_name(*newele));
   }
-  return;
 }
 
 
 /*----------------------------------------------------------------------*
  | determine whether element is copied or not               vuong 08/16 |
  *----------------------------------------------------------------------*/
-bool PoroPressureBased::PoroFluidMultiPhaseCloneStrategy::determine_ele_type(
+bool PoroPressureBased::PorofluidCloneStrategy::determine_ele_type(
     Core::Elements::Element* actele, const bool ismyele, std::vector<std::string>& eletype)
 {
   // note: ismyele, actele remain unused here! Used only for ALE creation
 
   // we only support POROFLUIDMULTIPHASE elements here
-  eletype.push_back("POROFLUIDMULTIPHASE");
+  eletype.emplace_back("POROFLUIDMULTIPHASE");
 
   // all elements are copied
   return true;
