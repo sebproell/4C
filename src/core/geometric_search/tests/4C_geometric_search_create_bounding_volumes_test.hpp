@@ -5,14 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_FEM_GEOMETRIC_SEARCH_CREATE_BOUNDING_VOLUMES_TEST_HPP
-#define FOUR_C_FEM_GEOMETRIC_SEARCH_CREATE_BOUNDING_VOLUMES_TEST_HPP
+#ifndef FOUR_C_GEOMETRIC_SEARCH_CREATE_BOUNDING_VOLUMES_TEST_HPP
+#define FOUR_C_GEOMETRIC_SEARCH_CREATE_BOUNDING_VOLUMES_TEST_HPP
 
 #include "4C_config.hpp"
 
 #ifdef FOUR_C_WITH_ARBORX
 
-#include "4C_fem_geometric_search_bounding_volume.hpp"
+#include "4C_geometric_search_bounding_volume.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 
 FOUR_C_NAMESPACE_OPEN
