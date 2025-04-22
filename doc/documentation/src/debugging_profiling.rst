@@ -202,6 +202,6 @@ It is also possible to only open the output of a specific mpi rank with processo
 
 **Example:** In the figure below a screenshot of `kcachegrind` is given where the profiling output of a Smoothed Particle Hydrodynamics (SPH) simulation is visualized.
 
-.. figure:: figures/kcachegrind.png
+.. figure:: _assets/kcachegrind.png
    :alt: Picture of kcachegrind
    :width: 100%

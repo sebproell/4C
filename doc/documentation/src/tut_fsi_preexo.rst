@@ -13,7 +13,7 @@ at these files only in case you encounter severe problems while
 stepping through the tutorial.
 For further details and references we refer the reader to [Wall99]_.
 
-.. figure:: figures/Angabeskizze.jpg
+.. figure:: _assets/Angabeskizze.jpg
    :alt: The driven cavity example
    :width: 60%
    :align: center

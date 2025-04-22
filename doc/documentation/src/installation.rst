@@ -297,7 +297,7 @@ To profit from clang-tidy (and many more features like cross-references, refacto
 there is an vs code extension that enables clangd for VS Code.
 For a full list of features see here: <https://clangd.llvm.org/features.html>
 
-.. figure:: figures/vscode-clangd.png
+.. figure:: _assets/vscode-clangd.png
    :alt: Screenshot of the clangd capability for VS Code
    :width: 100%
 
@@ -489,11 +489,11 @@ Refer to ``CMakeLists.txt`` for a definition of all other target specifiers.
 
     When omitting the custom target specifier in the build command, the default specifier 4C is used.
 
-.. |ctrl| image:: figures/WikiMooc_Key_CTRL.png
+.. |ctrl| image:: _assets/WikiMooc_Key_CTRL.png
           :height: 20
 
-.. |alt| image:: figures/WikiMooc_Key_ALT.png
+.. |alt| image:: _assets/WikiMooc_Key_ALT.png
          :height: 20
 
-.. |shift| image:: figures/WikiMooc_Key_SHIFT.png
+.. |shift| image:: _assets/WikiMooc_Key_SHIFT.png
            :height: 20

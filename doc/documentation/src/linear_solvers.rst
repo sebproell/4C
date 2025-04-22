@@ -20,7 +20,7 @@ while physics plays a role in iterative methods, and particular, their multigrid
 so it is important for the latter to comprehend the parameters to be used.
 Anyway, the decision on which solver to use is illustrated in the following flow chart:
 
-.. figure:: figures/LinearSolvers_flowchart.png
+.. figure:: _assets/LinearSolvers_flowchart.png
    :width: 400px
    :align: center
 
@@ -403,7 +403,7 @@ Besides that, particularly for the coarsest smoother, a direct solver can be use
 *ILUT, RILUK:*
    These are local (processor-based) incomplete factorization methods.
 
-For understanding the multigrid preconditioner better, the interested reader is referred to a :download:`presentation held by Max Firmbach in 2022 <figures/TGM_LinearSolvers.pdf>`.
+For understanding the multigrid preconditioner better, the interested reader is referred to a :download:`presentation held by Max Firmbach in 2022 <_assets/TGM_LinearSolvers.pdf>`.
 
 Damping helps with convergence, and it can be applied to any of the smoothers by ``smoother: damping factor``.
 A value of 1 (default) cancels damping, 0 means maximum damping.

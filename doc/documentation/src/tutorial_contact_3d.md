@@ -33,7 +33,7 @@ represented by a St.Venant-Kirchhoff material model with different values of the
 cube.
 
 ```{eval-rst}
-.. figure:: figures/tutorial_contact3d.jpg
+.. figure:: _assets/tutorial_contact3d.jpg
    :alt: Problem definition and geometrical setup
    :width: 500px
    :align: center

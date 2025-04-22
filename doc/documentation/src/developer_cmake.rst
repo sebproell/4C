@@ -86,7 +86,7 @@ Our recommended IDEs (VS Code and CLion) already support cmake presets natively.
 Here is a screenshot taken from VS Code:
 
 
-.. figure:: figures/vs-code-cmake-preset.png
+.. figure:: _assets/vs-code-cmake-preset.png
    :alt: CMake preset selection within VS Code
    :width: 100%
 

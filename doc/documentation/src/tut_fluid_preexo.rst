@@ -15,7 +15,7 @@ circular cylinder. For further details and references we refer the reader to:
 [Wall99]_
 
 
-.. figure:: figures/tut_fluid_problem.jpg
+.. figure:: _assets/tut_fluid_problem.jpg
    :alt: Problem definition and geometrical setup (with friendly permission ;-))
    :width: 95%
    :align: center
@@ -51,7 +51,7 @@ commands, since numbering of entities changed between Cubit versions!
 
 The generated mesh should look like this:
 
-.. figure:: figures/tut_fluid_mesh.jpg
+.. figure:: _assets/tut_fluid_mesh.jpg
    :alt: Mesh for a flow past a circular cylinder.
    :name: fig_domainDecomposition
    :width: 95.0%
@@ -234,7 +234,7 @@ Visualize your results in Paraview
    *Show* button. You receive a visualization of the :math:`X`-velocity
    field, which should look similar to this figure:
 
-.. figure:: figures/tut_fluid_xvel.png
+.. figure:: _assets/tut_fluid_xvel.png
    :alt: X-velocity for a flow past a circular cylinder
    :name: fig_FlowPastCylinder_x-velocity
    :width: 95.0%
