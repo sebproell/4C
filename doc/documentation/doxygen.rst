@@ -12,33 +12,25 @@ What is Doxygen and why does |FOURC| rely on it?
 
 Doxygen is a documentation generator, i.e. a tool for writing software reference documentation.
 The documentation is written within the code, so documentation lives close by to the code that it is documenting.
-This makes it relatively easy to keep up to date.
+This makes it relatively easy to keep up-to-date.
 Doxygen can cross reference documentation and code, so that the reader of a document can easily refer to the actual code.
+
+In contrast to the high-level documentation you are currently reading, Doxygen generates the more technical
+documentation of the code's API and relevant internals.
 
 |FOURC|'s Policy
 ~~~~~~~~~~~~~~~~
 
-|FOURC| requires a set of minimum Doxygen items for each code entity.
-
-At a bare minimum, |FOURC| requires that
-
-- any source code file has a file header consisting of the tags
-    - ``@file``
-    - ``@brief``
-    - ``@level``
-- any newly added source code entity has a ``@brief`` description, and functions additionally require at least the ``@param`` and ``@return`` information.
+|FOURC| requires Doxygen documentation for all new code.
 
 It is the responsibility of the developer adding the new code to include the relevant documentation.
-It is the responsibility of the merge request reviewer to not allow a request to be merged
-until this minimum documentation is in place and is understandable to someone other than the author.
+During code review, reviewers need to check that documentation is present and understandable.
 
 It is also highly recommended and encouraged that any time you come across undocumented entities,
-you either add the documentation yourself if you are knowledgeable enough to do so,
-or contact the file author and ask them to add the documentation.
+you take the time to document them. When you struggled to understand a piece of code,
+you can be sure that the next developer will struggle too, so it can be a great opportunity to improve the code base.
+Pull requests that "only" improve documentation of existing code are a welcome contribution!
 Our goal is to have a fully documented code base, and the more proactive every developer is about that, the easier it will be to achieve.
-
-> **Note:** Your IDE might offer supportive capabilities to ease Doxygen-style documentation.
-Checkout the :ref:`IDE setup instructions <Set-up-your-ide>` for details.
 
 Building the Doxygen Documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,33 +38,30 @@ Building the Doxygen Documentation
 Local build using CMake
 """""""""""""""""""""""""""
 
-|FOURC| has defined a custom build target ``documentation`` (see also our :ref:`list of custom build targets <build4Cwithcustomtargets>`.
+|FOURC| has defined a custom build target ``doxygen`` (see also our :ref:`list of custom build targets <build4Cwithcustomtargets>`.
 In order to create the Doxygen HTML webpage locally, just issue the command
 
 ::
 
     cd <buildDirectory>
-    make documentation
+    ninja doxygen
 
 
-This will build the Doxygen documentation in the directory ``<buildDirectory>/doc/html/``.
-It can be viewed by accessing ``<buildDirectory>/doc/html/index.html`` in any browser.
+This will build the Doxygen documentation in the directory ``<buildDirectory>/doc/doxygen/html/``.
+It can be viewed by accessing ``<buildDirectory>/doc/doxygen/html/index.html`` in any browser.
 
-To trigger a *re-build* of the documentation, just call ``make documentation`` again.
-The documentation target is always considered out of date and therefore always built.
-It is unfortunately not possible to only rebuild the documentation for changed code.
-However, Doxygen builds seem to benefit from using :ref:`ccache <ccache>`.
 
 Pipeline build
 """"""""""""""""
 
-We have a Doxygen pipeline in place that creates the Doxygen documentation every night.
-We check for errors in Latex processing. Other than that, no checks are performed right now.
+The Doxygen documentation is also built when you submit a pull request. A merge to the main branch
+will trigger the most recent version of the documentation to be built and published
+`here <https://4c-multiphysics.github.io/4C/doxygen/index.html>`_
 
 General Remarks on documenting the code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Documenting source code already starts when writing the code (even before writing its comments and documentation).
+Documenting source code already starts when writing the code (even before writing comments and documentation).
 Here are some general remarks and guidelines taken from Robert C. Martin's book
 "Clean Code" to facilitate writing easy-to-understand and well-documented code [Martin08]_.
 
@@ -96,32 +85,6 @@ Using pronouncable names makes it easier to discuss code with fellow users and d
 Don't be afraid of using non-abbreviated names!
 Typing on a keyboard is quick, and we use a code formatter to take care of formatting and line breaks.
 
-Documenting a File
-~~~~~~~~~~~~~~~~~~~
-
-Each source code file has to start with a file header that exhibits these tags:
-
-- ``@file``: keyword to tell Doxygen, that this comment block is related to the file description.
-  The file name **must not** to be given.
-- ``@brief``: summarize the file's content in a brief description
-
-Here's an example:
-
-.. code-block:: cpp
-
-    /*---------------------------------------------------------------------*/
-    /*! @file
-    @brief This header provides the interface for all FE simulations
-
-    @level 3
-    */
-    /*---------------------------------------------------------------------*/
-
-**Important:** Do not add personal contact information (like email, phone number, webpage)
-since they become outdated very quickly and make it more difficult to update maintainer information in the future.
-
-If GitHooks have been configured properly, the ``pre-commit`` hook will enforce this policy and provide hints on how to fix policy violations.
-Furthermore, this policy is checked during the code checks in every pipeline run.
 
 Documenting a Class or Struct
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -163,7 +126,7 @@ Classes should be preceded by a comment block along these lines:
       public BaseClass<stuff>
     {
       // Insert class definition here.
-    } // end of class ClassName
+    }
 
 Methods
 """"""""""
@@ -209,8 +172,8 @@ Within the class definition, methods should be preceded by a comment block along
      *  @returns This is a description of what the function returns on completion,
      *           if anything.
      */
-    returnType
-    functionName(someType arg1, anotherType arg2, yetAnotherType arg3 = someDefaultValue);
+    ReturnType
+    function_name(Type1 arg1, Type2 arg2, Type3 arg3 = some_default_value);
 
 
 If any of the lines in the comment block above (``\note``, ``\warning``, ``\remark`, ``@pre``, ``@post``, ``@param``, ``\throws``, ``@returns``)
@@ -253,46 +216,35 @@ When documenting an ``enum``, use something along the lines of the following:
      */
     enum EnumName
     {
-      /*!< This is a description of the SOMETHING value of the enum.
-           It can be as detailed as you like. */
-      SOMETHING,
-      SOMETHING_ELSE //!< This is a brief description of SOMETHING_ELSE.
+      /**
+       * This is a description of the something value of the enum.
+       * It can be as detailed as you like.
+       */
+      something,
+
+      /**
+       * Description of another value of the enum.
+       */
+      something_else,
     }; // end of enum EnumName
 
 Typedefs and Usings
 """"""""""""""""""""""
 
-When documenting a ``typedef``, the syntax is essentially the same as that used for member data:
+When documenting a ``using`` declaratin, the syntax is essentially the same as that used for member data:
 
 .. code-block:: cpp
 
     /*!
-     *  @brief A brief description of the typedef goes here.  The brief
+     *  @brief A brief description of the using declaration goes here.  The brief
      *         description is terminated by a blank line.
      *
-     *  The detailed description of the typedef follows the blank line.  If the
+     *  The detailed description of the using declaration follows the blank line.  If the
      *  brief description gives enough information to understand the typedef, its
      *  use and purpose, then a detailed description may not be necessary.
      */
-    typedef OriginalType NewName;
-
-However, as of C++11, we should really be phasing out ``typedef``s in favor of ``using`` statements.
-Unfortunately, Doxygen has not been updated to support those out of the box, so it needs a little help.
-We can use the ``\var`` command to tell Doxygen to document a ``using`` statement as if it were a variable:
-
-.. code-block:: cpp
-
-    /*!
-     *  \var NewName
-     *
-     *  @brief A brief description of the using statement goes here.  The brief
-     *         description is terminated by a blank line.
-     *
-     *  The detailed description of the using statement follows the blank line.
-     *  If the brief description gives enough information to understand the
-     *  using statement, then a detailed description may not be necessary.
-     */
     using NewName = OriginalType;
+
 
 Grouping Entities
 """"""""""""""""""""""
@@ -395,35 +347,6 @@ For instance, if you have
 the generated HTML will be such that it'll look like you copied and pasted the comment before ``int rand()`` in front of the other three routines.
 
 **Note:**  If you do not wish all members of a group to share the same documentation, *each and every member must be documented separately*.
-
-Documenting a Namespace
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Namespaces appear throughout our code, but if documentation were to show up before each occurrence of a namespace,
-those various bits of documentation will get bundled together by Doxygen in a manner depending on in what order it processes the files.
-To avoid the potential confusion there, namespaces should be documented in ``src/headers/namespaces.H``.
-Each namespace should be preceded by a comment block along these lines:
-
-.. code-block:: cpp
-
-    /*!
-     *  @brief A brief description of the namespace goes here.  The brief
-     *         description is terminated by a blank line.
-     *
-     *  The detailed description of the namespace follows the blank line.  This
-     *  should give an unfamiliar developer enough information to understand the
-     *  purpose of the namespace, what it contains, why it was organized in such a
-     *  way, etc.
-     *
-     *  If the detailed description continues over multiple paragraphs, separate
-     *  paragraphs with a blank line.
-     */
-    namespace something
-    {
-    } // end of namespace something
-
-
-``namespaces.H`` must only contain namespace (and nested namespaces) documentation, in particular no actual source code.
 
 General Doxygen Guidelines
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -574,18 +497,16 @@ There are a handful of different ways to include code blocks in Doxygen, but the
     /*!
      *  Here's a bit of code
      *  \code{.cpp}
-        int
-        main(
-          int   argc,
-          char* argv[])
-        {
-          std::cout << "Hello World!" << std::endl;
-        } // end of main()
-        \endcode
+     *   int
+     *   main(
+     *     int   argc,
+     *     char* argv[])
+     *   {
+     *     std::cout << "Hello World!" << std::endl;
+     *   } // end of main()
+     *  \endcode
      *  that prints "Hello World!".
      */
 
 The argument to the ``\code{}`` command is a file extension that'll tell Doxygen what kind of syntax highlighting it should use.
-Unfortunately, between the ``\code{}`` and ``\endcode`` keywords, there is no stripping of leading asterisks as would normally take place.
-It will, however, strip out whatever leading indentation exists.
 
