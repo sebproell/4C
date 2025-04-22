@@ -10,13 +10,11 @@
 
 #include "4C_config.hpp"
 
-#include "4C_fem_geometric_search_params.hpp"
+#include "4C_geometric_search_params.hpp"
 #include "4C_linalg_graph.hpp"
 #include "4C_linalg_map.hpp"
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Teuchos_RCPDecl.hpp>
 
 #include <memory>
 

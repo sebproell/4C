@@ -10,7 +10,7 @@
 #include "4C_fem_condition_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_dofset_base.hpp"
-#include "4C_fem_geometric_search_matchingoctree.hpp"
+#include "4C_geometric_search_matchingoctree.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 
 FOUR_C_NAMESPACE_OPEN

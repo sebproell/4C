@@ -8,7 +8,7 @@
 #include "4C_fem_dofset_merged_wrapper.hpp"
 
 #include "4C_fem_condition_utils.hpp"
-#include "4C_fem_geometric_search_matchingoctree.hpp"
+#include "4C_geometric_search_matchingoctree.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 
 #include <Epetra_Export.h>

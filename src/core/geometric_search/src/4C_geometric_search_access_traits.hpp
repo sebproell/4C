@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_fem_geometric_search_bounding_volume.hpp"
+#include "4C_geometric_search_bounding_volume.hpp"
 
 #ifdef FOUR_C_WITH_ARBORX
 #include <ArborX.hpp>
