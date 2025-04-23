@@ -50,7 +50,7 @@ MAXTIME                               0.1
 LOADLIN                               yes
 ------------------------------------------------------------------------SOLVER 1
 NAME                                  Structure_Solver
-SOLVER                                Superlu
+SOLVER                                UMFPACK
 ----------------------------------------------------------------BINNING STRATEGY
 BIN_SIZE_LOWER_BOUND                  -1
 DOMAINBOUNDINGBOX -25 -25 -25 25 25 25

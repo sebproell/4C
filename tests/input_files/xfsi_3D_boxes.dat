@@ -61,13 +61,13 @@ EOS_DEFINITION_TAU              Schott_Massing_Burman_DAngelo_Zunino
 EOS_H_DEFINITION                EOS_he_max_diameter_to_opp_surf
 --------------------------------------------------------------------SOLVER 1
 NAME                            XFSI_SOLVER
-SOLVER                          Superlu
+SOLVER                          UMFPACK
 --------------------------------------------------------------------SOLVER 2
 NAME                            Structural_Solver
-SOLVER                          Superlu
+SOLVER                          UMFPACK
 --------------------------------------------------------------------SOLVER 3
 NAME                            Fluid_Solver
-SOLVER                          Superlu
+SOLVER                          UMFPACK
 ----------------------------------------------------------------XFEM GENERAL
 VOLUME_GAUSS_POINTS_BY          DirectDivergence
 BOUNDARY_GAUSS_POINTS_BY        Tessellation
