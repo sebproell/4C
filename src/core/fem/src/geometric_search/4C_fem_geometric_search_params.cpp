@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_geometric_search_params.hpp"
+#include "4C_fem_geometric_search_params.hpp"
 
 #include "4C_utils_parameter_list.hpp"
 

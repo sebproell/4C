@@ -5,12 +5,12 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_GEOMETRIC_SEARCH_ACCESS_TRAITS_HPP
-#define FOUR_C_GEOMETRIC_SEARCH_ACCESS_TRAITS_HPP
+#ifndef FOUR_C_FEM_GEOMETRIC_SEARCH_ACCESS_TRAITS_HPP
+#define FOUR_C_FEM_GEOMETRIC_SEARCH_ACCESS_TRAITS_HPP
 
 #include "4C_config.hpp"
 
-#include "4C_geometric_search_bounding_volume.hpp"
+#include "4C_fem_geometric_search_bounding_volume.hpp"
 
 #ifdef FOUR_C_WITH_ARBORX
 #include <ArborX.hpp>
