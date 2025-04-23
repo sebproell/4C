@@ -5,16 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_geometric_search_input.hpp"
+#include "4C_inpar_geometric_search.hpp"
 
 #include "4C_io_input_spec_builders.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
-void Core::GeometricSearch::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void Inpar::GeometricSearch::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
-
   list["BOUNDINGVOLUME STRATEGY"] = group("BOUNDINGVOLUME STRATEGY",
       {
 

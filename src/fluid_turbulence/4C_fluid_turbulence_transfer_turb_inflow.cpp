@@ -10,7 +10,7 @@
 #include "4C_fem_condition.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_node.hpp"
-#include "4C_geometric_search_matchingoctree.hpp"
+#include "4C_fem_geometric_search_matchingoctree.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_io_input_parameter_container.hpp"

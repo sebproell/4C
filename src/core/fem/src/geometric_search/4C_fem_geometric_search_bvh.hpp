@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_GEOMETRIC_SEARCH_BVH_HPP
-#define FOUR_C_GEOMETRIC_SEARCH_BVH_HPP
+#ifndef FOUR_C_FEM_GEOMETRIC_SEARCH_BVH_HPP
+#define FOUR_C_FEM_GEOMETRIC_SEARCH_BVH_HPP
 
 #include "4C_config.hpp"
 
