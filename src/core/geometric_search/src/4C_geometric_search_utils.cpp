@@ -5,10 +5,10 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_fem_geometric_search_utils.hpp"
+#include "4C_geometric_search_utils.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
-#include "4C_fem_geometric_search_bounding_volume.hpp"
+#include "4C_geometric_search_bounding_volume.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_utils_densematrix_inverse.hpp"

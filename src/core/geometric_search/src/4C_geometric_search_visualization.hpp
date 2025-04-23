@@ -5,12 +5,12 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_FEM_GEOMETRIC_SEARCH_VISUALIZATION_HPP
-#define FOUR_C_FEM_GEOMETRIC_SEARCH_VISUALIZATION_HPP
+#ifndef FOUR_C_GEOMETRIC_SEARCH_VISUALIZATION_HPP
+#define FOUR_C_GEOMETRIC_SEARCH_VISUALIZATION_HPP
 
 #include "4C_config.hpp"
 
-#include "4C_fem_geometric_search_bounding_volume.hpp"
+#include "4C_geometric_search_bounding_volume.hpp"
 #include "4C_io_visualization_manager.hpp"
 
 #include <vector>
