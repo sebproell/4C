@@ -15,7 +15,7 @@ circular cylinder. For further details and references we refer the reader to:
 [Wall99]_
 
 
-.. figure:: figures/tut_fluid_problem.jpg
+.. figure:: /_assets/tut_fluid_problem.jpg
    :alt: Problem definition and geometrical setup (with friendly permission ;-))
    :width: 95%
    :align: center
@@ -41,7 +41,7 @@ the folder ``build-release`` created before, pick an arbitrary name for
 the file, click on ``Save``, and then set the dimension explicitly to
 2d.
 
-.. literalinclude::  tutorial_fluid.jou
+.. literalinclude::  /tutorial_fluid.jou
    :linenos:
 
 
@@ -51,7 +51,7 @@ commands, since numbering of entities changed between Cubit versions!
 
 The generated mesh should look like this:
 
-.. figure:: figures/tut_fluid_mesh.jpg
+.. figure:: /_assets/tut_fluid_mesh.jpg
    :alt: Mesh for a flow past a circular cylinder.
    :name: fig_domainDecomposition
    :width: 95.0%
@@ -148,7 +148,7 @@ Adapting the *bc-file*
 Open the previously created *bc-file* ’default.bc’ and edit your
 boundary conditions as shown below.
 
-.. literalinclude:: tutorial_fluid.bc
+.. literalinclude:: /tutorial_fluid.bc
 
 
 Save the file under a different name of your choice.
@@ -234,7 +234,7 @@ Visualize your results in Paraview
    *Show* button. You receive a visualization of the :math:`X`-velocity
    field, which should look similar to this figure:
 
-.. figure:: figures/tut_fluid_xvel.png
+.. figure:: /_assets/tut_fluid_xvel.png
    :alt: X-velocity for a flow past a circular cylinder
    :name: fig_FlowPastCylinder_x-velocity
    :width: 95.0%

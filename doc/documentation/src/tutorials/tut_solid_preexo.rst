@@ -14,7 +14,7 @@ The analyzed structure is a simple round tensile bar,
 which is commonly used to identify the material's stress-strain curve by comparing the simulation with the respective experiment.
 The geometry, which has a cross sectional diameter of 10 mm and a length of constant diameter of 50 mm is shown in the following figure:
 
-.. figure:: figures/tut_solid-geometry.jpg
+.. figure:: /_assets/tut_solid-geometry.jpg
    :alt: Problem definition and geometrical setup
    :width: 500px
    :align: center
@@ -39,7 +39,7 @@ For elasto-plastic simulations |FOURC| provides mainly the following seven mater
 
 The following flow chart depicts for which cases these seven models are applicable:
 
-.. figure:: figures/tut_solid_flow_chart.jpg
+.. figure:: /_assets/tut_solid_flow_chart.jpg
    :alt: plasticity models flow chart
    :width: 800px
    :align: center
@@ -56,7 +56,7 @@ Since axisymmetric elements are not available in |FOURC|, a 3D structure is mode
 The final FE model is shown here.
 
 
-.. figure:: figures/tut_solid-mesh.jpg
+.. figure:: /_assets/tut_solid-mesh.jpg
    :alt: tutorial_solid mesh
    :width: 500px
    :align: center
@@ -92,7 +92,7 @@ The mesh is rather fine and 27-node brick elements have been used herein.
 The corresponding journal file can be run to reproduce this mesh and output a binary exodus mesh information file ``tutorial_solid.e``.
 The geometry dimensions (actually mainly the radius, all other dimensions depend on it) and element size can be varied, since they are parametrized in the journal file.
 
-.. literalinclude::  tutorial_solid.jou
+.. literalinclude::  /tutorial_solid.jou
    :linenos:
 
 The general definition of the geometry in this cubit journal file, which can be run from the directory ``<source-root>/tests/framework-test/`` includes the complete mesh and four surface node sets.
@@ -116,7 +116,7 @@ Note that only surface conditions are given; the lines that belong to two surfac
 The loading condition has a function number (1) included for the y-direction, and also gets a tag: ``TAG monitor_reaction``.
 The tag is for an extra output of the total forces, which are printed in a csv file, if the output is requested.
 
-.. literalinclude:: tutorial_solid.bc
+.. literalinclude:: /tutorial_solid.bc
    :linenos:
 
 
@@ -126,7 +126,7 @@ All control parameters for the material, solvers, loading function, output infor
 Particularly, the output of the forces is requested by a particular section, ``IO/MONITOR STRUCTURE DBC``, which controls accuracy and frequency of the output.
 This and all other output information is given in section ``IO`` and its subsections.
 
-.. literalinclude::  tutorial_solid.head
+.. literalinclude::  /tutorial_solid.head
    :lines: 17-29
    :lineno-start: 17
 
@@ -136,7 +136,7 @@ In the section ``SOLVER 1``, the direct solver is defined, it does not have any 
 The iterative solver in section ``SOLVER 2`` has some parameters, namely an xml file, which contains more parameters.
 The given xml file as well as some other examples for different multiphysics problems are given in the folder ``<source-root>/tests/input-files/xml/*/*.xml``.
 
-.. literalinclude::  tutorial_solid.head
+.. literalinclude::  /tutorial_solid.head
    :lines: 30-63
    :lineno-start: 30
 
@@ -153,7 +153,7 @@ Besides output and solver details, the material and any functions are defined in
 For the material, we choose a large strain plasticity model, which is named ``MAT_Struct_PlasticNlnLogNeoHooke`` with parameters, which might represent a high strength Aluminum.
 Last but not least, a function is defined in this file, to which the Dirichlet boundary condition refers.
 
-.. literalinclude::  tutorial_solid.head
+.. literalinclude::  /tutorial_solid.head
    :lines: 64-68
    :lineno-start: 64
 
@@ -179,7 +179,7 @@ If they shall be opened by Paraview, the data file ``tutorial_solid-structure.pv
 Using the filter ``Warp by vector`` with Coloring defined by the scalar ``accumulated_plastic_strain``, one may obtain a contour plot on the deformed geometry:
 
 
-.. figure:: figures/tut_solid-deformed.jpg
+.. figure:: /_assets/tut_solid-deformed.jpg
    :alt: Paraview post processing output
    :width: 600px
    :align: center
@@ -203,7 +203,7 @@ A force-displacement graph may be created using gnuplot by the lines
     plot "tutorial_solid_monitor_dbc/tutorial_solid_10004_monitor_dbc.csv" using ($2*12):(abs($6))  with lines title "force-displacement"
 
 
-.. figure:: figures/tutorial_solid_graph.png
+.. figure:: /_assets/tutorial_solid_graph.png
    :alt: result curves for solid tutorial
    :width: 700px
    :align: center

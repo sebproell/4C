@@ -6,4 +6,4 @@ Element reference
 .. toctree::
 
    elementtypes
-   celltypereference
+   /celltypereference

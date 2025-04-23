@@ -20,7 +20,7 @@ and it's sometimes helpful to remove it with ``rm CMakeCache.txt``, before confi
 There is a number of available preset files, which can be retrieved by ``cmake <4C_sourcedir> --list-presets``.
 This is the current output of this command:
 
-.. literalinclude:: 4C-cmake-presets.txt
+.. literalinclude:: /4C-cmake-presets.txt
 
 In general, it is highly recommended to create your own preset, see below.
 
@@ -86,7 +86,7 @@ Our recommended IDEs (VS Code and CLion) already support cmake presets natively.
 Here is a screenshot taken from VS Code:
 
 
-.. figure:: figures/vs-code-cmake-preset.png
+.. figure:: /_assets/vs-code-cmake-preset.png
    :alt: CMake preset selection within VS Code
    :width: 100%
 

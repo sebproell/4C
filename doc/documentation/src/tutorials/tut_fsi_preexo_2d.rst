@@ -8,7 +8,7 @@ As example, we consider a 2d driven cavity example as sketched in Fig.
 :ref:`1.1 <tut_fsi_preexo_2d:1.1>`.
 For further details and references we refer the reader to [Wall99]_
 
-.. figure:: figures/Angabeskizze.jpg
+.. figure:: /_assets/Angabeskizze.jpg
    :alt: The driven cavity example in 2d
    :name: tut_fsi_preexo_2d:1.1
 

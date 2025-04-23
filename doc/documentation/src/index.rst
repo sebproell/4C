@@ -1,7 +1,3 @@
-.. 4C-documentation documentation master file
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 ========
 |FOURC|
 ========
@@ -71,12 +67,12 @@ This guide to |FOURC| is structured as follows:
    :hidden:
    :caption: Contents:
 
-   about
-   4Ccommunity
-   installation
-   tutorials
-   analysisguide
-   developmentguide
-   parameterreference
-   tools
-   appendix
+   about/about
+   community/4Ccommunity
+   installation/installation
+   tutorials/tutorials
+   analysis_guide/analysisguide
+   developer_guide/developmentguide
+   input_parameter_reference/parameterreference
+   tools/tools
+   appendix/appendix

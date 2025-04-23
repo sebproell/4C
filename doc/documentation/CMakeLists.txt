@@ -43,7 +43,7 @@ if(FOUR_C_BUILD_DOCUMENTATION)
       ${_sphinx_OUT_DIR}/reference_docs/4C-cmake-presets.txt
     COMMAND
       ${SPHINX_EXECUTABLE} -W -n -q -b html # warnings are errors and be nit-picky
-      -i "${CMAKE_CURRENT_SOURCE_DIR}" -i "${_sphinx_OUT_DIR}/reference_docs" -i
+      -i "${CMAKE_CURRENT_SOURCE_DIR}/src" -i "${_sphinx_OUT_DIR}/reference_docs" -i
       "${PROJECT_SOURCE_DIR}/tests/framework-test" -i "${_sphinx_TPLDEPEND_DIR}" -o
       "${_sphinx_HTML_DIR}" -c "${_sphinx_OUT_DIR}" -s "${PROJECT_BINARY_DIR}/doc/tmp"
     DEPENDS create_rtd ${FOUR_C_EXECUTABLE_NAME}

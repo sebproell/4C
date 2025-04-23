@@ -12,8 +12,8 @@
 import sys
 import os
 # sys.path.append(os.path.abspath('.../site-packages/sphinx/ext'))
-sys.path.append('@PROJECT_BINARY_DIR@/doc/tmp/python')
-#
+# Include our own python helper modules
+sys.path.append('@PROJECT_SOURCE_DIR@/doc/documentation/python')
 import plot
 
 

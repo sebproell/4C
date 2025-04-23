@@ -13,7 +13,7 @@ at these files only in case you encounter severe problems while
 stepping through the tutorial.
 For further details and references we refer the reader to [Wall99]_.
 
-.. figure:: figures/Angabeskizze.jpg
+.. figure:: /_assets/Angabeskizze.jpg
    :alt: The driven cavity example
    :width: 60%
    :align: center
@@ -38,7 +38,7 @@ the necessary geometry commands as well as mesh and definitions for
 elements and boundary conditions, respectively.
 
 
-.. literalinclude:: tutorial_fsi_3d.jou
+.. literalinclude:: /tutorial_fsi_3d.jou
    :linenos:
 
 
@@ -140,7 +140,7 @@ Therefore we assign:
 
 - The structure elements
 
-   .. literalinclude:: tutorial_fsi_3d.bc
+   .. literalinclude:: /tutorial_fsi_3d.bc
       :lines: 2-8
       :linenos:
       :lineno-start: 2
@@ -148,13 +148,13 @@ Therefore we assign:
 
 -  Surface clamping conditions and fixtures (including hierarchical line conditions)
 
-   .. literalinclude:: tutorial_fsi_3d.bc
+   .. literalinclude:: /tutorial_fsi_3d.bc
       :lines: 18-44
       :linenos:
       :lineno-start: 18
       :emphasize-lines: 5, 12, 19, 26
 
-   .. literalinclude:: tutorial_fsi_3d.bc
+   .. literalinclude:: /tutorial_fsi_3d.bc
       :lines: 53-79
       :linenos:
       :lineno-start: 53
@@ -164,7 +164,7 @@ Therefore we assign:
 -  The later coupling surface is first loaded with
    constant vertical surface pressure
 
-   .. literalinclude:: tutorial_fsi_3d.bc
+   .. literalinclude:: /tutorial_fsi_3d.bc
       :lines: 46-51
       :linenos:
       :lineno-start: 46
@@ -276,7 +276,7 @@ For the pure fluid simulation we assign:
 
 
 
-   .. literalinclude:: tutorial_fsi_3d.bc
+   .. literalinclude:: /tutorial_fsi_3d.bc
       :lines: 10-16
       :linenos:
       :lineno-start: 10
