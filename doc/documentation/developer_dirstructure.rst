@@ -10,9 +10,7 @@ support scripts. The important subdirectories are the following:
 
 :``dependencies``: Contains installation scripts for the external dependencies of |FOURC|.
 
-:``doc``:   Contains this documentation and also the setup for Doxygen.
-
-:``doc_removed_code``: Contains a changelog of major deletions in the code base.
+:``doc``:   Contains the sources of the documentation you are currently reading.
 
 :``docker``: Contains the setup files for docker images for running |FOURC| inside of it.
 

@@ -1,6 +1,6 @@
 .. _cmakepresets:
 
-cmake presets
+CMake presets
 --------------
 
 CMake presets are |FOURC|'s recommended way to configure and manage different configurations of |FOURC|.
