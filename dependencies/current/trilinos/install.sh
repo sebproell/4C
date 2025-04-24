@@ -17,7 +17,7 @@ INSTALL_DIR="$1"
 # Number of procs for building (default 4)
 NPROCS=${NPROCS:=4}
 # git sha from Trilinos repository:
-VERSION="11a16481fa1af48e3cfdb0aa84c29617ce94479f"
+VERSION="8cdf0375d278598c12edc3fd7059cb133c6f4426"
 #CHECKSUM=""
 
 
@@ -60,8 +60,6 @@ $CMAKE_COMMAND \
     -D Epetra_SHOW_DEPRECATED_WARNINGS:BOOL=OFF \
   -D Trilinos_ENABLE_EpetraExt:BOOL=ON \
     -D EpetraExt_SHOW_DEPRECATED_WARNINGS:BOOL=OFF \
-  -D Trilinos_ENABLE_Intrepid:BOOL=ON \
-    -D Intrepid_SHOW_DEPRECATED_WARNINGS:BOOL=OFF \
   -D Trilinos_ENABLE_Intrepid2:BOOL=ON \
   -D Trilinos_ENABLE_Ifpack:BOOL=ON \
     -D Ifpack_SHOW_DEPRECATED_WARNINGS:BOOL=OFF \
