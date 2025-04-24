@@ -379,7 +379,7 @@ namespace Mat
     Mat::PAR::PlasticElastHyperVCU* mat_params() const override { return params_; }
 
     /// get dissipation mode
-    Inpar::TSI::DissipationMode dis_mode() const override { return Inpar::TSI::pl_flow; }
+    TSI::DissipationMode dis_mode() const override { return TSI::pl_flow; }
 
     /// inverse plastic deformation gradient for each Gauss point at current state
     std::vector<Core::LinAlg::Matrix<3, 3>> plastic_defgrd_inverse_;

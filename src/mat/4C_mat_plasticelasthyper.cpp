@@ -48,7 +48,7 @@ Mat::PAR::PlasticElastHyper::PlasticElastHyper(const Core::Mat::PAR::Parameter::
       rY_13_(matdata.parameters.get<double>("rY_13")),
       cpl_(0.),
       stab_s_(0.),
-      dis_mode_(Inpar::TSI::pl_multiplier)
+      dis_mode_(TSI::pl_multiplier)
 {
   // check if sizes fit
   if (nummat_ != (int)matids_.size())
@@ -299,7 +299,7 @@ void Mat::PlasticElastHyper::unpack(Core::Communication::UnpackBuffer& buffer)
   }
 
   // dissipation mode
-  Inpar::TSI::DissipationMode mode;
+  TSI::DissipationMode mode;
   extract_from_pack(buffer, mode);
   set_dissipation_mode(mode);
 
@@ -368,11 +368,11 @@ void Mat::PlasticElastHyper::setup(int numgp, const Core::IO::InputParameterCont
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::PlasticElastHyper::setup_tsi(const int numgp, const int numdofperelement, const bool eas,
-    const Inpar::TSI::DissipationMode mode)
+void Mat::PlasticElastHyper::setup_tsi(
+    const int numgp, const int numdofperelement, const bool eas, const TSI::DissipationMode mode)
 {
   // dissipation mode
-  if (mode == Inpar::TSI::pl_multiplier)
+  if (mode == TSI::pl_multiplier)
     if (mat_params()->rY_11_ != 0. || mat_params()->rY_22_ != 0. || mat_params()->rY_33_ != 0. ||
         mat_params()->rY_12_ != 0. || mat_params()->rY_23_ != 0. || mat_params()->rY_13_ != 0.)
       FOUR_C_THROW("TSI with Hill plasticity not available with DISSIPATION_MODE pl_multiplier");
@@ -400,11 +400,11 @@ void Mat::PlasticElastHyper::setup_tsi(const int numgp, const int numdofpereleme
   if (pl_spin_chi() != 0.) FOUR_C_THROW("no thermo-plasticitiy with plastic spin");
 
   /// Hill TSI only with pl_flow dissipation
-  if (mat_params()->rY_11_ != 0. && mode == Inpar::TSI::pl_multiplier)
+  if (mat_params()->rY_11_ != 0. && mode == TSI::pl_multiplier)
     FOUR_C_THROW("hill thermo plasticity not with dissipation mode pl_multiplier");
 
   /// viscoplastic TSI only with  pl_flow dissipation
-  if (visc() != 0. && mode == Inpar::TSI::pl_multiplier)
+  if (visc() != 0. && mode == TSI::pl_multiplier)
     FOUR_C_THROW("thermo-visco-plasticity not with dissipation mode pl_multiplier");
 }
 
@@ -1059,7 +1059,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
     // TSI
     if (dNCPdT != nullptr)
     {
-      if (dis_mode() == Inpar::TSI::Taylor_Quinney)
+      if (dis_mode() == TSI::Taylor_Quinney)
       {
         double plHeating = taylor_quinney() * eta_v_strainlike.dot(deltaDp_v);
         Core::LinAlg::Matrix<6, 1> dHpDeta(Core::LinAlg::Initialization::zero);
@@ -1081,14 +1081,14 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
                            (*temp) * delta_alpha_i_[gp];
         switch (dis_mode())
         {
-          case Inpar::TSI::pl_multiplier:
+          case TSI::pl_multiplier:
             plHeating += delta_alpha_i_[gp] * (0. + inityield() * (1. - yield_soft() * dT) +
                                                   isohard() * (1. - hard_soft() * dT) * aI +
                                                   (infyield() * (1. - hard_soft() * dT) -
                                                       inityield() * (1. - yield_soft() * dT)) *
                                                       (1. - exp(-expisohard() * aI)));
             break;
-          case Inpar::TSI::pl_flow:
+          case TSI::pl_flow:
             plHeating += eta_v_strainlike.dot(deltaDp_v);
             break;
           default:
@@ -1103,13 +1103,13 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
                               delta_alpha_i_[gp];
         switch (dis_mode())
         {
-          case Inpar::TSI::pl_multiplier:
+          case TSI::pl_multiplier:
             dPlHeatingDT += -delta_alpha_i_[gp] *
                             (0. + inityield() * yield_soft() + isohard() * hard_soft() * aI +
                                 (infyield() * hard_soft() - inityield() * yield_soft()) *
                                     (1. - exp(-expisohard() * aI)));
             break;
-          case Inpar::TSI::pl_flow:
+          case TSI::pl_flow:
             // do nothing
             break;
           default:
@@ -1128,7 +1128,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
                         exp(-expisohard() * aI));
         switch (dis_mode())
         {
-          case Inpar::TSI::pl_multiplier:
+          case TSI::pl_multiplier:
             dPlHeatingDdai +=
                 +inityield() * (1. - yield_soft() * dT) +
                 isohard() * (1. - hard_soft() * dT) *
@@ -1137,7 +1137,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
                     ((1. - exp(-expisohard() * aI)) +
                         delta_alpha_i_[gp] * expisohard() * exp(-expisohard() * aI));
             break;
-          case Inpar::TSI::pl_flow:
+          case TSI::pl_flow:
             // do nothing
             break;
           default:
@@ -1159,7 +1159,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
               -2. * dPlHeatingDdai * abseta_H * dDpHeta / (pow(absHeta, 4.)), HetaH_strainlike, 1.);
         }
 
-        if (dis_mode() == Inpar::TSI::pl_flow) dHpDeta.update(1., deltaDp_v_strainlike, 1.);
+        if (dis_mode() == TSI::pl_flow) dHpDeta.update(1., deltaDp_v_strainlike, 1.);
 
         // derivative w.r.t. C
         dHdC->multiply_tn(*dMdC, dHpDeta);
@@ -1171,7 +1171,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
           tmp61.multiply(PlAniso_full_, eta_v_strainlike);
           dHdDp->update(dPlHeatingDdai * abseta_H / (absHeta * absHeta), tmp61, 1.);
         }
-        if (dis_mode() == Inpar::TSI::pl_flow) dHdDp->update(1., eta_v_strainlike, 1.);
+        if (dis_mode() == TSI::pl_flow) dHdDp->update(1., eta_v_strainlike, 1.);
 
         // scaling with time step
         plHeating /= dt;

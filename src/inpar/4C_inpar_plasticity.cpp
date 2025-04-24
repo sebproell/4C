@@ -8,11 +8,10 @@
 #include "4C_inpar_plasticity.hpp"
 
 #include "4C_inpar_structure.hpp"
-#include "4C_inpar_tsi.hpp"
 #include "4C_io_input_spec_builders.hpp"
+#include "4C_tsi_input.hpp"
+
 FOUR_C_NAMESPACE_OPEN
-
-
 
 void Inpar::Plasticity::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
@@ -81,14 +80,14 @@ void Inpar::Plasticity::set_valid_parameters(std::map<std::string, Core::IO::Inp
               {.description = "tolerance in the EAS increment norm for the Newton iteration",
                   .default_value = 1.0E-8}),
 
-          deprecated_selection<Inpar::TSI::DissipationMode>("DISSIPATION_MODE",
+          deprecated_selection<TSI::DissipationMode>("DISSIPATION_MODE",
               {
-                  {"pl_multiplier", Inpar::TSI::pl_multiplier},
-                  {"pl_flow", Inpar::TSI::pl_flow},
-                  {"Taylor_Quinney", Inpar::TSI::Taylor_Quinney},
+                  {"pl_multiplier", TSI::pl_multiplier},
+                  {"pl_flow", TSI::pl_flow},
+                  {"Taylor_Quinney", TSI::Taylor_Quinney},
               },
               {.description = "method to calculate the plastic dissipation",
-                  .default_value = Inpar::TSI::pl_multiplier})},
+                  .default_value = TSI::pl_multiplier})},
       {.defaultable = true});
 }
 
