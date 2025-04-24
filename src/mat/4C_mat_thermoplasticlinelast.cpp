@@ -10,7 +10,6 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
 #include "4C_mat_par_bundle.hpp"
-#include "4C_tsi_defines.hpp"
 #include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -585,11 +584,6 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
       // check: absolute value of Res has to be smaller than given tolerance
       if (norm < (params_->abstol_))
       {
-#ifdef DEBUGMATERIAL
-        if (gp == 0)
-          printf(
-              "Newton method converged after %i iterations; abs(Res)=  %-14.8E\n", itnum, abs(Res));
-#endif
         break;
       }
 
@@ -632,16 +626,6 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
         sigma_y = get_sigma_y_at_strainbarnp(strainbar_p);
       }
 
-#ifdef DEBUGMATERIAL
-      if (gp == 0)
-      {
-        std::cout << "am 1.GP: local Newton: Res " << Res << std::endl;
-        std::cout << "local Newton: ResTan " << ResTan << std::endl;
-        std::cout << "local Newton: Dgamma " << Dgamma << std::endl;
-        std::cout << "local Newton: betabarold " << betabarold << std::endl;
-        std::cout << "local Newton: betabar " << betabar << "\n" << std::endl;
-      }
-#endif  // #ifdef DEBUGMATERIAL
 
     }  // end of local Newton iteration
 
@@ -699,23 +683,6 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
     // back stress
     backstresscurr_->at(gp) = beta;
 
-#ifdef DEBUGMATERIAL
-    if (gp == 0)
-    {
-      std::cout << "LAST values\nplastic load: strainbarpllast_->at(gp) = "
-                << strainbarpllast_->at(gp) << std::endl;
-      std::cout << "plastic load: strainpllast->at(gp)\n " << strainpllast_->at(gp) << std::endl;
-      std::cout << "plastic load: backstresslast_->at(gp)\n " << backstresslast_->at(gp)
-                << std::endl;
-      std::cout << "CURRENT values\n plastic load: strainbar_p = " << strainbar_p << std::endl;
-      std::cout << "CURRENT values\nplastic load: strainbarplcurr_->at(gp) = "
-                << strainbarplcurr_->at(gp) << std::endl;
-      std::cout << "plastic load: strain_p\n " << strain_p << std::endl;
-      std::cout << "plastic load: strainplcurr_->at(gp)\n " << strainplcurr_->at(gp) << std::endl;
-      std::cout << "plastic load: backstresscurr_->at(gp)\n " << backstresscurr_->at(gp)
-                << std::endl;
-    }
-#endif  // ifdef DEBUGMATERIAL
 
   }  // plastic corrector
 
@@ -759,23 +726,6 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
     strainbarplcurr_->at(gp) = strainbarpllast_->at(gp);
     backstresscurr_->at(gp) = backstresslast_->at(gp);
 
-#ifdef DEBUGMATERIAL
-    if (gp == 0)
-    {
-      std::cout << "LAST values\nelastic load: strainbarpllast_->at(gp) = "
-                << strainbarpllast_->at(gp) << std::endl;
-      std::cout << "elastic load: strainpllast->at(gp)\n " << strainpllast_->at(gp) << std::endl;
-      std::cout << "elastic load: backstresslast_->at(gp)\n " << backstresslast_->at(gp)
-                << std::endl;
-      std::cout << "CURRENT values\n elastic load: strainbar_p = " << strainbar_p << std::endl;
-      std::cout << "CURRENT values\nelastic load: strainbarplcurr_->at(gp) = "
-                << strainbarplcurr_->at(gp) << std::endl;
-      std::cout << "elastic load: strain_p\n " << strain_p << std::endl;
-      std::cout << "elastic load: strainplcurr_->at(gp)\n " << strainplcurr_->at(gp) << std::endl;
-      std::cout << "elastic load: backstresscurr_->at(gp)\n " << backstresscurr_->at(gp)
-                << std::endl;
-    }
-#endif  // DEBUGMATERIAL
 
   }  // elastic step
 
@@ -823,20 +773,6 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   // ( generally C_ep is nonsymmetric )
   setup_cmat_elasto_plastic(*cmat, Dgamma, G, qbar, N, Nbar, heaviside, Hiso, Hkin);
 
-#ifdef DEBUGMATERIAL
-  std::cout << "Nach Setup Cep\n" << std::endl;
-  std::cout << " Dgamma " << Dgamma << std::endl;
-  std::cout << " G " << G << std::endl;
-  std::cout << " qbar " << qbar << std::endl;
-  std::cout << " flow vector " << N << std::endl;
-  std::cout << " heaviside " << heaviside << std::endl;
-  std::cout << " Kinematic hardening module " << Hkin << std::endl;
-
-  // build the elasto-plastic tangent modulus
-  Core::LinAlg::Matrix<6, 6> cmatFD(Core::LinAlg::Initialization::zero);
-
-  std::cout << "cmat " << *cmat << std::endl;
-#endif  // #ifdef DEBUGMATERIAL
 
   //---------------------------------------------------------------------------
   // ------------------------------------------ internal/mechanical dissipation
@@ -1097,19 +1033,6 @@ void Mat::ThermoPlasticLinElast::setup_cmat_elasto_plastic(
     }  // end columns, loop k
   }  // (q != 0.0)
 
-#ifdef DEBUGMATERIAL
-  std::cout << "End SetupCmatElastPlast" << std::endl;
-  std::cout << "Cep\n"
-            << " Dgamma " << Dgamma << std::endl;
-  std::cout << " G " << G << std::endl;
-  std::cout << " q " << q << std::endl;
-  std::cout << " flowvector " << flowvector << std::endl;
-  std::cout << " heaviside " << heaviside << std::endl;
-  std::cout << " epfac " << epfac << std::endl;
-  std::cout << " epfac1 " << epfac1 << std::endl;
-  std::cout << " epfac2 " << epfac2 << std::endl;
-  std::cout << " cmat " << cmat << std::endl;
-#endif  // #ifdef DEBUGMATERIAL
 
 }  // setup_cmat_elasto_plastic()
 

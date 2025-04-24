@@ -77,21 +77,7 @@ TSI::Partitioned::Partitioned(MPI_Comm comm)
 
   // structural and thermal contact
   prepare_contact_strategy();
-
-#ifdef TSIPARTITIONEDASOUTPUT
-  // now check if the two dofmaps are available and then bye bye
-  std::cout << "structure dofmap" << std::endl;
-  std::cout << *structure_field()->dof_row_map(0) << std::endl;
-  std::cout << "thermo dofmap" << std::endl;
-  std::cout << *structure_field()->dof_row_map(1) << std::endl;
-  std::cout << "thermo dofmap" << std::endl;
-  std::cout << *ThermoField()->dof_row_map(0) << std::endl;
-  std::cout << "structure dofmap" << std::endl;
-  std::cout << *ThermoField()->dof_row_map(1) << std::endl;
-//    exit(0);
-#endif
-
-}  // cstr
+}
 
 
 
@@ -1046,7 +1032,6 @@ void TSI::Partitioned::outer_iteration_loop()
  *----------------------------------------------------------------------*/
 void TSI::Partitioned::do_structure_step()
 {
-#ifndef TFSI
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
     std::cout << "\n";
@@ -1054,7 +1039,6 @@ void TSI::Partitioned::do_structure_step()
     std::cout << "    STRUCTURE SOLVER    \n";
     std::cout << "************************\n";
   }
-#endif
 
   /// solve structural system
   // do the nonlinear solve for the time step. All boundary conditions have
@@ -1073,7 +1057,6 @@ void TSI::Partitioned::do_structure_step()
  *----------------------------------------------------------------------*/
 void TSI::Partitioned::do_thermo_step()
 {
-#ifndef TFSI
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
     std::cout << "\n";
@@ -1081,7 +1064,6 @@ void TSI::Partitioned::do_thermo_step()
     std::cout << "    THERMO SOLVER    \n";
     std::cout << "*********************\n";
   }
-#endif
 
   /// solve thermal system
   // do the solve for the time step. All boundary conditions have

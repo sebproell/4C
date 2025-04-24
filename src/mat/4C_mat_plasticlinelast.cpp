@@ -10,7 +10,6 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
 #include "4C_mat_par_bundle.hpp"
-#include "4C_tsi_defines.hpp"
 #include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -491,11 +490,6 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       // check: absolute value of Res has to be smaller than given tolerance
       if (norm < (params_->abstol_))
       {
-#ifdef DEBUGMATERIAL
-        if (gp == 0)
-          printf(
-              "Newton method converged after %i iterations; abs(Res)=  %-14.8E\n", itnum, abs(Res));
-#endif
         break;
       }
 
@@ -527,16 +521,6 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       // sigma = sigma_y0 + Hiso . astrain^{p}_{n+1}
       sigma_y = sigma_y0 + Hiso * strainbar_p;
 
-#ifdef DEBUGMATERIAL
-      if (gp == 0)
-      {
-        std::cout << "am 1.GP: local Newton: Res " << Res << std::endl;
-        std::cout << "local Newton: ResTan " << ResTan << std::endl;
-        std::cout << "local Newton: Dgamma " << Dgamma << std::endl;
-        std::cout << "local Newton: betabarold " << betabarold << std::endl;
-        std::cout << "local Newton: betabar " << betabar << "\n" << std::endl;
-      }
-#endif  // #ifdef DEBUGMATERIAL
 
     }  // end of local Newton iteration
 
@@ -603,10 +587,6 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     // back stress
     backstresscurr_->at(gp) = beta;
 
-#ifdef DEBUGMATERIAL
-    std::cout << "end strain_p\n " << strain_p << std::endl;
-    std::cout << "end strainplcurr_->at(gp)\n " << strainplcurr_->at(gp) << std::endl;
-#endif  // ifdef DEBUGMATERIAL
 
   }  // plastic corrector
 
@@ -650,23 +630,6 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     strainbarplcurr_->at(gp) = strainbarpllast_->at(gp);
     backstresscurr_->at(gp) = backstresslast_->at(gp);
 
-#ifdef DEBUGMATERIAL
-    if (gp == 0)
-    {
-      std::cout << "LAST values\nelastic load: strainbarpllast_->at(gp) = "
-                << strainbarpllast_->at(gp) << std::endl;
-      std::cout << "elastic load: strainpllast->at(gp)\n " << strainpllast_->at(gp) << std::endl;
-      std::cout << "elastic load: backstresslast_->at(gp)\n " << backstresslast_->at(gp)
-                << std::endl;
-      std::cout << "CURRENT values\n elastic load: strainbar_p = " << strainbar_p << std::endl;
-      std::cout << "CURRENT values\nelastic load: strainbarplcurr_->at(gp) = "
-                << strainbarplcurr_->at(gp) << std::endl;
-      std::cout << "elastic load: strain_p\n " << strain_p << std::endl;
-      std::cout << "elastic load: strainplcurr_->at(gp)\n " << strainplcurr_->at(gp) << std::endl;
-      std::cout << "elastic load: backstresscurr_->at(gp)\n " << backstresscurr_->at(gp)
-                << std::endl;
-    }
-#endif  // DEBUGMATERIAL
 
   }  // elastic step
 
@@ -686,47 +649,6 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // using an associative flow rule: C_ep is symmetric
   // ( generally C_ep is nonsymmetric )
   setup_cmat_elasto_plastic(*cmat, Dgamma, G, qbar, Nbar, heaviside, Hiso, Hkin);
-
-#ifdef DEBUGMATERIAL
-  std::cout << "Nach Setup Cep\n" << std::endl;
-  std::cout << " Dgamma " << Dgamma << std::endl;
-  std::cout << " G " << G << std::endl;
-  std::cout << " qbar " << qbar << std::endl;
-  std::cout << " unit flow vector" << Nbar << std::endl;
-  std::cout << " heaviside " << heaviside << std::endl;
-  std::cout << " Kinematic hardening module " << Hkin << std::endl;
-
-  // build the elasto-plastic tangent modulus
-  Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmatFD(Core::LinAlg::Initialization::zero);
-
-  // build a finite difference check
-  fd_check(*stress,   // updated stress sigma_n+1
-      cmatFD,         // material tangent calculated with FD of stresses
-      beta,           // updated back stresses
-      p,              // volumetric stress
-      trialstrain_e,  // elastic strain vector
-      Dgamma,         // plastic multiplier
-      G,              // shear modulus
-      qbar,           // elastic trial von Mises effective stress
-      kappa,          // bulk modulus
-      Nbar,           //  flow vector
-      heaviside       // Heaviside function
-  );
-
-  std::cout << "cmat " << *cmat << std::endl;
-  std::cout << "cmatFD " << cmatFD << std::endl;
-//  // error: cmat - cmatFD
-//  Core::LinAlg::Matrix<NUM_STRESS_3D,NUM_STRESS_3D> cmatdiff;
-//  cmatdiff.update(1.0, cmat, 0.0);
-//  cmatdiff.update(-1.0, cmatFD, 1.0);
-//  std::cout << "error between two material tangents" << cmatdiff << std::endl;
-//  printf("c_11 %+12.5e   ",cmat(0,0)-cmatFD(0,0));
-//  printf("c_12 %+12.5e   ",cmat(0,1)-cmatFD(0,1));
-//  printf("cmat_11 %12.8f\n   ",cmat(0,0));
-//  printf("cmatFD_11 %12.8f\n   ",cmatFD(0,0));
-//  printf("error c_11 %12.8f\n   ",cmat(0,0)-cmatFD(0,0));
-//  printf("error c_12 %12.5f\n   ",cmat(0,1)-cmatFD(0,1));
-#endif  // #ifdef DEBUGMATERIAL
 
   // ------------------------- return plastic strains for post-processing
   // plastic strain
@@ -917,21 +839,6 @@ void Mat::PlasticLinElast::setup_cmat_elasto_plastic(
 
   // complete material tangent C_ep available
 
-#ifdef DEBUGMATERIAL
-  if (Dgamma != 0)
-  {
-    std::cout << "End SetupCmatElastPlast" << std::endl;
-    std::cout << "Cep\n"
-              << " Dgamma " << Dgamma << std::endl;
-    std::cout << " G " << G << std::endl;
-    std::cout << " q " << q << std::endl;
-    std::cout << " Nbar " << Nbar << std::endl;
-    std::cout << " heaviside " << heaviside << std::endl;
-    std::cout << " epfac " << epfac << std::endl;
-    std::cout << " epfac1 " << epfac1 << std::endl;
-    std::cout << " cmat " << cmat << std::endl;
-  }
-#endif  // #ifdef DEBUGMATERIAL
 
 }  // setup_cmat_elasto_plastic()
 
@@ -1061,21 +968,6 @@ void Mat::PlasticLinElast::fd_check(
     }
   }  // loop stresses
 
-#ifdef DEBUGMATERIAL
-  std::cout << "devdisturbstress\n " << devdisturbstress << std::endl;
-  std::cout << "disturbstress\n " << disturbstress << std::endl;
-  std::cout << "stress\n " << stress << std::endl;
-  std::cout << "  strain\n " << strain << std::endl;
-  std::cout << "  disturbstrain\n " << disturbstrain << std::endl;
-  for (int i = 0; i < NUM_STRESS_3D; ++i)
-  {
-    std::cout << "  Difference between strains at position " << i << " "
-              << strain(i) - disturbstrain(i) << std::endl;
-    std::cout << "  Difference between stresses at position " << i << " "
-              << stress(i) - disturbstress(i) << std::endl;
-  }
-  std::cout << "end of fd_check!!\n\n\n" << std::endl;
-#endif
 
   return;
 

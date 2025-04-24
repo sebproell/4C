@@ -234,10 +234,6 @@ void Mat::Damage::update()
   {
     if (failedcurr_.at(gp))
     {
-#ifdef DEBUGMATERIAL
-      if (!failedlast_.at(gp))
-        std::cout << "Element " << eleGID << ", ip " << gp << " has failed!\n";
-#endif  // #ifdef DEBUGMATERIAL
       failedlast_.at(gp) = true;
     }
   }
@@ -518,10 +514,6 @@ void Mat::Damage::evaluate_simplified_lemaitre(const Core::LinAlg::Matrix<3, 3>*
       // check if newest astrain^{p,m}_{n+1} is still smaller than threshold
       if (strainbar_p < strainbar_p_D)
       {
-#ifdef DEBUGMATERIAL
-        if (gp == 0) std::cout << "No damage! Current load step is admissible!" << std::endl;
-#endif  // #ifdef DEBUGMATERIAL
-
         // no damage occurs, i.e. current solution is correct, no return-map
         // considering damage is necessary
         damevolution = false;
@@ -583,22 +575,11 @@ void Mat::Damage::evaluate_simplified_lemaitre(const Core::LinAlg::Matrix<3, 3>*
         // update damage variable damage_{n+1}
         damagecurr_.at(gp) = damage;
 
-#ifdef DEBUGMATERIAL
-        std::cout << "end strain_p\n " << strain_p << std::endl;
-        std::cout << "end strainplcurr_->at(gp)\n " << strainplcurr_->at(gp) << std::endl;
-#endif  // ifdef DEBUGMATERIAL
 
       }  // (strainbar_p < strainbar_p_D)
       // updated strainbar_p not valid, recalculate step considering damage
       else  // (strainbar_p > strainbar_p_D)
       {
-#ifdef DEBUGMATERIAL
-        if (gp == 0)
-          std::cout << "New solution strainbar_p^m exceeds damage threshold!"
-                       "\n Recalculate load step considering damage!"
-                    << std::endl;
-#endif  // #ifdef DEBUGMATERIAL
-
         // damage occurs, i.e. current solution is not correct, recalculate
         // load step considering damage
         damevolution = true;
@@ -617,20 +598,6 @@ void Mat::Damage::evaluate_simplified_lemaitre(const Core::LinAlg::Matrix<3, 3>*
 
     if (damevolution == true)
     {
-#ifdef DEBUGMATERIAL
-      // only first plastic call is output at screen for every processor
-      // visualisation of whole plastic behaviour via PLASTIC_STRAIN in postprocessing
-      if ((plastic_step_ == false) and (gp == 0))
-      {
-        std::cout << "damage starts to evolve in element = " << eleID << std::endl;
-
-        plastic_step_ = true;
-      }
-
-      std::cout << "Damage has to be considered for current load step and ele = " << eleID
-                << ", and gp = " << gp << " ! Threshold exceeded!" << std::endl;
-#endif  // #ifdef DEBUGMATERIAL
-
       // ------------------------------------------------- return-mapping
       // local Newton-Raphson
       // ------------------------------- initial guess for Dgamma (12.49)
@@ -669,10 +636,6 @@ void Mat::Damage::evaluate_simplified_lemaitre(const Core::LinAlg::Matrix<3, 3>*
       // sanity check: omega < 1.0e-20
       if (omega < omegamin)
       {
-#ifdef DEBUGMATERIAL
-        std::cout << "Inadmissible value of integrity: omega = " << omega << " in ele " << eleGID
-                  << "!\n Element has failed.\n";
-#endif  // ifdef DEBUGMATERIAL
         omega = omegamin;
         failed = true;
       }
@@ -744,10 +707,6 @@ void Mat::Damage::evaluate_simplified_lemaitre(const Core::LinAlg::Matrix<3, 3>*
       // update failure flag;
       failedcurr_.at(gp) = failed;
 
-#ifdef DEBUGMATERIAL
-      std::cout << "end strain_p\n " << strain_p << std::endl;
-      std::cout << "end strainplcurr_->at(gp)\n " << strainplcurr_->at(gp) << std::endl;
-#endif  // ifdef DEBUGMATERIAL
 
     }  // damage evolution has to be considered, damage threshold exceeded
 
@@ -803,15 +762,6 @@ void Mat::Damage::evaluate_simplified_lemaitre(const Core::LinAlg::Matrix<3, 3>*
   setup_cmat_elasto_plastic(*cmat, eleGID, Dgamma, G, bulk, p_tilde, q_tilde, energyrelrate, Ytan,
       sigma_y, Hiso, Nbar, gp, damevolution, active_plasticity);
 
-#ifdef DEBUGMATERIAL
-  std::cout << "Nach Setup Cep\n" << std::endl;
-  std::cout << " Dgamma " << Dgamma << std::endl;
-  std::cout << " G " << G << std::endl;
-  std::cout << " q " << q << std::endl;
-  std::cout << " flow vector " << Nbar << std::endl;
-  std::cout << " active_plasticity " << active_plasticity << std::endl;
-  std::cout << "--> cmat " << cmat << std::endl;
-#endif  // #ifdef DEBUGMATERIAL
 
   // ------------------------------- return plastic strains for post-processing
   params.set<Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1>>("plglstrain", strainplcurr_.at(gp));
@@ -1147,24 +1097,6 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
                  eta_tilde(5) * eta_tilde(5);
   double qbar_tilde = sqrt(3.0 * J2bar);
 
-#ifdef DEBUGMATERIAL
-  if (gp == 0)
-  {
-    std::cout << ": devstress_tilde\n " << devstress_tilde << std::endl;
-    std::cout << ": devstrain\n " << devstrain << std::endl;
-    std::cout << ": beta\n " << beta << std::endl;
-    std::cout << ": eta_tilde\n " << eta_tilde << std::endl;
-    std::cout << "plastic load: strainbarplcurr_.at(gp)\n " << strainbarplcurr_.at(gp) << std::endl;
-    std::cout << "plastic load: strainbarpllast_.at(gp)\n " << strainbarpllast_.at(gp) << std::endl;
-    std::cout << "plastic load: strain_p\n " << strain_p << std::endl;
-    std::cout << "plastic load: strainplcurr_.at(gp)\n " << strainplcurr_.at(gp) << std::endl;
-    std::cout << "plastic load: strainpllast\n " << strainpllast_.at(gp) << std::endl;
-    std::cout << "elastic load: backstresscurr_.at(gp)\n " << backstresscurr_.at(gp) << std::endl;
-    std::cout << "elastic load: backstresslast_.at(gp)\n " << backstresslast_.at(gp) << std::endl;
-    std::cout << ": q_tilde\n " << q_tilde << std::endl;
-    std::cout << ": qbar_tilde\n " << qbar_tilde << std::endl;
-  }
-#endif  // DEBUGMATERIAL
 
   // initialise final (damaged) deviatoric stresses
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> devstress(Core::LinAlg::Initialization::zero);
@@ -1218,16 +1150,6 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
   // with trial values: Phi_trial = qbar{~,trial} - sigma_y and Dgamma == 0
   double Phi_trial = qbar_tilde - sigma_y;
 
-#ifdef DEBUGMATERIAL
-  if (gp == 0)
-  {
-    std::cout << ": Phi_trial  " << Phi_trial << std::endl;
-    std::cout << ": qbar_tilde  " << qbar_tilde << std::endl;
-    std::cout << ": sigma_y  " << sigma_y << std::endl;
-    std::cout << ": kappa " << kappa << std::endl;
-    std::cout << ": dkappa_dR " << dkappa_dR << std::endl;
-  }
-#endif  // DEBUGMATERIAL
 
   // --------------------------------------------------------- initialise
 
@@ -1252,10 +1174,6 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
   //---------------------------------------------------------------------------
   if (Phi_trial > 1.0e-08 and !failed)  // if (Phi_trial > 0.0)
   {
-#ifdef DEBUGMATERIAL
-    std::cout << "Damage has to be considered for current load step and ele = " << eleID
-              << ", and gp = " << gp << " ! Threshold exceeded!" << std::endl;
-#endif  // #ifdef DEBUGMATERIAL
     // deviatoric stress norm || eta^{~}_{n+1} ||
     double eta_tildenorm = 0.0;
     eta_tildenorm = sqrt(eta_tilde(0) * eta_tilde(0) + eta_tilde(1) * eta_tilde(1) +
@@ -1330,16 +1248,6 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
     // c_D = (Y^trial_{n+1} / r)^s . c_astrain
     double c_D = y * c_strainbar;
 
-#ifdef DEBUGMATERIAL
-    if (gp == 0)
-    {
-      std::cout << ": Phi_trial  " << Phi_trial << std::endl;
-      std::cout << ": qbar_tilde  " << qbar_tilde << std::endl;
-      std::cout << ": Y  " << Y << std::endl;
-      std::cout << ": y " << y << std::endl;
-      std::cout << ": c_D " << c_D << std::endl;
-    }
-#endif  // DEBUGMATERIAL
 
     // ------------------------------------------------- return-mapping
 
@@ -1566,16 +1474,6 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
         }
         break;
       }
-#ifdef DEBUGMATERIAL
-      else if (gp == 0)
-        printf(
-            "Newton method converged after %i iterations; "
-            "norm_k_s = %-14.8E, "
-            "norm_k_Phi = %-14.8E, "
-            "norm_k_b = %-14.8E, "
-            "norm_k_D = %-14.8E \n",
-            itnum, norm_k_s_tilde, norm_Phi, norm_k_beta, norm_k_D);
-#endif  // #ifdef DEBUGMATERIAL
 
       // --------------- else: load step NOT converged, calculate corrections
 
@@ -1777,19 +1675,6 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
       // c_D = - k_D + y . c_strainbar + (Dgamma / omega) dy_ds_matrixcD
       c_D = -k_D + y * c_strainbar + (Dgamma / omega) * dyds_matrixcD;
 
-#ifdef DEBUGMATERIAL
-      if (gp == 0)
-      {
-        std::cout << "End local Newton damage = " << damage << std::endl;
-        std::cout << "End local Newton strainbar_p = " << strainbar_p << std::endl;
-        std::cout << "End local Newton Rplast = " << Rplast << std::endl;
-
-        std::cout << "am 1.GP: local Newton: Res " << Res << std::endl;
-        std::cout << "local Newton: ResTan " << ResTan << std::endl;
-        std::cout << "local Newton: Dgamma " << Dgamma << std::endl;
-        std::cout << "local Newton: sigma_y " << sigma_y << std::endl;
-      }
-#endif  // #ifdef DEBUGMATERIAL
 
     }  // end of local Newton iteration
 
@@ -1856,10 +1741,6 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
 
     // update failed state
     failedcurr_.at(gp) = failed;
-#ifdef DEBUGMATERIAL
-    std::cout << "end strain_p\n " << strain_p << std::endl;
-    std::cout << "end strainplcurr_.at(gp)\n " << strainplcurr_.at(gp) << std::endl;
-#endif  // ifdef DEBUGMATERIAL
 
   }  // plastic corrector
 
@@ -1922,15 +1803,6 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
       g, h_alg, G, Hiso, bulk, Hkin, Hkin_rec, Nbetaold, gp, qbar_tilde, y, dy_dsigma_tilde,
       b_NbetaoldN);
 
-#ifdef DEBUGMATERIAL
-  std::cout << "Nach Setup Cep\n" << std::endl;
-  std::cout << " Dgamma " << Dgamma << std::endl;
-  std::cout << " G " << G << std::endl;
-  std::cout << " q " << q << std::endl;
-  std::cout << " flow vector " << Nbar << std::endl;
-  std::cout << " active_plasticity " << active_plasticity << std::endl;
-  std::cout << "--> cmat " << cmat << std::endl;
-#endif  // #ifdef DEBUGMATERIAL
 
   return;
 
@@ -2127,31 +1999,12 @@ void Mat::Damage::setup_cmat_elasto_plastic(Core::LinAlg::Matrix<NUM_STRESS_3D, 
 
     // complete material tangent C_ep available
 
-#ifdef DEBUGMATERIAL
-    if (Dgamma != 0)
-    {
-      std::cout << "End SetupCmatElastPlast" << std::endl;
-      std::cout << "Cep\n"
-                << " Dgamma " << Dgamma << std::endl;
-      std::cout << " G " << G << std::endl;
-      std::cout << " q " << q << std::endl;
-      std::cout << " Nbar " << Nbar << std::endl;
-      std::cout << " active_plasticity " << active_plasticity << std::endl;
-      std::cout << " epfac " << epfac << std::endl;
-      std::cout << " epfac1 " << epfac1 << std::endl;
-      std::cout << " cmat " << cmat << std::endl;
-    }
-#endif  // #ifdef DEBUGMATERIAL
   }  // (damevolution == false)
 
   // material tangent differs for case damage or not
   // if no damage: use standard tangent of purely plastic behaviour
   else  // (damevolution == true)
   {
-#ifdef DEBUGMATERIAL
-    if (gp == 0) std::cout << "damage evolution takes place in eleID = " << eleID << endl;
-#endif  // #ifdef DEBUGMATERIAL
-
     // incremental constitutive function for the stress tensor
     // consistent tangent operator
     // C^{ep} := dsigma_n+1 / dstrain_n+1
@@ -2313,21 +2166,6 @@ void Mat::Damage::setup_cmat_elasto_plastic(Core::LinAlg::Matrix<NUM_STRESS_3D, 
     }
     // complete material tangent C_ep available
 
-#ifdef DEBUGMATERIAL
-    if (Dgamma != 0)
-    {
-      std::cout << "End SetupCmatElastPlast" << std::endl;
-      std::cout << "Cep\n"
-                << " Dgamma " << Dgamma << std::endl;
-      std::cout << " G " << G << std::endl;
-      std::cout << " q_tilde " << q_tilde << std::endl;
-      std::cout << " Nbar " << Nbar << std::endl;
-      std::cout << " active_plasticity " << active_plasticity << std::endl;
-      std::cout << " epfac " << epfac << std::endl;
-      std::cout << " epfac1 " << epfac1 << std::endl;
-      std::cout << " cmat " << cmat << std::endl;
-    }
-#endif  // #ifdef DEBUGMATERIAL
 
   }  // damage evolves: (damevolution == true)
 
