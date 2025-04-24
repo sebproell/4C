@@ -357,8 +357,8 @@ void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_perio
               Core::IO::cout(Core::IO::debug)
                   << "Position of matching Node: " << matchPosition[0] << ", " << matchPosition[1];
               if (rve_dim_ == Inpar::RveMpc::rve3d)
-                Core::IO::cout(Core::IO::verbose) << ", " << matchPosition[2];
-              Core::IO::cout(Core::IO::verbose) << Core::IO::endl;
+                Core::IO::cout(Core::IO::debug) << ", " << matchPosition[2];
+              Core::IO::cout(Core::IO::debug) << Core::IO::endl;
               for (auto nodeM : *rveBoundaryNodeIdMap[surf.first + "-"])
               {
                 if (nodeP == rveCornerNodeIdMap[surf.second]) break;
@@ -501,8 +501,8 @@ void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_perio
   {
     PBCs.erase(PBCs.begin() + id);
   }
-  Core::IO::cout(Core::IO::verbose)
-      << "All Node Pairs found. Following Nodes are coupled:" << Core::IO::endl;
+  Core::IO::cout(Core::IO::debug) << "All Node Pairs found. Following Nodes are coupled:"
+                                  << Core::IO::endl;
 
   // Create the vector of MPC "Elements
   int mpcId = 0;
