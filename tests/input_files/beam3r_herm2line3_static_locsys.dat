@@ -36,7 +36,7 @@ TRIAD_VISUALIZATIONPOINT              yes
 STRAINS_GAUSSPOINT                    yes
 ELEMENT_GID                           yes
 ----------------------------------------------------------SOLVER 1
-SOLVER                          Superlu
+SOLVER                          UMFPACK
 ---------------------------------------------------------MATERIALS
 MAT 1 MAT_BeamReissnerElastPlastic YOUNG 240000.0 POISSONRATIO 0.3 DENS 0.0 CROSSAREA 0.011309733552923255 SHEARCORR 1 MOMINPOL 2.0357520395261858e-05 MOMIN2 1.0178760197630929e-05 MOMIN3 1.0178760197630929e-05 YIELDM 0.094287 ISOHARDM 64000.0 TORSIONPLAST false
 ------------------------------------------------------------FUNCT1

@@ -10,7 +10,7 @@ WRITE_INITIAL_STATE             No
 -----------------------------------------------------------------PROBLEM TYPE
 PROBLEMTYPE                      Structure
 --------------------------------------------------------------------SOLVER 1
-SOLVER                          Superlu
+SOLVER                          UMFPACK
 ----------------------------------------CARDIOVASCULAR 0D-STRUCTURE COUPLING
 TOL_CARDVASC0D_RES              1e-06
 TOL_CARDVASC0D_DOFINCR          1e-06
