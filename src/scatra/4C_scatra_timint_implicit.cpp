@@ -551,7 +551,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
             "'OUTPUTSCALAR' \n"
             "in 'SCALAR TRANSPORT DYNAMIC' is set to 'entire domain'. Either switch on the output "
             "of mean and total scalars\n"
-            "on conditions or remoove the 'DESIGN TOTAL AND MEAN SCALAR' condition from your input "
+            "on conditions or remove the 'DESIGN TOTAL AND MEAN SCALAR' condition from your input "
             "file!");
       }
     }

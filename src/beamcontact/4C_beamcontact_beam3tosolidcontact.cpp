@@ -1879,7 +1879,7 @@ void CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::projec
   TYPEBTS residual = 0.0;
 
 
-  // Local netwon iteration
+  // Local newton iteration
   // -----------------------------------------------------------------
 
   int iter;
@@ -1979,13 +1979,13 @@ void CONTACT::Beam3tosolidcontact<numnodessol, numnodes, numnodalvalues>::projec
 #endif
 
     // Inverting 2x2-matrix J by hard coded formula, so that it is possible
-    // to handle colinear vectors, because they lead to det(J) = 0
+    // to handle collinear vectors, because they lead to det(J) = 0
     TYPEBTS det_J = J(0, 0) * J(1, 1) - J(1, 0) * J(0, 1);
 
     // If det_J = 0 we assume, that the beam centerline and the surface edge are parallel.
     // These projection is not needed due the fact that the contact interval can also be
     // identified by two contact interval borders found with the GetContactLines method
-    parallel = Core::FADUtils::cast_to_double(Core::FADUtils::norm(det_J)) < COLINEARTOL;
+    parallel = Core::FADUtils::cast_to_double(Core::FADUtils::norm(det_J)) < COLLINEARTOL;
 
     // Check if the local Newton iteration has converged
     // If the start point fulfills the orthogonalty conditions (residual < BEAMCONTACTTOL), we also

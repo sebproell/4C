@@ -256,7 +256,7 @@ void NOX::Nln::Solver::PseudoTransient::create_group_pre_post_operator()
   // On the first step do some initializations
   if (nIter == 0)
   {
-    // Compute F of initital guess
+    // Compute F of initial guess
     ::NOX::Abstract::Group::ReturnType rtype = solnPtr->computeF();
     if (rtype != ::NOX::Abstract::Group::Ok)
     {

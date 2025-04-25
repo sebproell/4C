@@ -153,7 +153,7 @@ namespace Core::GeometricSearch
     // Vector with all intersection points
     std::vector<LinAlg::Matrix<3, 1>> all_points;
 
-    // Vector with all polygones connecting the intersection points
+    // Vector with all polygons connecting the intersection points
     std::vector<std::vector<int>> polygon_ids;
 
     for (unsigned int i_direction = 0; i_direction < kdop_directions; i_direction++)

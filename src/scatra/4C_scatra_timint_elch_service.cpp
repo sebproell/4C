@@ -116,7 +116,7 @@ Inpar::ElCh::CCCVHalfCyclePhase ScaTra::CCCVCondition::get_cccv_half_cycle_phase
 {
   // find current phase. If not initial relaxation look up in active half cycle
   return (phaseinitialrelaxation_
-              ? Inpar::ElCh::CCCVHalfCyclePhase::initital_relaxation
+              ? Inpar::ElCh::CCCVHalfCyclePhase::initial_relaxation
               : (charging_ ? halfcycle_charge_->get_cccv_half_cycle_phase()
                            : halfcycle_discharge_->get_cccv_half_cycle_phase()));
 }

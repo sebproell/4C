@@ -7,7 +7,7 @@
 
 # This module is special since files need to be generated.
 
-# Import the global property with external dependey configuration as a variable.
+# Import the global property with external dependency configuration as a variable.
 get_property(
   FOUR_C_DEFINES_FOR_EXTERNAL_DEPENDENCIES GLOBAL PROPERTY FOUR_C_DEFINES_FOR_EXTERNAL_DEPENDENCIES
   )

@@ -991,7 +991,7 @@ namespace FLD
     xji(1, 2) = (-xjm(0, 0) * xjm(1, 2) + xjm(1, 0) * xjm(0, 2)) / det;
     xji(2, 2) = (xjm(0, 0) * xjm(1, 1) - xjm(1, 0) * xjm(0, 1)) / det;
 
-    // compute global derivates
+    // compute global derivatives
     for (int nn = 0; nn < NSD; ++nn)
     {
       for (int rr = 0; rr < iel; ++rr)
@@ -1452,7 +1452,7 @@ namespace FLD
                        xjm(0, 0) * xjm(1, 2) * xjm(2, 1) - xjm(0, 1) * xjm(1, 0) * xjm(2, 2);
 
     //
-    //             compute global first derivates
+    //             compute global first derivatives
     //
     Core::LinAlg::Matrix<3, iel> derxy;
     /*
@@ -1486,7 +1486,7 @@ namespace FLD
     xji(1, 2) = (-xjm(0, 0) * xjm(1, 2) + xjm(1, 0) * xjm(0, 2)) / det;
     xji(2, 2) = (xjm(0, 0) * xjm(1, 1) - xjm(1, 0) * xjm(0, 1)) / det;
 
-    // compute global derivates
+    // compute global derivatives
     for (int nn = 0; nn < 3; ++nn)
     {
       for (int rr = 0; rr < iel; ++rr)

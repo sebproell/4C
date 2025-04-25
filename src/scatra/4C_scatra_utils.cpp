@@ -455,7 +455,7 @@ Core::LinAlg::Matrix<dim, 1> ScaTra::ScaTraUtils::do_mean_value_averaging_of_ele
       static Core::LinAlg::Matrix<dim, dim> xji_ele_XiToXYZ;
       xji_ele_XiToXYZ.invert(xjm_ele_XiToXYZ);
 
-      // set XYZ-derivates of shapefunctions
+      // set XYZ-derivatives of shapefunctions
       deriv3Dele_xyz.multiply(xji_ele_XiToXYZ, deriv3Dele);
 
       //----------------------------------------------------

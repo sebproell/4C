@@ -88,7 +88,7 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
   // a) Condensation with a block matrix (condensed_bmat)
   //    system is solved in a 2x2 (n,m) block matrix with the respective solvers
 
-  // b) Condensation with a block matrix merged to a sparse martix (condensed_bmat_merged)
+  // b) Condensation with a block matrix merged to a sparse matrix (condensed_bmat_merged)
   //    - condensation operation is done in the 2x2 (n,m) block matrix (no splitting operations)
   //      -> graph can be saved resulting in accelerated element assembly
   //         (ifdef: allocation of new matrix, more memory, slower element assembly,

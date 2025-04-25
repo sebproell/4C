@@ -4026,7 +4026,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::compute_lin_eta_fix_xi(
   //  std::cout << "r2_xi: " << r2_xi << std::endl;
   //  std::cout << "r2_xixi: " << r2_xixi << std::endl;
 
-  if (fabs(Core::FADUtils::cast_to_double(L)) < COLINEARTOL)
+  if (fabs(Core::FADUtils::cast_to_double(L)) < COLLINEARTOL)
     FOUR_C_THROW("Linearization of point to line projection is zero, choose tighter search boxes!");
 
   for (int i = 0; i < 3; i++)
@@ -4080,7 +4080,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::compute_lin_xi_fix_eta(
   L = Core::FADUtils::scalar_product(r1_xi, r1_xi) +
       Core::FADUtils::scalar_product(delta_r, r1_xixi);
 
-  if (fabs(Core::FADUtils::cast_to_double(L)) < COLINEARTOL)
+  if (fabs(Core::FADUtils::cast_to_double(L)) < COLLINEARTOL)
     FOUR_C_THROW("Linearization of point to line projection is zero, choose tighter search boxes!");
 
   for (int i = 0; i < 3; i++)
@@ -4895,7 +4895,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::evaluate_lin_orthogonality
   }
 
   // Inverting (2x2) matrix df by hard coded formula, so that it is
-  // possible to handle colinear vectors, because they lead to det(df) =0
+  // possible to handle collinear vectors, because they lead to det(df) =0
   TYPE det_df = df(0, 0) * df(1, 1) - df(1, 0) * df(0, 1);
 
   //********************************************************************
@@ -4907,7 +4907,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::evaluate_lin_orthogonality
   //********************************************************************
 
   // singular df
-  if (Core::FADUtils::cast_to_double(Core::FADUtils::norm(det_df)) < COLINEARTOL)
+  if (Core::FADUtils::cast_to_double(Core::FADUtils::norm(det_df)) < COLLINEARTOL)
   {
     // sort out
     elementscolinear = true;
@@ -4998,7 +4998,7 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::evaluate_lin_ptl_orthogona
   // check, if df=0: This can happen e.g. when the master beam 2 describes a circle geometry and the
   // projectiong slave point coincides with the cetern of the circle
 
-  if (fabs(Core::FADUtils::cast_to_double(df)) < COLINEARTOL)
+  if (fabs(Core::FADUtils::cast_to_double(df)) < COLLINEARTOL)
     return false;
   else
     return true;

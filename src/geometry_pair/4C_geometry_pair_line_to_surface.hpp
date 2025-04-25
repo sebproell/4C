@@ -200,7 +200,7 @@ namespace GEOMETRYPAIR
    * performance reasons. In the geometry pairs we have a lot of local Newton iterations. If they
    * are performed with the full FAD types, the performance drops significantly. Therefore, we use
    * geometry pairs with double type to evaluate all intersections and then only perform a single
-   * Netwon iteration (with the previously calculated result as starting point) to get the correct
+   * Newton iteration (with the previously calculated result as starting point) to get the correct
    * FAD dependencies.
    *
    * @tparam scalar_type Type that will be used for scalar values.

@@ -786,7 +786,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
       pvelaf.multiply(pevelaf, pfunct);
       normvel = pvelaf.dot(unitnormal);
 
-      // compute global first derivates for parent element
+      // compute global first derivatives for parent element
       pderxy.multiply(pxji, pderiv);
 
       // get velocity derivatives at n+alpha_F at integration point
@@ -1450,7 +1450,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
     // compute integration factor for boundary element
     fac_ = bintpoints.ip().qwgt[iquad] * drs_;
 
-    // compute global first derivates for parent element
+    // compute global first derivatives for parent element
     pderxy.multiply(pxji, pderiv);
 
     // get velocity derivatives at n+alpha_F at integration point
@@ -2206,7 +2206,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
         functionfac(idim) = 1.0;
     }
 
-    // compute global first derivates for parent element
+    // compute global first derivatives for parent element
     pderxy.multiply(pxji, pderiv);
 
     // get velocity at n+alpha_F at integration point
@@ -3897,7 +3897,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
 
     //    meas_surf += fac_;
 
-    // compute global first derivates for parent element
+    // compute global first derivatives for parent element
     pderxy.multiply(pxji, pderiv);
 
     const unsigned Velx = 0;
@@ -4158,7 +4158,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
 
     //    meas_vol += fac_;
 
-    // compute global first derivates for parent element
+    // compute global first derivatives for parent element
     pderxy.multiply(pxji, pderiv);
 
     /*
@@ -4556,7 +4556,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
       // compute integration factor
       fac_ = pintpoints.ip().qwgt[iquad] * det;
 
-      // compute global first derivates
+      // compute global first derivatives
       pderxy.multiply(pxji, pderiv);
 
       // interpolate to gausspoint

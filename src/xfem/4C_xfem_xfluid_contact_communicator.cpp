@@ -377,7 +377,7 @@ void XFEM::XFluidContactComm::get_states(const int fluidele_id, const std::vecto
       // double det = xji.invert(xjm); //if we need this at some point
       xji.invert(xjm);
 
-      // compute global first derivates
+      // compute global first derivatives
       derxy.multiply(xji, deriv);
 
       static Core::LinAlg::Matrix<3, 8> vel;

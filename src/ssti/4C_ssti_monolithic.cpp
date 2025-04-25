@@ -245,14 +245,14 @@ void SSTI::SSTIMono::prepare_time_step()
 
   distribute_solution_all_fields();
 
-  // in first time step: solve to get initital derivatives
+  // in first time step: solve to get initial derivatives
   scatra_field()->prepare_time_step();
 
   // if adaptive time stepping and different time step size: calculate time step in scatra
   // (prepare_time_step() of Scatra) and pass to structure and thermo
   if (scatra_field()->time_step_adapted()) distribute_dt_from_scatra();
 
-  // in first time step: solve to get initital derivatives
+  // in first time step: solve to get initial derivatives
   thermo_field()->prepare_time_step();
 
   // pass scalar transport degrees of freedom to structural discretization

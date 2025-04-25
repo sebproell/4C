@@ -276,7 +276,7 @@ namespace Mixture
         Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp,
         int eleGID) = 0;
 
-    /// Returns the refenrence mass density. Needs to be implemented by the deriving class.
+    /// Returns the reference mass density. Needs to be implemented by the deriving class.
 
     /*!
      * \brief Register names of the internal data that should be saved during runtime output

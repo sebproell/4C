@@ -340,7 +340,7 @@ void FPSI::Monolithic::timeloop()
 /*----------------------------------------------------------------------*/
 void FPSI::Monolithic::prepare_timeloop()
 {
-  // check if maps were destroyed before entring the timeloop
+  // check if maps were destroyed before entering the timeloop
   extractor().check_for_valid_map_extractor();
 
   return;

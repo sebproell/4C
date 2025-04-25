@@ -290,7 +290,7 @@ namespace FSI
   /// base class of all monolithic FSI algorithms with NOX as nonlinear solver
   /*!
 
-    Monolithic FSI is a Netwon solver on a block matrix with field blocks.
+    Monolithic FSI is a Newton solver on a block matrix with field blocks.
    */
   class Monolithic : public MonolithicBase,
                      public MonolithicInterface,

@@ -22,7 +22,7 @@ FOUR_C_NAMESPACE_OPEN
 #define XIETATOL                                                                               \
   1.0e-9 /* used for check if two coordinates xi, eta in element parameter space are identical \
 default: 1.0e-9  --> segments (in parameter space) cannot be smaller than this */
-#define COLINEARTOL 1.0e-08 /* used for check if elements are colinear */
+#define COLLINEARTOL 1.0e-08 /* used for check if elements are collinear */
 // default: 1.0e-08
 #define CONVTOLNEWTONPROJ 1.0e-10 /* tolerance for Newton projection algorithm */
 // default: 1.0e-10

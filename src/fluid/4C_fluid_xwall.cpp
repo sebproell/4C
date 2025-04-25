@@ -106,7 +106,7 @@ FLD::XWall::XWall(std::shared_ptr<Core::FE::Discretization> dis, int nsd,
 
   std::string projectiontype = params_->sublist("WALL MODEL").get<std::string>("Projection", "No");
 
-  if (projectiontype == "onlyl2projection")
+  if (projectiontype == "only_l2_projection")
     proj_ = true;
   else if (projectiontype == "No")
     proj_ = false;

@@ -655,7 +655,7 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
     FOUR_C_THROW("wrong number of master dofs {}", master_numdof);
   if (slave_numdof != numdofpernode_ * niel)
     FOUR_C_THROW("wrong number of slave dofs {}", slave_numdof);
-  if (master_numdof != slave_numdof) FOUR_C_THROW("Different element typs?");
+  if (master_numdof != slave_numdof) FOUR_C_THROW("Different element types?");
 #endif
 
   //---------------------------------------------------
@@ -1703,7 +1703,7 @@ double Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
   }
 
   //-----------------------------------------------------
-  // compute global derivates at integration point
+  // compute global derivate at integration point
   //
   //   dN    +-----  dN (xi)    dxi
   //     i    \        i           k
@@ -2130,7 +2130,7 @@ double Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
   }
 
   //-----------------------------------------------------
-  // compute global derivates at integration point
+  // compute global derivate at integration point
   //
   //   dN    +-----  dN (xi)    dxi
   //     i    \        i           k
@@ -3722,7 +3722,7 @@ void Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
       // this definition is derived form the following papers
       // E. Burman, P. Hansbo
       // "Edge stabilization for the generalized Stokes problem: A continuous interior penalty
-      // method" Comput. Methods Appl. Mech. Engrg. 2006 C. D'Angelo, P. Zunino "Numerical
+      // method" Compute. Methods Appl. Mech. Engrg. 2006 C. D'Angelo, P. Zunino "Numerical
       // approximation with Nitsche's coupling of transient Stokes'/Darcy's flow problems applied to
       // hemodynamics" Applied Numerical Mathematics 2012 Braack et al. 2007
       //"..."
@@ -3790,7 +3790,7 @@ void Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
       // "Cut finite element method for Oseen problem"
       // E. Burman, P. Hansbo
       // "Edge stabilization for the generalized Stokes problem: A continuous interior penalty
-      // method" Comput. Methods Appl. Mech. Engrg. 2006 C. D'Angelo, P. Zunino "Numerical
+      // method" Compute. Methods Appl. Mech. Engrg. 2006 C. D'Angelo, P. Zunino "Numerical
       // approximation with Nitsche's coupling of transient Stokes'/Darcy's flow problems applied to
       // hemodynamics" Applied Numerical Mathematics 2012 Braack et al. 2007
       //"..."
@@ -3859,7 +3859,7 @@ void Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
       // "Cut finite element method for Oseen problem"
       // E. Burman, P. Hansbo
       // "Edge stabilization for the generalized Stokes problem: A continuous interior penalty
-      // method" Comput. Methods Appl. Mech. Engrg. 2006 C. D'Angelo, P. Zunino "Numerical
+      // method" Compute. Methods Appl. Mech. Engrg. 2006 C. D'Angelo, P. Zunino "Numerical
       // approximation with Nitsche's coupling of transient Stokes'/Darcy's flow problems applied to
       // hemodynamics" Applied Numerical Mathematics 2012 Braack et al. 2007
       //"..."

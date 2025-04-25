@@ -105,7 +105,7 @@ void Core::FE::ShapeValues<distype>::evaluate(
     Core::LinAlg::Matrix<nsd_, 1> mypoint(xyzreal.values() + q * nsd_, true);
     mypoint.multiply_nn(xyze, myfunct);
 
-    // compute global first derivates
+    // compute global first derivatives
     for (unsigned int n = 0; n < nen_; ++n)
       for (unsigned int d = 0; d < nsd_; ++d)
       {

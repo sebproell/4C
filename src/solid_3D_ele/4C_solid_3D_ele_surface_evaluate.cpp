@@ -1357,7 +1357,7 @@ void Discret::Elements::SolidSurface::compute_area_deriv(const Core::LinAlg::Ser
 
     if (Adiff2 != nullptr)
     {
-      /*--------- second derivates of minor determiants of the Jacobian
+      /*--------- second derivatives of minor determiants of the Jacobian
        *----------------------------- with respect to the displacements */
       for (int n = 0; n < numnode; ++n)
       {

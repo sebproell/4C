@@ -53,7 +53,7 @@ FOUR_C_NAMESPACE_OPEN
 #define SHIFTVALUE \
   1.0e-7 /* value, one contact point will be shiftet, if contact points are to close */
 // default: 1.0e-7
-#define COLINEARTOL 1.0e-12 /* tolerance when two elements are almost colinear */
+#define COLLINEARTOL 1.0e-12 /* tolerance when two elements are almost collinear */
 // default: 1.0e-12
 #define DETERMINANTTOL                                                                           \
   1.0e-12 /* tolerance how small the determinant appearing in the contact point linearization is \

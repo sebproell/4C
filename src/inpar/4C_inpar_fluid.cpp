@@ -1190,7 +1190,7 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
               {.description = "Switch from gradient to residual based tauw.", .default_value = -1}),
 
           deprecated_selection<std::string>("Projection",
-              {"No", "onlyl2projection", "l2projectionwithcontinuityconstraint"},
+              {"No", "only_l2_projection", "l2_projection_with_continuity_constraint"},
               {.description = "Flag to switch projection of the enriched dofs after updating tauw, "
                               "alternatively with or "
                               "without continuity constraint.",

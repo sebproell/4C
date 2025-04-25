@@ -539,7 +539,7 @@ void Discret::Elements::FluidEleCalcXWall<distype, enrtype>::
   // compute integration factor
   my::fac_ = gpweight * my::det_;
 
-  // compute global first derivates
+  // compute global first derivatives
   derxy_.multiply(my::xji_, deriv_);
 
   //--------------------------------------------------------------
