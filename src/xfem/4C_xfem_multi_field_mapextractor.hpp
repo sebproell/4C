@@ -129,7 +129,7 @@ namespace XFEM
    */
   class MultiFieldMapExtractor
   {
-    typedef std::vector<std::shared_ptr<const Core::FE::Discretization>> XDisVec;
+    using XDisVec = std::vector<std::shared_ptr<const Core::FE::Discretization>>;
 
     // number of map extractor types
     static constexpr unsigned NUM_MAP_TYPES = 2;

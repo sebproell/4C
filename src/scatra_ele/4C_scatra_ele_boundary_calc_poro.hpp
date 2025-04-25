@@ -21,7 +21,7 @@ namespace Discret
     template <Core::FE::CellType distype, int probdim = Core::FE::dim<distype> + 1>
     class ScaTraEleBoundaryCalcPoro : public ScaTraEleBoundaryCalc<distype, probdim>
     {
-      typedef Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim> my;
+      using my = Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>;
       using my::nen_;
       using my::nsd_;
       using my::nsd_ele_;

@@ -167,8 +167,8 @@ namespace
   TEST_F(BeamToFluidMeshtyingPairGPTSTest, TestBeamToFluidMeshtyingHex8MovingBeam)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex8 fluid_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using fluid_type = GEOMETRYPAIR::t_hex8;
 
     // Definition of variables for this test case.
     Core::LinAlg::Matrix<beam_type::n_dof_, 1, double> q_beam;

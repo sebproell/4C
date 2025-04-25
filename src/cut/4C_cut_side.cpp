@@ -684,7 +684,7 @@ bool Cut::Side::create_parallel_cut_surface(Mesh& mesh, Element* element, Side& 
   {
     // map to find out which location id  on parallel surface each point has
     std::map<Point*, unsigned int> unique_points;
-    typedef std::map<Point*, unsigned int> unique_points_map;
+    using unique_points_map = std::map<Point*, unsigned int>;
 
     // trying to find duplicate points and remove points between them
     for (std::vector<Point*>::iterator it = cut_points_for_lines.begin();

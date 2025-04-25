@@ -58,11 +58,10 @@ namespace Solid
     class BeamInteraction : public Generic
     {
      public:
-      typedef std::map<enum Inpar::BeamInteraction::SubModelType,
-          std::shared_ptr<FourC::BeamInteraction::SUBMODELEVALUATOR::Generic>>
-          Map;
-      typedef std::vector<std::shared_ptr<FourC::BeamInteraction::SUBMODELEVALUATOR::Generic>>
-          Vector;
+      using Map = std::map<enum Inpar::BeamInteraction::SubModelType,
+          std::shared_ptr<FourC::BeamInteraction::SUBMODELEVALUATOR::Generic>>;
+      using Vector =
+          std::vector<std::shared_ptr<FourC::BeamInteraction::SUBMODELEVALUATOR::Generic>>;
 
       //! constructor
       BeamInteraction();

@@ -132,7 +132,7 @@ namespace Cut
         bool correct_rotation_direction_;
       };  // struct Graph
 
-      typedef std::vector<Cycle>::const_iterator surface_const_iterator;
+      using surface_const_iterator = std::vector<Cycle>::const_iterator;
 
       inline surface_const_iterator sbegin() const
       {

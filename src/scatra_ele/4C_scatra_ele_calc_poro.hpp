@@ -35,7 +35,7 @@ namespace Discret
       ScaTraEleCalcPoro(const int numdofpernode, const int numscal, const std::string& disname);
 
      private:
-      typedef ScaTraEleCalc<distype> my;
+      using my = ScaTraEleCalc<distype>;
       using my::nen_;
       using my::nsd_;
       using my::nsd_ele_;
@@ -219,7 +219,7 @@ namespace Discret
     template <int nsd, int nen>
     class ScaTraEleInternalVariableManagerPoro : public ScaTraEleInternalVariableManager<nsd, nen>
     {
-      typedef ScaTraEleInternalVariableManager<nsd, nen> my;
+      using my = ScaTraEleInternalVariableManager<nsd, nen>;
 
      public:
       ScaTraEleInternalVariableManagerPoro(int numscal)

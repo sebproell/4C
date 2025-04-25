@@ -71,7 +71,7 @@ namespace Discret
       /// private assignment operator since we are a Singleton.
       FluidEleCalcXFEM& operator=(FluidEleCalcXFEM const& copy);
 
-      typedef FluidEleCalc<distype> my;
+      using my = FluidEleCalc<distype>;
       using my::nen_;
       using my::nsd_;
       using my::numdofpernode_;

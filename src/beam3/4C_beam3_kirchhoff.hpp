@@ -26,7 +26,7 @@
 
 #include <memory>
 
-typedef Sacado::Fad::DFad<double> FAD;
+using FAD = Sacado::Fad::DFad<double>;
 
 #define REFERENCE_NODE \
   2  // number of reference-node for the calculation of the rotation of the other triads (local

@@ -37,7 +37,7 @@ namespace Discret
     class ArteryEleCalcPresBased : public ArteryEleCalc<distype>
     {
      private:
-      typedef ArteryEleCalc<distype> my;
+      using my = ArteryEleCalc<distype>;
 
       /// private constructor, since we are a Singleton.
       ArteryEleCalcPresBased(const int numdofpernode, const std::string& disname);

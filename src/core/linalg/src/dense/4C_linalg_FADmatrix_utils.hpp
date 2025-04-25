@@ -14,7 +14,7 @@
 
 #include <Sacado.hpp>
 
-typedef Sacado::Fad::DFad<double> FAD;
+using FAD = Sacado::Fad::DFad<double>;
 
 FOUR_C_NAMESPACE_OPEN
 

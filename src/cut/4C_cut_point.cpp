@@ -965,7 +965,7 @@ void Cut::Point::erased_containing_cut_pairs(Edge* edge)
 
 void Cut::Point::AddCreationInfo(const std::pair<Side*, Edge*>& cut_pair, const std::string& info)
 {
-  typedef std::map<std::pair<Side*, Edge*>, std::string>::iterator info_iterator;
+  using info_iterator = std::map<std::pair<Side*, Edge*>, std::string>::iterator;
   std::pair<info_iterator, bool> inserted = creation_info_.insert(std::make_pair(cut_pair, info));
   if (not inserted.second)
   {

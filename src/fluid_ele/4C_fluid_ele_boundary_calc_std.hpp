@@ -29,7 +29,7 @@ namespace Discret
     template <Core::FE::CellType distype>
     class FluidEleBoundaryCalcStd : public FluidBoundaryImpl<distype>
     {
-      typedef Discret::Elements::FluidBoundaryImpl<distype> my;
+      using my = Discret::Elements::FluidBoundaryImpl<distype>;
 
      public:
       /// Singleton access method

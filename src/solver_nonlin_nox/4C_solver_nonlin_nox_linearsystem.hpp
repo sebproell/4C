@@ -49,7 +49,7 @@ namespace NOX
     class LinearSystem : public ::NOX::Epetra::LinearSystem
     {
      public:
-      typedef std::map<NOX::Nln::SolutionType, Teuchos::RCP<Core::LinAlg::Solver>> SolverMap;
+      using SolverMap = std::map<NOX::Nln::SolutionType, Teuchos::RCP<Core::LinAlg::Solver>>;
 
      protected:
       //! Source of the RowMatrix if using a native preconditioner

@@ -117,8 +117,8 @@ namespace Cut
       PointGraph(unsigned dim) : graph_(create_graph(dim)) { /* intentionally left blank */ };
 
      public:
-      typedef std::vector<Cycle>::iterator facet_iterator;
-      typedef std::vector<std::vector<Cycle>>::iterator hole_iterator;
+      using facet_iterator = std::vector<Cycle>::iterator;
+      using hole_iterator = std::vector<std::vector<Cycle>>::iterator;
 
       PointGraph(Mesh& mesh, Element* element, Side* side, Location location, Strategy strategy);
 

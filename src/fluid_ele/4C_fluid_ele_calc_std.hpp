@@ -22,7 +22,7 @@ namespace Discret
     template <Core::FE::CellType distype>
     class FluidEleCalcStd : public FluidEleCalc<distype>
     {
-      typedef Discret::Elements::FluidEleCalc<distype> my;
+      using my = Discret::Elements::FluidEleCalc<distype>;
 
      public:
       /// Singleton access method

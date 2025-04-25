@@ -1570,7 +1570,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_3d_lin(
   //   Lin deta = - inv(dF) * Lin F             //
   //**********************************************
   // prepare linearizations
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get linsize
   int linsize = 0;
@@ -1882,7 +1882,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_2d_lin(
   //   Lin deta = - inv(dF) * Lin F             //
   //**********************************************
   // prepare linearizations
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   std::vector<Core::Gen::Pairedvector<int, double>> etaLin(3, 1000);
   std::vector<Core::Gen::Pairedvector<int, double>> fLin(3, 1000);
@@ -2309,7 +2309,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_normal_2d_lin(const Mor
   //   Lin deta = - inv(dF) * Lin F             //
   //**********************************************
   // prepare linearizations
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   std::vector<Core::Gen::Pairedvector<int, double>> etaLin(3, 1000);
   std::vector<Core::Gen::Pairedvector<int, double>> fLin(3, 1000);

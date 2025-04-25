@@ -37,9 +37,8 @@ namespace NOX
       {
         class Preconditioner;
       }  // namespace Interface
-      // typedef
-      typedef std::map<NOX::Nln::SolutionType, Teuchos::RCP<Interface::Preconditioner>>
-          PrecInterfaceMap;
+      using PrecInterfaceMap =
+          std::map<NOX::Nln::SolutionType, Teuchos::RCP<Interface::Preconditioner>>;
 
       namespace Interface
       {

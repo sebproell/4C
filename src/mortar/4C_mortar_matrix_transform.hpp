@@ -29,12 +29,12 @@ namespace Mortar
 {
   class MatrixRowColTransformer
   {
-    typedef Core::Gen::Pairedvector<CONTACT::MatBlockType, std::shared_ptr<Epetra_Export>>
-        plain_block_export_pairs;
+    using plain_block_export_pairs =
+        Core::Gen::Pairedvector<CONTACT::MatBlockType, std::shared_ptr<Epetra_Export>>;
 
    public:
-    typedef Core::Gen::Pairedvector<CONTACT::MatBlockType, std::shared_ptr<Core::LinAlg::Map>*>
-        plain_block_map_pairs;
+    using plain_block_map_pairs =
+        Core::Gen::Pairedvector<CONTACT::MatBlockType, std::shared_ptr<Core::LinAlg::Map>*>;
 
    public:
     /// constructor

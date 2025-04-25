@@ -22,10 +22,10 @@ FOUR_C_NAMESPACE_OPEN
 namespace Core::Geo
 {
   //! shortcut for a vector of BoundaryIntCells
-  typedef std::vector<Core::Geo::BoundaryIntCell> BoundaryIntCells;
+  using BoundaryIntCells = std::vector<Core::Geo::BoundaryIntCell>;
 
   //! shortcut for a vector of BoundaryCell pointers
-  typedef std::vector<std::shared_ptr<Core::Geo::BoundaryIntCell>> BoundaryIntCellPtrs;
+  using BoundaryIntCellPtrs = std::vector<std::shared_ptr<Core::Geo::BoundaryIntCell>>;
 
 
   //! based on this element property, one can speed up geometry algorithms

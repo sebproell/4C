@@ -51,7 +51,7 @@ namespace NOX
       class PrePostOperator
       {
        public:
-        typedef std::map<enum PrePostOpType, Teuchos::RCP<NOX::Nln::Abstract::PrePostOperator>> Map;
+        using Map = std::map<enum PrePostOpType, Teuchos::RCP<NOX::Nln::Abstract::PrePostOperator>>;
 
        private:
         //! Disallow default constructor.

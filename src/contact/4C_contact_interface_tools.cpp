@@ -810,7 +810,7 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
 
-    typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+    using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
     if ((int)(cnode->mo_data().get_d().size()) == 0) continue;
 
@@ -873,8 +873,8 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
 
       if ((int)(kcnode->mo_data().get_d().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+      using CI = std::map<int, double>::const_iterator;
+      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       for (_CI it = kcnode->mo_data().get_d().begin(); it != kcnode->mo_data().get_d().end(); ++it)
         newD[it->first] = it->second;
@@ -980,8 +980,8 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
 
       if ((int)(kcnode->mo_data().get_d().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+      using CI = std::map<int, double>::const_iterator;
+      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       for (_CI it = kcnode->mo_data().get_d().begin(); it != kcnode->mo_data().get_d().end(); ++it)
         newD[it->first] = it->second;
@@ -1081,9 +1081,6 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
 
-    // typedef std::map<int,std::map<int,double> >::const_iterator CIM;
-    // typedef std::map<int,double>::const_iterator CI;
-
     if ((int)(cnode->mo_data().get_m().size()) == 0) continue;
 
     refM = cnode->mo_data().get_m();
@@ -1143,7 +1140,7 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
 
       if ((int)(kcnode->mo_data().get_m().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
+      using CI = std::map<int, double>::const_iterator;
 
       // store M-values into refM
       newM = kcnode->mo_data().get_m();
@@ -1249,7 +1246,7 @@ void CONTACT::Interface::fd_check_mortar_m_deriv()
 
       if ((int)(kcnode->mo_data().get_m().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
+      using CI = std::map<int, double>::const_iterator;
 
       // store M-values into refM
       newM = kcnode->mo_data().get_m();
@@ -5274,7 +5271,7 @@ void CONTACT::Interface::fd_check_penalty_trac_nor()
 
       if ((int)(cnode->data().get_deriv_z()).size() != 0)
       {
-        typedef std::map<int, double>::const_iterator CI;
+        using CI = std::map<int, double>::const_iterator;
         std::map<int, double>& derivzmap = cnode->data().get_deriv_z()[d];
 
         // print derivz-values to screen and store

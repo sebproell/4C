@@ -33,27 +33,26 @@ namespace Cut
 
   namespace Impl
   {
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
+    using graph_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
         boost::property<boost::vertex_name_t, Point*,
             boost::property<boost::vertex_color_t, boost::default_color_type,
                 boost::property<boost::vertex_index_t, int>>>,
-        boost::property<boost::edge_index_t, int>>
-        graph_t;
+        boost::property<boost::edge_index_t, int>>;
 
-    typedef boost::graph_traits<graph_t>::vertex_descriptor vertex_t;
-    typedef boost::graph_traits<graph_t>::edge_descriptor edge_t;
+    using vertex_t = boost::graph_traits<graph_t>::vertex_descriptor;
+    using edge_t = boost::graph_traits<graph_t>::edge_descriptor;
 
-    typedef boost::graph_traits<graph_t>::vertex_iterator vertex_iterator;
-    typedef boost::graph_traits<graph_t>::edge_iterator edge_iterator;
-    typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator;
-    typedef boost::graph_traits<graph_t>::out_edge_iterator out_edge_iterator;
+    using vertex_iterator = boost::graph_traits<graph_t>::vertex_iterator;
+    using edge_iterator = boost::graph_traits<graph_t>::edge_iterator;
+    using adjacency_iterator = boost::graph_traits<graph_t>::adjacency_iterator;
+    using out_edge_iterator = boost::graph_traits<graph_t>::out_edge_iterator;
 
-    typedef boost::property_map<graph_t, boost::vertex_name_t>::type name_map_t;
-    typedef boost::property_map<graph_t, boost::vertex_color_t>::type color_map_t;
-    typedef boost::property_map<graph_t, boost::vertex_index_t>::type vertex_index_map_t;
-    typedef boost::property_map<graph_t, boost::edge_index_t>::type edge_index_map_t;
+    using name_map_t = boost::property_map<graph_t, boost::vertex_name_t>::type;
+    using color_map_t = boost::property_map<graph_t, boost::vertex_color_t>::type;
+    using vertex_index_map_t = boost::property_map<graph_t, boost::vertex_index_t>::type;
+    using edge_index_map_t = boost::property_map<graph_t, boost::edge_index_t>::type;
 
-    typedef boost::color_traits<boost::property_traits<color_map_t>::value_type> color_t;
+    using color_t = boost::color_traits<boost::property_traits<color_map_t>::value_type>;
 
     /// boost::graph visitor that is used to create a spanning tree from a graph
     class SpanningTreeCreator : public boost::default_bfs_visitor
@@ -173,18 +172,18 @@ namespace Cut
       int c_;
     };
 
-    typedef boost::filtered_graph<graph_t, EdgeFilter> filtered_graph_t;
+    using filtered_graph_t = boost::filtered_graph<graph_t, EdgeFilter>;
 
-    typedef std::vector<vertex_t> cycle_t;
+    using cycle_t = std::vector<vertex_t>;
 
 #ifdef CUT_USE_SORTED_VECTOR
-    typedef SortedVector<cycle_t*> plain_cycle_set;
-    typedef SortedVector<vertex_t> plain_vertex_set;
-    typedef SortedVector<std::pair<vertex_t, vertex_t>> plain_graph_edge_set;
+    using plain_cycle_set = SortedVector<cycle_t*>;
+    using plain_vertex_set = SortedVector<vertex_t>;
+    using plain_graph_edge_set = SortedVector<std::pair<vertex_t, vertex_t>>;
 #else
-    typedef std::set<cycle_t*> plain_cycle_set;
-    typedef std::set<vertex_t> plain_vertex_set;
-    typedef std::set<std::pair<vertex_t, vertex_t>> plain_graph_edge_set;
+    using plain_cycle_set = std::set<cycle_t*>;
+    using plain_vertex_set = std::set<vertex_t>;
+    using plain_graph_edge_set = std::set<std::pair<vertex_t, vertex_t>>;
 #endif
 
     void find_cycles(graph_t& g, plain_cycle_set& base_cycles);

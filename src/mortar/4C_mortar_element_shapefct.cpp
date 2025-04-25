@@ -2651,7 +2651,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
           FOUR_C_THROW(
               "Mortar::Element shape function for LM incompatible with number of element nodes!");
 #endif
-        typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+        using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
         Core::LinAlg::SerialDenseMatrix ae(nnodes, nnodes, true);
 
         std::shared_ptr<Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>> derivae =
@@ -2726,7 +2726,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
         for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
@@ -2765,7 +2765,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
           FOUR_C_THROW(
               "Mortar::Element shape function for LM incompatible with number of element nodes!");
 #endif
-        typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+        using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
         Core::LinAlg::SerialDenseMatrix ae(nnodes, nnodes, true);
 
         std::shared_ptr<Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>> derivae =
@@ -2841,7 +2841,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
         for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
@@ -2959,7 +2959,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
               "Mortar::Element shape function for LM incompatible with number of element nodes!");
 #endif
 
-        typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+        using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
         Core::LinAlg::SerialDenseMatrix ae(nnodes, nnodes, true);
 
         std::shared_ptr<Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>> derivae =
@@ -3059,7 +3059,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Ae * Me = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
         for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
@@ -3103,7 +3103,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
             std::make_shared<Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>>(
                 nnodes * 3, 0, Core::LinAlg::SerialDenseMatrix(nnodes, nnodes));
 
-        typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+        using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
         Core::LinAlg::SerialDenseMatrix ae(nnodes, nnodes, true);
 
         // prepare computation with Gauss quadrature
@@ -3179,7 +3179,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
         for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
@@ -3302,7 +3302,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
             std::make_shared<Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>>(
                 nnodes * 3, 0, Core::LinAlg::SerialDenseMatrix(nnodes, nnodes));
 
-        typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+        using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
         Core::LinAlg::SerialDenseMatrix ae(nnodes, nnodes, true);
 
         // prepare computation with Gauss quadrature
@@ -3378,7 +3378,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
         for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
@@ -3498,7 +3498,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
             std::make_shared<Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>>(
                 nnodes * 3, 0, Core::LinAlg::SerialDenseMatrix(nnodes, nnodes));
 
-        typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+        using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
         Core::LinAlg::SerialDenseMatrix ae(nnodes, nnodes, true);
 
         // prepare computation with Gauss quadrature
@@ -3570,7 +3570,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
         for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
@@ -3672,7 +3672,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
       // establish fundamental data
       double detg = 0.0;
       const int nnodes = num_node();
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+      using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       // empty shape function vals + derivs
       Core::LinAlg::SerialDenseVector valquad(nnodes);
@@ -3861,7 +3861,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
       // establish fundamental data
       double detg = 0.0;
       const int nnodes = num_node();
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+      using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       // empty shape function vals + derivs
       Core::LinAlg::SerialDenseVector valquad(nnodes);
@@ -4066,7 +4066,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
             std::make_shared<Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>>(
                 nnodes * 3, 0, Core::LinAlg::SerialDenseMatrix(nnodes, nnodes));
 
-        typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+        using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
         Core::LinAlg::SerialDenseMatrix ae(nnodes, nnodes, true);
 
         // prepare computation with Gauss quadrature
@@ -4162,7 +4162,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Ae * Me = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
         for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
@@ -4207,7 +4207,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
             std::make_shared<Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>>(
                 nnodes * 3, 0, Core::LinAlg::SerialDenseMatrix(nnodes, nnodes));
 
-        typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+        using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
         Core::LinAlg::SerialDenseMatrix ae(nnodes, nnodes, true);
 
         // prepare computation with Gauss quadrature
@@ -4303,7 +4303,7 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Ae * Me = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
         for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
@@ -4837,7 +4837,7 @@ bool Mortar::Element::deriv_shape_dual(
   Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix> dummy(
       nnodes * nnodes * 3 * 10, 0, Core::LinAlg::SerialDenseMatrix(nnodes, nnodes, true));
 
-  typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator _CIM;
+  using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
   for (_CIM p = derivdual.begin(); p != derivdual.end(); ++p)
   {
     for (int i = 0; i < nnodes; ++i)

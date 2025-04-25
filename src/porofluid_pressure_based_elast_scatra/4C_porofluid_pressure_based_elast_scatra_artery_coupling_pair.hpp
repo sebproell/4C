@@ -24,7 +24,7 @@
 #include <memory>
 
 // define Fad object for evaluation
-typedef Sacado::Fad::DFad<double> FAD;
+using FAD = Sacado::Fad::DFad<double>;
 
 // forward declaration
 

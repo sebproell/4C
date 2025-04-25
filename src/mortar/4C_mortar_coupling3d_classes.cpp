@@ -268,7 +268,7 @@ bool Mortar::IntElement::map_to_parent(const std::vector<Core::Gen::Pairedvector
   FOUR_C_THROW("MapToParent() function is outdated");
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // *********************************************************************
   // do mapping for given IntElement and Element
@@ -756,7 +756,7 @@ double Mortar::IntCell::jacobian()
 void Mortar::IntCell::deriv_jacobian(Core::Gen::Pairedvector<int, double>& derivjac)
 {
   // define iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // 1d line element
   if (shape() == Core::FE::CellType::line2)

@@ -26,7 +26,7 @@ namespace Discret
     class ScaTraEleUtilsElchElectrode : public ScaTraEleUtilsElch<distype>
     {
       //! abbreviation
-      typedef ScaTraEleUtilsElch<distype> myelch;
+      using myelch = ScaTraEleUtilsElch<distype>;
 
      public:
       //! singleton access method

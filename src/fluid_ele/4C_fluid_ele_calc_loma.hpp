@@ -23,7 +23,7 @@ namespace Discret
     template <Core::FE::CellType distype>
     class FluidEleCalcLoma : public FluidEleCalc<distype>
     {
-      typedef Discret::Elements::FluidEleCalc<distype> my;
+      using my = Discret::Elements::FluidEleCalc<distype>;
 
       using my::nen_;
       using my::nsd_;

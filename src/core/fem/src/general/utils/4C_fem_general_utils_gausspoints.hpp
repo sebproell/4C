@@ -237,8 +237,8 @@ namespace Core::FE
       int point_;
     };
 
-    typedef GaussPointIterator iterator;
-    typedef GaussPointIterator const_iterator;
+    using iterator = GaussPointIterator;
+    using const_iterator = GaussPointIterator;
 
     /// construct the optimal (normal) rule for a given element shape
     explicit GaussIntegration(Core::FE::CellType distype);

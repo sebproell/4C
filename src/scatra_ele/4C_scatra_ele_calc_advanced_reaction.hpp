@@ -42,7 +42,7 @@ namespace Discret
       ScaTraEleCalcAdvReac(const int numdofpernode, const int numscal, const std::string& disname);
 
      private:
-      typedef ScaTraEleCalc<distype, probdim> my;
+      using my = ScaTraEleCalc<distype, probdim>;
 
      protected:
       using my::nen_;

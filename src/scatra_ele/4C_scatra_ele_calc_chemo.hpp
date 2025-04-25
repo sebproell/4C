@@ -27,7 +27,7 @@ namespace Discret
       ScaTraEleCalcChemo(const int numdofpernode, const int numscal, const std::string& disname);
 
      private:
-      typedef ScaTraEleCalc<distype, probdim> my;
+      using my = ScaTraEleCalc<distype, probdim>;
       using my::nen_;
       using my::nsd_;
       using varmanager = ScaTraEleInternalVariableManager<nsd_, nen_>;

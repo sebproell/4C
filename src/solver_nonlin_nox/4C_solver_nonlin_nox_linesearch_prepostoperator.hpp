@@ -30,7 +30,7 @@ namespace NOX
       class PrePostOperator
       {
        public:
-        typedef std::map<enum PrePostOpType, Teuchos::RCP<NOX::Nln::Abstract::PrePostOperator>> map;
+        using map = std::map<enum PrePostOpType, Teuchos::RCP<NOX::Nln::Abstract::PrePostOperator>>;
 
         /// disallow the following
         PrePostOperator() = delete;

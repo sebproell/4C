@@ -77,9 +77,9 @@ namespace Solid
   class ModelEvaluatorManager
   {
    public:
-    typedef std::map<enum Inpar::Solid::ModelType, std::shared_ptr<Solid::ModelEvaluator::Generic>>
-        Map;
-    typedef std::vector<std::shared_ptr<Solid::ModelEvaluator::Generic>> Vector;
+    using Map =
+        std::map<enum Inpar::Solid::ModelType, std::shared_ptr<Solid::ModelEvaluator::Generic>>;
+    using Vector = std::vector<std::shared_ptr<Solid::ModelEvaluator::Generic>>;
 
     //! constructor
     ModelEvaluatorManager();

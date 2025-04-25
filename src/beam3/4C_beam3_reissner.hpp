@@ -26,7 +26,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-typedef Sacado::Fad::DFad<double> FAD;
+using FAD = Sacado::Fad::DFad<double>;
 
 // forward declaration ...
 namespace Core::LinAlg

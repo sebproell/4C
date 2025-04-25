@@ -24,7 +24,7 @@ namespace Discret
     {
      public:
       //! abbreviation
-      typedef ScaTraEleCalc<distype, probdim> my;
+      using my = ScaTraEleCalc<distype, probdim>;
 
 
       //! singleton access method

@@ -577,7 +577,7 @@ void VtkWriterBase::write_vtk_footer_master_file()
 
 
   // generate information about 'pieces' (piece = part that is written by individual processor)
-  typedef std::vector<std::string> pptags_type;
+  using pptags_type = std::vector<std::string>;
   const pptags_type& ppiecetags = this->writer_p_piece_tags();
 
   if (numproc_ != ppiecetags.size()) FOUR_C_THROW("Incorrect number of Pieces.");

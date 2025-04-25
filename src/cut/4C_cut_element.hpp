@@ -1021,10 +1021,6 @@ namespace Cut
     }
   };
 
-  // typedef EntityIdLess<Element> ElementIdLess;
-  //
-  // inline int EntityId( const Element & e ) { return e.Id(); }
-
 }  // namespace Cut
 
 

@@ -34,10 +34,6 @@ namespace Discret
       ScaTraEleCalcHDGCardiacMonodomain(
           const int numdofpernode, const int numscal, const std::string& disname);
 
-      //    typedef ScaTraEleCalc<distype,probdim> my;
-      //    typedef ScaTraEleCalcAniso<distype,probdim> aniso;
-      //    typedef ScaTraEleCalcAdvReac<distype,probdim> advreac;
-
       std::vector<Core::LinAlg::SerialDenseVector> values_mat_gp_all_;
       std::vector<double> gp_mat_alpha_;
 

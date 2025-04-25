@@ -26,8 +26,7 @@ namespace Core::Conditions
 /*----------------------------------------------------------------------*/
 /* The coupling methods for FSI. */
 /*----------------------------------------------------------------------*/
-// ToDo: put into the namespace Inpar::FSI ! No typedef?
-typedef enum FsiCoupling
+enum FsiCoupling
 {
   fsi_coupling_freesurface = -1,
   fsi_coupling_undefined = 0,
@@ -58,7 +57,7 @@ typedef enum FsiCoupling
   fsi_iter_sliding_monolithicfluidsplit,
   fsi_iter_sliding_monolithicstructuresplit,
   fsi_iter_mortar_monolithicfluidsplit_saddlepoint
-} FSI_COUPLING;
+};
 
 namespace Inpar
 {

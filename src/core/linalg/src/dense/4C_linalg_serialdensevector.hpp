@@ -42,7 +42,7 @@ namespace Core::LinAlg
   };
 
   // type definition for serial integer vector
-  typedef Teuchos::SerialDenseVector<int, int> IntSerialDenseVector;
+  using IntSerialDenseVector = Teuchos::SerialDenseVector<int, int>;
 
   /*!
     \brief Update vector components with scaled values of a,

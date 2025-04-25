@@ -670,7 +670,7 @@ const Core::LinAlg::SparseMatrix& NOX::Nln::LinearSystem::get_jacobian_block(
   {
     case LinSystem::LinalgBlockSparseMatrix:
     {
-      typedef Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy> linalg_bsm;
+      using linalg_bsm = Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>;
       const linalg_bsm& jac_block = dynamic_cast<const linalg_bsm&>(jacobian());
 
       if (rbid >= static_cast<unsigned>(jac_block.rows()) or
@@ -848,8 +848,8 @@ void NOX::Nln::LinearSystem::convert_jacobian_to_dense_matrix(
   {
     case NOX::Nln::LinSystem::LinalgBlockSparseMatrix:
     {
-      typedef Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>
-          linalg_blocksparsematrix;
+      using linalg_blocksparsematrix =
+          Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>;
       const linalg_blocksparsematrix& block_sparse =
           dynamic_cast<const linalg_blocksparsematrix&>(jacobian());
 

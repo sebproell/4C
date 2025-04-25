@@ -24,20 +24,20 @@ namespace Mat
   {
     namespace PAR
     {
-      typedef enum DistrType
+      enum DistrType
       {
         distr_type_undefined = 0,
         distr_type_vonmisesfisher = 1,
         distr_type_bingham = 2
-      } DISTR_TYPE_;
+      };
 
-      typedef enum StrategyType
+      enum StrategyType
       {
         strategy_type_undefined = 0,
         strategy_type_standard = 1,
         strategy_type_bydistributionfunction = 2,
         strategy_type_dispersedtransverselyisotropic = 3
-      } STRATEGY_TYPE_;
+      };
 
       /*!
        * @brief material parameters for generalized structural tensor with distribution
