@@ -394,7 +394,7 @@ namespace FLD
         bool is_ghost_penalty_reconstruct = false);
 
     /// evaluate gradient penalty terms to reconstruct ghost values
-    void assemble_mat_and_rhs_gradient_penalty(Core::LinAlg::MapExtractor& ghost_penaly_dbcmaps,
+    void assemble_mat_and_rhs_gradient_penalty(Core::LinAlg::MapExtractor& ghost_penalty_dbcmaps,
         std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_gp,
         Core::LinAlg::Vector<double>& residual_gp,
         std::shared_ptr<Core::LinAlg::Vector<double>> vec);
@@ -540,7 +540,7 @@ namespace FLD
     /// reconstruct ghost values using ghost penalty approach
     void x_timint_reconstruct_ghost_values(
         std::shared_ptr<Core::LinAlg::Vector<double>> vec,  ///< vector to be reconstructed
-        Core::LinAlg::MapExtractor& ghost_penaly_dbcmaps,   ///< which dofs are fixed during the
+        Core::LinAlg::MapExtractor& ghost_penalty_dbcmaps,  ///< which dofs are fixed during the
                                                             ///< ghost-penalty reconstruction?
         const bool screen_out                               ///< screen output?
     );

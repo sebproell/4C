@@ -522,7 +522,7 @@ void XFEM::MeshCouplingFPI::update_configuration_map_gp_contact(
       double ffac = 1;
       if (gap < (1 + get_fpi_pcontact_fullfraction()) * get_fpi_pcontact_exchange_dist() &&
           get_fpi_pcontact_exchange_dist() > 1e-16)
-        ffac = gap / (get_fpi_pcontact_exchange_dist())-get_fpi_pcontact_fullfraction();
+        ffac = gap / (get_fpi_pcontact_exchange_dist()) - get_fpi_pcontact_fullfraction();
       if (ffac < 0) ffac = 0;
 
       configuration_map_[Inpar::XFEM::X_Con_n_Row].second = ffac;
@@ -542,7 +542,7 @@ void XFEM::MeshCouplingFPI::update_configuration_map_gp_contact(
       double ffac = 1;
       if (gap < (1 + get_fpi_pcontact_fullfraction()) * get_fpi_pcontact_exchange_dist() &&
           get_fpi_pcontact_exchange_dist() > 1e-16)
-        ffac = gap / (get_fpi_pcontact_exchange_dist())-get_fpi_pcontact_fullfraction();
+        ffac = gap / (get_fpi_pcontact_exchange_dist()) - get_fpi_pcontact_fullfraction();
       if (ffac < 0) ffac = 0;
 
       // Configuration of Penalty Terms

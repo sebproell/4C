@@ -1430,7 +1430,7 @@ namespace Cut::Kernel
         Core::CLN::ClnWrapper::set_precision(prec);
 #ifdef CUSTOM_MEMORY_ALLOCATOR
 #if DEBUG_MEMORY_ALLOCATION
-        // set current constainer for most frequenty byte size allocation for this iteration
+        // set current container for most frequently byte size allocation for this iteration
         if (custom_allocator_run_)
 #endif
           Cut::MemorySingleton::getinstance().get_memory_pool_allocator().SetCurrent(

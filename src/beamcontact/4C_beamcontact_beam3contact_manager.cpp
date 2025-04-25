@@ -2137,7 +2137,7 @@ void CONTACT::Beam3cmanager::transform_angle_to_triad(
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < 3; j++)
       R(i, j) = identity(i, j) + spin(i, j) * (sin(theta_abs)) / theta_abs +
-                (1 - (cos(theta_abs))) / (pow(theta_abs, 2))*spin2(i, j);
+                (1 - (cos(theta_abs))) / (pow(theta_abs, 2)) * spin2(i, j);
 
   return;
 }

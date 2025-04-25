@@ -1079,27 +1079,27 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
 
           // only compute the symmetric components from a single eigenvector,
           // because eigenvalue directions are not consistent (it can be flipped)
-          tempCG(0, 0) += (prstr(k)) * (prstr(k))*n_00;
-          tempCG(0, 1) += (prstr(k)) * (prstr(k))*n_01;
-          tempCG(0, 2) += (prstr(k)) * (prstr(k))*n_02;
-          tempCG(1, 0) += (prstr(k)) * (prstr(k))*n_01;  // symmetry
-          tempCG(1, 1) += (prstr(k)) * (prstr(k))*n_11;
-          tempCG(1, 2) += (prstr(k)) * (prstr(k))*n_12;
-          tempCG(2, 0) += (prstr(k)) * (prstr(k))*n_02;  // symmetry
-          tempCG(2, 1) += (prstr(k)) * (prstr(k))*n_12;  // symmetry
-          tempCG(2, 2) += (prstr(k)) * (prstr(k))*n_22;
+          tempCG(0, 0) += (prstr(k)) * (prstr(k)) * n_00;
+          tempCG(0, 1) += (prstr(k)) * (prstr(k)) * n_01;
+          tempCG(0, 2) += (prstr(k)) * (prstr(k)) * n_02;
+          tempCG(1, 0) += (prstr(k)) * (prstr(k)) * n_01;  // symmetry
+          tempCG(1, 1) += (prstr(k)) * (prstr(k)) * n_11;
+          tempCG(1, 2) += (prstr(k)) * (prstr(k)) * n_12;
+          tempCG(2, 0) += (prstr(k)) * (prstr(k)) * n_02;  // symmetry
+          tempCG(2, 1) += (prstr(k)) * (prstr(k)) * n_12;  // symmetry
+          tempCG(2, 2) += (prstr(k)) * (prstr(k)) * n_22;
 
           // Computation of the Logarithmic strain tensor
 
-          lnv(0, 0) += (std::log(prstr(k)))*n_00;
-          lnv(0, 1) += (std::log(prstr(k)))*n_01;
-          lnv(0, 2) += (std::log(prstr(k)))*n_02;
-          lnv(1, 0) += (std::log(prstr(k)))*n_01;  // symmetry
-          lnv(1, 1) += (std::log(prstr(k)))*n_11;
-          lnv(1, 2) += (std::log(prstr(k)))*n_12;
-          lnv(2, 0) += (std::log(prstr(k)))*n_02;  // symmetry
-          lnv(2, 1) += (std::log(prstr(k)))*n_12;  // symmetry
-          lnv(2, 2) += (std::log(prstr(k)))*n_22;
+          lnv(0, 0) += (std::log(prstr(k))) * n_00;
+          lnv(0, 1) += (std::log(prstr(k))) * n_01;
+          lnv(0, 2) += (std::log(prstr(k))) * n_02;
+          lnv(1, 0) += (std::log(prstr(k))) * n_01;  // symmetry
+          lnv(1, 1) += (std::log(prstr(k))) * n_11;
+          lnv(1, 2) += (std::log(prstr(k))) * n_12;
+          lnv(2, 0) += (std::log(prstr(k))) * n_02;  // symmetry
+          lnv(2, 1) += (std::log(prstr(k))) * n_12;  // symmetry
+          lnv(2, 2) += (std::log(prstr(k))) * n_22;
         }
 
         // compare CG computed with deformation gradient with CG computed

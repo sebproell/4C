@@ -1235,7 +1235,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
       eta_s.val() = eta_s_[i_gp];
       const double desired_length = curr_seg_length * (myEta[i_gp] - etaA) / (etaB - etaA);
       double val = -1.0;
-      // Netwon loop
+      // Newton loop
       for (int istep = 0; istep < MESHMOVEMENTMAXITER; istep++)
       {
         // integrate \int_{\eta_a}^{eta_s} || F*t0 ||_2 ds
@@ -3121,7 +3121,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
     // If det_J = 0 we assume, that the artery and the surface edge are parallel.
     // These projection is not needed due the fact that the contact interval can also be
     // identified by other projections
-    parallel = fabs(jacdet) < COLINEARTOL * first_residual;
+    parallel = fabs(jacdet) < COLLINEARTOL * first_residual;
     if (!parallel) jacdet = J.invert();
 
     // Check if the local Newton iteration has converged
@@ -3380,7 +3380,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
     // If det_J = 0 we assume, that the artery element and the surface edge are parallel.
     // These projection is not needed due the fact that the contact interval can also be
     // identified by two contact interval borders found with the GetContactLines method
-    parallel = fabs(jacdet) < COLINEARTOL * first_residual;
+    parallel = fabs(jacdet) < COLLINEARTOL * first_residual;
     if (!parallel) J.invert();
 
     // Check if the local Newton iteration has converged

@@ -77,7 +77,7 @@ namespace Cut
 
    private:
     /*!
-    \brief The cyles ptlist and inlists are equal
+    \brief The cycles ptlist and inlists are equal
     */
     bool hasequal_ptlist_inlist(
         std::vector<Point*> ptlist, std::vector<std::vector<Point*>> inlists);

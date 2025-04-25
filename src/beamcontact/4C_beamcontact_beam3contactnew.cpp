@@ -577,7 +577,7 @@ void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::evaluate_stiffc_contact
 
   // if the bool inactivestiff is true, the contact stiffness will always be applied in the first
   // Newton steps for pair which have been active in the last time step (even when they are
-  // currentely not active) -> This makes the algorithm more robust.
+  // currently not active) -> This makes the algorithm more robust.
   const bool inactivestiff = bcparams_.get<bool>("BEAMS_INACTIVESTIFF");
 
   // In order to accelerate convergence, we only apply the basic stiffness part in case of very
@@ -2442,7 +2442,7 @@ void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::calc_penalty_law()
 {
   // if the bool inactivestiff is true, the contact stiffness will always be applied in the first
   // Newton steps for pair which have been active in the last time step (even when they are
-  // currentely not active) -> This makes the algorithm more robust.
+  // currently not active) -> This makes the algorithm more robust.
   const bool inactivestiff = bcparams_.get<bool>("BEAMS_INACTIVESTIFF");
 
   if (contactflag_ or (iter_ == 0 and inactivestiff and oldcontactflag_))
@@ -3069,7 +3069,7 @@ void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::evaluate_lin_orthogonal
   }
 
   // Inverting (2x2) matrix df by hard coded formula, so that it is
-  // possible to handle colinear vectors, because they lead to det(df) =0
+  // possible to handle collinear vectors, because they lead to det(df) =0
   TYPE det_df = df(0, 0) * df(1, 1) - df(1, 0) * df(0, 1);
 
   //********************************************************************
@@ -3081,7 +3081,7 @@ void CONTACT::Beam3contactnew<numnodes, numnodalvalues>::evaluate_lin_orthogonal
   //********************************************************************
 
   // singular df
-  if (Core::FADUtils::cast_to_double(Core::FADUtils::norm(det_df)) < COLINEARTOL)
+  if (Core::FADUtils::cast_to_double(Core::FADUtils::norm(det_df)) < COLLINEARTOL)
   {
     // sort out
     elementscolinear_ = true;

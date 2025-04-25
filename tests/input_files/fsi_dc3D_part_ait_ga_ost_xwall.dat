@@ -76,7 +76,7 @@ X_WALL                          Yes
 Tauw_Type                       between_steps
 Tauw_Calc_Type                  gradient_to_residual
 Switch_Step                     2
-Projection                      onlyl2projection
+Projection                      only_l2_projection
 C_Tauw                          1
 Min_Tauw                        10.0
 Inc_Tauw                        1

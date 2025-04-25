@@ -1193,14 +1193,15 @@ double FLD::WeaklyCompressibleManufacturedFlowFunction::evaluate(
                       ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                            (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
                               (8. * r0) +
-                          ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                          ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
                               (2. * r0))) -
           2. / 3. *
-              (-epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
-                               (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
-                                  (8. * r0) +
-                              ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
-                                  (2. * r0)) -
+              (-epsilon *
+                      ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
+                           (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
+                              (8. * r0) +
+                          ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                              (2. * r0)) -
                   M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y)));
   L_ex(1) =
       -sqrt(2. * mu) / 2. *
@@ -1210,25 +1211,27 @@ double FLD::WeaklyCompressibleManufacturedFlowFunction::evaluate(
                       ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                            (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
                               (8. * r0) +
-                          ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                          ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
                               (2. * r0))) +
           4. / 3. *
-              (-epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
-                               (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
-                                  (8. * r0) +
-                              ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
-                                  (2. * r0)) -
+              (-epsilon *
+                      ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
+                           (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
+                              (8. * r0) +
+                          ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                              (2. * r0)) -
                   M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y)));
   L_ex(2) =
       -sqrt(1. * mu) *
       ((M_PI * cos(M_PI * y) * sin(M_PI * t) * sin(M_PI * x) -
            epsilon *
-               (((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * y) * sin(M_PI * x)) / (2. * r0) -
-                   ((std::pow(M_PI, 3.))*x * (std::pow((sin(M_PI * t)), 2.)) * sin(2. * M_PI * y)) /
+               (((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * y) * sin(M_PI * x)) / (2. * r0) -
+                   ((std::pow(M_PI, 3.)) * x * (std::pow((sin(M_PI * t)), 2.)) *
+                       sin(2. * M_PI * y)) /
                        (2. * r0))) +
-          (-epsilon * (((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * y) * sin(M_PI * x)) /
+          (-epsilon * (((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * y) * sin(M_PI * x)) /
                               (2. * r0) -
-                          ((std::pow(M_PI, 3.))*y * (std::pow((sin(M_PI * t)), 2.)) *
+                          ((std::pow(M_PI, 3.)) * y * (std::pow((sin(M_PI * t)), 2.)) *
                               sin(2. * M_PI * x)) /
                               (2. * r0)) -
               M_PI * cos(M_PI * y) * sin(M_PI * t) * sin(M_PI * x)));
@@ -1329,28 +1332,28 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
   Core::LinAlg::Matrix<2, 1> f_w_ex;
 
   // evaluate variables
-  f_r_ex = (std::pow(M_PI, 2.))*epsilon * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y) -
+  f_r_ex = (std::pow(M_PI, 2.)) * epsilon * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y) -
            (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                            (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
                               (8. * r0) +
-                          ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                          ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
                               (2. * r0)) -
                M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y)) *
                (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) -
            (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                            (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
                               (8. * r0) +
-                          ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                          ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
                               (2. * r0)) +
                M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y)) *
                (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) +
-           (std::pow(M_PI, 2.))*epsilon * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y) *
+           (std::pow(M_PI, 2.)) * epsilon * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y) *
                (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                                (sin(2. * M_PI * x) + 2. * M_PI * x * cos(2. * M_PI * y))) /
                                   (8. * r0) +
                               (M_PI * cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) / (2. * r0)) -
                    sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) -
-           (std::pow(M_PI, 2.))*epsilon * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t) *
+           (std::pow(M_PI, 2.)) * epsilon * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t) *
                (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                                (sin(2. * M_PI * y) + 2. * M_PI * y * cos(2. * M_PI * x))) /
                                   (8. * r0) -
@@ -1365,32 +1368,32 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
           (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                           (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
                              (8. * r0) +
-                         ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                         ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
                              (2. * r0)) +
               M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y)) *
           (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) -
       mu * (epsilon *
                    (((std::pow(M_PI, 3.)) * (std::pow((sin(M_PI * t)), 2.)) * sin(2. * M_PI * x)) /
                            (2. * r0) +
-                       ((std::pow(M_PI, 3.))*cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) /
+                       ((std::pow(M_PI, 3.)) * cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) /
                            (2. * r0)) +
-               epsilon * (((std::pow(M_PI, 3.))*cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) /
+               epsilon * (((std::pow(M_PI, 3.)) * cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) /
                                  (2. * r0) +
-                             ((std::pow(M_PI, 4.))*x * cos(2. * M_PI * y) *
+                             ((std::pow(M_PI, 4.)) * x * cos(2. * M_PI * y) *
                                  (std::pow((sin(M_PI * t)), 2.))) /
                                  r0) +
                (2. * epsilon *
-                   (((std::pow(M_PI, 3.))*cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) /
+                   (((std::pow(M_PI, 3.)) * cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) /
                            (2. * r0) +
-                       ((std::pow(M_PI, 3.))*cos(M_PI * x) * (std::pow((sin(M_PI * t)), 2.)) *
+                       ((std::pow(M_PI, 3.)) * cos(M_PI * x) * (std::pow((sin(M_PI * t)), 2.)) *
                            sin(M_PI * x)) /
                            r0)) /
                    3. -
-               2. * (std::pow(M_PI, 2.))*sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) -
-      (epsilon * (((std::pow(M_PI, 2.))*cos(M_PI * t) * sin(M_PI * t) *
+               2. * (std::pow(M_PI, 2.)) * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) -
+      (epsilon * (((std::pow(M_PI, 2.)) * cos(M_PI * t) * sin(M_PI * t) *
                       (sin(2. * M_PI * x) + 2. * M_PI * x * cos(2. * M_PI * y))) /
                          (4. * r0) -
-                     ((std::pow(M_PI, 2.))*sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) /
+                     ((std::pow(M_PI, 2.)) * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) /
                          (2. * r0)) -
           M_PI * cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) *
           (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) +
@@ -1403,13 +1406,14 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
           (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                           (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
                              (8. * r0) +
-                         ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                         ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
                              (2. * r0)) -
               M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y)) *
           (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) +
       (epsilon *
-              (((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * y) * sin(M_PI * x)) / (2. * r0) -
-                  ((std::pow(M_PI, 3.))*x * (std::pow((sin(M_PI * t)), 2.)) * sin(2. * M_PI * y)) /
+              (((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * y) * sin(M_PI * x)) / (2. * r0) -
+                  ((std::pow(M_PI, 3.)) * x * (std::pow((sin(M_PI * t)), 2.)) *
+                      sin(2. * M_PI * y)) /
                       (2. * r0)) -
           M_PI * cos(M_PI * y) * sin(M_PI * t) * sin(M_PI * x)) *
           (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) *
@@ -1418,14 +1422,14 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
                              (8. * r0) -
                          (M_PI * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) / (2. * r0)) -
               cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t)) -
-      (std::pow(M_PI, 2.))*sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y) -
-      (std::pow(M_PI, 2.))*epsilon * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y) *
+      (std::pow(M_PI, 2.)) * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y) -
+      (std::pow(M_PI, 2.)) * epsilon * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y) *
           (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                           (sin(2. * M_PI * x) + 2. * M_PI * x * cos(2. * M_PI * y))) /
                              (8. * r0) +
                          (M_PI * cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) / (2. * r0)) -
               sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) -
-      (std::pow(M_PI, 2.))*epsilon * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y) *
+      (std::pow(M_PI, 2.)) * epsilon * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y) *
           (std::pow(
               (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                               (sin(2. * M_PI * x) + 2. * M_PI * x * cos(2. * M_PI * y))) /
@@ -1433,7 +1437,7 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
                              (M_PI * cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) / (2. * r0)) -
                   sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)),
               2.)) +
-      (std::pow(M_PI, 2.))*epsilon * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t) *
+      (std::pow(M_PI, 2.)) * epsilon * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t) *
           (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                           (sin(2. * M_PI * x) + 2. * M_PI * x * cos(2. * M_PI * y))) /
                              (8. * r0) +
@@ -1445,28 +1449,29 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
                          (M_PI * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) / (2. * r0)) -
               cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t));
   f_w_ex(1) =
-      mu * (epsilon * (((std::pow(M_PI, 3.))*cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) /
+      mu * (epsilon * (((std::pow(M_PI, 3.)) * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) /
                               (2. * r0) -
-                          ((std::pow(M_PI, 4.))*y * cos(2. * M_PI * x) *
+                          ((std::pow(M_PI, 4.)) * y * cos(2. * M_PI * x) *
                               (std::pow((sin(M_PI * t)), 2.))) /
                               r0) -
                epsilon *
                    (((std::pow(M_PI, 3.)) * (std::pow((sin(M_PI * t)), 2.)) * sin(2. * M_PI * y)) /
                            (2. * r0) -
-                       ((std::pow(M_PI, 3.))*cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) /
+                       ((std::pow(M_PI, 3.)) * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) /
                            (2. * r0)) +
                (2. * epsilon *
-                   (((std::pow(M_PI, 3.))*cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) /
+                   (((std::pow(M_PI, 3.)) * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) /
                            (2. * r0) -
-                       ((std::pow(M_PI, 3.))*cos(M_PI * y) * (std::pow((sin(M_PI * t)), 2.)) *
+                       ((std::pow(M_PI, 3.)) * cos(M_PI * y) * (std::pow((sin(M_PI * t)), 2.)) *
                            sin(M_PI * y)) /
                            r0)) /
                    3. +
-               2. * (std::pow(M_PI, 2.))*cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t)) -
-      (epsilon * (((std::pow(M_PI, 2.))*cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t)) / (2. * r0) +
-                     ((std::pow(M_PI, 2.))*cos(M_PI * t) * sin(M_PI * t) *
-                         (sin(2. * M_PI * y) + 2. * M_PI * y * cos(2. * M_PI * x))) /
-                         (4. * r0)) -
+               2. * (std::pow(M_PI, 2.)) * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t)) -
+      (epsilon *
+              (((std::pow(M_PI, 2.)) * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t)) / (2. * r0) +
+                  ((std::pow(M_PI, 2.)) * cos(M_PI * t) * sin(M_PI * t) *
+                      (sin(2. * M_PI * y) + 2. * M_PI * y * cos(2. * M_PI * x))) /
+                      (4. * r0)) -
           M_PI * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) *
           (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) +
       (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
@@ -1474,9 +1479,9 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
                          (8. * r0) +
                      (M_PI * cos(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) / (2. * r0)) -
           sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y)) *
-          (epsilon * (((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * y) * sin(M_PI * x)) /
+          (epsilon * (((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * y) * sin(M_PI * x)) /
                              (2. * r0) -
-                         ((std::pow(M_PI, 3.))*y * (std::pow((sin(M_PI * t)), 2.)) *
+                         ((std::pow(M_PI, 3.)) * y * (std::pow((sin(M_PI * t)), 2.)) *
                              sin(2. * M_PI * x)) /
                              (2. * r0)) +
               M_PI * cos(M_PI * y) * sin(M_PI * t) * sin(M_PI * x)) *
@@ -1485,7 +1490,7 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
           (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                           (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
                              (8. * r0) +
-                         ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                         ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
                              (2. * r0)) +
               M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y)) *
           (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) *
@@ -1497,7 +1502,7 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
       (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                       (2. * M_PI * cos(2. * M_PI * x) + 2. * M_PI * cos(2. * M_PI * y))) /
                          (8. * r0) +
-                     ((std::pow(M_PI, 2.))*cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
+                     ((std::pow(M_PI, 2.)) * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y)) /
                          (2. * r0)) -
           M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y)) *
           (r0 - epsilon * (p0 - M_PI * cos(M_PI * x) * sin(M_PI * t) * sin(M_PI * y))) *
@@ -1506,8 +1511,8 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
                              (8. * r0) -
                          (M_PI * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) / (2. * r0)) -
               cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t)) +
-      (std::pow(M_PI, 2.))*cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t) +
-      (std::pow(M_PI, 2.))*epsilon * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t) *
+      (std::pow(M_PI, 2.)) * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t) +
+      (std::pow(M_PI, 2.)) * epsilon * cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t) *
           (std::pow(
               (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                               (sin(2. * M_PI * y) + 2. * M_PI * y * cos(2. * M_PI * x))) /
@@ -1515,13 +1520,13 @@ double FLD::WeaklyCompressibleManufacturedFlowForceFunction::evaluate(
                              (M_PI * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) / (2. * r0)) -
                   cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t)),
               2.)) -
-      (std::pow(M_PI, 2.))*epsilon * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y) *
+      (std::pow(M_PI, 2.)) * epsilon * cos(M_PI * t) * cos(M_PI * x) * sin(M_PI * y) *
           (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                           (sin(2. * M_PI * y) + 2. * M_PI * y * cos(2. * M_PI * x))) /
                              (8. * r0) -
                          (M_PI * cos(M_PI * t) * cos(M_PI * x) * cos(M_PI * y)) / (2. * r0)) -
               cos(M_PI * x) * cos(M_PI * y) * sin(M_PI * t)) -
-      (std::pow(M_PI, 2.))*epsilon * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y) *
+      (std::pow(M_PI, 2.)) * epsilon * sin(M_PI * t) * sin(M_PI * x) * sin(M_PI * y) *
           (epsilon * ((M_PI * (std::pow((sin(M_PI * t)), 2.)) *
                           (sin(2. * M_PI * x) + 2. * M_PI * x * cos(2. * M_PI * y))) /
                              (8. * r0) +
@@ -1608,19 +1613,19 @@ double FLD::WeaklyCompressibleEtienneCFDFunction::evaluate(
 
   // evaluate variables
   L_ex(0) = +10. * x * (std::pow(y, 3.)) *
-            (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-            (std::pow((-10. * (std::pow(x, 5.)) + 25. * (std::pow(x, 4.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+            (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+            (std::pow((-10. * (std::pow(x, 5.)) + 25. * (std::pow(x, 4.)) -
+                          20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                 4.)) *
-            (40. * (std::pow(x, 5.))-100. * (std::pow(x, 4.)) +
-                80. * (std::pow(x, 3.))-20. * (std::pow(x, 2.)) + 5. * y - 4.);
+            (40. * (std::pow(x, 5.)) - 100. * (std::pow(x, 4.)) + 80. * (std::pow(x, 3.)) -
+                20. * (std::pow(x, 2.)) + 5. * y - 4.);
   L_ex(1) = -10. * x * (std::pow(y, 3.)) *
-            (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-            (std::pow((-10. * (std::pow(x, 5.)) + 25. * (std::pow(x, 4.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+            (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+            (std::pow((-10. * (std::pow(x, 5.)) + 25. * (std::pow(x, 4.)) -
+                          20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                 4.)) *
-            (40. * (std::pow(x, 5.))-100. * (std::pow(x, 4.)) +
-                80. * (std::pow(x, 3.))-20. * (std::pow(x, 2.)) + 5. * y - 4.);
+            (40. * (std::pow(x, 5.)) - 100. * (std::pow(x, 4.)) + 80. * (std::pow(x, 3.)) -
+                20. * (std::pow(x, 2.)) + 5. * y - 4.);
   L_ex(2) =
       20. * (std::pow(y, 3.)) *
           ((std::pow(
@@ -1757,386 +1762,351 @@ double FLD::WeaklyCompressibleEtienneCFDForceFunction::evaluate(
   f_r_ex = 0;
   f_w_ex(0) =
       2. * x -
-      (y * (20. * (std::pow(y, 3.)) *
-                   ((std::pow(
-                        (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                            5. * (std::pow(x, 2.)) + 1.),
-                        5.)) /
-                           5. -
-                       (std::pow(y, 5.)) / 5.) -
-               12. * (std::pow(y, 2.)) *
-                   ((std::pow(
-                        (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                            5. * (std::pow(x, 2.)) + 1.),
-                        6.)) /
-                           6. -
-                       (std::pow(y, 6.)) / 6.) -
-               (std::pow(y, 8.)) +
-               (std::pow(y, 4.)) *
-                   (200. * (std::pow(x, 3.))-300. * (std::pow(x, 2.)) + 120. * x - 10.) *
-                   (std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
-                       4.)) *
-                   (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                       20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.) +
-               100. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
-                   (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-                   (std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
-                       4.)) -
-               400. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
-                   (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-                   (std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
-                       3.)) *
-                   (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                       20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.))) /
+      (y *
+          (20. * (std::pow(y, 3.)) *
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                       5.)) /
+                          5. -
+                      (std::pow(y, 5.)) / 5.) -
+              12. * (std::pow(y, 2.)) *
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                       6.)) /
+                          6. -
+                      (std::pow(y, 6.)) / 6.) -
+              (std::pow(y, 8.)) +
+              (std::pow(y, 4.)) *
+                  (200. * (std::pow(x, 3.)) - 300. * (std::pow(x, 2.)) + 120. * x - 10.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                      4.)) *
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.) +
+              100. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                      4.)) -
+              400. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                      3.)) *
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.))) /
           5. +
       ((std::pow(x, 2.)) / 10. + (std::pow(y, 2.)) / 10. + 1. / 10.) *
           (24. * y *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        6.)) /
                           6. -
                       (std::pow(y, 6.)) / 6.) -
               60. * (std::pow(y, 2.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        5.)) /
                           5. -
                       (std::pow(y, 5.)) / 5.) +
               16. * (std::pow(y, 7.)) -
               (std::pow(y, 4.)) *
-                  (200. * (std::pow(x, 3.))-300. * (std::pow(x, 2.)) + 120. * x - 10.) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (200. * (std::pow(x, 3.)) - 300. * (std::pow(x, 2.)) + 120. * x - 10.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       4.)) -
               4. * (std::pow(y, 3.)) *
-                  (200. * (std::pow(x, 3.))-300. * (std::pow(x, 2.)) + 120. * x - 10.) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (200. * (std::pow(x, 3.)) - 300. * (std::pow(x, 2.)) + 120. * x - 10.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       4.)) *
-                  (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                      20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.) -
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.) -
               400. * (std::pow(x, 2.)) * (std::pow(y, 3.)) *
-                  (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       4.)) +
               400. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
-                  (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       3.)) +
               1600. * (std::pow(x, 2.)) * (std::pow(y, 3.)) *
-                  (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       3.)) *
-                  (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                      20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.)) -
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.)) -
       20. * (std::pow(y, 3.)) * ((std::pow(x, 2.)) / 10. + (std::pow(y, 2.)) / 10. + 1. / 10.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               3.)) *
-          (48. * x + 5. * y - 60. * x * y + 375. * (std::pow(x, 2.))*y -
-              2900. * (std::pow(x, 3.))*y + 13275. * (std::pow(x, 4.))*y -
-              31050. * (std::pow(x, 5.))*y + 38350. * (std::pow(x, 6.))*y -
-              24000. * (std::pow(x, 7.))*y + 6000. * (std::pow(x, 8.))*y -
-              360. * (std::pow(x, 2.)) + 3120. * (std::pow(x, 3.))-15620. * (std::pow(x, 4.)) +
-              52080. * (std::pow(x, 5.))-166360. * (std::pow(x, 6.)) +
-              504000. * (std::pow(x, 7.))-1141500. * (std::pow(x, 8.)) +
-              1737200. * (std::pow(x, 9.))-1720400. * (std::pow(x, 10.)) +
-              1066800. * (std::pow(x, 11.))-377000. * (std::pow(x, 12.)) +
-              58000. * (std::pow(x, 13.))-4.) +
+          (48. * x + 5. * y - 60. * x * y + 375. * (std::pow(x, 2.)) * y -
+              2900. * (std::pow(x, 3.)) * y + 13275. * (std::pow(x, 4.)) * y -
+              31050. * (std::pow(x, 5.)) * y + 38350. * (std::pow(x, 6.)) * y -
+              24000. * (std::pow(x, 7.)) * y + 6000. * (std::pow(x, 8.)) * y -
+              360. * (std::pow(x, 2.)) + 3120. * (std::pow(x, 3.)) - 15620. * (std::pow(x, 4.)) +
+              52080. * (std::pow(x, 5.)) - 166360. * (std::pow(x, 6.)) +
+              504000. * (std::pow(x, 7.)) - 1141500. * (std::pow(x, 8.)) +
+              1737200. * (std::pow(x, 9.)) - 1720400. * (std::pow(x, 10.)) +
+              1066800. * (std::pow(x, 11.)) - 377000. * (std::pow(x, 12.)) +
+              58000. * (std::pow(x, 13.)) - 4.) +
       4. * (std::pow(x, 2.)) * (std::pow(y, 3.)) *
-          (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) *
-          (40. * (std::pow(x, 5.))-100. * (std::pow(x, 4.)) +
-              80. * (std::pow(x, 3.))-20. * (std::pow(x, 2.)) + 5. * y - 4.) +
+          (40. * (std::pow(x, 5.)) - 100. * (std::pow(x, 4.)) + 80. * (std::pow(x, 3.)) -
+              20. * (std::pow(x, 2.)) + 5. * y - 4.) +
       10. * r0 * x * (std::pow(y, 4.)) *
           (5. * (std::pow(y, 4.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        5.)) /
                           5. -
                       (std::pow(y, 5.)) / 5.) -
               4. * (std::pow(y, 3.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        6.)) /
                           6. -
                       (std::pow(y, 6.)) / 6.)) *
-          (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) +
       40. * r0 * x * (std::pow(y, 3.)) *
           (5. * (std::pow(y, 4.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        5.)) /
                           5. -
                       (std::pow(y, 5.)) / 5.) -
               4. * (std::pow(y, 3.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        6.)) /
                           6. -
                       (std::pow(y, 6.)) / 6.)) *
-          (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) *
-          (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-              20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.) -
+          (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+              5. * (std::pow(x, 2.)) + y - 1.) -
       20. * r0 * x * (std::pow(y, 3.)) *
           (5. * (std::pow(y, 4.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        5.)) /
                           5. -
                       (std::pow(y, 5.)) / 5.) -
               4. * (std::pow(y, 3.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        6.)) /
                           6. -
                       (std::pow(y, 6.)) / 6.)) *
-          (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) *
-          (40. * (std::pow(x, 5.))-100. * (std::pow(x, 4.)) +
-              80. * (std::pow(x, 3.))-20. * (std::pow(x, 2.)) + 5. * y - 4.) -
+          (40. * (std::pow(x, 5.)) - 100. * (std::pow(x, 4.)) + 80. * (std::pow(x, 3.)) -
+              20. * (std::pow(x, 2.)) + 5. * y - 4.) -
       10. * r0 * x * (std::pow(y, 4.)) *
           (12. * (std::pow(y, 2.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        6.)) /
                           6. -
                       (std::pow(y, 6.)) / 6.) -
               20. * (std::pow(y, 3.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        5.)) /
                           5. -
                       (std::pow(y, 5.)) / 5.) +
               (std::pow(y, 8.))) *
-          (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) *
-          (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-              20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.);
+          (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+              5. * (std::pow(x, 2.)) + y - 1.);
   f_w_ex(1) =
       2. * y -
-      (x * (20. * (std::pow(y, 3.)) *
-                   ((std::pow(
-                        (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                            5. * (std::pow(x, 2.)) + 1.),
-                        5.)) /
-                           5. -
-                       (std::pow(y, 5.)) / 5.) -
-               12. * (std::pow(y, 2.)) *
-                   ((std::pow(
-                        (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                            5. * (std::pow(x, 2.)) + 1.),
-                        6.)) /
-                           6. -
-                       (std::pow(y, 6.)) / 6.) -
-               (std::pow(y, 8.)) +
-               (std::pow(y, 4.)) *
-                   (200. * (std::pow(x, 3.))-300. * (std::pow(x, 2.)) + 120. * x - 10.) *
-                   (std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
-                       4.)) *
-                   (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                       20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.) +
-               100. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
-                   (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-                   (std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
-                       4.)) -
-               400. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
-                   (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-                   (std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
-                       3.)) *
-                   (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                       20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.))) /
+      (x *
+          (20. * (std::pow(y, 3.)) *
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                       5.)) /
+                          5. -
+                      (std::pow(y, 5.)) / 5.) -
+              12. * (std::pow(y, 2.)) *
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                       6.)) /
+                          6. -
+                      (std::pow(y, 6.)) / 6.) -
+              (std::pow(y, 8.)) +
+              (std::pow(y, 4.)) *
+                  (200. * (std::pow(x, 3.)) - 300. * (std::pow(x, 2.)) + 120. * x - 10.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                      4.)) *
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.) +
+              100. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                      4.)) -
+              400. * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
+                      3.)) *
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.))) /
           5. -
       ((std::pow(x, 2.)) / 10. + (std::pow(y, 2.)) / 10. + 1. / 10.) *
           (120. * x * (std::pow(y, 2.)) *
-                  (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       5.)) -
               8000. * (std::pow(x, 3.)) * (std::pow(y, 4.)) *
-                  (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 3.)) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 3.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       3.)) -
               200. * x * (std::pow(y, 3.)) *
-                  (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       4.)) +
-              (std::pow(y, 4.)) * (600. * (std::pow(x, 2.))-600. * x + 120.) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+              (std::pow(y, 4.)) * (600. * (std::pow(x, 2.)) - 600. * x + 120.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       4.)) *
-                  (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                      20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.) +
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.) +
               12000. * (std::pow(x, 3.)) * (std::pow(y, 4.)) *
-                  (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 3.)) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 3.)) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       2.)) *
-                  (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                      20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.) +
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.) +
               30. * x * (std::pow(y, 4.)) *
-                  (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-                  (200. * (std::pow(x, 3.))-300. * (std::pow(x, 2.)) + 120. * x - 10.) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+                  (200. * (std::pow(x, 3.)) - 300. * (std::pow(x, 2.)) + 120. * x - 10.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       4.)) -
               120. * x * (std::pow(y, 4.)) *
-                  (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-                  (200. * (std::pow(x, 3.))-300. * (std::pow(x, 2.)) + 120. * x - 10.) *
-                  (std::pow(
-                      (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                          5. * (std::pow(x, 2.)) + 1.),
+                  (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+                  (200. * (std::pow(x, 3.)) - 300. * (std::pow(x, 2.)) + 120. * x - 10.) *
+                  (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                       3.)) *
-                  (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                      20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.)) -
-      4. * x * (std::pow(y, 4.)) * (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+                  (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                      5. * (std::pow(x, 2.)) + y - 1.)) -
+      4. * x * (std::pow(y, 4.)) *
+          (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) *
-          (40. * (std::pow(x, 5.))-100. * (std::pow(x, 4.)) +
-              80. * (std::pow(x, 3.))-20. * (std::pow(x, 2.)) + 5. * y - 4.) +
+          (40. * (std::pow(x, 5.)) - 100. * (std::pow(x, 4.)) + 80. * (std::pow(x, 3.)) -
+              20. * (std::pow(x, 2.)) + 5. * y - 4.) +
       100. * r0 * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
           (5. * (std::pow(y, 4.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        5.)) /
                           5. -
                       (std::pow(y, 5.)) / 5.) -
               4. * (std::pow(y, 3.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        6.)) /
                           6. -
                       (std::pow(y, 6.)) / 6.)) *
-          (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) +
       100. * r0 * (std::pow(x, 2.)) * (std::pow(y, 8.)) *
-          (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               8.)) *
-          (20. * (std::pow(x, 5.))-50. * (std::pow(x, 4.)) +
-              40. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 2. * y - 2.) +
+          (20. * (std::pow(x, 5.)) - 50. * (std::pow(x, 4.)) + 40. * (std::pow(x, 3.)) -
+              10. * (std::pow(x, 2.)) + 2. * y - 2.) +
       800. * r0 * (std::pow(x, 2.)) * (std::pow(y, 7.)) *
-          (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               8.)) *
-          (std::pow((10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-                        20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.),
+          (std::pow((10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+                        5. * (std::pow(x, 2.)) + y - 1.),
               2.)) +
       r0 * (std::pow(y, 4.)) *
           (5. * (std::pow(y, 4.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        5.)) /
                           5. -
                       (std::pow(y, 5.)) / 5.) -
               4. * (std::pow(y, 3.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        6.)) /
                           6. -
                       (std::pow(y, 6.)) / 6.)) *
-          (200. * (std::pow(x, 3.))-300. * (std::pow(x, 2.)) + 120. * x - 10.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (200. * (std::pow(x, 3.)) - 300. * (std::pow(x, 2.)) + 120. * x - 10.) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) *
-          (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-              20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.) -
+          (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+              5. * (std::pow(x, 2.)) + y - 1.) -
       80. * x * (std::pow(y, 2.)) * ((std::pow(x, 2.)) / 10. + (std::pow(y, 2.)) / 10. + 1. / 10.) *
-          (5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               4.)) *
-          (30. * (std::pow(x, 5.))-75. * (std::pow(x, 4.)) +
-              60. * (std::pow(x, 3.))-15. * (std::pow(x, 2.)) + 5. * y - 3.) -
+          (30. * (std::pow(x, 5.)) - 75. * (std::pow(x, 4.)) + 60. * (std::pow(x, 3.)) -
+              15. * (std::pow(x, 2.)) + 5. * y - 3.) -
       400. * r0 * (std::pow(x, 2.)) * (std::pow(y, 4.)) *
           (5. * (std::pow(y, 4.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        5.)) /
                           5. -
                       (std::pow(y, 5.)) / 5.) -
               4. * (std::pow(y, 3.)) *
-                  ((std::pow(
-                       (25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
-                           5. * (std::pow(x, 2.)) + 1.),
+                  ((std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) -
+                                 20. * (std::pow(x, 3.)) + 5. * (std::pow(x, 2.)) + 1.),
                        6.)) /
                           6. -
                       (std::pow(y, 6.)) / 6.)) *
-          (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               3.)) *
-          (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-              20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.) -
+          (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+              5. * (std::pow(x, 2.)) + y - 1.) -
       100. * r0 * (std::pow(x, 2.)) * (std::pow(y, 7.)) *
-          (std::pow((5. * (std::pow(x, 3.))-10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
-          (std::pow((25. * (std::pow(x, 4.))-10. * (std::pow(x, 5.))-20. * (std::pow(x, 3.)) +
+          (std::pow((5. * (std::pow(x, 3.)) - 10. * (std::pow(x, 2.)) + 6. * x - 1.), 2.)) *
+          (std::pow((25. * (std::pow(x, 4.)) - 10. * (std::pow(x, 5.)) - 20. * (std::pow(x, 3.)) +
                         5. * (std::pow(x, 2.)) + 1.),
               8.)) *
-          (40. * (std::pow(x, 5.))-100. * (std::pow(x, 4.)) +
-              80. * (std::pow(x, 3.))-20. * (std::pow(x, 2.)) + 5. * y - 4.) *
-          (10. * (std::pow(x, 5.))-25. * (std::pow(x, 4.)) +
-              20. * (std::pow(x, 3.))-5. * (std::pow(x, 2.)) + y - 1.);
+          (40. * (std::pow(x, 5.)) - 100. * (std::pow(x, 4.)) + 80. * (std::pow(x, 3.)) -
+              20. * (std::pow(x, 2.)) + 5. * y - 4.) *
+          (10. * (std::pow(x, 5.)) - 25. * (std::pow(x, 4.)) + 20. * (std::pow(x, 3.)) -
+              5. * (std::pow(x, 2.)) + y - 1.);
 
   switch (component)
   {
@@ -2321,17 +2291,17 @@ double FLD::WeaklyCompressibleEtienneFSIFluidFunction::evaluate(
           25. +
       3. * (std::pow(y, 2.)) * ((7. * cos(4. * M_PI * t)) / 6. - 3. / 2.) -
       6. * (std::pow(y, 2.)) * ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.) +
-      ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) / 5. +
-      ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+      ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) / 5. +
+      ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
           (cos(2. * M_PI * x) - 1.)) /
           5. -
-      ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+      ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
           ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) / 20. -
               1.) *
           ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
           (std::pow((cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.))) /
           100. -
-      ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+      ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
           ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
           (std::pow((cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.)) *
           (y +
@@ -2339,7 +2309,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidFunction::evaluate(
                   20. -
               1.)) /
           100. +
-      ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+      ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
           ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) / 20. -
               1.) *
           ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) * (4. * cos(2. * M_PI * x) - 1.) *
@@ -2373,9 +2343,9 @@ double FLD::WeaklyCompressibleEtienneFSIFluidFunction::evaluate(
                         2.)) *
                     ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                     200. +
-                ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
+                ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
                     5. +
-                ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                     (cos(2. * M_PI * x) - 1.)) /
                     5. +
                 ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -2430,9 +2400,9 @@ double FLD::WeaklyCompressibleEtienneFSIFluidFunction::evaluate(
                        2.)) *
                    ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                    200. +
-               ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
+               ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
                    5. +
-               ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+               ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                    (cos(2. * M_PI * x) - 1.)) /
                    5. +
                ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -2469,9 +2439,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidFunction::evaluate(
                           2.)) *
                       ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                       200. +
-                  ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
+                  ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
+                      (std::pow((sin(2. * M_PI * x)), 2.))) /
                       5. +
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                       (cos(2. * M_PI * x) - 1.)) /
                       5. +
                   ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -2502,7 +2473,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidFunction::evaluate(
                                             2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                   2.)) +
                           100.)) +
-          ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+          ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
               sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
               (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) + 10.) *
               (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.) *
@@ -2645,14 +2616,14 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                  5.),
                              2.))) /
                             25. -
-                        14. * M_PI * (std::pow(y, 2.))*cos(2. * M_PI * t) * sin(2. * M_PI * t) +
+                        14. * M_PI * (std::pow(y, 2.)) * cos(2. * M_PI * t) * sin(2. * M_PI * t) +
                         (4. * M_PI * cos(M_PI * x) * sin(2. * M_PI * t) *
                             (std::pow((sin(M_PI * x)), 3.)) *
                             ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 2. - 4.) *
                             (cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                                 5.)) /
                             25.) +
-                (28. * M_PI * (std::pow(y, 3.))*cos(2. * M_PI * t) * sin(2. * M_PI * t)) / 3. -
+                (28. * M_PI * (std::pow(y, 3.)) * cos(2. * M_PI * t) * sin(2. * M_PI * t)) / 3. -
                 (28. * M_PI * cos(2. * M_PI * t) * sin(2. * M_PI * t) *
                     (std::pow(
                         (cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) + 5.),
@@ -2750,7 +2721,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                    (std::pow((cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                        2.))) /
                    100. +
-               ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+               ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                    ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                    (std::pow((cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                        2.))) /
@@ -2765,14 +2736,14 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                            20. -
                        1.)) /
                    100. -
-               ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+               ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                    ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                         (cos(2. * M_PI * x) - 1.)) /
                            20. -
                        1.) *
                    ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) * (4. * cos(2. * M_PI * x) - 1.)) /
                    5. -
-               ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+               ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                    ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                         (cos(2. * M_PI * x) - 1.)) /
                            20. -
@@ -2814,10 +2785,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                    2.)) *
                                ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                200. +
-                           ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                           ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                (std::pow((sin(2. * M_PI * x)), 2.))) /
                                5. +
-                           ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                           ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                5. +
                            ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -2856,10 +2827,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -2892,7 +2863,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                      ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) *
+                      ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) *
                           sin(3. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                           ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                           (2. * cos(2. * M_PI * t) * cos(M_PI * x) *
@@ -2929,8 +2900,8 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. * y + 10.)) /
                       375.) *
               (10. * M_PI * cos(2. * M_PI * t) * sin(2. * M_PI * x) -
-                  6. * (std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(2. * M_PI * x) +
-                  24. * (std::pow(M_PI, 2.))*cos(2. * M_PI * t) * cos(2. * M_PI * x) *
+                  6. * (std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(2. * M_PI * x) +
+                  24. * (std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * cos(2. * M_PI * x) *
                       sin(2. * M_PI * x))) /
               (3. * (v + 1.) *
                   ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -2962,10 +2933,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                    2.)) *
                                ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                200. +
-                           ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                           ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                (std::pow((sin(2. * M_PI * x)), 2.))) /
                                5. +
-                           ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                           ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                5. +
                            ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3004,10 +2975,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3040,7 +3011,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                      ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) *
+                      ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) *
                           sin(3. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                           ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                           (2. * cos(2. * M_PI * t) * cos(M_PI * x) *
@@ -3114,14 +3085,14 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.)) /
                       375. +
-                  ((std::pow(M_PI, 2.))*cos(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) -
                           20. * y + 10.)) /
                       375. +
-                  ((std::pow(M_PI, 2.))*cos(3. * M_PI * x) * sin(M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(3. * M_PI * x) * sin(M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -3158,10 +3129,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                    2.)) *
                                ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                200. +
-                           ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                           ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                (std::pow((sin(2. * M_PI * x)), 2.))) /
                                5. +
-                           ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                           ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                5. +
                            ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3200,10 +3171,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3236,7 +3207,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                      ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) *
+                      ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) *
                           sin(3. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                           ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                           (2. * cos(2. * M_PI * t) * cos(M_PI * x) *
@@ -3303,13 +3274,13 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                20.) *
                            ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                            100. +
-                       (2. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * x) *
+                       (2. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * x) *
                            cos(2. * M_PI * (t + 1. / 4.))) /
                            5. +
-                       (2. * (std::pow(M_PI, 3.))*sin(2. * M_PI * x) *
+                       (2. * (std::pow(M_PI, 3.)) * sin(2. * M_PI * x) *
                            cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                            5. -
-                       (4. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * t) *
+                       (4. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * t) *
                            sin(2. * M_PI * x)) /
                            5. +
                        ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3371,13 +3342,13 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                   20.) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               100. +
-                          (2. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * x) *
+                          (2. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.))) /
                               5. +
-                          (2. * (std::pow(M_PI, 3.))*sin(2. * M_PI * x) *
+                          (2. * (std::pow(M_PI, 3.)) * sin(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. -
-                          (4. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * t) *
+                          (4. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * t) *
                               sin(2. * M_PI * x)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3433,10 +3404,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                   2.)) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               200. +
-                          ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                          ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                               (std::pow((sin(2. * M_PI * x)), 2.))) /
                               5. +
-                          ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                          ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3478,10 +3449,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                   2.)) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               200. +
-                          ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                          ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                               (std::pow((sin(2. * M_PI * x)), 2.))) /
                               5. +
-                          ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                          ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3527,10 +3498,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                   2.)) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               200. +
-                          ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                          ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                               (std::pow((sin(2. * M_PI * x)), 2.))) /
                               5. +
-                          ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                          ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3600,7 +3571,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) -
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * M_PI * cos(2. * M_PI * t) * (std::pow((sin(M_PI * x)), 4.)) -
                           6. * M_PI * cos(2. * M_PI * t) * (std::pow((cos(M_PI * x)), 2.)) *
@@ -3615,7 +3586,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                    2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                          2.)) +
                                  100.)) +
-                  ((std::pow(M_PI, 3.))*cos(2. * M_PI * t) * cos(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 3.)) * cos(2. * M_PI * t) * cos(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -3629,7 +3600,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                    2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                          2.)) +
                                  100.)) +
-                  (3. * (std::pow(M_PI, 3.))*cos(2. * M_PI * t) * cos(3. * M_PI * x) *
+                  (3. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * t) * cos(3. * M_PI * x) *
                       sin(M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                       ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
@@ -3644,7 +3615,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                    2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                          2.)) +
                                  100.)) +
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -3659,7 +3630,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                    2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                          2.)) +
                                  100.)) -
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * M_PI * sin(2. * M_PI * x) -
                           8. * M_PI * cos(2. * M_PI * x) * sin(2. * M_PI * x)) *
@@ -3726,10 +3697,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                  20.),
                                        2.))) /
                                    200. +
-                               ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                               ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                    (std::pow((sin(2. * M_PI * x)), 2.))) /
                                    5. +
-                               ((std::pow(M_PI, 2.))*cos(2. * M_PI * (t + 1. / 4.)) *
+                               ((std::pow(M_PI, 2.)) * cos(2. * M_PI * (t + 1. / 4.)) *
                                    cos(2. * M_PI * x) * (cos(2. * M_PI * x) - 1.)) /
                                    5. +
                                ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3769,10 +3740,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                               20.),
                                           2.))) /
                                       200. +
-                                  ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                                  ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                       (std::pow((sin(2. * M_PI * x)), 2.))) /
                                       5. +
-                                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * (t + 1. / 4.)) *
+                                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * (t + 1. / 4.)) *
                                       cos(2. * M_PI * x) * (cos(2. * M_PI * x) - 1.)) /
                                       5. +
                                   ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3807,7 +3778,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                   2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                               2.)) +
                                       100.)) +
-                          ((std::pow(M_PI, 2.))*sin(2. * M_PI * (t + 1. / 4.)) *
+                          ((std::pow(M_PI, 2.)) * sin(2. * M_PI * (t + 1. / 4.)) *
                               cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                               (2. * cos(2. * M_PI * t) * cos(M_PI * x) *
                                       (std::pow((sin(M_PI * x)), 3.)) +
@@ -3883,10 +3854,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                    2.)) *
                                ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                200. +
-                           ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                           ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                (std::pow((sin(2. * M_PI * x)), 2.))) /
                                5. +
-                           ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                           ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                5. +
                            ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3925,10 +3896,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -3961,7 +3932,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                      ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) *
+                      ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) *
                           sin(3. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                           ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                           (2. * cos(2. * M_PI * t) * cos(M_PI * x) *
@@ -4009,13 +3980,13 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                         20.) *
                     ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                     100. +
-                (2. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * x) *
+                (2. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * x) *
                     cos(2. * M_PI * (t + 1. / 4.))) /
                     5. +
-                (2. * (std::pow(M_PI, 3.))*sin(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                (2. * (std::pow(M_PI, 3.)) * sin(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                     (cos(2. * M_PI * x) - 1.)) /
                     5. -
-                (4. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * t) *
+                (4. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * t) *
                     sin(2. * M_PI * x)) /
                     5. +
                 ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4048,8 +4019,8 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                        100.)) +
            (E * M_PI * cos(2. * M_PI * t) *
                (10. * M_PI * cos(2. * M_PI * t) * sin(2. * M_PI * x) -
-                   6. * (std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(2. * M_PI * x) +
-                   24. * (std::pow(M_PI, 2.))*cos(2. * M_PI * t) * cos(2. * M_PI * x) *
+                   6. * (std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(2. * M_PI * x) +
+                   24. * (std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * cos(2. * M_PI * x) *
                        sin(2. * M_PI * x)) *
                (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.) *
                ((2. * ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 2. - 4.) *
@@ -4071,10 +4042,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                            2.)) *
                        ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                        200. +
-                   ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                   ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                        (std::pow((sin(2. * M_PI * x)), 2.))) /
                        5. +
-                   ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                   ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                        5. +
                    ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4118,10 +4089,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                            2.)) *
                        ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                        200. +
-                   ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                   ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                        (std::pow((sin(2. * M_PI * x)), 2.))) /
                        5. +
-                   ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                   ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                        5. +
                    ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4147,8 +4118,8 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                    2.)) *
                ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                (10. * M_PI * cos(2. * M_PI * t) * sin(2. * M_PI * x) -
-                   6. * (std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(2. * M_PI * x) +
-                   24. * (std::pow(M_PI, 2.))*cos(2. * M_PI * t) * cos(2. * M_PI * x) *
+                   6. * (std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(2. * M_PI * x) +
+                   24. * (std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * cos(2. * M_PI * x) *
                        sin(2. * M_PI * x)) *
                (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.)) /
                (1200. * (v + 1.) *
@@ -4184,10 +4155,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                            2.)) *
                        ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                        200. +
-                   ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                   ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                        (std::pow((sin(2. * M_PI * x)), 2.))) /
                        5. +
-                   ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                   ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                        5. +
                    ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4284,10 +4255,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                2.)) *
                            ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                            200. +
-                       ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                       ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                            (std::pow((sin(2. * M_PI * x)), 2.))) /
                            5. +
-                       ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                       ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                            (cos(2. * M_PI * x) - 1.)) /
                            5. +
                        ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4325,10 +4296,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4360,7 +4331,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -4399,10 +4370,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                             2.)) *
                         ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                         200. +
-                    ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                    ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                         (std::pow((sin(2. * M_PI * x)), 2.))) /
                         5. +
-                    ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                    ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                         (cos(2. * M_PI * x) - 1.)) /
                         5. +
                     ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4465,13 +4436,13 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                20.) *
                            ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                            100. +
-                       (2. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * x) *
+                       (2. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * x) *
                            cos(2. * M_PI * (t + 1. / 4.))) /
                            5. +
-                       (2. * (std::pow(M_PI, 3.))*sin(2. * M_PI * x) *
+                       (2. * (std::pow(M_PI, 3.)) * sin(2. * M_PI * x) *
                            cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                            5. -
-                       (4. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * t) *
+                       (4. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * t) *
                            sin(2. * M_PI * x)) /
                            5. +
                        ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4533,13 +4504,13 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                   20.) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               100. +
-                          (2. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * x) *
+                          (2. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.))) /
                               5. +
-                          (2. * (std::pow(M_PI, 3.))*sin(2. * M_PI * x) *
+                          (2. * (std::pow(M_PI, 3.)) * sin(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. -
-                          (4. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * t) *
+                          (4. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * t) *
                               sin(2. * M_PI * x)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4595,10 +4566,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                   2.)) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               200. +
-                          ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                          ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                               (std::pow((sin(2. * M_PI * x)), 2.))) /
                               5. +
-                          ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                          ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4640,10 +4611,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                   2.)) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               200. +
-                          ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                          ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                               (std::pow((sin(2. * M_PI * x)), 2.))) /
                               5. +
-                          ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                          ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4689,10 +4660,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                   2.)) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               200. +
-                          ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                          ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                               (std::pow((sin(2. * M_PI * x)), 2.))) /
                               5. +
-                          ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                          ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4762,7 +4733,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) -
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * M_PI * cos(2. * M_PI * t) * (std::pow((sin(M_PI * x)), 4.)) -
                           6. * M_PI * cos(2. * M_PI * t) * (std::pow((cos(M_PI * x)), 2.)) *
@@ -4777,7 +4748,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                    2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                          2.)) +
                                  100.)) +
-                  ((std::pow(M_PI, 3.))*cos(2. * M_PI * t) * cos(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 3.)) * cos(2. * M_PI * t) * cos(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -4791,7 +4762,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                    2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                          2.)) +
                                  100.)) +
-                  (3. * (std::pow(M_PI, 3.))*cos(2. * M_PI * t) * cos(3. * M_PI * x) *
+                  (3. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * t) * cos(3. * M_PI * x) *
                       sin(M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                       ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
@@ -4806,7 +4777,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                    2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                          2.)) +
                                  100.)) +
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -4821,7 +4792,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                    2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                          2.)) +
                                  100.)) -
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * M_PI * sin(2. * M_PI * x) -
                           8. * M_PI * cos(2. * M_PI * x) * sin(2. * M_PI * x)) *
@@ -4882,10 +4853,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                              20.),
                                    2.))) /
                                200. +
-                           ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                           ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                (std::pow((sin(2. * M_PI * x)), 2.))) /
                                5. +
-                           ((std::pow(M_PI, 2.))*cos(2. * M_PI * (t + 1. / 4.)) *
+                           ((std::pow(M_PI, 2.)) * cos(2. * M_PI * (t + 1. / 4.)) *
                                cos(2. * M_PI * x) * (cos(2. * M_PI * x) - 1.)) /
                                5. +
                            ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4923,10 +4894,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                 20.),
                                       2.))) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * (t + 1. / 4.)) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * (t + 1. / 4.)) *
                                   cos(2. * M_PI * x) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -4959,7 +4930,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                      ((std::pow(M_PI, 2.))*sin(2. * M_PI * (t + 1. / 4.)) * cos(2. * M_PI * t) *
+                      ((std::pow(M_PI, 2.)) * sin(2. * M_PI * (t + 1. / 4.)) * cos(2. * M_PI * t) *
                           sin(M_PI * x) * sin(3. * M_PI * x) *
                           (2. * cos(2. * M_PI * t) * cos(M_PI * x) *
                                   (std::pow((sin(M_PI * x)), 3.)) +
@@ -5024,10 +4995,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                2.)) *
                            ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                            200. +
-                       ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                       ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                            (std::pow((sin(2. * M_PI * x)), 2.))) /
                            5. +
-                       ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                       ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                            (cos(2. * M_PI * x) - 1.)) /
                            5. +
                        ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5065,10 +5036,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5100,7 +5071,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -5129,7 +5100,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                       3.))) /
                   125. +
               (std::pow(y, 3.)) * ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 3. - 8. / 3.)) *
-          (((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+          (((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                        20. -
                    1.) *
@@ -5137,12 +5108,12 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                (std::pow(
                    (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.))) /
                   100. -
-              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                   (cos(2. * M_PI * x) - 1.)) /
                   5. -
-              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
+              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
                   5. +
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (std::pow(
                       (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.)) *
@@ -5152,7 +5123,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   100. +
-              ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) *
+              ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -5165,7 +5136,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   5.) -
-      r0 * ((14. * (std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * cos(2. * M_PI * (t + 1. / 4.)) *
+      r0 * ((14. * (std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * cos(2. * M_PI * (t + 1. / 4.)) *
                 sin(2. * M_PI * (t + 1. / 4.)) *
                 ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                         20. -
@@ -5177,7 +5148,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                         20. -
                     1.)) /
                    5. -
-               ((std::pow(M_PI, 2.))*y * sin(2. * M_PI * t) *
+               ((std::pow(M_PI, 2.)) * y * sin(2. * M_PI * t) *
                    ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                         (cos(2. * M_PI * x) - 1.)) /
                            20. -
@@ -5190,10 +5161,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                            20. -
                        1.)) /
                    5. -
-               ((std::pow(M_PI, 2.))*sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
+               ((std::pow(M_PI, 2.)) * sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                    (cos(2. * M_PI * x) - 1.)) /
                    5. +
-               ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+               ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                    cos(2. * M_PI * (t + 1. / 4.)) *
                    ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                         (cos(2. * M_PI * x) - 1.)) /
@@ -5202,7 +5173,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                    ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) * (cos(2. * M_PI * x) - 1.) *
                    (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.)) /
                    100. +
-               ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+               ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                    cos(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                    (cos(2. * M_PI * x) - 1.) *
                    (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.) *
@@ -5214,8 +5185,8 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                    100.) +
       (5. * E *
           (10. * M_PI * cos(2. * M_PI * t) * sin(2. * M_PI * x) -
-              6. * (std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(2. * M_PI * x) +
-              24. * (std::pow(M_PI, 2.))*cos(2. * M_PI * t) * cos(2. * M_PI * x) *
+              6. * (std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(2. * M_PI * x) +
+              24. * (std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * cos(2. * M_PI * x) *
                   sin(2. * M_PI * x)) *
           ((2. * ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 2. - 4.) *
                (std::pow(
@@ -5225,12 +5196,12 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
               6. * (std::pow(y, 2.)) * ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 2. - 4.) +
               3. * (std::pow(y, 2.)) *
                   ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 3. - 8. / 3.) +
-              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
+              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
                   5. +
-              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                   (cos(2. * M_PI * x) - 1.)) /
                   5. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -5239,7 +5210,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                   (std::pow(
                       (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.))) /
                   100. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (std::pow(
                       (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.)) *
@@ -5249,7 +5220,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   100. +
-              ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -5290,10 +5261,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                2.)) *
                            ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                            200. +
-                       ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                       ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                            (std::pow((sin(2. * M_PI * x)), 2.))) /
                            5. +
-                       ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                       ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                            (cos(2. * M_PI * x) - 1.)) /
                            5. +
                        ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5331,10 +5302,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5366,7 +5337,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -5390,16 +5361,16 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                        (std::pow((sin(M_PI * x)), 2.))) *
                (cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) + 5.)) /
                   25. +
-              (2. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * x) *
+              (2. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * x) *
                   cos(2. * M_PI * (t + 1. / 4.))) /
                   5. +
-              (2. * (std::pow(M_PI, 3.))*sin(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+              (2. * (std::pow(M_PI, 3.)) * sin(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                   (cos(2. * M_PI * x) - 1.)) /
                   5. -
-              (4. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * t) *
+              (4. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * t) *
                   sin(2. * M_PI * x)) /
                   5. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((M_PI * (std::pow((sin(2. * M_PI * x)), 2.)) * sin(2. * M_PI * (t + 1. / 4.))) /
                           10. -
                       (M_PI * cos(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
@@ -5409,7 +5380,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                   (std::pow(
                       (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.))) /
                   50. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (2. * M_PI * sin(2. * M_PI * x) -
                       8. * M_PI * cos(2. * M_PI * x) * sin(2. * M_PI * x)) *
@@ -5420,7 +5391,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   50. +
-              (8. * (std::pow(M_PI, 3.))*y * cos(2. * M_PI * t) *
+              (8. * (std::pow(M_PI, 3.)) * y * cos(2. * M_PI * t) *
                   (std::pow((sin(2. * M_PI * x)), 2.)) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
@@ -5433,7 +5404,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   5. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -5443,7 +5414,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                       8. * M_PI * cos(2. * M_PI * x) * sin(2. * M_PI * x)) *
                   (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.)) /
                   50. +
-              ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                   ((M_PI * (std::pow((sin(2. * M_PI * x)), 2.)) * sin(2. * M_PI * (t + 1. / 4.))) /
                           10. -
                       (M_PI * cos(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
@@ -5456,7 +5427,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   5. -
-              (2. * (std::pow(M_PI, 3.))*y * cos(2. * M_PI * t) * cos(2. * M_PI * x) *
+              (2. * (std::pow(M_PI, 3.)) * y * cos(2. * M_PI * t) * cos(2. * M_PI * x) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -5468,7 +5439,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   5. +
-              ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                   ((M_PI * (std::pow((sin(2. * M_PI * x)), 2.)) * sin(2. * M_PI * (t + 1. / 4.))) /
                           10. -
                       (M_PI * cos(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
@@ -5509,10 +5480,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                2.)) *
                            ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                            200. +
-                       ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                       ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                            (std::pow((sin(2. * M_PI * x)), 2.))) /
                            5. +
-                       ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                       ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                            (cos(2. * M_PI * x) - 1.)) /
                            5. +
                        ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5550,10 +5521,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5585,7 +5556,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -5611,12 +5582,12 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
               6. * (std::pow(y, 2.)) * ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 2. - 4.) +
               3. * (std::pow(y, 2.)) *
                   ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 3. - 8. / 3.) +
-              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
+              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
                   5. +
-              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                   (cos(2. * M_PI * x) - 1.)) /
                   5. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -5625,7 +5596,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                   (std::pow(
                       (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.))) /
                   100. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (std::pow(
                       (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.)) *
@@ -5635,7 +5606,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   100. +
-              ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -5674,13 +5645,13 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                            20.) *
                        ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                        100. +
-                   (2. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * x) *
+                   (2. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * x) *
                        cos(2. * M_PI * (t + 1. / 4.))) /
                        5. +
-                   (2. * (std::pow(M_PI, 3.))*sin(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
-                       (cos(2. * M_PI * x) - 1.)) /
+                   (2. * (std::pow(M_PI, 3.)) * sin(2. * M_PI * x) *
+                       cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                        5. -
-                   (4. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * t) *
+                   (4. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * t) *
                        sin(2. * M_PI * x)) /
                        5. +
                    ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5741,13 +5712,13 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                               20.) *
                           ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                           100. +
-                      (2. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * x) *
+                      (2. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * x) *
                           cos(2. * M_PI * (t + 1. / 4.))) /
                           5. +
-                      (2. * (std::pow(M_PI, 3.))*sin(2. * M_PI * x) *
+                      (2. * (std::pow(M_PI, 3.)) * sin(2. * M_PI * x) *
                           cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                           5. -
-                      (4. * (std::pow(M_PI, 3.))*cos(2. * M_PI * x) * sin(2. * M_PI * t) *
+                      (4. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * x) * sin(2. * M_PI * t) *
                           sin(2. * M_PI * x)) /
                           5. +
                       ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5802,10 +5773,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                               2.)) *
                           ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                           200. +
-                      ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                      ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                           (std::pow((sin(2. * M_PI * x)), 2.))) /
                           5. +
-                      ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                      ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                           (cos(2. * M_PI * x) - 1.)) /
                           5. +
                       ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5847,10 +5818,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                               2.)) *
                           ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                           200. +
-                      ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                      ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                           (std::pow((sin(2. * M_PI * x)), 2.))) /
                           5. +
-                      ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                      ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                           (cos(2. * M_PI * x) - 1.)) /
                           5. +
                       ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5894,10 +5865,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                               2.)) *
                           ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                           200. +
-                      ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                      ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                           (std::pow((sin(2. * M_PI * x)), 2.))) /
                           5. +
-                      ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                      ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                           (cos(2. * M_PI * x) - 1.)) /
                           5. +
                       ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -5962,7 +5933,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                       2.)) +
                               100.)) -
-              ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                   sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (2. * M_PI * cos(2. * M_PI * t) * (std::pow((sin(M_PI * x)), 4.)) -
                       6. * M_PI * cos(2. * M_PI * t) * (std::pow((cos(M_PI * x)), 2.)) *
@@ -5976,7 +5947,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                      2.)) +
                              100.)) +
-              ((std::pow(M_PI, 3.))*cos(2. * M_PI * t) * cos(M_PI * x) * sin(3. * M_PI * x) *
+              ((std::pow(M_PI, 3.)) * cos(2. * M_PI * t) * cos(M_PI * x) * sin(3. * M_PI * x) *
                   sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                       10.) *
@@ -5989,7 +5960,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                      2.)) +
                              100.)) +
-              (3. * (std::pow(M_PI, 3.))*cos(2. * M_PI * t) * cos(3. * M_PI * x) * sin(M_PI * x) *
+              (3. * (std::pow(M_PI, 3.)) * cos(2. * M_PI * t) * cos(3. * M_PI * x) * sin(M_PI * x) *
                   sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                       10.) *
@@ -6002,7 +5973,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                      2.)) +
                              100.)) +
-              ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                   sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                       10.) *
@@ -6017,7 +5988,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                      2.)) +
                              100.)) -
-              ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                   sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (2. * M_PI * sin(2. * M_PI * x) -
                       8. * M_PI * cos(2. * M_PI * x) * sin(2. * M_PI * x)) *
@@ -6080,10 +6051,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                              20.),
                                    2.))) /
                                200. +
-                           ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                           ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                (std::pow((sin(2. * M_PI * x)), 2.))) /
                                5. +
-                           ((std::pow(M_PI, 2.))*cos(2. * M_PI * (t + 1. / 4.)) *
+                           ((std::pow(M_PI, 2.)) * cos(2. * M_PI * (t + 1. / 4.)) *
                                cos(2. * M_PI * x) * (cos(2. * M_PI * x) - 1.)) /
                                5. +
                            ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -6121,10 +6092,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                 20.),
                                       2.))) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * (t + 1. / 4.)) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * (t + 1. / 4.)) *
                                   cos(2. * M_PI * x) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -6157,7 +6128,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                      ((std::pow(M_PI, 2.))*sin(2. * M_PI * (t + 1. / 4.)) * cos(2. * M_PI * t) *
+                      ((std::pow(M_PI, 2.)) * sin(2. * M_PI * (t + 1. / 4.)) * cos(2. * M_PI * t) *
                           sin(M_PI * x) * sin(3. * M_PI * x) *
                           (2. * cos(2. * M_PI * t) * cos(M_PI * x) *
                                   (std::pow((sin(M_PI * x)), 3.)) +
@@ -6233,12 +6204,12 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
               6. * (std::pow(y, 2.)) * ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 2. - 4.) +
               3. * (std::pow(y, 2.)) *
                   ((7. * (std::pow((cos(2. * M_PI * t)), 2.))) / 3. - 8. / 3.) +
-              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
+              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) * (std::pow((sin(2. * M_PI * x)), 2.))) /
                   5. +
-              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                   (cos(2. * M_PI * x) - 1.)) /
                   5. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -6247,7 +6218,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                   (std::pow(
                       (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.))) /
                   100. -
-              ((std::pow(M_PI, 2.))*y * (std::pow((cos(2. * M_PI * t)), 2.)) *
+              ((std::pow(M_PI, 2.)) * y * (std::pow((cos(2. * M_PI * t)), 2.)) *
                   ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (std::pow(
                       (cos(2. * M_PI * x) - 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.), 2.)) *
@@ -6257,7 +6228,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                           20. -
                       1.)) /
                   100. +
-              ((std::pow(M_PI, 2.))*y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * y * cos(2. * M_PI * t) * sin(2. * M_PI * x) *
                   ((sin(2. * M_PI * x) * sin(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                           20. -
@@ -6299,10 +6270,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                2.)) *
                            ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                            200. +
-                       ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                       ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                            (std::pow((sin(2. * M_PI * x)), 2.))) /
                            5. +
-                       ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                       ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                            (cos(2. * M_PI * x) - 1.)) /
                            5. +
                        ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -6340,10 +6311,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                       2.)) *
                                   ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                                   200. +
-                              ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                              ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                                   (std::pow((sin(2. * M_PI * x)), 2.))) /
                                   5. +
-                              ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                                   cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                                   5. +
                               ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -6375,7 +6346,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidForceFunction::evaluate(
                                                     2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                           2.)) +
                                   100.)) +
-                  ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+                  ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                       sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                       (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                           10.) *
@@ -6503,10 +6474,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidViscosityFunction::evaluate(
                            2.)) *
                        ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                        200. +
-                   ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                   ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                        (std::pow((sin(2. * M_PI * x)), 2.))) /
                        5. +
-                   ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
+                   ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) * cos(2. * M_PI * (t + 1. / 4.)) *
                        (cos(2. * M_PI * x) - 1.)) /
                        5. +
                    ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -6544,10 +6515,10 @@ double FLD::WeaklyCompressibleEtienneFSIFluidViscosityFunction::evaluate(
                                   2.)) *
                               ((7. * cos(4. * M_PI * t)) / 4. - 9. / 4.)) /
                               200. +
-                          ((std::pow(M_PI, 2.))*sin(2. * M_PI * t) *
+                          ((std::pow(M_PI, 2.)) * sin(2. * M_PI * t) *
                               (std::pow((sin(2. * M_PI * x)), 2.))) /
                               5. +
-                          ((std::pow(M_PI, 2.))*cos(2. * M_PI * x) *
+                          ((std::pow(M_PI, 2.)) * cos(2. * M_PI * x) *
                               cos(2. * M_PI * (t + 1. / 4.)) * (cos(2. * M_PI * x) - 1.)) /
                               5. +
                           ((std::pow(M_PI, 2.)) * (std::pow((cos(2. * M_PI * t)), 2.)) *
@@ -6578,7 +6549,7 @@ double FLD::WeaklyCompressibleEtienneFSIFluidViscosityFunction::evaluate(
                                                 2. * (std::pow((cos(2. * M_PI * x)), 2.)) + 1.),
                                       2.)) +
                               100.)) +
-              ((std::pow(M_PI, 2.))*cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
+              ((std::pow(M_PI, 2.)) * cos(2. * M_PI * t) * sin(M_PI * x) * sin(3. * M_PI * x) *
                   sin(2. * M_PI * (t + 1. / 4.)) * ((7. * cos(4. * M_PI * t)) / 2. - 9. / 2.) *
                   (2. * cos(2. * M_PI * t) * cos(M_PI * x) * (std::pow((sin(M_PI * x)), 3.)) +
                       10.) *

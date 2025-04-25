@@ -57,7 +57,7 @@ PHYSICAL_MODEL                  no_model
 X_WALL                          Yes
 Tauw_Type                       between_steps
 Tauw_Calc_Type                  gradient
-Projection                      onlyl2projection
+Projection                      only_l2_projection
 Blending_Type                   ramp_function
 GP_Wall_Normal                  12
 GP_Wall_Normal_Off_Wall         12

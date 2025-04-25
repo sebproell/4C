@@ -4404,7 +4404,7 @@ namespace Discret
       my::xjm_.multiply_nt(my::deriv_, my::xyze_);
       my::det_ = my::xji_.invert(my::xjm_);
 
-      // compute global first derivates
+      // compute global first derivatives
       my::derxy_.multiply(my::xji_, my::deriv_);
 
       return;

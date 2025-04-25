@@ -457,7 +457,7 @@ void Discret::Elements::Beam3eb::set_up_reference_geometry(
     std::fill(bending_moment_gp_.begin(), bending_moment_gp_.end(), 0.0);
 
 
-    // create Matrix for the derivates of the shapefunctions at the GP
+    // create Matrix for the derivatives of the shapefunctions at the GP
     Core::LinAlg::Matrix<1, nnode> shapefuncderiv;
 
     // Loop through all GPs and compute jacobi at the GPs

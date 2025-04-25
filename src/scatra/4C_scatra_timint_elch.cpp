@@ -497,7 +497,7 @@ double ScaTra::ScaTraTimIntElch::extrapolate_state_adapt_time_step(double dt)
   // If so, adapt time step
   switch (cccv_condition_->get_cccv_half_cycle_phase())
   {
-    case Inpar::ElCh::CCCVHalfCyclePhase::initital_relaxation:
+    case Inpar::ElCh::CCCVHalfCyclePhase::initial_relaxation:
     {
       const double time_new = time_ + 2 * dt;                     // extrapolate
       if (time_new >= cccv_condition_->get_initial_relax_time())  // check
@@ -3320,7 +3320,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_cccv_phase()
 
     // which mode was last converged step? Is this phase over? Is the current half cycle over?
     if (cccv_condition_->get_cccv_half_cycle_phase() ==
-        Inpar::ElCh::CCCVHalfCyclePhase::initital_relaxation)
+        Inpar::ElCh::CCCVHalfCyclePhase::initial_relaxation)
     {
       // or-case is required to be independent of the time step size
       if (cccv_condition_->is_initial_relaxation(time_, dt()) or (time_ == 0.0))

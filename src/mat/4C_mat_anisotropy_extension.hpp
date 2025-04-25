@@ -124,7 +124,7 @@ namespace Mat
      *
      * @param gp (in) : Id of the integration point (use #GPDEFAULT for Element fibers)
      * @param i (in) : Id of the fiber
-     * @return Martix of the structural tensor in stress-like Voigt notation
+     * @return Matrix of the structural tensor in stress-like Voigt notation
      */
     const Core::LinAlg::Matrix<6, 1>& get_structural_tensor_stress(int gp, int i) const override;
 

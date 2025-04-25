@@ -846,7 +846,7 @@ namespace Cut
       eval_derivs_in_parameter_space<probdim, elementtype>(
           xyze, rst, deriv1, metrictensor, xjm, &xij, &normalvec1, &normalvec2, true);
 
-      // compute global first derivates
+      // compute global first derivatives
       derxy.multiply(xij, deriv1);
       //----------------------------------
 

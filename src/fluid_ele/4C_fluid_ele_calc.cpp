@@ -1710,7 +1710,7 @@ void Discret::Elements::FluidEleCalc<distype, enrtype>::eval_shape_func_and_deri
   // compute integration factor
   fac_ = gpweight * det_;
 
-  // compute global first derivates
+  // compute global first derivatives
   derxy_.multiply(xji_, deriv_);
 
   //--------------------------------------------------------------

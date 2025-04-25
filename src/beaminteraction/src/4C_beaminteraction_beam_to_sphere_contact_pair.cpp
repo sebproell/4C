@@ -378,7 +378,7 @@ void BeamInteraction::BeamToSphereContactPair<numnodes, numnodalvalues>::closest
     evaluate_lin_orthogonality_condition(df, delta_x, norm_delta_x, dx1, ddx1);
 
     // singular df
-    if (abs(df) < COLINEARTOL)
+    if (abs(df) < COLLINEARTOL)
     {
       FOUR_C_THROW("No solution for Closest Point Projection!");
     }

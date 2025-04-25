@@ -132,7 +132,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left*right
+        scalar to multiply with \e left*right
       \param left
         pointer to the first factor, size (\c i)x(\c j)
       \param right
@@ -152,7 +152,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left*right
+        scalar to multiply with \e left*right
       \param left
         pointer to the first factor, size (\c i)x(\c j)
       \param right
@@ -172,7 +172,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left*right^T
+        scalar to multiply with \e left*right^T
       \param left
         pointer to the first factor, size (\c i)x(\c j)
       \param right
@@ -193,7 +193,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left^T*right
+        scalar to multiply with \e left^T*right
       \param left
         pointer to the first factor, size (\c j)x(\c i) so that \e
         left^T has size (\c i)x(\c j)
@@ -214,7 +214,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left^T*right^T
+        scalar to multiply with \e left^T*right^T
       \param left
         pointer to the first factor, size (\c j)x(\c i) so that \e
         left^T has size (\c i)x(\c j)
@@ -238,7 +238,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left*right
+        scalar to multiply with \e left*right
       \param left
         pointer to the first factor, size (\c i)x(\c j)
       \param right
@@ -261,7 +261,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left*right
+        scalar to multiply with \e left*right
       \param left
         pointer to the first factor, size (\c i)x(\c j)
       \param right
@@ -284,7 +284,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left*right^T
+        scalar to multiply with \e left*right^T
       \param left
         pointer to the first factor, size (\c i)x(\c j)
       \param right
@@ -308,7 +308,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left^T*right
+        scalar to multiply with \e left^T*right
       \param left
         pointer to the first factor, size (\c j)x(\c i) so that \e
         left^T has size (\c i)x(\c j)
@@ -332,7 +332,7 @@ namespace Core::LinAlg
       \param out
         pointer to the memory the result should be stored in, size (\c i)x(\c k)
       \param infac
-        scalar to muliply with \e left^T*right^T
+        scalar to multiply with \e left^T*right^T
       \param left
         pointer to the first factor, size (\c j)x(\c i) so that \e
         left^T has size (\c i)x(\c j)

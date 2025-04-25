@@ -76,11 +76,11 @@ namespace Inpar
 
     enum class CCCVHalfCyclePhase
     {
-      undefined,           //!< undefined mode
-      constant_current,    //!< constant-current (CC) mode
-      constant_voltage,    //!< constant-voltage (CV) mode
-      relaxation,          //!< relaxation (RX) mode
-      initital_relaxation  //!< initial relaxation mode
+      undefined,          //!< undefined mode
+      constant_current,   //!< constant-current (CC) mode
+      constant_voltage,   //!< constant-voltage (CV) mode
+      relaxation,         //!< relaxation (RX) mode
+      initial_relaxation  //!< initial relaxation mode
     };
 
     // permittivitaet (not a general definition, but only once used)

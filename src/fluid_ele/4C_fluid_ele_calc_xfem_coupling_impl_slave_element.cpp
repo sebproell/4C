@@ -368,7 +368,7 @@ namespace Discret
         slave_xjm.multiply_nt(slave_deriv_, slave_xyze_);
         slave_xji.invert(slave_xjm);
 
-        // compute global first derivates
+        // compute global first derivatives
         slave_derxy_.multiply(slave_xji, slave_deriv_);
 
         // get velocity derivatives at integration point

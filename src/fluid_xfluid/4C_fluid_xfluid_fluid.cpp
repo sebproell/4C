@@ -459,7 +459,7 @@ void FLD::XFluidFluid::prepare_shape_derivatives(
 {
   if (!active_shapederivatives_) return;
 
-  // here we initialize the shapederivates
+  // here we initialize the shapederivatives
   // REMARK: the shape derivatives matrix results from linearization w.r.t. ALE-displacements
   // and therefore solely knows ALE-dof - here we use "extended shapederivatives" including
   // background fluid entries, that are set to zero
