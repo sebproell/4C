@@ -23,20 +23,6 @@ namespace Core::Conditions
   class ConditionDefinition;
 }
 
-
-/*!----------------------------------------------------------------------
-\brief enum of reduced dimensional airways dynamic types
-This is the enumeration of all types of different integration schemes
-
-*-----------------------------------------------------------------------*/
-enum RedAirwaysDyntype
-{
-  one_step_theta,
-  linear,
-  nonlinear
-};
-
-
 namespace Inpar
 {
   namespace ArtDyn
@@ -109,14 +95,6 @@ namespace Inpar
     void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
   }  // namespace BioFilm
 
-  namespace ReducedLung
-  {
-    /// set the reduced airways parameters
-    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
-
-    /// set specific reduced airways conditions
-    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
-  }  // namespace ReducedLung
 }  // namespace Inpar
 
 /*----------------------------------------------------------------------*/

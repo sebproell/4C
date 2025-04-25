@@ -12,6 +12,7 @@
 #include "4C_io_control.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_red_airways_implicitintegration.hpp"
+#include "4C_red_airways_input.hpp"
 #include "4C_red_airways_resulttest.hpp"
 #include "4C_red_airways_tissue.hpp"
 #include "4C_utils_result_test.hpp"
@@ -98,7 +99,7 @@ std::shared_ptr<Airway::RedAirwayImplicitTimeInt> dyn_red_airways_drt(bool Coupl
   airwaystimeparams.set("write solution every", rawdyn.get<int>("RESULTSEVERY"));
 
   // Solver type
-  airwaystimeparams.set("solver type", rawdyn.get<RedAirwaysDyntype>("SOLVERTYPE"));
+  airwaystimeparams.set("solver type", rawdyn.get<Airway::RedAirwaysSolvertype>("SOLVERTYPE"));
   // Tolerance
   airwaystimeparams.set("tolerance", rawdyn.get<double>("TOLERANCE"));
   // Maximum number of iterations

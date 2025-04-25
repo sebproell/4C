@@ -63,6 +63,7 @@
 #include "4C_porofluid_pressure_based_elast_input.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 #include "4C_porofluid_pressure_based_input.hpp"
+#include "4C_red_airways_input.hpp"
 #include "4C_thermo_input.hpp"
 #include "4C_tsi_input.hpp"
 
@@ -226,7 +227,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::ArtDyn::set_valid_parameters(specs);
   Inpar::ArteryNetwork::set_valid_parameters(specs);
   Inpar::BioFilm::set_valid_parameters(specs);
-  Inpar::ReducedLung::set_valid_parameters(specs);
+  Airway::set_valid_parameters(specs);
   Inpar::Cardiovascular0D::set_valid_parameters(specs);
   Inpar::FPSI::set_valid_parameters(specs);
   FBI::set_valid_parameters(specs);
