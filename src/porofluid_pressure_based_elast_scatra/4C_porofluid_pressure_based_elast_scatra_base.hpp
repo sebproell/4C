@@ -12,7 +12,7 @@
 
 #include "4C_adapter_algorithmbase.hpp"
 #include "4C_linalg_vector.hpp"
-#include "4C_porofluid_pressure_based_elast_adapter.hpp"
+#include "4C_porofluid_pressure_based_elast.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
@@ -104,20 +104,20 @@ namespace PoroPressureBased
     void apply_additional_dbc_for_vol_frac_species();
 
     //! access to poro field
-    const std::shared_ptr<PoroPressureBased::PoroMultiPhase>& poro_field() { return poromulti_; }
+    const std::shared_ptr<PorofluidElast>& poro_field() { return poromulti_; }
 
     //! access to fluid field
     const std::shared_ptr<Adapter::ScaTraBaseAlgorithm>& scatra_algo() { return scatra_; }
 
     //! dof map of vector of unknowns of scatra field
-    virtual std::shared_ptr<const Core::LinAlg::Map> scatra_dof_row_map() const;
+    std::shared_ptr<const Core::LinAlg::Map> scatra_dof_row_map() const;
 
     //! handle divergence of solver
     void handle_divergence() const;
 
    private:
     //! underlying poroelast multi phase
-    std::shared_ptr<PoroPressureBased::PoroMultiPhase> poromulti_;
+    std::shared_ptr<PorofluidElast> poromulti_;
 
     //! underlying scatra problem
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_;

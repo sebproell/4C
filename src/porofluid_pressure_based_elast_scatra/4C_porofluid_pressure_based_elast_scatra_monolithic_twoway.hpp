@@ -138,7 +138,7 @@ namespace PoroPressureBased
     virtual void setup_system_matrix();
 
     //! print header
-    void print_header();
+    void print_header() override;
 
     //! solve linear system of equations
     void linear_solve();

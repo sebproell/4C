@@ -9,7 +9,6 @@
 
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_porofluid_pressure_based_elast_adapter.hpp"
 #include "4C_porofluid_pressure_based_elast_input.hpp"
 #include "4C_porofluid_pressure_based_elast_utils.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
@@ -22,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | Main control routine                                      vuong 08/16 |
  *----------------------------------------------------------------------*/
-void poromultiphase_dyn(int restart)
+void porofluid_elast_dyn(int restart)
 {
   // define the discretization names
   const std::string struct_disname = "structure";
@@ -66,7 +65,7 @@ void poromultiphase_dyn(int restart)
   auto solscheme = Teuchos::getIntegralValue<PoroPressureBased::SolutionSchemePorofluidElast>(
       poroparams, "COUPALGO");
 
-  std::shared_ptr<PoroPressureBased::PoroMultiPhase> algo =
+  std::shared_ptr<PoroPressureBased::PorofluidElast> algo =
       PoroPressureBased::create_algorithm_porofluid_elast(solscheme, poroparams, comm);
 
   // initialize
@@ -107,9 +106,6 @@ void poromultiphase_dyn(int restart)
   // perform the result test if required
   algo->create_field_test();
   problem->test_all(comm);
-
-  return;
-
 }  // poromultiphase_dyn
 
 FOUR_C_NAMESPACE_CLOSE

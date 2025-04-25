@@ -17,7 +17,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-// forward declaration
 namespace Core::Conditions
 {
   class ConditionDefinition;

@@ -90,7 +90,7 @@ namespace Adapter
     //@}
 
     /// print time step header
-    void print_header();
+    virtual void print_header();
 
     /// return printscreen_
     int print_screen_every() { return printscreen_; }
