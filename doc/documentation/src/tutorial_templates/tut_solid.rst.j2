@@ -1,13 +1,15 @@
+{% set solid_tutorial_file = "tutorial_solid.4C.yaml" %}
+{% set inputfile_content = load_input_file(solid_tutorial_file) %}
 .. _3dsolidtutorial:
 
-3D Solid Tutorial with Coreform Cubit\ |reg|\  and *pre_exodus*
-=================================================================
+3D Solid Tutorial with Coreform Cubit\ |reg|\
+==============================================
 
 Introduction
 ----------------
 
 This tutorial gives an introduction to the usage of |FOURC| for simulating plastic material behaviour.
-It is assumed that |FOURC| including the pre-processing tool `pre_exodus` has been built on your machine according to the instructions and has passed the tests without error messages.
+It is assumed that |FOURC| has been built on your machine according to the instructions and has passed the tests without error messages.
 In addition, the pre-processing of the finite element model is built with Coreform Cubit, but the input file can also be generated without this software.
 
 The analyzed structure is a simple round tensile bar,
@@ -98,75 +100,77 @@ The geometry dimensions (actually mainly the radius, all other dimensions depend
 The general definition of the geometry in this cubit journal file, which can be run from the directory ``<source-root>/tests/framework-test/`` includes the complete mesh and four surface node sets.
 If you don't have Coreform Cubit, you may use the resulting exodus file directly, which is also located in this directory.
 
-The boundary conditions and loading, the material and all solver details are defined in two other files:
-A so-called boundary condition file ``tutorial_solid.bc`` and a header file ``tutorial_solid.head``.
-These three files together can be combined to a |FOURC| input file using the command
+After the file containing the geometry, which is binary, has been created, another input file is needed, which contains
 
-::
+- simulation parameters,
+- boundary conditions, and
+- further information on the geometry, e.g., the material assignment for the elements.
 
-    <build-dir>/pre-exodus --exo=tutorial_solid.e --bc=tutorial_solid.bc --head=tutorial_solid.head
+This file should be written in yaml format, here it is called ``tutorial_solid.4C.yaml``.
+First of all, it contains the problem type, which is a 3D solid mechanics problem here:
 
-Note that you need to build the ``pre_exodus`` command before.
-You'll find the build information for ``pre_exodus`` in the :ref:`setup section <custom_target_specifiers>` or in the :ref:`workflow/preprocessing section <preprocessing>`.
+{{ section_dump(inputfile_content, ["PROBLEM TYPE", "PROBLEM SIZE"]) }}
 
-The boundary condition file ``tutorial_solid.bc`` contains the element information and boundary conditions.
+Then we need the information about the geometry to be read in; this is done here:
+
+{{ section_dump(inputfile_content, "STRUCTURE GEOMETRY") }}
+
 The element type is a quadratic (27 node) 3D solid element(Solid HEX27) with nonlinear kinematics, that is, including a large strain formulation.
-The boundary conditions include three symmetry conditions (based on the surfaces defined in Cubit) and one loading condition.
+Since the block number and material number can be different, the material, kinematics (small or large deformation) and other 4C-specific data are to be entered after the keyword ``ELEMENT_DATA``.
+
+The conditions section defines all conditions that are applied to the structure.
+In the current structure, three symmetry conditions (based on the surfaces defined in Cubit) and one loading condition have to be defined.
+They are thus Dirichlet type conditions.
 Note that only surface conditions are given; the lines that belong to two surfaces automatically get the combined boundary conditions.
 The loading condition has a function number (1) included for the y-direction, and also gets a tag: ``TAG monitor_reaction``.
-The tag is for an extra output of the total forces, which are printed in a csv file, if the output is requested.
+The function is defined below the condition with the identifier (``FUNCT1``), to which the Dirichlet boundary condition refers.
+The tag is for an extra output of the total forces, which are printed in a csv file, if the output is requested in the header file, see below.
 
-.. literalinclude:: /tutorial_solid.bc
-   :linenos:
+{{ section_dump(inputfile_content, ["DESIGN SURF DIRICH CONDITIONS", "FUNCT1"]) }}
 
-
-
-
-All control parameters for the material, solvers, loading function, output information are contained in ``tutorial_solid.head``.
-Particularly, the output of the forces is requested by a particular section, ``IO/MONITOR STRUCTURE DBC``, which controls accuracy and frequency of the output.
+After the boundary conditions, additional parameters are defined for the material, solvers, and output information.
+Particularly, the output of the forces is requested by a particular section, ``IO/MONITOR STRUCTURE DBC``,
+which controls accuracy and frequency of the output.
 This and all other output information is given in section ``IO`` and its subsections.
 
-.. literalinclude::  /tutorial_solid.head
-   :lines: 17-29
-   :lineno-start: 17
+{{ section_dump(inputfile_content, ["IO", "IO/RUNTIME VTK OUTPUT", "IO/RUNTIME VTK OUTPUT/STRUCTURE", "IO/MONITOR STRUCTURE DBC"]) }}
 
-You'll find two solver sections in there. In the original header file, which are selected in the section ``STRUCTURAL DYNAMIC`` by the parameter ``LINEAR_SOLVER``.
+You'll find two solver sections in this file as well, which are selected in the section ``STRUCTURAL DYNAMIC``
+by the parameter ``LINEAR_SOLVER``.
 The value of this parameter refers to the section ``SOLVER x``, in which ``x`` is the number of the selected solver.
 In the section ``SOLVER 1``, the direct solver is defined, it does not have any parameters (except an optional name).
 The iterative solver in section ``SOLVER 2`` has some parameters, namely an xml file, which contains more parameters.
 The given xml file as well as some other examples for different multiphysics problems are given in the folder ``<source-root>/tests/input-files/xml/*/*.xml``.
 
-.. literalinclude::  /tutorial_solid.head
-   :lines: 30-63
-   :lineno-start: 30
+{{ section_dump(inputfile_content, ["STRUCTURAL DYNAMIC", "SOLVER 1", "SOLVER 2"]) }}
 
-If you choose ``LINEAR_SOLVER  2``, you'll get the iterative solver.
-Note that you have to copy the xml file to your folder before executing ``pre_exodus`` with the iterative solver setting.
+If you choose ``LINEAR_SOLVER: 2``, you'll get the iterative solver.
+Note that you have to copy the xml file to your folder before executing |FOURC| with the iterative solver setting.
 
 The ``STRUCTURAL DYNAMIC`` section also defines the time integration, particularly the time stepping.
 Time step size is given by ``TIMESTEP``, the maximum time is given by ``MAXTIME`` and the maximum number of increments is ``NUMSTEP``.
 The end of the simulation is defined either when the maximum time or when the number of increments is reached, whatever comes earlier.
 Note that the number of time steps is currently set to 10, in order to keep the simulation time short for the CI/CD tests.
-If you want to run the whole simulation including necking of the specimen, you have to change the parameter to at least ``NUMSTEP 200``.
+If you want to run the whole simulation including necking of the specimen, you have to change the parameter to at least ``NUMSTEP: 200``.
 
-Besides output and solver details, the material and any functions are defined in the header.
-For the material, we choose a large strain plasticity model, which is named ``MAT_Struct_PlasticNlnLogNeoHooke`` with parameters, which might represent a high strength Aluminum.
-Last but not least, a function is defined in this file, to which the Dirichlet boundary condition refers.
+Besides output and solver details, the materials are defined in the input file.
+For the single material used here, we choose a large strain plasticity model, which is named ``MAT_Struct_PlasticNlnLogNeoHooke`` with parameters, which might represent a high strength Aluminum.
 
-.. literalinclude::  /tutorial_solid.head
-   :lines: 64-68
-   :lineno-start: 64
+{{ section_dump(inputfile_content, ["MATERIALS"]) }}
 
+Last but not least, a section called ``RESULT DESCRIPTION`` is given in the input file, which is only used for the deployment tests.
+Some particular values are checked in the automated testing procedure. For the user, this section has no relevance.
 
+The yaml file and the geometry file are already contained in the ``<source-root>/tests/framework-test`` directory.
 
 Simulation
 -----------
 
-After the file ``tutorial_solid.dat`` has been created successfully using the ``pre_exodus`` command shown above, the simulation is run on a single processor by the command
+After the file ``tutorial_solid.4C.yaml`` has been created, the simulation is run on a single processor by the command
 
 ::
 
-    <build-dir>/4C tutorial_solid.dat tutorial_solid
+    <build-dir>/4C tutorial_solid.4C.yaml tutorial_solid
 
 Since the solver output is quite lengthy, one might want to redirect it into a file.
 For running the simulation with several processes, use ``mpirun -np <n_cpu> <build-dir>/4C [further parameters]``.

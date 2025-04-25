@@ -25,6 +25,7 @@ if(FOUR_C_BUILD_DOCUMENTATION)
   file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/doc/tmp)
   file(MAKE_DIRECTORY ${_sphinx_OUT_DIR}/reference_docs)
   file(MAKE_DIRECTORY ${_sphinx_OUT_DIR}/reference_docs/reference_images)
+  file(MAKE_DIRECTORY ${_sphinx_OUT_DIR}/reference_docs/tutorials)
 
   #install the python virtual environment with sphinx
   find_package(Sphinx REQUIRED)

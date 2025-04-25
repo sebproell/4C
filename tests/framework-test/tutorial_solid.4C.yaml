@@ -1,5 +1,48 @@
 PROBLEM TYPE:
   PROBLEMTYPE: "Structure"
+PROBLEM SIZE:
+  DIM: 3
+STRUCTURE GEOMETRY:
+  FILE: "tutorial_solid_geo.e"
+  ELEMENT_BLOCKS:
+    - ID: 1
+      ELEMENT_NAME: SOLID
+      ELEMENT_DATA: "MAT 1 KINEM nonlinear"
+DESIGN SURF DIRICH CONDITIONS:
+  - E: 1
+    NUMDOF: 3
+    ENTITY_TYPE: node_set_id
+    ONOFF: [0, 1, 0]
+    VAL: [0, 0, 0]
+    FUNCT: [0, 0, 0]
+  - E: 2
+    NUMDOF: 3
+    ENTITY_TYPE: node_set_id
+    ONOFF: [0, 0, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [0, 0, 0]
+  - E: 3
+    NUMDOF: 3
+    ENTITY_TYPE: node_set_id
+    ONOFF: [1, 0, 0]
+    VAL: [0, 0, 0]
+    FUNCT: [0, 0, 0]
+  - E: 4
+    NUMDOF: 3
+    ENTITY_TYPE: node_set_id
+    ONOFF: [0, 1, 0]
+    VAL: [0, 1, 0]
+    FUNCT: [0, 1, 0]
+    TAG: "monitor_reaction"
+FUNCT1:
+  - COMPONENT: 0
+    SYMBOLIC_FUNCTION_OF_SPACE_TIME: "pull"
+  - VARIABLE: 0
+    NAME: "pull"
+    TYPE: "linearinterpolation"
+    NUMPOINTS: 2
+    TIMES: [0, 20]
+    VALUES: [0, 20]
 IO:
   STRUCT_STRESS: "Cauchy"
   STRUCT_STRAIN: "GL"
@@ -45,15 +88,6 @@ MATERIALS:
       HARDEXPO: 5
       VISC: 0.01
       RATE_DEPENDENCY: 1
-FUNCT1:
-  - COMPONENT: 0
-    SYMBOLIC_FUNCTION_OF_SPACE_TIME: "pull"
-  - VARIABLE: 0
-    NAME: "pull"
-    TYPE: "linearinterpolation"
-    NUMPOINTS: 2
-    TIMES: [0,20]
-    VALUES: [0,20]
 RESULT DESCRIPTION:
   - STRUCTURE:
       DIS: "structure"
