@@ -115,9 +115,6 @@ enum Inpar::Solid::ConvergenceStatus Solid::Nln::SOLVER::SingleStep::solve()
   //// do one non-linear step using solve
   ::NOX::StatusTest::StatusType stepstatus = nlnsolver_->solve();
 
-  // copy the solution group into the class variable
-  group() = nlnsolver_->getSolutionGroup();
-
   integrator().set_state(Core::LinAlg::Vector<double>(x_epetra.getEpetraVector()));
 
   return convert_final_status(stepstatus);
