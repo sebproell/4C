@@ -63,7 +63,7 @@ namespace Adapter
 namespace PoroPressureBased
 {
   // forward declaration
-  class MeshtyingStrategyBase;
+  class MeshtyingArtery;
 
   /*!
    * \brief implicit time integration for porous multiphase flow problems
@@ -304,9 +304,9 @@ namespace PoroPressureBased
     }
 
     //! return the meshtying strategy
-    std::shared_ptr<PoroPressureBased::MeshtyingStrategyBase> mesh_tying_strategy() const
+    std::shared_ptr<PoroPressureBased::MeshtyingArtery> mesh_tying_strategy() const
     {
-      return strategy_;
+      return meshtying_;
     }
 
    protected:
@@ -693,8 +693,8 @@ namespace PoroPressureBased
     //! nonlinear iteration increment vector
     std::shared_ptr<Core::LinAlg::Vector<double>> increment_;
 
-    //! meshtying strategy (includes standard case without meshtying)
-    std::shared_ptr<PoroPressureBased::MeshtyingStrategyBase> strategy_;
+    //! meshtying strategy
+    std::shared_ptr<MeshtyingArtery> meshtying_;
 
     //! end time point when to switch off the starting Dirichlet boundary condition
     double starting_dbc_time_end_;

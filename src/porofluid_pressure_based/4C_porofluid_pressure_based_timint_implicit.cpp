@@ -24,7 +24,6 @@
 #include "4C_porofluid_pressure_based_ele_action.hpp"
 #include "4C_porofluid_pressure_based_ele_parameter.hpp"
 #include "4C_porofluid_pressure_based_meshtying_strategy_artery.hpp"
-#include "4C_porofluid_pressure_based_meshtying_strategy_std.hpp"
 #include "4C_porofluid_pressure_based_resulttest.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 #include "4C_utils_enum.hpp"
@@ -302,17 +301,12 @@ void PoroPressureBased::TimIntImpl::init(bool isale, int nds_disp, int nds_vel,
   // build mesh tying strategy
   // -------------------------------------------------------------------
   if (artery_coupling_active_)
-    strategy_ =
-        std::make_shared<PoroPressureBased::MeshtyingStrategyArtery>(this, params_, poroparams_);
-  else
-    strategy_ =
-        std::make_shared<PoroPressureBased::MeshtyingStrategyStd>(this, params_, poroparams_);
-  // check if initial fields match
-  strategy_->check_initial_fields(phinp_);
-  // set the nearby ele pairs
-  strategy_->set_nearby_ele_pairs(nearbyelepairs);
-  // setup the strategy
-  strategy_->setup();
+  {
+    meshtying_ = std::make_shared<PoroPressureBased::MeshtyingArtery>(this, params_, poroparams_);
+    meshtying_->check_initial_fields(phinp_);
+    meshtying_->set_nearby_ele_pairs(nearbyelepairs);
+    meshtying_->setup();
+  }
 
   // -------------------------------------------------------------------
   // create a solver
@@ -322,10 +316,12 @@ void PoroPressureBased::TimIntImpl::init(bool isale, int nds_disp, int nds_vel,
       Global::Problem::instance()->solver_params_callback(),
       Teuchos::getIntegralValue<Core::IO::Verbositylevel>(
           Global::Problem::instance()->io_params(), "VERBOSITY"));
-  strategy_->initialize_linear_solver(solver_);
-
-  return;
-}  // TimIntImpl::init()
+  if (artery_coupling_active_)
+  {
+    meshtying_->initialize_linear_solver(solver_);
+  }
+  discretization()->compute_null_space_if_necessary(solver_->params());
+}
 
 
 
@@ -387,11 +383,11 @@ void PoroPressureBased::TimIntImpl::prepare_time_loop()
     evaluate_error_compared_to_analytical_sol();
   }
 
-  // do the same also for meshtying
-  strategy_->prepare_time_loop();
-
-  return;
-}  // POROFLUIDMULTIPHASE::TimIntImpl::prepare_time_loop
+  if (artery_coupling_active_)
+  {
+    meshtying_->prepare_time_loop();
+  }
+}
 
 
 /*----------------------------------------------------------------------*
@@ -437,11 +433,11 @@ void PoroPressureBased::TimIntImpl::prepare_time_step()
     apply_starting_dbc();
   }
 
-  // do the same also for meshtying
-  strategy_->prepare_time_step();
-
-  return;
-}  // TimIntImpl::prepare_time_step
+  if (artery_coupling_active_)
+  {
+    meshtying_->prepare_time_step();
+  }
+}
 
 
 /*------------------------------------------------------------------------------*
@@ -536,7 +532,10 @@ void PoroPressureBased::TimIntImpl::solve()
 /*----------------------------------------------------------------------*
  | contains the call of linear/nonlinear solver             vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::TimIntImpl::update() { strategy_->update(); }
+void PoroPressureBased::TimIntImpl::update()
+{
+  if (artery_coupling_active_) meshtying_->update();
+}
 
 
 /*----------------------------------------------------------------------*
@@ -558,11 +557,11 @@ void PoroPressureBased::TimIntImpl::apply_mesh_movement(
   // provide POROFLUIDMULTIPHASE discretization with displacement field
   set_state(nds_disp_, "dispnp", dispnp);
 
-  // apply mesh movement also on the strategy
-  strategy_->apply_mesh_movement();
-
-  return;
-}  // TimIntImpl::ApplyMeshMovement
+  if (artery_coupling_active_)
+  {
+    meshtying_->apply_mesh_movement();
+  }
+}
 
 
 /*----------------------------------------------------------------------*
@@ -585,10 +584,10 @@ void PoroPressureBased::TimIntImpl::collect_runtime_output_data()
     visualization_writer_->append_element_owner("Owner");
 
     // write output of blood vessel volume fraction
-    if (output_bloodvesselvolfrac_)
+    if (artery_coupling_active_ && output_bloodvesselvolfrac_)
     {
       visualization_writer_->append_result_data_vector_with_context(
-          *strategy_->blood_vessel_volume_fraction(), Core::IO::OutputEntity::element,
+          *meshtying_->blood_vessel_volume_fraction(), Core::IO::OutputEntity::element,
           {"bloodvesselvolfrac"});
     }
   }
@@ -742,7 +741,10 @@ void PoroPressureBased::TimIntImpl::output()
     // do the same for the strategy
     // TODO this is the artery output, arteries still need to be migrated to vtk-based output, then
     // this method should be moved to collect_runtime_output_data()
-    strategy_->output();
+    if (artery_coupling_active_)
+    {
+      meshtying_->output();
+    }
 
     // reconstruct porosity for output; porosity is only needed for output and does not have to be
     // transferred between fields
@@ -793,7 +795,9 @@ std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::TimIntImpl::dof_row_
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::TimIntImpl::artery_dof_row_map() const
 {
-  return strategy_->artery_dof_row_map();
+  FOUR_C_ASSERT(artery_coupling_active_,
+      "artery_dof_row_map can only be called when artery coupling is active.");
+  return meshtying_->artery_dof_row_map();
 }
 
 /*-----------------------------------------------------------------------*
@@ -802,7 +806,10 @@ std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::TimIntImpl::artery_d
 std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase>
 PoroPressureBased::TimIntImpl::artery_porofluid_sysmat() const
 {
-  return strategy_->artery_porofluid_sysmat();
+  FOUR_C_ASSERT(artery_coupling_active_,
+      "artery_porofluid_sysmat can only be called when artery coupling is active.");
+
+  return meshtying_->artery_porofluid_sysmat();
 }
 
 /*----------------------------------------------------------------------*
@@ -811,7 +818,9 @@ PoroPressureBased::TimIntImpl::artery_porofluid_sysmat() const
 std::shared_ptr<const Core::LinAlg::Vector<double>>
 PoroPressureBased::TimIntImpl::artery_porofluid_rhs() const
 {
-  return strategy_->artery_porofluid_rhs();
+  FOUR_C_ASSERT(artery_coupling_active_,
+      "artery_porofluid_rhs can only be called when artery coupling is active.");
+  return meshtying_->artery_porofluid_rhs();
 }
 
 
@@ -1250,7 +1259,15 @@ void PoroPressureBased::TimIntImpl::nonlinear_solve()
     linear_solve(isadapttol, actresidual, adaptolbetter);
 
     //------------------------------------------------ update solution vector
-    update_iter(strategy_->combined_increment(increment_));
+    if (artery_coupling_active_)
+    {
+      update_iter(meshtying_->combined_increment(increment_));
+    }
+    else
+    {
+      update_iter(increment_);
+    }
+
 
   }  // nonlinear iteration
 
@@ -1278,8 +1295,16 @@ void PoroPressureBased::TimIntImpl::linear_solve(
     solver_params.lin_tol_better = adaptolbetter;
   }
 
-  strategy_->linear_solve(solver_, sysmat_, increment_, residual_, solver_params);
-  // solver_->Solve(sysmat_->EpetraOperator(),increment_,residual_,true,1,nullptr);
+  if (artery_coupling_active_)
+  {
+    meshtying_->linear_solve(solver_, sysmat_, increment_, residual_, solver_params);
+  }
+  else
+  {
+    solver_params.refactor = true;
+    solver_params.reset = true;
+    solver_->solve(sysmat_->epetra_operator(), increment_, residual_, solver_params);
+  }
 
   solver_->reset_tolerance();
 
@@ -1300,7 +1325,20 @@ bool PoroPressureBased::TimIntImpl::abort_nonlin_iter(
   std::vector<double> preresnorm;
   std::vector<double> incprenorm;
   std::vector<double> prenorm;
-  strategy_->calculate_norms(preresnorm, incprenorm, prenorm, increment_);
+  if (artery_coupling_active_)
+  {
+    meshtying_->calculate_norms(preresnorm, incprenorm, prenorm, increment_);
+  }
+  else
+  {
+    preresnorm.resize(1);
+    incprenorm.resize(1);
+    prenorm.resize(1);
+
+    preresnorm[0] = calculate_vector_norm(vectornormfres_, *residual_);
+    incprenorm[0] = calculate_vector_norm(vectornorminc_, *increment_);
+    prenorm[0] = calculate_vector_norm(vectornorminc_, *phinp_);
+  }
 
   std::vector<double> relinc(prenorm.size());
 
@@ -1903,8 +1941,10 @@ void PoroPressureBased::TimIntImpl::evaluate()
   // Apply Dirichlet Boundary Condition
   prepare_system_for_newton_solve();
 
-  // evaluate mesh tying
-  strategy_->evaluate();
+  if (artery_coupling_active_)
+  {
+    meshtying_->evaluate();
+  }
 }
 
 /*----------------------------------------------------------------------*
@@ -1937,8 +1977,16 @@ void PoroPressureBased::TimIntImpl::prepare_system_for_newton_solve()
 void PoroPressureBased::TimIntImpl::update_iter(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> inc)
 {
-  std::shared_ptr<const Core::LinAlg::Vector<double>> extractedinc =
-      strategy_->extract_and_update_iter(inc);
+  std::shared_ptr<const Core::LinAlg::Vector<double>> extractedinc;
+  if (artery_coupling_active_)
+  {
+    extractedinc = meshtying_->extract_and_update_iter(inc);
+  }
+  else
+  {
+    extractedinc = inc;
+  }
+
   // store incremental vector to be available for convergence check
   // if incremental vector is received from outside for coupled problem
   increment_->update(1.0, *extractedinc, 0.0);
@@ -2097,7 +2145,10 @@ void PoroPressureBased::TimIntImpl::set_initial_field(
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::Utils::ResultTest> PoroPressureBased::TimIntImpl::create_field_test()
 {
-  strategy_->create_field_test();
+  if (artery_coupling_active_)
+  {
+    meshtying_->create_field_test();
+  }
   return std::make_shared<PoroPressureBased::ResultTest>(*this);
 }
 
@@ -2106,7 +2157,10 @@ std::shared_ptr<Core::Utils::ResultTest> PoroPressureBased::TimIntImpl::create_f
  -----------------------------------------------------------------------*/
 void PoroPressureBased::TimIntImpl::read_restart(const int step)
 {
-  strategy_->read_restart(step);
+  if (artery_coupling_active_)
+  {
+    meshtying_->read_restart(step);
+  }
   return;
 }
 
@@ -2396,7 +2450,9 @@ void PoroPressureBased::TimIntImpl::fd_check()
  *----------------------------------------------------------------*/
 std::shared_ptr<Adapter::ArtNet> PoroPressureBased::TimIntImpl::art_net_tim_int()
 {
-  return strategy_->art_net_tim_int();
+  FOUR_C_ASSERT(artery_coupling_active_,
+      "art_net_tim_int can only be called when artery coupling is active.");
+  return meshtying_->art_net_tim_int();
 }
 
 FOUR_C_NAMESPACE_CLOSE
