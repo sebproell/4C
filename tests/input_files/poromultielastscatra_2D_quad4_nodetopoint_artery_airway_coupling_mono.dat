@@ -90,7 +90,7 @@ SOLVESCATRA                     yes
 INITIALFIELD                    field_by_condition
 --------------------------------------------------------------------SOLVER 1
 NAME                            solver
-SOLVER                          Superlu
+SOLVER                          UMFPACK
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_FluidPoroMultiPhaseReactions LOCAL No PERMEABILITY 1.2e-3 NUMMAT 3 MATIDS 12 13 14 NUMFLUIDPHASES_IN_MULTIPHASEPORESPACE 1 NUMREAC 1 REACIDS 50
 MAT 50 MAT_FluidPoroSingleReaction NUMSCAL 4 TOTALNUMDOF 3 NUMVOLFRAC 1 SCALE 1 1 1 COUPLING scalar_by_function FUNCTID 4
