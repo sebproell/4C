@@ -29,12 +29,12 @@ namespace Core::Conditions
 This is the enumeration of all types of different integration schemes
 
 *-----------------------------------------------------------------------*/
-typedef enum RedAirwaysDyntype
+enum RedAirwaysDyntype
 {
   one_step_theta,
   linear,
   nonlinear
-} _RED_AIRWAYS_DYNTYPE;
+};
 
 
 namespace Inpar

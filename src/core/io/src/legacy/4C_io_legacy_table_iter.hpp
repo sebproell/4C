@@ -20,11 +20,11 @@ FOUR_C_NAMESPACE_OPEN
 
  */
 /*----------------------------------------------------------------------*/
-typedef struct StackElement
+struct StackElement
 {
   struct StackElement* snext;
   MapNode* map_node;
-} STACK_ELEMENT;
+};
 
 
 /*----------------------------------------------------------------------*/
@@ -33,11 +33,11 @@ typedef struct StackElement
 
  */
 /*----------------------------------------------------------------------*/
-typedef struct Stack
+struct Stack
 {
   int count;
-  STACK_ELEMENT head;
-} STACK;
+  StackElement head;
+};
 
 
 /*----------------------------------------------------------------------*/
@@ -49,18 +49,18 @@ typedef struct Stack
 
  */
 /*----------------------------------------------------------------------*/
-typedef struct MapIterator
+struct MapIterator
 {
   MAP* map;
-  STACK stack;
-} MAP_ITERATOR;
+  Stack stack;
+};
 
 
-void init_map_iterator(MAP_ITERATOR* iterator, MAP* map);
+void init_map_iterator(MapIterator* iterator, MAP* map);
 
-int next_map_node(MAP_ITERATOR* iterator);
+int next_map_node(MapIterator* iterator);
 
-MapNode* iterator_get_node(MAP_ITERATOR* iterator);
+MapNode* iterator_get_node(MapIterator* iterator);
 
 FOUR_C_NAMESPACE_CLOSE
 

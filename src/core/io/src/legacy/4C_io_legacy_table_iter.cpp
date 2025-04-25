@@ -17,7 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 
  */
 /*----------------------------------------------------------------------*/
-void init_map_iterator(MAP_ITERATOR* iterator, MAP* map)
+void init_map_iterator(MapIterator* iterator, MAP* map)
 {
   iterator->stack.count = 0;
   iterator->map = map;
@@ -31,11 +31,11 @@ void init_map_iterator(MAP_ITERATOR* iterator, MAP* map)
 
  */
 /*----------------------------------------------------------------------*/
-static void push_map_node(MAP_ITERATOR* iterator, MapNode* map_node)
+static void push_map_node(MapIterator* iterator, MapNode* map_node)
 {
-  STACK_ELEMENT* new_element;
+  StackElement* new_element;
 
-  new_element = new STACK_ELEMENT;
+  new_element = new StackElement;
   new_element->map_node = map_node;
   new_element->snext = iterator->stack.head.snext;
   iterator->stack.head.snext = new_element;
@@ -48,9 +48,9 @@ static void push_map_node(MAP_ITERATOR* iterator, MapNode* map_node)
 
  */
 /*----------------------------------------------------------------------*/
-static void pop_map_node(MAP_ITERATOR* iterator)
+static void pop_map_node(MapIterator* iterator)
 {
-  STACK_ELEMENT* tmp_free;
+  StackElement* tmp_free;
 
   if (iterator->stack.count == 0)
   {
@@ -74,7 +74,7 @@ static void pop_map_node(MAP_ITERATOR* iterator)
 
  */
 /*----------------------------------------------------------------------*/
-int next_map_node(MAP_ITERATOR* iterator)
+int next_map_node(MapIterator* iterator)
 {
   int result = 0;
 
@@ -129,6 +129,6 @@ int next_map_node(MAP_ITERATOR* iterator)
 
  */
 /*----------------------------------------------------------------------*/
-MapNode* iterator_get_node(MAP_ITERATOR* iterator) { return iterator->stack.head.snext->map_node; }
+MapNode* iterator_get_node(MapIterator* iterator) { return iterator->stack.head.snext->map_node; }
 
 FOUR_C_NAMESPACE_CLOSE

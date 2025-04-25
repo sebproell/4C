@@ -904,7 +904,7 @@ MAP* symbol_map(const SYMBOL* symbol)
 
 */
 /*----------------------------------------------------------------------*/
-typedef enum TokenType
+enum TokenType
 {
   tok_none,
   tok_done,
@@ -916,7 +916,7 @@ typedef enum TokenType
   tok_equal,
   tok_indent,
   tok_dedent
-} TOKEN_TYPE;
+};
 
 
 /*----------------------------------------------------------------------*/
@@ -933,14 +933,13 @@ typedef enum TokenType
 /*----------------------------------------------------------------------*/
 struct ParserData
 {
-  TOKEN_TYPE tok;
+  TokenType tok;
   char* token_string;
   int token_int;
   double token_real;
 
   char* file_buffer;
   int file_size;
-  /*char* filename;*/
 
   int pos;
   int lineno;

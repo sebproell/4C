@@ -47,7 +47,7 @@ void PostFilterBase::write_any_results(PostField* field, const char* type, const
   PostResult result = PostResult(field);
   result.next_result();
 
-  MAP_ITERATOR iter;
+  MapIterator iter;
   init_map_iterator(&iter, result.group());
 
   while (next_map_node(&iter))

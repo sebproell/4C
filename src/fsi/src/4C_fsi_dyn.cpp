@@ -480,7 +480,7 @@ void fsi_ale_drt()
 
   const Teuchos::ParameterList& fsidyn = problem->fsi_dynamic_params();
 
-  auto coupling = Teuchos::getIntegralValue<FSI_COUPLING>(fsidyn, "COUPALGO");
+  auto coupling = Teuchos::getIntegralValue<FsiCoupling>(fsidyn, "COUPALGO");
   switch (coupling)
   {
     case fsi_iter_monolithicfluidsplit:
