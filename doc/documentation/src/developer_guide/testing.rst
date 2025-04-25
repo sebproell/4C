@@ -13,48 +13,38 @@ Overview on testing mechanisms
 and relies on a variety of test mechanism to guarantee and maintain its intended behaviour.
 Tests fall into these categories:
 
-- Regression tests: test dat-file based simulations only (no pre-/post-processing)
+- Regression tests/end-to-end tests: test a typical simulation run of |FOURC| with an input file
 - Unit tests: isolate and exercise specific units of source code independently from other parts
-- Framework tests: tests the complete |FOURC| workflow (mesh generation, pre-processing, simulation, post-processing)
 
 |FOURC| tests can be triggered through various mechanisms:
 
 - On Github, we use Github actions on every pull request and run additional tests every night.
 - Locally, one can trigger ctest to run all or some tests.
 
-    - filter tests by adding ``-R <regex>``. Only tests including ``<regex>`` in their names are performed
-    - exclude tests by adding ``-E <regex>``. Tests with ``<regex>`` in their names are not performed
-    - filter tests by adding ``-L <regex>``. Only tests with label ``<regex>`` in their names are performed
-    - skip the clean up test by adding ``-FC test_cleanup``
+    - Filter tests by adding ``-R <regex>``. Only tests including ``<regex>`` in their names are executed.
+    - Exclude tests by adding ``-E <regex>``. Tests with ``<regex>`` in their names are not executed.
+    - Filter tests by adding ``-L <regex>``. Only tests with label ``<regex>`` in their names are executed.
+    - Skip the clean up test by adding ``-FC test_cleanup``.
 
-- Particularly, if you want to run ctest on a single input file, simply run ``ctest -R <input_file>``,
-  where ``<input_file>`` is the input filename without the ``.dat`` suffix. A ctest with that name should exist.
+- If you want to run ctest on a single input file inside the ``tests/input_files`` directory,
+  run ``ctest -R <input_file>`` where ``<input_file>`` is the input file name.
 
 
 Guidelines for |FOURC| input files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``*.dat``-file of a CI test (residing in ``<4C_sourcedir>/tests/input_files``) should include:
+An input file of a CI test (residing in ``<4C_sourcedir>/tests/input_files``) should include:
 
 - A short but informative summary of what is tested, maybe also which results are compared,
   in the header
 - No unused sections
-- No unused parameters (as far as possible)
+- No unused parameters
 - No alternative input parameters/values as comment
-- No empty lines
-
-In general a "clean" format of the file is demanded (alignment of parameters/values).
-
-Accompanying ``*.xml``-files will be formatted by ``pre-commit``. Check ``.pre-commit-config.yaml`` for details.
 
 Executing |FOURC| unit tests
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Configure and build |FOURC| as described in `README <https://github.com/4C-multiphysics/4C/blob/main/README.md>`_.
-In the |FOURC| build directory ``<builddir>`` a subfolder ``unittests`` with executable unittests inside is generated.
-
-    Note: in order to execute the following commands, change to build directory <builddir>
-
+Configure and build |FOURC| as described :ref:`here <installation>`.
 The |FOURC| unit tests are included in ctest as part of the minimal tests and also in the full test suite:
 
 ::

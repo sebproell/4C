@@ -7,7 +7,7 @@ Developer guide
 .. toctree::
     :maxdepth: 2
 
-    4Ctesting
+    testing
     codingguidelines
     petra_object_model
     developer_addedinformation
