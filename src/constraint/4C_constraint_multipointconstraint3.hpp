@@ -16,13 +16,13 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   /*!
   \brief This pure virtual class can handle multi point constraints in 3D.
   It is derived from the basic multipointconstraint class.
   */
-  class MPConstraint3 : public CONSTRAINTS::MPConstraint
+  class MPConstraint3 : public Constraints::MPConstraint
   {
    public:
     /*!
@@ -127,7 +127,7 @@ namespace CONSTRAINTS
         eletocondvecindex_;  ///< maps element ID to condition index in vector #constrcond_
 
   };  // class
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

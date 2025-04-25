@@ -200,7 +200,7 @@ void Solid::TimInt::init(const Teuchos::ParameterList& timeparams,
   if ((writeenergyevery_ != 0) and (myrank_ == 0)) attach_energy_file();
 
   // initialize constraint manager
-  conman_ = std::make_shared<CONSTRAINTS::ConstrManager>();
+  conman_ = std::make_shared<Constraints::ConstrManager>();
   conman_->init(discret_, sdynparams_);
 
   // create stiffness, mass matrix and other fields
@@ -242,14 +242,14 @@ void Solid::TimInt::setup()
           Global::Problem::instance()->cardiovascular0_d_structural_params(), *solver_, mor_);
 
   // initialize spring dashpot manager
-  springman_ = std::make_shared<CONSTRAINTS::SpringDashpotManager>(discret_);
+  springman_ = std::make_shared<Constraints::SpringDashpotManager>(discret_);
 
 
   // initialize constraint solver if constraints are defined
   if (conman_->have_constraint())
   {
     consolv_ =
-        std::make_shared<CONSTRAINTS::ConstraintSolver>(discret_, *solver_, dbcmaps_, sdynparams_);
+        std::make_shared<Constraints::ConstraintSolver>(discret_, *solver_, dbcmaps_, sdynparams_);
   }
 
   // check for beam contact

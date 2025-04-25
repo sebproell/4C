@@ -53,11 +53,11 @@ namespace CONTACT
   class MeshtyingContactBridge;
 }
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   class ConstrManager;
   class SpringDashpotManager;
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 
 namespace Utils
 {
@@ -236,10 +236,10 @@ namespace Adapter
     virtual bool have_spring_dashpot() = 0;
 
     /// get constraint manager defined in the structure
-    virtual std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager() = 0;
+    virtual std::shared_ptr<Constraints::ConstrManager> get_constraint_manager() = 0;
 
     /// get SpringDashpot manager defined in the structure
-    virtual std::shared_ptr<CONSTRAINTS::SpringDashpotManager> get_spring_dashpot_manager() = 0;
+    virtual std::shared_ptr<Constraints::SpringDashpotManager> get_spring_dashpot_manager() = 0;
 
     /// Get type of thickness scaling for thin shell structures
     virtual Inpar::Solid::StcScale get_stc_algo() = 0;

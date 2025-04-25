@@ -201,7 +201,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::LowMach::set_valid_parameters(specs);
   Cut::set_valid_parameters(specs);
   Inpar::XFEM::set_valid_parameters(specs);
-  Inpar::CONSTRAINTS::set_valid_parameters(specs);
+  Inpar::Constraints::set_valid_parameters(specs);
 
   Lubrication::set_valid_parameters(specs);
   Inpar::ScaTra::set_valid_parameters(specs);

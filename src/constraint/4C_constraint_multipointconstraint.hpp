@@ -16,7 +16,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   /*!
   \brief This pure virtual class is the common interface for multi point constraints.
@@ -140,7 +140,7 @@ namespace CONSTRAINTS
     //             ///< constraint discretization prescribing ghosting ) const;
 
   };  // class
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

@@ -459,7 +459,7 @@ namespace Adapter
     bool have_constraint() override = 0;
 
     /// get constraint manager defined in the structure
-    std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager() override = 0;
+    std::shared_ptr<Constraints::ConstrManager> get_constraint_manager() override = 0;
 
     /// Get type of thickness scaling for thin shell structures
     Inpar::Solid::StcScale get_stc_algo() override = 0;
@@ -493,7 +493,7 @@ namespace Adapter
     }
 
     /// get SpringDashpot manager defined in the structure
-    std::shared_ptr<CONSTRAINTS::SpringDashpotManager> get_spring_dashpot_manager() override
+    std::shared_ptr<Constraints::SpringDashpotManager> get_spring_dashpot_manager() override
     {
       FOUR_C_THROW("This function seems to be unused!");
       return nullptr;

@@ -38,7 +38,7 @@ namespace Core::LinAlg
   class MultiMapExtractor;
 }  // namespace Core::LinAlg
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   // forward declarations
   class Constraint;
@@ -387,7 +387,7 @@ namespace CONSTRAINTS
     void set_is_init(bool trueorfalse) { isinit_ = trueorfalse; };
 
   };  // class
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

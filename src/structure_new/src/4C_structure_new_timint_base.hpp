@@ -270,7 +270,7 @@ namespace Solid
       }
 
       /// FixMe get constraint manager defined in the structure
-      std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager() override
+      std::shared_ptr<Constraints::ConstrManager> get_constraint_manager() override
       {
         FOUR_C_THROW("Not yet implemented!");
         return nullptr;

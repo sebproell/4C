@@ -16,7 +16,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   /*!
   \brief This class can handle twodimensional multi point constraints. It is derived from the basic
@@ -118,7 +118,7 @@ namespace CONSTRAINTS
 
 
   };  // class
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

@@ -18,9 +18,9 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  |  ctor (public)                                               tk 07/08|
  *----------------------------------------------------------------------*/
-CONSTRAINTS::MPConstraint::MPConstraint(std::shared_ptr<Core::FE::Discretization> discr,
+Constraints::MPConstraint::MPConstraint(std::shared_ptr<Core::FE::Discretization> discr,
     const std::string& conditionname, int& minID, int& maxID)
-    : CONSTRAINTS::Constraint(discr, conditionname, minID, maxID)
+    : Constraints::Constraint(discr, conditionname, minID, maxID)
 {
   return;
 }
@@ -28,15 +28,15 @@ CONSTRAINTS::MPConstraint::MPConstraint(std::shared_ptr<Core::FE::Discretization
 /*----------------------------------------------------------------------*
  |  ctor (public)                                               tk 07/08|
  *----------------------------------------------------------------------*/
-CONSTRAINTS::MPConstraint::MPConstraint(
+Constraints::MPConstraint::MPConstraint(
     std::shared_ptr<Core::FE::Discretization> discr, const std::string& conditionname)
-    : CONSTRAINTS::Constraint(discr, conditionname)
+    : Constraints::Constraint(discr, conditionname)
 {
   return;
 }
 
 /// Set state of the underlying constraint discretization
-void CONSTRAINTS::MPConstraint::set_constr_state(
+void Constraints::MPConstraint::set_constr_state(
     const std::string& state,              ///< name of state to set
     const Core::LinAlg::Vector<double>& V  ///< values to set
 )

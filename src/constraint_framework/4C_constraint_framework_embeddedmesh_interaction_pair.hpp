@@ -40,7 +40,7 @@ namespace GEOMETRYPAIR
   class GeometryPair;
 }  // namespace GEOMETRYPAIR
 
-namespace CONSTRAINTS::EMBEDDEDMESH
+namespace Constraints::EMBEDDEDMESH
 {
   class SolidToSolidMortarManager;
 
@@ -52,7 +52,7 @@ namespace CONSTRAINTS::EMBEDDEDMESH
     */
     SolidInteractionPair(std::shared_ptr<Core::Elements::Element> element1,
         Core::Elements::Element* element2,
-        CONSTRAINTS::EMBEDDEDMESH::EmbeddedMeshParams& params_ptr,
+        Constraints::EMBEDDEDMESH::EmbeddedMeshParams& params_ptr,
         std::shared_ptr<Cut::CutWizard> cutwizard_ptr,
         std::vector<std::shared_ptr<Cut::BoundaryCell>>& boundary_cells);
 
@@ -62,7 +62,7 @@ namespace CONSTRAINTS::EMBEDDEDMESH
     virtual ~SolidInteractionPair() = default;
 
     //! @name Access methods
-    inline CONSTRAINTS::EMBEDDEDMESH::EmbeddedMeshParams params() const { return params_; }
+    inline Constraints::EMBEDDEDMESH::EmbeddedMeshParams params() const { return params_; }
 
     /*!
     \brief Get first element
@@ -99,7 +99,7 @@ namespace CONSTRAINTS::EMBEDDEDMESH
     virtual void get_pair_visualization(
         Core::IO::VisualizationData& lagrange_multipliers_visualization_data,
         std::shared_ptr<Core::LinAlg::Vector<double>> lambda,
-        const CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
+        const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
         std::shared_ptr<std::unordered_set<int>> interface_tracker) = 0;
 
 
@@ -120,7 +120,7 @@ namespace CONSTRAINTS::EMBEDDEDMESH
      * @param displacement_vector (in) Global displacement vector.
      */
     virtual void evaluate_and_assemble_mortar_contributions(const Core::FE::Discretization& discret,
-        const CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
+        const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
         Core::LinAlg::SparseMatrix& global_g_bl_, Core::LinAlg::SparseMatrix& global_g_bg_,
         Core::LinAlg::SparseMatrix& global_fbl_l_, Core::LinAlg::SparseMatrix& global_fbg_l_,
         Epetra_FEVector& global_constraint, Epetra_FEVector& global_kappa,
@@ -146,7 +146,7 @@ namespace CONSTRAINTS::EMBEDDEDMESH
 
    protected:
     //! embedded mesh parameter data container
-    CONSTRAINTS::EMBEDDEDMESH::EmbeddedMeshParams params_;
+    Constraints::EMBEDDEDMESH::EmbeddedMeshParams params_;
 
     //! number of gauss points in the boundary cell
     int num_gauss_points_boundary_cell_ = 0;
@@ -165,7 +165,7 @@ namespace CONSTRAINTS::EMBEDDEDMESH
     //! boundary cells that are related to this coupling pair
     std::vector<std::shared_ptr<Cut::BoundaryCell>> boundary_cells_;
   };
-}  // namespace CONSTRAINTS::EMBEDDEDMESH
+}  // namespace Constraints::EMBEDDEDMESH
 
 FOUR_C_NAMESPACE_CLOSE
 

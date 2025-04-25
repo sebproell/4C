@@ -35,7 +35,7 @@ namespace Core::LinAlg
   class SparseOperator;
 }  // namespace Core::LinAlg
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   /*!
   \brief Class containing uzawa algorithm to solve linear system.
@@ -165,7 +165,7 @@ namespace CONSTRAINTS
     std::shared_ptr<Core::LinAlg::SparseMatrix> stcmat_;
 
   };  // class
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

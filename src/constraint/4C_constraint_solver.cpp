@@ -26,7 +26,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  |  ctor (public)                                               tk 11/07|
  *----------------------------------------------------------------------*/
-CONSTRAINTS::ConstraintSolver::ConstraintSolver(std::shared_ptr<Core::FE::Discretization> discr,
+Constraints::ConstraintSolver::ConstraintSolver(std::shared_ptr<Core::FE::Discretization> discr,
     Core::LinAlg::Solver& solver, std::shared_ptr<Core::LinAlg::MapExtractor> dbcmaps,
     Teuchos::ParameterList params)
     : actdisc_(discr),
@@ -40,7 +40,7 @@ CONSTRAINTS::ConstraintSolver::ConstraintSolver(std::shared_ptr<Core::FE::Discre
 /*----------------------------------------------------------------------*
  |  set-up (public)                                             tk 11/07|
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintSolver::setup(Core::FE::Discretization& discr,
+void Constraints::ConstraintSolver::setup(Core::FE::Discretization& discr,
     Core::LinAlg::Solver& solver, Core::LinAlg::MapExtractor& dbcmaps,
     Teuchos::ParameterList params)
 {
@@ -69,7 +69,7 @@ void CONSTRAINTS::ConstraintSolver::setup(Core::FE::Discretization& discr,
 |(public)                                                               |
 |Solve linear constrained system                                        |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintSolver::solve(Core::LinAlg::SparseMatrix& stiff,
+void Constraints::ConstraintSolver::solve(Core::LinAlg::SparseMatrix& stiff,
     Core::LinAlg::SparseMatrix& constr, Core::LinAlg::SparseMatrix& constrT,
     std::shared_ptr<Core::LinAlg::Vector<double>> dispinc, Core::LinAlg::Vector<double>& lagrinc,
     Core::LinAlg::Vector<double>& rhsstand, Core::LinAlg::Vector<double>& rhsconstr)
@@ -95,7 +95,7 @@ void CONSTRAINTS::ConstraintSolver::solve(Core::LinAlg::SparseMatrix& stiff,
 |(public)                                                               |
 |Solve linear constrained system by iterative Uzawa algorithm           |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stiff,
+void Constraints::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stiff,
     Core::LinAlg::SparseMatrix& constr, Core::LinAlg::SparseMatrix& constrT,
     std::shared_ptr<Core::LinAlg::Vector<double>> dispinc, Core::LinAlg::Vector<double>& lagrinc,
     Core::LinAlg::Vector<double>& rhsstand, Core::LinAlg::Vector<double>& rhsconstr)
@@ -246,7 +246,7 @@ void CONSTRAINTS::ConstraintSolver::solve_uzawa(Core::LinAlg::SparseMatrix& stif
 |(public)                                                               |
 |Solve linear constrained system by iterative Uzawa algorithm           |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintSolver::solve_direct(Core::LinAlg::SparseMatrix& stiff,
+void Constraints::ConstraintSolver::solve_direct(Core::LinAlg::SparseMatrix& stiff,
     Core::LinAlg::SparseMatrix& constr, Core::LinAlg::SparseMatrix& constrT,
     Core::LinAlg::Vector<double>& dispinc, Core::LinAlg::Vector<double>& lagrinc,
     Core::LinAlg::Vector<double>& rhsstand, Core::LinAlg::Vector<double>& rhsconstr)
@@ -297,7 +297,7 @@ void CONSTRAINTS::ConstraintSolver::solve_direct(Core::LinAlg::SparseMatrix& sti
   return;
 }
 
-void CONSTRAINTS::ConstraintSolver::solve_simple(Core::LinAlg::SparseMatrix& stiff,
+void Constraints::ConstraintSolver::solve_simple(Core::LinAlg::SparseMatrix& stiff,
     Core::LinAlg::SparseMatrix& constr, Core::LinAlg::SparseMatrix& constrT,
     Core::LinAlg::Vector<double>& dispinc, Core::LinAlg::Vector<double>& lagrinc,
     Core::LinAlg::Vector<double>& rhsstand, Core::LinAlg::Vector<double>& rhsconstr)

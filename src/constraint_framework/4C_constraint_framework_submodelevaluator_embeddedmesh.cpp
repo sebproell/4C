@@ -16,7 +16,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-CONSTRAINTS::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConstraintManager(
+Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConstraintManager(
     std::shared_ptr<Core::FE::Discretization> discret_ptr,
     const Core::LinAlg::Vector<double>& dispnp)
 {
@@ -26,15 +26,15 @@ CONSTRAINTS::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConst
   auto cut_parameter_list = Global::Problem::instance()->cut_general_params();
 
   auto embedded_mesh_coupling_strategy =
-      Teuchos::getIntegralValue<Inpar::CONSTRAINTS::EmbeddedMeshCouplingStrategy>(
+      Teuchos::getIntegralValue<Inpar::Constraints::EmbeddedMeshCouplingStrategy>(
           embedded_mesh_parameter_list, "COUPLING_STRATEGY");
 
   auto embedded_mesh_constraint_enforcement =
-      Teuchos::getIntegralValue<Inpar::CONSTRAINTS::EmbeddedMeshConstraintEnforcement>(
+      Teuchos::getIntegralValue<Inpar::Constraints::EmbeddedMeshConstraintEnforcement>(
           embedded_mesh_parameter_list, "CONSTRAINT_ENFORCEMENT");
 
   auto embedded_mesh_mortar_shape_function =
-      Teuchos::getIntegralValue<Inpar::CONSTRAINTS::SolidToSolidMortarShapefunctions>(
+      Teuchos::getIntegralValue<Inpar::Constraints::SolidToSolidMortarShapefunctions>(
           embedded_mesh_parameter_list, "MORTAR_SHAPE_FUNCTION");
 
   auto embedded_mesh_constraint_penalty_parameter =
@@ -51,7 +51,7 @@ CONSTRAINTS::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConst
   bool cut_screen_output = xfem_parameter_list.get<bool>("PRINT_OUTPUT");
 
   // Initialize embedded mesh coupling parameters
-  CONSTRAINTS::EMBEDDEDMESH::EmbeddedMeshParams embedded_mesh_coupling_params = {
+  Constraints::EMBEDDEDMESH::EmbeddedMeshParams embedded_mesh_coupling_params = {
       .embedded_mesh_coupling_strategy_ = embedded_mesh_coupling_strategy,
       .embedded_mesh_constraint_enforcement_ = embedded_mesh_constraint_enforcement,
       .embedded_mesh_constraint_penalty_parameter_ = embedded_mesh_constraint_penalty_parameter,
@@ -70,12 +70,12 @@ CONSTRAINTS::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConst
           *Global::Problem::instance()->output_control_file(), 0.0),  // Fix time
       discret_ptr->get_comm(), "embedded_mesh");
 
-  mortar_manager_ = std::make_shared<CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager>(
+  mortar_manager_ = std::make_shared<Constraints::EMBEDDEDMESH::SolidToSolidMortarManager>(
       discret_ptr, dispnp, embedded_mesh_coupling_params, visualization_manager,
       discret_ptr->dof_row_map()->MaxAllGID() + 1);
 }
 
-bool CONSTRAINTS::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::evaluate_force_stiff(
+bool Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::evaluate_force_stiff(
     const Core::LinAlg::Vector<double>& displacement_vector,
     std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& global_state_ptr,
     std::shared_ptr<Core::LinAlg::SparseMatrix> me_stiff_ptr,
@@ -89,7 +89,7 @@ bool CONSTRAINTS::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::evaluate_for
   return true;
 }
 
-void CONSTRAINTS::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::runtime_output_step_state(
+void Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::runtime_output_step_state(
     std::pair<double, int> output_time_and_step)
 {
   // Write runtime output for the embedded mesh method

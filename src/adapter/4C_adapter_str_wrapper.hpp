@@ -192,13 +192,13 @@ namespace Adapter
     bool have_spring_dashpot() override { return structure_->have_spring_dashpot(); }
 
     /// get constraint manager defined in the structure
-    std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager() override
+    std::shared_ptr<Constraints::ConstrManager> get_constraint_manager() override
     {
       return structure_->get_constraint_manager();
     }
 
     /// get constraint manager defined in the structure
-    std::shared_ptr<CONSTRAINTS::SpringDashpotManager> get_spring_dashpot_manager() override
+    std::shared_ptr<Constraints::SpringDashpotManager> get_spring_dashpot_manager() override
     {
       return structure_->get_spring_dashpot_manager();
     }

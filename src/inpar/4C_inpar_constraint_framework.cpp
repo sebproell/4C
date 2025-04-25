@@ -14,7 +14,7 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-void Inpar::CONSTRAINTS::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void Inpar::Constraints::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 

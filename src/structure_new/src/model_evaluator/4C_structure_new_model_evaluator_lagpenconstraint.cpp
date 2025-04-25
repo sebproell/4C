@@ -68,7 +68,7 @@ void Solid::ModelEvaluator::LagPenConstraint::setup()
   // to the manager in the future! -> get rid of it as soon as old
   // time-integration dies ...
   // initialize constraint manager
-  constrman_ = std::make_shared<CONSTRAINTS::ConstrManager>();
+  constrman_ = std::make_shared<Constraints::ConstrManager>();
   constrman_->init(dis, Global::Problem::instance()->structural_dynamic_params());
   constrman_->setup(disnp_ptr_, Global::Problem::instance()->structural_dynamic_params());
 

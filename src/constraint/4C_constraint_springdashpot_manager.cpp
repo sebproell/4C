@@ -18,7 +18,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-CONSTRAINTS::SpringDashpotManager::SpringDashpotManager(
+Constraints::SpringDashpotManager::SpringDashpotManager(
     std::shared_ptr<Core::FE::Discretization> dis)
     : actdisc_(dis), havespringdashpot_(false)
 {
@@ -43,7 +43,7 @@ CONSTRAINTS::SpringDashpotManager::SpringDashpotManager(
   return;
 }
 
-void CONSTRAINTS::SpringDashpotManager::stiffness_and_internal_forces(
+void Constraints::SpringDashpotManager::stiffness_and_internal_forces(
     std::shared_ptr<Core::LinAlg::SparseMatrix> stiff,
     std::shared_ptr<Core::LinAlg::Vector<double>> fint,
     std::shared_ptr<Core::LinAlg::Vector<double>> disn,
@@ -54,19 +54,19 @@ void CONSTRAINTS::SpringDashpotManager::stiffness_and_internal_forces(
   {
     springs_[i]->reset_newton();
     // get spring type from current condition
-    const CONSTRAINTS::SpringDashpot::RobinSpringDashpotType stype = springs_[i]->get_spring_type();
+    const Constraints::SpringDashpot::RobinSpringDashpotType stype = springs_[i]->get_spring_type();
 
-    if (stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::xyz or
-        stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::refsurfnormal)
+    if (stype == Constraints::SpringDashpot::RobinSpringDashpotType::xyz or
+        stype == Constraints::SpringDashpot::RobinSpringDashpotType::refsurfnormal)
       springs_[i]->evaluate_robin(stiff, fint, disn, veln, parlist);
-    if (stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
+    if (stype == Constraints::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
       springs_[i]->evaluate_force_stiff(*stiff, *fint, disn, *veln, parlist);
   }
 
   return;
 }
 
-void CONSTRAINTS::SpringDashpotManager::update()
+void Constraints::SpringDashpotManager::update()
 {
   // update all spring dashpot conditions for each new time step
   for (int i = 0; i < n_conds_; ++i) springs_[i]->update();
@@ -74,7 +74,7 @@ void CONSTRAINTS::SpringDashpotManager::update()
   return;
 }
 
-void CONSTRAINTS::SpringDashpotManager::reset_prestress(Core::LinAlg::Vector<double>& dis)
+void Constraints::SpringDashpotManager::reset_prestress(Core::LinAlg::Vector<double>& dis)
 {
   // loop over all spring dashpot conditions and reset them
   for (int i = 0; i < n_conds_; ++i) springs_[i]->reset_prestress(dis);
@@ -82,7 +82,7 @@ void CONSTRAINTS::SpringDashpotManager::reset_prestress(Core::LinAlg::Vector<dou
   return;
 }
 
-void CONSTRAINTS::SpringDashpotManager::output(Core::IO::DiscretizationWriter& output,
+void Constraints::SpringDashpotManager::output(Core::IO::DiscretizationWriter& output,
     Core::FE::Discretization& discret, Core::LinAlg::Vector<double>& disp)
 {
   // row maps for export
@@ -98,8 +98,8 @@ void CONSTRAINTS::SpringDashpotManager::output(Core::IO::DiscretizationWriter& o
     springs_[i]->output_gap_normal(*gap, normals, springstress);
 
     // get spring type from current condition
-    const CONSTRAINTS::SpringDashpot::RobinSpringDashpotType stype = springs_[i]->get_spring_type();
-    if (stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
+    const Constraints::SpringDashpot::RobinSpringDashpotType stype = springs_[i]->get_spring_type();
+    if (stype == Constraints::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
       found_cursurfnormal = true;
   }
 
@@ -117,7 +117,7 @@ void CONSTRAINTS::SpringDashpotManager::output(Core::IO::DiscretizationWriter& o
   return;
 }
 
-void CONSTRAINTS::SpringDashpotManager::output_restart(
+void Constraints::SpringDashpotManager::output_restart(
     std::shared_ptr<Core::IO::DiscretizationWriter> output_restart,
     Core::FE::Discretization& discret, Core::LinAlg::Vector<double>& disp)
 {
@@ -131,12 +131,12 @@ void CONSTRAINTS::SpringDashpotManager::output_restart(
   for (int i = 0; i < n_conds_; ++i)
   {
     // get spring type from current condition
-    const CONSTRAINTS::SpringDashpot::RobinSpringDashpotType stype = springs_[i]->get_spring_type();
+    const Constraints::SpringDashpot::RobinSpringDashpotType stype = springs_[i]->get_spring_type();
 
-    if (stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::xyz or
-        stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::refsurfnormal)
+    if (stype == Constraints::SpringDashpot::RobinSpringDashpotType::xyz or
+        stype == Constraints::SpringDashpot::RobinSpringDashpotType::refsurfnormal)
       springs_[i]->output_prestr_offset(*springoffsetprestr);
-    if (stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
+    if (stype == Constraints::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
       springs_[i]->output_prestr_offset_old(*springoffsetprestr_old);
   }
 
@@ -156,7 +156,7 @@ void CONSTRAINTS::SpringDashpotManager::output_restart(
 |(public)                                                      mhv 03/15|
 |Read restart information                                               |
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::SpringDashpotManager::read_restart(
+void Constraints::SpringDashpotManager::read_restart(
     Core::IO::DiscretizationReader& reader, const double& time)
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> tempvec =
@@ -171,12 +171,12 @@ void CONSTRAINTS::SpringDashpotManager::read_restart(
   for (int i = 0; i < n_conds_; ++i)
   {
     // get spring type from current condition
-    const CONSTRAINTS::SpringDashpot::RobinSpringDashpotType stype = springs_[i]->get_spring_type();
+    const Constraints::SpringDashpot::RobinSpringDashpotType stype = springs_[i]->get_spring_type();
 
-    if (stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::xyz or
-        stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::refsurfnormal)
+    if (stype == Constraints::SpringDashpot::RobinSpringDashpotType::xyz or
+        stype == Constraints::SpringDashpot::RobinSpringDashpotType::refsurfnormal)
       springs_[i]->set_restart(*tempvec);
-    if (stype == CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
+    if (stype == Constraints::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
       springs_[i]->set_restart_old(*tempvecold);
   }
 

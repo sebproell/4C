@@ -123,7 +123,7 @@ namespace Solid
 
      private:
       //! all spring dashpot instances
-      std::vector<std::shared_ptr<CONSTRAINTS::SpringDashpot>> springs_;
+      std::vector<std::shared_ptr<Constraints::SpringDashpot>> springs_;
 
       //! structural displacement at \f$t_{n+1}\f$
       std::shared_ptr<const Core::LinAlg::Vector<double>> disnp_ptr_;

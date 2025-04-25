@@ -25,7 +25,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  |  ctor (public)                                               tk 07/08|
  *----------------------------------------------------------------------*/
-CONSTRAINTS::MPConstraint2::MPConstraint2(std::shared_ptr<Core::FE::Discretization> discr,
+Constraints::MPConstraint2::MPConstraint2(std::shared_ptr<Core::FE::Discretization> discr,
     const std::string& conditionname, int& minID, int& maxID)
     : MPConstraint(discr, conditionname, minID, maxID)
 {
@@ -50,7 +50,7 @@ CONSTRAINTS::MPConstraint2::MPConstraint2(std::shared_ptr<Core::FE::Discretizati
 |(public)                                                       tk 08/08  |
 |Initialization routine activates conditions (restart)                    |
 *------------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint2::initialize(const double& time)
+void Constraints::MPConstraint2::initialize(const double& time)
 {
   for (auto* cond : constrcond_)
   {
@@ -74,7 +74,7 @@ void CONSTRAINTS::MPConstraint2::initialize(const double& time)
 |(public)                                                        tk 07/08|
 |Evaluate Constraints, choose the right action based on type             |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint2::initialize(
+void Constraints::MPConstraint2::initialize(
     Teuchos::ParameterList& params, std::shared_ptr<Core::LinAlg::Vector<double>> systemvector)
 {
   const double time = params.get("total time", -1.0);
@@ -117,7 +117,7 @@ void CONSTRAINTS::MPConstraint2::initialize(
 |(public)                                                        tk 07/08|
 |Evaluate Constraints, choose the right action based on type             |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint2::evaluate(Teuchos::ParameterList& params,
+void Constraints::MPConstraint2::evaluate(Teuchos::ParameterList& params,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -143,7 +143,7 @@ void CONSTRAINTS::MPConstraint2::evaluate(Teuchos::ParameterList& params,
  |subroutine creating a new discretization containing constraint elements |
  *------------------------------------------------------------------------*/
 std::map<int, std::shared_ptr<Core::FE::Discretization>>
-CONSTRAINTS::MPConstraint2::create_discretization_from_condition(
+Constraints::MPConstraint2::create_discretization_from_condition(
     std::shared_ptr<Core::FE::Discretization> actdisc,
     std::vector<Core::Conditions::Condition*> constrcondvec, const std::string& discret_name,
     const std::string& element_name, int& startID)
@@ -233,7 +233,7 @@ CONSTRAINTS::MPConstraint2::create_discretization_from_condition(
  |(private)                                                 tk 04/08    |
  |reorder MPC nodes based on condition input                            |
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint2::reorder_constraint_nodes(
+void Constraints::MPConstraint2::reorder_constraint_nodes(
     std::vector<int>& nodeids, const Core::Conditions::Condition* cond)
 {
   // get this condition's nodes
@@ -255,7 +255,7 @@ void CONSTRAINTS::MPConstraint2::reorder_constraint_nodes(
  |Evaluate method, calling element evaluates of a condition and          |
  |assembing results based on this conditions                             |
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint2::evaluate_constraint(std::shared_ptr<Core::FE::Discretization> disc,
+void Constraints::MPConstraint2::evaluate_constraint(std::shared_ptr<Core::FE::Discretization> disc,
     Teuchos::ParameterList& params, std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,

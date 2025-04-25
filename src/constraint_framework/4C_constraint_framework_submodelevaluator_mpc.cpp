@@ -27,7 +27,7 @@
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 FOUR_C_NAMESPACE_OPEN
-CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::RveMultiPointConstraintManager(
+Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::RveMultiPointConstraintManager(
     std::shared_ptr<const Core::FE::Discretization> disc_ptr, Core::LinAlg::SparseMatrix* st_ptr)
 {
   discret_ptr_ = disc_ptr;
@@ -114,7 +114,7 @@ CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::RveMultiPointCon
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::check_input()
+void Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::check_input()
 {
   if (Core::Communication::num_mpi_ranks(discret_ptr_->get_comm()) > 1)
     FOUR_C_THROW("periodic boundary conditions for RVEs are not implemented in parallel.");
@@ -209,7 +209,7 @@ void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::check_input
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_opposite_edge_node(
+int Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_opposite_edge_node(
     const int nodeID, Inpar::RveMpc::RveEdgeIdentifiers edge,
     std::map<std::string, const std::vector<int>*>& rveBoundaryNodeIdMap)
 {
@@ -270,7 +270,7 @@ int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_opposit
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_periodic_mp_cs(
+void Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_periodic_mp_cs(
     std::map<std::string, const std::vector<int>*>& rveBoundaryNodeIdMap,
     std::map<std::string, int>& rveCornerNodeIdMap)
 {
@@ -546,7 +546,7 @@ void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_perio
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_linear_mp_cs()
+int Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_linear_mp_cs()
 {
   Core::IO::cout(Core::IO::verbose)
       << Core::IO::endl
@@ -645,7 +645,7 @@ int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::build_linear
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_periodic_rve_corner_nodes(
+int Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_periodic_rve_corner_nodes(
     const std::vector<int>* edge1, const std::vector<int>* edge2)
 {
   for (int nodeId : *edge2)
@@ -655,7 +655,7 @@ int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_periodi
   return -1;
 }
 
-int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_periodic_rve_corner_nodes(
+int Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_periodic_rve_corner_nodes(
     const std::vector<int>* surf1, const std::vector<int>* surf2, const std::vector<int>* surf3)
 {
   std::vector<int> commonNodeIds12, commonNodeIds123;
@@ -678,7 +678,7 @@ int CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::find_periodi
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::
+void Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::
     build_periodic_rve_corner_node_map(
         std::map<std::string, const std::vector<int>*>& rveBoundaryNodeIdMap,
         std::map<std::string, int>& rveCornerNodeIdMap)
@@ -772,7 +772,7 @@ void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::
+void Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::
     build_periodic_rve_boundary_node_map(
         std::map<std::string, const std::vector<int>*>& rveBoundaryNodeIdMap)
 {
@@ -834,7 +834,7 @@ void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void CONSTRAINTS::SUBMODELEVALUATOR::RveMultiPointConstraintManager::reset() {}
+void Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager::reset() {}
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 

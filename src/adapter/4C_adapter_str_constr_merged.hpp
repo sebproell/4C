@@ -121,7 +121,7 @@ namespace Adapter
     bool have_constraint() override { return structure_->have_constraint(); };
 
     /// Return bool indicating if constraints are defined
-    std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager() override
+    std::shared_ptr<Constraints::ConstrManager> get_constraint_manager() override
     {
       return structure_->get_constraint_manager();
     };
