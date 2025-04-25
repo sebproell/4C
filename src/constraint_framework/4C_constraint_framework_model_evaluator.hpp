@@ -17,7 +17,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Constraints::SUBMODELEVALUATOR
+namespace Constraints::SubmodelEvaluator
 {
   class RveMultiPointConstraintManager;
 
@@ -41,7 +41,7 @@ namespace Solid
     {
      public:
       using SubmodelevaluatorVector =
-          std::vector<std::shared_ptr<Constraints::SUBMODELEVALUATOR::ConstraintBase>>;
+          std::vector<std::shared_ptr<Constraints::SubmodelEvaluator::ConstraintBase>>;
 
       Constraint() = default;
 

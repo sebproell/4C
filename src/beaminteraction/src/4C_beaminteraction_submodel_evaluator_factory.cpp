@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-BeamInteraction::SUBMODELEVALUATOR::Factory::Factory()
+BeamInteraction::SubmodelEvaluator::Factory::Factory()
 {
   // empty constructor
 }
@@ -27,7 +27,7 @@ BeamInteraction::SUBMODELEVALUATOR::Factory::Factory()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Solid::ModelEvaluator::BeamInteraction::Map>
-BeamInteraction::SUBMODELEVALUATOR::Factory::build_model_evaluators(
+BeamInteraction::SubmodelEvaluator::Factory::build_model_evaluators(
     const std::set<enum Inpar::BeamInteraction::SubModelType>& submodeltypes) const
 {
   // create a new standard map
@@ -41,19 +41,19 @@ BeamInteraction::SUBMODELEVALUATOR::Factory::build_model_evaluators(
     {
       case Inpar::BeamInteraction::submodel_beamcontact:
         (*model_map)[*mt_iter] =
-            std::make_shared<BeamInteraction::SUBMODELEVALUATOR::BeamContact>();
+            std::make_shared<BeamInteraction::SubmodelEvaluator::BeamContact>();
         break;
       case Inpar::BeamInteraction::submodel_crosslinking:
         (*model_map)[*mt_iter] =
-            std::make_shared<BeamInteraction::SUBMODELEVALUATOR::Crosslinking>();
+            std::make_shared<BeamInteraction::SubmodelEvaluator::Crosslinking>();
         break;
       case Inpar::BeamInteraction::submodel_spherebeamlink:
         (*model_map)[*mt_iter] =
-            std::make_shared<BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking>();
+            std::make_shared<BeamInteraction::SubmodelEvaluator::SphereBeamLinking>();
         break;
       case Inpar::BeamInteraction::submodel_potential:
         (*model_map)[*mt_iter] =
-            std::make_shared<BeamInteraction::SUBMODELEVALUATOR::BeamPotential>();
+            std::make_shared<BeamInteraction::SubmodelEvaluator::BeamPotential>();
         break;
       default:
         FOUR_C_THROW("Not yet implemented!");
@@ -67,7 +67,7 @@ BeamInteraction::SUBMODELEVALUATOR::Factory::build_model_evaluators(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Solid::ModelEvaluator::BeamInteraction::Map>
-BeamInteraction::SUBMODELEVALUATOR::build_model_evaluators(
+BeamInteraction::SubmodelEvaluator::build_model_evaluators(
     const std::set<enum Inpar::BeamInteraction::SubModelType>& submodeltypes)
 {
   Factory factory;

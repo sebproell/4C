@@ -111,7 +111,7 @@ BeamInteraction::BeamToSolidCondition::create_contact_pair(
 /**
  *
  */
-std::shared_ptr<BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManager>
+std::shared_ptr<BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManager>
 BeamInteraction::BeamToSolidCondition::create_indirect_assembly_manager(
     const std::shared_ptr<const Core::FE::Discretization>& discret)
 {
@@ -141,7 +141,7 @@ BeamInteraction::BeamToSolidCondition::create_indirect_assembly_manager(
     mortar_manager->set_local_maps(condition_contact_pairs_);
 
     // Create the indirect assembly manager with the mortar manager
-    return std::make_shared<SUBMODELEVALUATOR::BeamContactAssemblyManagerInDirect>(mortar_manager);
+    return std::make_shared<SubmodelEvaluator::BeamContactAssemblyManagerInDirect>(mortar_manager);
   }
   return nullptr;
 }

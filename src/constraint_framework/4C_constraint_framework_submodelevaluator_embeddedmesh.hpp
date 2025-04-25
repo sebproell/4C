@@ -20,7 +20,7 @@ namespace Constraints::EmbeddedMesh
   class SolidToSolidMortarManager;
 }
 
-namespace Constraints::SUBMODELEVALUATOR
+namespace Constraints::SubmodelEvaluator
 {
   class EmbeddedMeshConstraintManager : public ConstraintBase
   {
@@ -63,7 +63,7 @@ namespace Constraints::SUBMODELEVALUATOR
     //! Pointer to the mortar manager. This object stores the relevant mortar matrices.
     std::shared_ptr<Constraints::EmbeddedMesh::SolidToSolidMortarManager> mortar_manager_;
   };
-}  // namespace Constraints::SUBMODELEVALUATOR
+}  // namespace Constraints::SubmodelEvaluator
 
 FOUR_C_NAMESPACE_CLOSE
 

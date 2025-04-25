@@ -26,7 +26,7 @@ namespace FBI
 
 namespace BeamInteraction
 {
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     /**
      * \brief This class collects local force and stiffness terms of the pairs and adds them
@@ -72,7 +72,7 @@ namespace BeamInteraction
       /// Object determining how the local matrices are assembled into the global one
       std::shared_ptr<FBI::Utils::FBIAssemblyStrategy> assemblystrategy_;
     };
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

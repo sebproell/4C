@@ -16,7 +16,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConstraintManager(
+Constraints::SubmodelEvaluator::EmbeddedMeshConstraintManager::EmbeddedMeshConstraintManager(
     std::shared_ptr<Core::FE::Discretization> discret_ptr,
     const Core::LinAlg::Vector<double>& dispnp)
 {
@@ -75,7 +75,7 @@ Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConst
       discret_ptr->dof_row_map()->MaxAllGID() + 1);
 }
 
-bool Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::evaluate_force_stiff(
+bool Constraints::SubmodelEvaluator::EmbeddedMeshConstraintManager::evaluate_force_stiff(
     const Core::LinAlg::Vector<double>& displacement_vector,
     std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& global_state_ptr,
     std::shared_ptr<Core::LinAlg::SparseMatrix> me_stiff_ptr,
@@ -89,7 +89,7 @@ bool Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::evaluate_for
   return true;
 }
 
-void Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::runtime_output_step_state(
+void Constraints::SubmodelEvaluator::EmbeddedMeshConstraintManager::runtime_output_step_state(
     std::pair<double, int> output_time_and_step)
 {
   // Write runtime output for the embedded mesh method

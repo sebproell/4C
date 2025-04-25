@@ -67,7 +67,7 @@ namespace Adapter
    * constraint enforcement technique with a discretization approach for Fluid-beam interaction.
    *
    * The idea is, that this method should act a bit like a mini
-   * BeamInteraction::SUBMODELEVALUATOR::BeamContact and manage the fluid-beam interaction pairs and
+   * BeamInteraction::SubmodelEvaluator::BeamContact and manage the fluid-beam interaction pairs and
    * their assembly into global contribution matrices
    */
   class FBIConstraintBridge

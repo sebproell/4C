@@ -23,7 +23,7 @@ namespace BeamInteraction
 {
   class BeamToSolidSurfaceVisualizationOutputParams;
   class BeamToSolidVisualizationOutputWriterBase;
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class BeamContact;
   }
@@ -63,7 +63,7 @@ namespace BeamInteraction
      * (and probably can not) have a RCP to itself.
      */
     void write_output_runtime(
-        const BeamInteraction::SUBMODELEVALUATOR::BeamContact* beam_contact) const;
+        const BeamInteraction::SubmodelEvaluator::BeamContact* beam_contact) const;
 
     /**
      * \brief Setup post iteration output creation, and call WriteOutputData.
@@ -73,7 +73,7 @@ namespace BeamInteraction
      * @param i_iteration (in) current number of iteration.
      */
     void write_output_runtime_iteration(
-        const BeamInteraction::SUBMODELEVALUATOR::BeamContact* beam_contact, int i_iteration) const;
+        const BeamInteraction::SubmodelEvaluator::BeamContact* beam_contact, int i_iteration) const;
 
    private:
     /**
@@ -85,7 +85,7 @@ namespace BeamInteraction
      * @param time (in) Scalar time value for this visualization step.
      */
     void write_output_beam_to_solid_surface(
-        const BeamInteraction::SUBMODELEVALUATOR::BeamContact* beam_contact, int i_step,
+        const BeamInteraction::SubmodelEvaluator::BeamContact* beam_contact, int i_step,
         double time) const;
 
    private:

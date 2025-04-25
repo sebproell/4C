@@ -41,7 +41,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::SphereBeamLinking()
+BeamInteraction::SubmodelEvaluator::SphereBeamLinking::SphereBeamLinking()
     : sm_crosslinkink_ptr_(nullptr),
       spherebeamlinking_params_ptr_(nullptr),
       visualization_manager_ptr_(nullptr),
@@ -51,7 +51,7 @@ BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::SphereBeamLinking()
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::setup()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::setup()
 {
   check_init();
 
@@ -75,7 +75,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::setup()
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::post_setup()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::post_setup()
 {
   check_init_setup();
   // nothing to do (yet)
@@ -83,7 +83,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::post_setup()
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::init_submodel_dependencies(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::init_submodel_dependencies(
     std::shared_ptr<Solid::ModelEvaluator::BeamInteraction::Map> const submodelmap)
 {
   check_init_setup();
@@ -93,13 +93,13 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::init_submodel_depend
   for (miter = (*submodelmap).begin(); miter != (*submodelmap).end(); ++miter)
     if (miter->first == Inpar::BeamInteraction::submodel_crosslinking)
       sm_crosslinkink_ptr_ =
-          std::dynamic_pointer_cast<BeamInteraction::SUBMODELEVALUATOR::Crosslinking>(
+          std::dynamic_pointer_cast<BeamInteraction::SubmodelEvaluator::Crosslinking>(
               miter->second);
 }
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::reset()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::reset()
 {
   check_init_setup();
 
@@ -164,7 +164,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::reset()
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::evaluate_force()
+bool BeamInteraction::SubmodelEvaluator::SphereBeamLinking::evaluate_force()
 {
   check_init_setup();
 
@@ -220,7 +220,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::evaluate_force()
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::evaluate_stiff()
+bool BeamInteraction::SubmodelEvaluator::SphereBeamLinking::evaluate_stiff()
 {
   check_init_setup();
 
@@ -281,7 +281,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::evaluate_stiff()
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::evaluate_force_stiff()
+bool BeamInteraction::SubmodelEvaluator::SphereBeamLinking::evaluate_force_stiff()
 {
   check_init_setup();
 
@@ -348,14 +348,14 @@ bool BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::evaluate_force_stiff
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::update_step_state(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::update_step_state(
     const double& timefac_n)
 {
   check_init_setup();
 }
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::pre_update_step_element(
+bool BeamInteraction::SubmodelEvaluator::SphereBeamLinking::pre_update_step_element(
     bool beam_redist)
 {
   check_init_setup();
@@ -365,7 +365,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::pre_update_step_elem
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::update_step_element(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::update_step_element(
     bool repartition_was_done)
 {
   check_init_setup();
@@ -419,7 +419,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::update_step_element(
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::post_update_step_element()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::post_update_step_element()
 {
   check_init_setup();
 
@@ -446,7 +446,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::post_update_step_ele
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
 std::map<Solid::EnergyType, double>
-BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::get_energy() const
+BeamInteraction::SubmodelEvaluator::SphereBeamLinking::get_energy() const
 {
   check_init_setup();
 
@@ -473,7 +473,7 @@ BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::get_energy() const
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::output_step_state(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::output_step_state(
     Core::IO::DiscretizationWriter& iowriter) const
 {
   check_init_setup();
@@ -481,7 +481,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::output_step_state(
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::runtime_output_step_state() const
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::runtime_output_step_state() const
 {
   check_init_setup();
 
@@ -490,7 +490,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::runtime_output_step_
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::reset_step_state()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::reset_step_state()
 {
   check_init_setup();
 
@@ -500,7 +500,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::reset_step_state()
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::write_restart(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::write_restart(
     Core::IO::DiscretizationWriter& ia_writer, Core::IO::DiscretizationWriter& bin_writer) const
 {
   check_init_setup();
@@ -510,14 +510,14 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::write_restart(
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::pre_read_restart()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::pre_read_restart()
 {
   // empty
 }
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::read_restart(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::read_restart(
     Core::IO::DiscretizationReader& ia_reader, Core::IO::DiscretizationReader& bin_reader)
 {
   check_init_setup();
@@ -527,14 +527,14 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::read_restart(
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::post_read_restart()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::post_read_restart()
 {
   // empty
 }
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::add_bins_to_bin_col_map(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::add_bins_to_bin_col_map(
     std::set<int>& colbins)
 {
   // empty
@@ -542,7 +542,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::add_bins_to_bin_col_
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::
     add_bins_with_relevant_content_for_ia_discret_col_map(std::set<int>& colbins) const
 {
   check_init_setup();
@@ -551,7 +551,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::get_half_interaction_distance(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::get_half_interaction_distance(
     double& half_interaction_distance)
 {
   double spherebeamlinking_half_interaction_distance = 0.0;
@@ -597,7 +597,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::get_half_interaction
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::init_output_runtime()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::init_output_runtime()
 {
   check_init();
 
@@ -610,7 +610,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::init_output_runtime(
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::write_output_runtime() const
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::write_output_runtime() const
 {
   check_init_setup();
 
@@ -709,11 +709,11 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::write_output_runtime
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::find_and_store_neighboring_elements(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::find_and_store_neighboring_elements(
     std::map<int, std::vector<std::pair<int, int>>>& newlinks)
 {
   TEUCHOS_FUNC_TIME_MONITOR(
-      "BeamInteraction::SUBMODELEVALUATOR::"
+      "BeamInteraction::SubmodelEvaluator::"
       "SphereBeamLinking::find_and_store_neighboring_elements");
 
   check_init_setup();
@@ -768,7 +768,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::find_and_store_neigh
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::check_feasibility_of_new_link(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::check_feasibility_of_new_link(
     Core::Elements::Element const* currele,
     std::vector<Core::Elements::Element const*> const& neighbors,
     std::unordered_set<int>& tobebonded,
@@ -916,7 +916,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::check_feasibility_of
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::create_beam_to_sphere_joint(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::create_beam_to_sphere_joint(
     std::map<int, std::vector<std::pair<int, int>>> const& newlinks)
 {
   check_init_setup();
@@ -994,7 +994,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::create_beam_to_spher
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::unbind_sphere_beam_bonds(
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::unbind_sphere_beam_bonds(
     int& num_dissolved)
 {
   check_init_setup();
@@ -1056,7 +1056,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::unbind_sphere_beam_b
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::
     calc_force_dependent_catch_slip_bond_unbind_probability(
         std::shared_ptr<BeamInteraction::BeamLinkPinJointed> linkelepairptr, double& p_unbind)
 {
@@ -1119,7 +1119,7 @@ void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::SphereBeamLinking::update_linker_length()
+void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::update_linker_length()
 {
   check_init_setup();
 

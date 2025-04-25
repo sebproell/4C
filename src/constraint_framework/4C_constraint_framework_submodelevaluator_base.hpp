@@ -15,7 +15,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Constraints::SUBMODELEVALUATOR
+namespace Constraints::SubmodelEvaluator
 {
   /*! \brief Interface class of all submodel evaluators managing
    *  constraint terms
@@ -92,7 +92,7 @@ namespace Constraints::SUBMODELEVALUATOR
     std::shared_ptr<Core::LinAlg::Vector<double>> constraint_vector_;
   };
 
-}  // namespace Constraints::SUBMODELEVALUATOR
+}  // namespace Constraints::SubmodelEvaluator
 
 FOUR_C_NAMESPACE_CLOSE
 #endif

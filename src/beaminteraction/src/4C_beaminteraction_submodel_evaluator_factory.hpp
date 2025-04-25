@@ -19,7 +19,7 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace BeamInteraction
 {
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class Generic;
 
@@ -45,7 +45,7 @@ namespace BeamInteraction
     std::shared_ptr<Solid::ModelEvaluator::BeamInteraction::Map> build_model_evaluators(
         const std::set<enum Inpar::BeamInteraction::SubModelType>& submodeltypes);
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

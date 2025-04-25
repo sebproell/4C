@@ -36,7 +36,7 @@ namespace BeamInteraction
   class SphereBeamLinkingParams;
   class BeamLinkPinJointed;
 
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class SphereBeamLinking : public Generic
     {
@@ -163,7 +163,7 @@ namespace BeamInteraction
 
      private:
       //! cell discretization
-      std::shared_ptr<BeamInteraction::SUBMODELEVALUATOR::Crosslinking> sm_crosslinkink_ptr_;
+      std::shared_ptr<BeamInteraction::SubmodelEvaluator::Crosslinking> sm_crosslinkink_ptr_;
 
       //! data container holding all beam contact related parameters
       std::shared_ptr<BeamInteraction::SphereBeamLinkingParams> spherebeamlinking_params_ptr_;
@@ -175,7 +175,7 @@ namespace BeamInteraction
       int random_number_sphere_beam_linking_step_;
     };
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

@@ -20,7 +20,7 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManagerDirect::
+BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManagerDirect::
     BeamContactAssemblyManagerDirect(
         const std::vector<std::shared_ptr<BeamInteraction::BeamContactPair>>&
             assembly_contact_elepairs)
@@ -32,7 +32,7 @@ BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManagerDirect::
 /**
  *
  */
-void BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManagerDirect::evaluate_force_stiff(
+void BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManagerDirect::evaluate_force_stiff(
     std::shared_ptr<Core::FE::Discretization> discret,
     const std::shared_ptr<const Solid::ModelEvaluator::BeamInteractionDataState>& data_state,
     std::shared_ptr<Epetra_FEVector> fe_sysvec,

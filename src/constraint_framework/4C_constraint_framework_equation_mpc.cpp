@@ -15,7 +15,7 @@
 FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void Constraints::SUBMODELEVALUATOR::LinearCoupledEquation::evaluate_equation(
+void Constraints::SubmodelEvaluator::LinearCoupledEquation::evaluate_equation(
     Core::LinAlg::SparseMatrix& Q_dd, Core::LinAlg::SparseMatrix& Q_dL,
     Core::LinAlg::SparseMatrix& Q_Ld, Core::LinAlg::Vector<double>& constraint_vector,
     const Core::LinAlg::Vector<double>& D_np1)
@@ -38,26 +38,26 @@ void Constraints::SUBMODELEVALUATOR::LinearCoupledEquation::evaluate_equation(
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int Constraints::SUBMODELEVALUATOR::MultiPointConstraintEquationBase::get_number_of_mp_cs() const
+int Constraints::SubmodelEvaluator::MultiPointConstraintEquationBase::get_number_of_mp_cs() const
 {
   return n_dof_coupled_;
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int Constraints::SUBMODELEVALUATOR::MultiPointConstraintEquationBase::get_first_row_id() const
+int Constraints::SubmodelEvaluator::MultiPointConstraintEquationBase::get_first_row_id() const
 {
   return first_row_id_;
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void Constraints::SUBMODELEVALUATOR::MultiPointConstraintEquationBase::set_first_row_id(
+void Constraints::SubmodelEvaluator::MultiPointConstraintEquationBase::set_first_row_id(
     int global_row_id)
 {
   first_row_id_ = global_row_id;
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Constraints::SUBMODELEVALUATOR::LinearCoupledEquation::LinearCoupledEquation(
+Constraints::SubmodelEvaluator::LinearCoupledEquation::LinearCoupledEquation(
     int id, const std::vector<int>& dofs, std::vector<double> coefficients)
 {
   Core::IO::cout(Core::IO::debug) << "\nLinear coupled equation saved (ID: " << id << ")\n ";

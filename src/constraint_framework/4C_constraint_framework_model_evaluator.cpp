@@ -91,7 +91,7 @@ void Solid::ModelEvaluator::Constraint::create_sub_model_evaluators()
       case Inpar::Constraints::SubModelType::submodel_pbc_rve:
       {
         sub_model_vec_ptr_.emplace_back(
-            std::make_shared<Constraints::SUBMODELEVALUATOR::RveMultiPointConstraintManager>(
+            std::make_shared<Constraints::SubmodelEvaluator::RveMultiPointConstraintManager>(
                 discret_ptr(), constraint_stiff_ptr_.get()));
 
         break;
@@ -99,7 +99,7 @@ void Solid::ModelEvaluator::Constraint::create_sub_model_evaluators()
       case Inpar::Constraints::SubModelType::submodel_embeddedmesh:
       {
         sub_model_vec_ptr_.emplace_back(
-            std::make_shared<Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager>(
+            std::make_shared<Constraints::SubmodelEvaluator::EmbeddedMeshConstraintManager>(
                 discret_ptr(), *global_state().get_dis_np().get()));
 
         break;

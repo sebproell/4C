@@ -293,9 +293,9 @@ void BeamInteraction::BeamInteractionConditions::create_contact_pairs(
  */
 void BeamInteraction::BeamInteractionConditions::create_indirect_assembly_managers(
     const std::shared_ptr<const Core::FE::Discretization>& discret,
-    std::vector<std::shared_ptr<SUBMODELEVALUATOR::BeamContactAssemblyManager>>& assembly_managers)
+    std::vector<std::shared_ptr<SubmodelEvaluator::BeamContactAssemblyManager>>& assembly_managers)
 {
-  std::shared_ptr<BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManager>
+  std::shared_ptr<BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManager>
       condition_assembly_manager = nullptr;
   for (auto& map_pair : condition_map_)
   {

@@ -23,7 +23,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-namespace Constraints::SUBMODELEVALUATOR
+namespace Constraints::SubmodelEvaluator
 {
   class MultiPointConstraintEquationBase;
 
@@ -111,6 +111,6 @@ namespace Constraints::SUBMODELEVALUATOR
         std::map<std::string, const std::vector<int>*>& rveBoundaryNodeIdMap_);
     //@}
   };
-}  // namespace Constraints::SUBMODELEVALUATOR
+}  // namespace Constraints::SubmodelEvaluator
 FOUR_C_NAMESPACE_CLOSE
 #endif

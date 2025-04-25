@@ -26,7 +26,7 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-BeamInteraction::SUBMODELEVALUATOR::PartitionedBeamInteractionAssemblyManagerIndirect::
+BeamInteraction::SubmodelEvaluator::PartitionedBeamInteractionAssemblyManagerIndirect::
     PartitionedBeamInteractionAssemblyManagerIndirect(
         std::vector<std::shared_ptr<BeamInteraction::BeamContactPair>>& assembly_contact_elepairs,
         std::shared_ptr<const Core::FE::Discretization>& discretization1,
@@ -47,7 +47,7 @@ BeamInteraction::SUBMODELEVALUATOR::PartitionedBeamInteractionAssemblyManagerInd
 /**
  *
  */
-void BeamInteraction::SUBMODELEVALUATOR::PartitionedBeamInteractionAssemblyManagerIndirect::
+void BeamInteraction::SubmodelEvaluator::PartitionedBeamInteractionAssemblyManagerIndirect::
     evaluate_force_stiff(const Core::FE::Discretization& discretization1,
         const Core::FE::Discretization& discretization2, std::shared_ptr<Epetra_FEVector>& ff,
         std::shared_ptr<Epetra_FEVector>& fb, std::shared_ptr<Core::LinAlg::SparseOperator> cff,

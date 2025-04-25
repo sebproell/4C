@@ -62,7 +62,7 @@ namespace BeamInteraction
   class CrosslinkingParams;
   class BeamLink;
 
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class Crosslinking : public Generic
     {
@@ -542,7 +542,7 @@ namespace BeamInteraction
       //! @}
     };
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

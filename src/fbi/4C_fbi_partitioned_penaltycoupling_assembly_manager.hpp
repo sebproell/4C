@@ -37,7 +37,7 @@ namespace BeamInteraction
 
 namespace BeamInteraction
 {
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     /**
      * \brief This class assembles the contribution of beam contact pairs into the global force
@@ -85,7 +85,7 @@ namespace BeamInteraction
       std::vector<std::shared_ptr<BeamInteraction::BeamContactPair>> assembly_contact_elepairs_;
     };
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

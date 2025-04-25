@@ -28,7 +28,7 @@ namespace FBI
 }
 namespace BeamInteraction
 {
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     /**
      * \brief This class collects local mortar coupling terms of the pairs (D and M) and assembles
@@ -80,7 +80,7 @@ namespace BeamInteraction
       std::shared_ptr<BeamInteraction::BeamToFluidMortarManager> mortar_manager_;
     };
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

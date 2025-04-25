@@ -90,7 +90,7 @@ namespace BeamInteraction
      * \brief Create the indirect assembly manager for this condition.
      * @param discret (in) discretization.
      */
-    std::shared_ptr<SUBMODELEVALUATOR::BeamContactAssemblyManager> create_indirect_assembly_manager(
+    std::shared_ptr<SubmodelEvaluator::BeamContactAssemblyManager> create_indirect_assembly_manager(
         const std::shared_ptr<const Core::FE::Discretization>& discret) override;
 
     /**

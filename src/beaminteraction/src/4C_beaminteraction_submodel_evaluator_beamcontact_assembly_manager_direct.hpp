@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace BeamInteraction
 {
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     /**
      * \brief This class collects local force and stiffness terms of the pairs and adds them
@@ -63,7 +63,7 @@ namespace BeamInteraction
       //! Vector of pairs to be evaluated by this class.
       std::vector<std::shared_ptr<BeamInteraction::BeamContactPair>> assembly_contact_elepairs_;
     };
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

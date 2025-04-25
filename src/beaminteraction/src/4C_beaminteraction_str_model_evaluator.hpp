@@ -42,7 +42,7 @@ namespace BeamInteraction
 
   class BeamCrosslinkerHandler;
 
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class Generic;
   }
@@ -59,9 +59,9 @@ namespace Solid
     {
      public:
       using Map = std::map<enum Inpar::BeamInteraction::SubModelType,
-          std::shared_ptr<FourC::BeamInteraction::SUBMODELEVALUATOR::Generic>>;
+          std::shared_ptr<FourC::BeamInteraction::SubmodelEvaluator::Generic>>;
       using Vector =
-          std::vector<std::shared_ptr<FourC::BeamInteraction::SUBMODELEVALUATOR::Generic>>;
+          std::vector<std::shared_ptr<FourC::BeamInteraction::SubmodelEvaluator::Generic>>;
 
       //! constructor
       BeamInteraction();
