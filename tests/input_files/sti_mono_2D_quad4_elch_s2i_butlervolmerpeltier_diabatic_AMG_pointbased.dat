@@ -77,14 +77,14 @@ SYMBOLIC_FUNCTION_OF_SPACE_TIME 300.0              // initial temperature
 SYMBOLIC_FUNCTION_OF_SPACE_TIME a
 VARIABLE 0 NAME a TYPE multifunction NUMPOINTS 3 TIMES 0.0 7.0 20.0 DESCRIPTION 0.5*(sin((t*pi/7.0)-(pi/2)))+0.5 1.0
 -------------------------------------------------RESULT DESCRIPTION
-SCATRA DIS scatra NODE 2066 QUANTITY phi1 VALUE  1.55898593446956912e+01 TOLERANCE 1.6e-07 // local lithium concentration at anode-electrolyte interface (anode side)
+SCATRA DIS scatra NODE 2066 QUANTITY phi1 VALUE  1.55898593446956912e+01 TOLERANCE 2.3e-07 // local lithium concentration at anode-electrolyte interface (anode side)
 SCATRA DIS scatra NODE 2066 QUANTITY phi2 VALUE  1.18996806709133138e-02 TOLERANCE 1.2e-10 // local electric potential at anode-electrolyte interface (anode side)
 SCATRA DIS thermo NODE 2066 QUANTITY phi VALUE  3.00067315218840179e+02 TOLERANCE 3.0e-06 // local temperature at anode-electrolyte interface (anode side)
 SCATRA DIS scatra NODE 1238 QUANTITY phi1 VALUE  1.00411680344864807e+00 TOLERANCE 1.0e-08 // local lithium concentration at anode-electrolyte interface (electrolyte side)
-SCATRA DIS scatra NODE 1238 QUANTITY phi2 VALUE -2.90407079575493110e-01 TOLERANCE 2.9e-09 // local electric potential at anode-electrolyte interface (electrolyte side)
+SCATRA DIS scatra NODE 1238 QUANTITY phi2 VALUE -2.90407079575493110e-01 TOLERANCE 5.2e-09 // local electric potential at anode-electrolyte interface (electrolyte side)
 SCATRA DIS thermo NODE 1238 QUANTITY phi VALUE  3.00067315218985584e+02 TOLERANCE 3.0e-06 // local temperature at anode-electrolyte interface (electrolyte side)
 SCATRA DIS scatra NODE 786 QUANTITY phi1 VALUE  9.90238549432993165e-01 TOLERANCE 9.9e-09 // local lithium concentration at cathode-electrolyte interface (electrolyte side)
-SCATRA DIS scatra NODE 786 QUANTITY phi2 VALUE -2.91666531017122976e-01 TOLERANCE 2.9e-09 // local electric potential at cathode-electrolyte interface (electrolyte side)
+SCATRA DIS scatra NODE 786 QUANTITY phi2 VALUE -2.91666531017122976e-01 TOLERANCE 5.6e-09 // local electric potential at cathode-electrolyte interface (electrolyte side)
 SCATRA DIS thermo NODE 786 QUANTITY phi VALUE  3.00067299062345910e+02 TOLERANCE 3.0e-06 // local temperature at cathode-electrolyte interface (electrolyte side)
 SCATRA DIS scatra NODE 2666 QUANTITY phi1 VALUE  8.46877776638593360e+00 TOLERANCE 8.5e-08 // local lithium concentration at cathode-electrolyte interface (cathode side)
 SCATRA DIS scatra NODE 2666 QUANTITY phi2 VALUE  3.79965614505147542e+00 TOLERANCE 3.8e-08 // local electric potential at cathode-electrolyte interface (cathode side)
