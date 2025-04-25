@@ -50,10 +50,10 @@ namespace
 }  // namespace
 
 template <typename Interface, typename Background, typename Mortar>
-Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
+Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
     Mortar>::SurfaceToBackgroundCouplingPairMortar(std::shared_ptr<Core::Elements::Element>
                                                        element1,
-    Core::Elements::Element* element2, Constraints::EMBEDDEDMESH::EmbeddedMeshParams& params_ptr,
+    Core::Elements::Element* element2, Constraints::EmbeddedMesh::EmbeddedMeshParams& params_ptr,
     std::shared_ptr<Cut::CutWizard>& cutwizard_ptr,
     std::vector<std::shared_ptr<Cut::BoundaryCell>>& boundary_cells)
     : SolidInteractionPair(element1, element2, params_ptr, cutwizard_ptr, boundary_cells)
@@ -100,11 +100,11 @@ Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Back
 }
 
 template <typename Interface, typename Background, typename Mortar>
-void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
+void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
     Mortar>::get_pair_visualization(Core::IO::VisualizationData&
                                         lagrange_multipliers_visualization_data,
     std::shared_ptr<Core::LinAlg::Vector<double>> lambda,
-    const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
+    const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,
     std::shared_ptr<std::unordered_set<int>> interface_tracker)
 {
   // Get the visualization vectors.
@@ -162,16 +162,16 @@ void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface,
 }
 
 template <typename Interface, typename Background, typename Mortar>
-void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
+void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
     Mortar>::set_current_element_position(Core::FE::Discretization const& discret,
     const Core::LinAlg::Vector<double>& displacement_vector)
 {
   std::vector<double> interface_dofvec_timestep = std::vector<double>();
   std::vector<double> background_dofvec_timestep = std::vector<double>();
 
-  Constraints::EMBEDDEDMESH::get_current_element_displacement(
+  Constraints::EmbeddedMesh::get_current_element_displacement(
       discret, &element_1(), displacement_vector, interface_dofvec_timestep);
-  Constraints::EMBEDDEDMESH::get_current_element_displacement(
+  Constraints::EmbeddedMesh::get_current_element_displacement(
       discret, &element_2(), displacement_vector, background_dofvec_timestep);
 
   // Get the initial positions of the first element
@@ -258,7 +258,7 @@ std::shared_ptr<Core::FE::GaussPoints> project_boundary_cell_gauss_rule_on_inter
 }
 
 template <typename Interface, typename Background, typename Mortar>
-void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
+void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
     Mortar>::set_gauss_rule_for_interface_and_background()
 {
   // Variables before iterating over boundary cells
@@ -315,9 +315,9 @@ void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface,
 }
 
 template <typename Interface, typename Background, typename Mortar>
-void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
+void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
     Mortar>::evaluate_and_assemble_mortar_contributions(const Core::FE::Discretization& discret,
-    const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
+    const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,
     Core::LinAlg::SparseMatrix& global_g_bl, Core::LinAlg::SparseMatrix& global_g_bg,
     Core::LinAlg::SparseMatrix& global_fbl_l, Core::LinAlg::SparseMatrix& global_fbg_l,
     Epetra_FEVector& global_constraint, Epetra_FEVector& global_kappa,
@@ -343,7 +343,7 @@ void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface,
 }
 
 template <typename Interface, typename Background, typename Mortar>
-void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
+void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
     Mortar>::get_projected_gauss_rule_in_cut_element(Core::IO::VisualizationData&
         cut_element_integration_points_visualization_data)
 {
@@ -393,7 +393,7 @@ void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface,
 }
 
 template <typename Interface, typename Background, typename Mortar>
-void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
+void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
     Mortar>::
     get_projected_gauss_rule_on_interface(
         Core::IO::VisualizationData& background_integration_points_visualization_data,
@@ -595,7 +595,7 @@ double get_determinant_interface_element(
 }
 
 template <typename Interface, typename Background, typename Mortar>
-void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
+void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Background,
     Mortar>::evaluate_dm(Core::LinAlg::Matrix<Mortar::n_dof_, Interface::n_dof_, double>& local_D,
     Core::LinAlg::Matrix<Mortar::n_dof_, Background::n_dof_, double>& local_M,
     Core::LinAlg::Matrix<Mortar::n_dof_, 1, double>& local_kappa,
@@ -686,7 +686,7 @@ void Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<Interface,
 /**
  * Explicit template initialization of template class.
  */
-namespace Constraints::EMBEDDEDMESH
+namespace Constraints::EmbeddedMesh
 {
   using namespace GEOMETRYPAIR;
 
@@ -696,6 +696,6 @@ namespace Constraints::EMBEDDEDMESH
   template class SurfaceToBackgroundCouplingPairMortar<t_quad4, t_nurbs27, t_quad4>;
   template class SurfaceToBackgroundCouplingPairMortar<t_nurbs9, t_nurbs27, t_nurbs9>;
 
-}  // namespace Constraints::EMBEDDEDMESH
+}  // namespace Constraints::EmbeddedMesh
 
 FOUR_C_NAMESPACE_CLOSE

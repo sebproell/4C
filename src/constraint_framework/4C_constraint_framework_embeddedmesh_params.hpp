@@ -18,7 +18,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Constraints::EMBEDDEDMESH
+namespace Constraints::EmbeddedMesh
 {
   struct EmbeddedMeshParams
   {
@@ -58,7 +58,7 @@ namespace Constraints::EMBEDDEDMESH
     //! Parameter list of cut
     Teuchos::ParameterList cut_params_;
   };
-}  // namespace Constraints::EMBEDDEDMESH
+}  // namespace Constraints::EmbeddedMesh
 
 FOUR_C_NAMESPACE_CLOSE
 

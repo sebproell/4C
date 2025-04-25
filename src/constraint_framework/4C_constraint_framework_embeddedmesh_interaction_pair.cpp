@@ -15,9 +15,9 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-Constraints::EMBEDDEDMESH::SolidInteractionPair::SolidInteractionPair(
+Constraints::EmbeddedMesh::SolidInteractionPair::SolidInteractionPair(
     std::shared_ptr<Core::Elements::Element> element1, Core::Elements::Element* element2,
-    Constraints::EMBEDDEDMESH::EmbeddedMeshParams& params_ptr,
+    Constraints::EmbeddedMesh::EmbeddedMeshParams& params_ptr,
     std::shared_ptr<Cut::CutWizard> cutwizard_ptr,
     std::vector<std::shared_ptr<Cut::BoundaryCell>>& boundary_cells)
     : params_(params_ptr),

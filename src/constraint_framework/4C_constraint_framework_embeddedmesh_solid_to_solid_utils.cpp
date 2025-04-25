@@ -29,9 +29,9 @@ FOUR_C_NAMESPACE_OPEN
 /*
   Free function that prepares and performs the cut.
 */
-void Constraints::EMBEDDEDMESH::prepare_and_perform_cut(std::shared_ptr<Cut::CutWizard> cutwizard,
+void Constraints::EmbeddedMesh::prepare_and_perform_cut(std::shared_ptr<Cut::CutWizard> cutwizard,
     std::shared_ptr<Core::FE::Discretization>& discret,
-    Constraints::EMBEDDEDMESH::EmbeddedMeshParams& embedded_mesh_coupling_params)
+    Constraints::EmbeddedMesh::EmbeddedMeshParams& embedded_mesh_coupling_params)
 {
   //! vector of all coupling discretizations, the background mesh is coupled with
   std::map<std::string, int> dofset_coupling_map;
@@ -102,10 +102,10 @@ void Constraints::EMBEDDEDMESH::prepare_and_perform_cut(std::shared_ptr<Cut::Cut
 }
 
 // Helper function to create a coupling pair
-std::shared_ptr<Constraints::EMBEDDEDMESH::SolidInteractionPair> coupling_pair_mortar_factory(
+std::shared_ptr<Constraints::EmbeddedMesh::SolidInteractionPair> coupling_pair_mortar_factory(
     std::shared_ptr<Core::Elements::Element> interfaceele_real,
     Core::Elements::Element* background_ele,
-    Constraints::EMBEDDEDMESH::EmbeddedMeshParams& params_ptr,
+    Constraints::EmbeddedMesh::EmbeddedMeshParams& params_ptr,
     std::shared_ptr<Cut::CutWizard>& cutwizard_ptr,
     std::vector<std::shared_ptr<Cut::BoundaryCell>>& boundary_cells)
 {
@@ -117,7 +117,7 @@ std::shared_ptr<Constraints::EMBEDDEDMESH::SolidInteractionPair> coupling_pair_m
       {
         case Core::FE::CellType::hex8:
         {
-          return std::make_shared<Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<
+          return std::make_shared<Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<
               GEOMETRYPAIR::t_quad4, GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_quad4>>(
               interfaceele_real, background_ele, params_ptr, cutwizard_ptr, boundary_cells);
           break;
@@ -136,14 +136,14 @@ std::shared_ptr<Constraints::EMBEDDEDMESH::SolidInteractionPair> coupling_pair_m
       {
         case Core::FE::CellType::hex8:
         {
-          return std::make_shared<Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<
+          return std::make_shared<Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<
               GEOMETRYPAIR::t_nurbs9, GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_nurbs9>>(
               interfaceele_real, background_ele, params_ptr, cutwizard_ptr, boundary_cells);
           break;
         }
         case Core::FE::CellType::wedge6:
         {
-          return std::make_shared<Constraints::EMBEDDEDMESH::SurfaceToBackgroundCouplingPairMortar<
+          return std::make_shared<Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<
               GEOMETRYPAIR::t_nurbs9, GEOMETRYPAIR::t_wedge6, GEOMETRYPAIR::t_nurbs9>>(
               interfaceele_real, background_ele, params_ptr, cutwizard_ptr, boundary_cells);
           break;
@@ -162,14 +162,14 @@ std::shared_ptr<Constraints::EMBEDDEDMESH::SolidInteractionPair> coupling_pair_m
   }
 }
 
-std::vector<Constraints::EMBEDDEDMESH::BackgroundInterfaceInfo>
-Constraints::EMBEDDEDMESH::get_information_background_and_interface_elements(
+std::vector<Constraints::EmbeddedMesh::BackgroundInterfaceInfo>
+Constraints::EmbeddedMesh::get_information_background_and_interface_elements(
     const std::shared_ptr<Cut::CutWizard>& cutwizard, Core::FE::Discretization& discret,
     std::vector<int>& ids_cut_elements_col,
     std::vector<Core::Elements::Element*>& cut_elements_col_vector)
 {
   // Declare object to store information of the background elements and their interface elements
-  std::vector<Constraints::EMBEDDEDMESH::BackgroundInterfaceInfo> information_coupling_pairs;
+  std::vector<Constraints::EmbeddedMesh::BackgroundInterfaceInfo> information_coupling_pairs;
   cut_elements_col_vector.clear();
   std::set<int> ids_cut_elements;
 
@@ -253,11 +253,11 @@ Constraints::EMBEDDEDMESH::get_information_background_and_interface_elements(
   return information_coupling_pairs;
 }
 
-void Constraints::EMBEDDEDMESH::get_coupling_pairs_and_background_elements(
+void Constraints::EmbeddedMesh::get_coupling_pairs_and_background_elements(
     std::vector<BackgroundInterfaceInfo>& info_background_interface_elements,
     std::shared_ptr<Cut::CutWizard>& cutwizard,
-    Constraints::EMBEDDEDMESH::EmbeddedMeshParams& params_ptr, Core::FE::Discretization& discret,
-    std::vector<std::shared_ptr<Constraints::EMBEDDEDMESH::SolidInteractionPair>>&
+    Constraints::EmbeddedMesh::EmbeddedMeshParams& params_ptr, Core::FE::Discretization& discret,
+    std::vector<std::shared_ptr<Constraints::EmbeddedMesh::SolidInteractionPair>>&
         embeddedmesh_coupling_pairs)
 {
   // Iterate over the information of the background elements and their corresponding interface
@@ -277,7 +277,7 @@ void Constraints::EMBEDDEDMESH::get_coupling_pairs_and_background_elements(
       std::shared_ptr<Core::Elements::Element> surface_ele;
       for (const auto& interfaceEleSurface : interfaceEleSurfaces)
       {
-        if (Constraints::EMBEDDEDMESH::is_interface_element_surface(*interfaceEleSurface))
+        if (Constraints::EmbeddedMesh::is_interface_element_surface(*interfaceEleSurface))
           surface_ele = interfaceEleSurface;
       }
 
@@ -299,7 +299,7 @@ void Constraints::EMBEDDEDMESH::get_coupling_pairs_and_background_elements(
       // coupling pair
       if (coupling_pair_boundary_cells.size() != 0)
       {
-        std::shared_ptr<Constraints::EMBEDDEDMESH::SolidInteractionPair>
+        std::shared_ptr<Constraints::EmbeddedMesh::SolidInteractionPair>
             embeddedmesh_coupling_pair = coupling_pair_mortar_factory(
                 surface_ele, background_ele, params_ptr, cutwizard, coupling_pair_boundary_cells);
 
@@ -310,7 +310,7 @@ void Constraints::EMBEDDEDMESH::get_coupling_pairs_and_background_elements(
   }
 }
 
-void Constraints::EMBEDDEDMESH::change_gauss_rule_of_cut_elements(
+void Constraints::EmbeddedMesh::change_gauss_rule_of_cut_elements(
     std::vector<Core::Elements::Element*> cut_elements_vector, Cut::CutWizard& cutwizard)
 {
   // loop over column elements
@@ -338,7 +338,7 @@ void Constraints::EMBEDDEDMESH::change_gauss_rule_of_cut_elements(
 }
 
 
-void Constraints::EMBEDDEDMESH::mortar_shape_functions_to_number_of_lagrange_values(
+void Constraints::EmbeddedMesh::mortar_shape_functions_to_number_of_lagrange_values(
     const Inpar::Constraints::SolidToSolidMortarShapefunctions shape_function,
     unsigned int& n_lambda_node)
 {
@@ -364,7 +364,7 @@ void Constraints::EMBEDDEDMESH::mortar_shape_functions_to_number_of_lagrange_val
   }
 }
 
-bool Constraints::EMBEDDEDMESH::is_interface_node(Core::Nodes::Node const& node)
+bool Constraints::EmbeddedMesh::is_interface_node(Core::Nodes::Node const& node)
 {
   bool is_node_on_interface = false;
 
@@ -374,15 +374,15 @@ bool Constraints::EMBEDDEDMESH::is_interface_node(Core::Nodes::Node const& node)
   return is_node_on_interface;
 }
 
-bool Constraints::EMBEDDEDMESH::is_interface_element_surface(Core::Elements::Element& ele)
+bool Constraints::EmbeddedMesh::is_interface_element_surface(Core::Elements::Element& ele)
 {
   for (int i = 0; i < ele.num_point(); i++)
-    if (!Constraints::EMBEDDEDMESH::is_interface_node(*(ele.nodes()[i]))) return false;
+    if (!Constraints::EmbeddedMesh::is_interface_node(*(ele.nodes()[i]))) return false;
 
   return true;
 }
 
-void Constraints::EMBEDDEDMESH::get_current_element_displacement(
+void Constraints::EmbeddedMesh::get_current_element_displacement(
     Core::FE::Discretization const& discret, Core::Elements::Element const* ele,
     const Core::LinAlg::Vector<double>& displacement_vector, std::vector<double>& eledisp)
 {
@@ -392,19 +392,19 @@ void Constraints::EMBEDDEDMESH::get_current_element_displacement(
   eledisp = Core::FE::extract_values(displacement_vector, lm);
 }
 
-void Constraints::EMBEDDEDMESH::get_mortar_gid(
-    const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
-    const Constraints::EMBEDDEDMESH::SolidInteractionPair* interaction_pair,
+void Constraints::EmbeddedMesh::get_mortar_gid(
+    const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,
+    const Constraints::EmbeddedMesh::SolidInteractionPair* interaction_pair,
     const unsigned int n_mortar_pos, std::vector<int>* lambda_gid_pos)
 {
   mortar_manager->location_vector(interaction_pair, *lambda_gid_pos);
 }
 
 template <typename Interface, typename Background, typename Mortar>
-void Constraints::EMBEDDEDMESH::assemble_local_mortar_contributions(
-    const Constraints::EMBEDDEDMESH::SolidInteractionPair* pair,
+void Constraints::EmbeddedMesh::assemble_local_mortar_contributions(
+    const Constraints::EmbeddedMesh::SolidInteractionPair* pair,
     const Core::FE::Discretization& discret,
-    const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
+    const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,
     Core::LinAlg::SparseMatrix& global_g_bl, Core::LinAlg::SparseMatrix& global_g_bg,
     Core::LinAlg::SparseMatrix& global_fbl_l, Core::LinAlg::SparseMatrix& global_fbg_l,
     Epetra_FEVector& global_constraint, Epetra_FEVector& global_kappa,
@@ -460,7 +460,7 @@ void Constraints::EMBEDDEDMESH::assemble_local_mortar_contributions(
 }
 
 
-Core::FE::GaussIntegration Constraints::EMBEDDEDMESH::create_gauss_integration_from_collection(
+Core::FE::GaussIntegration Constraints::EmbeddedMesh::create_gauss_integration_from_collection(
     std::vector<Core::FE::GaussIntegration>& intpoints_vector)
 {
   // format as Core::FE::GaussIntegration
@@ -480,7 +480,7 @@ Core::FE::GaussIntegration Constraints::EMBEDDEDMESH::create_gauss_integration_f
 }
 
 Inpar::Constraints::SolidToSolidMortarShapefunctions
-Constraints::EMBEDDEDMESH::define_shape_functions_lagrange_multipliers(Core::FE::CellType celltype)
+Constraints::EmbeddedMesh::define_shape_functions_lagrange_multipliers(Core::FE::CellType celltype)
 {
   switch (celltype)
   {
@@ -498,15 +498,15 @@ Constraints::EMBEDDEDMESH::define_shape_functions_lagrange_multipliers(Core::FE:
 /**
  * Explicit template initialization of template functions.
  */
-namespace Constraints::EMBEDDEDMESH
+namespace Constraints::EmbeddedMesh
 {
   using namespace GEOMETRYPAIR;
 
 #define initialize_template_assemble_local_mortar_contributions(Interface, Background, Mortar) \
   template void assemble_local_mortar_contributions<Interface, Background, Mortar>(            \
-      const Constraints::EMBEDDEDMESH::SolidInteractionPair* pair,                             \
+      const Constraints::EmbeddedMesh::SolidInteractionPair* pair,                             \
       const Core::FE::Discretization& discret,                                                 \
-      const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,              \
+      const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,              \
       Core::LinAlg::SparseMatrix& global_g_bl, Core::LinAlg::SparseMatrix& global_g_bg,        \
       Core::LinAlg::SparseMatrix& global_fbl_l, Core::LinAlg::SparseMatrix& global_fbg_l,      \
       Epetra_FEVector& global_constraint, Epetra_FEVector& global_kappa,                       \
@@ -522,6 +522,6 @@ namespace Constraints::EMBEDDEDMESH
   initialize_template_assemble_local_mortar_contributions(t_nurbs9, t_nurbs27, t_nurbs9);
   initialize_template_assemble_local_mortar_contributions(t_nurbs9, t_wedge6, t_nurbs9);
 
-}  // namespace Constraints::EMBEDDEDMESH
+}  // namespace Constraints::EmbeddedMesh
 
 FOUR_C_NAMESPACE_CLOSE

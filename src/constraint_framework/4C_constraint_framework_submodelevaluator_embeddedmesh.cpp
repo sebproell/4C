@@ -51,7 +51,7 @@ Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConst
   bool cut_screen_output = xfem_parameter_list.get<bool>("PRINT_OUTPUT");
 
   // Initialize embedded mesh coupling parameters
-  Constraints::EMBEDDEDMESH::EmbeddedMeshParams embedded_mesh_coupling_params = {
+  Constraints::EmbeddedMesh::EmbeddedMeshParams embedded_mesh_coupling_params = {
       .embedded_mesh_coupling_strategy_ = embedded_mesh_coupling_strategy,
       .embedded_mesh_constraint_enforcement_ = embedded_mesh_constraint_enforcement,
       .embedded_mesh_constraint_penalty_parameter_ = embedded_mesh_constraint_penalty_parameter,
@@ -70,7 +70,7 @@ Constraints::SUBMODELEVALUATOR::EmbeddedMeshConstraintManager::EmbeddedMeshConst
           *Global::Problem::instance()->output_control_file(), 0.0),  // Fix time
       discret_ptr->get_comm(), "embedded_mesh");
 
-  mortar_manager_ = std::make_shared<Constraints::EMBEDDEDMESH::SolidToSolidMortarManager>(
+  mortar_manager_ = std::make_shared<Constraints::EmbeddedMesh::SolidToSolidMortarManager>(
       discret_ptr, dispnp, embedded_mesh_coupling_params, visualization_manager,
       discret_ptr->dof_row_map()->MaxAllGID() + 1);
 }

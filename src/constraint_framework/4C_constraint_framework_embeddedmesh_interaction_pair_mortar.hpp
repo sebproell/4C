@@ -18,7 +18,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Constraints::EMBEDDEDMESH
+namespace Constraints::EmbeddedMesh
 {
   class SolidToSolidMortarManager;
 
@@ -31,7 +31,7 @@ namespace Constraints::EMBEDDEDMESH
      */
     SurfaceToBackgroundCouplingPairMortar(std::shared_ptr<Core::Elements::Element> element1,
         Core::Elements::Element* element2,
-        Constraints::EMBEDDEDMESH::EmbeddedMeshParams& params_ptr,
+        Constraints::EmbeddedMesh::EmbeddedMeshParams& params_ptr,
         std::shared_ptr<Cut::CutWizard>& cutwizard_ptr,
         std::vector<std::shared_ptr<Cut::BoundaryCell>>& boundary_cells);
 
@@ -51,7 +51,7 @@ namespace Constraints::EMBEDDEDMESH
     void get_pair_visualization(
         Core::IO::VisualizationData& lagrange_multipliers_visualization_data,
         std::shared_ptr<Core::LinAlg::Vector<double>> lambda,
-        const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
+        const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,
         std::shared_ptr<std::unordered_set<int>> interface_tracker) override;
 
     //! @name Evaluation methods
@@ -69,7 +69,7 @@ namespace Constraints::EMBEDDEDMESH
      * @param displacement_vector (in) Global displacement vector.
      */
     void evaluate_and_assemble_mortar_contributions(const Core::FE::Discretization& discret,
-        const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
+        const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,
         Core::LinAlg::SparseMatrix& global_g_bl, Core::LinAlg::SparseMatrix& global_g_bg,
         Core::LinAlg::SparseMatrix& global_fbl_l, Core::LinAlg::SparseMatrix& global_fbg_l,
         Epetra_FEVector& global_constraint, Epetra_FEVector& global_kappa,
@@ -151,7 +151,7 @@ namespace Constraints::EMBEDDEDMESH
   {
   }
 
-}  // namespace Constraints::EMBEDDEDMESH
+}  // namespace Constraints::EmbeddedMesh
 
 FOUR_C_NAMESPACE_CLOSE
 

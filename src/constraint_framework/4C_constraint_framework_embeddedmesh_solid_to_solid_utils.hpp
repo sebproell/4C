@@ -44,7 +44,7 @@ namespace Core::LinAlg
   class SparseMatrix;
 }
 
-namespace Constraints::EMBEDDEDMESH
+namespace Constraints::EmbeddedMesh
 {
   class SolidToSolidMortarManager;
   class SolidInteractionPair;
@@ -63,7 +63,7 @@ namespace Constraints::EMBEDDEDMESH
    */
   void prepare_and_perform_cut(std::shared_ptr<Cut::CutWizard> cutwizard,
       std::shared_ptr<Core::FE::Discretization>& discret,
-      Constraints::EMBEDDEDMESH::EmbeddedMeshParams& embedded_mesh_coupling_params);
+      Constraints::EmbeddedMesh::EmbeddedMeshParams& embedded_mesh_coupling_params);
 
   /**
    * \brief Free function that obtains the information of a background element and
@@ -94,8 +94,8 @@ namespace Constraints::EMBEDDEDMESH
   void get_coupling_pairs_and_background_elements(
       std::vector<BackgroundInterfaceInfo>& info_background_interface_elements,
       std::shared_ptr<Cut::CutWizard>& cutwizard,
-      Constraints::EMBEDDEDMESH::EmbeddedMeshParams& params_ptr, Core::FE::Discretization& discret,
-      std::vector<std::shared_ptr<Constraints::EMBEDDEDMESH::SolidInteractionPair>>&
+      Constraints::EmbeddedMesh::EmbeddedMeshParams& params_ptr, Core::FE::Discretization& discret,
+      std::vector<std::shared_ptr<Constraints::EmbeddedMesh::SolidInteractionPair>>&
           embeddedmesh_coupling_pairs);
 
   /**
@@ -142,9 +142,9 @@ namespace Constraints::EMBEDDEDMESH
    */
   template <typename Interface, typename Background, typename Mortar>
   void assemble_local_mortar_contributions(
-      const Constraints::EMBEDDEDMESH::SolidInteractionPair* pair,
+      const Constraints::EmbeddedMesh::SolidInteractionPair* pair,
       const Core::FE::Discretization& discret,
-      const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
+      const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,
       Core::LinAlg::SparseMatrix& global_g_bl, Core::LinAlg::SparseMatrix& global_g_bg,
       Core::LinAlg::SparseMatrix& global_fbl_l, Core::LinAlg::SparseMatrix& global_fbg_l,
       Epetra_FEVector& global_constraint, Epetra_FEVector& global_kappa,
@@ -161,8 +161,8 @@ namespace Constraints::EMBEDDEDMESH
    * @param n_mortar_pos (in) Number of positional mortar DOFs associated with the pair
    * @param lambda_gid_pos (out) GIDs of positional mortar DOFs associated with the pair
    */
-  void get_mortar_gid(const Constraints::EMBEDDEDMESH::SolidToSolidMortarManager* mortar_manager,
-      const Constraints::EMBEDDEDMESH::SolidInteractionPair* interaction_pair,
+  void get_mortar_gid(const Constraints::EmbeddedMesh::SolidToSolidMortarManager* mortar_manager,
+      const Constraints::EmbeddedMesh::SolidInteractionPair* interaction_pair,
       const unsigned int n_mortar_pos, std::vector<int>* lambda_gid_pos);
 
   bool is_interface_node(Core::Nodes::Node const& node);
@@ -182,7 +182,7 @@ namespace Constraints::EMBEDDEDMESH
   Inpar::Constraints::SolidToSolidMortarShapefunctions define_shape_functions_lagrange_multipliers(
       Core::FE::CellType celltype);
 
-}  // namespace Constraints::EMBEDDEDMESH
+}  // namespace Constraints::EmbeddedMesh
 
 FOUR_C_NAMESPACE_CLOSE
 
