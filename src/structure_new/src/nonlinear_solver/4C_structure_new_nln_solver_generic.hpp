@@ -188,7 +188,6 @@ namespace Solid
         /*! returns the nox group (pointer) (only for internal use)
          *
          *  The nox group has to be initialized in one of the derived setup() routines. */
-        ::NOX::Abstract::Group& group();
         Teuchos::RCP<::NOX::Abstract::Group>& group_ptr();
 
        protected:
