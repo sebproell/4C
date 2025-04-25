@@ -25,6 +25,8 @@ in the future.
 
 **New code should always follow the following guidelines. Touching old code is always a great opportunity to improve it with respect to these guidelines.**
 
+.. _avoid-define-flags:
+
 Avoid define flags
 ^^^^^^^^^^^^^^^^^^
 
@@ -69,8 +71,7 @@ In addition, the string-based lookup is not compile-time checked.
 Const-correctness
 ^^^^^^^^^^^^^^^^^
 
-Make new code const-correct and fix old code in that regard when working on it. Const-correctness is mainly relevant
-for function parameters and member functions.
+Make code const-correct. Const-correctness is mainly relevant for function parameters and member functions.
 
 **Note:** The member fields of a struct or class should often not be ``const``, as this would prevent the struct or
 class from being moved or copied. Instead, use ``const`` member functions to access the fields in a ``const`` context.
@@ -91,15 +92,18 @@ See also `Enum.3 <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#e
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - **Namespaces** use CamelCase: ``LinAlg::``
-- **Class names** / **function** names / **enum types** use camel case, starting with a capital letter:
-  ``ClassToDoSomething / FunctionToPerformAnOperation()``
+- **class**, **struct** and **enum** types use CamelCase: ``ClassName``, ``StructName``, ``EnumName``
+- **Functions** use snake_case: ``function_with_descriptive_name()``
 - **Variables** and **enum values** use
 
     - snake_case, i.e. all lower-case letters separated by underscores, e.g. ``variable_with_descriptive_name``
     - camelCase starting with a lower-case letter, e.g. ``variableWithDescriptiveName``
 
-- **Class members** end with an underscore: ``variable_``
-- **Define flags** are in all caps: ``DEBUG``
+- **Private class members** end with an underscore: ``variable_``
+- **Define flags** are all CAPS: ``FOUR_C_ENABLE_ASSERTIONS`` (please :ref:`avoid define flags<avoid-define-flags>`)
+
+The full specification of the naming convention is listed in the
+`.clang-tidy configuration file <https://github.com/4C-multiphysics/4C/blob/main/.clang-tidy>`_.
 
 Variable names must not be just a single letter, because they are impossible to find in a global search operation.
 (Exception: loop indices such as i, j, but remember that even loop indices could/should have descriptive names.)
