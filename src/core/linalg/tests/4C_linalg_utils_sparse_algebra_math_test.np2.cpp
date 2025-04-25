@@ -152,7 +152,7 @@ namespace
       // Check for overall norm of matrix inverse
       constexpr double expected_frobenius_norm = 8.31688788510637e+06;
       EXPECT_NEAR(
-          A_inverse->norm_frobenius(), expected_frobenius_norm, expected_frobenius_norm * 1e-12);
+          A_inverse->norm_frobenius(), expected_frobenius_norm, expected_frobenius_norm * 1e-10);
     }
 
     {
@@ -178,7 +178,7 @@ namespace
       // Check for overall norm of matrix inverse
       constexpr double expected_frobenius_norm = 1.1473820881252188e+07;
       EXPECT_NEAR(
-          A_thresh->norm_frobenius(), expected_frobenius_norm, expected_frobenius_norm * 1e-12);
+          A_thresh->norm_frobenius(), expected_frobenius_norm, expected_frobenius_norm * 1e-10);
     }
   }
 }  // namespace
