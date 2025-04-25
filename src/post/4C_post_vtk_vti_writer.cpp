@@ -394,7 +394,7 @@ void PostVtiWriter::writer_prep_timestep()
 
   const std::shared_ptr<Core::FE::Discretization> dis = field_->discretization();
   // collect all possible values of the x-, y- and z-coordinate
-  typedef std::set<double, LessTol<double>> set_tol;
+  using set_tol = std::set<double, LessTol<double>>;
   set_tol collected_coords[3];
   for (int n = 0; n < dis->num_my_col_nodes(); ++n)
   {

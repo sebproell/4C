@@ -296,7 +296,7 @@ void test_hex8quad4selfcut92();
 
 void test_hex8quad4aligned_edges();
 
-typedef void (*testfunct)();
+using testfunct = void (*)();
 
 /**
  * \brief Run a given test and store errors if necessary.

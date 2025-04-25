@@ -77,9 +77,8 @@ namespace Solid
      */
     class Data : public Solid::Elements::ParamsInterface
     {
-      typedef std::map<enum NOX::Nln::StatusTest::QuantityType,
-          enum ::NOX::Abstract::Vector::NormType>
-          quantity_norm_type_map;
+      using quantity_norm_type_map =
+          std::map<enum NOX::Nln::StatusTest::QuantityType, enum ::NOX::Abstract::Vector::NormType>;
 
      public:
       //! constructor

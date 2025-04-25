@@ -122,7 +122,7 @@ namespace ScaTra
 
    private:
     //! abbreviation
-    typedef MortarCellCalc<distype_s, distype_m> my;
+    using my = MortarCellCalc<distype_s, distype_m>;
 
    protected:
     using my::nen_master_;
@@ -213,8 +213,8 @@ namespace ScaTra
 
    private:
     //! abbreviation
-    typedef MortarCellCalc<distype_s, distype_m> my;
-    typedef MortarCellCalcElch<distype_s, distype_m> myelch;
+    using my = MortarCellCalc<distype_s, distype_m>;
+    using myelch = MortarCellCalcElch<distype_s, distype_m>;
     using my::nen_master_;
     using my::nen_slave_;
     using my::nsd_slave_;
@@ -291,7 +291,7 @@ namespace ScaTra
 
    private:
     //! abbreviation
-    typedef MortarCellCalc<distype_s, distype_m> my;
+    using my = MortarCellCalc<distype_s, distype_m>;
     using my::nen_master_;
     using my::nen_slave_;
     using my::nsd_slave_;

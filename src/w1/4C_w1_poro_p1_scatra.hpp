@@ -32,7 +32,7 @@ namespace Discret
     template <Core::FE::CellType distype>
     class Wall1PoroP1Scatra : public Wall1PoroP1<distype>
     {
-      typedef Discret::Elements::Wall1PoroP1<distype> my;
+      using my = Discret::Elements::Wall1PoroP1<distype>;
 
      public:
       //@}

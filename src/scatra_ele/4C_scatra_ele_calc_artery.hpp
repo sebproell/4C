@@ -35,7 +35,7 @@ namespace Discret
 
      private:
      public:
-      typedef ScaTraEleCalc<distype, probdim> my;
+      using my = ScaTraEleCalc<distype, probdim>;
       using my::nen_;
       using my::nsd_;
       using my::nsd_ele_;
@@ -136,7 +136,7 @@ namespace Discret
     template <int nsd, int nen>
     class ScaTraEleInternalVariableManagerArtery : public ScaTraEleInternalVariableManager<nsd, nen>
     {
-      typedef ScaTraEleInternalVariableManager<nsd, nen> my;
+      using my = ScaTraEleInternalVariableManager<nsd, nen>;
 
      public:
       ScaTraEleInternalVariableManagerArtery(int numscal)

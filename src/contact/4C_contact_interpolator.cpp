@@ -637,7 +637,7 @@ void NTS::Interpolator::interpolate_master_temp_3d(
 void NTS::Interpolator::nw_t_e_2d(CONTACT::Node& mynode, double& area, double& jumpval,
     Core::Gen::Pairedvector<int, double>& dslipmatrix)
 {
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // multiply the two shape functions
   double prod1 = abs(jumpval);
@@ -676,7 +676,7 @@ void NTS::Interpolator::nw_slip_2d(CONTACT::Node& mynode, Mortar::Element& mele,
   const int ncol = mele.num_node();
   const int ndof = mynode.num_dof();
 
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Core::Gen::Pairedvector<int, double> dslipgp(linsize + ndof * ncol);
 
@@ -818,7 +818,7 @@ void NTS::Interpolator::nw_wear_2d(CONTACT::Node& mynode, Mortar::Element& mele,
   const int ncol = mele.num_node();
   const int ndof = mynode.num_dof();
 
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   std::array<double, 3> gpt = {0.0, 0.0, 0.0};
   std::array<double, 3> gplm = {0.0, 0.0, 0.0};
@@ -1078,7 +1078,7 @@ void NTS::Interpolator::nw_gap_2d(CONTACT::Node& mynode, Mortar::Element& sele,
   // **************************
   // linearization
   // **************************
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
   Core::Gen::Pairedvector<int, double> dgapgp(10 * ncol);
 
   //*************************************************************
@@ -1166,7 +1166,7 @@ void NTS::Interpolator::nw_gap_3d(CONTACT::Node& mynode, Mortar::Element& mele,
   // **************************
   // linearization
   // **************************
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // TODO: linsize for parallel simulations buggy. 100 for safety
   Core::Gen::Pairedvector<int, double> dgapgp(3 * ncol + 3 * mynode.get_linsize() + 100);
@@ -1237,7 +1237,7 @@ void NTS::Interpolator::nw_master_temp(CONTACT::Node& mynode, Mortar::Element& m
   // **************************
   // linearization
   // **************************
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   std::map<int, double>& dTpdT = mynode.tsi_data().deriv_temp_master_temp();
   dTpdT.clear();
@@ -1267,7 +1267,7 @@ void NTS::Interpolator::nw_d_m_2d(CONTACT::Node& mynode, Mortar::Element& sele,
     Core::LinAlg::SerialDenseMatrix& mderiv, Core::Gen::Pairedvector<int, double>& dmxi)
 {
   const int ncol = mele.num_node();
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // node-wise M value
   for (int k = 0; k < ncol; ++k)
@@ -1315,7 +1315,7 @@ void NTS::Interpolator::nw_d_m_3d(CONTACT::Node& mynode, Mortar::Element& mele,
 {
   const int ncol = mele.num_node();
 
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // node-wise M value
   for (int k = 0; k < ncol; ++k)
@@ -1443,7 +1443,7 @@ void NTS::Interpolator::deriv_xi_gp_2d(Mortar::Element& sele, Mortar::Element& m
   fac_ymsl_gp -= sgpx[1];
 
   // prepare linearization
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // build directional derivative of slave GP coordinates
   Core::Gen::Pairedvector<int, double> dmap_xsl_gp(linsize + nummnode * ndof);
@@ -1607,7 +1607,7 @@ void NTS::Interpolator::deriv_xi_gp_3d(Mortar::Element& sele, Mortar::Element& m
   lmatrix.invert();
 
   // build directional derivative of slave GP normal
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < numsnode; ++i)

@@ -23,15 +23,6 @@ namespace Core::Conditions
   class ConditionDefinition;
 }
 
-// ToDo: move these enums to namespace Inpar::ArteryNetwork etc.
-//       is the typedef really needed?
-
-/*!----------------------------------------------------------------------
-\brief enum of arterial network dynamic types
-This is the enumeration of all types of different integration schemes
-
-*-----------------------------------------------------------------------*/
-
 
 /*!----------------------------------------------------------------------
 \brief enum of reduced dimensional airways dynamic types

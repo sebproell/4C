@@ -34,7 +34,7 @@ namespace Discret
       //! private constructor for singletons
       ScaTraEleCalcLsReinit(const int numdofpernode, const int numscal, const std::string& disname);
 
-      typedef ScaTraEleCalc<distype, prob_dim> my;
+      using my = ScaTraEleCalc<distype, prob_dim>;
       using my::nen_;
       using my::nsd_;
       using my::nsd_ele_;
@@ -335,7 +335,7 @@ namespace Discret
     class ScaTraEleInternalVariableManagerLsReinit
         : public ScaTraEleInternalVariableManager<nsd, nen>
     {
-      typedef ScaTraEleInternalVariableManager<nsd, nen> my;
+      using my = ScaTraEleInternalVariableManager<nsd, nen>;
 
      public:
       ScaTraEleInternalVariableManagerLsReinit(int numscal)

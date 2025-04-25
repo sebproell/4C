@@ -54,14 +54,14 @@ namespace Core::Gen
   class Pairedvector : protected InsertPolicy
   {
    private:
-    typedef Pairedvector<Key, T, InsertPolicy> class_type;
-    typedef InsertPolicy base_type;
-    typedef typename base_type::pairedvector_type pairedvector_type;
-    typedef typename base_type::pair_type pair_type;
+    using class_type = Pairedvector<Key, T, InsertPolicy>;
+    using base_type = InsertPolicy;
+    using pairedvector_type = typename base_type::pairedvector_type;
+    using pair_type = typename base_type::pair_type;
 
    public:
-    typedef typename base_type::iterator iterator;
-    typedef typename base_type::const_iterator const_iterator;
+    using iterator = typename base_type::iterator;
+    using const_iterator = typename base_type::const_iterator;
 
     /**
      *  @brief  constructor creates no elements, but reserves the maximum

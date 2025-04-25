@@ -459,7 +459,7 @@ void CONTACT::Coupling2dManager::consistent_dual_shape()
   }
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // no overlap: the applied dual shape functions don't matter, as the integration domain is void
   if ((ximax == -1.0 && ximin == 1.0) || (ximax - ximin < 4. * MORTARINTLIM)) return;

@@ -681,7 +681,7 @@ void CONTACT::Integrator::integrate_deriv_segment_2d(Mortar::Element& sele, doub
   Core::LinAlg::SerialDenseMatrix ssecderiv(nrow, 1);
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < nrow; ++i)
@@ -1735,7 +1735,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane(Mortar::Element& sel
 
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   if (cppnormal_)
@@ -1981,7 +1981,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
     sele.deriv_shape_dual(dualmap);
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < nrow; ++i)
@@ -2370,7 +2370,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
     for (int iter = 0; iter < nrow; ++iter)
     {
       // map iterator
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(mynodes[iter]);
       if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -2728,7 +2728,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
     sele.deriv_shape_dual(dualmap);
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < nrowL; ++i)
@@ -3129,7 +3129,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
     for (int iter = 0; iter < nrowL; ++iter)
     {
       // map iterator
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(mynodes[iter]);
       if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -3786,7 +3786,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_quad(Mortar::Element
   if (!myintnodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // prepare directional derivative of dual shape functions
   // this is necessary for all slave element types except tri3
@@ -4245,7 +4245,7 @@ void CONTACT::Integrator::integrate_deriv_ele_2d(Mortar::Element& sele,
   std::shared_ptr<Core::LinAlg::SerialDenseMatrix> lagmult;
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // prepare directional derivative of dual shape functions
   // this is only necessary for quadratic dual shape functions in 2D
@@ -4589,7 +4589,7 @@ void CONTACT::Integrator::integrate_d(Mortar::Element& sele, MPI_Comm comm, bool
 
     if (lin)
     {
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       // (1) Lin(Phi) - dual shape functions
       if (duallin)
@@ -4690,8 +4690,6 @@ void CONTACT::Integrator::integrate_kappa_penalty(
   Core::LinAlg::SerialDenseVector val(nrow);
   Core::LinAlg::SerialDenseMatrix deriv(nrow, 2, true);
 
-  // map iterator
-  // typedef std::map<int,double>::const_iterator CI;
 
   // get slave element nodes themselves
   Core::Nodes::Node** mynodes = sele.nodes();
@@ -4873,7 +4871,7 @@ void CONTACT::Integrator::deriv_xi_a_b_2d(const Mortar::Element& sele, double sx
   mele.evaluate_shape(pmxib, valmxib, derivmxib, nummnode, false);
 
   // prepare linearizations
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // compute leading constant for DerivXiBMaster if start node = slave node
   if (startslave == true)
@@ -5294,7 +5292,7 @@ void CONTACT::Integrator::deriv_xi_gp_2d(const Mortar::Element& sele, const Mort
   fac_ymsl_gp -= sgpx[1];
 
   // prepare linearization
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // build directional derivative of slave GP coordinates
   Core::Gen::Pairedvector<int, double> dmap_xsl_gp(linsize + nummnode * ndof);
@@ -5459,7 +5457,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d(const Mortar::Element& sele, const Mort
   lmatrix.invert();
 
   // build directional derivative of slave GP normal
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < numsnode; ++i)
@@ -5562,18 +5560,6 @@ void CONTACT::Integrator::deriv_xi_gp_3d(const Mortar::Element& sele, const Mort
     derivmxi[0][p->first] += alpha * lmatrix(0, 2) * (p->second);
     derivmxi[1][p->first] += alpha * lmatrix(1, 2) * (p->second);
   }
-
-  /*
-  // check linearization
-  typedef std::map<int,double>::const_iterator CI;
-  std::cout << "\nLinearization of current master GP:" << std::endl;
-  std::cout << "-> Coordinate 1:" << std::endl;
-  for (CI p=derivmxi[0].begin();p!=derivmxi[0].end();++p)
-    std::cout << p->first << " " << p->second << std::endl;
-  std::cout << "-> Coordinate 2:" << std::endl;
-  for (CI p=derivmxi[1].begin();p!=derivmxi[1].end();++p)
-      std::cout << p->first << " " << p->second << std::endl;
-  */
 }
 
 /*----------------------------------------------------------------------*
@@ -5617,7 +5603,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d_aux_plane(const Mortar::Element& ele, c
   lmatrix.invert();
 
   // start to fill linearization maps for element GP
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // see if this is an IntEle
   const Mortar::IntElement* ie = dynamic_cast<const Mortar::IntElement*>(&ele);
@@ -5674,21 +5660,6 @@ void CONTACT::Integrator::deriv_xi_gp_3d_aux_plane(const Mortar::Element& ele, c
     derivxi[0][p->first] += alpha * lmatrix(0, 2) * (p->second);
     derivxi[1][p->first] += alpha * lmatrix(1, 2) * (p->second);
   }
-
-  /*
-  // check linearization
-  typedef std::map<int,double>::const_iterator CI;
-  std::cout << "\nLinearization of current slave / master GP:" << std::endl;
-  std::cout << "-> Coordinate 1:" << std::endl;
-  for (CI p=derivxi[0].begin();p!=derivxi[0].end();++p)
-    std::cout << p->first << " " << p->second << std::endl;
-  std::cout << "-> Coordinate 2:" << std::endl;
-  for (CI p=derivxi[1].begin();p!=derivxi[1].end();++p)
-    std::cout << p->first << " " << p->second << std::endl;
-  std::cout << "-> Coordinate 3:" << std::endl;
-  for (CI p=derivxi[2].begin();p!=derivxi[2].end();++p)
-    std::cout << p->first << " " << p->second << std::endl;
-  */
 }
 
 
@@ -6568,7 +6539,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
     std::vector<Core::Gen::Pairedvector<int, double>>& dnmap_unit)
 {
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -6879,7 +6850,7 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
     std::vector<Core::Gen::Pairedvector<int, double>>& dnmap_unit)
 {
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = nullptr;
@@ -7113,7 +7084,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
     std::vector<Core::Gen::Pairedvector<int, double>>& dnmap_unit)
 {
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -7433,7 +7404,7 @@ void inline CONTACT::Integrator::gp_2d_g_lin(int& iter, Mortar::Element& sele,
   double fac = 0.0;
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get the corresponding map as a reference
   std::map<int, double>& dgmap = dynamic_cast<CONTACT::Node*>(mymrtrnode)->data().get_deriv_g();
@@ -7533,7 +7504,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin_lin(int& iter, Mortar::IntEl
     const std::vector<Core::Gen::Pairedvector<int, double>>& dsxigp)
 {
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** sintnodes = sintele.nodes();
@@ -7589,7 +7560,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_lin(int& iter, Mortar::Element& se
   const int nrow = sele.num_node();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -7717,7 +7688,7 @@ void CONTACT::Integrator::gp_g_lin(int& iter, Mortar::Element& sele, Mortar::Ele
   const int ncol = mele.num_node();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -7837,7 +7808,7 @@ void CONTACT::Integrator::gp_3d_dm_lin_bound(Mortar::Element& sele, Mortar::Elem
   Core::Nodes::Node** snodes = sele.nodes();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   if (shape_fcn() == Inpar::Mortar::shape_standard)
   {
@@ -8187,7 +8158,7 @@ void inline CONTACT::Integrator::gp_2d_dm_lin_bound(Mortar::Element& sele, Morta
   Core::Nodes::Node** snodes = sele.nodes();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   if (shape_fcn() == Inpar::Mortar::shape_standard)
   {
@@ -8506,7 +8477,7 @@ void inline CONTACT::Integrator::gp_2d_dm_ele_lin(int& iter, bool& bound, Mortar
   mnodes = mele.nodes();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(snodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -8652,7 +8623,7 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
   mnodes = mele.nodes();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // **************** no edge modification *****************************
   // (and LinM also for edge node modification case)
@@ -8924,7 +8895,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_pwlin_lin(int& iter, Mortar::Elem
   Core::Nodes::Node** sintnodes = sintele.nodes();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // **************** no edge modification *****************************
   // (and LinM also for edge node modification case)
@@ -9032,7 +9003,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
   for (int i = 0; i < nrow; ++i) smnodes[i] = dynamic_cast<Mortar::Node*>(snodes[i]);
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // **************** no edge modification *****************************
   // (and LinM also for edge node modification case)
@@ -9143,8 +9114,8 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
           // (1) Lin(Phi) - dual shape functions
           if (duallin)
           {
-            typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator
-                _CIM;
+            using _CIM =
+                Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
             for (_CIM p = dualmap.begin(); p != dualmap.end(); ++p)
             {
               double lmderiv_d = 0.0;
@@ -9198,8 +9169,8 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
             // (1) Lin(Phi) - dual shape functions
             if (duallin)
             {
-              typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator
-                  _CIM;
+              using _CIM =
+                  Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
               fac = wgt * sval[k] * jac;
               for (_CIM p = dualmap.begin(); p != dualmap.end(); ++p)
                 for (int m = 0; m < nrow; ++m)
@@ -9248,8 +9219,8 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
             // (1) Lin(Phi) - dual shape functions
             if (duallin)
             {
-              typedef Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator
-                  _CIM;
+              using _CIM =
+                  Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
               fac = wgt * sval[k] * jac;
               for (_CIM p = dualmap.begin(); p != dualmap.end(); ++p)
                 for (int m = 0; m < nrow; ++m)
@@ -9392,7 +9363,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
   const int ncol = mele.num_node();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // standard shape functions
   if (shape_fcn() == Inpar::Mortar::shape_standard)
@@ -9624,7 +9595,7 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
   linsize = linsize * 2;
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   //***********************************************************************
   // Here, the tangential relative slip increment is used and NOT the
@@ -9954,7 +9925,7 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
   Core::Nodes::Node** mnodes = mele.nodes();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   //***********************************************************************
   // Here, the tangential relative slip increment is used and NOT the
@@ -10568,7 +10539,7 @@ void inline CONTACT::Integrator::gp_2d_te_master_lin(int& iter,  // like k
   if (!mnodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(mnodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -10692,7 +10663,7 @@ void inline CONTACT::Integrator::gp_2d_te_lin(int& iter, Mortar::Element& sele,
   if (!snodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(snodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -10891,7 +10862,7 @@ void inline CONTACT::Integrator::gp_3d_te_lin(int& iter, Mortar::Element& sele,
   if (!snodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(snodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -11143,7 +11114,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
   if (!mnodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(mnodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -11367,7 +11338,7 @@ void inline CONTACT::Integrator::gp_2d_slip_incr(Mortar::Element& sele, Mortar::
     Core::Gen::Pairedvector<int, double>& dslipgp, int& linsize)
 {
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -11536,7 +11507,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
     std::vector<Core::Gen::Pairedvector<int, double>>& dslipgp)
 {
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -11918,7 +11889,7 @@ void inline CONTACT::Integrator::gp_2d_slip_incr_lin(int& iter, Mortar::Element&
   double fac = 0.0;
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   FriNode* snode = dynamic_cast<FriNode*>(snodes[iter]);
   if (snode->is_on_boundor_ce()) return;
@@ -11969,7 +11940,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr_lin(int& iter, Mortar::Element&
   double nrow = sele.num_node();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   FriNode* snode = dynamic_cast<FriNode*>(snodes[iter]);
 
@@ -12054,7 +12025,7 @@ void inline CONTACT::Integrator::gp_2d_wear_lin(int& iter, Mortar::Element& sele
   Core::Nodes::Node** snodes = sele.nodes();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get the corresponding map as a reference
   CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(snodes[iter]);
@@ -12152,7 +12123,7 @@ void inline CONTACT::Integrator::gp_3d_wear_lin(int& iter, Mortar::Element& sele
   Core::Nodes::Node** snodes = sele.nodes();
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get the corresponding map as a reference
   CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(snodes[iter]);
@@ -12259,7 +12230,7 @@ void inline CONTACT::Integrator::gp_ncoup_deriv(Mortar::Element& sele, Mortar::E
     std::vector<Core::Gen::Pairedvector<int, double>>& dnmap_unit, bool quadratic, int nintrow)
 {
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -12528,7 +12499,7 @@ void inline CONTACT::Integrator::gp_ncoup_deriv(Mortar::Element& sele, Mortar::E
   }
 
   // h.Willmann Write Deformation Gradient Determinant Linearization to map
-  typedef std::map<int, double>::iterator I;
+  using I = std::map<int, double>::iterator;
 
   if (slaveporo)
   {
@@ -12614,8 +12585,8 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
   // evaluated on the slave side interface surface
 
   // map iterator
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
-  typedef std::map<int, double>::const_iterator CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = std::map<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();

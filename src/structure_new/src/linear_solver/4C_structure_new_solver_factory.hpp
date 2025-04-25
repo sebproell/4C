@@ -50,8 +50,8 @@ namespace Solid
     class Factory
     {
      private:
-      typedef std::map<enum Inpar::Solid::ModelType, std::shared_ptr<Core::LinAlg::Solver>>
-          LinSolMap;
+      using LinSolMap =
+          std::map<enum Inpar::Solid::ModelType, std::shared_ptr<Core::LinAlg::Solver>>;
 
      public:
       //! constructor

@@ -320,19 +320,19 @@ bool Cut::Impl::find_cycles(graph_t& g, Cut::Cycle& cycle,
   for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei)
     boost::put(e_index, *ei, edge_count++);
 
-  typedef std::vector<edge_t> vec_t;
+  using vec_t = std::vector<edge_t>;
   std::vector<vec_t> embedding(boost::num_vertices(g));
 
 
   // Use geometry to build embedding. The only safe way to do it.
 
 #ifdef CLN_CALC_OUTSIDE_KERNEL
-  typedef Core::CLN::ClnWrapper floatType;
+  using floatType = Core::CLN::ClnWrapper;
   // NOTE: Cln can be used, if one get problem with double arc and there is no other way to fix it
   // However, if running cln with as custom memory manager, this should be changed ( mostly to free
   // objects in a container, similarly as in cut_kernel )
 #else
-  typedef double floatType;
+  using floatType = double;
 #endif
 
   vertex_iterator vi, vi_end;
@@ -607,7 +607,7 @@ void Cut::Impl::PointGraph::Graph::find_cycles(Side* side, Cycle& cycle)
   {
     for (int i = 0; i < num_comp; ++i)
     {
-      typedef boost::filtered_graph<graph_t, EdgeFilter> filtered_graph_t;
+      using filtered_graph_t = boost::filtered_graph<graph_t, EdgeFilter>;
       EdgeFilter filter(g, component, i);
       filtered_graph_t fg(g, filter);
 
@@ -791,7 +791,7 @@ void Cut::Impl::PointGraph::Graph::find_cycles(
     {
       for (int i = 0; i < num_comp; ++i)
       {
-        typedef boost::filtered_graph<graph_t, EdgeFilter> filtered_graph_t;
+        using filtered_graph_t = boost::filtered_graph<graph_t, EdgeFilter>;
         EdgeFilter filter(g, component, i);
         filtered_graph_t fg(g, filter);
 

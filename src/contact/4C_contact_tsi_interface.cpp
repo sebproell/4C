@@ -72,7 +72,7 @@ void CONTACT::TSIInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linst
   // consistent equation is:
   // mu(d,T)*(z_n-c_n*g)ut = 0
 
-  typedef std::map<int, double>::const_iterator _CI;
+  using _CI = std::map<int, double>::const_iterator;
   // loop over all stick nodes of the interface
   for (int i = 0; i < sticknodes->NumMyElements(); ++i)
   {
@@ -195,7 +195,7 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
   // consistent equation is:
   // || z_t^tr || z_t - \mu (z_n -c_n*wgap) z_t^tr = 0
 
-  typedef std::map<int, double>::const_iterator _CI;
+  using _CI = std::map<int, double>::const_iterator;
   // loop over all stick nodes of the interface
   for (int i = 0; i < slipnodes->NumMyElements(); ++i)
   {
@@ -556,8 +556,8 @@ void CONTACT::TSIInterface::assemble_dm_lin_diss(Core::LinAlg::SparseMatrix* d_L
   // there's no dissipation without friction
   if (!friction_) return;
 
-  typedef std::map<int, double>::const_iterator _cim;
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _cip;
+  using _cim = std::map<int, double>::const_iterator;
+  using _cip = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   const double dt = interface_params().get<double>("TIMESTEP");
 
@@ -680,9 +680,9 @@ void CONTACT::TSIInterface::assemble_lin_l_mn_dm_temp(
   // get out if there's nothing to do
   if (lin_disp == nullptr) FOUR_C_THROW("called to assemble something but didn't provide a matrix");
 
-  typedef std::map<int, double>::const_iterator _cim;
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _cip;
-  typedef std::map<int, std::map<int, double>>::const_iterator _cimm;
+  using _cim = std::map<int, double>::const_iterator;
+  using _cip = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using _cimm = std::map<int, std::map<int, double>>::const_iterator;
 
   // loop over all LM slave nodes (row map)
   for (int j = 0; j < activenodes_->NumMyElements(); ++j)
@@ -758,8 +758,8 @@ void CONTACT::TSIInterface::assemble_dm_l_mn(const double fac, Core::LinAlg::Spa
   // get out if there's nothing to do
   if (DM_LMn == nullptr) FOUR_C_THROW("called to assemble something but didn't provide a matrix");
 
-  typedef std::map<int, double>::const_iterator _cim;
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _cip;
+  using _cim = std::map<int, double>::const_iterator;
+  using _cip = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // loop over all LM slave nodes (row map)
   for (int j = 0; j < activenodes_->NumMyElements(); ++j)

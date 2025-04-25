@@ -32,9 +32,9 @@ namespace Discret
       ScaTraEleCalcChemoReac(
           const int numdofpernode, const int numscal, const std::string& disname);
 
-      typedef ScaTraEleCalc<distype, probdim> my;
-      typedef ScaTraEleCalcChemo<distype, probdim> chemo;
-      typedef ScaTraEleCalcAdvReac<distype, probdim> advreac;
+      using my = ScaTraEleCalc<distype, probdim>;
+      using chemo = ScaTraEleCalcChemo<distype, probdim>;
+      using advreac = ScaTraEleCalcAdvReac<distype, probdim>;
 
      public:
       //! Singleton access method

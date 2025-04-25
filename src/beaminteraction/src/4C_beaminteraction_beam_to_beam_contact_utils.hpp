@@ -24,7 +24,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-typedef Sacado::Fad::DFad<double> FAD;
+using FAD = Sacado::Fad::DFad<double>;
 
 namespace BeamInteraction
 {

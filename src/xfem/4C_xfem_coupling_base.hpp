@@ -37,7 +37,7 @@ namespace Discret
 
 namespace XFEM
 {
-  typedef std::pair<Inpar::XFEM::EleCouplingCondType, Core::Conditions::Condition*> EleCoupCond;
+  using EleCoupCond = std::pair<Inpar::XFEM::EleCouplingCondType, Core::Conditions::Condition*>;
 
   Inpar::XFEM::EleCouplingCondType cond_type_string_to_enum(const std::string& condname);
 

@@ -187,7 +187,7 @@ namespace TimeStepping
   {
    protected:
     //! template base class
-    typedef TimIntMStepBase<STATE> MStepBase;
+    using MStepBase = TimIntMStepBase<STATE>;
 
    public:
     //! @name Life
@@ -279,7 +279,7 @@ namespace TimeStepping
   {
    protected:
     //! base template class
-    typedef TimIntMStepBase<Core::LinAlg::Vector<double>> MStepBase;
+    using MStepBase = TimIntMStepBase<Core::LinAlg::Vector<double>>;
 
    public:
     //! @name Life

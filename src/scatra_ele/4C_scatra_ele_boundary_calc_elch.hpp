@@ -27,7 +27,7 @@ namespace Discret
     template <Core::FE::CellType distype, int probdim = Core::FE::dim<distype> + 1>
     class ScaTraEleBoundaryCalcElch : public ScaTraEleBoundaryCalc<distype, probdim>
     {
-      typedef Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim> my;
+      using my = Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>;
 
      protected:
       using my::nen_;

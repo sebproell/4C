@@ -27,26 +27,26 @@ namespace Cut
   class SortedVector
   {
    public:
-    typedef SortedVector<K, b_no_duplicates, Pr, A> Myt_;
-    typedef std::vector<K, A> Cont;
-    typedef typename Cont::allocator_type allocator_type;
-    typedef typename Cont::size_type size_type;
-    typedef typename Cont::difference_type difference_type;
-    typedef typename Cont::reference reference;
-    typedef typename Cont::const_reference const_reference;
-    typedef typename Cont::value_type value_type;
-    typedef K key_type;
-    typedef typename Cont::iterator iterator;
-    typedef typename Cont::const_iterator const_iterator;
-    typedef Pr key_compare;
-    typedef Pr value_compare;
+    using Myt_ = SortedVector<K, b_no_duplicates, Pr, A>;
+    using Cont = std::vector<K, A>;
+    using allocator_type = typename Cont::allocator_type;
+    using size_type = typename Cont::size_type;
+    using difference_type = typename Cont::difference_type;
+    using reference = typename Cont::reference;
+    using const_reference = typename Cont::const_reference;
+    using value_type = typename Cont::value_type;
+    using key_type = K;
+    using iterator = typename Cont::iterator;
+    using const_iterator = typename Cont::const_iterator;
+    using key_compare = Pr;
+    using value_compare = Pr;
 
-    typedef typename Cont::const_reverse_iterator const_reverse_iterator;
-    typedef typename Cont::reverse_iterator reverse_iterator;
+    using const_reverse_iterator = typename Cont::const_reverse_iterator;
+    using reverse_iterator = typename Cont::reverse_iterator;
 
-    typedef std::pair<iterator, iterator> Pairii_;
-    typedef std::pair<const_iterator, const_iterator> Paircc_;
-    typedef std::pair<iterator, bool> Pairib_;
+    using Pairii_ = std::pair<iterator, iterator>;
+    using Paircc_ = std::pair<const_iterator, const_iterator>;
+    using Pairib_ = std::pair<iterator, bool>;
 
     explicit SortedVector(const Pr& pred = Pr(), const A& al = A()) : less_(pred), vec_(al) {}
 

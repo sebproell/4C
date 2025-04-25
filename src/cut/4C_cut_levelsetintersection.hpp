@@ -33,7 +33,7 @@ namespace Cut
   */
   class LevelSetIntersection : public virtual ParentIntersection
   {
-    typedef ParentIntersection my;
+    using my = ParentIntersection;
 
 
    public:

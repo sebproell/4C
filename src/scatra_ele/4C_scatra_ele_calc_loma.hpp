@@ -26,7 +26,7 @@ namespace Discret
       //! private constructor for singletons
       ScaTraEleCalcLoma(const int numdofpernode, const int numscal, const std::string& disname);
 
-      typedef ScaTraEleCalc<distype> my;
+      using my = ScaTraEleCalc<distype>;
       using my::nen_;
       using my::nsd_;
 

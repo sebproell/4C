@@ -141,10 +141,8 @@ namespace NOX
           //! @}
         };
       }  // end namespace Interface
-      // typedef
-      typedef std::map<NOX::Nln::SolutionType,
-          Teuchos::RCP<NOX::Nln::CONSTRAINT::Interface::Required>>
-          ReqInterfaceMap;
+      using ReqInterfaceMap =
+          std::map<NOX::Nln::SolutionType, Teuchos::RCP<NOX::Nln::CONSTRAINT::Interface::Required>>;
     }  // namespace CONSTRAINT
   }  // end namespace Nln
 }  // end namespace NOX

@@ -142,9 +142,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex8Line2)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex8 solid_type;
-    typedef GEOMETRYPAIR::t_line2 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex8;
+    using lambda_type = GEOMETRYPAIR::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -313,9 +313,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex8Line3)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex8 solid_type;
-    typedef GEOMETRYPAIR::t_line3 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex8;
+    using lambda_type = GEOMETRYPAIR::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -523,9 +523,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex8Line4)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex8 solid_type;
-    typedef GEOMETRYPAIR::t_line4 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex8;
+    using lambda_type = GEOMETRYPAIR::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -772,9 +772,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex20Line2)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex20 solid_type;
-    typedef GEOMETRYPAIR::t_line2 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex20;
+    using lambda_type = GEOMETRYPAIR::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -1051,9 +1051,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex20Line3)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex20 solid_type;
-    typedef GEOMETRYPAIR::t_line3 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex20;
+    using lambda_type = GEOMETRYPAIR::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -1405,9 +1405,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex20Line4)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex20 solid_type;
-    typedef GEOMETRYPAIR::t_line4 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex20;
+    using lambda_type = GEOMETRYPAIR::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -1834,9 +1834,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex27Line2)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex27 solid_type;
-    typedef GEOMETRYPAIR::t_line2 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex27;
+    using lambda_type = GEOMETRYPAIR::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -2176,9 +2176,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex27Line3)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex27 solid_type;
-    typedef GEOMETRYPAIR::t_line3 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex27;
+    using lambda_type = GEOMETRYPAIR::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -2614,9 +2614,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex27Line4)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_hex27 solid_type;
-    typedef GEOMETRYPAIR::t_line4 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_hex27;
+    using lambda_type = GEOMETRYPAIR::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3148,9 +3148,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet4Line2)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_tet4 solid_type;
-    typedef GEOMETRYPAIR::t_line2 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_tet4;
+    using lambda_type = GEOMETRYPAIR::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3283,9 +3283,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet4Line3)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_tet4 solid_type;
-    typedef GEOMETRYPAIR::t_line3 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_tet4;
+    using lambda_type = GEOMETRYPAIR::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3445,9 +3445,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet4Line4)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_tet4 solid_type;
-    typedef GEOMETRYPAIR::t_line4 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_tet4;
+    using lambda_type = GEOMETRYPAIR::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3634,9 +3634,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet10Line2)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_tet10 solid_type;
-    typedef GEOMETRYPAIR::t_line2 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_tet10;
+    using lambda_type = GEOMETRYPAIR::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3823,9 +3823,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet10Line3)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_tet10 solid_type;
-    typedef GEOMETRYPAIR::t_line3 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_tet10;
+    using lambda_type = GEOMETRYPAIR::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -4057,9 +4057,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet10Line4)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_tet10 solid_type;
-    typedef GEOMETRYPAIR::t_line4 lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_tet10;
+    using lambda_type = GEOMETRYPAIR::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>

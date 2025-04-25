@@ -103,10 +103,10 @@ NEIGHBORTOL ca. 3, since the sum of |xi1| and |xi2| has to be larger than three 
 FOUR_C_THROW(
     "check functionality of FAD based linearization in case of beam3k and beam3r with Hermite cl "
     "intpol");
-typedef Sacado::Fad::DFad<double> TYPE;
+using TYPE = Sacado::Fad::DFad<double>;
 // #define FADCHECKS //Decide whether FAD checks via Sacado are printed as output or not
 #else
-typedef double TYPE;
+using TYPE = double;
 #endif
 
 #define CHECKBOUNDARYCONTACT  // Detection of beam ends in order to open the contact, when one beam
@@ -227,7 +227,7 @@ FOUR_C_THROW("CONSISTENTTRANSITION does not work in combination with ENDPOINTSEG
 // #define AUTOMATICDIFFBTS                        // Decide if automatic differentiation via Sacado
 //  is used default: Off
 #ifdef AUTOMATICDIFFBTS
-typedef Sacado::Fad::DFad<double> TYPEBTS;
+using TYPEBTS = Sacado::Fad::DFad<double>;
 //  #define FADCHECKSTIFFNESS                     // Decide if FAD checks for contact stiffness are
 //  printed as output
 #ifndef FADCHECKSTIFFNESS
@@ -238,7 +238,7 @@ typedef Sacado::Fad::DFad<double> TYPEBTS;
 //    gauss points are printed as output
 #endif
 #else
-typedef double TYPEBTS;
+using TYPEBTS = double;
 #endif
 
 // #define FDCHECKSTIFFNESS                        // Decide if differentiation via finite

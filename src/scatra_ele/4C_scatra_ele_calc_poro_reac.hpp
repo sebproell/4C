@@ -28,9 +28,9 @@ namespace Discret
       /// protected constructor, since we are a Singleton.
       ScaTraEleCalcPoroReac(const int numdofpernode, const int numscal, const std::string& disname);
 
-      typedef ScaTraEleCalc<distype> my;
-      typedef ScaTraEleCalcPoro<distype> poro;
-      typedef ScaTraEleCalcAdvReac<distype> advreac;
+      using my = ScaTraEleCalc<distype>;
+      using poro = ScaTraEleCalcPoro<distype>;
+      using advreac = ScaTraEleCalcAdvReac<distype>;
 
      public:
       /// Singleton access method

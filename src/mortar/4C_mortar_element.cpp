@@ -741,7 +741,7 @@ void Mortar::Element::deriv_unit_normal_at_xi(
   // non-unit normal derivative
   std::vector<Core::Gen::Pairedvector<int, double>> derivnnu(
       3, nderiv);  // assume that each node has 3 dofs...
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // now the derivative
   for (int n = 0; n < nnodes; ++n)

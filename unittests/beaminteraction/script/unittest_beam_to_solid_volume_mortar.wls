@@ -200,9 +200,9 @@ functionStringPre="  /**
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2mathematica_solid_Typemathematica_mortar_Type)
   {
     // Element types.
-    typedef GEOMETRYPAIR::t_hermite beam_type;
-    typedef GEOMETRYPAIR::t_mathematica_solid_type solid_type;
-    typedef GEOMETRYPAIR::t_mathematica_mortar_type lambda_type;
+    using beam_type = GEOMETRYPAIR::t_hermite;
+    using solid_type = GEOMETRYPAIR::t_mathematica_solid_type;
+    using lambda_type = GEOMETRYPAIR::t_mathematica_mortar_type;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>

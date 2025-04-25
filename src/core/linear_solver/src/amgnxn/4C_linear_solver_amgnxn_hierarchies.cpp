@@ -227,8 +227,8 @@ void Core::LinearSolver::AMGNxN::Hierarchies::setup()
           NumLevel_this_block, Teuchos::null);
 
       // some local typedefs
-      typedef Xpetra::Matrix<Scalar, LocalOrdinal, GlobalOrdinal, Node> Matrix;
-      typedef MueLu::SmootherBase<Scalar, LocalOrdinal, GlobalOrdinal, Node> SmootherBase;
+      using Matrix = Xpetra::Matrix<Scalar, LocalOrdinal, GlobalOrdinal, Node>;
+      using SmootherBase = MueLu::SmootherBase<Scalar, LocalOrdinal, GlobalOrdinal, Node>;
 
       Teuchos::RCP<Matrix> myA = Teuchos::null;
       Teuchos::RCP<Epetra_CrsMatrix> myAcrs = Teuchos::null;

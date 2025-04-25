@@ -51,10 +51,10 @@ namespace Discret
       ScaTraEleCalcMultiPoroReac(
           const int numdofpernode, const int numscal, const std::string& disname);
 
-      typedef ScaTraEleCalc<distype> my;
-      typedef ScaTraEleCalcPoroReac<distype> pororeac;
-      typedef ScaTraEleCalcPoro<distype> poro;
-      typedef ScaTraEleCalcAdvReac<distype> advreac;
+      using my = ScaTraEleCalc<distype>;
+      using pororeac = ScaTraEleCalcPoroReac<distype>;
+      using poro = ScaTraEleCalcPoro<distype>;
+      using advreac = ScaTraEleCalcAdvReac<distype>;
       using my::nen_;
       using my::nsd_;
 
@@ -383,7 +383,7 @@ namespace Discret
     class ScaTraEleInternalVariableManagerMultiPoro
         : public ScaTraEleInternalVariableManager<nsd, nen>
     {
-      typedef ScaTraEleInternalVariableManager<nsd, nen> my;
+      using my = ScaTraEleInternalVariableManager<nsd, nen>;
 
      public:
       ScaTraEleInternalVariableManagerMultiPoro(int numscal)

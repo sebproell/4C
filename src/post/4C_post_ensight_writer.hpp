@@ -71,9 +71,9 @@ const int subhex18map[4][8] = {{0, 4, 8, 7, 9, 13, 17, 16}, {4, 1, 5, 8, 13, 10,
 class EnsightWriter : public PostWriterBase
 {
  public:
-  typedef std::map<Core::FE::CellType, int> NumElePerDisType;
+  using NumElePerDisType = std::map<Core::FE::CellType, int>;
 
-  typedef std::map<Core::FE::CellType, std::vector<int>> EleGidPerDisType;
+  using EleGidPerDisType = std::map<Core::FE::CellType, std::vector<int>>;
 
   //! constructor, does nothing (SetField must be called before usage)
   EnsightWriter(PostField* field, const std::string& name);

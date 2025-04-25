@@ -25,7 +25,7 @@ namespace Discret
     template <Core::FE::CellType distype, Discret::Elements::Fluid::EnrichmentType enrtype>
     class FluidEleCalcXWall : public FluidEleCalc<distype, enrtype>
     {
-      typedef Discret::Elements::FluidEleCalc<distype, enrtype> my;
+      using my = Discret::Elements::FluidEleCalc<distype, enrtype>;
 
       using my::nen_;
       using my::nsd_;

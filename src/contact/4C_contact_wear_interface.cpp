@@ -395,8 +395,8 @@ void Wear::WearInterface::assemble_lin_t_d(Core::LinAlg::SparseMatrix& lintgloba
     if (fnode->wear_data().get_t().size() > 0)
     {
       // map iterator
-      typedef std::map<int, double>::const_iterator CI;
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+      using CI = std::map<int, double>::const_iterator;
+      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       std::map<int, double>& nmap = fnode->wear_data().get_t()[0];
 
@@ -538,8 +538,8 @@ void Wear::WearInterface::assemble_lin_t_d_master(Core::LinAlg::SparseMatrix& li
     if (fnode->wear_data().get_t().size() > 0)
     {
       // map iterator
-      typedef std::map<int, double>::const_iterator CI;
-      typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+      using CI = std::map<int, double>::const_iterator;
+      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       std::map<int, double>& nmap = fnode->wear_data().get_t()[0];
 
@@ -787,8 +787,6 @@ void Wear::WearInterface::assemble_lin_t_lm(Core::LinAlg::SparseMatrix& lintglob
     considerednodes = slipnodes_;
   }
 
-  // typedef std::map<int,double>::const_iterator CI;
-
   // loop over all LM slave nodes (row map)
   for (int j = 0; j < considerednodes->NumMyElements(); ++j)
   {
@@ -797,7 +795,7 @@ void Wear::WearInterface::assemble_lin_t_lm(Core::LinAlg::SparseMatrix& lintglob
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     CONTACT::FriNode* fnode = dynamic_cast<CONTACT::FriNode*>(node);
 
-    typedef std::map<int, double>::const_iterator CI;
+    using CI = std::map<int, double>::const_iterator;
 
     if (fnode->wear_data().get_t().size() > 0)
     {
@@ -845,8 +843,6 @@ void Wear::WearInterface::assemble_lin_t_lm_master(Core::LinAlg::SparseMatrix& l
       Core::LinAlg::allreduce_e_map(*(slipmasternodes_));
 
 
-  // typedef std::map<int,double>::const_iterator CI;
-
   // loop over all LM slave nodes (row map)
   for (int j = 0; j < slmasternodes->NumMyElements(); ++j)
   {
@@ -855,7 +851,7 @@ void Wear::WearInterface::assemble_lin_t_lm_master(Core::LinAlg::SparseMatrix& l
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     CONTACT::FriNode* fnode = dynamic_cast<CONTACT::FriNode*>(node);
 
-    typedef std::map<int, double>::const_iterator CI;
+    using CI = std::map<int, double>::const_iterator;
 
     if (fnode->wear_data().get_t().size() > 0)
     {
@@ -3642,7 +3638,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs(Core::LinAlg::Vector<double>& r
 
   double wcoeff = interface_params().get<double>("WEARCOEFF");
 
-  typedef std::map<int, double>::const_iterator CI;
+  using CI = std::map<int, double>::const_iterator;
 
   for (int i = 0; i < considerednodes->NumMyElements(); ++i)
   {
@@ -3732,7 +3728,7 @@ void Wear::WearInterface::assemble_wear_cond_rhs_master(Epetra_FEVector& RHS)
 
   double wcoeff = interface_params().get<double>("WEARCOEFF_MASTER");
 
-  typedef std::map<int, double>::const_iterator CI;
+  using CI = std::map<int, double>::const_iterator;
 
   const std::shared_ptr<Core::LinAlg::Map> slmasternodes =
       Core::LinAlg::allreduce_e_map(*(slipmasternodes_));

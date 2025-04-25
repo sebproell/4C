@@ -32,9 +32,9 @@ namespace Discret
       ScaTraEleCalcCardiacMonodomain(
           const int numdofpernode, const int numscal, const std::string& disname);
 
-      typedef ScaTraEleCalc<distype, probdim> my;
-      typedef ScaTraEleCalcAniso<distype, probdim> aniso;
-      typedef ScaTraEleCalcAdvReac<distype, probdim> advreac;
+      using my = ScaTraEleCalc<distype, probdim>;
+      using aniso = ScaTraEleCalcAniso<distype, probdim>;
+      using advreac = ScaTraEleCalcAdvReac<distype, probdim>;
       using my::nen_;
       using my::nsd_;
       using my::nsd_ele_;

@@ -116,7 +116,7 @@ namespace Discret
     {
      public:
       //! abbreviation
-      typedef ScaTraEleInternalVariableManager<nsd, nen> vm;
+      using vm = ScaTraEleInternalVariableManager<nsd, nen>;
 
       //! constructor
       ScaTraEleInternalVariableManagerSTIElch(const int& numscal)

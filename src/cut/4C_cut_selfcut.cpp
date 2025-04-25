@@ -333,8 +333,8 @@ void Cut::SelfCut::operations_for_node_merging(
 template <typename A, typename B>
 void Cut::SelfCut::modify_edge_or_side_map(std::map<A, B>& data, int nod, int replwith)
 {
-  typedef typename std::map<A, B>::iterator ittype;
-  typedef typename A::iterator A_ittype;
+  using ittype = typename std::map<A, B>::iterator;
+  using A_ittype = typename A::iterator;
 
   std::vector<ittype> eraseThese;
 
@@ -368,7 +368,7 @@ void Cut::SelfCut::modify_edge_or_side_map(std::map<A, B>& data, int nod, int re
     }
   }
 
-  typedef typename std::vector<ittype>::iterator itc;
+  using itc = typename std::vector<ittype>::iterator;
 
   // delete the elements with "wrong" key
   for (itc ite = eraseThese.begin(); ite != eraseThese.end(); ite++)

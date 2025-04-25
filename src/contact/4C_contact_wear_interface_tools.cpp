@@ -428,7 +428,7 @@ void Wear::WearInterface::fd_check_deriv_e_d(Core::LinAlg::SparseMatrix& linedis
   std::vector<double> newt(nrow);
 
   int dim = n_dim();
-  typedef std::map<int, double>::const_iterator CI;
+  using CI = std::map<int, double>::const_iterator;
 
   // store reference
   // loop over proc's slave nodes
@@ -744,7 +744,7 @@ void Wear::WearInterface::fd_check_deriv_e_d_master(Core::LinAlg::SparseMatrix& 
   std::vector<double> newt(nrow);
 
   int dim = n_dim();
-  typedef std::map<int, double>::const_iterator CI;
+  using CI = std::map<int, double>::const_iterator;
 
   // store reference
   // loop over proc's slave nodes
@@ -1063,7 +1063,7 @@ void Wear::WearInterface::fd_check_deriv_t_d(Core::LinAlg::SparseMatrix& lintdis
   std::vector<double> newt(nrow);
 
   int dim = n_dim();
-  typedef std::map<int, double>::const_iterator CI;
+  using CI = std::map<int, double>::const_iterator;
 
   // store reference
   // loop over proc's slave nodes
@@ -1256,7 +1256,7 @@ void Wear::WearInterface::fd_check_deriv_t_d_master(Core::LinAlg::SparseMatrix& 
   std::vector<double> newt(nrow);
 
   int dim = n_dim();
-  typedef std::map<int, double>::const_iterator CI;
+  using CI = std::map<int, double>::const_iterator;
 
   // store reference
   // loop over proc's slave nodes
@@ -2519,9 +2519,6 @@ void Wear::WearInterface::fd_check_mortar_t_deriv()
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
 
-    // typedef std::map<int,std::map<int,double> >::const_iterator CID;
-    // typedef std::map<int,double>::const_iterator CI;
-
     if ((int)(cnode->wear_data().get_t().size()) == 0) continue;
 
     //    for( int d=0; d<dim; d++ )
@@ -2585,7 +2582,7 @@ void Wear::WearInterface::fd_check_mortar_t_deriv()
 
       if ((int)(kcnode->wear_data().get_t().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
+      using CI = std::map<int, double>::const_iterator;
 
       for (int d = 0; d < 1; d++)
       {
@@ -2690,9 +2687,6 @@ void Wear::WearInterface::fd_check_mortar_t_master_deriv()
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
 
-    // typedef std::map<int,std::map<int,double> >::const_iterator CID;
-    // typedef std::map<int,double>::const_iterator CI;
-
     if ((int)(cnode->wear_data().get_t().size()) == 0) continue;
 
     int dof = cnode->dofs()[0];
@@ -2756,7 +2750,7 @@ void Wear::WearInterface::fd_check_mortar_t_master_deriv()
 
       if ((int)(kcnode->wear_data().get_t().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
+      using CI = std::map<int, double>::const_iterator;
 
       for (int d = 0; d < 1; d++)
       {
@@ -2870,7 +2864,7 @@ void Wear::WearInterface::fd_check_mortar_t_master_deriv()
 
       if ((int)(kcnode->wear_data().get_t().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
+      using CI = std::map<int, double>::const_iterator;
 
       for (int d = 0; d < 1; d++)
       {
@@ -2975,16 +2969,10 @@ void Wear::WearInterface::fd_check_mortar_e_deriv()
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
 
-    // typedef std::map<int,std::map<int,double> >::const_iterator CID;
-    // typedef std::map<int,double>::const_iterator CI;
-
     if ((int)(cnode->wear_data().get_e().size()) == 0) continue;
 
-    //    for( int d=0; d<dim; d++ )
-    //    {
     int dof = cnode->dofs()[0];
     refE[dof] = cnode->wear_data().get_e()[0];
-    //    }
 
     refDerivE[gid] = cnode->wear_data().get_deriv_e();
   }
@@ -3041,7 +3029,7 @@ void Wear::WearInterface::fd_check_mortar_e_deriv()
 
       if ((int)(kcnode->wear_data().get_e().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
+      using CI = std::map<int, double>::const_iterator;
 
       for (int d = 0; d < 1; d++)
       {
@@ -3146,9 +3134,6 @@ void Wear::WearInterface::fd_check_mortar_e_master_deriv()
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     CONTACT::FriNode* cnode = dynamic_cast<CONTACT::FriNode*>(node);
 
-    // typedef std::map<int,std::map<int,double> >::const_iterator CID;
-    // typedef std::map<int,double>::const_iterator CI;
-
     if ((int)(cnode->wear_data().get_e().size()) == 0) continue;
 
     int dof = cnode->dofs()[0];
@@ -3212,7 +3197,7 @@ void Wear::WearInterface::fd_check_mortar_e_master_deriv()
 
       if ((int)(kcnode->wear_data().get_e().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
+      using CI = std::map<int, double>::const_iterator;
 
       for (int d = 0; d < 1; d++)
       {
@@ -3327,7 +3312,7 @@ void Wear::WearInterface::fd_check_mortar_e_master_deriv()
 
       if ((int)(kcnode->wear_data().get_e().size()) == 0) continue;
 
-      typedef std::map<int, double>::const_iterator CI;
+      using CI = std::map<int, double>::const_iterator;
 
       for (int d = 0; d < 1; d++)
       {

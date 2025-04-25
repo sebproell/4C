@@ -482,8 +482,8 @@ void Solid::TimeInt::Implicit::check_for_time_step_increase(Inpar::Solid::Conver
 void Solid::TimeInt::Implicit::print_jacobian_in_matlab_format(
     const NOX::Nln::Group& curr_grp) const
 {
-  typedef Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>
-      LinalgBlockSparseMatrix;
+  using LinalgBlockSparseMatrix =
+      Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>;
 
   if (not get_data_io().is_write_jacobian_to_matlab()) return;
 

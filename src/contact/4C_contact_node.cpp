@@ -753,7 +753,7 @@ void CONTACT::Node::build_averaged_edge_tangent()
   //**************************************************
   //      LINEARIZATION
   //**************************************************
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator _CI;
+  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   for (int j = 0; j < (int)((data().get_deriv_tangent()).size()); ++j)
     (data().get_deriv_tangent())[j].clear();
@@ -985,7 +985,7 @@ void CONTACT::Node::deriv_averaged_normal(
   // normalize directional derivative
   // (length differs for weighted/unweighted case but not the procedure!)
   // (be careful with reference / copy of derivative maps!)
-  typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
   Core::Gen::Pairedvector<int, double>& derivnx = data().get_deriv_n()[0];
   Core::Gen::Pairedvector<int, double>& derivny = data().get_deriv_n()[1];
   Core::Gen::Pairedvector<int, double>& derivnz = data().get_deriv_n()[2];
@@ -1118,7 +1118,7 @@ void CONTACT::Node::deriv_averaged_normal(
 
     // normalize txi directional derivative
     // (identical to normalization of normal derivative)
-    typedef Core::Gen::Pairedvector<int, double>::const_iterator CI;
+    using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
     Core::Gen::Pairedvector<int, double>& derivtxix = data().get_deriv_txi()[0];
     Core::Gen::Pairedvector<int, double>& derivtxiy = data().get_deriv_txi()[1];
     Core::Gen::Pairedvector<int, double>& derivtxiz = data().get_deriv_txi()[2];

@@ -208,7 +208,7 @@ namespace CONTACT
      */
     virtual std::map<int, double>& get_deriv_d(int& k)
     {
-      typedef std::map<int, std::map<int, double>>::const_iterator CI;
+      using CI = std::map<int, std::map<int, double>>::const_iterator;
       CI p = derivd_.find(k);
       if (p == derivd_.end()) FOUR_C_THROW("GetDerivD: No map entry existing for given index");
       return derivd_[k];
@@ -223,7 +223,7 @@ namespace CONTACT
      */
     virtual std::map<int, double>& get_deriv_m(int& k)
     {
-      typedef std::map<int, std::map<int, double>>::const_iterator CI;
+      using CI = std::map<int, std::map<int, double>>::const_iterator;
       CI p = derivm_.find(k);
       if (p == derivm_.end()) FOUR_C_THROW("GetDerivM: No map entry existing for given index");
       return derivm_[k];

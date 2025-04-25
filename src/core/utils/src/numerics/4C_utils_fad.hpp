@@ -214,10 +214,10 @@ namespace Core::FADUtils
   struct HigherOrderFadType
   {
     //! Nested type of this Fad type.
-    typedef typename HigherOrderFadType<n - 1, BaseFadType>::type nested_type;
+    using nested_type = typename HigherOrderFadType<n - 1, BaseFadType>::type;
 
     //! Fad type of this object.
-    typedef typename Sacado::mpl::apply<BaseFadType, nested_type>::type type;
+    using type = typename Sacado::mpl::apply<BaseFadType, nested_type>::type;
   };
 
   /**
@@ -226,7 +226,7 @@ namespace Core::FADUtils
   template <typename BaseFadType>
   struct HigherOrderFadType<1, BaseFadType>
   {
-    typedef BaseFadType type;
+    using type = BaseFadType;
   };
 
 
@@ -242,7 +242,7 @@ namespace Core::FADUtils
   struct HigherOrderFadValue
   {
     //! Type of nested value.
-    typedef typename FadType::value_type nested_type;
+    using nested_type = typename FadType::value_type;
 
     /**
      * \brief Set a value of this Fad type.

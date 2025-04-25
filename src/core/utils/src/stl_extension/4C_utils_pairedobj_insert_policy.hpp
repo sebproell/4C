@@ -38,13 +38,13 @@ namespace Core::Gen
   template <typename Key, typename T>
   class DefaultInsertPolicy
   {
-    typedef DefaultInsertPolicy<Key, T> class_type;
+    using class_type = DefaultInsertPolicy<Key, T>;
 
    protected:
-    typedef std::pair<Key, T> pair_type;
-    typedef std::vector<pair_type> pairedvector_type;
-    typedef typename pairedvector_type::iterator iterator;
-    typedef typename pairedvector_type::const_iterator const_iterator;
+    using pair_type = std::pair<Key, T>;
+    using pairedvector_type = std::vector<pair_type>;
+    using iterator = typename pairedvector_type::iterator;
+    using const_iterator = typename pairedvector_type::const_iterator;
 
    public:
     iterator begin(const iterator& first) { return first; }
@@ -138,14 +138,14 @@ namespace Core::Gen
   template <typename Key, typename T>
   class QuickInsertPolicy : public DefaultInsertPolicy<Key, T>
   {
-    typedef QuickInsertPolicy<Key, T> class_type;
+    using class_type = QuickInsertPolicy<Key, T>;
 
    protected:
-    typedef DefaultInsertPolicy<Key, T> base_type;
-    typedef typename base_type::pair_type pair_type;
-    typedef typename base_type::pairedvector_type pairedvector_type;
-    typedef typename base_type::iterator iterator;
-    typedef typename base_type::const_iterator const_iterator;
+    using base_type = DefaultInsertPolicy<Key, T>;
+    using pair_type = typename base_type::pair_type;
+    using pairedvector_type = typename base_type::pairedvector_type;
+    using iterator = typename base_type::iterator;
+    using const_iterator = typename base_type::const_iterator;
 
    public:
     /** @brief return a constant number of offset values
@@ -415,14 +415,14 @@ namespace Core::Gen
   template <typename Key, typename T>
   class InsertAndSortPolicy : public DefaultInsertPolicy<Key, T>
   {
-    typedef InsertAndSortPolicy<Key, T> class_type;
+    using class_type = InsertAndSortPolicy<Key, T>;
 
    protected:
-    typedef DefaultInsertPolicy<Key, T> base_type;
-    typedef typename base_type::pair_type pair_type;
-    typedef typename base_type::pairedvector_type pairedvector_type;
-    typedef typename base_type::iterator iterator;
-    typedef typename base_type::const_iterator const_iterator;
+    using base_type = DefaultInsertPolicy<Key, T>;
+    using pair_type = typename base_type::pair_type;
+    using pairedvector_type = typename base_type::pairedvector_type;
+    using iterator = typename base_type::iterator;
+    using const_iterator = typename base_type::const_iterator;
 
    public:
     InsertAndSortPolicy()

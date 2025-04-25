@@ -529,7 +529,7 @@ namespace Cut
     }
   };
 
-  typedef EntityIdLess<Point> PointPidLess;
+  using PointPidLess = EntityIdLess<Point>;
 
   /// position on edge based comparison for sorting and searching
   class PointPositionLess
@@ -556,16 +556,16 @@ namespace Cut
   };
 
 #ifdef CUT_USE_SORTED_VECTOR
-  typedef SortedVector<Point*, true, PointPidLess> PointSet;
-  typedef SortedVector<Point*, true, PointPositionLess> PointPositionSet;
+  using PointSet = SortedVector<Point*, true, PointPidLess>;
+  using PointPositionSet = SortedVector<Point*, true, PointPositionLess>;
 
-  typedef SortedVector<std::shared_ptr<Point>, true, PointPidLess> RCPPointSet;
+  using RCPPointSet = SortedVector<std::shared_ptr<Point>, true, PointPidLess>;
 
 #else
-  typedef std::set<Point*, PointPidLess> PointSet;
-  typedef std::set<Point*, PointPositionLess> PointPositionSet;
+  using PointSet = std::set<Point*, PointPidLess>;
+  using PointPositionSet = std::set<Point*, PointPositionLess>;
 
-  typedef std::set<std::shared_ptr<Point>, PointPidLess> RCPPointSet;
+  using RCPPointSet = std::set<std::shared_ptr<Point>, PointPidLess>;
 
 #endif
 
