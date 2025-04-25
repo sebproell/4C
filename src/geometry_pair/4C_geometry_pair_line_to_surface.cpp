@@ -24,11 +24,11 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::GeometryPairLineToSurface(
+GeometryPair::GeometryPairLineToSurface<ScalarType, Line, Surface>::GeometryPairLineToSurface(
     const Core::Elements::Element* element1, const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::LineToSurfaceEvaluationData>&
+    const std::shared_ptr<GeometryPair::LineToSurfaceEvaluationData>&
         line_to_surface_evaluation_data)
-    : GeometryPair(element1, element2),
+    : GeometryPairBase(element1, element2),
       line_to_surface_evaluation_data_(line_to_surface_evaluation_data),
       is_unit_test_(false)
 {
@@ -48,7 +48,7 @@ GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::GeometryPair
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::project_point_to_other(
+void GeometryPair::GeometryPairLineToSurface<ScalarType, Line, Surface>::project_point_to_other(
     const Core::LinAlg::Matrix<3, 1, ScalarType>& point,
     const ElementData<Surface, ScalarType>& element_data_surface,
     Core::LinAlg::Matrix<3, 1, ScalarType>& xi, ProjectionResult& projection_result,
@@ -63,7 +63,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::project
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::intersect_line_with_other(
+void GeometryPair::GeometryPairLineToSurface<ScalarType, Line, Surface>::intersect_line_with_other(
     const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Surface, ScalarType>& element_data_surface,
     std::vector<ProjectionPoint1DTo3D<ScalarType>>& intersection_points,
@@ -107,7 +107,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::interse
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line,
+void GeometryPair::GeometryPairLineToSurface<ScalarType, Line,
     Surface>::intersect_line_with_surface_edge(const ElementData<Line, ScalarType>&
                                                    element_data_line,
     const ElementData<Surface, ScalarType>& element_data_surface,
@@ -236,7 +236,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line,
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-double GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line,
+double GeometryPair::GeometryPairLineToSurface<ScalarType, Line,
     Surface>::get_surface_normal_influence_direction(const ElementData<Surface, ScalarType>&
         element_data_surface) const
 {
@@ -255,7 +255,7 @@ double GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line,
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-double GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::get_surface_size(
+double GeometryPair::GeometryPairLineToSurface<ScalarType, Line, Surface>::get_surface_size(
     const ElementData<Surface, ScalarType>& element_data_surface) const
 {
   // Get the position of the first 3 nodes of the surface.
@@ -296,7 +296,7 @@ double GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::get_s
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::get_face_fixed_parameters(
+void GeometryPair::GeometryPairLineToSurface<ScalarType, Line, Surface>::get_face_fixed_parameters(
     unsigned int& n_faces, std::vector<unsigned int>& face_fixed_parameters,
     std::vector<double>& face_fixed_values) const
 {
@@ -323,7 +323,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Line, Surface>::get_fac
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurfaceFADWrapper<ScalarType, Line, Surface>::pre_evaluate(
+void GeometryPair::GeometryPairLineToSurfaceFADWrapper<ScalarType, Line, Surface>::pre_evaluate(
     const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Surface, ScalarType>& element_data_surface,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -347,7 +347,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurfaceFADWrapper<ScalarType, Line, Surface
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurfaceFADWrapper<ScalarType, Line, Surface>::evaluate(
+void GeometryPair::GeometryPairLineToSurfaceFADWrapper<ScalarType, Line, Surface>::evaluate(
     const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Surface, ScalarType>& element_data_surface,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -431,7 +431,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurfaceFADWrapper<ScalarType, Line, Surface
  *
  */
 template <typename ScalarType, typename Surface>
-void GEOMETRYPAIR::project_point_to_surface(const Core::LinAlg::Matrix<3, 1, ScalarType>& point,
+void GeometryPair::project_point_to_surface(const Core::LinAlg::Matrix<3, 1, ScalarType>& point,
     const ElementData<Surface, ScalarType>& element_data_surface,
     Core::LinAlg::Matrix<3, 1, ScalarType>& xi, ProjectionResult& projection_result,
     const double normal_influence_direction, const bool min_one_iteration)
@@ -499,7 +499,7 @@ void GEOMETRYPAIR::project_point_to_surface(const Core::LinAlg::Matrix<3, 1, Sca
 /**
  * Explicit template initialization of template class.
  */
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template class GeometryPairLineToSurface<double, t_line2, t_tri3>;
   template class GeometryPairLineToSurface<double, t_line2, t_tri6>;
@@ -610,6 +610,6 @@ namespace GEOMETRYPAIR
       t_quad9>;
   template class GeometryPairLineToSurfaceFADWrapper<
       line_to_surface_patch_scalar_type_fixed_size<t_hermite, t_nurbs9>, t_hermite, t_nurbs9>;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE

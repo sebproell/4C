@@ -17,7 +17,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Evaluate the field function in the element
@@ -88,7 +88,7 @@ namespace GEOMETRYPAIR
     Core::LinAlg::Matrix<3, 2, ScalarTypeResult> dr;
     Core::LinAlg::Matrix<3, 1, ScalarTypeResult> dr_0;
     Core::LinAlg::Matrix<3, 1, ScalarTypeResult> dr_1;
-    GEOMETRYPAIR::evaluate_position_derivative1<Surface>(xi, element_data_surface, dr);
+    GeometryPair::evaluate_position_derivative1<Surface>(xi, element_data_surface, dr);
     for (unsigned int i_dir = 0; i_dir < 3; i_dir++)
     {
       dr_0(i_dir) = dr(i_dir, 0);
@@ -159,7 +159,7 @@ namespace GEOMETRYPAIR
     evaluate_surface_normal<Surface>(xi, element_data_surface, normal);
 
     // Evaluate the position on the surface
-    GEOMETRYPAIR::evaluate_position<Surface>(xi, element_data_surface, r);
+    GeometryPair::evaluate_position<Surface>(xi, element_data_surface, r);
 
     // Add the normal part to the position
     normal.scale(xi(2));
@@ -212,7 +212,7 @@ namespace GEOMETRYPAIR
    */
   template <typename Volume, typename ScalarType>
   void evaluate_jacobian(const Core::LinAlg::Matrix<3, 1, ScalarType>& xi,
-      const GEOMETRYPAIR::ElementData<Volume, double>& X_volume,
+      const GeometryPair::ElementData<Volume, double>& X_volume,
       Core::LinAlg::Matrix<3, 3, ScalarType>& J)
   {
     // Check at compile time if a volume (3D) element is given
@@ -233,8 +233,8 @@ namespace GEOMETRYPAIR
   template <typename Volume, typename ScalarTypeXi, typename ScalarTypeDof,
       typename ScalarTypeResult>
   void evaluate_deformation_gradient(const Core::LinAlg::Matrix<3, 1, ScalarTypeXi>& xi,
-      const GEOMETRYPAIR::ElementData<Volume, double>& X_volume,
-      const GEOMETRYPAIR::ElementData<Volume, ScalarTypeDof>& q_volume,
+      const GeometryPair::ElementData<Volume, double>& X_volume,
+      const GeometryPair::ElementData<Volume, ScalarTypeDof>& q_volume,
       Core::LinAlg::Matrix<3, 3, ScalarTypeResult>& F)
   {
     // Check at compile time if a volume (3D) element is given
@@ -249,7 +249,7 @@ namespace GEOMETRYPAIR
     // Get the derivatives of the shape functions w.r.t to the parameter coordinates
     Core::LinAlg::Matrix<Volume::element_dim_, Volume::n_nodes_ * Volume::n_val_, ScalarTypeXi>
         dNdxi(Core::LinAlg::Initialization::zero);
-    GEOMETRYPAIR::EvaluateShapeFunction<Volume>::evaluate_deriv1(
+    GeometryPair::EvaluateShapeFunction<Volume>::evaluate_deriv1(
         dNdxi, xi, q_volume.shape_function_data_);
 
     // Transform to derivatives w.r.t physical coordinates
@@ -453,7 +453,7 @@ namespace GEOMETRYPAIR
     xi.put_scalar(0.0);
   }
 
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
 FOUR_C_NAMESPACE_CLOSE

@@ -42,7 +42,7 @@ namespace BeamInteraction
     class BeamContactAssemblyManager;
   }
 }  // namespace BeamInteraction
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   class GeometryEvaluationDataBase;
 }

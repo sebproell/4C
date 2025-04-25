@@ -26,7 +26,7 @@ namespace
 FOUR_C_NAMESPACE_OPEN
 
 // Forward declarations.
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   enum class ProjectionResult;
 
@@ -34,20 +34,20 @@ namespace GEOMETRYPAIR
   class ProjectionPoint1DTo3D;
 
   class LineToSurfaceEvaluationData;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 namespace Core::LinAlg
 {
   template <unsigned int rows, unsigned int cols, class ValueType>
   class Matrix;
 }  // namespace Core::LinAlg
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template <typename ScalarType>
   class LineSegment;
 }
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Class that handles the geometrical interactions of a line (element 1) and a surface
@@ -57,7 +57,7 @@ namespace GEOMETRYPAIR
    * @tparam surface Type of surface element.
    */
   template <typename ScalarType, typename Line, typename Surface>
-  class GeometryPairLineToSurface : public GeometryPair
+  class GeometryPairLineToSurface : public GeometryPairBase
   {
     //! Declare the unit test class as a fried class, so private and protected methods can be used.
     friend GeometryPairLineToSurfaceTest;
@@ -68,7 +68,7 @@ namespace GEOMETRYPAIR
      */
     GeometryPairLineToSurface(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::LineToSurfaceEvaluationData>&
+        const std::shared_ptr<GeometryPair::LineToSurfaceEvaluationData>&
             line_to_surface_evaluation_data);
 
 
@@ -126,7 +126,7 @@ namespace GEOMETRYPAIR
      * \brief Return the pointer to the evaluation data of this pair.
      * @return Pointer to the evaluation data.
      */
-    inline const std::shared_ptr<GEOMETRYPAIR::LineToSurfaceEvaluationData>& get_evaluation_data()
+    inline const std::shared_ptr<GeometryPair::LineToSurfaceEvaluationData>& get_evaluation_data()
         const
     {
       return line_to_surface_evaluation_data_;
@@ -184,7 +184,7 @@ namespace GEOMETRYPAIR
 
    protected:
     //! Link to the geometry evaluation container.
-    std::shared_ptr<GEOMETRYPAIR::LineToSurfaceEvaluationData> line_to_surface_evaluation_data_;
+    std::shared_ptr<GeometryPair::LineToSurfaceEvaluationData> line_to_surface_evaluation_data_;
 
    private:
     //! Flag if the class is executed by unit tests. If this is the case, the line radius for
@@ -321,7 +321,7 @@ namespace GEOMETRYPAIR
       const ElementData<Surface, ScalarType>& element_data_surface,
       Core::LinAlg::Matrix<3, 1, ScalarType>& xi, ProjectionResult& projection_result,
       const double normal_influence_direction = -1.0, const bool min_one_iteration = false);
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

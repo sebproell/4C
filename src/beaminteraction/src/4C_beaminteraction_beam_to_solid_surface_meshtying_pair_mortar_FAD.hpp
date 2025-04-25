@@ -27,7 +27,7 @@ namespace Inpar
     enum class BeamToSolidMortarShapefunctions;
     enum class BeamToSolidSurfaceRotationCoupling;
   }  // namespace BeamToSolid
-  namespace GEOMETRYPAIR
+  namespace GeometryPair
   {
     enum class SurfaceNormals;
   }
@@ -44,8 +44,8 @@ namespace BeamInteraction
   /**
    * \brief Class for Mortar beam to surface surface mesh tying.
    * @tparam scalar_type Type for scalar variables.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam surface Type from GEOMETRYPAIR::ElementDiscretization... representing the surface.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam surface Type from GeometryPair::ElementDiscretization... representing the surface.
    * @tparam mortar Type from BeamInteraction::ElementDiscretization... representing the mortar
    * shape functions.
    */
@@ -93,8 +93,8 @@ namespace BeamInteraction
 
   /**
    * \brief Class for beam to solid surface rotational mesh tying.
-   * @param beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @param surface Type from GEOMETRYPAIR::ElementDiscretization... representing the solid.
+   * @param beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @param surface Type from GeometryPair::ElementDiscretization... representing the solid.
    * @param mortar Type from BeamInteraction::ElementDiscretization... representing the mortar shape
    * functions for displacement coupling.
    *
@@ -167,8 +167,8 @@ namespace BeamInteraction
      */
     template <typename ScalarTypeRotVec>
     void get_surface_rotation_vector(const Core::LinAlg::Matrix<3, 1, double>& xi,
-        const GEOMETRYPAIR::ElementData<Surface, double>& q_solid_ref,
-        const GEOMETRYPAIR::ElementData<Surface, ScalarTypeRotVec>& q_solid,
+        const GeometryPair::ElementData<Surface, double>& q_solid_ref,
+        const GeometryPair::ElementData<Surface, ScalarTypeRotVec>& q_solid,
         const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
         const Inpar::BeamToSolid::BeamToSolidSurfaceRotationCoupling surface_triad_type,
         Core::LinAlg::Matrix<3, 1, ScalarTypeRotVec>& psi_solid) const;
@@ -194,7 +194,7 @@ namespace BeamInteraction
   beam_to_solid_surface_meshtying_pair_mortar_fad_factory(const Core::FE::CellType surface_shape,
       const Inpar::BeamToSolid::BeamToSolidMortarShapefunctions mortar_shapefunction,
       const bool rotational_coupling,
-      const Inpar::GEOMETRYPAIR::SurfaceNormals surface_normal_strategy);
+      const Inpar::GeometryPair::SurfaceNormals surface_normal_strategy);
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

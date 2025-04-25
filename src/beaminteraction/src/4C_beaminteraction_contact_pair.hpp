@@ -36,12 +36,12 @@ namespace Core::Elements
   class Element;
 }
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
-  class GeometryPair;
+  class GeometryPairBase;
   class GeometryEvaluationDataBase;
   class FaceElement;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
 namespace BeamInteraction
@@ -147,7 +147,7 @@ namespace BeamInteraction
     /*!
     \brief Get the geometry pair object. Throw error if it does not exist.
     */
-    inline std::shared_ptr<GEOMETRYPAIR::GeometryPair> geometry_pair() const
+    inline std::shared_ptr<GeometryPair::GeometryPairBase> geometry_pair() const
     {
       if (geometry_pair_ == nullptr)
         FOUR_C_THROW("The geometry pair is requested, but it is a null pointer!");
@@ -354,7 +354,7 @@ namespace BeamInteraction
      */
     virtual void create_geometry_pair(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>&
+        const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>&
             geometry_evaluation_data_ptr)
     {
       FOUR_C_THROW("CreateGeometryPair has to be implemented in the derived class.");
@@ -381,7 +381,7 @@ namespace BeamInteraction
      *
      * @param face_element (in) RCP to the face element.
      */
-    virtual void set_face_element(std::shared_ptr<GEOMETRYPAIR::FaceElement>& face_element)
+    virtual void set_face_element(std::shared_ptr<GeometryPair::FaceElement>& face_element)
     {
       FOUR_C_THROW("This method has to be implemented in the derived class.");
     }
@@ -409,7 +409,7 @@ namespace BeamInteraction
     bool issetup_;
 
     //! pointer to the geometry pair
-    std::shared_ptr<GEOMETRYPAIR::GeometryPair> geometry_pair_;
+    std::shared_ptr<GeometryPair::GeometryPairBase> geometry_pair_;
 
    private:
     //! beam contact parameter data container

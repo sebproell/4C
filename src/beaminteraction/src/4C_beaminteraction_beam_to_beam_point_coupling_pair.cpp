@@ -86,9 +86,9 @@ void BeamInteraction::BeamToBeamPointCouplingPair<Beam>::evaluate_and_assemble_p
 
   // Initialize variables for evaluation of the positional coupling terms.
   std::array<Core::LinAlg::Matrix<Beam::n_dof_, 1, int>, 2> gid_pos;
-  std::array<GEOMETRYPAIR::ElementData<Beam, scalar_type_pos>, 2> beam_pos = {
-      GEOMETRYPAIR::InitializeElementData<Beam, scalar_type_pos>::initialize(beam_ele[0]),
-      GEOMETRYPAIR::InitializeElementData<Beam, scalar_type_pos>::initialize(beam_ele[1])};
+  std::array<GeometryPair::ElementData<Beam, scalar_type_pos>, 2> beam_pos = {
+      GeometryPair::InitializeElementData<Beam, scalar_type_pos>::initialize(beam_ele[0]),
+      GeometryPair::InitializeElementData<Beam, scalar_type_pos>::initialize(beam_ele[1])};
   std::array<Core::LinAlg::Matrix<3, 1, scalar_type_pos>, 2> r;
   Core::LinAlg::Matrix<3, 1, scalar_type_pos> force;
   std::array<Core::LinAlg::Matrix<Beam::n_dof_, 1, scalar_type_pos>, 2> force_element;
@@ -115,7 +115,7 @@ void BeamInteraction::BeamToBeamPointCouplingPair<Beam>::evaluate_and_assemble_p
               i_beam * Beam::n_dof_ + i_dof, element_posdofvec_absolutevalues[i_dof]);
 
     // Evaluate the position of the coupling point.
-    GEOMETRYPAIR::evaluate_position<Beam>(
+    GeometryPair::evaluate_position<Beam>(
         position_in_parameterspace_[i_beam], beam_pos[i_beam], r[i_beam]);
   }
 
@@ -326,7 +326,7 @@ void BeamInteraction::BeamToBeamPointCouplingPair<
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToBeamPointCouplingPair<t_hermite>;
 }  // namespace BeamInteraction

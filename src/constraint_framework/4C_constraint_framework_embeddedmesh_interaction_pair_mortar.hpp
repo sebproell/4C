@@ -96,16 +96,16 @@ namespace Constraints::EmbeddedMesh
         Core::LinAlg::Matrix<Mortar::n_dof_, 1, double>& local_constraint);
 
     //! Current nodal positions (and tangents) of the interface element.
-    GEOMETRYPAIR::ElementData<Interface, double> ele1pos_;
+    GeometryPair::ElementData<Interface, double> ele1pos_;
 
     //! Current nodal positions (and tangents) of the background element.
-    GEOMETRYPAIR::ElementData<Background, double> ele2pos_;
+    GeometryPair::ElementData<Background, double> ele2pos_;
 
     //! Displacements of the interface element.
-    GEOMETRYPAIR::ElementData<Interface, double> ele1dis_;
+    GeometryPair::ElementData<Interface, double> ele1dis_;
 
     //! Displacements of the background element.
-    GEOMETRYPAIR::ElementData<Background, double> ele2dis_;
+    GeometryPair::ElementData<Background, double> ele2dis_;
 
     //! integration rule over the interface for element1_ and element2_
     std::vector<std::tuple<Core::LinAlg::Matrix<2, 1>, Core::LinAlg::Matrix<3, 1>, double>>
@@ -116,9 +116,9 @@ namespace Constraints::EmbeddedMesh
    * \brief Evaluate the normal vector at the nodes of an interface element
    */
   template <typename ElementType>
-  typename std::enable_if<GEOMETRYPAIR::IsSurfaceAveragedNormalsElement<ElementType>::value_>::type
+  typename std::enable_if<GeometryPair::IsSurfaceAveragedNormalsElement<ElementType>::value_>::type
   evaluate_interface_element_nodal_normals(
-      GEOMETRYPAIR::ElementData<ElementType, double>& element_data_surface)
+      GeometryPair::ElementData<ElementType, double>& element_data_surface)
   {
     Core::LinAlg::SerialDenseMatrix nodal_coordinates =
         Core::FE::get_ele_node_numbering_nodes_paramspace(ElementType::discretization_);
@@ -130,7 +130,7 @@ namespace Constraints::EmbeddedMesh
     {
       for (unsigned int i_dim = 0; i_dim < 2; i_dim++)
         xi(i_dim) = nodal_coordinates(i_dim, iter_node);
-      GEOMETRYPAIR::evaluate_face_normal<ElementType>(xi, element_data_surface, temp_normal);
+      GeometryPair::evaluate_face_normal<ElementType>(xi, element_data_surface, temp_normal);
       for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
         normals(iter_node)(i_dim) += temp_normal(i_dim);
     }
@@ -145,9 +145,9 @@ namespace Constraints::EmbeddedMesh
   }
 
   template <typename ElementType>
-  std::enable_if_t<!GEOMETRYPAIR::IsSurfaceAveragedNormalsElement<ElementType>::value_>
+  std::enable_if_t<!GeometryPair::IsSurfaceAveragedNormalsElement<ElementType>::value_>
   evaluate_interface_element_nodal_normals(
-      GEOMETRYPAIR::ElementData<ElementType, double>& element_data_surface)
+      GeometryPair::ElementData<ElementType, double>& element_data_surface)
   {
   }
 

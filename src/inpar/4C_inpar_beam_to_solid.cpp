@@ -102,7 +102,7 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
               .default_value = 0.0}),
   };
   // Add the geometry pair input parameters.
-  Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(beam_to_solid_volume_mestying);
+  Inpar::GeometryPair::set_valid_parameters_line_to3_d(beam_to_solid_volume_mestying);
 
   list["BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING"] =
       group("BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING", beam_to_solid_volume_mestying,
@@ -197,10 +197,10 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
               .default_value = BeamToSolidSurfaceRotationCoupling::none}),
   };
   // Add the geometry pair input parameters.
-  Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(beam_to_solid_surface_meshtying);
+  Inpar::GeometryPair::set_valid_parameters_line_to3_d(beam_to_solid_surface_meshtying);
 
   // Add the surface options.
-  Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(beam_to_solid_surface_meshtying);
+  Inpar::GeometryPair::set_valid_parameters_line_to_surface(beam_to_solid_surface_meshtying);
   list["BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING"] =
       group("BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING", beam_to_solid_surface_meshtying,
           {.defaultable = true});
@@ -245,10 +245,10 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
               .default_value = BeamToSolidMortarShapefunctions::none}),
   };
   // Add the geometry pair input parameters.
-  Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(beam_to_solid_surface_contact);
+  Inpar::GeometryPair::set_valid_parameters_line_to3_d(beam_to_solid_surface_contact);
 
   // Add the surface options.
-  Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(beam_to_solid_surface_contact);
+  Inpar::GeometryPair::set_valid_parameters_line_to_surface(beam_to_solid_surface_contact);
 
   list["BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT"] =
       group("BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT", beam_to_solid_surface_contact,

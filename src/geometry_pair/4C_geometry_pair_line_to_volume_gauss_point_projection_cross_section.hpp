@@ -16,11 +16,11 @@
 FOUR_C_NAMESPACE_OPEN
 
 // Forward declaration.
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template <typename ScalarType>
   class ProjectionPointVolumeToVolume;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 namespace LargeRotations
 {
   template <unsigned int numnodes, typename T>
@@ -28,7 +28,7 @@ namespace LargeRotations
 }  // namespace LargeRotations
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief This geometry pair projects Gauss points from a line to a volume, but the Gauss points
@@ -48,7 +48,7 @@ namespace GEOMETRYPAIR
      */
     GeometryPairLineToVolumeGaussPointProjectionCrossSection(
         const Core::Elements::Element* element1, const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData>& evaluation_data);
+        const std::shared_ptr<GeometryPair::LineTo3DEvaluationData>& evaluation_data);
 
 
     /**
@@ -82,7 +82,7 @@ namespace GEOMETRYPAIR
      */
     std::vector<bool>& get_line_projection_vector() const;
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

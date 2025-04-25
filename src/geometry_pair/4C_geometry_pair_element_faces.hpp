@@ -24,20 +24,20 @@ namespace
 FOUR_C_NAMESPACE_OPEN
 
 // Forward declarations.
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   struct ConnectedFace;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 namespace Inpar
 {
-  namespace GEOMETRYPAIR
+  namespace GeometryPair
   {
     enum class SurfaceNormals;
   }
 }  // namespace Inpar
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief This structure "converts" a face element type to the underlying volume element.
@@ -109,7 +109,7 @@ namespace GEOMETRYPAIR
      * @param face_elements (in) Vector with all face elements in the surface condition.
      */
     virtual void setup(const std::shared_ptr<const Core::FE::Discretization>& discret,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>&
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>&
             face_elements) = 0;
 
     /**
@@ -120,7 +120,7 @@ namespace GEOMETRYPAIR
      * @param face_elements (in) Map with all the faces in this condition.
      */
     virtual void set_state(const std::shared_ptr<const Core::LinAlg::Vector<double>>& displacement,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>&
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>&
             face_elements) = 0;
 
     /**
@@ -130,7 +130,7 @@ namespace GEOMETRYPAIR
      * @param face_elements (in) Vector with all face elements in the surface condition.
      */
     virtual void calculate_averaged_reference_normals(
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements) {
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements) {
     };
 
     /**
@@ -219,14 +219,14 @@ namespace GEOMETRYPAIR
      * @param face_elements (in) Vector with all face elements in the surface condition.
      */
     void setup(const std::shared_ptr<const Core::FE::Discretization>& discret,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements)
         override;
 
     /**
      * \brief Set the needed displacement vectors for this face (derived).
      */
     void set_state(const std::shared_ptr<const Core::LinAlg::Vector<double>>& displacement,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements)
         override;
 
     /**
@@ -354,21 +354,21 @@ namespace GEOMETRYPAIR
      * @param face_elements (in) Vector with all face elements in the surface condition.
      */
     void setup(const std::shared_ptr<const Core::FE::Discretization>& discret,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements)
         override;
 
     /**
      * \brief Set the needed displacement vectors for this face (derived).
      */
     void set_state(const std::shared_ptr<const Core::LinAlg::Vector<double>>& displacement,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements)
         override;
 
     /**
      * \brief Calculate the averaged normals on the nodes of this face (derived).
      */
     void calculate_averaged_reference_normals(
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements)
         override;
 
     /**
@@ -434,14 +434,14 @@ namespace GEOMETRYPAIR
      * @param face_elements (in) Vector with all face elements in the surface condition.
      */
     void setup(const std::shared_ptr<const Core::FE::Discretization>& discret,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements)
         override;
 
     /**
      * \brief Set the needed displacement vectors for this face (derived).
      */
     void set_state(const std::shared_ptr<const Core::LinAlg::Vector<double>>& displacement,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements)
         override;
 
     /**
@@ -453,8 +453,8 @@ namespace GEOMETRYPAIR
      */
     template <typename ScalarTypeNormal>
     void calculate_normals(
-        const GEOMETRYPAIR::ElementData<Volume, ScalarTypeNormal>& volume_position,
-        const GEOMETRYPAIR::ElementData<Surface, ScalarTypeNormal>& surface_position,
+        const GeometryPair::ElementData<Volume, ScalarTypeNormal>& volume_position,
+        const GeometryPair::ElementData<Surface, ScalarTypeNormal>& surface_position,
         Core::LinAlg::Matrix<3 * Surface::n_nodes_, 1, ScalarTypeNormal>& normals) const;
 
     /**
@@ -477,10 +477,10 @@ namespace GEOMETRYPAIR
     Core::LinAlg::Matrix<Surface::n_dof_, 1, int> surface_dof_lid_map_;
 
     //! Reference position.
-    GEOMETRYPAIR::ElementData<Volume, double> volume_reference_position_;
+    GeometryPair::ElementData<Volume, double> volume_reference_position_;
 
     //! Current position.
-    GEOMETRYPAIR::ElementData<Volume, ScalarType> volume_position_;
+    GeometryPair::ElementData<Volume, ScalarType> volume_position_;
 
     //! Map the face coordinate axis to the volume coordinate axis.
     Core::LinAlg::Matrix<2, 1, int> face_to_volume_coordinate_axis_map_;
@@ -505,9 +505,9 @@ namespace GEOMETRYPAIR
    */
   std::shared_ptr<FaceElement> face_element_factory(
       const std::shared_ptr<const Core::Elements::Element>& core_element, const int fad_order,
-      const Inpar::GEOMETRYPAIR::SurfaceNormals surface_normal_strategy);
+      const Inpar::GeometryPair::SurfaceNormals surface_normal_strategy);
 
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

@@ -30,7 +30,7 @@ namespace BeamInteraction
 {
   /**
    * \brief Class for point-wise beam to beam mesh tying.
-   * @param beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
+   * @param beam Type from GeometryPair::ElementDiscretization... representing the beam.
    */
   template <typename Beam>
   class BeamToBeamPointCouplingPair : public BeamContactPair

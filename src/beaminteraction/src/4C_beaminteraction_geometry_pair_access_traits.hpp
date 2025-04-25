@@ -16,7 +16,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template <>
   struct SetShapeFunctionData<t_hermite>
@@ -33,7 +33,7 @@ namespace GEOMETRYPAIR
       shape_function_data.ref_length_ = beam_element->ref_length();
     }
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

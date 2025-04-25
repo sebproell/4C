@@ -17,7 +17,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Struct to evaluate the shape functions for an element
@@ -248,7 +248,7 @@ namespace GEOMETRYPAIR
               N_flat(ElementType::n_val_ * node + val);
   }
 
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

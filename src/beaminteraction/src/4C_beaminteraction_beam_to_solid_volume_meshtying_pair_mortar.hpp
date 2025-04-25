@@ -26,8 +26,8 @@ namespace BeamInteraction
   /**
    * \brief Class for beam to solid meshtying using mortar shape functions for the contact
    * tractions.
-   * @param beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @param solid Type from GEOMETRYPAIR::ElementDiscretization... representing the solid.
+   * @param beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @param solid Type from GeometryPair::ElementDiscretization... representing the solid.
    * @param mortar Type from BeamInteraction::ElementDiscretization... representing the mortar shape
    * functions.
    */

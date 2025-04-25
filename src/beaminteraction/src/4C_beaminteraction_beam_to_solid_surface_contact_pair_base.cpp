@@ -84,7 +84,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam,
           visualization_writer->get_visualization_writer("btss-contact-segmentation");
   if (visualization_segmentation != nullptr)
   {
-    std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<ScalarType>> points;
+    std::vector<GeometryPair::ProjectionPoint1DTo3D<ScalarType>> points;
     for (const auto& segment : this->line_to_3D_segments_)
       for (const auto& segmentation_point : {segment.get_start_point(), segment.get_end_point()})
         points.push_back(segmentation_point);
@@ -96,7 +96,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam,
           visualization_writer->get_visualization_writer("btss-contact-integration-points");
   if (visualization_integration_points != nullptr)
   {
-    std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<ScalarType>> points;
+    std::vector<GeometryPair::ProjectionPoint1DTo3D<ScalarType>> points;
     for (const auto& segment : this->line_to_3D_segments_)
       for (const auto& segmentation_point : (segment.get_projection_points()))
         points.push_back(segmentation_point);
@@ -112,7 +112,7 @@ template <typename ScalarType, typename Beam, typename Surface>
 void BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam, Surface>::
     add_visualization_integration_points(
         BeamInteraction::BeamToSolidOutputWriterVisualization& visualization_writer,
-        const std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<ScalarType>>& points,
+        const std::vector<GeometryPair::ProjectionPoint1DTo3D<ScalarType>>& points,
         const Teuchos::ParameterList& visualization_params) const
 {
   auto& visualization_data = visualization_writer.get_visualization_data();
@@ -149,7 +149,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam, Surfac
   {
     const auto [r_beam, r_surface, surface_normal, gap] =
         this->evaluate_contact_kinematics_at_projection_point(point, beam_cross_section_radius);
-    GEOMETRYPAIR::evaluate_position<Beam>(point.get_eta(), this->ele1posref_, X_beam);
+    GeometryPair::evaluate_position<Beam>(point.get_eta(), this->ele1posref_, X_beam);
 
     u_beam = r_beam;
     u_beam -= X_beam;
@@ -179,10 +179,10 @@ template <typename ScalarType, typename Beam, typename Surface>
 void BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam,
     Surface>::create_geometry_pair(const Core::Elements::Element* element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
+    const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
 {
   this->geometry_pair_ =
-      GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<ScalarType, Beam, Surface>(
+      GeometryPair::geometry_pair_line_to_surface_factory_fad<ScalarType, Beam, Surface>(
           element1, element2, geometry_evaluation_data_ptr);
 }
 
@@ -191,9 +191,9 @@ void BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam,
  */
 template <typename ScalarType, typename Beam, typename Surface>
 void BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam,
-    Surface>::set_face_element(std::shared_ptr<GEOMETRYPAIR::FaceElement>& face_element)
+    Surface>::set_face_element(std::shared_ptr<GeometryPair::FaceElement>& face_element)
 {
-  face_element_ = std::dynamic_pointer_cast<GEOMETRYPAIR::FaceElementTemplate<Surface, ScalarType>>(
+  face_element_ = std::dynamic_pointer_cast<GeometryPair::FaceElementTemplate<Surface, ScalarType>>(
       face_element);
 
   // Set the number of (centerline) degrees of freedom for the beam element in the face element
@@ -209,12 +209,12 @@ void BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam,
  *
  */
 template <typename ScalarType, typename Beam, typename Surface>
-std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Beam, Surface>>
+std::shared_ptr<GeometryPair::GeometryPairLineToSurface<ScalarType, Beam, Surface>>
 BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam, Surface>::cast_geometry_pair()
     const
 {
   return std::dynamic_pointer_cast<
-      GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Beam, Surface>>(this->geometry_pair_);
+      GeometryPair::GeometryPairLineToSurface<ScalarType, Beam, Surface>>(this->geometry_pair_);
 }
 
 /**
@@ -225,7 +225,7 @@ std::tuple<Core::LinAlg::Matrix<3, 1, ScalarType>, Core::LinAlg::Matrix<3, 1, Sc
     Core::LinAlg::Matrix<3, 1, ScalarType>, ScalarType>
 BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam, Surface>::
     evaluate_contact_kinematics_at_projection_point(
-        const GEOMETRYPAIR::ProjectionPoint1DTo3D<ScalarType>& projection_point,
+        const GeometryPair::ProjectionPoint1DTo3D<ScalarType>& projection_point,
         const double beam_cross_section_radius) const
 {
   // Get the projection coordinates
@@ -234,14 +234,14 @@ BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam, Surface>::
 
   // Get the surface normal vector
   Core::LinAlg::Matrix<3, 1, ScalarType> surface_normal;
-  GEOMETRYPAIR::evaluate_surface_normal<Surface>(
+  GeometryPair::evaluate_surface_normal<Surface>(
       xi, this->face_element_->get_face_element_data(), surface_normal);
 
   // Evaluate the current position of beam and solid
   Core::LinAlg::Matrix<3, 1, ScalarType> r_beam;
   Core::LinAlg::Matrix<3, 1, ScalarType> r_surface;
-  GEOMETRYPAIR::evaluate_position<Beam>(eta, this->ele1pos_, r_beam);
-  GEOMETRYPAIR::evaluate_position<Surface>(
+  GeometryPair::evaluate_position<Beam>(eta, this->ele1pos_, r_beam);
+  GeometryPair::evaluate_position<Surface>(
       xi, this->face_element_->get_face_element_data(), r_surface);
 
   // Evaluate the gap function
@@ -258,7 +258,7 @@ BeamInteraction::BeamToSolidSurfaceContactPairBase<ScalarType, Beam, Surface>::
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidSurfaceContactPairBase<line_to_surface_patch_scalar_type_1st_order,
       t_line2, t_tri3>;

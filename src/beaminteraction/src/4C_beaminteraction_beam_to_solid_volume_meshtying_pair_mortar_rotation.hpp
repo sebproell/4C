@@ -35,8 +35,8 @@ namespace BeamInteraction
 {
   /**
    * \brief Class for beam to solid rotational meshtying.
-   * @param beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @param solid Type from GEOMETRYPAIR::ElementDiscretization... representing the solid.
+   * @param beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @param solid Type from GeometryPair::ElementDiscretization... representing the solid.
    * @param mortar Type from BeamInteraction::ElementDiscretization... representing the mortar shape
    * functions for displacement coupling.
    * @param mortar_rot Type from BeamInteraction::ElementDiscretization... representing the mortar
@@ -100,7 +100,7 @@ namespace BeamInteraction
      */
     void evaluate_rotational_coupling_terms(
         const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
-        const GEOMETRYPAIR::ElementData<Solid, scalar_type_rot_1st>& q_solid,
+        const GeometryPair::ElementData<Solid, scalar_type_rot_1st>& q_solid,
         const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
             triad_interpolation_scheme,
         const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
@@ -117,7 +117,7 @@ namespace BeamInteraction
      */
     void evaluate_rotational_coupling_stiff_terms(
         const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
-        const GEOMETRYPAIR::ElementData<Solid, scalar_type_rot_2nd>& q_solid,
+        const GeometryPair::ElementData<Solid, scalar_type_rot_2nd>& q_solid,
         Core::LinAlg::Matrix<MortarRot::n_dof_, 1, double>& lambda_rot,
         const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
             triad_interpolation_scheme,

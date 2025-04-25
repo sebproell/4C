@@ -69,7 +69,7 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
               .default_value = FBI::BeamToFluidMeshtingMortarShapefunctions::none}),
   };
   // Add the geometry pair input parameters.
-  Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(beam_to_fluid_meshtying);
+  Inpar::GeometryPair::set_valid_parameters_line_to3_d(beam_to_fluid_meshtying);
 
   list["FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING"] =
       group("FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING", beam_to_fluid_meshtying,

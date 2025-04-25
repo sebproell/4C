@@ -190,8 +190,8 @@ void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
       // Get the line-to-surface evaluation data for the current condition.
       auto beam_to_surface_condition =
           std::dynamic_pointer_cast<const BeamToSolidConditionSurface>(condition);
-      std::shared_ptr<const GEOMETRYPAIR::LineToSurfaceEvaluationData> surface_evaluation_data =
-          std::dynamic_pointer_cast<const GEOMETRYPAIR::LineToSurfaceEvaluationData>(
+      std::shared_ptr<const GeometryPair::LineToSurfaceEvaluationData> surface_evaluation_data =
+          std::dynamic_pointer_cast<const GeometryPair::LineToSurfaceEvaluationData>(
               beam_to_surface_condition->get_geometry_evaluation_data());
 
       // Get the coupling ID for the current condition.

@@ -133,8 +133,8 @@ namespace BeamInteraction
   void get_solid_rotation_vector(
       const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
       const Core::LinAlg::Matrix<3, 1, double>& xi,
-      const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-      const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+      const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+      const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
       const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
       Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid);
 
@@ -151,8 +151,8 @@ namespace BeamInteraction
   template <typename Solid, typename ScalarType>
   void get_solid_rotation_vector_deformation_gradient_3d_general(
       const Core::LinAlg::Matrix<3, 1, double>& xi,
-      const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-      const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+      const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+      const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
       const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
       Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid);
 
@@ -169,8 +169,8 @@ namespace BeamInteraction
   template <typename Solid, typename ScalarType>
   void get_solid_rotation_vector_deformation_gradient_3d_general_in_cross_section_plane(
       const Core::LinAlg::Matrix<3, 1, double>& xi,
-      const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-      const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+      const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+      const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
       const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
       Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid);
 
@@ -202,8 +202,8 @@ namespace BeamInteraction
   template <typename Solid, typename ScalarType>
   void get_solid_rotation_vector_deformation_gradient_3d_base1(
       const Core::LinAlg::Matrix<3, 1, double>& xi,
-      const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-      const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+      const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+      const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
       const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
       Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid);
 
@@ -222,8 +222,8 @@ namespace BeamInteraction
   void get_solid_rotation_vector_deformation_gradient3_d(
       const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
       const Core::LinAlg::Matrix<3, 1, double>& xi,
-      const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-      const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+      const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+      const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
       const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
       Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid);
 
@@ -240,8 +240,8 @@ namespace BeamInteraction
   template <typename Solid, typename ScalarType>
   void get_solid_rotation_vector_polar_decomposition2_d(
       const Core::LinAlg::Matrix<3, 1, double>& xi,
-      const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-      const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+      const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+      const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
       const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
       Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid);
 
@@ -260,8 +260,8 @@ namespace BeamInteraction
   void get_solid_rotation_vector_deformation_gradient2_d(
       const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
       const Core::LinAlg::Matrix<3, 1, double>& xi,
-      const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-      const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+      const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+      const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
       const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
       Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid);
 
@@ -326,7 +326,7 @@ namespace BeamInteraction
   std::tuple<Core::LinAlg::Matrix<Beam::n_dof_, 1, int>, const std::vector<int>&>
   get_beam_to_surface_pair_gid(const Core::FE::Discretization& discret,
       const Core::Elements::Element& beam_element,
-      const GEOMETRYPAIR::FaceElementTemplate<Surface, ScalarType>& face_element)
+      const GeometryPair::FaceElementTemplate<Surface, ScalarType>& face_element)
   {
     // Get the beam centerline GIDs.
     Core::LinAlg::Matrix<Beam::n_dof_, 1, int> beam_centerline_gid;
@@ -348,7 +348,7 @@ namespace BeamInteraction
   template <typename Beam, typename Surface, typename ScalarType>
   std::vector<int> get_beam_to_surface_pair_gid_combined(const Core::FE::Discretization& discret,
       const Core::Elements::Element& beam_element,
-      const GEOMETRYPAIR::FaceElementTemplate<Surface, ScalarType>& face_element)
+      const GeometryPair::FaceElementTemplate<Surface, ScalarType>& face_element)
   {
     const auto [beam_centerline_gid, patch_gid] =
         get_beam_to_surface_pair_gid<Beam>(discret, beam_element, face_element);

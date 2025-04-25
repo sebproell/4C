@@ -14,31 +14,31 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-GEOMETRYPAIR::LineTo3DEvaluationData::LineTo3DEvaluationData(
+GeometryPair::LineTo3DEvaluationData::LineTo3DEvaluationData(
     const Teuchos::ParameterList& input_parameter_list)
     : GeometryEvaluationDataBase(input_parameter_list),
-      strategy_(Inpar::GEOMETRYPAIR::LineTo3DStrategy::none),
+      strategy_(Inpar::GeometryPair::LineTo3DStrategy::none),
       gauss_rule_(Core::FE::GaussRule1D::undefined),
       integration_points_circumference_(-1),
       gauss_point_projection_tracker_(),
       n_search_points_(0),
       not_all_gauss_points_project_valid_action_(
-          Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction::fail),
+          Inpar::GeometryPair::NotAllGaussPointsProjectValidAction::fail),
       segment_tracker_()
 {
   // Get parameters from the input file.
   {
-    strategy_ = Teuchos::getIntegralValue<Inpar::GEOMETRYPAIR::LineTo3DStrategy>(
+    strategy_ = Teuchos::getIntegralValue<Inpar::GeometryPair::LineTo3DStrategy>(
         input_parameter_list, "GEOMETRY_PAIR_STRATEGY");
 
     n_search_points_ = input_parameter_list.get<int>("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS");
     not_all_gauss_points_project_valid_action_ =
-        Teuchos::getIntegralValue<Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction>(
+        Teuchos::getIntegralValue<Inpar::GeometryPair::NotAllGaussPointsProjectValidAction>(
             input_parameter_list,
             "GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION");
 
     gauss_rule_ =
-        Inpar::GEOMETRYPAIR::int_to_gauss_rule1_d(input_parameter_list.get<int>("GAUSS_POINTS"));
+        Inpar::GeometryPair::int_to_gauss_rule1_d(input_parameter_list.get<int>("GAUSS_POINTS"));
 
     integration_points_circumference_ =
         input_parameter_list.get<int>("INTEGRATION_POINTS_CIRCUMFERENCE");
@@ -51,7 +51,7 @@ GEOMETRYPAIR::LineTo3DEvaluationData::LineTo3DEvaluationData(
 /**
  *
  */
-void GEOMETRYPAIR::LineTo3DEvaluationData::clear()
+void GeometryPair::LineTo3DEvaluationData::clear()
 {
   // Call reset on the base method.
   GeometryEvaluationDataBase::clear();
@@ -69,7 +69,7 @@ void GEOMETRYPAIR::LineTo3DEvaluationData::clear()
 /**
  *
  */
-void GEOMETRYPAIR::LineTo3DEvaluationData::reset_tracker()
+void GeometryPair::LineTo3DEvaluationData::reset_tracker()
 {
   for (auto& data : gauss_point_projection_tracker_)
     std::fill(data.second.begin(), data.second.end(), false);

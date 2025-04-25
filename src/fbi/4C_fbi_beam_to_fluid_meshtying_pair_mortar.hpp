@@ -20,8 +20,8 @@ namespace BeamInteraction
   /**
    * \brief Class for beam to fluid meshtying using mortar shape functions for the contact
    * tractions.
-   * @param beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @param fluid Type from GEOMETRYPAIR::ElementDiscretization... representing the fluid.
+   * @param beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @param fluid Type from GeometryPair::ElementDiscretization... representing the fluid.
    * @param mortar Type from BeamInteraction::ElementDiscretization... representing the mortar shape
    * functions.
    */
@@ -74,7 +74,7 @@ namespace BeamInteraction
 
    protected:
     virtual void evaluate_penalty_force(Core::LinAlg::Matrix<3, 1, scalar_type>& force,
-        const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point,
+        const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point,
         Core::LinAlg::Matrix<3, 1, scalar_type> v_beam) const;
   };
 }  // namespace BeamInteraction

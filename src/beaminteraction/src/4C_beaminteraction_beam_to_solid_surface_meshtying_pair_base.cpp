@@ -81,7 +81,7 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam,
           visualization_writer->get_visualization_writer("btss-coupling-segmentation");
   if (visualization_segmentation != nullptr)
   {
-    std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<double>> points;
+    std::vector<GeometryPair::ProjectionPoint1DTo3D<double>> points;
     for (const auto& segment : this->line_to_3D_segments_)
       for (const auto& segmentation_point : {segment.get_start_point(), segment.get_end_point()})
         points.push_back(segmentation_point);
@@ -93,7 +93,7 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam,
           visualization_writer->get_visualization_writer("btss-coupling-integration-points");
   if (visualization_integration_points != nullptr)
   {
-    std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<double>> points;
+    std::vector<GeometryPair::ProjectionPoint1DTo3D<double>> points;
     for (const auto& segment : this->line_to_3D_segments_)
       for (const auto& segmentation_point : (segment.get_projection_points()))
         points.push_back(segmentation_point);
@@ -109,7 +109,7 @@ template <typename ScalarType, typename Beam, typename Surface>
 void BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam, Surface>::
     add_visualization_integration_points(
         BeamInteraction::BeamToSolidOutputWriterVisualization& visualization_writer,
-        const std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<double>>& points,
+        const std::vector<GeometryPair::ProjectionPoint1DTo3D<double>>& points,
         const Teuchos::ParameterList& visualization_params) const
 {
   auto& visualization_data = visualization_writer.get_visualization_data();
@@ -137,12 +137,12 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam, Surf
 
   for (const auto& point : points)
   {
-    GEOMETRYPAIR::evaluate_position<Beam>(point.get_eta(), this->ele1posref_, X_beam);
-    GEOMETRYPAIR::evaluate_position<Beam>(point.get_eta(), this->ele1pos_, r_beam);
+    GeometryPair::evaluate_position<Beam>(point.get_eta(), this->ele1posref_, X_beam);
+    GeometryPair::evaluate_position<Beam>(point.get_eta(), this->ele1pos_, r_beam);
     u_beam = r_beam;
     u_beam -= X_beam;
 
-    GEOMETRYPAIR::evaluate_position<Surface>(
+    GeometryPair::evaluate_position<Surface>(
         point.get_xi(), this->face_element_->get_face_element_data(), r_solid);
     projection_dir = r_solid;
     projection_dir -= r_beam;
@@ -169,9 +169,9 @@ template <typename ScalarType, typename Beam, typename Surface>
 void BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam,
     Surface>::create_geometry_pair(const Core::Elements::Element* element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
+    const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
 {
-  this->geometry_pair_ = GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, Beam, Surface>(
+  this->geometry_pair_ = GeometryPair::geometry_pair_line_to_surface_factory<double, Beam, Surface>(
       element1, element2, geometry_evaluation_data_ptr);
 }
 
@@ -180,9 +180,9 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam,
  */
 template <typename ScalarType, typename Beam, typename Surface>
 void BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam,
-    Surface>::set_face_element(std::shared_ptr<GEOMETRYPAIR::FaceElement>& face_element)
+    Surface>::set_face_element(std::shared_ptr<GeometryPair::FaceElement>& face_element)
 {
-  face_element_ = std::dynamic_pointer_cast<GEOMETRYPAIR::FaceElementTemplate<Surface, ScalarType>>(
+  face_element_ = std::dynamic_pointer_cast<GeometryPair::FaceElementTemplate<Surface, ScalarType>>(
       face_element);
 
   // Set the number of (centerline) degrees of freedom for the beam element in the face element
@@ -198,11 +198,11 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam,
  *
  */
 template <typename ScalarType, typename Beam, typename Surface>
-std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToSurface<double, Beam, Surface>>
+std::shared_ptr<GeometryPair::GeometryPairLineToSurface<double, Beam, Surface>>
 BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam,
     Surface>::cast_geometry_pair() const
 {
-  return std::dynamic_pointer_cast<GEOMETRYPAIR::GeometryPairLineToSurface<double, Beam, Surface>>(
+  return std::dynamic_pointer_cast<GeometryPair::GeometryPairLineToSurface<double, Beam, Surface>>(
       this->geometry_pair_);
 }
 
@@ -212,7 +212,7 @@ BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam,
 template <typename ScalarType, typename Beam, typename Surface>
 Core::LinAlg::Matrix<3, 1, ScalarType>
 BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam, Surface>::evaluate_coupling(
-    const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& evaluation_point) const
+    const GeometryPair::ProjectionPoint1DTo3D<double>& evaluation_point) const
 {
   using namespace Inpar::BeamToSolid;
 
@@ -236,8 +236,8 @@ BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam, Surface>:
         surface_dof.element_position_(i_dof_surface) -=
             this->face_element_->get_face_reference_element_data().element_position_(i_dof_surface);
 
-      GEOMETRYPAIR::evaluate_position<Beam>(evaluation_point.get_eta(), beam_dof, r_beam);
-      GEOMETRYPAIR::evaluate_position<Surface>(evaluation_point.get_xi(), surface_dof, r_surface);
+      GeometryPair::evaluate_position<Beam>(evaluation_point.get_eta(), beam_dof, r_beam);
+      GeometryPair::evaluate_position<Surface>(evaluation_point.get_xi(), surface_dof, r_surface);
 
       r_beam -= r_surface;
       return r_beam;
@@ -245,8 +245,8 @@ BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam, Surface>:
     case BeamToSolidSurfaceCoupling::reference_configuration_forced_to_zero:
     case BeamToSolidSurfaceCoupling::reference_configuration_forced_to_zero_fad:
     {
-      GEOMETRYPAIR::evaluate_position<Beam>(evaluation_point.get_eta(), this->ele1pos_, r_beam);
-      GEOMETRYPAIR::evaluate_position<Surface>(
+      GeometryPair::evaluate_position<Beam>(evaluation_point.get_eta(), this->ele1pos_, r_beam);
+      GeometryPair::evaluate_position<Surface>(
           evaluation_point.get_xi(), this->face_element_->get_face_element_data(), r_surface);
 
       r_beam -= r_surface;
@@ -254,8 +254,8 @@ BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam, Surface>:
     }
     case BeamToSolidSurfaceCoupling::consistent_fad:
     {
-      GEOMETRYPAIR::evaluate_position<Beam>(evaluation_point.get_eta(), this->ele1pos_, r_beam);
-      GEOMETRYPAIR::evaluate_surface_position<Surface>(
+      GeometryPair::evaluate_position<Beam>(evaluation_point.get_eta(), this->ele1pos_, r_beam);
+      GeometryPair::evaluate_surface_position<Surface>(
           evaluation_point.get_xi(), this->face_element_->get_face_element_data(), r_surface);
 
       r_beam -= r_surface;
@@ -274,7 +274,7 @@ BeamInteraction::BeamToSolidSurfaceMeshtyingPairBase<ScalarType, Beam, Surface>:
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidSurfaceMeshtyingPairBase<
       line_to_surface_scalar_type<t_hermite, t_quad4>, t_hermite, t_quad4>;

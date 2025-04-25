@@ -24,10 +24,10 @@ namespace
 
   void set_up_default_parameters_line_to_3d(Teuchos::ParameterList& list)
   {
-    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GEOMETRYPAIR::LineTo3DStrategy::segmentation);
+    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GeometryPair::LineTo3DStrategy::segmentation);
     list.set("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 6);
     list.set("GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
-        Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction::fail);
+        Inpar::GeometryPair::NotAllGaussPointsProjectValidAction::fail);
     list.set("GAUSS_POINTS", 6);
     list.set("INTEGRATION_POINTS_CIRCUMFERENCE", 6);
   }
@@ -47,7 +47,7 @@ namespace
       Teuchos::ParameterList line_to_volume_params_list;
       set_up_default_parameters_line_to_3d(line_to_volume_params_list);
       evaluation_data_ =
-          std::make_shared<GEOMETRYPAIR::LineTo3DEvaluationData>(line_to_volume_params_list);
+          std::make_shared<GeometryPair::LineTo3DEvaluationData>(line_to_volume_params_list);
     }
 
     /**
@@ -64,11 +64,11 @@ namespace
     template <typename El1, typename El2>
     void create_evaluate_pairs(
         std::vector<std::shared_ptr<
-            GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, El1, El2>>>& geometry_pairs,
+            GeometryPair::GeometryPairLineToVolumeSegmentation<double, El1, El2>>>& geometry_pairs,
         const std::vector<Core::LinAlg::Matrix<El1::n_dof_, 1, double>>& q_line_elements,
         const std::vector<double>& line_ref_lengths,
         const std::vector<Core::LinAlg::Matrix<El2::n_dof_, 1, double>>& q_volume_elements,
-        std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>>& segments_vector)
+        std::vector<std::vector<GeometryPair::LineSegment<double>>>& segments_vector)
     {
       // Check that the vectors have the right size.
       if (line_elements_.size() != q_line_elements.size())
@@ -77,16 +77,16 @@ namespace
         FOUR_C_THROW("Size for volume elements and volume q does not match!");
 
       // Get the element data containers
-      std::vector<GEOMETRYPAIR::ElementData<El1, double>> q_line(q_line_elements.size());
+      std::vector<GeometryPair::ElementData<El1, double>> q_line(q_line_elements.size());
       for (unsigned int i_beam = 0; i_beam < line_elements_.size(); i_beam++)
       {
         q_line[i_beam].element_position_ = q_line_elements[i_beam];
         q_line[i_beam].shape_function_data_.ref_length_ = line_ref_lengths[i_beam];
       }
-      std::vector<GEOMETRYPAIR::ElementData<El2, double>> q_volume(q_volume_elements.size());
+      std::vector<GeometryPair::ElementData<El2, double>> q_volume(q_volume_elements.size());
       for (unsigned int i_volume = 0; i_volume < volume_elements_.size(); i_volume++)
       {
-        q_volume[i_volume] = GEOMETRYPAIR::InitializeElementData<El2, double>::initialize(
+        q_volume[i_volume] = GeometryPair::InitializeElementData<El2, double>::initialize(
             volume_elements_[i_volume].get());
         q_volume[i_volume].element_position_ = q_volume_elements[i_volume];
       }
@@ -98,7 +98,7 @@ namespace
         for (auto& volume : volume_elements_)
         {
           geometry_pairs.push_back(std::make_shared<
-              GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, El1, El2>>(
+              GeometryPair::GeometryPairLineToVolumeSegmentation<double, El1, El2>>(
               line.get(), volume.get(), evaluation_data_));
         }
       }
@@ -118,7 +118,7 @@ namespace
     }
 
     //! Evaluation data container for geometry pairs.
-    std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData> evaluation_data_;
+    std::shared_ptr<GeometryPair::LineTo3DEvaluationData> evaluation_data_;
 
     //! Vector of line elements.
     std::vector<std::shared_ptr<Core::Elements::Element>> line_elements_;
@@ -137,8 +137,8 @@ namespace
     std::vector<Core::LinAlg::Matrix<12, 1, double>> q_line_elements;
     std::vector<double> line_ref_lengths;
     std::vector<Core::LinAlg::Matrix<24, 1, double>> q_volume_elements;
-    std::vector<std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8>>>
+    std::vector<std::shared_ptr<GeometryPair::GeometryPairLineToVolumeSegmentation<double,
+        GeometryPair::t_hermite, GeometryPair::t_hex8>>>
         geometry_pairs;
 
     // Get the geometry.
@@ -146,7 +146,7 @@ namespace
         line_elements_, volume_elements_, q_line_elements, line_ref_lengths, q_volume_elements);
 
     // Vector with vector of segments for Evaluate.
-    std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>> segments_vector;
+    std::vector<std::vector<GeometryPair::LineSegment<double>>> segments_vector;
 
     // Create and evaluate the geometry pairs.
     create_evaluate_pairs(
@@ -160,9 +160,9 @@ namespace
 
       // The first pair contains the full beam.
       EXPECT_NEAR(
-          -1., segments_vector[0][0].get_eta_a(), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          -1., segments_vector[0][0].get_eta_a(), GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(
-          1., segments_vector[0][0].get_eta_b(), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          1., segments_vector[0][0].get_eta_b(), GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -178,8 +178,8 @@ namespace
     std::vector<Core::LinAlg::Matrix<12, 1, double>> q_line_elements;
     std::vector<double> line_ref_lengths;
     std::vector<Core::LinAlg::Matrix<24, 1, double>> q_volume_elements;
-    std::vector<std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8>>>
+    std::vector<std::shared_ptr<GeometryPair::GeometryPairLineToVolumeSegmentation<double,
+        GeometryPair::t_hermite, GeometryPair::t_hex8>>>
         geometry_pairs;
 
     // Get the geometry.
@@ -187,7 +187,7 @@ namespace
         line_elements_, volume_elements_, q_line_elements, line_ref_lengths, q_volume_elements);
 
     // Vector with vector of segments for Evaluate.
-    std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>> segments_vector;
+    std::vector<std::vector<GeometryPair::LineSegment<double>>> segments_vector;
 
     // Create and evaluate the geometry pairs.
     create_evaluate_pairs(
@@ -200,13 +200,13 @@ namespace
 
       // Check the parameter coordinates.
       EXPECT_NEAR(
-          -1., segments_vector[0][0].get_eta_a(), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          -1., segments_vector[0][0].get_eta_a(), GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(0.36285977578126655, segments_vector[0][0].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(0.36285977578126744, segments_vector[1][0].get_eta_a(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(
-          1.0, segments_vector[1][0].get_eta_b(), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          1.0, segments_vector[1][0].get_eta_b(), GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -219,8 +219,8 @@ namespace
     std::vector<Core::LinAlg::Matrix<12, 1, double>> q_line_elements;
     std::vector<double> line_ref_lengths;
     std::vector<Core::LinAlg::Matrix<81, 1, double>> q_volume_elements;
-    std::vector<std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex27>>>
+    std::vector<std::shared_ptr<GeometryPair::GeometryPairLineToVolumeSegmentation<double,
+        GeometryPair::t_hermite, GeometryPair::t_hex27>>>
         geometry_pairs;
 
     // Get the geometry.
@@ -228,7 +228,7 @@ namespace
         line_elements_, volume_elements_, q_line_elements, line_ref_lengths, q_volume_elements);
 
     // Vector with vector of segments for Evaluate.
-    std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>> segments_vector;
+    std::vector<std::vector<GeometryPair::LineSegment<double>>> segments_vector;
 
     // Create and evaluate the geometry pairs.
     create_evaluate_pairs(
@@ -241,13 +241,13 @@ namespace
 
       // Check the segment coordinates on the line.
       EXPECT_NEAR(-0.7495456134309243, segments_vector[0][0].get_eta_a(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(-0.44451080329628256, segments_vector[0][0].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(0.076870238957896297, segments_vector[0][1].get_eta_a(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(0.95200105410689462, segments_vector[0][1].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -260,8 +260,8 @@ namespace
     std::vector<Core::LinAlg::Matrix<12, 1, double>> q_line_elements;
     std::vector<double> line_ref_lengths;
     std::vector<Core::LinAlg::Matrix<30, 1, double>> q_volume_elements;
-    std::vector<std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet10>>>
+    std::vector<std::shared_ptr<GeometryPair::GeometryPairLineToVolumeSegmentation<double,
+        GeometryPair::t_hermite, GeometryPair::t_tet10>>>
         geometry_pairs;
 
     // Get the geometry.
@@ -269,7 +269,7 @@ namespace
         line_elements_, volume_elements_, q_line_elements, line_ref_lengths, q_volume_elements);
 
     // Vector with vector of segments for Evaluate.
-    std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>> segments_vector;
+    std::vector<std::vector<GeometryPair::LineSegment<double>>> segments_vector;
 
     // Create and evaluate the geometry pairs.
     create_evaluate_pairs(
@@ -282,13 +282,13 @@ namespace
 
       // Check the segment coordinates on the line.
       EXPECT_NEAR(-0.40853230756138476, segments_vector[0][0].get_eta_a(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(-0.079518054716933712, segments_vector[0][0].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(0.88282786408473413, segments_vector[0][1].get_eta_a(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(0.97917616983415101, segments_vector[0][1].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -301,12 +301,12 @@ namespace
     std::vector<Core::LinAlg::Matrix<12, 1, double>> q_line_elements;
     std::vector<double> line_ref_lengths;
     std::vector<Core::LinAlg::Matrix<81, 1, double>> q_volume_elements;
-    std::vector<std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_nurbs27>>>
+    std::vector<std::shared_ptr<GeometryPair::GeometryPairLineToVolumeSegmentation<double,
+        GeometryPair::t_hermite, GeometryPair::t_nurbs27>>>
         geometry_pairs;
 
     // Vector with vector of segments for Evaluate.
-    std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>> segments_vector;
+    std::vector<std::vector<GeometryPair::LineSegment<double>>> segments_vector;
 
     // Add the relevant nurbs information to the discretization.
     std::shared_ptr<Core::FE::Nurbs::NurbsDiscretization> structdis =
@@ -328,9 +328,9 @@ namespace
 
       // Check the segment coordinates on the line.
       EXPECT_NEAR(-0.40769440465702655, segments_vector[0][0].get_eta_a(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(-0.0090552523537554153, segments_vector[0][0].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -343,8 +343,8 @@ namespace
     std::vector<Core::LinAlg::Matrix<12, 1, double>> q_line_elements;
     std::vector<double> line_ref_lengths;
     std::vector<Core::LinAlg::Matrix<24, 1, double>> q_volume_elements;
-    std::vector<std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8>>>
+    std::vector<std::shared_ptr<GeometryPair::GeometryPairLineToVolumeSegmentation<double,
+        GeometryPair::t_hermite, GeometryPair::t_hex8>>>
         geometry_pairs;
 
     // Get the geometry.
@@ -352,7 +352,7 @@ namespace
         line_elements_, volume_elements_, q_line_elements, line_ref_lengths, q_volume_elements);
 
     // Vector with vector of segments for Evaluate.
-    std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>> segments_vector;
+    std::vector<std::vector<GeometryPair::LineSegment<double>>> segments_vector;
 
     // Create and evaluate the geometry pairs.
     create_evaluate_pairs(
@@ -365,13 +365,13 @@ namespace
 
       // Check the segment coordinates on the line.
       EXPECT_NEAR(
-          -1.0, segments_vector[0][0].get_eta_a(), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          -1.0, segments_vector[0][0].get_eta_a(), GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(-0.9435487116990338, segments_vector[0][0].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(-0.03868932051359714, segments_vector[0][1].get_eta_a(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(0.9822380322126314, segments_vector[0][1].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -384,8 +384,8 @@ namespace
     std::vector<Core::LinAlg::Matrix<12, 1, double>> q_line_elements;
     std::vector<double> line_ref_lengths;
     std::vector<Core::LinAlg::Matrix<24, 1, double>> q_volume_elements;
-    std::vector<std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8>>>
+    std::vector<std::shared_ptr<GeometryPair::GeometryPairLineToVolumeSegmentation<double,
+        GeometryPair::t_hermite, GeometryPair::t_hex8>>>
         geometry_pairs;
 
     // Get the geometry.
@@ -399,12 +399,12 @@ namespace
     line_to_volume_params_list.set("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 2);
     line_to_volume_params_list.set(
         "GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
-        Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction::warning);
+        Inpar::GeometryPair::NotAllGaussPointsProjectValidAction::warning);
     evaluation_data_ =
-        std::make_shared<GEOMETRYPAIR::LineTo3DEvaluationData>(line_to_volume_params_list);
+        std::make_shared<GeometryPair::LineTo3DEvaluationData>(line_to_volume_params_list);
 
     // Vector with vector of segments for Evaluate.
-    std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>> segments_vector;
+    std::vector<std::vector<GeometryPair::LineSegment<double>>> segments_vector;
 
     // Create and evaluate the geometry pairs.
     create_evaluate_pairs(
@@ -414,9 +414,9 @@ namespace
     {
       EXPECT_EQ(segments_vector[0].size(), 1);
       EXPECT_NEAR(
-          -1.0, segments_vector[0][0].get_eta_a(), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          -1.0, segments_vector[0][0].get_eta_a(), GeometryPair::Constants::projection_xi_eta_tol);
       EXPECT_NEAR(0.9822380322126314, segments_vector[0][0].get_eta_b(),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -429,8 +429,8 @@ namespace
     std::vector<Core::LinAlg::Matrix<12, 1, double>> q_line_elements;
     std::vector<double> line_ref_lengths;
     std::vector<Core::LinAlg::Matrix<24, 1, double>> q_volume_elements;
-    std::vector<std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8>>>
+    std::vector<std::shared_ptr<GeometryPair::GeometryPairLineToVolumeSegmentation<double,
+        GeometryPair::t_hermite, GeometryPair::t_hex8>>>
         geometry_pairs;
 
     // Get the geometry.
@@ -443,10 +443,10 @@ namespace
     set_up_default_parameters_line_to_3d(line_to_volume_params_list);
     line_to_volume_params_list.set("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 2);
     evaluation_data_ =
-        std::make_shared<GEOMETRYPAIR::LineTo3DEvaluationData>(line_to_volume_params_list);
+        std::make_shared<GeometryPair::LineTo3DEvaluationData>(line_to_volume_params_list);
 
     // Vector with vector of segments for Evaluate.
-    std::vector<std::vector<GEOMETRYPAIR::LineSegment<double>>> segments_vector;
+    std::vector<std::vector<GeometryPair::LineSegment<double>>> segments_vector;
 
     // Create and evaluate the geometry pairs.
     FOUR_C_EXPECT_THROW_WITH_MESSAGE(create_evaluate_pairs(geometry_pairs, q_line_elements,

@@ -29,8 +29,8 @@ namespace BeamInteraction
   /**
    * \brief Class for beam to fluid meshtying using Gauss point projection.
    *
-   * \param[in] beam Type from GEOMETRYPAIR::ElementDiscretization representing the beam.
-   * \param[in] volume Type from GEOMETRYPAIR::ElementDiscretization... representing the fluid.
+   * \param[in] beam Type from GeometryPair::ElementDiscretization representing the beam.
+   * \param[in] volume Type from GeometryPair::ElementDiscretization... representing the fluid.
    */
   template <typename Beam, typename Fluid>
   class BeamToFluidMeshtyingPairGaussPoint : public BeamToFluidMeshtyingPairBase<Beam, Fluid>

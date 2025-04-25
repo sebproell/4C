@@ -24,8 +24,8 @@ namespace BeamInteraction
   /**
    * \brief Class for beam to surface surface contact based on manual variation of the gap function.
    * @tparam scalar_type Type for scalar DOF values.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam surface Type from GEOMETRYPAIR::ElementDiscretization... representing the surface.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam surface Type from GeometryPair::ElementDiscretization... representing the surface.
    */
   template <typename ScalarType, typename Beam, typename Surface>
   class BeamToSolidSurfaceContactPairGapVariation
@@ -55,8 +55,8 @@ namespace BeamInteraction
   /**
    * \brief Class for beam to surface surface contact based on variation of the penalty potential.
    * @tparam scalar_type Type for scalar DOF values.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam surface Type from GEOMETRYPAIR::ElementDiscretization... representing the surface.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam surface Type from GeometryPair::ElementDiscretization... representing the surface.
    */
   template <typename ScalarType, typename Beam, typename Surface>
   class BeamToSolidSurfaceContactPairPotential

@@ -21,7 +21,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Base class for Fourier shape functions defined along a 1D curve in 3D space.
@@ -61,7 +61,7 @@ namespace GEOMETRYPAIR
     static constexpr unsigned int n_dof_ = spatial_dim_ * n_val_ * n_nodes_;
 
     //! Geometry type of the element.
-    static constexpr GEOMETRYPAIR::DiscretizationTypeGeometry geometry_type_ =
+    static constexpr GeometryPair::DiscretizationTypeGeometry geometry_type_ =
         ElementDiscretizationToGeometryType<discretization_>::geometry_type_;
   };
 
@@ -151,7 +151,7 @@ namespace GEOMETRYPAIR
       }
     }
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
 namespace BeamInteraction
@@ -163,8 +163,8 @@ namespace BeamInteraction
    * \brief Class for full 2D-3D beam-to-solid volume mesh tying based on a Simo-Reissner beam
    * element with mortar constraint discretization.
    *
-   * @param beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @param solid Type from GEOMETRYPAIR::ElementDiscretization... representing the solid.
+   * @param beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @param solid Type from GeometryPair::ElementDiscretization... representing the solid.
    * @param solid Mortar shape function.
    */
   template <typename Beam, typename Solid, typename Mortar>

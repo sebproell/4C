@@ -17,11 +17,11 @@
 FOUR_C_NAMESPACE_OPEN
 
 // Forward declaration.
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template <typename ScalarType, typename Line, typename Volume>
   class GeometryPairLineToVolumeGaussPointProjectionCrossSection;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
 namespace BeamInteraction
@@ -29,8 +29,8 @@ namespace BeamInteraction
   /**
    * \brief Base class for 2D-3D beam to solid volume mesh tying
    * @tparam ScalarType Scalar FAD type to be used in this pair.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam solid Type from GEOMETRYPAIR::ElementDiscretization... representing the solid.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam solid Type from GeometryPair::ElementDiscretization... representing the solid.
    */
   template <typename ScalarType, typename Beam, typename Solid>
   class BeamToSolidVolumeMeshtyingPair2D3DBase
@@ -59,7 +59,7 @@ namespace BeamInteraction
      */
     void create_geometry_pair(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>&
+        const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>&
             geometry_evaluation_data_ptr) override;
 
    protected:
@@ -72,7 +72,7 @@ namespace BeamInteraction
      * position is calculated.
      */
     void evaluate_beam_position_double(
-        const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& integration_point,
+        const GeometryPair::ProjectionPoint1DTo3D<double>& integration_point,
         Core::LinAlg::Matrix<3, 1, double>& r_beam, bool reference) const override;
 
     /**
@@ -80,10 +80,10 @@ namespace BeamInteraction
      * @return RPC with the type of geometry pair for this beam contact pair.
      */
     inline std::shared_ptr<
-        GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double, Beam, Solid>>
+        GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double, Beam, Solid>>
     cast_geometry_pair() const
     {
-      return std::dynamic_pointer_cast<GEOMETRYPAIR::
+      return std::dynamic_pointer_cast<GeometryPair::
               GeometryPairLineToVolumeGaussPointProjectionCrossSection<double, Beam, Solid>>(
           this->geometry_pair_);
     };

@@ -15,7 +15,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief A base class that all geometry pair evaluation data container have to inherit from.
@@ -40,7 +40,7 @@ namespace GEOMETRYPAIR
      */
     virtual void clear() {};
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

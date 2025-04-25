@@ -20,7 +20,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Result of a projection with the geometry pairs.
@@ -442,7 +442,7 @@ namespace GEOMETRYPAIR
     //! Vector to store projection points for this segment.
     std::vector<ProjectionPoint1DTo3D<ScalarType>> segment_projection_points_;
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
 FOUR_C_NAMESPACE_CLOSE

@@ -53,8 +53,8 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<Beam, Solid,
   // Call Evaluate on the geometry Pair. Only do this once for meshtying.
   if (!this->meshtying_is_evaluated_)
   {
-    GEOMETRYPAIR::ElementData<Beam, double> beam_coupling_ref;
-    GEOMETRYPAIR::ElementData<Solid, double> solid_coupling_ref;
+    GeometryPair::ElementData<Beam, double> beam_coupling_ref;
+    GeometryPair::ElementData<Solid, double> solid_coupling_ref;
     this->get_coupling_reference_position(beam_coupling_ref, solid_coupling_ref);
     this->cast_geometry_pair()->evaluate(
         beam_coupling_ref, solid_coupling_ref, this->line_to_3D_segments_);
@@ -112,7 +112,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<Beam, Solid,
   if (visualization_discret != nullptr || visualization_continuous != nullptr)
   {
     // Setup variables.
-    GEOMETRYPAIR::ElementData<Mortar, double> element_data_lambda;
+    GeometryPair::ElementData<Mortar, double> element_data_lambda;
     Core::LinAlg::Matrix<3, 1, scalar_type> X;
     Core::LinAlg::Matrix<3, 1, scalar_type> r;
     Core::LinAlg::Matrix<3, 1, scalar_type> u;
@@ -170,13 +170,13 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<Beam, Solid,
           xi_mortar_node = Core::FE::get_node_coordinates(i_node, Mortar::discretization_);
 
           // Get position and displacement of the mortar node.
-          GEOMETRYPAIR::evaluate_position<Beam>(xi_mortar_node(0), this->ele1pos_, r);
-          GEOMETRYPAIR::evaluate_position<Beam>(xi_mortar_node(0), this->ele1posref_, X);
+          GeometryPair::evaluate_position<Beam>(xi_mortar_node(0), this->ele1pos_, r);
+          GeometryPair::evaluate_position<Beam>(xi_mortar_node(0), this->ele1posref_, X);
           u = r;
           u -= X;
 
           // Get the discrete Lagrangian multiplier.
-          GEOMETRYPAIR::evaluate_position<Mortar>(
+          GeometryPair::evaluate_position<Mortar>(
               xi_mortar_node(0), element_data_lambda, lambda_discret);
 
           // Add to output data.
@@ -236,11 +236,11 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<Beam, Solid,
           // Get the position, displacement and lambda value at the current point.
           xi = segment.get_eta_a() + i_curve_segment * (segment.get_eta_b() - segment.get_eta_a()) /
                                          (double)mortar_segments;
-          GEOMETRYPAIR::evaluate_position<Beam>(xi, this->ele1pos_, r);
-          GEOMETRYPAIR::evaluate_position<Beam>(xi, this->ele1posref_, X);
+          GeometryPair::evaluate_position<Beam>(xi, this->ele1pos_, r);
+          GeometryPair::evaluate_position<Beam>(xi, this->ele1posref_, X);
           u = r;
           u -= X;
-          GEOMETRYPAIR::evaluate_position<Mortar>(xi, element_data_lambda, lambda_discret);
+          GeometryPair::evaluate_position<Mortar>(xi, element_data_lambda, lambda_discret);
 
           // Add to output data.
           for (unsigned int dim = 0; dim < 3; dim++)
@@ -315,11 +315,11 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<Beam, Solid, Mortar>:
     for (unsigned int i_gp = 0; i_gp < n_gp; i_gp++)
     {
       // Get the current Gauss point.
-      const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+      const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
           this->line_to_3D_segments_[i_segment].get_projection_points()[i_gp];
 
       // Get the jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(
+      GeometryPair::evaluate_position_derivative1<Beam>(
           projected_gauss_point.get_eta(), this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
@@ -329,11 +329,11 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<Beam, Solid, Mortar>:
       N_mortar.clear();
       N_beam.clear();
       N_solid.clear();
-      GEOMETRYPAIR::EvaluateShapeFunction<Mortar>::evaluate(
+      GeometryPair::EvaluateShapeFunction<Mortar>::evaluate(
           N_mortar, projected_gauss_point.get_eta());
-      GEOMETRYPAIR::EvaluateShapeFunction<Beam>::evaluate(
+      GeometryPair::EvaluateShapeFunction<Beam>::evaluate(
           N_beam, projected_gauss_point.get_eta(), this->ele1pos_.shape_function_data_);
-      GEOMETRYPAIR::EvaluateShapeFunction<Solid>::evaluate(
+      GeometryPair::EvaluateShapeFunction<Solid>::evaluate(
           N_solid, projected_gauss_point.get_xi(), this->ele2pos_.shape_function_data_);
 
       // Fill in the local templated mortar matrix D.
@@ -402,7 +402,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<Beam, Solid,
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidVolumeMeshtyingPairMortar<t_hermite, t_hex8, t_line2>;
   template class BeamToSolidVolumeMeshtyingPairMortar<t_hermite, t_hex20, t_line2>;

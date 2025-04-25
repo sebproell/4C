@@ -12,7 +12,7 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-std::string GEOMETRYPAIR::discretization_type_geometry_to_string(
+std::string GeometryPair::discretization_type_geometry_to_string(
     const DiscretizationTypeGeometry discretization_type)
 {
   switch (discretization_type)
@@ -29,7 +29,7 @@ std::string GEOMETRYPAIR::discretization_type_geometry_to_string(
       return "tetraeder";
     default:
       FOUR_C_THROW(
-          "GEOMETRYPAIR::DiscretizationTypeGeometryToString: Got unexpected discretization "
+          "GeometryPair::DiscretizationTypeGeometryToString: Got unexpected discretization "
           "type.");
       return "";
       break;

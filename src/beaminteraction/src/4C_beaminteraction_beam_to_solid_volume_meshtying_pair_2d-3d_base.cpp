@@ -22,21 +22,21 @@ template <typename ScalarType, typename Beam, typename Solid>
 void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DBase<ScalarType, Beam,
     Solid>::create_geometry_pair(const Core::Elements::Element* element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
+    const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
 {
   // Cast the geometry evaluation data to the correct format.
   auto line_to_3d_evaluation_data =
-      std::dynamic_pointer_cast<GEOMETRYPAIR::LineTo3DEvaluationData>(geometry_evaluation_data_ptr);
+      std::dynamic_pointer_cast<GeometryPair::LineTo3DEvaluationData>(geometry_evaluation_data_ptr);
 
   // Explicitly create the cross section projection geometry pair here and check that the correct
   // parameter is set in the input file.
-  Inpar::GEOMETRYPAIR::LineTo3DStrategy strategy = line_to_3d_evaluation_data->get_strategy();
-  if (strategy != Inpar::GEOMETRYPAIR::LineTo3DStrategy::gauss_point_projection_cross_section)
+  Inpar::GeometryPair::LineTo3DStrategy strategy = line_to_3d_evaluation_data->get_strategy();
+  if (strategy != Inpar::GeometryPair::LineTo3DStrategy::gauss_point_projection_cross_section)
     FOUR_C_THROW(
         "The 2D-3D beam-to-volume mesh tying pair only works with the cross section projection "
         "geometry pair. This has to be specified in the input file.");
   this->geometry_pair_ = std::make_shared<
-      GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double, Beam, Solid>>(
+      GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double, Beam, Solid>>(
       element1, element2, line_to_3d_evaluation_data);
 }
 
@@ -45,7 +45,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DBase<ScalarType, Beam,
  */
 template <typename ScalarType, typename Beam, typename Solid>
 void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DBase<ScalarType, Beam,
-    Solid>::evaluate_beam_position_double(const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>&
+    Solid>::evaluate_beam_position_double(const GeometryPair::ProjectionPoint1DTo3D<double>&
                                               integration_point,
     Core::LinAlg::Matrix<3, 1, double>& r_beam, bool reference) const
 {
@@ -59,7 +59,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DBase<ScalarType, Beam,
     r_cross_section_ref(1) = integration_point.get_eta_cross_section()(0);
     r_cross_section_ref(2) = integration_point.get_eta_cross_section()(1);
     r_cross_section_cur.multiply(triad, r_cross_section_ref);
-    GEOMETRYPAIR::evaluate_position<Beam>(eta, q, r_beam);
+    GeometryPair::evaluate_position<Beam>(eta, q, r_beam);
     r_beam += r_cross_section_cur;
   };
 
@@ -69,7 +69,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DBase<ScalarType, Beam,
   }
   else
   {
-    evaluate_position(GEOMETRYPAIR::ElementDataToDouble<Beam>::to_double(this->ele1pos_), r_beam);
+    evaluate_position(GeometryPair::ElementDataToDouble<Beam>::to_double(this->ele1pos_), r_beam);
   }
 }
 
@@ -79,7 +79,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DBase<ScalarType, Beam,
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidVolumeMeshtyingPair2D3DBase<double, t_hermite, t_hex8>;
   template class BeamToSolidVolumeMeshtyingPair2D3DBase<double, t_hermite, t_hex20>;

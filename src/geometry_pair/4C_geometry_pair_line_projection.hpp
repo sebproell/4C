@@ -28,7 +28,7 @@ namespace Core::FE
 {
   struct IntegrationPoints1D;
 }  // namespace Core::FE
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   enum class ProjectionResult;
 
@@ -37,10 +37,10 @@ namespace GEOMETRYPAIR
 
   template <typename ScalarType>
   class LineSegment;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief This class contains static methods for common line-to-xxx algorithms.
@@ -281,7 +281,7 @@ namespace GEOMETRYPAIR
     static std::set<LineSegment<double>>& get_segment_tracking_set(const PairType* pair);
   };
 
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

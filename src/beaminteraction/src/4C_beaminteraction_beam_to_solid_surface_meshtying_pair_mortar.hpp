@@ -32,19 +32,19 @@ namespace BeamInteraction
 {
   /**
    * \brief Class for Mortar beam to surface surface mesh tying.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam surface Type from GEOMETRYPAIR::ElementDiscretization... representing the surface.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam surface Type from GeometryPair::ElementDiscretization... representing the surface.
    * @tparam mortar Type from BeamInteraction::ElementDiscretization... representing the mortar
    * shape functions.
    */
   template <typename Beam, typename Surface, typename Mortar>
   class BeamToSolidSurfaceMeshtyingPairMortar
       : public BeamToSolidSurfaceMeshtyingPairMortarBase<
-            GEOMETRYPAIR::line_to_surface_scalar_type<Beam, Surface>, Beam, Surface, Mortar>
+            GeometryPair::line_to_surface_scalar_type<Beam, Surface>, Beam, Surface, Mortar>
   {
    private:
     //! Type to be used for scalar AD variables.
-    using scalar_type = GEOMETRYPAIR::line_to_surface_scalar_type<Beam, Surface>;
+    using scalar_type = GeometryPair::line_to_surface_scalar_type<Beam, Surface>;
 
     //! Shortcut to the base class.
     using base_class =

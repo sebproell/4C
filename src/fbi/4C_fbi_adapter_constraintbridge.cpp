@@ -41,7 +41,7 @@ void Adapter::FBIConstraintBridge::setup(const Core::LinAlg::Map* beam_map,
 
   // Create the beaminteraction data container and set the parameters
   geometry_evaluation_data_ =
-      std::make_shared<GEOMETRYPAIR::LineTo3DEvaluationData>(geometry_parameter_list);
+      std::make_shared<GeometryPair::LineTo3DEvaluationData>(geometry_parameter_list);
 
   if (fluidmeshtying)
   {

@@ -44,7 +44,7 @@ namespace BeamInteraction
   class BeamContactPair;
 }
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   class LineTo3DEvaluationData;
 }
@@ -131,7 +131,7 @@ namespace Adapter
 
     /// returns data container geometry_evaluation-data_ holding all geometry related evaluation
     /// data
-    virtual std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData> get_geometry_data() const final
+    virtual std::shared_ptr<GeometryPair::LineTo3DEvaluationData> get_geometry_data() const final
     {
       return geometry_evaluation_data_;
     };
@@ -181,7 +181,7 @@ namespace Adapter
         meshtying_pairs_;
 
     /// data container holding all geometry related evaluation data
-    std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData> geometry_evaluation_data_;
+    std::shared_ptr<GeometryPair::LineTo3DEvaluationData> geometry_evaluation_data_;
   };
 }  // namespace Adapter
 

@@ -96,7 +96,7 @@ namespace BeamInteraction
     /**
      * \brief Return a pointer to the geometry evaluation data in this condition.
      */
-    std::shared_ptr<const GEOMETRYPAIR::GeometryEvaluationDataBase> get_geometry_evaluation_data()
+    std::shared_ptr<const GeometryPair::GeometryEvaluationDataBase> get_geometry_evaluation_data()
         const
     {
       return geometry_evaluation_data_;
@@ -122,7 +122,7 @@ namespace BeamInteraction
 
    protected:
     //! Pointer to the geometry evaluation data for this condition.
-    std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase> geometry_evaluation_data_;
+    std::shared_ptr<GeometryPair::GeometryEvaluationDataBase> geometry_evaluation_data_;
 
     //! Pointer to the solid condition.
     std::shared_ptr<const Core::Conditions::Condition> condition_other_;

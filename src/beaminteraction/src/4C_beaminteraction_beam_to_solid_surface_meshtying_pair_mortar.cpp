@@ -119,11 +119,11 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairMortar<Beam, Surface, Morta
     for (unsigned int i_gp = 0; i_gp < n_gp; i_gp++)
     {
       // Get the current Gauss point.
-      const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+      const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
           this->line_to_3D_segments_[i_segment].get_projection_points()[i_gp];
 
       // Get the jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(
+      GeometryPair::evaluate_position_derivative1<Beam>(
           projected_gauss_point.get_eta(), this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
@@ -133,11 +133,11 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairMortar<Beam, Surface, Morta
       N_mortar.clear();
       N_beam.clear();
       N_surface.clear();
-      GEOMETRYPAIR::EvaluateShapeFunction<Mortar>::evaluate(
+      GeometryPair::EvaluateShapeFunction<Mortar>::evaluate(
           N_mortar, projected_gauss_point.get_eta());
-      GEOMETRYPAIR::EvaluateShapeFunction<Beam>::evaluate(
+      GeometryPair::EvaluateShapeFunction<Beam>::evaluate(
           N_beam, projected_gauss_point.get_eta(), this->ele1pos_.shape_function_data_);
-      GEOMETRYPAIR::EvaluateShapeFunction<Surface>::evaluate(N_surface,
+      GeometryPair::EvaluateShapeFunction<Surface>::evaluate(N_surface,
           projected_gauss_point.get_xi(),
           this->face_element_->get_face_element_data().shape_function_data_);
 
@@ -222,7 +222,7 @@ BeamInteraction::beam_to_solid_surface_meshtying_pair_mortar_factory(
     const Core::FE::CellType surface_shape,
     const Inpar::BeamToSolid::BeamToSolidMortarShapefunctions mortar_shapefunction)
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   switch (mortar_shapefunction)
   {

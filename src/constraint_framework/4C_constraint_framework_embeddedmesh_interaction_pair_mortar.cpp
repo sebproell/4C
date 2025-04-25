@@ -27,7 +27,7 @@ namespace
   //! physical space
   template <typename Pointtype>
   void map_from_parametric_to_physical_space(
-      GEOMETRYPAIR::ElementData<Pointtype, double> element_data,
+      GeometryPair::ElementData<Pointtype, double> element_data,
       Core::LinAlg::Matrix<Pointtype::element_dim_, 1>& point_param_space,
       Core::LinAlg::Matrix<Pointtype::n_dof_, 1, double> nodal_values,
       Core::LinAlg::Matrix<Pointtype::spatial_dim_, 1, double>& point_physical_space)
@@ -36,7 +36,7 @@ namespace
     Core::LinAlg::Matrix<1, Pointtype::n_nodes_ * Pointtype::n_val_, double> shape_fun(
         Core::LinAlg::Initialization::zero);
 
-    GEOMETRYPAIR::EvaluateShapeFunction<Pointtype>::evaluate(
+    GeometryPair::EvaluateShapeFunction<Pointtype>::evaluate(
         shape_fun, point_param_space, element_data.shape_function_data_);
 
     // Map the point to the physical system by multiplying the shape
@@ -66,13 +66,13 @@ Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface, Back
   params_ = params_ptr;
 
   // Initialize the element positions and displacement containers
-  ele1pos_ = GEOMETRYPAIR::InitializeElementData<Interface, double>::initialize(&this->element_1());
+  ele1pos_ = GeometryPair::InitializeElementData<Interface, double>::initialize(&this->element_1());
   ele2pos_ =
-      GEOMETRYPAIR::InitializeElementData<Background, double>::initialize(&this->element_2());
+      GeometryPair::InitializeElementData<Background, double>::initialize(&this->element_2());
 
-  ele1dis_ = GEOMETRYPAIR::InitializeElementData<Interface, double>::initialize(&this->element_1());
+  ele1dis_ = GeometryPair::InitializeElementData<Interface, double>::initialize(&this->element_1());
   ele2dis_ =
-      GEOMETRYPAIR::InitializeElementData<Background, double>::initialize(&this->element_2());
+      GeometryPair::InitializeElementData<Background, double>::initialize(&this->element_2());
 
   // Write the initial position of the elements
   for (int node_ele1 = 0; node_ele1 < element_1().num_point(); node_ele1++)
@@ -195,7 +195,7 @@ void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface,
 
 template <typename Surface, Core::FE::CellType boundarycell_distype>
 std::shared_ptr<Core::FE::GaussPoints> project_boundary_cell_gauss_rule_on_interface(
-    Cut::BoundaryCell* boundary_cell, GEOMETRYPAIR::ElementData<Surface, double>& ele1pos)
+    Cut::BoundaryCell* boundary_cell, GeometryPair::ElementData<Surface, double>& ele1pos)
 {
   // Get the coordinates of the vertices of the boundary cell
   const Core::LinAlg::SerialDenseMatrix vertices_boundary_cell = boundary_cell->coordinates();
@@ -210,13 +210,13 @@ std::shared_ptr<Core::FE::GaussPoints> project_boundary_cell_gauss_rule_on_inter
     for (int i_dim = 0; i_dim < 3; i_dim++)
       vertex_to_project(i_dim) = vertices_boundary_cell(i_dim, i_vertex);
 
-    GEOMETRYPAIR::ProjectionResult temp_projection_result;
-    GEOMETRYPAIR::project_point_to_surface(
+    GeometryPair::ProjectionResult temp_projection_result;
+    GeometryPair::project_point_to_surface(
         vertex_to_project, ele1pos, xi_interface, temp_projection_result);
 
-    if (temp_projection_result == GEOMETRYPAIR::ProjectionResult::projection_not_found)
+    if (temp_projection_result == GeometryPair::ProjectionResult::projection_not_found)
       FOUR_C_THROW("No projection was found. ");
-    else if (temp_projection_result == GEOMETRYPAIR::ProjectionResult::projection_found_not_valid)
+    else if (temp_projection_result == GeometryPair::ProjectionResult::projection_found_not_valid)
       std::cout << "WARNING: a projection was found but it is not valid\n";
 
     projected_vertices_xi(0, i_vertex) = xi_interface(0);
@@ -301,10 +301,10 @@ void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface,
       xi_interface(1) = gps_boundarycell->point(it_gp)[1];
 
       // Project gauss points on the background element and write them
-      GEOMETRYPAIR::evaluate_position(xi_interface, ele1pos_, interface_position);
+      GeometryPair::evaluate_position(xi_interface, ele1pos_, interface_position);
 
-      GEOMETRYPAIR::ProjectionResult temp_projection_result;
-      GEOMETRYPAIR::project_point_to_volume(
+      GeometryPair::ProjectionResult temp_projection_result;
+      GeometryPair::project_point_to_volume(
           interface_position, ele2pos_, xi_background, temp_projection_result);
 
       // Write the weight
@@ -629,11 +629,11 @@ void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface,
     N_interface.clear();
     N_background.clear();
 
-    GEOMETRYPAIR::EvaluateShapeFunction<Mortar>::evaluate(
+    GeometryPair::EvaluateShapeFunction<Mortar>::evaluate(
         N_mortar, xi_interface, ele1pos_.shape_function_data_);
-    GEOMETRYPAIR::EvaluateShapeFunction<Interface>::evaluate(
+    GeometryPair::EvaluateShapeFunction<Interface>::evaluate(
         N_interface, xi_interface, ele1pos_.shape_function_data_);
-    GEOMETRYPAIR::EvaluateShapeFunction<Background>::evaluate(
+    GeometryPair::EvaluateShapeFunction<Background>::evaluate(
         N_background, xi_background, ele2pos_.shape_function_data_);
 
     // Fill in the local templated mortar matrix D.
@@ -688,7 +688,7 @@ void Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<Interface,
  */
 namespace Constraints::EmbeddedMesh
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class SurfaceToBackgroundCouplingPairMortar<t_quad4, t_hex8, t_quad4>;
   template class SurfaceToBackgroundCouplingPairMortar<t_nurbs9, t_hex8, t_nurbs9>;

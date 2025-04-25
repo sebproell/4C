@@ -118,7 +118,7 @@ std::shared_ptr<Constraints::EmbeddedMesh::SolidInteractionPair> coupling_pair_m
         case Core::FE::CellType::hex8:
         {
           return std::make_shared<Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<
-              GEOMETRYPAIR::t_quad4, GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_quad4>>(
+              GeometryPair::t_quad4, GeometryPair::t_hex8, GeometryPair::t_quad4>>(
               interfaceele_real, background_ele, params_ptr, cutwizard_ptr, boundary_cells);
           break;
         }
@@ -137,14 +137,14 @@ std::shared_ptr<Constraints::EmbeddedMesh::SolidInteractionPair> coupling_pair_m
         case Core::FE::CellType::hex8:
         {
           return std::make_shared<Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<
-              GEOMETRYPAIR::t_nurbs9, GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_nurbs9>>(
+              GeometryPair::t_nurbs9, GeometryPair::t_hex8, GeometryPair::t_nurbs9>>(
               interfaceele_real, background_ele, params_ptr, cutwizard_ptr, boundary_cells);
           break;
         }
         case Core::FE::CellType::wedge6:
         {
           return std::make_shared<Constraints::EmbeddedMesh::SurfaceToBackgroundCouplingPairMortar<
-              GEOMETRYPAIR::t_nurbs9, GEOMETRYPAIR::t_wedge6, GEOMETRYPAIR::t_nurbs9>>(
+              GeometryPair::t_nurbs9, GeometryPair::t_wedge6, GeometryPair::t_nurbs9>>(
               interfaceele_real, background_ele, params_ptr, cutwizard_ptr, boundary_cells);
           break;
         }
@@ -500,7 +500,7 @@ Constraints::EmbeddedMesh::define_shape_functions_lagrange_multipliers(Core::FE:
  */
 namespace Constraints::EmbeddedMesh
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
 #define initialize_template_assemble_local_mortar_contributions(Interface, Background, Mortar) \
   template void assemble_local_mortar_contributions<Interface, Background, Mortar>(            \

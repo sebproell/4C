@@ -21,13 +21,13 @@
 FOUR_C_NAMESPACE_OPEN
 
 // Forward declarations.
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   enum class DiscretizationTypeGeometry;
 }
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Convert the enum DiscretizationTypeGeometry to a human readable string.
@@ -99,7 +99,7 @@ namespace GEOMETRYPAIR
     PrintElementData<other>::print(element_data_other, out);
   }
 
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
 FOUR_C_NAMESPACE_CLOSE

@@ -18,10 +18,10 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-GEOMETRYPAIR::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
+GeometryPair::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
     Surface>::GeometryPairLineToSurfaceGaussPointProjection(const Core::Elements::Element* element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::LineToSurfaceEvaluationData>&
+    const std::shared_ptr<GeometryPair::LineToSurfaceEvaluationData>&
         line_to_surface_evaluation_data)
     : GeometryPairLineToSurface<ScalarType, Line, Surface>(
           element1, element2, line_to_surface_evaluation_data)
@@ -45,7 +45,7 @@ GEOMETRYPAIR::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
+void GeometryPair::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
     Surface>::pre_evaluate(const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Surface, ScalarType>& element_data_surface,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -60,7 +60,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Lin
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
+void GeometryPair::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
     Surface>::evaluate(const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Surface, ScalarType>& element_data_surface,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -75,7 +75,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Lin
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-std::vector<bool>& GEOMETRYPAIR::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
+std::vector<bool>& GeometryPair::GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line,
     Surface>::get_line_projection_vector() const
 {
   // Get the Gauss point projection tracker for this line element.
@@ -89,7 +89,7 @@ std::vector<bool>& GEOMETRYPAIR::GeometryPairLineToSurfaceGaussPointProjection<S
 /**
  * Explicit template initialization of template class.
  */
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
 
   template class GeometryPairLineToSurfaceGaussPointProjection<double, t_line2, t_tri3>;
@@ -158,6 +158,6 @@ namespace GEOMETRYPAIR
       t_hermite, t_quad9>;
   template class GeometryPairLineToSurfaceGaussPointProjection<
       line_to_surface_patch_scalar_type_fixed_size<t_hermite, t_nurbs9>, t_hermite, t_nurbs9>;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE

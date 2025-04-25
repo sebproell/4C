@@ -41,7 +41,7 @@ namespace
      * \brief Return a reference to the connected faces of a face element.
      */
     template <typename A>
-    std::map<int, GEOMETRYPAIR::ConnectedFace>& get_connected_faces(A& face_element)
+    std::map<int, GeometryPair::ConnectedFace>& get_connected_faces(A& face_element)
     {
       return face_element.connected_faces_;
     }
@@ -67,15 +67,15 @@ namespace
     using namespace FourC;
 
     // Define the type of the face elements.
-    using surface = GEOMETRYPAIR::t_quad4;
-    using scalar_type = GEOMETRYPAIR::line_to_surface_patch_scalar_type;
-    using face_element_type = GEOMETRYPAIR::FaceElementPatchTemplate<surface, scalar_type>;
+    using surface = GeometryPair::t_quad4;
+    using scalar_type = GeometryPair::line_to_surface_patch_scalar_type;
+    using face_element_type = GeometryPair::FaceElementPatchTemplate<surface, scalar_type>;
 
     // Tolerance for the result tests.
     const double eps = 1e-12;
 
     // Fill the discretization object with the geometry.
-    std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>> face_elements_map;
+    std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>> face_elements_map;
     xtest_surface_patch_quad4<face_element_type>(*discret_, face_elements_map);
 
     // Load the result vectors.
@@ -182,7 +182,7 @@ namespace
       xi(1) = -0.8;
       xi(2) = 0.69;
       Core::LinAlg::Matrix<3, 1, scalar_type> r;
-      GEOMETRYPAIR::evaluate_surface_position<surface>(
+      GeometryPair::evaluate_surface_position<surface>(
           xi, face_element->get_face_element_data(), r);
       for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
       {

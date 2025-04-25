@@ -37,7 +37,7 @@ namespace Core::Elements
   class Element;
 }
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   enum class DiscretizationTypeVolume;
 
@@ -50,10 +50,10 @@ namespace GEOMETRYPAIR
   class LineSegment;
 
   class LineTo3DEvaluationData;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Class that handles the geometrical interactions of a line (element 1) and a volume
@@ -63,7 +63,7 @@ namespace GEOMETRYPAIR
    * @param volume Type of volume element.
    */
   template <typename ScalarType, typename Line, typename Volume>
-  class GeometryPairLineToVolume : public GeometryPair
+  class GeometryPairLineToVolume : public GeometryPairBase
   {
    public:
     /**
@@ -71,7 +71,7 @@ namespace GEOMETRYPAIR
      */
     GeometryPairLineToVolume(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData>& line_to_3d_evaluation_data);
+        const std::shared_ptr<GeometryPair::LineTo3DEvaluationData>& line_to_3d_evaluation_data);
 
 
     /**
@@ -99,7 +99,7 @@ namespace GEOMETRYPAIR
      * \brief Return the pointer to the evaluation data of this pair.
      * @return Pointer to the evaluation data.
      */
-    const std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData>& get_evaluation_data() const
+    const std::shared_ptr<GeometryPair::LineTo3DEvaluationData>& get_evaluation_data() const
     {
       return line_to_3d_evaluation_data_;
     }
@@ -150,7 +150,7 @@ namespace GEOMETRYPAIR
 
    protected:
     //! Link to the geometry evaluation container.
-    std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData> line_to_3d_evaluation_data_;
+    std::shared_ptr<GeometryPair::LineTo3DEvaluationData> line_to_3d_evaluation_data_;
   };
 
   /**
@@ -165,7 +165,7 @@ namespace GEOMETRYPAIR
   void project_point_to_volume(const Core::LinAlg::Matrix<3, 1, ScalarType>& point,
       const ElementData<Volume, ScalarType>& element_data_volume,
       Core::LinAlg::Matrix<3, 1, ScalarType>& xi, ProjectionResult& projection_result);
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

@@ -34,7 +34,7 @@ namespace BeamInteraction
 {
   class BeamToSolidOutputWriterVisualization;
 }
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   class FaceElement;
 }
@@ -67,7 +67,7 @@ namespace BeamInteraction
    */
   void add_averaged_nodal_normals(
       BeamInteraction::BeamToSolidOutputWriterVisualization& output_writer_base_ptr,
-      const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements,
+      const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements,
       const int condition_coupling_id, const bool write_unique_ids = false);
 
   /**

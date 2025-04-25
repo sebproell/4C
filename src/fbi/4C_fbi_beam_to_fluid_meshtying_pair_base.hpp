@@ -26,13 +26,13 @@ namespace Core::LinAlg
   class SerialDenseMatrix;
 }  // namespace Core::LinAlg
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template <typename ScalarType, typename Line, typename Volume>
   class GeometryPairLineToVolume;
   class LineTo3DEvaluationData;
   class GeometryEvaluationDataBase;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
 namespace BeamInteraction
@@ -40,8 +40,8 @@ namespace BeamInteraction
   /**
    * \brief Class representing a pair of elements for beam to fluid meshtying
    *
-   * \param[in] beam Type from GEOMETRYPAIR::ElementDiscretization representing the beam.
-   * \param[in] fluid Type from GEOMETRYPAIR::ElementDiscretization representing the fluid.
+   * \param[in] beam Type from GeometryPair::ElementDiscretization representing the beam.
+   * \param[in] fluid Type from GeometryPair::ElementDiscretization representing the fluid.
    */
   template <typename Beam, typename Fluid>
   class BeamToFluidMeshtyingPairBase
@@ -111,7 +111,7 @@ namespace BeamInteraction
      */
     void create_geometry_pair(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>&
+        const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>&
             geometry_evaluation_data_ptr) override;
 
    protected:
@@ -121,16 +121,16 @@ namespace BeamInteraction
     BeamToFluidMeshtyingPairBase();
 
     void evaluate_beam_position(
-        const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& integration_point,
+        const GeometryPair::ProjectionPoint1DTo3D<double>& integration_point,
         Core::LinAlg::Matrix<3, 1, scalar_type>& r_beam, bool reference) const;
 
     //! Current nodal velocities of the two elements.
-    GEOMETRYPAIR::ElementData<Beam, scalar_type> ele1vel_;
-    GEOMETRYPAIR::ElementData<Fluid, scalar_type> ele2vel_;
+    GeometryPair::ElementData<Beam, scalar_type> ele1vel_;
+    GeometryPair::ElementData<Fluid, scalar_type> ele2vel_;
 
     //! Current nodal positions (and tangents) of the two elements.
-    GEOMETRYPAIR::ElementData<Beam, double> ele1poscur_;
-    GEOMETRYPAIR::ElementData<Fluid, double> ele2poscur_;
+    GeometryPair::ElementData<Beam, double> ele1poscur_;
+    GeometryPair::ElementData<Fluid, double> ele2poscur_;
   };
 }  // namespace BeamInteraction
 

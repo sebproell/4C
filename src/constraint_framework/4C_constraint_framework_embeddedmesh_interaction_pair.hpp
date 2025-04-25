@@ -35,10 +35,10 @@ namespace Cut
   class CutWizard;
   class BoundaryCell;
 }  // namespace Cut
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
-  class GeometryPair;
-}  // namespace GEOMETRYPAIR
+  class GeometryPairBase;
+}  // namespace GeometryPair
 
 namespace Constraints::EmbeddedMesh
 {

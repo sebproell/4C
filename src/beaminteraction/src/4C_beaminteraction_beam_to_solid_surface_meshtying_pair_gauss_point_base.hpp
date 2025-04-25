@@ -21,8 +21,8 @@ namespace BeamInteraction
   /**
    * \brief Class for Gauss-point-to-segment beam to surface surface mesh tying.
    * @tparam scalar_type Scalar type for variables.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam surface Type from GEOMETRYPAIR::ElementDiscretization... representing the surface.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam surface Type from GeometryPair::ElementDiscretization... representing the surface.
    */
   template <typename ScalarType, typename Beam, typename Surface>
   class BeamToSolidSurfaceMeshtyingPairGaussPointBase

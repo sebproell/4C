@@ -46,7 +46,7 @@ BeamInteraction::BeamToBeamPointCouplingCondition::create_contact_pair(
 
     // Create the beam contact pair.
     std::shared_ptr<BeamInteraction::BeamContactPair> contact_pair =
-        std::make_shared<BeamToBeamPointCouplingPair<GEOMETRYPAIR::t_hermite>>(
+        std::make_shared<BeamToBeamPointCouplingPair<GeometryPair::t_hermite>>(
             rotational_penalty_parameter_, positional_penalty_parameter_,
             local_parameter_coordinates_);
     // Return the newly created pair.

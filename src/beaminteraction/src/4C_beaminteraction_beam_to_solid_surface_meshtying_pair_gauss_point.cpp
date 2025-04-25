@@ -79,11 +79,11 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairGaussPoint<Beam,
     for (unsigned int i_gp = 0; i_gp < n_gp; i_gp++)
     {
       // Get the current Gauss point.
-      const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+      const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
           this->line_to_3D_segments_[i_segment].get_projection_points()[i_gp];
 
       // Get the Jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(
+      GeometryPair::evaluate_position_derivative1<Beam>(
           projected_gauss_point.get_eta(), this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
@@ -137,7 +137,7 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairGaussPoint<Beam,
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidSurfaceMeshtyingPairGaussPoint<t_hermite, t_tri3>;
   template class BeamToSolidSurfaceMeshtyingPairGaussPoint<t_hermite, t_tri6>;

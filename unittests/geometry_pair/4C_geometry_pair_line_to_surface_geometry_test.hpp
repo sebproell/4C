@@ -22,9 +22,9 @@ namespace
   /**
    * Setup the surface geometry for the tri3 tests.
    */
-  GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_tri3, double> xtest_setup_tri3()
+  GeometryPair::ElementData<GeometryPair::t_tri3, double> xtest_setup_tri3()
   {
-    auto element_data = GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_tri3, double>();
+    auto element_data = GeometryPair::ElementData<GeometryPair::t_tri3, double>();
 
     element_data.element_position_(0) = 0.;
     element_data.element_position_(1) = 0.;
@@ -52,9 +52,9 @@ namespace
   /**
    * Setup the surface geometry for the tri6 tests.
    */
-  GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_tri6, double> xtest_setup_tri6()
+  GeometryPair::ElementData<GeometryPair::t_tri6, double> xtest_setup_tri6()
   {
-    auto element_data = GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_tri6, double>();
+    auto element_data = GeometryPair::ElementData<GeometryPair::t_tri6, double>();
 
     element_data.element_position_(0) = 0.;
     element_data.element_position_(1) = 0.;
@@ -100,9 +100,9 @@ namespace
   /**
    * Setup the surface geometry for the quad4 tests.
    */
-  GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_quad4, double> xtest_setup_quad4()
+  GeometryPair::ElementData<GeometryPair::t_quad4, double> xtest_setup_quad4()
   {
-    auto element_data = GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_quad4, double>();
+    auto element_data = GeometryPair::ElementData<GeometryPair::t_quad4, double>();
 
     element_data.element_position_(0) = 0;
     element_data.element_position_(1) = 0;
@@ -136,9 +136,9 @@ namespace
   /**
    * Setup the surface geometry for the quad8 tests.
    */
-  GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_quad8, double> xtest_setup_quad8()
+  GeometryPair::ElementData<GeometryPair::t_quad8, double> xtest_setup_quad8()
   {
-    auto element_data = GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_quad8, double>();
+    auto element_data = GeometryPair::ElementData<GeometryPair::t_quad8, double>();
 
     element_data.element_position_(0) = 0.;
     element_data.element_position_(1) = 0.;
@@ -196,9 +196,9 @@ namespace
   /**
    * Setup the surface geometry for the quad9 tests.
    */
-  GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_quad9, double> xtest_setup_quad9()
+  GeometryPair::ElementData<GeometryPair::t_quad9, double> xtest_setup_quad9()
   {
-    auto element_data = GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_quad9, double>();
+    auto element_data = GeometryPair::ElementData<GeometryPair::t_quad9, double>();
 
     element_data.element_position_(0) = 0.;
     element_data.element_position_(1) = 0.;
@@ -263,7 +263,7 @@ namespace
    * Setup the beam geometry for the tests.
    */
   std::pair<std::shared_ptr<Core::Elements::Element>,
-      GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_hermite, double>>
+      GeometryPair::ElementData<GeometryPair::t_hermite, double>>
   xtest_setup_beam()
   {
     // Set up the beam element.
@@ -273,7 +273,7 @@ namespace
     element->set_node_ids(2, dummy_node_ids);
 
     // Set up the beam.
-    auto element_data = GEOMETRYPAIR::ElementData<GEOMETRYPAIR::t_hermite, double>();
+    auto element_data = GeometryPair::ElementData<GeometryPair::t_hermite, double>();
 
     element_data.shape_function_data_.ref_length_ = 1.807519343263254585;
     element_data.element_position_(0) = -0.1;

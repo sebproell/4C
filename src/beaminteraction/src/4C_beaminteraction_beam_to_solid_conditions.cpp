@@ -163,7 +163,7 @@ BeamInteraction::BeamToSolidConditionVolumeMeshtying::BeamToSolidConditionVolume
 
   // Create the geometry evaluation data for this condition.
   geometry_evaluation_data_ =
-      std::make_shared<GEOMETRYPAIR::LineTo3DEvaluationData>(input_parameter_list);
+      std::make_shared<GeometryPair::LineTo3DEvaluationData>(input_parameter_list);
 }
 
 /**
@@ -192,22 +192,22 @@ BeamInteraction::create_beam_to_solid_volume_pair_shape(const Core::FE::CellType
   {
     case Core::FE::CellType::hex8:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_hex8, BtsTemplateArguments...>>();
     case Core::FE::CellType::hex20:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex20, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_hex20, BtsTemplateArguments...>>();
     case Core::FE::CellType::hex27:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex27, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_hex27, BtsTemplateArguments...>>();
     case Core::FE::CellType::tet4:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet4, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_tet4, BtsTemplateArguments...>>();
     case Core::FE::CellType::tet10:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet10, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_tet10, BtsTemplateArguments...>>();
     case Core::FE::CellType::nurbs27:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_nurbs27, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_nurbs27, BtsTemplateArguments...>>();
     default:
       FOUR_C_THROW("Wrong element type for solid element.");
       return nullptr;
@@ -225,19 +225,19 @@ BeamInteraction::create_beam_to_solid_volume_pair_shape_no_nurbs(const Core::FE:
   {
     case Core::FE::CellType::hex8:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_hex8, BtsTemplateArguments...>>();
     case Core::FE::CellType::hex20:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex20, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_hex20, BtsTemplateArguments...>>();
     case Core::FE::CellType::hex27:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex27, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_hex27, BtsTemplateArguments...>>();
     case Core::FE::CellType::tet4:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet4, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_tet4, BtsTemplateArguments...>>();
     case Core::FE::CellType::tet10:
       return std::make_shared<
-          BtsClass<GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet10, BtsTemplateArguments...>>();
+          BtsClass<GeometryPair::t_hermite, GeometryPair::t_tet10, BtsTemplateArguments...>>();
     default:
       FOUR_C_THROW("Wrong element type for solid element.");
       return nullptr;
@@ -258,13 +258,13 @@ BeamInteraction::create_beam_to_solid_volume_pair_mortar(const Core::FE::CellTyp
   {
     case Inpar::BeamToSolid::BeamToSolidMortarShapefunctions::line2:
       return create_beam_to_solid_volume_pair_mortar<BtsClass, BtsMortarTemplateArguments...,
-          GEOMETRYPAIR::t_line2>(shape, other_mortar_shape_function...);
+          GeometryPair::t_line2>(shape, other_mortar_shape_function...);
     case Inpar::BeamToSolid::BeamToSolidMortarShapefunctions::line3:
       return create_beam_to_solid_volume_pair_mortar<BtsClass, BtsMortarTemplateArguments...,
-          GEOMETRYPAIR::t_line3>(shape, other_mortar_shape_function...);
+          GeometryPair::t_line3>(shape, other_mortar_shape_function...);
     case Inpar::BeamToSolid::BeamToSolidMortarShapefunctions::line4:
       return create_beam_to_solid_volume_pair_mortar<BtsClass, BtsMortarTemplateArguments...,
-          GEOMETRYPAIR::t_line4>(shape, other_mortar_shape_function...);
+          GeometryPair::t_line4>(shape, other_mortar_shape_function...);
     default:
       FOUR_C_THROW("Wrong mortar shape function.");
       return nullptr;
@@ -375,7 +375,7 @@ BeamInteraction::BeamToSolidConditionSurface::BeamToSolidConditionSurface(
 
   // Create the geometry evaluation data for this condition.
   geometry_evaluation_data_ =
-      std::make_shared<GEOMETRYPAIR::LineToSurfaceEvaluationData>(input_parameter_list);
+      std::make_shared<GeometryPair::LineToSurfaceEvaluationData>(input_parameter_list);
 }
 
 /**
@@ -425,10 +425,10 @@ void BeamInteraction::BeamToSolidConditionSurface::setup(
 
   // Cast the geometry evaluation data to the correct type.
   auto line_to_surface_evaluation_data =
-      std::dynamic_pointer_cast<GEOMETRYPAIR::LineToSurfaceEvaluationData>(
+      std::dynamic_pointer_cast<GeometryPair::LineToSurfaceEvaluationData>(
           geometry_evaluation_data_);
   if (line_to_surface_evaluation_data == nullptr)
-    FOUR_C_THROW("Could not cast to GEOMETRYPAIR::LineToSurfaceEvaluationData.");
+    FOUR_C_THROW("Could not cast to GeometryPair::LineToSurfaceEvaluationData.");
 
   // If the pairs are FAD, i.e., if the averaged normals have to be evaluated using FAD.
   int fad_order = 0;
@@ -451,7 +451,7 @@ void BeamInteraction::BeamToSolidConditionSurface::setup(
   }
 
   // Loop over all pairs and add the needed face elements.
-  std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>> pair_face_elements;
+  std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>> pair_face_elements;
   pair_face_elements.clear();
   for (const auto& pair : condition_contact_pairs_)
   {
@@ -464,8 +464,8 @@ void BeamInteraction::BeamToSolidConditionSurface::setup(
       if (find_in_pair == pair_face_elements.end())
       {
         // The face element has to be created and added to the contact pair.
-        std::shared_ptr<GEOMETRYPAIR::FaceElement> new_face_element =
-            GEOMETRYPAIR::face_element_factory(find_in_condition->second, fad_order,
+        std::shared_ptr<GeometryPair::FaceElement> new_face_element =
+            GeometryPair::face_element_factory(find_in_condition->second, fad_order,
                 line_to_surface_evaluation_data->get_surface_normal_strategy());
         new_face_element->set_part_of_pair(true);
         pair_face_elements[solid_id] = new_face_element;
@@ -486,7 +486,7 @@ void BeamInteraction::BeamToSolidConditionSurface::setup(
 
   // Now all faces of contact pairs are in pair_face_elements, we still need to add faces that are
   // needed for averaged normal calculation, but are not contained in any pair.
-  std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>> face_elements_needed;
+  std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>> face_elements_needed;
   face_elements_needed = pair_face_elements;
   for (const auto& face_element_iterator : pair_face_elements)
   {
@@ -508,7 +508,7 @@ void BeamInteraction::BeamToSolidConditionSurface::setup(
           {
             // It is not already in the needed faces -> add it.
             face_elements_needed[element_id] =
-                GEOMETRYPAIR::face_element_factory(find_in_condition->second, fad_order,
+                GeometryPair::face_element_factory(find_in_condition->second, fad_order,
                     line_to_surface_evaluation_data->get_surface_normal_strategy());
           }
         }
@@ -538,16 +538,16 @@ void BeamInteraction::BeamToSolidConditionSurface::set_state(
   if (is_contact())
   {
     auto line_to_other_evaluation_data =
-        std::dynamic_pointer_cast<GEOMETRYPAIR::LineTo3DEvaluationData>(geometry_evaluation_data_);
+        std::dynamic_pointer_cast<GeometryPair::LineTo3DEvaluationData>(geometry_evaluation_data_);
     line_to_other_evaluation_data->reset_tracker();
   }
 
   // Cast the geometry evaluation data to the correct type.
   auto line_to_surface_evaluation_data =
-      std::dynamic_pointer_cast<GEOMETRYPAIR::LineToSurfaceEvaluationData>(
+      std::dynamic_pointer_cast<GeometryPair::LineToSurfaceEvaluationData>(
           geometry_evaluation_data_);
   if (line_to_surface_evaluation_data == nullptr)
-    FOUR_C_THROW("Could not cast to GEOMETRYPAIR::LineToSurfaceEvaluationData.");
+    FOUR_C_THROW("Could not cast to GeometryPair::LineToSurfaceEvaluationData.");
 
   // Setup the geometry data for the surface patch.
   line_to_surface_evaluation_data->set_state(beaminteraction_data_state->get_dis_col_np());
@@ -560,7 +560,7 @@ std::shared_ptr<BeamInteraction::BeamContactPair>
 BeamInteraction::BeamToSolidConditionSurface::create_contact_pair_internal(
     const std::vector<Core::Elements::Element const*>& ele_ptrs)
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   const auto* beam_element = dynamic_cast<const Discret::Elements::Beam3Base*>(ele_ptrs[0]);
   const bool beam_is_hermite = beam_element->hermite_centerline_interpolation();
@@ -569,10 +569,10 @@ BeamInteraction::BeamToSolidConditionSurface::create_contact_pair_internal(
   const auto shape = core_element->shape();
 
   auto line_to_surface_evaluation_data =
-      std::dynamic_pointer_cast<GEOMETRYPAIR::LineToSurfaceEvaluationData>(
+      std::dynamic_pointer_cast<GeometryPair::LineToSurfaceEvaluationData>(
           geometry_evaluation_data_);
   if (line_to_surface_evaluation_data == nullptr)
-    FOUR_C_THROW("Could not cast to GEOMETRYPAIR::LineToSurfaceEvaluationData.");
+    FOUR_C_THROW("Could not cast to GeometryPair::LineToSurfaceEvaluationData.");
   auto surface_normal_strategy = line_to_surface_evaluation_data->get_surface_normal_strategy();
 
   if (is_mesh_tying())
@@ -637,7 +637,7 @@ BeamInteraction::BeamToSolidConditionSurface::create_contact_pair_internal(
           case Inpar::BeamToSolid::BeamToSolidSurfaceCoupling::displacement_fad:
           case Inpar::BeamToSolid::BeamToSolidSurfaceCoupling::consistent_fad:
           {
-            if (surface_normal_strategy == Inpar::GEOMETRYPAIR::SurfaceNormals::standard)
+            if (surface_normal_strategy == Inpar::GeometryPair::SurfaceNormals::standard)
             {
               switch (shape)
               {
@@ -665,7 +665,7 @@ BeamInteraction::BeamToSolidConditionSurface::create_contact_pair_internal(
               }
             }
             else if (surface_normal_strategy ==
-                     Inpar::GEOMETRYPAIR::SurfaceNormals::extended_volume)
+                     Inpar::GeometryPair::SurfaceNormals::extended_volume)
             {
               switch (shape)
               {
