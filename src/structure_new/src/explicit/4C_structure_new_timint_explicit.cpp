@@ -109,7 +109,7 @@ void Solid::TimeInt::Explicit::evaluate()
 {
   check_init_setup();
   throw_if_state_not_in_sync_with_nox_group();
-  ::NOX::Abstract::Group& grp = nln_solver().solution_group();
+  ::NOX::Abstract::Group& grp = nln_solver().get_solution_group();
 
   auto* grp_ptr = dynamic_cast<NOX::Nln::Group*>(&grp);
   if (grp_ptr == nullptr) FOUR_C_THROW("Dynamic cast failed!");

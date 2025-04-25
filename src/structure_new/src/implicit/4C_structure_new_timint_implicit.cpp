@@ -84,7 +84,7 @@ void Solid::TimeInt::Implicit::set_state(const std::shared_ptr<Core::LinAlg::Vec
   integrator_ptr()->set_state(*x);
   ::NOX::Epetra::Vector x_nox(
       Teuchos::rcpFromRef(*x->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
-  nln_solver().solution_group().setX(x_nox);
+  nln_solver().get_solution_group().setX(x_nox);
   set_state_in_sync_with_nox_group(true);
 }
 
@@ -109,7 +109,7 @@ void Solid::TimeInt::Implicit::prepare_time_step()
   double& time_np = data_global_state().get_time_np();
   time_np = data_global_state().get_time_n() + (*data_global_state().get_delta_time())[0]; */
 
-  ::NOX::Abstract::Group& grp = nln_solver().solution_group();
+  ::NOX::Abstract::Group& grp = nln_solver().get_solution_group();
   predictor().predict(grp);
 }
 
@@ -130,7 +130,7 @@ int Solid::TimeInt::Implicit::integrate_step()
 {
   check_init_setup();
   // do the predictor step
-  ::NOX::Abstract::Group& grp = nln_solver().solution_group();
+  ::NOX::Abstract::Group& grp = nln_solver().get_solution_group();
   predictor().predict(grp);
   return solve();
 }
@@ -158,7 +158,7 @@ void Solid::TimeInt::Implicit::update_state_incrementally(
 
   check_init_setup();
   throw_if_state_not_in_sync_with_nox_group();
-  ::NOX::Abstract::Group& grp = nln_solver().solution_group();
+  ::NOX::Abstract::Group& grp = nln_solver().get_solution_group();
 
   auto* grp_ptr = dynamic_cast<NOX::Nln::Group*>(&grp);
   FOUR_C_ASSERT(grp_ptr != nullptr, "Dynamic cast failed!");
@@ -202,7 +202,7 @@ void Solid::TimeInt::Implicit::evaluate()
 {
   check_init_setup();
   throw_if_state_not_in_sync_with_nox_group();
-  ::NOX::Abstract::Group& grp = nln_solver().solution_group();
+  ::NOX::Abstract::Group& grp = nln_solver().get_solution_group();
 
   auto* grp_ptr = dynamic_cast<NOX::Nln::Group*>(&grp);
   FOUR_C_ASSERT(grp_ptr != nullptr, "Dynamic cast failed!");

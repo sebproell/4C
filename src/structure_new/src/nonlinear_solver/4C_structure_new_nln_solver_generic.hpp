@@ -81,7 +81,7 @@ namespace Solid
          *
          *  The nox group has to be initialized in one of the derived setup() routines beforehand.
          */
-        ::NOX::Abstract::Group& solution_group();
+        ::NOX::Abstract::Group& get_solution_group();
         const ::NOX::Abstract::Group& get_solution_group() const;
 
         //! Get the number of nonlinear iterations
