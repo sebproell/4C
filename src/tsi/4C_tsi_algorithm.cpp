@@ -20,15 +20,12 @@
 #include "4C_coupling_volmortar_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_tsi.hpp"
 #include "4C_io.hpp"
 #include "4C_mortar_multifield_coupling.hpp"
 #include "4C_solid_3D_ele.hpp"
-#include "4C_structure_new_model_evaluator_contact.hpp"
 #include "4C_structure_new_model_evaluator_structure.hpp"
 #include "4C_thermo_adapter.hpp"
-#include "4C_thermo_element.hpp"
-#include "4C_tsi_defines.hpp"
+#include "4C_tsi_input.hpp"
 #include "4C_tsi_utils.hpp"
 #include "4C_utils_parameter_list.hpp"
 
@@ -100,9 +97,9 @@ TSI::Algorithm::Algorithm(MPI_Comm comm)
 
     // set the temperature; Monolithic does this in it's own constructor with potentially
     // redistributed discretizations
-    if (Teuchos::getIntegralValue<Inpar::TSI::SolutionSchemeOverFields>(
+    if (Teuchos::getIntegralValue<TSI::SolutionSchemeOverFields>(
             Global::Problem::instance()->tsi_dynamic_params(), "COUPALGO") !=
-        Inpar::TSI::Monolithic)
+        TSI::SolutionSchemeOverFields::Monolithic)
     {
       if (matchinggrid_)
         structdis->set_state(1, "temperature", *thermo_field()->tempnp());
@@ -115,9 +112,9 @@ TSI::Algorithm::Algorithm(MPI_Comm comm)
     structure_ =
         std::dynamic_pointer_cast<Adapter::StructureWrapper>(adapterbase_ptr->structure_field());
 
-    if (restart && Teuchos::getIntegralValue<Inpar::TSI::SolutionSchemeOverFields>(
+    if (restart && Teuchos::getIntegralValue<TSI::SolutionSchemeOverFields>(
                        Global::Problem::instance()->tsi_dynamic_params(), "COUPALGO") ==
-                       Inpar::TSI::Monolithic)
+                       TSI::SolutionSchemeOverFields::Monolithic)
       structure_->setup();
 
     structure_field()->discretization()->clear_state(true);

@@ -222,18 +222,6 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     else
       FOUR_C_THROW("Unknown type of convection boundary condition");
 
-#ifdef THRASOUTPUT
-    if (ele->Id() == 0)
-    {
-      std::cout << "ele Id= " << ele->Id() << std::endl;
-      // print all parameters read from the current condition
-      std::cout << "type of boundary condition  = " << *tempstate << std::endl;
-      std::cout << "heat convection coefficient = " << coeff << std::endl;
-      std::cout << "surrounding temperature     = " << surtemp << std::endl;
-      std::cout << "time curve                  = " << curvenum << std::endl;
-      std::cout << "total time                  = " << time << std::endl;
-    }
-#endif
 
     // get kinematic type from parent element
     Inpar::Solid::KinemType kintype = parentele->kintype_;
@@ -442,18 +430,6 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
         else
           FOUR_C_THROW("Unknown type of convection boundary condition");
 
-#ifdef THRASOUTPUT
-        if (ele->Id() == 0)
-        {
-          std::cout << "ele Id= " << ele->Id() << std::endl;
-          // print all parameters read from the current condition
-          std::cout << "type of boundary condition  = " << *tempstate << std::endl;
-          std::cout << "heat convection coefficient = " << coeff << std::endl;
-          std::cout << "surrounding temperature     = " << surtemp << std::endl;
-          std::cout << "time curve                  = " << curvenum << std::endl;
-          std::cout << "total time                  = " << time << std::endl;
-        }
-#endif  // THRASOUTPUT
 
         // get the displacements
         std::shared_ptr<const Core::LinAlg::Vector<double>> disp =

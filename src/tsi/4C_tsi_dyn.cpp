@@ -11,9 +11,9 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_tsi.hpp"
 #include "4C_thermo_adapter.hpp"
 #include "4C_tsi_algorithm.hpp"
+#include "4C_tsi_input.hpp"
 #include "4C_tsi_monolithic.hpp"
 #include "4C_tsi_partitioned.hpp"
 #include "4C_tsi_utils.hpp"
@@ -45,7 +45,7 @@ void tsi_dyn_drt()
   const Teuchos::ParameterList& sdynparams =
       Global::Problem::instance()->structural_dynamic_params();
   const auto coupling =
-      Teuchos::getIntegralValue<Inpar::TSI::SolutionSchemeOverFields>(tsidyn, "COUPALGO");
+      Teuchos::getIntegralValue<TSI::SolutionSchemeOverFields>(tsidyn, "COUPALGO");
 
   // create an empty TSI::Algorithm instance
   std::shared_ptr<TSI::Algorithm> tsi;
@@ -53,18 +53,18 @@ void tsi_dyn_drt()
   // choose algorithm depending on solution type
   switch (coupling)
   {
-    case Inpar::TSI::Monolithic:
+    case TSI::SolutionSchemeOverFields::Monolithic:
     {
       // create an TSI::Monolithic instance
       tsi = std::make_shared<TSI::Monolithic>(comm, sdynparams);
       break;
     }
-    case Inpar::TSI::OneWay:
-    case Inpar::TSI::SequStagg:
-    case Inpar::TSI::IterStagg:
-    case Inpar::TSI::IterStaggAitken:
-    case Inpar::TSI::IterStaggAitkenIrons:
-    case Inpar::TSI::IterStaggFixedRel:
+    case TSI::SolutionSchemeOverFields::OneWay:
+    case TSI::SolutionSchemeOverFields::SequStagg:
+    case TSI::SolutionSchemeOverFields::IterStagg:
+    case TSI::SolutionSchemeOverFields::IterStaggAitken:
+    case TSI::SolutionSchemeOverFields::IterStaggAitkenIrons:
+    case TSI::SolutionSchemeOverFields::IterStaggFixedRel:
     {
       // Any partitioned algorithm. Stable of working horses.
       // create an TSI::Algorithm instance

@@ -5,15 +5,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_tsi.hpp"
+#include "4C_tsi_input.hpp"
 
 #include "4C_contact_input.hpp"
 #include "4C_io_input_spec_builders.hpp"
+
 FOUR_C_NAMESPACE_OPEN
 
-
-
-void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -23,15 +22,16 @@ void Inpar::TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           // coupling strategy for (partitioned and monolithic) TSI solvers
           deprecated_selection<SolutionSchemeOverFields>("COUPALGO",
               {
-                  {"tsi_oneway", OneWay},
-                  {"tsi_sequstagg", SequStagg},
-                  {"tsi_iterstagg", IterStagg},
-                  {"tsi_iterstagg_aitken", IterStaggAitken},
-                  {"tsi_iterstagg_aitkenirons", IterStaggAitkenIrons},
-                  {"tsi_iterstagg_fixedrelax", IterStaggFixedRel},
-                  {"tsi_monolithic", Monolithic},
+                  {"tsi_oneway", SolutionSchemeOverFields::OneWay},
+                  {"tsi_sequstagg", SolutionSchemeOverFields::SequStagg},
+                  {"tsi_iterstagg", SolutionSchemeOverFields::IterStagg},
+                  {"tsi_iterstagg_aitken", SolutionSchemeOverFields::IterStaggAitken},
+                  {"tsi_iterstagg_aitkenirons", SolutionSchemeOverFields::IterStaggAitkenIrons},
+                  {"tsi_iterstagg_fixedrelax", SolutionSchemeOverFields::IterStaggFixedRel},
+                  {"tsi_monolithic", SolutionSchemeOverFields::Monolithic},
               },
-              {.description = "Coupling strategies for TSI solvers", .default_value = Monolithic}),
+              {.description = "Coupling strategies for TSI solvers",
+                  .default_value = SolutionSchemeOverFields::Monolithic}),
 
 
           parameter<bool>(

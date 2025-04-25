@@ -53,7 +53,6 @@
 #include "4C_inpar_ssti.hpp"
 #include "4C_inpar_sti.hpp"
 #include "4C_inpar_structure.hpp"
-#include "4C_inpar_tsi.hpp"
 #include "4C_inpar_volmortar.hpp"
 #include "4C_inpar_wear.hpp"
 #include "4C_inpar_xfem.hpp"
@@ -65,6 +64,7 @@
 #include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 #include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_thermo_input.hpp"
+#include "4C_tsi_input.hpp"
 
 #include <Teuchos_any.hpp>
 #include <Teuchos_Array.hpp>
@@ -195,7 +195,7 @@ std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
   Inpar::Plasticity::set_valid_parameters(specs);
 
   Thermo::set_valid_parameters(specs);
-  Inpar::TSI::set_valid_parameters(specs);
+  TSI::set_valid_parameters(specs);
 
   Inpar::FLUID::set_valid_parameters(specs);
   Inpar::LowMach::set_valid_parameters(specs);

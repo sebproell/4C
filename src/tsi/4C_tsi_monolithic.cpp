@@ -34,7 +34,6 @@
 #include "4C_structure_new_timint_base.hpp"
 #include "4C_thermo_ele_action.hpp"
 #include "4C_thermo_timint.hpp"
-#include "4C_tsi_defines.hpp"
 #include "4C_tsi_utils.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -71,16 +70,15 @@ TSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& sdynpar
       k_st_(nullptr),
       k_ts_(nullptr),
       merge_tsi_blockmatrix_(tsidynmono_.get<bool>("MERGE_TSI_BLOCK_MATRIX")),
-      soltech_(Teuchos::getIntegralValue<Inpar::TSI::NlnSolTech>(tsidynmono_, "NLNSOL")),
-      iternorm_(Teuchos::getIntegralValue<Inpar::TSI::VectorNorm>(tsidynmono_, "ITERNORM")),
+      soltech_(Teuchos::getIntegralValue<TSI::NlnSolTech>(tsidynmono_, "NLNSOL")),
+      iternorm_(Teuchos::getIntegralValue<TSI::VectorNorm>(tsidynmono_, "ITERNORM")),
       iter_(0),
       sdyn_(sdynparams),
       timernewton_("", true),
       dtsolve_(0.),
       ptcdt_(tsidynmono_.get<double>("PTCDT")),
       dti_(1.0 / ptcdt_),
-      ls_strategy_(
-          Teuchos::getIntegralValue<Inpar::TSI::LineSearch>(tsidynmono_, "TSI_LINE_SEARCH")),
+      ls_strategy_(Teuchos::getIntegralValue<TSI::LineSearch>(tsidynmono_, "TSI_LINE_SEARCH")),
       vel_(nullptr)
 {
   fix_time_integration_params();
@@ -111,10 +109,8 @@ TSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& sdynpar
   // get direct solver, e.g. UMFPACK
   else  // (merge_tsi_blockmatrix_ == true)
   {
-#ifndef TFSI
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
       std::cout << "Merged TSI block matrix is used!\n" << std::endl;
-#endif
 
     // get solver parameter list of linear TSI solver
     const int linsolvernumber = tsidynmono_.get<int>("LINEAR_SOLVER");
@@ -145,7 +141,6 @@ TSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& sdynpar
       locsysman_ = nullptr;
   }
 
-#ifndef TFSI
   if ((tsidynmono_.get<bool>("CALC_NECKING_TSI_VALUES")) and
       (Core::Communication::my_mpi_rank(get_comm()) == 0))
     std::cout
@@ -154,7 +149,6 @@ TSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& sdynpar
         << "\n The body is located between x: [0,6.413mm], y: [0,6.413mm], z: "
            "[-13.3335mm,13.3335mm]\n"
         << std::endl;
-#endif
 
   // structural and thermal contact
   prepare_contact_strategy();
@@ -321,11 +315,11 @@ void TSI::Monolithic::solve()
   switch (soltech_)
   {
     // Newton-Raphson iteration
-    case Inpar::TSI::soltech_newtonfull:
+    case TSI::soltech_newtonfull:
       newton_full();
       break;
     // Pseudo-transient continuation
-    case Inpar::TSI::soltech_ptc:
+    case TSI::soltech_ptc:
       ptc();
       break;
     // catch problems
@@ -362,14 +356,6 @@ void TSI::Monolithic::time_loop()
     // write output to screen and files
     output();
 
-#ifdef TSIMONOLITHASOUTPUT
-    printf("End Timeloop ThermoField()->Tempnp[0] %12.8f\n", (*ThermoField()->Tempnp())[0]);
-    printf("End Timeloop ThermoField()->Tempn[0] %12.8f\n", (*ThermoField()->Tempn())[0]);
-
-    printf("End Timeloop disp %12.8f\n", (*structure_field()->Dispn())[0]);
-    std::cout << "dispn\n" << *(structure_field()->Dispn()) << std::endl;
-#endif  // TSIMONOLITHASOUTPUT
-
   }  // not_finished
 }  // TimeLoop()
 
@@ -380,13 +366,6 @@ void TSI::Monolithic::time_loop()
  *----------------------------------------------------------------------*/
 void TSI::Monolithic::newton_full()
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << "TSI::Monolithic::NewtonFull()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
   // we do a Newton-Raphson iteration here.
   // the specific time integration has set the following
   // --> On #rhs_ is the positive force residuum
@@ -513,12 +492,12 @@ void TSI::Monolithic::newton_full()
     // do line search
     switch (ls_strategy_)
     {
-      case Inpar::TSI::LS_none:
+      case TSI::LS_none:
         break;
-      case Inpar::TSI::LS_structure:
-      case Inpar::TSI::LS_thermo:
-      case Inpar::TSI::LS_and:
-      case Inpar::TSI::LS_or:
+      case TSI::LS_structure:
+      case TSI::LS_thermo:
+      case TSI::LS_and:
+      case TSI::LS_or:
       {
         normstrrhs_ = calculate_vector_norm(iternormstr_, *structure_field()->rhs());
         normthrrhs_ = calculate_vector_norm(iternormthr_, *thermo_field()->rhs());
@@ -625,13 +604,6 @@ void TSI::Monolithic::ptc()
   // do a PTC iteration here
   // implementation is based on the work of Gee, Kelley, Lehouq (2009):
   // "Pseudo-transient continuation for nonlinear transient elasticity"
-
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << "TSI::Monolithic::PTC()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
 
   // the specific time integration has set the following
   // --> On #rhs_ is the positive force residuum
@@ -859,13 +831,6 @@ void TSI::Monolithic::ptc()
  *----------------------------------------------------------------------*/
 void TSI::Monolithic::evaluate(std::shared_ptr<Core::LinAlg::Vector<double>> stepinc)
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << "\n TSI::Monolithic::evaluate()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
   TEUCHOS_FUNC_TIME_MONITOR("TSI::Monolithic::Evaluate");
 
   // displacement and temperature incremental vector
@@ -878,33 +843,12 @@ void TSI::Monolithic::evaluate(std::shared_ptr<Core::LinAlg::Vector<double>> ste
     // extract displacement sx and temperature tx incremental vector of global
     // unknown incremental vector x
     extract_field_vectors(stepinc, sx, tx);
-
-#ifdef TSIMONOLITHASOUTPUT
-    std::cout << "Recent thermal increment DT_n+1^i\n" << *(tx) << std::endl;
-    std::cout << "Recent structural increment Dd_n+1^i\n" << *(sx) << std::endl;
-
-    std::cout << "Until here only old solution of Newton step. No update applied\n"
-              << *(ThermoField()->Tempnp()) << std::endl;
-#endif  // TSIMONOLITHASOUTPUT
   }
-
-  // else (x == nullptr): initialise the system
-#ifdef TSIMONOLITHASOUTPUT
-  std::cout << "Tempnp vor UpdateNewton\n" << *(ThermoField()->Tempnp()) << std::endl;
-  printf(
-      "Tempnp vor UpdateNewton ThermoField()->Tempnp[0] %12.8f\n", (*ThermoField()->Tempnp())[0]);
-#endif  // TSIMONOLITHASOUTPUT
 
   // Newton update of the thermo field
   // update temperature before passed to the structural field
   //   update_iter_incrementally(tx),
   thermo_field()->update_newton(tx);
-
-#ifdef TSIMONOLITHASOUTPUT
-  std::cout << "Tempnp nach UpdateNewton\n" << *(ThermoField()->Tempnp()) << std::endl;
-  printf(
-      "Tempnp nach UpdateNewton ThermoField()->Tempnp[0] %12.8f\n", (*ThermoField()->Tempnp())[0]);
-#endif  // TSIMONOLITHASOUTPUT
 
   // call all elements and assemble rhs and matrices
   /// structural field
@@ -912,24 +856,8 @@ void TSI::Monolithic::evaluate(std::shared_ptr<Core::LinAlg::Vector<double>> ste
   // structure Evaluate (builds tangent, residual and applies DBC)
   Teuchos::Time timerstructure("", true);
 
-#ifndef MonTSWithoutTHERMO
   // apply current temperature to structure
   apply_thermo_coupling_state(thermo_field()->tempnp(), tx);
-#endif
-
-#ifdef TSIPARALLEL
-  std::cout << Core::Communication::my_mpi_rank(Comm()) << " nach ApplyTemp!!" << std::endl;
-#endif  // TSIPARALLEL
-
-#ifdef TSIMONOLITHASOUTPUT
-  std::shared_ptr<Core::LinAlg::Vector<double>> tempera =
-      std::make_shared<Core::LinAlg::Vector<double>>(ThermoField()->Tempn()->Map());
-
-  if (ThermoField()->Tempnp() != nullptr) tempera->Update(1.0, *ThermoField()->Tempnp(), 0.0);
-
-  structure_field()->discretization()->set_state(1, "temperature", tempera);
-  structure_field()->discretization()->set_state(1, "temperature", ThermoField()->Tempn());
-#endif  // TSIMONOLITHASOUTPUT
 
   // Monolithic TSI accesses the linearised structure problem:
   //   UpdaterIterIncrementally(sx),
@@ -943,17 +871,6 @@ void TSI::Monolithic::evaluate(std::shared_ptr<Core::LinAlg::Vector<double>> ste
   else
     structure_field()->evaluate(sx);
   structure_field()->discretization()->clear_state(true);
-
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  std::cout << "  structure time for calling Evaluate: " << timerstructure.totalElapsedTime(true)
-            << "\n";
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
-#ifdef TSIMONOLITHASOUTPUT
-  std::cout << "STR rhs_" << *structure_field()->RHS() << std::endl;
-#endif  // TSIMONOLITHASOUTPUT
 
   /// thermal field
 
@@ -971,27 +888,14 @@ void TSI::Monolithic::evaluate(std::shared_ptr<Core::LinAlg::Vector<double>> ste
   else
     vel_ = structure_field()->velnp();
 
-#ifndef MonTSWithoutSTR
   // pass the structural values to the thermo field
   apply_struct_coupling_state(structure_field()->dispnp(), vel_);
-#endif
-
-#ifdef TSIMONOLITHASOUTPUT
-  std::cout << "d_n+1 inserted in Thermo field\n" << *(structure_field()->Dispnp()) << std::endl;
-  std::cout << "v_n+1\n" << *vel_ << std::endl;
-#endif  // TSIMONOLITHASOUTPUT
 
   // monolithic TSI accesses the linearised thermo problem
   //   evaluate_rhs_tang_residual() and
   //   prepare_system_for_newton_solve()
   thermo_field()->evaluate();
   thermo_field()->discretization()->clear_state(true);
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  std::cout << "  thermo time for calling Evaluate: " << timerthermo.totalElapsedTime(true) << "\n";
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
 }  // evaluate()
 
 
@@ -1027,23 +931,8 @@ std::shared_ptr<const Core::LinAlg::Map> TSI::Monolithic::dof_row_map() const
  *----------------------------------------------------------------------*/
 void TSI::Monolithic::setup_system()
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << " TSI::Monolithic::SetupSystem()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
   // set parameters that remain the same in the whole calculation
   set_default_parameters();
-
-#ifdef TSIPARALLEL
-  std::cout << Core::Communication::my_mpi_rank(Comm()) << " :PID" << std::endl;
-  std::cout << "structure dofmap" << std::endl;
-  std::cout << *structure_field()->dof_row_map(0) << std::endl;
-  std::cout << "thermo dofmap" << std::endl;
-  std::cout << *structure_field()->dof_row_map(1) << std::endl;
-#endif  // TSIPARALLEL
 
   set_dof_row_maps();
 
@@ -1092,12 +981,6 @@ void TSI::Monolithic::set_dof_row_maps()
  *----------------------------------------------------------------------*/
 void TSI::Monolithic::setup_system_matrix()
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << " TSI::Monolithic::setup_system_matrix()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
   TEUCHOS_FUNC_TIME_MONITOR("TSI::Monolithic::setup_system_matrix");
 
   /*----------------------------------------------------------------------*/
@@ -1119,9 +1002,7 @@ void TSI::Monolithic::setup_system_matrix()
 
   k_st_->reset();
   // call the element and calculate the matrix block
-#ifndef MonTSWithoutTHERMO
   apply_str_coupl_matrix(k_st_);
-#endif  // MonTSWithoutTHERMO
 
   k_st_->complete(*(structure_field()->discretization()->dof_row_map(1)),
       *(structure_field()->discretization()->dof_row_map(0)));
@@ -1153,10 +1034,8 @@ void TSI::Monolithic::setup_system_matrix()
   k_ts_->reset();
 
   // call the element and calculate the matrix block
-#if ((!defined(MonTSWithoutSTR)) and (!defined(COUPLEINITTEMPERATURE)))
   apply_thermo_coupl_matrix(k_ts_);
   apply_thermo_coupl_matrix_conv_bc(k_ts_);
-#endif
 
   k_ts_->complete(*(thermo_field()->discretization()->dof_row_map(1)),
       *(thermo_field()->discretization()->dof_row_map(0)));
@@ -1180,13 +1059,6 @@ void TSI::Monolithic::setup_system_matrix()
  *----------------------------------------------------------------------*/
 void TSI::Monolithic::setup_rhs()
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << " TSI::Monolithic::setup_rhs()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
   TEUCHOS_FUNC_TIME_MONITOR("TSI::Monolithic::setup_rhs");
 
   // create full monolithic rhs vector
@@ -1215,13 +1087,6 @@ void TSI::Monolithic::setup_rhs()
  *----------------------------------------------------------------------*/
 void TSI::Monolithic::linear_solve()
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << " TSI::Monolithic::linear_solve()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
   // Solve for inc_ = [disi_,tempi_]
   // Solve K_Teffdyn . IncX = -R  ===>  IncX_{n+1} with X=[d,T]
   // \f$x_{i+1} = x_i + \Delta x_i\f$
@@ -1244,15 +1109,6 @@ void TSI::Monolithic::linear_solve()
   // default: use block matrix
   if (merge_tsi_blockmatrix_ == false)
   {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-    if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    {
-      std::cout << " DBC applied to TSI system on proc" << Core::Communication::my_mpi_rank(Comm())
-                << std::endl;
-    }
-#endif  // TFSI
-#endif  // TSI_DEBUG
     // Infnormscaling: scale system before solving
     scale_system(*systemmatrix_, *rhs_);
 
@@ -1277,15 +1133,6 @@ void TSI::Monolithic::linear_solve()
     solver_params.reset = iter_ == 1;
     solver_->solve(sparse->epetra_operator(), iterinc_, rhs_, solver_params);
   }  // MergeBlockMatrix
-
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-  {
-    std::cout << " Solved" << std::endl;
-  }
-#endif  // TFSI
-#endif  // TSI_DEBUG
 
   // apply mortar coupling
   if (mortar_coupling_ != nullptr) mortar_coupling_->recover_incr(*iterinc_);
@@ -1344,13 +1191,13 @@ bool TSI::Monolithic::converged()
   // residual TSI forces
   switch (normtyperhs_)
   {
-    case Inpar::TSI::convnorm_abs:
+    case TSI::convnorm_abs:
       convrhs = normrhs_ < tolrhs_;
       break;
-    case Inpar::TSI::convnorm_rel:
+    case TSI::convnorm_rel:
       convrhs = normrhs_ < std::max(tolrhs_ * normrhsiter0_, 1.0e-15);
       break;
-    case Inpar::TSI::convnorm_mix:
+    case TSI::convnorm_mix:
       convrhs = ((normrhs_ < tolrhs_) and (normrhs_ < std::max(normrhsiter0_ * tolrhs_, 1.0e-15)));
       break;
     default:
@@ -1361,13 +1208,13 @@ bool TSI::Monolithic::converged()
   // residual TSI increments
   switch (normtypeinc_)
   {
-    case Inpar::TSI::convnorm_abs:
+    case TSI::convnorm_abs:
       convinc = norminc_ < tolinc_;
       break;
-    case Inpar::TSI::convnorm_rel:
+    case TSI::convnorm_rel:
       convinc = norminc_ < std::max(norminciter0_ * tolinc_, 1e-15);
       break;
-    case Inpar::TSI::convnorm_mix:
+    case TSI::convnorm_mix:
       convinc = norminc_ < std::max(norminciter0_ * tolinc_, 1e-15);
       break;
     default:
@@ -1452,17 +1299,17 @@ bool TSI::Monolithic::converged()
   // combine increment-like and force-like residuals, combine TSI and single
   // field values
   bool conv = false;
-  if (combincrhs_ == Inpar::TSI::bop_and)
+  if (combincrhs_ == TSI::bop_and)
     conv = convinc and convrhs;
-  else if (combincrhs_ == Inpar::TSI::bop_or)
+  else if (combincrhs_ == TSI::bop_or)
     conv = convinc or convrhs;
-  else if (combincrhs_ == Inpar::TSI::bop_coupl_and_single)
+  else if (combincrhs_ == TSI::bop_coupl_and_single)
     conv = convinc and convrhs and convdisp and convstrrhs and convtemp and convthrrhs;
-  else if (combincrhs_ == Inpar::TSI::bop_coupl_or_single)
+  else if (combincrhs_ == TSI::bop_coupl_or_single)
     conv = (convinc and convrhs) or (convdisp and convstrrhs and convtemp and convthrrhs);
-  else if (combincrhs_ == Inpar::TSI::bop_and_single)
+  else if (combincrhs_ == TSI::bop_and_single)
     conv = convdisp and convstrrhs and convtemp and convthrrhs;
-  else if (combincrhs_ == Inpar::TSI::bop_or_single)
+  else if (combincrhs_ == TSI::bop_or_single)
     conv = (convdisp or convstrrhs or convtemp or convthrrhs);
   else
     FOUR_C_THROW("Something went terribly wrong with binary operator!");
@@ -1521,13 +1368,13 @@ void TSI::Monolithic::print_newton_iter_header(FILE* ofile)
   // displacement
   switch (normtyperhs_)
   {
-    case Inpar::TSI::convnorm_abs:
+    case TSI::convnorm_abs:
       oss << std::setw(15) << "abs-res-norm";
       break;
-    case Inpar::TSI::convnorm_rel:
+    case TSI::convnorm_rel:
       oss << std::setw(15) << "rel-res-norm";
       break;
-    case Inpar::TSI::convnorm_mix:
+    case TSI::convnorm_mix:
       oss << std::setw(15) << "mix-res-norm";
       break;
     default:
@@ -1537,10 +1384,10 @@ void TSI::Monolithic::print_newton_iter_header(FILE* ofile)
 
   switch (normtypeinc_)
   {
-    case Inpar::TSI::convnorm_abs:
+    case TSI::convnorm_abs:
       oss << std::setw(15) << "abs-inc-norm";
       break;
-    case Inpar::TSI::convnorm_rel:
+    case TSI::convnorm_rel:
       oss << std::setw(15) << "rel-inc-norm";
       break;
     default:
@@ -1623,7 +1470,7 @@ void TSI::Monolithic::print_newton_iter_header(FILE* ofile)
   }
 
 
-  if (soltech_ == Inpar::TSI::soltech_ptc)
+  if (soltech_ == TSI::soltech_ptc)
   {
     oss << std::setw(16) << "        PTC-dti";
   }
@@ -1677,13 +1524,13 @@ void TSI::Monolithic::print_newton_iter_text(FILE* ofile)
   // ----------------------------------------------- test coupled problem
   switch (normtyperhs_)
   {
-    case Inpar::TSI::convnorm_abs:
+    case TSI::convnorm_abs:
       oss << std::setw(15) << std::setprecision(5) << std::scientific << normrhs_;
       break;
-    case Inpar::TSI::convnorm_rel:
+    case TSI::convnorm_rel:
       oss << std::setw(15) << std::setprecision(5) << std::scientific << normrhs_ / normrhsiter0_;
       break;
-    case Inpar::TSI::convnorm_mix:
+    case TSI::convnorm_mix:
       oss << std::setw(15) << std::setprecision(5) << std::scientific
           << std::min(normrhs_, normrhs_ / normrhsiter0_);
       break;
@@ -1694,13 +1541,13 @@ void TSI::Monolithic::print_newton_iter_text(FILE* ofile)
 
   switch (normtypeinc_)
   {
-    case Inpar::TSI::convnorm_abs:
+    case TSI::convnorm_abs:
       oss << std::setw(15) << std::setprecision(5) << std::scientific << norminc_;
       break;
-    case Inpar::TSI::convnorm_rel:
+    case TSI::convnorm_rel:
       oss << std::setw(15) << std::setprecision(5) << std::scientific << norminc_ / norminciter0_;
       break;
-    case Inpar::TSI::convnorm_mix:
+    case TSI::convnorm_mix:
       oss << std::setw(15) << std::setprecision(5) << std::scientific
           << std::min(norminc_, norminc_ / norminciter0_);
       break;
@@ -1795,7 +1642,7 @@ void TSI::Monolithic::print_newton_iter_text(FILE* ofile)
         << contact_strategy_lagrange_->thermo_contact_incr_;
   }
 
-  if (soltech_ == Inpar::TSI::soltech_ptc)
+  if (soltech_ == TSI::soltech_ptc)
   {
     oss << std::setw(16) << std::setprecision(5) << std::scientific << dti_;
   }
@@ -1848,13 +1695,6 @@ void TSI::Monolithic::apply_str_coupl_matrix(
     std::shared_ptr<Core::LinAlg::SparseMatrix> k_st  //!< off-diagonal tangent matrix term
 )
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << " TSI::Monolithic::apply_str_coupl_matrix()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
   // create the parameters for the discretization
   Teuchos::ParameterList sparams;
 
@@ -1934,13 +1774,6 @@ void TSI::Monolithic::apply_thermo_coupl_matrix(
     std::shared_ptr<Core::LinAlg::SparseMatrix> k_ts  //!< off-diagonal tangent matrix term
 )
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << " TSI::Monolithic::ApplyThermoCouplMatrix()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
   // create the parameters for the discretization
   Teuchos::ParameterList tparams;
   // action for elements
@@ -2043,13 +1876,6 @@ void TSI::Monolithic::apply_thermo_coupl_matrix_conv_bc(
     std::shared_ptr<Core::LinAlg::SparseMatrix> k_ts  //!< off-diagonal tangent matrix term
 )
 {
-#ifdef TSI_DEBUG
-#ifndef TFSI
-  if (Core::Communication::my_mpi_rank(Comm()) == 0)
-    std::cout << " TSI::Monolithic::apply_thermo_coupl_matrix_conv_bc()" << std::endl;
-#endif  // TFSI
-#endif  // TSI_DEBUG
-
   std::vector<Core::Conditions::Condition*> cond;
   std::string condstring("ThermoConvections");
   thermo_field()->discretization()->get_condition(condstring, cond);
@@ -2266,11 +2092,11 @@ void TSI::Monolithic::unscale_solution(Core::LinAlg::BlockSparseMatrixBase& mat,
  | calculate vector norm                                     dano 04/13 |
  *----------------------------------------------------------------------*/
 double TSI::Monolithic::calculate_vector_norm(
-    const enum Inpar::TSI::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
+    const enum TSI::VectorNorm norm, const Core::LinAlg::Vector<double>& vect)
 {
   // L1 norm
   // norm = sum_0^i vect[i]
-  if (norm == Inpar::TSI::norm_l1)
+  if (norm == TSI::norm_l1)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);
@@ -2278,7 +2104,7 @@ double TSI::Monolithic::calculate_vector_norm(
   }
   // L2/Euclidian norm
   // norm = sqrt{sum_0^i vect[i]^2 }
-  else if (norm == Inpar::TSI::norm_l2)
+  else if (norm == TSI::norm_l2)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -2286,7 +2112,7 @@ double TSI::Monolithic::calculate_vector_norm(
   }
   // RMS norm
   // norm = sqrt{sum_0^i vect[i]^2 }/ sqrt{length_vect}
-  else if (norm == Inpar::TSI::norm_rms)
+  else if (norm == TSI::norm_rms)
   {
     double vectnorm;
     vect.norm_2(&vectnorm);
@@ -2294,14 +2120,14 @@ double TSI::Monolithic::calculate_vector_norm(
   }
   // infinity/maximum norm
   // norm = max( vect[i] )
-  else if (norm == Inpar::TSI::norm_inf)
+  else if (norm == TSI::norm_inf)
   {
     double vectnorm;
     vect.norm_inf(&vectnorm);
     return vectnorm;
   }
   // norm = sum_0^i vect[i]/length_vect
-  else if (norm == Inpar::TSI::norm_l1_scaled)
+  else if (norm == TSI::norm_l1_scaled)
   {
     double vectnorm;
     vect.norm_1(&vectnorm);
@@ -2330,8 +2156,8 @@ void TSI::Monolithic::set_default_parameters()
   itermin_ = tsidyn_.get<int>("ITEMIN");
 
   // what kind of norm do we wanna test for coupled TSI problem
-  normtypeinc_ = Teuchos::getIntegralValue<Inpar::TSI::ConvNorm>(tsidyn_, "NORM_INC");
-  normtyperhs_ = Teuchos::getIntegralValue<Inpar::TSI::ConvNorm>(tsidynmono_, "NORM_RESF");
+  normtypeinc_ = Teuchos::getIntegralValue<TSI::ConvNorm>(tsidyn_, "NORM_INC");
+  normtyperhs_ = Teuchos::getIntegralValue<TSI::ConvNorm>(tsidynmono_, "NORM_RESF");
   // what kind of norm do we wanna test for the single fields
   normtypedisi_ = Teuchos::getIntegralValue<Inpar::Solid::ConvNorm>(sdyn_, "NORM_DISP");
   normtypestrrhs_ = Teuchos::getIntegralValue<Inpar::Solid::ConvNorm>(sdyn_, "NORM_RESF");
@@ -2342,24 +2168,23 @@ void TSI::Monolithic::set_default_parameters()
   enum Thermo::VectorNorm thriternorm =
       Teuchos::getIntegralValue<Thermo::VectorNorm>(tdyn, "ITERNORM");
   // in total when do we reach a converged state for complete problem
-  combincrhs_ = Teuchos::getIntegralValue<Inpar::TSI::BinaryOp>(tsidynmono_, "NORMCOMBI_RESFINC");
+  combincrhs_ = Teuchos::getIntegralValue<TSI::BinaryOp>(tsidynmono_, "NORMCOMBI_RESFINC");
 
-#ifndef TFSI
   switch (combincrhs_)
   {
-    case Inpar::TSI::bop_and:
+    case TSI::bop_and:
     {
       if (Core::Communication::my_mpi_rank(get_comm()) == 0)
         std::cout << "Convergence test of TSI:\n res, inc with 'AND'." << std::endl;
       break;
     }
-    case Inpar::TSI::bop_or:
+    case TSI::bop_or:
     {
       if (Core::Communication::my_mpi_rank(get_comm()) == 0)
         std::cout << "Convergence test of TSI:\n res, inc with 'OR'." << std::endl;
       break;
     }
-    case Inpar::TSI::bop_coupl_and_single:
+    case TSI::bop_coupl_and_single:
     {
       if (Core::Communication::my_mpi_rank(get_comm()) == 0)
         std::cout
@@ -2367,21 +2192,21 @@ void TSI::Monolithic::set_default_parameters()
             << std::endl;
       break;
     }
-    case Inpar::TSI::bop_coupl_or_single:
+    case TSI::bop_coupl_or_single:
     {
       if (Core::Communication::my_mpi_rank(get_comm()) == 0)
         std::cout << "Convergence test of TSI:\n (res, inc) or (str-res, thermo-res, dis, temp)."
                   << std::endl;
       break;
     }
-    case Inpar::TSI::bop_and_single:
+    case TSI::bop_and_single:
     {
       if (Core::Communication::my_mpi_rank(get_comm()) == 0)
         std::cout << "Convergence test of TSI:\n str-res, thermo-res, dis, temp with 'AND'."
                   << std::endl;
       break;
     }
-    case Inpar::TSI::bop_or_single:
+    case TSI::bop_or_single:
     {
       if (Core::Communication::my_mpi_rank(get_comm()) == 0)
         std::cout << "Convergence test of TSI:\n str-res, thermo-res, dis, temp with 'OR'."
@@ -2394,23 +2219,22 @@ void TSI::Monolithic::set_default_parameters()
       break;
     }
   }  // switch (combincrhs_)
-#endif
 
   // convert the single field norms to be used within TSI
   // what norm is used for structure
   switch (striternorm)
   {
     case Inpar::Solid::norm_l1:
-      iternormstr_ = Inpar::TSI::norm_l1;
+      iternormstr_ = TSI::norm_l1;
       break;
     case Inpar::Solid::norm_l2:
-      iternormstr_ = Inpar::TSI::norm_l2;
+      iternormstr_ = TSI::norm_l2;
       break;
     case Inpar::Solid::norm_rms:
-      iternormstr_ = Inpar::TSI::norm_rms;
+      iternormstr_ = TSI::norm_rms;
       break;
     case Inpar::Solid::norm_inf:
-      iternormstr_ = Inpar::TSI::norm_inf;
+      iternormstr_ = TSI::norm_inf;
       break;
     case Inpar::Solid::norm_vague:
     default:
@@ -2422,16 +2246,16 @@ void TSI::Monolithic::set_default_parameters()
   switch (thriternorm)
   {
     case Thermo::norm_l1:
-      iternormthr_ = Inpar::TSI::norm_l1;
+      iternormthr_ = TSI::norm_l1;
       break;
     case Thermo::norm_l2:
-      iternormthr_ = Inpar::TSI::norm_l2;
+      iternormthr_ = TSI::norm_l2;
       break;
     case Thermo::norm_rms:
-      iternormthr_ = Inpar::TSI::norm_rms;
+      iternormthr_ = TSI::norm_rms;
       break;
     case Thermo::norm_inf:
-      iternormthr_ = Inpar::TSI::norm_inf;
+      iternormthr_ = TSI::norm_inf;
       break;
     case Thermo::norm_vague:
     default:
@@ -2442,12 +2266,11 @@ void TSI::Monolithic::set_default_parameters()
   }  // switch (thriternorm)
 
   // if scaled L1-norm is wished to be used
-  if ((iternorm_ == Inpar::TSI::norm_l1_scaled) and
-      ((combincrhs_ == Inpar::TSI::bop_coupl_and_single) or
-          (combincrhs_ == Inpar::TSI::bop_coupl_or_single)))
+  if ((iternorm_ == TSI::norm_l1_scaled) and
+      ((combincrhs_ == TSI::bop_coupl_and_single) or (combincrhs_ == TSI::bop_coupl_or_single)))
   {
-    iternormstr_ = Inpar::TSI::norm_l1_scaled;
-    iternormthr_ = Inpar::TSI::norm_l1_scaled;
+    iternormstr_ = TSI::norm_l1_scaled;
+    iternormthr_ = TSI::norm_l1_scaled;
   }
 
   // test the TSI-residual and the TSI-increment
@@ -2907,15 +2730,15 @@ bool TSI::Monolithic::l_sadmissible()
 {
   switch (ls_strategy_)
   {
-    case Inpar::TSI::LS_structure:
+    case TSI::LS_structure:
       return normstrrhs_ < last_iter_res_.first;
-    case Inpar::TSI::LS_thermo:
+    case TSI::LS_thermo:
       return normthrrhs_ < last_iter_res_.second;
-    case Inpar::TSI::LS_or:
+    case TSI::LS_or:
       return (normstrrhs_ < last_iter_res_.first || normthrrhs_ < last_iter_res_.second);
-    case Inpar::TSI::LS_and:
+    case TSI::LS_and:
       return (normstrrhs_ < last_iter_res_.first && normthrrhs_ < last_iter_res_.second);
-    case Inpar::TSI::LS_none:
+    case TSI::LS_none:
     default:
       FOUR_C_THROW("you should not be here");
       return false;

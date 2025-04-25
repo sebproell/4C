@@ -434,29 +434,6 @@ namespace Discret
       void copy_matrix_into_char_vector(
           std::vector<char>& data, const Core::LinAlg::Matrix<nquad_, nsd_>& stuff) const;
 
-      //! FDcheck of conductivity matrix on element level
-      void fd_check_coupl_nln_fint_cond_capa(
-          const Core::Elements::Element* ele,  //!< the element whose matrix is calculated
-          const double time,                   //!< current time
-          const std::vector<double>& disp,     //!< current displacements
-          const std::vector<double>& vel,      //!< current velocities
-          Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_>*
-              etang,                                              //!< tangent conductivity matrix
-          Core::LinAlg::Matrix<nen_ * numdofpernode_, 1>* efint,  //!< internal force);)
-          Teuchos::ParameterList& params) const;
-
-      //! FDcheck of linearized capacity matrix on element level
-      void fd_check_capalin(
-          const Core::Elements::Element* ele,  //!< the element whose matrix is calculated
-          const double time,                   //!< current time
-          const std::vector<double>& disp,     //!< current displacements
-          const std::vector<double>& vel,      //!< current velocities
-          Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_>*
-              ecapa,  //!< capacity matrix
-          Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_>*
-              ecapalin,  //!< linearization term from capacity matrix
-          Teuchos::ParameterList& params) const;
-
       //! actual values of temperatures T_{n+1}
       Core::LinAlg::Matrix<nen_, 1> etempn_;
       //! temperatures in last time step T_{n}

@@ -312,10 +312,6 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
         ele, time, discretization, la, &etang, &ecapa, &ecapalin, &efint, params);
 
 
-#ifdef TSISLMFDCHECK
-    fd_check_capalin(ele, time, mydisp, myvel, &ecapa, &ecapalin, params);
-#endif
-
     if (params.get<bool>("lump capa matrix", false))
     {
       calculate_lump_matrix(&ecapa);
@@ -625,9 +621,6 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
     FOUR_C_THROW("Unknown type of action for Temperature Implementation: {}", action);
   }
 
-#ifdef THRASOUTPUT
-  std::cout << "etemp_ end of Evaluate thermo_ele_impl\n" << etempn_ << std::endl;
-#endif
 
   return 0;
 }
@@ -728,10 +721,6 @@ void Discret::Elements::TemperImpl<distype>::evaluate_tang_capa_fint(
   {
     nonlinear_thermo_disp_contribution(
         ele, time, mydisp, myvel, etang, ecapa, ecapalin, efint, params);
-
-#ifdef TSISLMFDCHECK
-    fd_check_coupl_nln_fint_cond_capa(ele, time, mydisp, myvel, &etang, &efint, params);
-#endif
 
     if (plasticmat_) nonlinear_dissipation_fint_tang(ele, mydisp, etang, efint, params);
   }  // TSI: (kintype_ == Inpar::Solid::KinemType::nonlinearTotLag)
@@ -851,10 +840,6 @@ void Discret::Elements::TemperImpl<distype>::linear_thermo_contribution(
     // negative q is used for balance equation: -q = -(-k gradtemp)= k * gradtemp
     materialize(ele, iquad);
 
-#ifdef THRASOUTPUT
-    std::cout << "CalculateFintCondCapa heatflux_ = " << heatflux_ << std::endl;
-    std::cout << "CalculateFintCondCapa gradtemp_ = " << gradtemp_ << std::endl;
-#endif  // THRASOUTPUT
 
     // internal force vector
     if (efint != nullptr)
@@ -910,14 +895,6 @@ void Discret::Elements::TemperImpl<distype>::linear_thermo_contribution(
 
   }  // --------------------------------- end loop over Gauss Points
 
-#ifdef THRASOUTPUT
-  if (efint != nullptr)
-    std::cout << "element No. = " << ele->Id() << " efint f_Td CalculateFintCondCapa" << *efint
-              << std::endl;
-  if (econd != nullptr)
-    std::cout << "element No. = " << ele->Id() << " econd nach linear_thermo_contribution" << *econd
-              << std::endl;
-#endif  // THRASOUTPUT
 }  // linear_thermo_contribution
 
 
@@ -945,10 +922,6 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
     evel(i, 0) = vel[i + 0];
   }
 
-#ifdef THRASOUTPUT
-  std::cout << "CalculateCoupl evel\n" << evel << std::endl;
-  std::cout << "edisp\n" << edisp << std::endl;
-#endif  // THRASOUTPUT
 
   // ------------------------------------------------ initialise material
 
@@ -958,16 +931,6 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
   // build the product of the shapefunctions and element temperatures T = N . T
   Core::LinAlg::Matrix<1, 1> NT(Core::LinAlg::Initialization::uninitialized);
 
-#ifdef CALCSTABILOFREACTTERM
-  // check critical parameter of reactive term
-  // initialise kinematic diffusivity for checking stability of reactive term
-  // kappa = k/(rho C_V) = Conductivity()/Capacitity()
-  double kappa = 0.0;
-  // calculate element length h = (vol)^(dim)
-  double h = calculate_char_ele_length();
-  std::cout << "h = " << h << std::endl;
-  double h2 = h ^ 2;
-#endif  // CALCSTABILOFREACTTERM
 
   // ------------------------------------------------ structural material
   std::shared_ptr<Core::Mat::Material> structmat = get_str_material(ele);
@@ -976,11 +939,6 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
   {
     std::shared_ptr<Mat::ThermoStVenantKirchhoff> thrstvk =
         std::dynamic_pointer_cast<Mat::ThermoStVenantKirchhoff>(structmat);
-#ifdef CALCSTABILOFREACTTERM
-    // kappa = k / (rho C_V)
-    kappa = thrstvk->Conductivity();
-    kappa /= thrstvk->Capacity();
-#endif  // CALCSTABILOFREACTTERM
   }  // m_thermostvenant
 
   Core::LinAlg::Matrix<nen_, 1> Ndctemp_dTBvNT(Core::LinAlg::Initialization::zero);
@@ -1014,10 +972,6 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
 
     // calculate scalar-valued temperature
     NT.multiply_tn(funct_, etempn_);
-#ifdef COUPLEINITTEMPERATURE
-    // for TSI validation with Tanaka: use T_0 here instead of current temperature!
-    NT(0, 0) = thrstvk->InitTemp;
-#endif  // COUPLEINITTEMPERATURE
 
     std::shared_ptr<Mat::Trait::ThermoSolid> thermoSolid =
         std::dynamic_pointer_cast<Mat::Trait::ThermoSolid>(structmat);
@@ -1059,31 +1013,6 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
 
     }  // m_thermopllinelast
 
-#ifdef CALCSTABILOFREACTTERM
-    // scalar product ctemp : (B . (d^e)')
-    // in case of elastic step ctemp : (B . (d^e)') ==  ctemp : (B . d')
-    double cbv = 0.0;
-    for (int i = 0; i < 6; ++i) cbv += ctemp(i, 0) * strainvel(i, 0);
-
-    // ------------------------------------ start reactive term check
-    // check reactive term for stability
-    // check critical parameter of reactive term
-    // K = sigma / ( kappa * h^2 ) > 1 --> problems occur
-    // kappa: kinematic diffusitivity
-    // sigma = m I : (B . (d^e)') = ctemp : (B . (d^e)')
-    double sigma = cbv;
-    std::cout << "sigma = " << sigma << std::endl;
-    std::cout << "h = " << h << std::endl;
-    std::cout << "h^2 = " << h * h << std::endl;
-    std::cout << "kappa = " << kappa << std::endl;
-    std::cout << "strainvel = " << strainvel << std::endl;
-    // critical parameter for reactive dominated problem
-    double K_thermo = sigma / (kappa * (h * h));
-    std::cout << "K_thermo abs = " << abs(K_thermo) << std::endl;
-    if (abs(K_thermo) > 1.0)
-      std::cout << "stability problems can occur: abs(K_thermo) = " << abs(K_thermo) << std::endl;
-    // -------------------------------------- end reactive term check
-#endif  // CALCSTABILOFREACTTERM
 
     // N_T^T . (- ctemp) : ( B_L .  (d^e)' )
     Core::LinAlg::Matrix<nen_, 6> Nctemp(
@@ -1098,18 +1027,6 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
       // fintdisp += - N_T^T . ctemp : (B_L .  (d^e)') . N_T . T
       efint->multiply((-fac_), ncBv, NT, 1.0);
 
-#ifdef TSIMONOLITHASOUTPUT
-      if (ele->Id() == 0)
-      {
-        std::cout << "efint nach CalculateCoupl" << *efint << std::endl;
-        std::cout << "CouplFint\n" << std::endl;
-        std::cout << "ele Id= " << ele->Id() << std::endl;
-        std::cout << "boplin\n" << boplin << std::endl;
-        std::cout << "etemp_ End linear_disp_contribution\n" << etempn_ << std::endl;
-        std::cout << "ctemp_\n" << ctemp << std::endl;
-        std::cout << "ncBv\n" << ncBv << std::endl;
-      }
-#endif  // TSIMONOLITHASOUTPUT
     }  // if (efint != nullptr)
 
     // update conductivity matrix (with displacement dependent term)
@@ -1128,14 +1045,6 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
 
     }  // if (econd != nullptr)
 
-#ifdef THRASOUTPUT
-    if (efint != nullptr)
-      std::cout << "element No. = " << ele->Id() << "efint f_Td CalculateCouplFintCond" << *efint
-                << std::endl;
-    if (econd != nullptr)
-      std::cout << "element No. = " << ele->Id() << "econd nach linear_disp_contribution" << *econd
-                << std::endl;
-#endif  // THRASOUTPUT
 
   }  // ---------------------------------- end loop over Gauss Points
 }
@@ -1277,18 +1186,6 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
     Core::LinAlg::Matrix<nen_, 6> NNTC(Core::LinAlg::Initialization::uninitialized);  // (8x1)(1x6)
     NNTC.multiply_nt(NNT, ctemp);                                                     // (8x6)
 
-#ifdef TSIMONOLITHASOUTPUT
-    if (ele->Id() == 0)
-    {
-      std::cout << "Coupl Cond\n" << std::endl;
-      std::cout << "ele Id= " << ele->Id() << std::endl;
-      std::cout << "boplin \n" << boplin << std::endl;
-      std::cout << "etemp_ End linear_coupled_tang\n" << etempn_ << std::endl;
-      std::cout << "ctemp_\n" << ctemp << std::endl;
-      std::cout << "NNTC\n" << NNTC << std::endl;
-    }
-#endif  // TSIMONOLITHASOUTPUT
-
     // coupling stiffness matrix
     if (etangcoupl != nullptr)
     {
@@ -1322,13 +1219,6 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_thermo_disp_contribution(
   Core::LinAlg::Matrix<nen_, nsd_> xcurr;      // current  coord. of element
   Core::LinAlg::Matrix<nen_, nsd_> xcurrrate;  // current  coord. of element
   initial_and_current_nodal_position_velocity(ele, disp, vel, xcurr, xcurrrate);
-
-#ifdef THRASOUTPUT
-  std::cout << "xrefe" << xrefe << std::endl;
-  std::cout << "xcurr" << xcurr << std::endl;
-  std::cout << "xcurrrate" << xcurrrate << std::endl;
-  std::cout << "derxy_" << derxy_ << std::endl;
-#endif  // THRASOUTPUT
 
   // ------------------------------------------------ initialise material
 
@@ -1412,11 +1302,6 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_thermo_disp_contribution(
     // put the initial, material heatflux onto heatflux_
     heatflux_.update(initialheatflux);
     // from here on heatflux_ == -Q
-
-#ifdef THRASOUTPUT
-    std::cout << "CalculateCouplNlnFintCondCapa heatflux_ = " << heatflux_ << std::endl;
-    std::cout << "nonlinear_thermo_disp_contribution Cinv = " << Cinv << std::endl;
-#endif  // THRASOUTPUT
 
     std::shared_ptr<Mat::Trait::ThermoSolid> thermoSolid =
         std::dynamic_pointer_cast<Mat::Trait::ThermoSolid>(structmat);
@@ -1592,26 +1477,6 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_thermo_disp_contribution(
       ecapalin->multiply_nt((fac_ * dercapa_), NNetemp, funct_, 1.0);
     }
 
-#ifdef TSIMONOLITHASOUTPUT
-    if (ele->Id() == 0)
-    {
-      std::cout << "CouplNlnFintCondCapa\n" << std::endl;
-      std::cout << "ele Id= " << ele->Id() << std::endl;
-      std::cout << "ctemp_\n" << ctemp << std::endl;
-      std::cout << "Cratevct\n" << Cratevct << std::endl;
-      std::cout << "defgrd\n" << defgrd << std::endl;
-    }
-    std::cout << "CalculateCouplNlnFintCondCapa heatflux_ = " << heatflux_ << std::endl;
-    std::cout << "CalculateCouplNlnFintCondCapa etemp_ = " << etempn_ << std::endl;
-
-    if (efint != nullptr)
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnFintCondCapa: efint f_Td"
-                << *efint << std::endl;
-    if (econd != nullptr)
-      std::cout << "element No. = " << ele->Id()
-                << " nonlinear_thermo_disp_contribution: econd k_TT" << *econd << std::endl;
-#endif  // TSIMONOLITHASOUTPUT
-
   }  // ---------------------------------- end loop over Gauss Points
 }
 
@@ -1630,13 +1495,6 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
   Core::LinAlg::Matrix<nen_, nsd_> xcurrrate(
       Core::LinAlg::Initialization::uninitialized);  // current  velocity of element
   initial_and_current_nodal_position_velocity(ele, disp, vel, xcurr, xcurrrate);
-
-#ifdef THRASOUTPUT
-  std::cout << "xrefe" << xrefe << std::endl;
-  std::cout << "xcurr" << xcurr << std::endl;
-  std::cout << "xcurrrate" << xcurrrate << std::endl;
-  std::cout << "derxy_" << derxy_ << std::endl;
-#endif  // THRASOUTPUT
 
   // --------------------------------------------------- time integration
 
@@ -1998,24 +1856,6 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
       // k_Td += - timefac . N_T . T . 1/Dt . N_T^T . dH_p/dd . detJ . w(gp)
       etangcoupl->multiply((-fac_ * NT(0.0) / stepsize), funct_, dHp_dd, 1.0);
 
-#ifdef THRASOUTPUT
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnCond: cmat_T vorm Skalieren"
-                << cmat_T << std::endl;
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnCond: deltaT" << deltaT
-                << std::endl;
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnCond: dC_T_ddCdot"
-                << dC_T_ddCdot << std::endl;
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnCond: cb" << cb << std::endl;
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnCond: cmat_T" << cmat_T
-                << std::endl;
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnCond: cbCdot = " << cbCdot
-                << std::endl;
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnCond: dHp_dd" << dHp_dd
-                << std::endl;
-      std::cout << "element No. = " << ele->Id() << " CalculateCouplNlnCond: dC_T_ddCdot"
-                << dC_T_ddCdot << std::endl;
-#endif  // THRASOUTPUT
-
     }  // m_thermoplhyperelast
 
   }  // ---------------------------------- end loop over Gauss Points
@@ -2112,15 +1952,6 @@ void Discret::Elements::TemperImpl<distype>::linear_dissipation_fint(
       efint->update((fac_ * Dmech), funct_, 1.0);
     }
 
-#ifdef TSIMONOLITHASOUTPUT
-    if (ele->Id() == 0)
-    {
-      std::cout << "CouplDissipationFint\n" << std::endl;
-      std::cout << "boplin\n" << boplin << std::endl;
-      std::cout << "etemp_ End InternalDiss\n" << etempn_ << std::endl;
-    }
-#endif  // TSIMONOLITHASOUTPUT
-
   }  // -------------------------------------------- end loop over Gauss Points
 }
 
@@ -2133,11 +1964,6 @@ void Discret::Elements::TemperImpl<distype>::linear_dissipation_coupled_tang(
   // get node coordinates
   Core::Geo::fill_initial_position_array<distype, nsd_, Core::LinAlg::Matrix<nsd_, nen_>>(
       ele, xyze_);
-
-#ifdef THRASOUTPUT
-  std::cout << "linear_dissipation_coupled_tang evel\n" << evel << std::endl;
-  std::cout << "edisp\n" << edisp << std::endl;
-#endif  // THRASOUTPUT
 
   // ------------------------------------------------ structural material
   std::shared_ptr<Core::Mat::Material> structmat = get_str_material(ele);
@@ -2273,12 +2099,6 @@ void Discret::Elements::TemperImpl<distype>::linear_dissipation_coupled_tang(
     }  // (etangcoupl != nullptr)
 
   }  //---------------------------------- end loop over Gauss Points
-
-#ifdef THRASOUTPUT
-  if (etangcoupl != nullptr and ele->Id() == 0)
-    std::cout << "element No. = " << ele->Id() << " etangcoupl nach CalculateCouplDissi"
-              << *etangcoupl << std::endl;
-#endif  // THRASOUTPUT
 }
 
 template <Core::FE::CellType distype>
@@ -2370,31 +2190,7 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_dissipation_fint_tang(
           (-fac_ * thermoplhyperelast->mech_diss_k_tt(iquad) / stepsize), funct_, funct_, 1.0);
     }
 
-#ifdef TSIMONOLITHASOUTPUT
-    if (ele->Id() == 0)
-    {
-      std::cout << "CouplFint\n" << std::endl;
-      std::cout << "boplin\n" << boplin << std::endl;
-      std::cout << "etemp_ End InternalDiss\n" << etempn_ << std::endl;
-    }
-
-    // output of mechanical dissipation to fint
-    Core::LinAlg::Matrix<nen_, 1> fint_Dmech(Core::LinAlg::Initialization::uninitialized);
-    fint_Dmech.update((-fac_ * Dmech), funct_);
-    std::cout << "nonlinear_dissipation_fint_tang: element No. = " << ele->Id() << " f_Td_Dmech "
-              << fint_Dmech << std::endl;
-#endif  // TSIMONOLITHASOUTPUT
-
   }  // ---------------------------------- end loop over Gauss Points
-
-#ifdef TSIMONOLITHASOUTPUT
-  if (efint != nullptr)
-    std::cout << "CalculateCouplNlnDissipation: element No. = " << ele->Id() << " efint f_Td "
-              << *efint << std::endl;
-  if (econd != nullptr)
-    std::cout << "nonlinear_dissipation_fint_tang: element No. = " << ele->Id() << " econd k_TT"
-              << *econd << std::endl;
-#endif  // TSIMONOLITHASOUTPUT
 }
 
 template <Core::FE::CellType distype>
@@ -2410,13 +2206,6 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_dissipation_coupled_tang(
   Core::LinAlg::Matrix<nen_, nsd_> xcurrrate;  // current  velocity of element
 
   initial_and_current_nodal_position_velocity(ele, disp, vel, xcurr, xcurrrate);
-
-#ifdef THRASOUTPUT
-  std::cout << "xrefe" << xrefe << std::endl;
-  std::cout << "xcurr" << xcurr << std::endl;
-  std::cout << "xcurrrate" << xcurrrate << std::endl;
-  std::cout << "derxy_" << derxy_ << std::endl;
-#endif  // THRASOUTPUT
 
   // build the deformation gradient w.r.t. material configuration
   Core::LinAlg::Matrix<nsd_, nsd_> defgrd(Core::LinAlg::Initialization::uninitialized);
@@ -2507,12 +2296,6 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_dissipation_coupled_tang(
     }  // (etangcoupl != nullptr)
 
   }  //--------------------------------------------- end loop over Gauss Points
-
-#ifdef THRASOUTPUT
-  if ((etangcoupl != nullptr) and (ele->Id() == 0))
-    std::cout << "element No. = " << ele->Id() << " etangcoupl nach CalculateCouplDissi"
-              << *etangcoupl << std::endl;
-#endif  // THRASOUTPUT
 }
 
 template <Core::FE::CellType distype>
@@ -3419,314 +3202,5 @@ void Discret::Elements::TemperImpl<distype>::copy_matrix_into_char_vector(
   add_to_pack(tempBuffer, stuff);
   std::copy(tempBuffer().begin(), tempBuffer().end(), std::back_inserter(data));
 }
-
-template <Core::FE::CellType distype>
-void Discret::Elements::TemperImpl<distype>::fd_check_coupl_nln_fint_cond_capa(
-    const Core::Elements::Element* ele,  //!< the element whose matrix is calculated
-    const double time,                   //!< current time
-    const std::vector<double>& disp,     //!< current displacements
-    const std::vector<double>& vel,      //!< current velocities
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_>*
-        etang,                                              //!< tangent conductivity matrix
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1>* efint,  //!< internal force);)
-    Teuchos::ParameterList& params) const
-{
-  bool checkPassed = true;
-  double error_max = 0.0;
-  const double tol = 1e-5;
-  const double delta = 1e-7;
-  // save old variables
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint_old =
-      Core::LinAlg::Matrix<nen_ * numdofpernode_, 1>(*efint);
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> etang_old =
-      Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_>(*etang);
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> etemp_old =
-      Core::LinAlg::Matrix<nen_ * numdofpernode_, 1>(etempn_);
-
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> etang_approx =
-      Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_>();
-
-  // create a vector for evaluation of disturbed fint
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint_disturb =
-      Core::LinAlg::Matrix<nen_ * numdofpernode_, 1>();
-  // loop over rows and disturb corresponding temperature
-  for (int j = 0; j < nen_ * numdofpernode_; j++)
-  {
-    efint_disturb.clear();
-    // disturb column dof and evaluate fint
-    etempn_(j, 0) += delta;
-    nonlinear_thermo_disp_contribution(ele, time, disp, vel,
-        nullptr,  // <- etang, not needed here
-        nullptr, &efint_disturb, nullptr, params);
-    // loop over rows
-    for (int i = 0; i < nen_ * numdofpernode_; i++)
-    {
-      // approximate tangent as
-      // k_ij = (efint_disturb_i - efint_old_i)/delta
-      double etang_approx_ij = (efint_disturb(i, 0) - efint_old(i, 0)) / delta;
-      double error_ij = abs(etang_approx_ij - etang_old(i, j));
-      double relerror = 0.0;
-      if (abs(etang_approx(i, j)) > 1e-7)
-        relerror = error_ij / etang_approx(i, j);
-      else if (abs(etang_old(i, j)) > 1e-7)
-        relerror = error_ij / etang_old(i, j);
-      if (abs(relerror) > abs(error_max)) error_max = abs(relerror);
-
-      // ---------------------------------------- control values of fd_check
-      if ((abs(relerror) > tol) and (abs(error_ij) > tol))
-      {
-        // fd_check of tangent was NOT successful
-        checkPassed = false;
-
-        std::cout << "finite difference check failed!\n"
-                  << "entry (" << i << "," << j << ") of tang = " << etang_old(i, j)
-                  << " and of approx. tang = " << etang_approx_ij
-                  << ".\nAbsolute error = " << error_ij << ", relative error = " << relerror
-                  << std::endl;
-      }  // control the error values
-    }
-
-    // remove disturbance for next step
-    etempn_(j, 0) -= delta;
-  }
-  if (checkPassed)
-  {
-    std::cout.precision(12);
-    std::cout << "finite difference check successful! Maximal relative error = " << error_max
-              << std::endl;
-    std::cout << "****************** finite difference check done ***************\n\n" << std::endl;
-  }
-  else
-    FOUR_C_THROW("fd_check of thermal tangent failed!");
-}
-
-
-template <Core::FE::CellType distype>
-void Discret::Elements::TemperImpl<distype>::fd_check_capalin(
-    const Core::Elements::Element* ele,  //!< the element whose matrix is calculated
-    const double time,                   //!< current time
-    const std::vector<double>& disp,     //!< current displacements
-    const std::vector<double>& vel,      //!< current velocities
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_>*
-        ecapan,  //!< capacity matrix
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_>*
-        ecapalin,  //!< linearization term from capacity matrix
-    Teuchos::ParameterList& params) const
-{
-  std::cout << "********** finite difference check of capacity tangent *************\n"
-            << std::endl;
-
-  bool checkPassed = true;
-  double error_max = 0.0;
-  const double tol = 1e-5;
-  const double delta = 1e-6;
-
-#ifdef TSISLMFDCHECKDEBUG
-  std::ofstream myfile;
-  myfile.open("FDCheck_capa.txt", std::ios::out);
-  myfile << "element " << ele->Id() << ", delta: " << delta << "\n";
-  myfile << "********** finite difference check of capacity tangent *************\n";
-  myfile.close();
-  myfile.open("FDCheck_capa.txt", std::ios::out | std::ios::app);
-#endif
-
-
-  // no scaling with time step size, since it occurs in all terms
-
-  // tangent only of capacity terms!
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> ecapatang(
-      Core::LinAlg::Initialization::uninitialized);
-  ecapatang.update(1.0, *ecapan, 1.0, *ecapalin);
-
-  // part of fcap that only depends on step n+1
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efcapn(
-      Core::LinAlg::Initialization::uninitialized);
-  efcapn.multiply(*ecapan, etempn_);
-
-#ifdef TSISLMFDCHECKDEBUG
-  myfile << "actual tangent\n";
-  for (int i = 0; i < numdofpernode_ * nen_; i++)
-  {
-    for (int j = 0; j < numdofpernode_ * nen_; j++)
-    {
-      myfile << std::setprecision(10) << ecapatang(i, j) << " ";
-    }
-    myfile << "\n";
-  }
-
-  myfile << "contribution from the linearization\n";
-  for (int i = 0; i < numdofpernode_ * nen_; i++)
-  {
-    for (int j = 0; j < numdofpernode_ * nen_; j++)
-    {
-      myfile << std::setprecision(10) << (*ecapalin)(i, j) << " ";
-    }
-    myfile << "\n";
-  }
-
-  myfile << "actual element T_{n+1}\n";
-  for (int i = 0; i < numdofpernode_ * nen_; i++)
-  {
-    myfile << std::setprecision(10) << etempn_(i, 0) << " ";
-  }
-  myfile << "\n";
-
-#endif
-
-
-  // f_cap = C(T_{n+1}) * T_n
-  // TODO this is not(!) how it's done right now in time integration, should be changed there
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efcap(Core::LinAlg::Initialization::uninitialized);
-  efcap.multiply(*ecapan, etemp_);  //
-
-  // build actual residual at this step
-  // res = 1/Dt .(fcap(T_{n+1}) - fcap(T_n))
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> res_act(
-      Core::LinAlg::Initialization::uninitialized);
-  res_act.update(1, efcapn, -1, efcap);
-
-  // create a vector for evaluation of disturbed ecapa and residual
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> ecapa_disturb(
-      Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> res_disturb(Core::LinAlg::Initialization::zero);
-  // loop over rows and disturb corresponding temperature
-  for (int j = 0; j < nen_ * numdofpernode_; j++)
-  {
-    ecapa_disturb.clear();
-    // disturb column dof and evaluate fint
-    etempn_(j, 0) += delta;
-    nonlinear_thermo_disp_contribution(ele, time, disp, vel, nullptr,
-        &ecapa_disturb,  // <- ecapa at disturbed temp
-        nullptr, nullptr, params);
-
-    // evaluate the disturbed capacity force
-    res_disturb.multiply(ecapa_disturb, etempn_);  // disturbed efcap
-    efcap.multiply(ecapa_disturb, etemp_);
-    res_disturb.update(-1, efcap, 1);
-
-#ifdef TSISLMFDCHECKDEBUG
-    myfile << "---------- disturbing dof " << j << " ---------------\n";
-    myfile << "disturbed element T_{n+1}\n";
-    for (int i = 0; i < numdofpernode_ * nen_; i++)
-    {
-      myfile << std::setprecision(10) << etempn_(i, 0) << " ";
-    }
-    myfile << "\n";
-
-    myfile << "disturbed capacity\n";
-    for (int i = 0; i < numdofpernode_ * nen_; i++)
-    {
-      for (int k = 0; k < numdofpernode_ * nen_; k++)
-      {
-        myfile << std::setprecision(10) << ecapa_disturb(i, k) << " ";
-      }
-      myfile << "\n";
-    }
-
-    myfile << "disturbed residual\n";
-    for (int i = 0; i < numdofpernode_ * nen_; i++)
-    {
-      myfile << std::setprecision(10) << res_disturb(i, 0) << " ";
-    }
-    myfile << "\n";
-
-    myfile << "actual residual\n";
-    for (int i = 0; i < numdofpernode_ * nen_; i++)
-    {
-      myfile << std::setprecision(10) << res_act(i, 0) << " ";
-    }
-    myfile << "\n";
-    myfile << "approximated tangent column " << j << "\n";
-#endif
-
-    // loop over rows
-    for (int i = 0; i < nen_ * numdofpernode_; i++)
-    {
-      // approximate tangent as
-      // k_ij = (res_disturb_i - res_act_i)/delta
-      double ecapatang_approx_ij = (res_disturb(i, 0) - res_act(i, 0)) / delta;
-      double error_ij = abs(ecapatang_approx_ij - ecapatang(i, j));
-      double relerror = 0.0;
-
-#ifdef TSISLMFDCHECKDEBUG
-      myfile << ecapatang_approx_ij << " ";
-#endif
-
-      // TODO what is the best way to calc errors?
-      double avg = (abs(ecapatang(i, j)) + abs(ecapatang_approx_ij)) / 2;
-      if (avg > tol) relerror = error_ij / avg;
-      if (abs(relerror) > abs(error_max)) error_max = abs(relerror);
-
-      // ---------------------------------------- control values of fd_check
-      if (abs(relerror) > tol)
-      {
-        // fd_check of tangent was NOT successful
-        checkPassed = false;
-
-        std::cout << "finite difference check failed!\n"
-                  << "entry (" << i << "," << j << ") of tang = " << ecapatang(i, j)
-                  << " and of approx. tang = " << ecapatang_approx_ij
-                  << ".\nAbsolute error = " << error_ij << ", relative error = " << relerror
-                  << std::endl;
-      }  // control the error values
-    }
-
-#ifdef TSISLMFDCHECKDEBUG
-    myfile << "\n";
-#endif
-
-    // remove disturbance for next step
-    etempn_(j, 0) -= delta;
-  }
-#ifdef TSISLMFDCHECKDEBUG
-  myfile.close();
-#endif
-  if (checkPassed)
-  {
-    std::cout.precision(12);
-    std::cout << "finite difference check successful! Maximal relative error = " << error_max
-              << std::endl;
-    std::cout << "****************** finite difference check done ***************\n\n" << std::endl;
-  }
-  else
-    FOUR_C_THROW("fd_check of thermal capacity tangent failed!");
-}
-
-
-#ifdef CALCSTABILOFREACTTERM
-/*----------------------------------------------------------------------*
- | get the corresponding structural material                 dano 11/12 |
- *----------------------------------------------------------------------*/
-template <Core::FE::CellType distype>
-void Discret::Elements::TemperImpl<distype>::calculate_reactive_term(
-    const Core::LinAlg::Matrix<6, 1>* ctemp,     // temperature-dependent material tangent
-    const Core::LinAlg::Matrix<6, 1>* strainvel  // strain rate
-) const
-{
-  // scalar product ctemp : (B . (d^e)')
-  // in case of elastic step ctemp : (B . (d^e)') ==  ctemp : (B . d')
-  double cbv = 0.0;
-  for (int i = 0; i < 6; ++i) cbv += ctemp(i, 0) * strainvel(i, 0);
-
-  // ------------------------------------ start reactive term check
-  // check reactive term for stability
-  // check critical parameter of reactive term
-  // K = sigma / ( kappa * h^2 ) > 1 --> problems occur
-  // kappa: kinematic diffusitivity
-  // sigma = m I : (B . (d^e)') = ctemp : (B . (d^e)')
-  double sigma = cbv;
-  std::cout << "sigma = " << sigma << std::endl;
-  std::cout << "h = " << h << std::endl;
-  std::cout << "h^2 = " << h * h << std::endl;
-  std::cout << "kappa = " << kappa << std::endl;
-  std::cout << "strainvel = " << strainvel << std::endl;
-  // critical parameter for reactive dominated problem
-  double K_thermo = sigma / (kappa * (h * h));
-  std::cout << "K_thermo abs = " << abs(K_thermo) << std::endl;
-  if (abs(K_thermo) > 1.0)
-    std::cout << "stability problems can occur: abs(K_thermo) = " << abs(K_thermo) << std::endl;
-  // -------------------------------------- end reactive term check
-}
-#endif  // CALCSTABILOFREACTTERM
 
 FOUR_C_NAMESPACE_CLOSE

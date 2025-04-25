@@ -13,10 +13,10 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
-#include "4C_inpar_tsi.hpp"
 #include "4C_mat_elasthyper.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_material_parameter_base.hpp"
+#include "4C_tsi_input.hpp"
 
 #define AS_CONVERGENCE_TOL 1.e-12
 
@@ -98,7 +98,7 @@ namespace Mat
       /// stabilization parameter "s" controlling the shape of the NCP function
       double stab_s_;
       /// method to calculate plastic dissipation in TSI problem
-      Inpar::TSI::DissipationMode dis_mode_;
+      TSI::DissipationMode dis_mode_;
 
 
       /// create material instance of matching type with my parameters
@@ -262,18 +262,18 @@ namespace Mat
     virtual double taylor_quinney() const { return mat_params()->taylor_quinney_; }
 
     /// set dissipation mode
-    virtual void set_dissipation_mode(Inpar::TSI::DissipationMode mode)
+    virtual void set_dissipation_mode(TSI::DissipationMode mode)
     {
       if (mat_params() != nullptr) mat_params()->dis_mode_ = mode;
     }
 
     /// get dissipation mode
-    virtual Inpar::TSI::DissipationMode dis_mode() const
+    virtual TSI::DissipationMode dis_mode() const
     {
       if (mat_params() != nullptr)
         return mat_params()->dis_mode_;
       else
-        return (Inpar::TSI::DissipationMode)0;
+        return (TSI::DissipationMode)0;
     }
 
     /// evaluate quantities for elastic stiffness matrix
@@ -397,7 +397,7 @@ namespace Mat
 
     /// setup material TSI data
     virtual void setup_tsi(const int numgp, const int numdofperelement, const bool eas,
-        const Inpar::TSI::DissipationMode mode);
+        const TSI::DissipationMode mode);
 
     /// setup plastic orthotropy tensor H
     virtual void setup_hill_plasticity(const Core::IO::InputParameterContainer& container);

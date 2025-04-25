@@ -14,8 +14,8 @@
  *----------------------------------------------------------------------*/
 #include "4C_config.hpp"
 
-#include "4C_inpar_tsi.hpp"
 #include "4C_tsi_algorithm.hpp"
+#include "4C_tsi_input.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -103,7 +103,7 @@ namespace TSI
         double ittol                   //!< iteration tolerance
     );
 
-    enum Inpar::TSI::ConvNorm normtypeinc_;  //!< convergence check for residual temperatures
+    enum ConvNorm normtypeinc_;  //!< convergence check for residual temperatures
 
     //! maximum iteration steps
     int itmax_;
@@ -138,7 +138,7 @@ namespace TSI
     //@}
 
     //! coupling algorithm
-    Inpar::TSI::SolutionSchemeOverFields coupling_;
+    SolutionSchemeOverFields coupling_;
     //! we couple based on displacements
     bool displacementcoupling_;
     //! quasi-static solution of the mechanical equation

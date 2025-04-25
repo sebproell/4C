@@ -901,20 +901,6 @@ void Mat::ThermoPlasticHyperElast::evaluate(const Core::LinAlg::Matrix<3, 3>* de
 
     }  // (Dgamma != 0.0)
 
-#ifdef DEBUGMATERIAL
-    std::cout << "dsigma_y0_temp_dT = " << dsigma_y0_temp_dT << std::endl;
-    std::cout << "dkappaT_dT = " << dkappaT_dT << std::endl;
-    std::cout << "beta0 = " << beta0 << std::endl;
-    std::cout << "- 2 * mubar * dDgamma_d = " << -2.0 * mubar * dDgamma_dT << std::endl;
-    std::cout << "Cmat_kdT_vct = " << Cmat_kdT_vct << std::endl;
-    std::cout << "mubar = " << mubar << std::endl;
-    std::cout << "dDgamma_dT = " << dDgamma_dT << std::endl;
-    std::cout << "N = " << N << std::endl;
-    std::cout << "mechdiss_kTT_ = " << mechdiss_kTT_->at(gp) << std::endl;
-    std::cout << "mechdiss_ = " << mechdiss_->at(gp) << std::endl;
-    std::cout << "mechdiss_kTd_->at(gp) = " << mechdiss_kTd_->at(gp) << std::endl;
-    std::cout << "Cmat_kdT_vct = " << *Cmat_kdT_vct << std::endl;
-#endif
 
   }  // end plastic step
 
@@ -1199,24 +1185,6 @@ void Mat::ThermoPlasticHyperElast::evaluate(const Core::LinAlg::Matrix<1, 1>& Nt
   // --> PK2 = ctemp . Delta T = m_0/2.0 . (J + 1/J). Cinv . Delta T
   stresstemp.multiply_nn(ctemp, deltaT);
 
-#ifdef DEBUGMATERIAL
-  // ------------- FDcheck of temperature-dependent mechanical material tangent
-
-  // in case we want to test the material tangent without Delta T in the FD Check
-  //  stresstemp.update(ctemp);
-
-  // build the elasto-plastic tangent modulus
-  Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmat_TFD(Core::LinAlg::Initialization::zero);
-  fd_check(stresstemp, cmat_T, cmat_TFD, Ntemp, params);
-  std::cout << "cmat_T " << cmat_T << std::endl;
-  std::cout << "cmat_TFD " << cmat_TFD << std::endl;
-
-  std::cout << "Evaluate Material: Ntemp = " << Ntemp << std::endl;
-  std::cout << "Evaluate Material: deltaT = " << deltaT << std::endl;
-  std::cout << "Evaluate Material: ctemp\n" << ctemp << std::endl;
-  std::cout << "Evaluate Material: cmat_T\n" << cmat_T << std::endl;
-  std::cout << "Evaluate Material: thermal stress stresstemp\n" << stresstemp << std::endl;
-#endif  // DEBUGMATERIAL
 
 }  // THERMOEvaluate()
 
@@ -1257,14 +1225,6 @@ void Mat::ThermoPlasticHyperElast::setup_cmat_thermo(const double temperature,
   Core::LinAlg::Tensor::add_kronecker_tensor_product(
       cmat_T, (-deltaT * m_0 * (J + 1 / J)), invRCG, invRCG, 1.0);
 
-#ifdef DEBUGMATERIAL
-  std::cout << "SetupCmatThermo(): Jacobi determinant J = " << J << std::endl;
-  std::cout << "SetupCmatThermo(): 1.0 * (deltaT * m_0/2 * (J + 1/J)) = "
-            << 1.0 * (deltaT * m_0 / 2.0 * (J + 1 / J)) << std::endl;
-  std::cout << "SetupCmatThermo(): deltaT = " << deltaT << std::endl;
-  std::cout << "SetupCmatThermo(): Ntemp = " << Ntemp << std::endl;
-  std::cout << "SetupCmatThermo(): inittemp = " << inittemp << std::endl;
-#endif  // DEBUGMATERIAL
 
 }  // SetupCmatThermo()
 
@@ -1447,20 +1407,6 @@ void Mat::ThermoPlasticHyperElast::fd_check(
       // in case of testing only disturb_ctemp, ignore deltaT
       // disturb_stresstemp.update(disturb_ctemp);
 
-#ifdef DEBUGMATERIAL
-      std::cout << std::scientific;
-      std::cout << "Cinv_vct\n " << Cinv_vct << std::endl;
-      std::cout << "disturb_Cinv_vct\n " << disturb_Cinv_vct << std::endl;
-      std::cout << "Jacobi determinant disturb = " << J_disturb << std::endl;
-      std::cout << "Jacobi determinant = " << J << std::endl;
-      std::cout << "deltaT = " << deltaT << std::endl;
-      std::cout << "Ntemp = " << Ntemp << std::endl;
-      std::cout << "inittemp = " << inittemp << std::endl;
-      std::cout << "m DT = " << m * deltaT(0, 0) << std::endl;
-      std::cout << "disturb_ctemp\n " << disturb_ctemp << std::endl;
-      std::cout << "stress\n " << stress << std::endl;
-      std::cout << "disturb_stresstemp\n " << disturb_stresstemp << std::endl;
-#endif  // DEBUGMATERIAL
 
       // be careful we save the disturbed RCG in tensor notation, i.e. (3x3)
       // to insert the corresponding terms in cmat (6x6) copy the terms to

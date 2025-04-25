@@ -15,9 +15,9 @@
 #include "4C_config.hpp"
 
 #include "4C_inpar_structure.hpp"
-#include "4C_inpar_tsi.hpp"
 #include "4C_thermo_input.hpp"
 #include "4C_tsi_algorithm.hpp"
+#include "4C_tsi_input.hpp"
 
 #include <Teuchos_Time.hpp>
 
@@ -185,8 +185,8 @@ namespace TSI
     void print_newton_conv();
 
     //! Determine norm of force residual
-    double calculate_vector_norm(const enum Inpar::TSI::VectorNorm norm,  //!< norm to use
-        const Core::LinAlg::Vector<double>& vect  //!< the vector of interest
+    double calculate_vector_norm(const enum TSI::VectorNorm norm,  //!< norm to use
+        const Core::LinAlg::Vector<double>& vect                   //!< the vector of interest
     );
 
     //@}
@@ -319,21 +319,21 @@ namespace TSI
 
     //! @name iterative solution technique
 
-    enum Inpar::TSI::NlnSolTech soltech_;  //!< kind of iteration technique or
-                                           //!< nonlinear solution technique
+    enum TSI::NlnSolTech soltech_;  //!< kind of iteration technique or
+                                    //!< nonlinear solution technique
 
-    enum Inpar::TSI::ConvNorm normtypeinc_;       //!< convergence check for increments
-    enum Inpar::TSI::ConvNorm normtyperhs_;       //!< convergence check for residual forces
+    enum TSI::ConvNorm normtypeinc_;              //!< convergence check for increments
+    enum TSI::ConvNorm normtyperhs_;              //!< convergence check for residual forces
     enum Inpar::Solid::ConvNorm normtypedisi_;    //!< convergence check for residual displacements
     enum Inpar::Solid::ConvNorm normtypestrrhs_;  //!< convergence check for residual forces
     enum Thermo::ConvNorm normtypetempi_;         //!< convergence check for residual temperatures
     enum Thermo::ConvNorm normtypethrrhs_;        //!< convergence check for residual thermal forces
 
-    enum Inpar::TSI::BinaryOp combincrhs_;  //!< binary operator to combine increments and forces
+    enum TSI::BinaryOp combincrhs_;  //!< binary operator to combine increments and forces
 
-    enum Inpar::TSI::VectorNorm iternorm_;     //!< vector norm to check TSI values with
-    enum Inpar::TSI::VectorNorm iternormstr_;  //!< vector norm to check structural values with
-    enum Inpar::TSI::VectorNorm iternormthr_;  //!< vector norm to check thermal values with
+    enum TSI::VectorNorm iternorm_;     //!< vector norm to check TSI values with
+    enum TSI::VectorNorm iternormstr_;  //!< vector norm to check structural values with
+    enum TSI::VectorNorm iternormthr_;  //!< vector norm to check thermal values with
 
     double tolinc_;     //!< tolerance for increment
     double tolrhs_;     //!< tolerance for rhs
@@ -374,7 +374,7 @@ namespace TSI
     //@}
 
     //! @name line search parameters
-    Inpar::TSI::LineSearch ls_strategy_;
+    TSI::LineSearch ls_strategy_;
     double ls_step_length_;
     std::pair<double, double> last_iter_res_;
     //@}
