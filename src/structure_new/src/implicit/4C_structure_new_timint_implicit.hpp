@@ -129,9 +129,6 @@ namespace Solid
       //! returns the current solution group
       [[nodiscard]] const ::NOX::Abstract::Group& get_solution_group() const override;
 
-      //! returns the current solution group ptr
-      std::shared_ptr<::NOX::Abstract::Group> solution_group_ptr() override;
-
       Solid::IMPLICIT::Generic& impl_int()
       {
         check_init_setup();

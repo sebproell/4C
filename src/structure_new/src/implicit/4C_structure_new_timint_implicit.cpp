@@ -227,14 +227,6 @@ const ::NOX::Abstract::Group& Solid::TimeInt::Implicit::get_solution_group() con
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-std::shared_ptr<::NOX::Abstract::Group> Solid::TimeInt::Implicit::solution_group_ptr()
-{
-  check_init_setup();
-  return Core::Utils::shared_ptr_from_ref(nln_solver().solution_group());
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
 Inpar::Solid::ConvergenceStatus Solid::TimeInt::Implicit::perform_error_action(
     Inpar::Solid::ConvergenceStatus nonlinsoldiv)
 {
