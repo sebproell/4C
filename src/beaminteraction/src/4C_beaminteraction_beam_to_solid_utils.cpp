@@ -219,8 +219,8 @@ template <typename Solid, typename ScalarType>
 void BeamInteraction::get_solid_rotation_vector(
     const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
     const Core::LinAlg::Matrix<3, 1, double>& xi,
-    const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-    const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+    const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+    const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
     const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
     Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid)
 {
@@ -267,8 +267,8 @@ void BeamInteraction::get_solid_rotation_vector(
 template <typename Solid, typename ScalarType>
 void BeamInteraction::get_solid_rotation_vector_deformation_gradient_3d_general(
     const Core::LinAlg::Matrix<3, 1, double>& xi,
-    const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-    const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+    const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+    const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
     const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
     Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid)
 {
@@ -278,7 +278,7 @@ void BeamInteraction::get_solid_rotation_vector_deformation_gradient_3d_general(
   Core::LinAlg::Matrix<3, 3, ScalarType> ref_triad;
   Core::LargeRotations::quaterniontotriad(quaternion_beam_ref_fad, ref_triad);
   Core::LinAlg::Matrix<3, 3, ScalarType> deformation_gradient;
-  GEOMETRYPAIR::evaluate_deformation_gradient<Solid>(
+  GeometryPair::evaluate_deformation_gradient<Solid>(
       xi, q_solid_ref, q_solid, deformation_gradient);
   Core::LinAlg::Matrix<3, 3, ScalarType> deformed_basis;
   deformed_basis.multiply(deformation_gradient, ref_triad);
@@ -355,8 +355,8 @@ template <typename Solid, typename ScalarType>
 void BeamInteraction::
     get_solid_rotation_vector_deformation_gradient_3d_general_in_cross_section_plane(
         const Core::LinAlg::Matrix<3, 1, double>& xi,
-        const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-        const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+        const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+        const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
         const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
         Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid)
 {
@@ -364,7 +364,7 @@ void BeamInteraction::
   Core::LinAlg::Matrix<3, 3, double> ref_triad;
   Core::LargeRotations::quaterniontotriad(quaternion_beam_ref, ref_triad);
   Core::LinAlg::Matrix<3, 3, ScalarType> deformation_gradient;
-  GEOMETRYPAIR::evaluate_deformation_gradient<Solid>(
+  GeometryPair::evaluate_deformation_gradient<Solid>(
       xi, q_solid_ref, q_solid, deformation_gradient);
 
   // Get the rotation angle.
@@ -450,8 +450,8 @@ void BeamInteraction::
 template <typename Solid, typename ScalarType>
 void BeamInteraction::get_solid_rotation_vector_deformation_gradient_3d_base1(
     const Core::LinAlg::Matrix<3, 1, double>& xi,
-    const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-    const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+    const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+    const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
     const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
     Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid)
 {
@@ -461,7 +461,7 @@ void BeamInteraction::get_solid_rotation_vector_deformation_gradient_3d_base1(
   Core::LinAlg::Matrix<3, 3, ScalarType> ref_triad;
   Core::LargeRotations::quaterniontotriad(quaternion_beam_ref_fad, ref_triad);
   Core::LinAlg::Matrix<3, 3, ScalarType> deformation_gradient;
-  GEOMETRYPAIR::evaluate_deformation_gradient<Solid>(
+  GeometryPair::evaluate_deformation_gradient<Solid>(
       xi, q_solid_ref, q_solid, deformation_gradient);
   Core::LinAlg::Matrix<3, 3, ScalarType> deformed_basis;
   deformed_basis.multiply(deformation_gradient, ref_triad);
@@ -529,8 +529,8 @@ template <typename Solid, typename ScalarType>
 void BeamInteraction::get_solid_rotation_vector_deformation_gradient3_d(
     const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
     const Core::LinAlg::Matrix<3, 1, double>& xi,
-    const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-    const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+    const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+    const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
     const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
     Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid)
 {
@@ -540,7 +540,7 @@ void BeamInteraction::get_solid_rotation_vector_deformation_gradient3_d(
   Core::LinAlg::Matrix<3, 3, ScalarType> ref_triad;
   Core::LargeRotations::quaterniontotriad(quaternion_beam_ref_fad, ref_triad);
   Core::LinAlg::Matrix<3, 3, ScalarType> deformation_gradient;
-  GEOMETRYPAIR::evaluate_deformation_gradient<Solid>(
+  GeometryPair::evaluate_deformation_gradient<Solid>(
       xi, q_solid_ref, q_solid, deformation_gradient);
   Core::LinAlg::Matrix<3, 3, ScalarType> deformed_basis;
   deformed_basis.multiply(deformation_gradient, ref_triad);
@@ -614,14 +614,14 @@ void BeamInteraction::get_solid_rotation_vector_deformation_gradient3_d(
 template <typename Solid, typename ScalarType>
 void BeamInteraction::get_solid_rotation_vector_polar_decomposition2_d(
     const Core::LinAlg::Matrix<3, 1, double>& xi,
-    const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-    const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+    const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+    const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
     const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
     Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid)
 {
   // Get the deformation gradient in the solid.
   Core::LinAlg::Matrix<3, 3, ScalarType> deformation_gradient;
-  GEOMETRYPAIR::evaluate_deformation_gradient<Solid>(
+  GeometryPair::evaluate_deformation_gradient<Solid>(
       xi, q_solid_ref, q_solid, deformation_gradient);
 
   // Check that the assumption of plane rotations is full filled.
@@ -691,14 +691,14 @@ template <typename Solid, typename ScalarType>
 void BeamInteraction::get_solid_rotation_vector_deformation_gradient2_d(
     const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
     const Core::LinAlg::Matrix<3, 1, double>& xi,
-    const GEOMETRYPAIR::ElementData<Solid, double>& q_solid_ref,
-    const GEOMETRYPAIR::ElementData<Solid, ScalarType>& q_solid,
+    const GeometryPair::ElementData<Solid, double>& q_solid_ref,
+    const GeometryPair::ElementData<Solid, ScalarType>& q_solid,
     const Core::LinAlg::Matrix<4, 1, double>& quaternion_beam_ref,
     Core::LinAlg::Matrix<3, 1, ScalarType>& psi_solid)
 {
   // Get the deformation gradient in the solid.
   Core::LinAlg::Matrix<3, 3, ScalarType> deformation_gradient;
-  GEOMETRYPAIR::evaluate_deformation_gradient<Solid>(
+  GeometryPair::evaluate_deformation_gradient<Solid>(
       xi, q_solid_ref, q_solid, deformation_gradient);
 
   // Check that the assumption of plane rotations is full filled.
@@ -831,7 +831,7 @@ void BeamInteraction::assemble_local_mortar_contributions(
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   // Helper types for the macro initialization. The compiler has troubles inserting the templated
   // typenames into the macros.
@@ -866,8 +866,8 @@ namespace BeamInteraction
   get_solid_rotation_vector<a, Core::FADUtils::HigherOrderFadType<fad_order,                     \
                                    Sacado::Fad::SLFad<double, 3 + a::n_dof_>>::type>(            \
       const Inpar::BeamToSolid::BeamToSolidRotationCoupling&,                                    \
-      const Core::LinAlg::Matrix<3, 1, double>&, const GEOMETRYPAIR::ElementData<a, double>&,    \
-      const GEOMETRYPAIR::ElementData<a, Core::FADUtils::HigherOrderFadType<fad_order,           \
+      const Core::LinAlg::Matrix<3, 1, double>&, const GeometryPair::ElementData<a, double>&,    \
+      const GeometryPair::ElementData<a, Core::FADUtils::HigherOrderFadType<fad_order,           \
                                              Sacado::Fad::SLFad<double, 3 + a::n_dof_>>::type>&, \
       const Core::LinAlg::Matrix<4, 1, double>&,                                                 \
       Core::LinAlg::Matrix<3, 1,                                                                 \

@@ -36,7 +36,7 @@ namespace BeamInteraction
   class BeamToSolidSurfaceVisualizationOutputWriter;
   class BeamToSolidSurfaceVisualizationOutputWriterContact;
 
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class BeamContactAssemblyManager;
 
@@ -58,7 +58,7 @@ namespace BeamInteraction
         return Inpar::BeamInteraction::submodel_beamcontact;
       }
 
-      //! @name Derived public BeamInteraction::SUBMODELEVALUATOR::Generic methods
+      //! @name Derived public BeamInteraction::SubmodelEvaluator::Generic methods
       //! @{
       //! \brief reset submodel specific variables
       //! derived
@@ -141,7 +141,7 @@ namespace BeamInteraction
        * \brief Return the assembly managers in this submodel evaluator.
        */
       inline const std::vector<
-          std::shared_ptr<BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManager>>&
+          std::shared_ptr<BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManager>>&
       get_assembly_managers() const
       {
         return assembly_managers_;
@@ -270,7 +270,7 @@ namespace BeamInteraction
       std::vector<std::shared_ptr<BeamInteraction::BeamContactPair>> contact_elepairs_;
 
       //! Objects to evaluate system contributions for stiffness and force terms.
-      std::vector<std::shared_ptr<BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManager>>
+      std::vector<std::shared_ptr<BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManager>>
           assembly_managers_;
 
       //! mapping beam ele (elegid) to set of spatially proximal eles (pointer to elements)
@@ -296,7 +296,7 @@ namespace BeamInteraction
           geometric_search_visualization_ptr_;
     };
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

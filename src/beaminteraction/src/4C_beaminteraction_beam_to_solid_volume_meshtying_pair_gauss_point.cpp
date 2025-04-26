@@ -47,8 +47,8 @@ bool BeamInteraction::BeamToSolidVolumeMeshtyingPairGaussPoint<Beam, Solid>::eva
   // Call Evaluate on the geometry Pair. Only do this once for meshtying.
   if (!this->meshtying_is_evaluated_)
   {
-    GEOMETRYPAIR::ElementData<Beam, double> beam_coupling_ref;
-    GEOMETRYPAIR::ElementData<Solid, double> solid_coupling_ref;
+    GeometryPair::ElementData<Beam, double> beam_coupling_ref;
+    GeometryPair::ElementData<Solid, double> solid_coupling_ref;
     this->get_coupling_reference_position(beam_coupling_ref, solid_coupling_ref);
     this->cast_geometry_pair()->evaluate(
         beam_coupling_ref, solid_coupling_ref, this->line_to_3D_segments_);
@@ -87,20 +87,20 @@ bool BeamInteraction::BeamToSolidVolumeMeshtyingPairGaussPoint<Beam, Solid>::eva
     for (unsigned int i_gp = 0; i_gp < n_gp; i_gp++)
     {
       // Get the current Gauss point.
-      const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+      const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
           this->line_to_3D_segments_[i_segment].get_projection_points()[i_gp];
 
       // Get the jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(
+      GeometryPair::evaluate_position_derivative1<Beam>(
           projected_gauss_point.get_eta(), this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
       segment_jacobian = dr_beam_ref.norm2() * beam_segmentation_factor;
 
       // Get the current positions on beam and solid.
-      GEOMETRYPAIR::evaluate_position<Beam>(
+      GeometryPair::evaluate_position<Beam>(
           projected_gauss_point.get_eta(), this->ele1pos_, r_beam);
-      GEOMETRYPAIR::evaluate_position<Solid>(
+      GeometryPair::evaluate_position<Solid>(
           projected_gauss_point.get_xi(), this->ele2pos_, r_solid);
 
       // Calculate the force in this Gauss point. The sign of the force calculated here is the one
@@ -195,8 +195,8 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairGaussPoint<Beam, Solid>::eva
   // Call Evaluate on the geometry Pair. Only do this once for meshtying.
   if (!this->meshtying_is_evaluated_)
   {
-    GEOMETRYPAIR::ElementData<Beam, double> beam_coupling_ref;
-    GEOMETRYPAIR::ElementData<Solid, double> solid_coupling_ref;
+    GeometryPair::ElementData<Beam, double> beam_coupling_ref;
+    GeometryPair::ElementData<Solid, double> solid_coupling_ref;
     this->get_coupling_reference_position(beam_coupling_ref, solid_coupling_ref);
     this->cast_geometry_pair()->evaluate(
         beam_coupling_ref, solid_coupling_ref, this->line_to_3D_segments_);
@@ -214,7 +214,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairGaussPoint<Beam, Solid>::eva
 
   // Set the FAD variables for the solid DOFs.
   auto q_solid =
-      GEOMETRYPAIR::InitializeElementData<Solid, scalar_type_rot_2nd>::initialize(this->element2());
+      GeometryPair::InitializeElementData<Solid, scalar_type_rot_2nd>::initialize(this->element2());
   for (unsigned int i_solid = 0; i_solid < Solid::n_dof_; i_solid++)
     q_solid.element_position_(i_solid) =
         Core::FADUtils::HigherOrderFadValue<scalar_type_rot_2nd>::apply(3 + Solid::n_dof_,
@@ -273,7 +273,7 @@ template <typename Beam, typename Solid>
 void BeamInteraction::BeamToSolidVolumeMeshtyingPairGaussPoint<Beam,
     Solid>::evaluate_rotational_coupling_terms(  //
     const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
-    const GEOMETRYPAIR::ElementData<Solid, scalar_type_rot_2nd>& q_solid,
+    const GeometryPair::ElementData<Solid, scalar_type_rot_2nd>& q_solid,
     const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
         triad_interpolation_scheme,
     const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
@@ -332,11 +332,11 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairGaussPoint<Beam,
     for (unsigned int i_gp = 0; i_gp < n_gp; i_gp++)
     {
       // Get the current Gauss point.
-      const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+      const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
           this->line_to_3D_segments_[i_segment].get_projection_points()[i_gp];
 
       // Get the jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(
+      GeometryPair::evaluate_position_derivative1<Beam>(
           projected_gauss_point.get_eta(), this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
@@ -439,7 +439,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairGaussPoint<Beam,
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidVolumeMeshtyingPairGaussPoint<t_hermite, t_hex8>;
   template class BeamToSolidVolumeMeshtyingPairGaussPoint<t_hermite, t_hex20>;

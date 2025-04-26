@@ -22,7 +22,7 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::geometry_pair_line_to_volume_factory(
+std::shared_ptr<GeometryPair::GeometryPairBase> GeometryPair::geometry_pair_line_to_volume_factory(
     const Core::Elements::Element* element1, const Core::Elements::Element* element2,
     const std::shared_ptr<GeometryEvaluationDataBase>& geometry_evaluation_data)
 {
@@ -31,18 +31,18 @@ std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::geometry_pair_line_to_
       std::dynamic_pointer_cast<LineTo3DEvaluationData>(geometry_evaluation_data);
 
   // Get the strategy for line to volume interaction.
-  Inpar::GEOMETRYPAIR::LineTo3DStrategy strategy = line_to_3d_evaluation_data->get_strategy();
+  Inpar::GeometryPair::LineTo3DStrategy strategy = line_to_3d_evaluation_data->get_strategy();
 
   // Create the class depending on the strategy.
   switch (strategy)
   {
-    case Inpar::GEOMETRYPAIR::LineTo3DStrategy::
+    case Inpar::GeometryPair::LineTo3DStrategy::
         gauss_point_projection_without_boundary_segmentation:
-    case Inpar::GEOMETRYPAIR::LineTo3DStrategy::gauss_point_projection_boundary_segmentation:
+    case Inpar::GeometryPair::LineTo3DStrategy::gauss_point_projection_boundary_segmentation:
       return std::make_shared<
           GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line, Volume>>(
           element1, element2, line_to_3d_evaluation_data);
-    case Inpar::GEOMETRYPAIR::LineTo3DStrategy::segmentation:
+    case Inpar::GeometryPair::LineTo3DStrategy::segmentation:
       return std::make_shared<GeometryPairLineToVolumeSegmentation<ScalarType, Line, Volume>>(
           element1, element2, line_to_3d_evaluation_data);
     default:
@@ -60,33 +60,33 @@ std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::geometry_pair_line_to_
 /**
  * Explicit template initialization of factory function.
  */
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex8>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_volume_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex8>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex20>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_volume_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex20>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex27>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_volume_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex27>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tet4>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_volume_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_tet4>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tet10>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_volume_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_tet10>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_nurbs27>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_volume_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_nurbs27>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_wedge6>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_volume_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_wedge6>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
 
 
@@ -94,7 +94,7 @@ GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, GEOMETRYPAIR::t_hermi
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::geometry_pair_line_to_surface_factory(
+std::shared_ptr<GeometryPair::GeometryPairBase> GeometryPair::geometry_pair_line_to_surface_factory(
     const Core::Elements::Element* element1, const Core::Elements::Element* element2,
     const std::shared_ptr<GeometryEvaluationDataBase>& geometry_evaluation_data)
 {
@@ -103,18 +103,18 @@ std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::geometry_pair_line_to_
       std::dynamic_pointer_cast<LineToSurfaceEvaluationData>(geometry_evaluation_data);
 
   // Get the strategy for line to volume interaction.
-  Inpar::GEOMETRYPAIR::LineTo3DStrategy strategy = line_to_surface_evaluation_data->get_strategy();
+  Inpar::GeometryPair::LineTo3DStrategy strategy = line_to_surface_evaluation_data->get_strategy();
 
   // Create the class depending on the strategy.
   switch (strategy)
   {
-    case Inpar::GEOMETRYPAIR::LineTo3DStrategy::
+    case Inpar::GeometryPair::LineTo3DStrategy::
         gauss_point_projection_without_boundary_segmentation:
-    case Inpar::GEOMETRYPAIR::LineTo3DStrategy::gauss_point_projection_boundary_segmentation:
+    case Inpar::GeometryPair::LineTo3DStrategy::gauss_point_projection_boundary_segmentation:
       return std::make_shared<
           GeometryPairLineToSurfaceGaussPointProjection<ScalarType, Line, Surface>>(
           element1, element2, line_to_surface_evaluation_data);
-    case Inpar::GEOMETRYPAIR::LineTo3DStrategy::segmentation:
+    case Inpar::GeometryPair::LineTo3DStrategy::segmentation:
       return std::make_shared<GeometryPairLineToSurfaceSegmentation<ScalarType, Line, Surface>>(
           element1, element2, line_to_surface_evaluation_data);
     default:
@@ -129,8 +129,9 @@ std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::geometry_pair_line_to_
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad(
-    const Core::Elements::Element* element1, const Core::Elements::Element* element2,
+std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad(const Core::Elements::Element* element1,
+    const Core::Elements::Element* element2,
     const std::shared_ptr<GeometryEvaluationDataBase>& geometry_evaluation_data)
 {
   // Create the internal pair as double.
@@ -148,179 +149,179 @@ std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::geometry_pair_line_to_
 /**
  * Explicit template initialization of factory function.
  */
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_tri3>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_line2,
+    GeometryPair::t_tri3>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_tri6>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_line2,
+    GeometryPair::t_tri6>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_quad4>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_line2,
+    GeometryPair::t_quad4>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_quad8>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_line2,
+    GeometryPair::t_quad8>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_quad9>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_line2,
+    GeometryPair::t_quad9>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_nurbs9>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_line2,
+    GeometryPair::t_nurbs9>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
 
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_tri3>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_line2,
+    GeometryPair::t_tri3>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_tri6>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_line2,
+    GeometryPair::t_tri6>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_quad4>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_line2,
+    GeometryPair::t_quad4>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_quad8>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_line2,
+    GeometryPair::t_quad8>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_line2,
-    GEOMETRYPAIR::t_quad9>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_line2,
+    GeometryPair::t_quad9>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_fixed_size_1st_order<GEOMETRYPAIR::t_line2,
-        GEOMETRYPAIR::t_nurbs9>,
-    GEOMETRYPAIR::t_line2, GEOMETRYPAIR::t_nurbs9>(const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_fixed_size_1st_order<GeometryPair::t_line2,
+        GeometryPair::t_nurbs9>,
+    GeometryPair::t_line2, GeometryPair::t_nurbs9>(const Core::Elements::Element*,
     const Core::Elements::Element*, const std::shared_ptr<GeometryEvaluationDataBase>&);
 
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type, GEOMETRYPAIR::t_line2, GEOMETRYPAIR::t_tri3>(
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type, GeometryPair::t_line2, GeometryPair::t_tri3>(
     const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type, GEOMETRYPAIR::t_line2, GEOMETRYPAIR::t_tri6>(
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type, GeometryPair::t_line2, GeometryPair::t_tri6>(
     const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type, GEOMETRYPAIR::t_line2, GEOMETRYPAIR::t_quad4>(
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type, GeometryPair::t_line2, GeometryPair::t_quad4>(
     const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type, GEOMETRYPAIR::t_line2, GEOMETRYPAIR::t_quad8>(
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type, GeometryPair::t_line2, GeometryPair::t_quad8>(
     const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type, GEOMETRYPAIR::t_line2, GEOMETRYPAIR::t_quad9>(
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type, GeometryPair::t_line2, GeometryPair::t_quad9>(
     const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_fixed_size<GEOMETRYPAIR::t_line2,
-        GEOMETRYPAIR::t_nurbs9>,
-    GEOMETRYPAIR::t_line2, GEOMETRYPAIR::t_nurbs9>(const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_fixed_size<GeometryPair::t_line2,
+        GeometryPair::t_nurbs9>,
+    GeometryPair::t_line2, GeometryPair::t_nurbs9>(const Core::Elements::Element*,
     const Core::Elements::Element*, const std::shared_ptr<GeometryEvaluationDataBase>&);
 
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tri3>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_tri3>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tri6>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_tri6>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_quad4>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_quad4>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_quad8>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_quad8>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_quad9>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_quad9>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_nurbs9>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory<double, GeometryPair::t_hermite,
+    GeometryPair::t_nurbs9>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
 
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tri3>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_hermite,
+    GeometryPair::t_tri3>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tri6>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_hermite,
+    GeometryPair::t_tri6>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_quad4>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_hermite,
+    GeometryPair::t_quad4>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_quad8>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_hermite,
+    GeometryPair::t_quad8>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_1st_order, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_quad9>(const Core::Elements::Element*, const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_1st_order, GeometryPair::t_hermite,
+    GeometryPair::t_quad9>(const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_fixed_size_1st_order<GEOMETRYPAIR::t_hermite,
-        GEOMETRYPAIR::t_nurbs9>,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_nurbs9>(const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_fixed_size_1st_order<GeometryPair::t_hermite,
+        GeometryPair::t_nurbs9>,
+    GeometryPair::t_hermite, GeometryPair::t_nurbs9>(const Core::Elements::Element*,
     const Core::Elements::Element*, const std::shared_ptr<GeometryEvaluationDataBase>&);
 
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tri3>(
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type, GeometryPair::t_hermite, GeometryPair::t_tri3>(
     const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tri6>(
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type, GeometryPair::t_hermite, GeometryPair::t_tri6>(
     const Core::Elements::Element*, const Core::Elements::Element*,
     const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::
-    geometry_pair_line_to_surface_factory_fad<GEOMETRYPAIR::line_to_surface_patch_scalar_type,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad4>(const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase> GeometryPair::
+    geometry_pair_line_to_surface_factory_fad<GeometryPair::line_to_surface_patch_scalar_type,
+        GeometryPair::t_hermite, GeometryPair::t_quad4>(const Core::Elements::Element*,
         const Core::Elements::Element*, const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::
-    geometry_pair_line_to_surface_factory_fad<GEOMETRYPAIR::line_to_surface_patch_scalar_type,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad8>(const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase> GeometryPair::
+    geometry_pair_line_to_surface_factory_fad<GeometryPair::line_to_surface_patch_scalar_type,
+        GeometryPair::t_hermite, GeometryPair::t_quad8>(const Core::Elements::Element*,
         const Core::Elements::Element*, const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair> GEOMETRYPAIR::
-    geometry_pair_line_to_surface_factory_fad<GEOMETRYPAIR::line_to_surface_patch_scalar_type,
-        GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad9>(const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase> GeometryPair::
+    geometry_pair_line_to_surface_factory_fad<GeometryPair::line_to_surface_patch_scalar_type,
+        GeometryPair::t_hermite, GeometryPair::t_quad9>(const Core::Elements::Element*,
         const Core::Elements::Element*, const std::shared_ptr<GeometryEvaluationDataBase>&);
-template std::shared_ptr<GEOMETRYPAIR::GeometryPair>
-GEOMETRYPAIR::geometry_pair_line_to_surface_factory_fad<
-    GEOMETRYPAIR::line_to_surface_patch_scalar_type_fixed_size<GEOMETRYPAIR::t_hermite,
-        GEOMETRYPAIR::t_nurbs9>,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_nurbs9>(const Core::Elements::Element*,
+template std::shared_ptr<GeometryPair::GeometryPairBase>
+GeometryPair::geometry_pair_line_to_surface_factory_fad<
+    GeometryPair::line_to_surface_patch_scalar_type_fixed_size<GeometryPair::t_hermite,
+        GeometryPair::t_nurbs9>,
+    GeometryPair::t_hermite, GeometryPair::t_nurbs9>(const Core::Elements::Element*,
     const Core::Elements::Element*, const std::shared_ptr<GeometryEvaluationDataBase>&);
 
 FOUR_C_NAMESPACE_CLOSE

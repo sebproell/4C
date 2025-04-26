@@ -135,7 +135,7 @@ BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
  *
  */
 void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::write_output_runtime(
-    const BeamInteraction::SUBMODELEVALUATOR::BeamContact* beam_contact) const
+    const BeamInteraction::SubmodelEvaluator::BeamContact* beam_contact) const
 {
   // Get the time step and time for the output file. If output is desired at every iteration, the
   // values are padded. The runtime output is written when the time step is already set to the next
@@ -151,7 +151,7 @@ void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::write_
  */
 void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
     write_output_runtime_iteration(
-        const BeamInteraction::SUBMODELEVALUATOR::BeamContact* beam_contact, int i_iteration) const
+        const BeamInteraction::SubmodelEvaluator::BeamContact* beam_contact, int i_iteration) const
 {
   if (output_params_ptr_->get_output_every_iteration())
   {
@@ -167,7 +167,7 @@ void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
  */
 void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
     write_output_beam_to_solid_surface(
-        const BeamInteraction::SUBMODELEVALUATOR::BeamContact* beam_contact, int i_step,
+        const BeamInteraction::SubmodelEvaluator::BeamContact* beam_contact, int i_step,
         double time) const
 {
   // Parameter list that will be passed to all contact pairs when they create their visualization.
@@ -190,8 +190,8 @@ void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
       // Get the line-to-surface evaluation data for the current condition.
       auto beam_to_surface_condition =
           std::dynamic_pointer_cast<const BeamToSolidConditionSurface>(condition);
-      std::shared_ptr<const GEOMETRYPAIR::LineToSurfaceEvaluationData> surface_evaluation_data =
-          std::dynamic_pointer_cast<const GEOMETRYPAIR::LineToSurfaceEvaluationData>(
+      std::shared_ptr<const GeometryPair::LineToSurfaceEvaluationData> surface_evaluation_data =
+          std::dynamic_pointer_cast<const GeometryPair::LineToSurfaceEvaluationData>(
               beam_to_surface_condition->get_geometry_evaluation_data());
 
       // Get the coupling ID for the current condition.
@@ -223,7 +223,7 @@ void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
   {
     // Add pair specific output for direct assembly managers.
     auto direct_assembly_manager = std::dynamic_pointer_cast<
-        BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManagerDirect>(assembly_manager);
+        BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManagerDirect>(assembly_manager);
     if (not(direct_assembly_manager == nullptr))
     {
       for (const auto& pair : direct_assembly_manager->get_contact_pairs())
@@ -232,7 +232,7 @@ void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
 
     // Add pair specific output for indirect assembly managers.
     auto indirect_assembly_manager = std::dynamic_pointer_cast<
-        BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManagerInDirect>(assembly_manager);
+        BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManagerInDirect>(assembly_manager);
     if (not(indirect_assembly_manager == nullptr))
     {
       // Get the global vector with the Lagrange Multiplier values and add it to the parameter list

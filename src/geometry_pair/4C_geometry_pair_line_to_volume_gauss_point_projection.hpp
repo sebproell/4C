@@ -15,7 +15,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Class that handles the geometrical interactions of a line and a volume by projecting
@@ -45,7 +45,7 @@ namespace GEOMETRYPAIR
      */
     GeometryPairLineToVolumeGaussPointProjection(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData>& evaluation_data);
+        const std::shared_ptr<GeometryPair::LineTo3DEvaluationData>& evaluation_data);
 
 
     /**
@@ -79,7 +79,7 @@ namespace GEOMETRYPAIR
         const ElementData<Volume, ScalarType>& element_data_volume,
         std::vector<LineSegment<ScalarType>>& segments) const override;
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

@@ -20,10 +20,10 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line,
+GeometryPair::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line,
     Volume>::GeometryPairLineToVolumeGaussPointProjection(const Core::Elements::Element* element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData>& evaluation_data)
+    const std::shared_ptr<GeometryPair::LineTo3DEvaluationData>& evaluation_data)
     : GeometryPairLineToVolume<ScalarType, Line, Volume>(element1, element2, evaluation_data)
 {
   // Check if a projection tracking vector exists for this line element. If not a new one is
@@ -46,7 +46,7 @@ GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line,
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line,
+void GeometryPair::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line,
     Volume>::pre_evaluate(const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Volume, ScalarType>& element_data_volume,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -62,7 +62,7 @@ void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line, Volume>::evaluate(
+void GeometryPair::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line, Volume>::evaluate(
     const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Volume, ScalarType>& element_data_volume,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -77,19 +77,19 @@ void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<ScalarType, Line
 /**
  * Explicit template initialization of template class.
  */
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex20>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex27>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet4>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet10>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_nurbs27>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_wedge6>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjection<double,
+    GeometryPair::t_hermite, GeometryPair::t_hex8>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjection<double,
+    GeometryPair::t_hermite, GeometryPair::t_hex20>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjection<double,
+    GeometryPair::t_hermite, GeometryPair::t_hex27>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjection<double,
+    GeometryPair::t_hermite, GeometryPair::t_tet4>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjection<double,
+    GeometryPair::t_hermite, GeometryPair::t_tet10>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjection<double,
+    GeometryPair::t_hermite, GeometryPair::t_nurbs27>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjection<double,
+    GeometryPair::t_hermite, GeometryPair::t_wedge6>;
 
 FOUR_C_NAMESPACE_CLOSE

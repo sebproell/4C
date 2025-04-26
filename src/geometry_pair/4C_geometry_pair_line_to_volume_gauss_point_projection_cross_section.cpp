@@ -23,11 +23,11 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<ScalarType, Line,
+GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<ScalarType, Line,
     Volume>::GeometryPairLineToVolumeGaussPointProjectionCrossSection(const Core::Elements::Element*
                                                                           element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData>& evaluation_data)
+    const std::shared_ptr<GeometryPair::LineTo3DEvaluationData>& evaluation_data)
     : GeometryPairLineToVolume<ScalarType, Line, Volume>(element1, element2, evaluation_data)
 {
   // Check if a projection tracking vector exists for this line element. If not a new one is
@@ -52,7 +52,7 @@ GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<ScalarTyp
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<ScalarType, Line,
+void GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<ScalarType, Line,
     Volume>::pre_evaluate(const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Volume, ScalarType>& element_data_volume,
     std::vector<LineSegment<ScalarType>>& segments,
@@ -99,10 +99,10 @@ void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<Scal
     if (line_triad_interpolation != nullptr)
       line_triad_interpolation->get_interpolated_triad_at_xi(triad, eta);
     else
-      GEOMETRYPAIR::evaluate_triad_at_plane_curve<Line>(eta, element_data_line, triad);
+      GeometryPair::evaluate_triad_at_plane_curve<Line>(eta, element_data_line, triad);
 
     // Get the position on the line.
-    GEOMETRYPAIR::evaluate_position<Line>(eta, element_data_line, r_line);
+    GeometryPair::evaluate_position<Line>(eta, element_data_line, r_line);
 
     for (unsigned int index_gp_circ = 0; index_gp_circ < n_integration_points_circ; index_gp_circ++)
     {
@@ -155,7 +155,7 @@ void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<Scal
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<ScalarType, Line,
+void GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<ScalarType, Line,
     Volume>::evaluate(const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Volume, ScalarType>& element_data_volume,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -192,7 +192,7 @@ void GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<Scal
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-std::vector<bool>& GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<
+std::vector<bool>& GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<
     ScalarType, Line, Volume>::get_line_projection_vector() const
 {
   // Get the Gauss point projection tracker for this line element.
@@ -206,15 +206,15 @@ std::vector<bool>& GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCro
 /**
  * Explicit template initialization of template class.
  */
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex8>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex20>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_hex27>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet4>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
-    GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tet10>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
+    GeometryPair::t_hermite, GeometryPair::t_hex8>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
+    GeometryPair::t_hermite, GeometryPair::t_hex20>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
+    GeometryPair::t_hermite, GeometryPair::t_hex27>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
+    GeometryPair::t_hermite, GeometryPair::t_tet4>;
+template class GeometryPair::GeometryPairLineToVolumeGaussPointProjectionCrossSection<double,
+    GeometryPair::t_hermite, GeometryPair::t_tet10>;
 
 FOUR_C_NAMESPACE_CLOSE

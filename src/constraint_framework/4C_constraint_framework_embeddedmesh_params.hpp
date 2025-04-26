@@ -18,25 +18,25 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace CONSTRAINTS::EMBEDDEDMESH
+namespace Constraints::EmbeddedMesh
 {
   struct EmbeddedMeshParams
   {
     //! Strategy for coupling the embedded meshes
-    enum Inpar::CONSTRAINTS::EmbeddedMeshCouplingStrategy embedded_mesh_coupling_strategy_ =
-        Inpar::CONSTRAINTS::EmbeddedMeshCouplingStrategy::none;
+    enum Inpar::Constraints::EmbeddedMeshCouplingStrategy embedded_mesh_coupling_strategy_ =
+        Inpar::Constraints::EmbeddedMeshCouplingStrategy::none;
 
     //! Constraint enforcement method
-    enum Inpar::CONSTRAINTS::EmbeddedMeshConstraintEnforcement
+    enum Inpar::Constraints::EmbeddedMeshConstraintEnforcement
         embedded_mesh_constraint_enforcement_ =
-            Inpar::CONSTRAINTS::EmbeddedMeshConstraintEnforcement::none;
+            Inpar::Constraints::EmbeddedMeshConstraintEnforcement::none;
 
     //! Penalty parameter for coupling enforcement
     double embedded_mesh_constraint_penalty_parameter_ = 0.0;
 
     //! Shape function for the mortar Lagrange-multiplicators
-    enum Inpar::CONSTRAINTS::SolidToSolidMortarShapefunctions embedded_mesh_mortar_shape_function_ =
-        Inpar::CONSTRAINTS::SolidToSolidMortarShapefunctions::none;
+    enum Inpar::Constraints::SolidToSolidMortarShapefunctions embedded_mesh_mortar_shape_function_ =
+        Inpar::Constraints::SolidToSolidMortarShapefunctions::none;
 
     //! Nodal Dof set strategy for XFEM
     Cut::NodalDofSetStrategy xfem_nodal_dof_set_strategy_ =
@@ -58,7 +58,7 @@ namespace CONSTRAINTS::EMBEDDEDMESH
     //! Parameter list of cut
     Teuchos::ParameterList cut_params_;
   };
-}  // namespace CONSTRAINTS::EMBEDDEDMESH
+}  // namespace Constraints::EmbeddedMesh
 
 FOUR_C_NAMESPACE_CLOSE
 

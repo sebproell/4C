@@ -87,7 +87,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairGapVariation<ScalarType, Beam
       const auto& xi = projected_gauss_point.get_xi();
 
       // Get the Jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam_ref);
+      GeometryPair::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
       segment_jacobian = Core::FADUtils::vector_norm(dr_beam_ref) * beam_segmentation_factor;
@@ -98,9 +98,9 @@ void BeamInteraction::BeamToSolidSurfaceContactPairGapVariation<ScalarType, Beam
               projected_gauss_point, beam_cross_section_radius);
 
       // Get the shape function matrices.
-      GEOMETRYPAIR::EvaluateShapeFunction<Beam>::evaluate(
+      GeometryPair::EvaluateShapeFunction<Beam>::evaluate(
           N_beam, eta, this->ele1pos_.shape_function_data_);
-      GEOMETRYPAIR::EvaluateShapeFunction<Surface>::evaluate(
+      GeometryPair::EvaluateShapeFunction<Surface>::evaluate(
           N_surface, xi, this->face_element_->get_face_element_data().shape_function_data_);
 
       // Calculate the variation of the gap function multiplied with the surface normal vector.
@@ -210,7 +210,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairPotential<ScalarType, Beam,
       const auto& eta = projected_gauss_point.get_eta();
 
       // Get the Jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam_ref);
+      GeometryPair::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
       segment_jacobian = Core::FADUtils::vector_norm(dr_beam_ref) * beam_segmentation_factor;
@@ -252,7 +252,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairPotential<ScalarType, Beam,
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidSurfaceContactPairGapVariation<
       line_to_surface_patch_scalar_type_1st_order, t_line2, t_tri3>;

@@ -317,7 +317,7 @@ namespace Solid
     };
 
     //! Return Teuchos::rcp to ConstraintManager conman_
-    std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager() override
+    std::shared_ptr<Constraints::ConstrManager> get_constraint_manager() override
     {
       FOUR_C_THROW("get_constraint_manager() has not been tested for explicit time integrators");
       return nullptr;
@@ -332,7 +332,7 @@ namespace Solid
     };
 
     //! Return Teuchos::rcp to SpringDashpotManager springman_
-    std::shared_ptr<CONSTRAINTS::SpringDashpotManager> get_spring_dashpot_manager() override
+    std::shared_ptr<Constraints::SpringDashpotManager> get_spring_dashpot_manager() override
     {
       FOUR_C_THROW(
           "get_spring_dashpot_manager() has not been tested for explicit time integrators");

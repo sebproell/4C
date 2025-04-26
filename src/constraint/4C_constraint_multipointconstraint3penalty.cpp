@@ -26,7 +26,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-CONSTRAINTS::MPConstraint3Penalty::MPConstraint3Penalty(
+Constraints::MPConstraint3Penalty::MPConstraint3Penalty(
     std::shared_ptr<Core::FE::Discretization> discr,  ///< discretization constraint lives on
     const std::string& CondName  ///< Name of condition to create constraint from
     )
@@ -86,7 +86,7 @@ CONSTRAINTS::MPConstraint3Penalty::MPConstraint3Penalty(
 
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3Penalty::initialize(const double& time)
+void Constraints::MPConstraint3Penalty::initialize(const double& time)
 {
   for (auto* cond : constrcond_)
   {
@@ -108,7 +108,7 @@ void CONSTRAINTS::MPConstraint3Penalty::initialize(const double& time)
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3Penalty::initialize(
+void Constraints::MPConstraint3Penalty::initialize(
     Teuchos::ParameterList& params, std::shared_ptr<Core::LinAlg::Vector<double>> systemvector)
 {
   FOUR_C_THROW("method not used for penalty formulation!");
@@ -116,7 +116,7 @@ void CONSTRAINTS::MPConstraint3Penalty::initialize(
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3Penalty::initialize(Teuchos::ParameterList& params)
+void Constraints::MPConstraint3Penalty::initialize(Teuchos::ParameterList& params)
 {
   const double time = params.get("total time", -1.0);
 
@@ -150,7 +150,7 @@ void CONSTRAINTS::MPConstraint3Penalty::initialize(Teuchos::ParameterList& param
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3Penalty::evaluate(Teuchos::ParameterList& params,
+void Constraints::MPConstraint3Penalty::evaluate(Teuchos::ParameterList& params,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -197,7 +197,7 @@ void CONSTRAINTS::MPConstraint3Penalty::evaluate(Teuchos::ParameterList& params,
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
 std::map<int, std::shared_ptr<Core::FE::Discretization>>
-CONSTRAINTS::MPConstraint3Penalty::create_discretization_from_condition(
+Constraints::MPConstraint3Penalty::create_discretization_from_condition(
     std::shared_ptr<Core::FE::Discretization> actdisc,
     std::vector<Core::Conditions::Condition*> constrcondvec, const std::string& discret_name,
     const std::string& element_name, int& startID)
@@ -338,7 +338,7 @@ CONSTRAINTS::MPConstraint3Penalty::create_discretization_from_condition(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3Penalty::evaluate_constraint(
+void Constraints::MPConstraint3Penalty::evaluate_constraint(
     std::shared_ptr<Core::FE::Discretization> disc, Teuchos::ParameterList& params,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
@@ -437,7 +437,7 @@ void CONSTRAINTS::MPConstraint3Penalty::evaluate_constraint(
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3Penalty::evaluate_error(Core::FE::Discretization& disc,
+void Constraints::MPConstraint3Penalty::evaluate_error(Core::FE::Discretization& disc,
     Teuchos::ParameterList& params, Core::LinAlg::Vector<double>& systemvector, bool init)
 {
   if (!(disc.filled())) FOUR_C_THROW("fill_complete() was not called");

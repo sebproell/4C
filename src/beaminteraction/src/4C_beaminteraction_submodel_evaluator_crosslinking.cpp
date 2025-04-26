@@ -44,7 +44,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-BeamInteraction::SUBMODELEVALUATOR::Crosslinking::Crosslinking()
+BeamInteraction::SubmodelEvaluator::Crosslinking::Crosslinking()
     : crosslinking_params_ptr_(nullptr),
       cl_exporter_(nullptr),
       beam_exporter_(nullptr),
@@ -64,7 +64,7 @@ BeamInteraction::SUBMODELEVALUATOR::Crosslinking::Crosslinking()
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::setup()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::setup()
 {
   check_init();
 
@@ -98,7 +98,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::setup()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_partition_problem()
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::post_partition_problem()
 {
   check_init_setup();
 
@@ -194,7 +194,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_partition_problem()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_setup()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::post_setup()
 {
   check_init_setup();
 
@@ -233,7 +233,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_setup()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::init_submodel_dependencies(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::init_submodel_dependencies(
     std::shared_ptr<Solid::ModelEvaluator::BeamInteraction::Map> const submodelmap)
 {
   check_init_setup();
@@ -242,7 +242,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::init_submodel_dependencie
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::set_filament_types()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::set_filament_types()
 {
   check_init();
 
@@ -278,7 +278,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::set_filament_types()
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     set_all_possible_initial_double_bonded_crosslinker(
         std::vector<std::shared_ptr<BeamInteraction::Data::CrosslinkerData>>& newlinker,
         std::map<int, NewDoubleBonds>& mynewdbondcl)
@@ -309,7 +309,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_all_possible_bspot_links(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::get_all_possible_bspot_links(
     std::vector<BeamInteraction::Data::BspotLinkerData>& my_bspot_linker)
 {
   check_init();
@@ -456,7 +456,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_all_possible_bspot_li
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_initial_linker(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::communicate_initial_linker(
     std::vector<BeamInteraction::Data::BspotLinkerData> const& my_bspot_linker,
     std::map<int, std::vector<BeamInteraction::Data::BspotLinkerData>>& global_bspot_linker)
 {
@@ -538,7 +538,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_initial_linke
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::unambiguous_decisions_on_all_procs(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::unambiguous_decisions_on_all_procs(
     std::vector<std::shared_ptr<BeamInteraction::Data::CrosslinkerData>>& newlinker,
     std::map<int, std::vector<BeamInteraction::Data::BspotLinkerData>> const& global_bspot_linker,
     std::vector<int>& newlinkermatid)
@@ -632,7 +632,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::unambiguous_decisions_on_
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::setup_my_initial_double_bonded_linker(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::setup_my_initial_double_bonded_linker(
     std::vector<std::shared_ptr<BeamInteraction::Data::CrosslinkerData>>& newlinker,
     std::map<int, NewDoubleBonds>& mynewdbondcl, std::vector<int> const& newlinkermatid)
 {
@@ -707,7 +707,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::setup_my_initial_double_b
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::add_crosslinker_to_bin_discretization()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::add_crosslinker_to_bin_discretization()
 {
   check_init();
 
@@ -752,7 +752,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::add_crosslinker_to_bin_di
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::reset()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::reset()
 {
   check_init_setup();
 
@@ -825,7 +825,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::reset()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::evaluate_force()
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::evaluate_force()
 {
   check_init_setup();
 
@@ -871,7 +871,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::evaluate_force()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::evaluate_stiff()
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::evaluate_stiff()
 {
   check_init_setup();
 
@@ -923,7 +923,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::evaluate_stiff()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::evaluate_force_stiff()
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::evaluate_force_stiff()
 {
   check_init_setup();
 
@@ -981,7 +981,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::evaluate_force_stiff()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_step_state(const double& timefac_n)
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_step_state(const double& timefac_n)
 {
   check_init_setup();
 
@@ -991,7 +991,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_step_state(const d
 }
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_update_step_element(bool beam_redist)
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::pre_update_step_element(bool beam_redist)
 {
   check_init_setup();
 
@@ -1066,7 +1066,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_update_step_element(b
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_step_element(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_step_element(
     bool repartition_was_done)
 {
   check_init_setup();
@@ -1092,14 +1092,14 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_step_element(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_update_step_element()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::post_update_step_element()
 {
   // empty
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::map<Solid::EnergyType, double> BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_energy()
+std::map<Solid::EnergyType, double> BeamInteraction::SubmodelEvaluator::Crosslinking::get_energy()
     const
 {
   check_init_setup();
@@ -1116,7 +1116,7 @@ std::map<Solid::EnergyType, double> BeamInteraction::SUBMODELEVALUATOR::Crosslin
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::output_step_state(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::output_step_state(
     Core::IO::DiscretizationWriter& iowriter) const
 {
   check_init_setup();
@@ -1125,12 +1125,12 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::output_step_state(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::runtime_output_step_state() const
+void BeamInteraction::SubmodelEvaluator::Crosslinking::runtime_output_step_state() const
 {
   check_init_setup();
 
   TEUCHOS_FUNC_TIME_MONITOR(
-      "BeamInteraction::SUBMODELEVALUATOR::Crosslinking::"
+      "BeamInteraction::SubmodelEvaluator::Crosslinking::"
       "runtime_output_step_state");
 
   if (visualization_output_writer_ptr_ != nullptr) write_output_runtime_structure();
@@ -1138,7 +1138,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::runtime_output_step_state
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::init_output_runtime_structure()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::init_output_runtime_structure()
 {
   check_init();
 
@@ -1151,7 +1151,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::init_output_runtime_struc
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::write_output_runtime_structure() const
+void BeamInteraction::SubmodelEvaluator::Crosslinking::write_output_runtime_structure() const
 {
   check_init_setup();
 
@@ -1277,7 +1277,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::write_output_runtime_stru
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::fill_state_data_vectors_for_output(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::fill_state_data_vectors_for_output(
     Core::LinAlg::Vector<double>& displacement, Core::LinAlg::Vector<double>& orientation,
     Core::LinAlg::Vector<double>& numberofbonds, Core::LinAlg::Vector<double>& owner,
     Core::LinAlg::Vector<double>& force) const
@@ -1330,11 +1330,11 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::fill_state_data_vectors_f
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::reset_step_state() { check_init_setup(); }
+void BeamInteraction::SubmodelEvaluator::Crosslinking::reset_step_state() { check_init_setup(); }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::write_restart(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::write_restart(
     Core::IO::DiscretizationWriter& ia_writer, Core::IO::DiscretizationWriter& bin_writer) const
 {
   check_init_setup();
@@ -1401,7 +1401,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::write_restart(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_read_restart()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::pre_read_restart()
 {
   check_init_setup();
   beam_crosslinker_handler_ptr()->remove_all_linker();
@@ -1409,7 +1409,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::pre_read_restart()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::read_restart(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::read_restart(
     Core::IO::DiscretizationReader& ia_reader, Core::IO::DiscretizationReader& bin_reader)
 {
   check_init_setup();
@@ -1542,7 +1542,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::read_restart(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_read_restart()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::post_read_restart()
 {
   check_init_setup();
 
@@ -1570,7 +1570,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::post_read_restart()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::add_bins_to_bin_col_map(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::add_bins_to_bin_col_map(
     std::set<int>& colbins)
 {
   // nothing to do
@@ -1578,7 +1578,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::add_bins_to_bin_col_map(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     add_bins_with_relevant_content_for_ia_discret_col_map(std::set<int>& colbins) const
 {
   check_init_setup();
@@ -1630,7 +1630,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*-------------------------------------------------------------------------------*
  *-------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_half_interaction_distance(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::get_half_interaction_distance(
     double& half_interaction_distance)
 {
   check_init_setup();
@@ -1673,7 +1673,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_half_interaction_dist
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_crosslinker()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_crosslinker()
 {
   check_init_setup();
 
@@ -1850,7 +1850,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_crosslinker()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_unbound_crosslinker(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_unbound_crosslinker(
     Core::Nodes::Node* crosslinker_i, BeamInteraction::Data::CrosslinkerData* cldata_i)
 {
   check_init();
@@ -1908,7 +1908,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::diffuse_unbound_crosslink
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_single_occupied_cl_bspot(
+int BeamInteraction::SubmodelEvaluator::Crosslinking::get_single_occupied_cl_bspot(
     std::vector<std::pair<int, int>> const& clbspots) const
 {
   check_init();
@@ -1925,7 +1925,7 @@ int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_single_occupied_cl_bsp
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     set_position_of_double_bonded_crosslinker_pb_cconsistent(Core::LinAlg::Matrix<3, 1>& clpos,
         Core::LinAlg::Matrix<3, 1> const& bspot1pos,
         Core::LinAlg::Matrix<3, 1> const& bspot2pos) const
@@ -1949,7 +1949,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::set_position_of_newly_free_crosslinker(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::set_position_of_newly_free_crosslinker(
     CrossLinking::CrosslinkerNode* crosslinker, BeamInteraction::Data::CrosslinkerData* cldata)
 {
   check_init();
@@ -1980,7 +1980,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::set_position_of_newly_fre
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     set_position_of_newly_single_bonded_crosslinker(CrossLinking::CrosslinkerNode* crosslinker,
         BeamInteraction::Data::CrosslinkerData* cldata, int stayoccpotid)
 {
@@ -2010,7 +2010,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::store_maps_prior_redistribution()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::store_maps_prior_redistribution()
 {
   check_init();
 
@@ -2021,12 +2021,12 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::store_maps_prior_redistri
 }
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_and_export_crosslinker_data()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_and_export_crosslinker_data()
 {
   check_init();
 
   TEUCHOS_FUNC_TIME_MONITOR(
-      "BeamInteraction::SUBMODELEVALUATOR::Crosslinking::"
+      "BeamInteraction::SubmodelEvaluator::Crosslinking::"
       "update_and_export_crosslinker_data");
 
   //  // if one proc has changed maps, all procs have to update exporter
@@ -2077,12 +2077,12 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_and_export_crossli
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_and_export_beam_data(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_and_export_beam_data(
     bool update_states)
 {
   check_init();
 
-  //  TEUCHOS_FUNC_TIME_MONITOR("BeamInteraction::SUBMODELEVALUATOR::Crosslinking::"
+  //  TEUCHOS_FUNC_TIME_MONITOR("BeamInteraction::SubmodelEvaluator::Crosslinking::"
   //      "update_and_export_beam_data");
   //
   //  // if maps have change on one proc, all procs have to rebuild the exporter object
@@ -2176,12 +2176,12 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_and_export_beam_da
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::bind_and_unbind_crosslinker()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::bind_and_unbind_crosslinker()
 {
   check_init_setup();
 
   TEUCHOS_FUNC_TIME_MONITOR(
-      "BeamInteraction::SUBMODELEVALUATOR::"
+      "BeamInteraction::SubmodelEvaluator::"
       "Crosslinking::bind_and_unbind_crosslinker");
 
   // manage binding events
@@ -2211,7 +2211,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::bind_and_unbind_crosslink
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::bind_crosslinker()
+int BeamInteraction::SubmodelEvaluator::Crosslinking::bind_crosslinker()
 {
   check_init();
 
@@ -2241,7 +2241,7 @@ int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::bind_crosslinker()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::find_potential_binding_events(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::find_potential_binding_events(
     std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& mybonds,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>&
         undecidedbonds)
@@ -2249,7 +2249,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::find_potential_binding_ev
   check_init();
 
   TEUCHOS_FUNC_TIME_MONITOR(
-      "BeamInteraction::SUBMODELEVALUATOR::Crosslinking::find_potential_binding_events");
+      "BeamInteraction::SubmodelEvaluator::Crosslinking::find_potential_binding_events");
 
   // this variable is used to check if a beam binding spot is linked twice on
   // myrank during a time step
@@ -2296,7 +2296,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::find_potential_binding_ev
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     find_potential_binding_events_in_bin_and_neighborhood(Core::Elements::Element* bin,
         std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& mybonds,
         std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>&
@@ -2353,7 +2353,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::check_if_sphere_prohibits_binding(
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::check_if_sphere_prohibits_binding(
     std::set<Core::Elements::Element*> const& neighboring_col_spheres,
     Core::Nodes::Node* node_i) const
 {
@@ -2392,7 +2392,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::check_if_sphere_prohibits
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_binding(Core::Nodes::Node* node_i,
+void BeamInteraction::SubmodelEvaluator::Crosslinking::prepare_binding(Core::Nodes::Node* node_i,
     std::set<Core::Elements::Element*> const& neighboring_beams,
     std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& mybonds,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>&
@@ -2497,7 +2497,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_binding(Core::Nod
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::check_bind_event_criteria(
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::check_bind_event_criteria(
     CrossLinking::CrosslinkerNode const* const crosslinker_i,
     Core::Elements::Element const* const potbeampartner,
     BeamInteraction::Data::CrosslinkerData* cldata_i,
@@ -2628,7 +2628,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::check_bind_event_criteria
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::
     return_false_if_identical_bond_already_exists(
         CrossLinking::CrosslinkerNode const* const crosslinker_i,
         BeamInteraction::Data::CrosslinkerData* cldata_i,
@@ -2720,7 +2720,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::check_linker_and_filament_type_compatibility(
+bool BeamInteraction::SubmodelEvaluator::Crosslinking::check_linker_and_filament_type_compatibility(
     Inpar::BeamInteraction::CrosslinkerType linkertype,
     Inpar::BeamInteraction::FilamentType filamenttype) const
 {
@@ -2761,7 +2761,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::Crosslinking::check_linker_and_filament
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_occupied_cl_b_spot_beam_tangent(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::get_occupied_cl_b_spot_beam_tangent(
     CrossLinking::CrosslinkerNode const* const crosslinker_i,
     BeamInteraction::Data::CrosslinkerData* cldata_i,
     Core::LinAlg::Matrix<3, 1>& occ_bindingspot_beam_tangent, int clgid) const
@@ -2788,7 +2788,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::get_occupied_cl_b_spot_be
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::manage_binding_in_parallel(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::manage_binding_in_parallel(
     std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& mybonds,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>&
         undecidedbonds,
@@ -2797,7 +2797,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::manage_binding_in_paralle
   check_init();
 
   TEUCHOS_FUNC_TIME_MONITOR(
-      "BeamInteraction::SUBMODELEVALUATOR::Crosslinking::manage_binding_in_parallel");
+      "BeamInteraction::SubmodelEvaluator::Crosslinking::manage_binding_in_parallel");
 
   // -------------------------------------------------------------------------
   // 1) each procs makes his requests and receives the request of other procs
@@ -2823,7 +2823,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::manage_binding_in_paralle
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+int BeamInteraction::SubmodelEvaluator::Crosslinking::
     update_my_crosslinker_and_element_binding_states(
         std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& mybonds,
         std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& myelebonds)
@@ -2847,7 +2847,7 @@ int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_crosslinker_binding_states(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_crosslinker_binding_states(
     std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>> const& mybonds,
     std::map<int, NewDoubleBonds>& mynewdbondcl)
 {
@@ -3038,7 +3038,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_crosslinker_bin
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_element_binding_states(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_element_binding_states(
     std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>> const& myelebonds)
 {
   check_init();
@@ -3112,7 +3112,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_element_binding
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     create_new_double_bonded_crosslinker_element_pairs(
         std::map<int, NewDoubleBonds> const& mynewdbondcl)
 {
@@ -3161,7 +3161,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     double_bind_crosslinker_in_bins_and_neighborhood(std::set<int> const& bingids)
 {
   check_init();
@@ -3227,7 +3227,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::un_bind_crosslinker()
+int BeamInteraction::SubmodelEvaluator::Crosslinking::un_bind_crosslinker()
 {
   check_init();
 
@@ -3333,7 +3333,7 @@ int BeamInteraction::SUBMODELEVALUATOR::Crosslinking::un_bind_crosslinker()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     calc_bells_force_dependent_unbind_probability(CrossLinking::CrosslinkerNode* linker,
         BeamInteraction::BeamLink& elepairptr, std::vector<double>& punlinkforcedependent) const
 {
@@ -3400,7 +3400,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_beam_binding_status_after_unbinding(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_beam_binding_status_after_unbinding(
     std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>> const& unbindevent)
 {
   check_init();
@@ -3428,7 +3428,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_beam_binding_statu
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_double_bonds_after_redistribution()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_double_bonds_after_redistribution()
 {
   check_init();
 
@@ -3471,7 +3471,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_double_bonds_af
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_double_bonds_remote_id_list()
+void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_double_bonds_remote_id_list()
 {
   check_init();
 
@@ -3510,7 +3510,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::update_my_double_bonds_re
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::unbind_crosslinker_in_bins_and_neighborhood(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::unbind_crosslinker_in_bins_and_neighborhood(
     std::set<int> const& bingids)
 {
   check_init();
@@ -3520,7 +3520,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::unbind_crosslinker_in_bin
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::unbind_crosslinker_in_bins_and_neighborhood(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::unbind_crosslinker_in_bins_and_neighborhood(
     std::set<int> const& bingids, bool doubleunbind)
 {
   check_init_setup();
@@ -3603,7 +3603,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::unbind_crosslinker_in_bin
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
+void BeamInteraction::SubmodelEvaluator::Crosslinking::
     determine_responsilbe_procs_for_forced_crosslinker_unbinding(
         std::set<int> const& bingids, std::set<int>& binsonmyrank) const
 {
@@ -3648,7 +3648,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_bin_ids(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::communicate_bin_ids(
     std::map<int, std::vector<int>> const& binstosend, std::set<int>& binsonmyrank) const
 {
   check_init_setup();
@@ -3699,7 +3699,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_bin_ids(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::dissolve_bond(Core::Nodes::Node* linker,
+void BeamInteraction::SubmodelEvaluator::Crosslinking::dissolve_bond(Core::Nodes::Node* linker,
     int freedbspotid, int numbondsold,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>>>&
         sendunbindevents,
@@ -3772,7 +3772,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::dissolve_bond(Core::Nodes
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_undecided_bonds(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::communicate_undecided_bonds(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>&
         undecidedbonds,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>& requestedcl)
@@ -3792,7 +3792,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_undecided_bon
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_decided_bonds(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::communicate_decided_bonds(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>& decidedbonds,
     std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& myelebonds) const
 {
@@ -3814,7 +3814,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_decided_bonds
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::decide_binding_in_parallel(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::decide_binding_in_parallel(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>& requestedcl,
     std::map<int, std::shared_ptr<BeamInteraction::Data::BindEventData>>& mybonds,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>>& decidedbonds)
@@ -3926,7 +3926,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::decide_binding_in_paralle
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_beam_link_after_redistribution(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::communicate_beam_link_after_redistribution(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::BeamLink>>>& dbondcltosend)
 {
   check_init();
@@ -4020,7 +4020,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_beam_link_aft
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_crosslinker_unbinding(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::communicate_crosslinker_unbinding(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>>>&
         sendunbindevent,
     std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>>& myrankunbindevent) const
@@ -4033,7 +4033,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::communicate_crosslinker_u
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 template <typename T>
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send(
     Core::Communication::Exporter& exporter, std::vector<MPI_Request>& request,
     std::map<int, std::vector<std::shared_ptr<T>>> const& send) const
 {
@@ -4070,7 +4070,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send(
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 template <typename T>
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_receiving_procs(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::prepare_receiving_procs(
     std::map<int, std::vector<std::shared_ptr<T>>> const& datasenttorank,
     std::vector<int>& summedtargets) const
 {
@@ -4092,7 +4092,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_receiving_procs(
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 template <typename T>
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::recv_any(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::recv_any(
     Core::Communication::Exporter& exporter, int receivesize,
     std::vector<std::shared_ptr<T>>& recv) const
 {
@@ -4126,7 +4126,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::recv_any(
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 template <typename T>
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send_recv_any(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send_recv_any(
     std::map<int, std::vector<std::shared_ptr<T>>> const& send,
     std::vector<std::shared_ptr<T>>& recv) const
 {
@@ -4160,7 +4160,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send_recv_any(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::wait(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::wait(
     Core::Communication::Exporter& exporter, std::vector<MPI_Request>& request, int length) const
 {
   check_init();
@@ -4174,7 +4174,7 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::wait(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::print_and_check_bind_event_data(
+void BeamInteraction::SubmodelEvaluator::Crosslinking::print_and_check_bind_event_data(
     BeamInteraction::Data::BindEventData& bindeventdata) const
 {
   check_init();
@@ -4197,60 +4197,60 @@ void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::print_and_check_bind_even
 //-----------------------------------------------------------------------------
 // explicit template instantiation (to please every compiler)
 //-----------------------------------------------------------------------------
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send(
     Core::Communication::Exporter&, std::vector<MPI_Request>&,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::CrosslinkerData>>> const&)
     const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send(
     Core::Communication::Exporter&, std::vector<MPI_Request>&,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BeamData>>> const&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send(
     Core::Communication::Exporter&, std::vector<MPI_Request>&,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>> const&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send(
     Core::Communication::Exporter&, std::vector<MPI_Request>&,
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>>> const&)
     const;
 
 
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_receiving_procs(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::prepare_receiving_procs(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::CrosslinkerData>>> const&,
     std::vector<int>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_receiving_procs(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::prepare_receiving_procs(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BeamData>>> const&,
     std::vector<int>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_receiving_procs(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::prepare_receiving_procs(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>> const&,
     std::vector<int>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::prepare_receiving_procs(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::prepare_receiving_procs(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>>> const&,
     std::vector<int>&) const;
 
 
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::recv_any(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::recv_any(
     Core::Communication::Exporter&, int const,
     std::vector<std::shared_ptr<BeamInteraction::Data::CrosslinkerData>>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::recv_any(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::recv_any(
     Core::Communication::Exporter&, int const,
     std::vector<std::shared_ptr<BeamInteraction::Data::BeamData>>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::recv_any(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::recv_any(
     Core::Communication::Exporter&, int const,
     std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::recv_any(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::recv_any(
     Core::Communication::Exporter&, int const,
     std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>>&) const;
 
 
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send_recv_any(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send_recv_any(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::CrosslinkerData>>> const&,
     std::vector<std::shared_ptr<BeamInteraction::Data::CrosslinkerData>>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send_recv_any(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send_recv_any(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BeamData>>> const&,
     std::vector<std::shared_ptr<BeamInteraction::Data::BeamData>>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send_recv_any(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send_recv_any(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>> const&,
     std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>&) const;
-template void BeamInteraction::SUBMODELEVALUATOR::Crosslinking::i_send_recv_any(
+template void BeamInteraction::SubmodelEvaluator::Crosslinking::i_send_recv_any(
     std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>>> const&,
     std::vector<std::shared_ptr<BeamInteraction::Data::UnBindEventData>>&) const;
 

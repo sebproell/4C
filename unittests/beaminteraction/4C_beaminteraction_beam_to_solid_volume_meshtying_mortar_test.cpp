@@ -24,10 +24,10 @@ namespace
 
   void set_up_default_parameters_line_to_3d(Teuchos::ParameterList& list)
   {
-    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GEOMETRYPAIR::LineTo3DStrategy::segmentation);
+    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GeometryPair::LineTo3DStrategy::segmentation);
     list.set("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 6);
     list.set("GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
-        Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction::fail);
+        Inpar::GeometryPair::NotAllGaussPointsProjectValidAction::fail);
     list.set("GAUSS_POINTS", 6);
     list.set("INTEGRATION_POINTS_CIRCUMFERENCE", 6);
   }
@@ -48,7 +48,7 @@ namespace
       Teuchos::ParameterList line_to_volume_params_list;
       set_up_default_parameters_line_to_3d(line_to_volume_params_list);
       evaluation_data_ =
-          std::make_shared<GEOMETRYPAIR::LineTo3DEvaluationData>(line_to_volume_params_list);
+          std::make_shared<GeometryPair::LineTo3DEvaluationData>(line_to_volume_params_list);
     }
 
     /**
@@ -58,9 +58,9 @@ namespace
     void perform_mortar_pair_unit_test(
         BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<BeamType, SolidType, LambdaType>&
             contact_pair,
-        const GEOMETRYPAIR::ElementData<BeamType, double>& q_beam,
+        const GeometryPair::ElementData<BeamType, double>& q_beam,
         const Core::LinAlg::Matrix<9, 1, double>& q_beam_rot,
-        const GEOMETRYPAIR::ElementData<SolidType, double>& q_solid,
+        const GeometryPair::ElementData<SolidType, double>& q_solid,
         const Core::LinAlg::Matrix<LambdaType::n_dof_, BeamType::n_dof_, double>& result_local_D,
         const Core::LinAlg::Matrix<LambdaType::n_dof_, SolidType::n_dof_, double>& result_local_M,
         const Core::LinAlg::Matrix<LambdaType::n_dof_, 1, double>& result_local_kappa)
@@ -133,7 +133,7 @@ namespace
 
 
     //! Evaluation data container for geometry pairs.
-    std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData> evaluation_data_;
+    std::shared_ptr<GeometryPair::LineTo3DEvaluationData> evaluation_data_;
   };
 
   /**
@@ -142,9 +142,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex8Line2)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex8;
-    using lambda_type = GEOMETRYPAIR::t_line2;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex8;
+    using lambda_type = GeometryPair::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -152,8 +152,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -313,9 +313,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex8Line3)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex8;
-    using lambda_type = GEOMETRYPAIR::t_line3;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex8;
+    using lambda_type = GeometryPair::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -323,8 +323,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -523,9 +523,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex8Line4)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex8;
-    using lambda_type = GEOMETRYPAIR::t_line4;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex8;
+    using lambda_type = GeometryPair::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -533,8 +533,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -772,9 +772,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex20Line2)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex20;
-    using lambda_type = GEOMETRYPAIR::t_line2;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex20;
+    using lambda_type = GeometryPair::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -782,8 +782,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -1051,9 +1051,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex20Line3)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex20;
-    using lambda_type = GEOMETRYPAIR::t_line3;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex20;
+    using lambda_type = GeometryPair::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -1061,8 +1061,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -1405,9 +1405,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex20Line4)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex20;
-    using lambda_type = GEOMETRYPAIR::t_line4;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex20;
+    using lambda_type = GeometryPair::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -1415,8 +1415,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -1834,9 +1834,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex27Line2)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex27;
-    using lambda_type = GEOMETRYPAIR::t_line2;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex27;
+    using lambda_type = GeometryPair::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -1844,8 +1844,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -2176,9 +2176,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex27Line3)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex27;
-    using lambda_type = GEOMETRYPAIR::t_line3;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex27;
+    using lambda_type = GeometryPair::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -2186,8 +2186,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -2614,9 +2614,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Hex27Line4)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_hex27;
-    using lambda_type = GEOMETRYPAIR::t_line4;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_hex27;
+    using lambda_type = GeometryPair::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -2624,8 +2624,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -3148,9 +3148,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet4Line2)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_tet4;
-    using lambda_type = GEOMETRYPAIR::t_line2;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_tet4;
+    using lambda_type = GeometryPair::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3158,8 +3158,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -3283,9 +3283,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet4Line3)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_tet4;
-    using lambda_type = GEOMETRYPAIR::t_line3;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_tet4;
+    using lambda_type = GeometryPair::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3293,8 +3293,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -3445,9 +3445,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet4Line4)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_tet4;
-    using lambda_type = GEOMETRYPAIR::t_line4;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_tet4;
+    using lambda_type = GeometryPair::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3455,8 +3455,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -3634,9 +3634,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet10Line2)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_tet10;
-    using lambda_type = GEOMETRYPAIR::t_line2;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_tet10;
+    using lambda_type = GeometryPair::t_line2;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3644,8 +3644,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -3823,9 +3823,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet10Line3)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_tet10;
-    using lambda_type = GEOMETRYPAIR::t_line3;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_tet10;
+    using lambda_type = GeometryPair::t_line3;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -3833,8 +3833,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;
@@ -4057,9 +4057,9 @@ namespace
   TEST_F(BeamToSolidVolumeMeshtyingPairMortarTest, TestBeamToSolidMeshtyingMortarHermite2Tet10Line4)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using solid_type = GEOMETRYPAIR::t_tet10;
-    using lambda_type = GEOMETRYPAIR::t_line4;
+    using beam_type = GeometryPair::t_hermite;
+    using solid_type = GeometryPair::t_tet10;
+    using lambda_type = GeometryPair::t_line4;
 
     // Create the mesh tying mortar pair.
     BeamInteraction::BeamToSolidVolumeMeshtyingPairMortar<beam_type, solid_type, lambda_type>
@@ -4067,8 +4067,8 @@ namespace
             lambda_type>();
 
     // Definition of variables for this test case.
-    GEOMETRYPAIR::ElementData<beam_type, double> q_beam;
-    GEOMETRYPAIR::ElementData<solid_type, double> q_solid;
+    GeometryPair::ElementData<beam_type, double> q_beam;
+    GeometryPair::ElementData<solid_type, double> q_solid;
     Core::LinAlg::Matrix<9, 1> q_beam_rot;
     Core::LinAlg::SerialDenseMatrix local_D;
     Core::LinAlg::SerialDenseMatrix local_M;

@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  |  ctor (public)                                               tk 07/08|
  *----------------------------------------------------------------------*/
-CONSTRAINTS::Constraint::Constraint(std::shared_ptr<Core::FE::Discretization> discr,
+Constraints::Constraint::Constraint(std::shared_ptr<Core::FE::Discretization> discr,
     const std::string& conditionname, int& minID, int& maxID)
     : actdisc_(discr)
 {
@@ -56,7 +56,7 @@ CONSTRAINTS::Constraint::Constraint(std::shared_ptr<Core::FE::Discretization> di
 /*----------------------------------------------------------------------*
  |  ctor (public)                                               tk 07/08|
  *----------------------------------------------------------------------*/
-CONSTRAINTS::Constraint::Constraint(
+Constraints::Constraint::Constraint(
     std::shared_ptr<Core::FE::Discretization> discr, const std::string& conditionname)
     : actdisc_(discr)
 {
@@ -84,7 +84,7 @@ CONSTRAINTS::Constraint::Constraint(
 /*-----------------------------------------------------------------------*
 |(private)                                                       tk 07/08|
 *-----------------------------------------------------------------------*/
-CONSTRAINTS::Constraint::ConstrType CONSTRAINTS::Constraint::get_constr_type(
+Constraints::Constraint::ConstrType Constraints::Constraint::get_constr_type(
     const std::string& name)
 {
   if (name == "VolumeConstraint_3D" or name == "VolumeConstraint_3D_Pen")
@@ -106,7 +106,7 @@ CONSTRAINTS::Constraint::ConstrType CONSTRAINTS::Constraint::get_constr_type(
 |(public)                                                       tk 08/08  |
 |Initialization routine computes ref base values and activates conditions |
 *------------------------------------------------------------------------*/
-void CONSTRAINTS::Constraint::initialize(
+void Constraints::Constraint::initialize(
     Teuchos::ParameterList& params, Core::LinAlg::Vector<double>& systemvector3)
 {
   // choose action
@@ -135,7 +135,7 @@ void CONSTRAINTS::Constraint::initialize(
 |(public)                                                       tk 08/08  |
 |Initialization routine activates conditions (restart)                    |
 *------------------------------------------------------------------------*/
-void CONSTRAINTS::Constraint::initialize(const double& time)
+void Constraints::Constraint::initialize(const double& time)
 {
   for (auto* cond : constrcond_)
   {
@@ -159,7 +159,7 @@ void CONSTRAINTS::Constraint::initialize(const double& time)
 |(public)                                                        tk 07/08|
 |Evaluate Constraints, choose the right action based on type             |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::Constraint::evaluate(Teuchos::ParameterList& params,
+void Constraints::Constraint::evaluate(Teuchos::ParameterList& params,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -192,7 +192,7 @@ void CONSTRAINTS::Constraint::evaluate(Teuchos::ParameterList& params,
  |Evaluate method, calling element evaluates of a condition and          |
  |assembing results based on this conditions                             |
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::Constraint::evaluate_constraint(Teuchos::ParameterList& params,
+void Constraints::Constraint::evaluate_constraint(Teuchos::ParameterList& params,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -342,7 +342,7 @@ void CONSTRAINTS::Constraint::evaluate_constraint(Teuchos::ParameterList& params
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::Constraint::initialize_constraint(
+void Constraints::Constraint::initialize_constraint(
     Teuchos::ParameterList& params, Core::LinAlg::Vector<double>& systemvector)
 {
   if (!(actdisc_->filled())) FOUR_C_THROW("fill_complete() was not called");
@@ -419,7 +419,7 @@ void CONSTRAINTS::Constraint::initialize_constraint(
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-std::vector<int> CONSTRAINTS::Constraint::get_active_cond_id()
+std::vector<int> Constraints::Constraint::get_active_cond_id()
 {
   std::vector<int> condID;
   std::map<int, bool>::const_iterator mapit;

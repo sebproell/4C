@@ -28,7 +28,7 @@ namespace
    */
   template <typename FaceElementType>
   void xtest_surface_patch_quad4(Core::FE::Discretization& discret,
-      std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements_map)
+      std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements_map)
   {
     using namespace FourC;
 

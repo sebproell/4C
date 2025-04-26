@@ -25,9 +25,9 @@ namespace BeamInteraction
    * \brief Class for mortar beam to surface surface contact based on a scalar Lagrange multiplier
    * interpolation
    * @tparam scalar_type Type for scalar DOF values.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam surface Type from GEOMETRYPAIR::ElementDiscretization... representing the surface.
-   * @tparam mortar Type from GEOMETRYPAIR::ElementDiscretization... representing the interpolation
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam surface Type from GeometryPair::ElementDiscretization... representing the surface.
+   * @tparam mortar Type from GeometryPair::ElementDiscretization... representing the interpolation
    * of the Lagrange multiplier.
    */
   template <typename ScalarType, typename Beam, typename Surface, typename Mortar>
@@ -38,7 +38,7 @@ namespace BeamInteraction
     //! Shortcut to the base class.
     using base_class = BeamToSolidSurfaceContactPairBase<ScalarType, Beam, Surface>;
 
-    // Type from GEOMETRYPAIR::ElementDiscretization... representing the interpolation of the
+    // Type from GeometryPair::ElementDiscretization... representing the interpolation of the
     // Lagrange multiplier variations. For now this is always equal to the primal interpolation.
     using mortar_trial = Mortar;
 

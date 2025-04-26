@@ -37,12 +37,12 @@ namespace BeamInteraction
 {
   class BeamContactPair;
   class BeamContactParams;
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class BeamContactAssemblyManager;
   }
 }  // namespace BeamInteraction
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   class GeometryEvaluationDataBase;
 }
@@ -126,7 +126,7 @@ namespace BeamInteraction
      * @param discret (in) discretization.
      * @return Pointer to created assembly manager.
      */
-    virtual std::shared_ptr<SUBMODELEVALUATOR::BeamContactAssemblyManager>
+    virtual std::shared_ptr<SubmodelEvaluator::BeamContactAssemblyManager>
     create_indirect_assembly_manager(const std::shared_ptr<const Core::FE::Discretization>& discret)
     {
       return nullptr;
@@ -217,7 +217,7 @@ namespace BeamInteraction
     void create_indirect_assembly_managers(
         const std::shared_ptr<const Core::FE::Discretization>& discret,
         std::vector<
-            std::shared_ptr<BeamInteraction::SUBMODELEVALUATOR::BeamContactAssemblyManager>>&
+            std::shared_ptr<BeamInteraction::SubmodelEvaluator::BeamContactAssemblyManager>>&
             assembly_managers);
 
     /**

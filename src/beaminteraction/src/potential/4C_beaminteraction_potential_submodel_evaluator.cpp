@@ -110,7 +110,7 @@ namespace
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-BeamInteraction::SUBMODELEVALUATOR::BeamPotential::BeamPotential()
+BeamInteraction::SubmodelEvaluator::BeamPotential::BeamPotential()
 {
   // clear stl stuff
   nearby_elements_map_.clear();
@@ -118,7 +118,7 @@ BeamInteraction::SUBMODELEVALUATOR::BeamPotential::BeamPotential()
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::setup()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::setup()
 {
   check_init();
 
@@ -137,7 +137,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::setup()
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_setup()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::post_setup()
 {
   check_init_setup();
 
@@ -151,7 +151,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_setup()
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::init_submodel_dependencies(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::init_submodel_dependencies(
     std::shared_ptr<Solid::ModelEvaluator::BeamInteraction::Map> const submodelmap)
 {
   check_init_setup();
@@ -160,7 +160,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::init_submodel_dependenci
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::reset()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::reset()
 {
   check_init_setup();
 
@@ -194,12 +194,12 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::reset()
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_force()
+bool BeamInteraction::SubmodelEvaluator::BeamPotential::evaluate_force()
 {
   check_init_setup();
 
   // measure time for evaluating this function
-  TEUCHOS_FUNC_TIME_MONITOR("BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_force");
+  TEUCHOS_FUNC_TIME_MONITOR("BeamInteraction::SubmodelEvaluator::BeamPotential::evaluate_force");
 
   // resulting discrete element force vectors of the two interacting elements
   std::vector<Core::LinAlg::SerialDenseVector> eleforce(2);
@@ -282,12 +282,12 @@ bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_force()
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_stiff()
+bool BeamInteraction::SubmodelEvaluator::BeamPotential::evaluate_stiff()
 {
   check_init_setup();
 
   // measure time for evaluating this function
-  TEUCHOS_FUNC_TIME_MONITOR("BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_stiff");
+  TEUCHOS_FUNC_TIME_MONITOR("BeamInteraction::SubmodelEvaluator::BeamPotential::evaluate_stiff");
 
   // linearizations
   std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> elestiff(
@@ -373,13 +373,13 @@ bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_stiff()
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_force_stiff()
+bool BeamInteraction::SubmodelEvaluator::BeamPotential::evaluate_force_stiff()
 {
   check_init_setup();
 
   // measure time for evaluating this function
   TEUCHOS_FUNC_TIME_MONITOR(
-      "BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_force_stiff");
+      "BeamInteraction::SubmodelEvaluator::BeamPotential::evaluate_force_stiff");
 
   // resulting discrete element force vectors of the two interacting elements
   std::vector<Core::LinAlg::SerialDenseVector> eleforce(2);
@@ -478,7 +478,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::evaluate_force_stiff()
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::update_step_state(const double& timefac_n)
+void BeamInteraction::SubmodelEvaluator::BeamPotential::update_step_state(const double& timefac_n)
 {
   check_init_setup();
 
@@ -487,7 +487,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::update_step_state(const 
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::pre_update_step_element(bool beam_redist)
+bool BeamInteraction::SubmodelEvaluator::BeamPotential::pre_update_step_element(bool beam_redist)
 {
   check_init_setup();
 
@@ -508,7 +508,7 @@ bool BeamInteraction::SUBMODELEVALUATOR::BeamPotential::pre_update_step_element(
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::update_step_element(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::update_step_element(
     bool repartition_was_done)
 {
   check_init_setup();
@@ -520,7 +520,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::update_step_element(
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_update_step_element()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::post_update_step_element()
 {
   check_init_setup();
 
@@ -529,7 +529,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_update_step_element
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-std::map<Solid::EnergyType, double> BeamInteraction::SUBMODELEVALUATOR::BeamPotential::get_energy()
+std::map<Solid::EnergyType, double> BeamInteraction::SubmodelEvaluator::BeamPotential::get_energy()
     const
 {
   check_init_setup();
@@ -546,7 +546,7 @@ std::map<Solid::EnergyType, double> BeamInteraction::SUBMODELEVALUATOR::BeamPote
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::output_step_state(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::output_step_state(
     Core::IO::DiscretizationWriter& iowriter) const
 {
   check_init_setup();
@@ -555,7 +555,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::output_step_state(
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::runtime_output_step_state() const
+void BeamInteraction::SubmodelEvaluator::BeamPotential::runtime_output_step_state() const
 {
   check_init_setup();
   // nothing to do (so far)
@@ -563,11 +563,11 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::runtime_output_step_stat
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::reset_step_state() { check_init_setup(); }
+void BeamInteraction::SubmodelEvaluator::BeamPotential::reset_step_state() { check_init_setup(); }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::write_restart(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::write_restart(
     Core::IO::DiscretizationWriter& ia_writer, Core::IO::DiscretizationWriter& bin_writer) const
 {
   // empty
@@ -575,14 +575,14 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::write_restart(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::pre_read_restart()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::pre_read_restart()
 {
   // empty
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::read_restart(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::read_restart(
     Core::IO::DiscretizationReader& ia_reader, Core::IO::DiscretizationReader& bin_reader)
 {
   // empty
@@ -590,7 +590,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::read_restart(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_read_restart()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::post_read_restart()
 {
   check_init_setup();
 
@@ -604,7 +604,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::post_read_restart()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::run_post_iterate(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::run_post_iterate(
     const ::NOX::Solver::Generic& solver)
 {
   check_init_setup();
@@ -618,7 +618,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::run_post_iterate(
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::add_bins_to_bin_col_map(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::add_bins_to_bin_col_map(
     std::set<int>& colbins)
 {
   check_init_setup();
@@ -627,7 +627,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::add_bins_to_bin_col_map(
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
+void BeamInteraction::SubmodelEvaluator::BeamPotential::
     add_bins_with_relevant_content_for_ia_discret_col_map(std::set<int>& colbins) const
 {
   check_init_setup();
@@ -636,7 +636,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::get_half_interaction_distance(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::get_half_interaction_distance(
     double& half_interaction_distance)
 {
   check_init_setup();
@@ -659,13 +659,13 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::get_half_interaction_dis
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::find_and_store_neighboring_elements()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::find_and_store_neighboring_elements()
 {
   check_init();
 
   // measure time for evaluating this function
   TEUCHOS_FUNC_TIME_MONITOR(
-      "BeamInteraction::SUBMODELEVALUATOR::BeamPotential::find_and_store_neighboring_elements");
+      "BeamInteraction::SubmodelEvaluator::BeamPotential::find_and_store_neighboring_elements");
 
   // loop over all row elements
   int const numroweles = ele_type_map_extractor_ptr()->beam_map()->NumMyElements();
@@ -711,7 +711,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::find_and_store_neighbori
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
+void BeamInteraction::SubmodelEvaluator::BeamPotential::
     select_eles_to_be_considered_for_potential_evaluation(
         Core::Elements::Element* currele, std::set<Core::Elements::Element*>& neighbors) const
 {
@@ -795,7 +795,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::setup_potential_reduction_strategy()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::setup_potential_reduction_strategy()
 {
   LengthToEdgeImplementation::DataMaps data_maps;
 
@@ -846,7 +846,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::setup_potential_reductio
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::create_beam_potential_element_pairs()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::create_beam_potential_element_pairs()
 {
   // Todo maybe keep existing pairs and reuse them ?
   beam_potential_element_pairs_.clear();
@@ -888,7 +888,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::create_beam_potential_el
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::print_all_beam_potential_element_pairs(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::print_all_beam_potential_element_pairs(
     std::ostream& out) const
 {
   out << "\n\nCurrent BeamPotentialElementPairs: ";
@@ -900,7 +900,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::print_all_beam_potential
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::print_active_beam_potential_set(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::print_active_beam_potential_set(
     std::ostream& out) const
 {
   // Todo
@@ -918,7 +918,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::print_active_beam_potent
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
+void BeamInteraction::SubmodelEvaluator::BeamPotential::
     get_beam_potential_conditions_applied_to_this_element_pair(
         BeamInteraction::BeamPotentialPair const& elementpair,
         std::vector<Core::Conditions::Condition*>& conditions_element1,
@@ -953,7 +953,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::print_console_welcome_message(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::print_console_welcome_message(
     std::ostream& out) const
 {
   // console welcome message
@@ -995,7 +995,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::print_console_welcome_me
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::init_output_runtime_beam_potential()
+void BeamInteraction::SubmodelEvaluator::BeamPotential::init_output_runtime_beam_potential()
 {
   check_init();
 
@@ -1006,7 +1006,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::init_output_runtime_beam
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
+void BeamInteraction::SubmodelEvaluator::BeamPotential::
     write_time_step_output_runtime_beam_potential() const
 {
   check_init_setup();
@@ -1019,7 +1019,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
+void BeamInteraction::SubmodelEvaluator::BeamPotential::
     write_iteration_output_runtime_beam_potential(int iteration_number) const
 {
   check_init_setup();
@@ -1032,7 +1032,7 @@ void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::
 
 /*-----------------------------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::BeamPotential::write_output_runtime_beam_potential(
+void BeamInteraction::SubmodelEvaluator::BeamPotential::write_output_runtime_beam_potential(
     int timestep_number, double time) const
 {
   check_init_setup();

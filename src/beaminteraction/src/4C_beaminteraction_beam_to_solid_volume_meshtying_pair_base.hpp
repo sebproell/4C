@@ -25,11 +25,11 @@ namespace Core::LinAlg
   class SerialDenseVector;
   class SerialDenseMatrix;
 }  // namespace Core::LinAlg
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template <typename ScalarType, typename Line, typename Volume>
   class GeometryPairLineToVolume;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
 namespace BeamInteraction
@@ -37,8 +37,8 @@ namespace BeamInteraction
   /**
    * \brief Class for beam to solid meshtying.
    * @tparam ScalarType Scalar FAD type to be used in this pair.
-   * @tparam Beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam Solid Type from GEOMETRYPAIR::ElementDiscretization... representing the solid.
+   * @tparam Beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam Solid Type from GeometryPair::ElementDiscretization... representing the solid.
    */
   template <typename ScalarType, typename Beam, typename Solid>
   class BeamToSolidVolumeMeshtyingPairBase
@@ -118,7 +118,7 @@ namespace BeamInteraction
      */
     void create_geometry_pair(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>&
+        const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>&
             geometry_evaluation_data_ptr) override;
 
    protected:
@@ -126,10 +126,10 @@ namespace BeamInteraction
      * \brief Return a cast of the geometry pair to the type for this contact pair.
      * @return RPC with the type of geometry pair for this beam contact pair.
      */
-    inline std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToVolume<double, Beam, Solid>>
+    inline std::shared_ptr<GeometryPair::GeometryPairLineToVolume<double, Beam, Solid>>
     cast_geometry_pair() const
     {
-      return std::dynamic_pointer_cast<GEOMETRYPAIR::GeometryPairLineToVolume<double, Beam, Solid>>(
+      return std::dynamic_pointer_cast<GeometryPair::GeometryPairLineToVolume<double, Beam, Solid>>(
           this->geometry_pair_);
     };
 
@@ -153,18 +153,18 @@ namespace BeamInteraction
      * @param beam_coupling_ref (out) shifted reference position of the beam.
      * @param solid_coupling_ref (out) shifted reference position of the solid.
      */
-    void get_coupling_reference_position(GEOMETRYPAIR::ElementData<Beam, double>& beam_coupling_ref,
-        GEOMETRYPAIR::ElementData<Solid, double>& solid_coupling_ref) const;
+    void get_coupling_reference_position(GeometryPair::ElementData<Beam, double>& beam_coupling_ref,
+        GeometryPair::ElementData<Solid, double>& solid_coupling_ref) const;
 
    protected:
     //! Flag if the meshtying has been evaluated already.
     bool meshtying_is_evaluated_;
 
     //! Current nodal positions (and tangents) of the solid.
-    GEOMETRYPAIR::ElementData<Solid, ScalarType> ele2pos_;
+    GeometryPair::ElementData<Solid, ScalarType> ele2pos_;
 
     //! Reference nodal positions (and tangents) of the solid.
-    GEOMETRYPAIR::ElementData<Solid, double> ele2posref_;
+    GeometryPair::ElementData<Solid, double> ele2posref_;
 
     //! Offset of solid DOFs for coupling. This will be used when the state that should be coupled
     //! is not the undeformed reference position, i.e. in restart simulations where the restart

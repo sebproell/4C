@@ -29,7 +29,7 @@ namespace BeamInteraction
   struct BeamPotentialParams;
   class BeamPotentialPair;
 
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class BeamPotential : public Generic
     {
@@ -49,7 +49,7 @@ namespace BeamInteraction
         return Inpar::BeamInteraction::submodel_potential;
       }
 
-      //! @name Derived public BeamInteraction::SUBMODELEVALUATOR::Generic methods
+      //! @name Derived public BeamInteraction::SubmodelEvaluator::Generic methods
       //! @{
       //! \brief reset submodel specific variables
       //! derived
@@ -216,7 +216,7 @@ namespace BeamInteraction
       std::shared_ptr<Core::IO::VisualizationManager> visualization_manager_;
     };
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

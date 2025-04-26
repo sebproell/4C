@@ -15,7 +15,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Class that handles the geometrical interactions of a line and a surface by calculating
@@ -44,7 +44,7 @@ namespace GEOMETRYPAIR
      */
     GeometryPairLineToSurfaceSegmentation(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::LineToSurfaceEvaluationData>&
+        const std::shared_ptr<GeometryPair::LineToSurfaceEvaluationData>&
             line_to_surface_evaluation_data);
 
 
@@ -60,7 +60,7 @@ namespace GEOMETRYPAIR
         const ElementData<Surface, ScalarType>& element_data_surface,
         std::vector<LineSegment<ScalarType>>& segments) const override;
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

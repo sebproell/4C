@@ -12,7 +12,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   namespace Constants
   {
@@ -34,7 +34,7 @@ namespace GEOMETRYPAIR
     //! Tolerance for positions to be equal.
     const double pos_tol = 1e-10;
   }  // namespace Constants
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

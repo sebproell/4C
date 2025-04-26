@@ -22,7 +22,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-CONSTRAINTS::ConstraintPenalty::ConstraintPenalty(
+Constraints::ConstraintPenalty::ConstraintPenalty(
     std::shared_ptr<Core::FE::Discretization> discr, const std::string& conditionname)
     : Constraint(discr, conditionname)
 {
@@ -62,7 +62,7 @@ CONSTRAINTS::ConstraintPenalty::ConstraintPenalty(
   }
 }
 
-void CONSTRAINTS::ConstraintPenalty::initialize(
+void Constraints::ConstraintPenalty::initialize(
     Teuchos::ParameterList& params, Core::LinAlg::Vector<double>& systemvector3)
 {
   FOUR_C_THROW("method not used for penalty formulation!");
@@ -70,7 +70,7 @@ void CONSTRAINTS::ConstraintPenalty::initialize(
 
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintPenalty::initialize(Teuchos::ParameterList& params)
+void Constraints::ConstraintPenalty::initialize(Teuchos::ParameterList& params)
 {
   // choose action
   switch (constrtype_)
@@ -95,7 +95,7 @@ void CONSTRAINTS::ConstraintPenalty::initialize(Teuchos::ParameterList& params)
 
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintPenalty::initialize(const double& time)
+void Constraints::ConstraintPenalty::initialize(const double& time)
 {
   for (auto* cond : constrcond_)
   {
@@ -117,7 +117,7 @@ void CONSTRAINTS::ConstraintPenalty::initialize(const double& time)
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintPenalty::evaluate(Teuchos::ParameterList& params,
+void Constraints::ConstraintPenalty::evaluate(Teuchos::ParameterList& params,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -168,7 +168,7 @@ void CONSTRAINTS::ConstraintPenalty::evaluate(Teuchos::ParameterList& params,
 
 /*-----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintPenalty::evaluate_constraint(Teuchos::ParameterList& params,
+void Constraints::ConstraintPenalty::evaluate_constraint(Teuchos::ParameterList& params,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     Core::LinAlg::SparseOperator& systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -300,7 +300,7 @@ void CONSTRAINTS::ConstraintPenalty::evaluate_constraint(Teuchos::ParameterList&
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstraintPenalty::evaluate_error(
+void Constraints::ConstraintPenalty::evaluate_error(
     Teuchos::ParameterList& params, Core::LinAlg::Vector<double>& systemvector)
 {
   if (!(actdisc_->filled())) FOUR_C_THROW("fill_complete() was not called");

@@ -119,11 +119,11 @@ void BeamInteraction::BeamToSolidSurfaceContactPairMortar<ScalarType, Beam, Surf
               projected_gauss_point, beam_cross_section_radius);
 
       // Get the shape function matrices
-      GEOMETRYPAIR::evaluate_shape_function_matrix<mortar_trial>(N_lambda_trial, eta);
-      GEOMETRYPAIR::evaluate_shape_function_matrix<Mortar>(N_lambda, eta);
-      GEOMETRYPAIR::evaluate_shape_function_matrix<Beam>(
+      GeometryPair::evaluate_shape_function_matrix<mortar_trial>(N_lambda_trial, eta);
+      GeometryPair::evaluate_shape_function_matrix<Mortar>(N_lambda, eta);
+      GeometryPair::evaluate_shape_function_matrix<Beam>(
           N_beam, eta, this->ele1pos_.shape_function_data_);
-      GEOMETRYPAIR::evaluate_shape_function_matrix<Surface>(
+      GeometryPair::evaluate_shape_function_matrix<Surface>(
           N_surface, xi, this->face_element_->get_face_element_data().shape_function_data_);
 
       // Weighted gap
@@ -338,7 +338,7 @@ void BeamInteraction::BeamToSolidSurfaceContactPairMortar<ScalarType, Beam, Surf
         visualization_params.get<std::shared_ptr<Core::LinAlg::Vector<double>>>("lambda");
 
     // Get the lambda GIDs of this pair.
-    auto q_lambda = GEOMETRYPAIR::InitializeElementData<Mortar, double>::initialize(nullptr);
+    auto q_lambda = GeometryPair::InitializeElementData<Mortar, double>::initialize(nullptr);
     const auto& [lambda_row_pos, _] = mortar_manager->location_vector(*this);
     std::vector<double> lambda_pair = Core::FE::extract_values(*lambda, lambda_row_pos);
     for (unsigned int i_dof = 0; i_dof < Mortar::n_dof_; i_dof++)
@@ -388,12 +388,12 @@ void BeamInteraction::BeamToSolidSurfaceContactPairMortar<ScalarType, Beam, Surf
                   point, beam_cross_section_radius);
 
           // Get the beam displacement
-          GEOMETRYPAIR::evaluate_position<Beam>(point.get_eta(), this->ele1posref_, r0_beam);
+          GeometryPair::evaluate_position<Beam>(point.get_eta(), this->ele1posref_, r0_beam);
           u = r_beam;
           u -= r0_beam;
 
           // Get the Lagrange multiplier value
-          GEOMETRYPAIR::evaluate_position<Mortar>(point.get_eta(), q_lambda, lambda_scalar);
+          GeometryPair::evaluate_position<Mortar>(point.get_eta(), q_lambda, lambda_scalar);
 
           // Add to output data.
           lambda_vis.push_back(Core::FADUtils::cast_to_double(lambda_scalar(0)));
@@ -440,12 +440,12 @@ ScalarType BeamInteraction::BeamToSolidSurfaceContactPairMortar<ScalarType, Beam
   {
     case Inpar::BeamToSolid::BeamToSolidSurfaceContactMortarDefinedIn::reference_configuration:
     {
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam);
+      GeometryPair::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam);
       return Core::FADUtils::vector_norm(dr_beam);
     }
     case Inpar::BeamToSolid::BeamToSolidSurfaceContactMortarDefinedIn::current_configuration:
     {
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(eta, this->ele1pos_, dr_beam);
+      GeometryPair::evaluate_position_derivative1<Beam>(eta, this->ele1pos_, dr_beam);
       return Core::FADUtils::vector_norm(dr_beam);
     }
     default:
@@ -461,7 +461,7 @@ std::shared_ptr<BeamInteraction::BeamContactPair>
 beam_to_solid_surface_contact_pair_mortar_factory_template_beam_surface(
     const BeamInteraction::BeamToSolidSurfaceContactParams& beam_to_surface_contact_params)
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   switch (beam_to_surface_contact_params.get_mortar_shape_function_type())
   {
@@ -482,7 +482,7 @@ beam_to_solid_surface_contact_pair_mortar_factory_template_beam(
     const BeamInteraction::BeamToSolidSurfaceContactParams& beam_to_surface_contact_params,
     const Core::FE::CellType& surface_type)
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   switch (surface_type)
   {
@@ -502,7 +502,7 @@ BeamInteraction::beam_to_solid_surface_contact_pair_mortar_factory(
     const BeamToSolidSurfaceContactParams& beam_to_surface_contact_params,
     const Core::FE::CellType& surface_type, const bool beam_is_hermite)
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   if (beam_is_hermite)
   {

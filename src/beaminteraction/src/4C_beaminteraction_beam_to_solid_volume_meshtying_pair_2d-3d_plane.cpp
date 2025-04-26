@@ -31,8 +31,8 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DPlane<Beam, Solid>::pre_
   // Call pre_evaluate on the geometry Pair.
   if (!this->meshtying_is_evaluated_)
   {
-    GEOMETRYPAIR::ElementData<Beam, double> beam_coupling_ref;
-    GEOMETRYPAIR::ElementData<Solid, double> solid_coupling_ref;
+    GeometryPair::ElementData<Beam, double> beam_coupling_ref;
+    GeometryPair::ElementData<Solid, double> solid_coupling_ref;
     this->get_coupling_reference_position(beam_coupling_ref, solid_coupling_ref);
     this->cast_geometry_pair()->pre_evaluate(
         beam_coupling_ref, solid_coupling_ref, this->line_to_3D_segments_);
@@ -51,8 +51,8 @@ bool BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DPlane<Beam, Solid>::eval
   // Call Evaluate on the geometry Pair. Only do this once for meshtying.
   if (!this->meshtying_is_evaluated_)
   {
-    GEOMETRYPAIR::ElementData<Beam, double> beam_coupling_ref;
-    GEOMETRYPAIR::ElementData<Solid, double> solid_coupling_ref;
+    GeometryPair::ElementData<Beam, double> beam_coupling_ref;
+    GeometryPair::ElementData<Solid, double> solid_coupling_ref;
     this->get_coupling_reference_position(beam_coupling_ref, solid_coupling_ref);
     this->cast_geometry_pair()->evaluate(
         beam_coupling_ref, solid_coupling_ref, this->line_to_3D_segments_);
@@ -69,7 +69,7 @@ bool BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DPlane<Beam, Solid>::eval
         "surface!");
 
   // Get the vector with the projection points for this pair.
-  const std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<double>>& projection_points =
+  const std::vector<GeometryPair::ProjectionPoint1DTo3D<double>>& projection_points =
       this->line_to_3D_segments_[0].get_projection_points();
 
   // If there are no projection points, return no contact status.
@@ -101,24 +101,24 @@ bool BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DPlane<Beam, Solid>::eval
       i_integration_point++)
   {
     // Get the current Gauss point.
-    const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+    const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
         projection_points[i_integration_point];
 
     // Get the jacobian in the reference configuration.
-    GEOMETRYPAIR::evaluate_position_derivative1<Beam>(
+    GeometryPair::evaluate_position_derivative1<Beam>(
         projected_gauss_point.get_eta(), this->ele1posref_, dr_beam_ref);
     beam_jacobian = dr_beam_ref.norm2();
 
     // Get the current positions on beam and solid.
-    GEOMETRYPAIR::evaluate_position<Beam>(projected_gauss_point.get_eta(), this->ele1pos_, r_beam);
-    GEOMETRYPAIR::evaluate_triad_at_plane_curve<Beam>(
+    GeometryPair::evaluate_position<Beam>(projected_gauss_point.get_eta(), this->ele1pos_, r_beam);
+    GeometryPair::evaluate_triad_at_plane_curve<Beam>(
         projected_gauss_point.get_eta(), this->ele1pos_, triad);
     r_cross_section_ref(0) = 0.0;
     r_cross_section_ref(1) = projected_gauss_point.get_eta_cross_section()(0);
     r_cross_section_ref(2) = projected_gauss_point.get_eta_cross_section()(1);
     r_cross_section.multiply(triad, r_cross_section_ref);
     r_beam += r_cross_section;
-    GEOMETRYPAIR::evaluate_position<Solid>(projected_gauss_point.get_xi(), this->ele2pos_, r_solid);
+    GeometryPair::evaluate_position<Solid>(projected_gauss_point.get_xi(), this->ele2pos_, r_solid);
 
     // Calculate the force in this Gauss point. The sign of the force calculated here is the one
     // that acts on the beam.
@@ -203,15 +203,15 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DPlane<Beam, Solid>::get_
 {
   if (reference)
   {
-    GEOMETRYPAIR::ElementData<Beam, double> beam_coupling_ref;
-    GEOMETRYPAIR::ElementData<Solid, double> dummy;
+    GeometryPair::ElementData<Beam, double> beam_coupling_ref;
+    GeometryPair::ElementData<Solid, double> dummy;
     this->get_coupling_reference_position(beam_coupling_ref, dummy);
-    GEOMETRYPAIR::evaluate_triad_at_plane_curve<Beam>(xi, beam_coupling_ref, triad);
+    GeometryPair::evaluate_triad_at_plane_curve<Beam>(xi, beam_coupling_ref, triad);
   }
   else
   {
-    GEOMETRYPAIR::evaluate_triad_at_plane_curve<Beam>(
-        xi, GEOMETRYPAIR::ElementDataToDouble<Beam>::to_double(this->ele1pos_), triad);
+    GeometryPair::evaluate_triad_at_plane_curve<Beam>(
+        xi, GeometryPair::ElementDataToDouble<Beam>::to_double(this->ele1pos_), triad);
   }
 }
 
@@ -221,7 +221,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DPlane<Beam, Solid>::get_
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidVolumeMeshtyingPair2D3DPlane<t_hermite, t_hex8>;
   template class BeamToSolidVolumeMeshtyingPair2D3DPlane<t_hermite, t_hex20>;

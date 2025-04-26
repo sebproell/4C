@@ -20,12 +20,12 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   class FaceElement;
 }
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Class to manage input parameters and evaluation data for line to surface interactions.
@@ -50,7 +50,7 @@ namespace GEOMETRYPAIR
      * \param face_elements (in) Map to all face elements in this condition on this rank.
      */
     void setup(const std::shared_ptr<const Core::FE::Discretization>& discret,
-        const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements);
+        const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements);
 
     /**
      * \brief Calculate the averaged nodal normals.
@@ -60,7 +60,7 @@ namespace GEOMETRYPAIR
     /**
      * \brief Get a reference to the face element map.
      */
-    const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& get_face_elements()
+    const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& get_face_elements()
         const
     {
       return face_elements_;
@@ -69,19 +69,19 @@ namespace GEOMETRYPAIR
     /**
      * \brief Return the strategy to be used for the surface normals.
      */
-    Inpar::GEOMETRYPAIR::SurfaceNormals get_surface_normal_strategy() const
+    Inpar::GeometryPair::SurfaceNormals get_surface_normal_strategy() const
     {
       return surface_normal_strategy_;
     }
 
    private:
     //! A map of all face elements needed for this surface.
-    std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>> face_elements_;
+    std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>> face_elements_;
 
     //! Strategy to be used for surface normals.
-    Inpar::GEOMETRYPAIR::SurfaceNormals surface_normal_strategy_;
+    Inpar::GeometryPair::SurfaceNormals surface_normal_strategy_;
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

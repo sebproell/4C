@@ -24,12 +24,12 @@ namespace Core::Elements
 }
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Base class for all geometry pairs.
    */
-  class GeometryPair
+  class GeometryPairBase
   {
    public:
     /**
@@ -37,13 +37,14 @@ namespace GEOMETRYPAIR
      * @param element1 Pointer to the first element.
      * @param element2 Pointer to the second element.
      */
-    GeometryPair(const Core::Elements::Element* element1, const Core::Elements::Element* element2)
+    GeometryPairBase(
+        const Core::Elements::Element* element1, const Core::Elements::Element* element2)
         : element1_(element1), element2_(element2) {};
 
     /**
      * \brief Destructor.
      */
-    virtual ~GeometryPair() = default;
+    virtual ~GeometryPairBase() = default;
 
     /**
      * \brief Pointer to the first element.
@@ -73,7 +74,7 @@ namespace GEOMETRYPAIR
     //! Link to the element containing the second geometry.
     const Core::Elements::Element* element2_;
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

@@ -20,7 +20,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Class to manage inout parameters and evaluation data for line to 3D interactions.
@@ -48,7 +48,7 @@ namespace GEOMETRYPAIR
      * \brief Get the segmentation strategy.
      * @return flag for segmentation strategy.
      */
-    inline Inpar::GEOMETRYPAIR::LineTo3DStrategy get_strategy() const { return strategy_; }
+    inline Inpar::GeometryPair::LineTo3DStrategy get_strategy() const { return strategy_; }
 
     /**
      * \brief Get the number of search points for segmentation search.
@@ -59,7 +59,7 @@ namespace GEOMETRYPAIR
     /**
      * \brief Get the flaf on what to do if not all Gauss points of a segment project valid.
      */
-    inline Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction
+    inline Inpar::GeometryPair::NotAllGaussPointsProjectValidAction
     get_not_all_gauss_points_project_valid_action() const
     {
       return not_all_gauss_points_project_valid_action_;
@@ -116,7 +116,7 @@ namespace GEOMETRYPAIR
 
    private:
     //! Strategy to be used for contact search.
-    Inpar::GEOMETRYPAIR::LineTo3DStrategy strategy_;
+    Inpar::GeometryPair::LineTo3DStrategy strategy_;
 
     //! Gauss rule for Gauss point projection method.
     Core::FE::GaussRule1D gauss_rule_;
@@ -131,14 +131,14 @@ namespace GEOMETRYPAIR
     unsigned int n_search_points_;
 
     //! What to do if not all Gauss points of a segment project valid
-    Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction
+    Inpar::GeometryPair::NotAllGaussPointsProjectValidAction
         not_all_gauss_points_project_valid_action_;
 
     //! Segment tracking vector for segmentation. We use double in this case, because otherwise the
     //! class would have to be templated on the type of this tracker.
     std::map<int, std::set<LineSegment<double>>> segment_tracker_;
   };
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

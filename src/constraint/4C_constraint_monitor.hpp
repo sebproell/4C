@@ -29,7 +29,7 @@ namespace Core::LinAlg
   class SparseOperator;
 }
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   /*!
    */
@@ -110,7 +110,7 @@ namespace CONSTRAINTS
                                                     ///< by aasembly of element contributions
     );
   };  // class
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 
 FOUR_C_NAMESPACE_CLOSE
 

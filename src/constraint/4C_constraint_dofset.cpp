@@ -15,7 +15,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-int CONSTRAINTS::ConstraintDofSet::assign_degrees_of_freedom(
+int Constraints::ConstraintDofSet::assign_degrees_of_freedom(
     const std::shared_ptr<Core::FE::Discretization> dis, const int ndofs, const int start)
 {
   // A definite offset is currently not supported.

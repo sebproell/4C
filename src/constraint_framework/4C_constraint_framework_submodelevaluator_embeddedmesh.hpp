@@ -15,12 +15,12 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace CONSTRAINTS::EMBEDDEDMESH
+namespace Constraints::EmbeddedMesh
 {
   class SolidToSolidMortarManager;
 }
 
-namespace CONSTRAINTS::SUBMODELEVALUATOR
+namespace Constraints::SubmodelEvaluator
 {
   class EmbeddedMeshConstraintManager : public ConstraintBase
   {
@@ -61,9 +61,9 @@ namespace CONSTRAINTS::SUBMODELEVALUATOR
 
    private:
     //! Pointer to the mortar manager. This object stores the relevant mortar matrices.
-    std::shared_ptr<CONSTRAINTS::EMBEDDEDMESH::SolidToSolidMortarManager> mortar_manager_;
+    std::shared_ptr<Constraints::EmbeddedMesh::SolidToSolidMortarManager> mortar_manager_;
   };
-}  // namespace CONSTRAINTS::SUBMODELEVALUATOR
+}  // namespace Constraints::SubmodelEvaluator
 
 FOUR_C_NAMESPACE_CLOSE
 

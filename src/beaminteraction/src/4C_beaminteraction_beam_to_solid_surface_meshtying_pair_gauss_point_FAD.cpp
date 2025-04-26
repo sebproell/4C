@@ -79,7 +79,7 @@ void BeamInteraction::BeamToSolidSurfaceMeshtyingPairGaussPointFAD<ScalarType, B
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidSurfaceMeshtyingPairGaussPointFAD<line_to_surface_patch_scalar_type,
       t_hermite, t_quad4>;

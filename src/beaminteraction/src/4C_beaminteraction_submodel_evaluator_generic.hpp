@@ -63,7 +63,7 @@ namespace BeamInteraction
   {
     class MapExtractor;
   }
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     class Crosslinking;
 
@@ -72,7 +72,7 @@ namespace BeamInteraction
      *
      *  This class summarizes the functionality which all submodel evaluators share
      *  and/or have to implement. Look in the derived classes for examples. A minimal
-     *  example can be found at \ref BeamInteraction::SUBMODELEVALUATOR::Crosslinking.
+     *  example can be found at \ref BeamInteraction::SubmodelEvaluator::Crosslinking.
      */
     class Generic
     {
@@ -276,7 +276,7 @@ namespace BeamInteraction
 
     };  // class Generic
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

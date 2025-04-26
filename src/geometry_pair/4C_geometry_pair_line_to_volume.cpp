@@ -19,10 +19,10 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-GEOMETRYPAIR::GeometryPairLineToVolume<ScalarType, Line, Volume>::GeometryPairLineToVolume(
+GeometryPair::GeometryPairLineToVolume<ScalarType, Line, Volume>::GeometryPairLineToVolume(
     const Core::Elements::Element* element1, const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData>& line_to_3d_evaluation_data)
-    : GeometryPair(element1, element2), line_to_3d_evaluation_data_(line_to_3d_evaluation_data)
+    const std::shared_ptr<GeometryPair::LineTo3DEvaluationData>& line_to_3d_evaluation_data)
+    : GeometryPairBase(element1, element2), line_to_3d_evaluation_data_(line_to_3d_evaluation_data)
 {
   // For the current implementation, the line element has to be on the same processor as the pair
   // object. This is because the tracking vector in LineTo3DEvaluationData is only local and we
@@ -41,12 +41,12 @@ GEOMETRYPAIR::GeometryPairLineToVolume<ScalarType, Line, Volume>::GeometryPairLi
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-void GEOMETRYPAIR::GeometryPairLineToVolume<ScalarType, Line, Volume>::project_point_to_other(
+void GeometryPair::GeometryPairLineToVolume<ScalarType, Line, Volume>::project_point_to_other(
     const Core::LinAlg::Matrix<3, 1, ScalarType>& point,
     const ElementData<Volume, ScalarType>& element_data_volume,
     Core::LinAlg::Matrix<3, 1, ScalarType>& xi, ProjectionResult& projection_result) const
 {
-  GEOMETRYPAIR::project_point_to_volume<ScalarType, Volume>(
+  GeometryPair::project_point_to_volume<ScalarType, Volume>(
       point, element_data_volume, xi, projection_result);
 }
 
@@ -55,7 +55,7 @@ void GEOMETRYPAIR::GeometryPairLineToVolume<ScalarType, Line, Volume>::project_p
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-void GEOMETRYPAIR::GeometryPairLineToVolume<ScalarType, Line, Volume>::intersect_line_with_surface(
+void GeometryPair::GeometryPairLineToVolume<ScalarType, Line, Volume>::intersect_line_with_surface(
     const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Volume, ScalarType>& element_data_volume, const unsigned int& fixed_parameter,
     const double& fixed_value, ScalarType& eta, Core::LinAlg::Matrix<3, 1, ScalarType>& xi,
@@ -176,7 +176,7 @@ void GEOMETRYPAIR::GeometryPairLineToVolume<ScalarType, Line, Volume>::intersect
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-void GEOMETRYPAIR::GeometryPairLineToVolume<ScalarType, Line, Volume>::intersect_line_with_other(
+void GeometryPair::GeometryPairLineToVolume<ScalarType, Line, Volume>::intersect_line_with_other(
     const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Volume, ScalarType>& element_data_volume,
     std::vector<ProjectionPoint1DTo3D<ScalarType>>& intersection_points,
@@ -236,7 +236,7 @@ void GEOMETRYPAIR::GeometryPairLineToVolume<ScalarType, Line, Volume>::intersect
  *
  */
 template <typename ScalarType, typename Volume>
-void GEOMETRYPAIR::project_point_to_volume(const Core::LinAlg::Matrix<3, 1, ScalarType>& point,
+void GeometryPair::project_point_to_volume(const Core::LinAlg::Matrix<3, 1, ScalarType>& point,
     const ElementData<Volume, ScalarType>& element_data_volume,
     Core::LinAlg::Matrix<3, 1, ScalarType>& xi, ProjectionResult& projection_result)
 {
@@ -263,7 +263,7 @@ void GEOMETRYPAIR::project_point_to_volume(const Core::LinAlg::Matrix<3, 1, Scal
     while (counter < Constants::local_newton_iter_max)
     {
       // Get the point coordinates on the volume.
-      GEOMETRYPAIR::evaluate_position<Volume>(xi, element_data_volume, r_volume);
+      GeometryPair::evaluate_position<Volume>(xi, element_data_volume, r_volume);
 
       // Evaluate the residuum $r_{volume} - r_{line} = R_{pos}$
       residuum = r_volume;
@@ -284,7 +284,7 @@ void GEOMETRYPAIR::project_point_to_volume(const Core::LinAlg::Matrix<3, 1, Scal
       if (residuum.norm2() > Constants::local_newton_res_max) break;
 
       // Get the jacobian.
-      GEOMETRYPAIR::evaluate_position_derivative1<Volume>(xi, element_data_volume, J_J_inv);
+      GeometryPair::evaluate_position_derivative1<Volume>(xi, element_data_volume, J_J_inv);
 
       // Solve the linearized system.
       if (Core::LinAlg::solve_linear_system_do_not_throw_error_on_zero_determinant_scaled(
@@ -306,19 +306,19 @@ void GEOMETRYPAIR::project_point_to_volume(const Core::LinAlg::Matrix<3, 1, Scal
 /**
  * Explicit template initialization of template class.
  */
-template class GEOMETRYPAIR::GeometryPairLineToVolume<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex8>;
-template class GEOMETRYPAIR::GeometryPairLineToVolume<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex20>;
-template class GEOMETRYPAIR::GeometryPairLineToVolume<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex27>;
-template class GEOMETRYPAIR::GeometryPairLineToVolume<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tet4>;
-template class GEOMETRYPAIR::GeometryPairLineToVolume<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tet10>;
-template class GEOMETRYPAIR::GeometryPairLineToVolume<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_nurbs27>;
-template class GEOMETRYPAIR::GeometryPairLineToVolume<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_wedge6>;
+template class GeometryPair::GeometryPairLineToVolume<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex8>;
+template class GeometryPair::GeometryPairLineToVolume<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex20>;
+template class GeometryPair::GeometryPairLineToVolume<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex27>;
+template class GeometryPair::GeometryPairLineToVolume<double, GeometryPair::t_hermite,
+    GeometryPair::t_tet4>;
+template class GeometryPair::GeometryPairLineToVolume<double, GeometryPair::t_hermite,
+    GeometryPair::t_tet10>;
+template class GeometryPair::GeometryPairLineToVolume<double, GeometryPair::t_hermite,
+    GeometryPair::t_nurbs27>;
+template class GeometryPair::GeometryPairLineToVolume<double, GeometryPair::t_hermite,
+    GeometryPair::t_wedge6>;
 
 FOUR_C_NAMESPACE_CLOSE

@@ -15,7 +15,7 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(std::vector<Core::IO::InputSpec>& list)
+void Inpar::GeometryPair::set_valid_parameters_line_to3_d(std::vector<Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -52,22 +52,22 @@ void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to3_d(std::vector<Core::IO::
 /**
  *
  */
-void Inpar::GEOMETRYPAIR::set_valid_parameters_line_to_surface(
+void Inpar::GeometryPair::set_valid_parameters_line_to_surface(
     std::vector<Core::IO::InputSpec>& list)
 {
   // Add the input parameters for line to surface coupling.
 
   // Add the surface normal option.
-  list.push_back(Core::IO::InputSpecBuilders::parameter<GEOMETRYPAIR::SurfaceNormals>(
+  list.push_back(Core::IO::InputSpecBuilders::parameter<GeometryPair::SurfaceNormals>(
       "GEOMETRY_PAIR_SURFACE_NORMALS",
       {.description = "How the surface normals are evaluated",
-          .default_value = GEOMETRYPAIR::SurfaceNormals::standard}));
+          .default_value = GeometryPair::SurfaceNormals::standard}));
 }
 
 /**
  *
  */
-Core::FE::GaussRule1D Inpar::GEOMETRYPAIR::int_to_gauss_rule1_d(const int n_gauss_points)
+Core::FE::GaussRule1D Inpar::GeometryPair::int_to_gauss_rule1_d(const int n_gauss_points)
 {
   switch (n_gauss_points)
   {

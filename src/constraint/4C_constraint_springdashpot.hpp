@@ -45,7 +45,7 @@ namespace Adapter
   class CouplingNonLinMortar;
 }
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   class SpringDashpot
   {
@@ -230,7 +230,7 @@ namespace CONSTRAINTS
     RobinSpringDashpotType springtype_;
 
   };  // class
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 
 FOUR_C_NAMESPACE_CLOSE
 

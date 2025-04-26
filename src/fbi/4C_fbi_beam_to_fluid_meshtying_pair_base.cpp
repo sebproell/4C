@@ -47,10 +47,10 @@ void BeamInteraction::BeamToFluidMeshtyingPairBase<Beam, Fluid>::setup()
   base_class::setup();
 
   // Initialize the element data containers
-  ele1vel_ = GEOMETRYPAIR::InitializeElementData<Beam, scalar_type>::initialize(this->element1());
-  ele2vel_ = GEOMETRYPAIR::InitializeElementData<Fluid, scalar_type>::initialize(this->element2());
-  ele1poscur_ = GEOMETRYPAIR::InitializeElementData<Beam, double>::initialize(this->element1());
-  ele2poscur_ = GEOMETRYPAIR::InitializeElementData<Fluid, double>::initialize(this->element2());
+  ele1vel_ = GeometryPair::InitializeElementData<Beam, scalar_type>::initialize(this->element1());
+  ele2vel_ = GeometryPair::InitializeElementData<Fluid, scalar_type>::initialize(this->element2());
+  ele1poscur_ = GeometryPair::InitializeElementData<Beam, double>::initialize(this->element1());
+  ele2poscur_ = GeometryPair::InitializeElementData<Fluid, double>::initialize(this->element2());
 
   // Initialize current nodal velocities for beam element
   for (unsigned int i = 0; i < Beam::n_dof_; i++) this->ele1vel_.element_position_(i) = 0.0;
@@ -94,10 +94,10 @@ void BeamInteraction::BeamToFluidMeshtyingPairBase<Beam,
 template <typename Beam, typename Fluid>
 void BeamInteraction::BeamToFluidMeshtyingPairBase<Beam, Fluid>::create_geometry_pair(
     const Core::Elements::Element* element1, const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
+    const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
 {
   // Set up the geometry pair
-  this->geometry_pair_ = GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, Beam, Fluid>(
+  this->geometry_pair_ = GeometryPair::geometry_pair_line_to_volume_factory<double, Beam, Fluid>(
       element1, element2, geometry_evaluation_data_ptr);
 }
 
@@ -235,8 +235,8 @@ void BeamInteraction::BeamToFluidMeshtyingPairBase<Beam, Fluid>::get_pair_visual
       // Add the left and right boundary point of the segment.
       for (const auto& segmentation_point : {segment.get_eta_a(), segment.get_eta_b()})
       {
-        GEOMETRYPAIR::evaluate_position<Beam>(segmentation_point, this->ele1posref_, X);
-        GEOMETRYPAIR::evaluate_position<Beam>(segmentation_point, this->ele1pos_, r);
+        GeometryPair::evaluate_position<Beam>(segmentation_point, this->ele1posref_, X);
+        GeometryPair::evaluate_position<Beam>(segmentation_point, this->ele1pos_, r);
         u = r;
         u -= X;
         for (unsigned int dim = 0; dim < 3; dim++)
@@ -251,32 +251,32 @@ void BeamInteraction::BeamToFluidMeshtyingPairBase<Beam, Fluid>::get_pair_visual
 
 template <typename Beam, typename Fluid>
 void BeamInteraction::BeamToFluidMeshtyingPairBase<Beam, Fluid>::evaluate_beam_position(
-    const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& integration_point,
+    const GeometryPair::ProjectionPoint1DTo3D<double>& integration_point,
     Core::LinAlg::Matrix<3, 1, scalar_type>& r_beam, bool reference) const
 {
   if (reference)
-    GEOMETRYPAIR::evaluate_position<Beam>(integration_point.get_eta(), this->ele1posref_, r_beam);
+    GeometryPair::evaluate_position<Beam>(integration_point.get_eta(), this->ele1posref_, r_beam);
   else
-    GEOMETRYPAIR::evaluate_position<Beam>(integration_point.get_eta(), this->ele1pos_, r_beam);
+    GeometryPair::evaluate_position<Beam>(integration_point.get_eta(), this->ele1pos_, r_beam);
 }
 
 /**
  * Explicit template initialization of template class.
  */
 // Hermite beam element, hex8 solid element.
-template class BeamInteraction::BeamToFluidMeshtyingPairBase<GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex8>;
+template class BeamInteraction::BeamToFluidMeshtyingPairBase<GeometryPair::t_hermite,
+    GeometryPair::t_hex8>;
 // Hermite beam element, hex20 solid element.
-template class BeamInteraction::BeamToFluidMeshtyingPairBase<GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex20>;
+template class BeamInteraction::BeamToFluidMeshtyingPairBase<GeometryPair::t_hermite,
+    GeometryPair::t_hex20>;
 // Hermite beam element, hex27 solid element.
-template class BeamInteraction::BeamToFluidMeshtyingPairBase<GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex27>;
+template class BeamInteraction::BeamToFluidMeshtyingPairBase<GeometryPair::t_hermite,
+    GeometryPair::t_hex27>;
 // Hermite beam element, tet4 solid element.
-template class BeamInteraction::BeamToFluidMeshtyingPairBase<GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tet4>;
+template class BeamInteraction::BeamToFluidMeshtyingPairBase<GeometryPair::t_hermite,
+    GeometryPair::t_tet4>;
 // Hermite beam element, tet10 solid element.
-template class BeamInteraction::BeamToFluidMeshtyingPairBase<GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tet10>;
+template class BeamInteraction::BeamToFluidMeshtyingPairBase<GeometryPair::t_hermite,
+    GeometryPair::t_tet10>;
 
 FOUR_C_NAMESPACE_CLOSE

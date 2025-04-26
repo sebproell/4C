@@ -15,7 +15,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   //! Scalar type to be used for line to volume pairs.
   template <typename Line, typename Volume>
@@ -49,7 +49,7 @@ namespace GEOMETRYPAIR
   using line_to_surface_patch_scalar_type_fixed_size =
       typename Core::FADUtils::HigherOrderFadType<2,
           Sacado::ELRFad::SLFad<double, Line::n_dof_ + Surface::n_dof_>>::type;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

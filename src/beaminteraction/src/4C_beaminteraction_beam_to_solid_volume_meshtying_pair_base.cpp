@@ -47,8 +47,8 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairBase<ScalarType, Beam, Solid
   base_class::setup();
 
   // Get the solid element data container
-  ele2posref_ = GEOMETRYPAIR::InitializeElementData<Solid, double>::initialize(this->element2());
-  ele2pos_ = GEOMETRYPAIR::InitializeElementData<Solid, ScalarType>::initialize(this->element2());
+  ele2posref_ = GeometryPair::InitializeElementData<Solid, double>::initialize(this->element2());
+  ele2pos_ = GeometryPair::InitializeElementData<Solid, ScalarType>::initialize(this->element2());
 
   // Set reference nodal positions for the solid element
   for (unsigned int n = 0; n < Solid::n_nodes_; ++n)
@@ -68,9 +68,9 @@ template <typename ScalarType, typename Beam, typename Solid>
 void BeamInteraction::BeamToSolidVolumeMeshtyingPairBase<ScalarType, Beam,
     Solid>::create_geometry_pair(const Core::Elements::Element* element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
+    const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>& geometry_evaluation_data_ptr)
 {
-  this->geometry_pair_ = GEOMETRYPAIR::geometry_pair_line_to_volume_factory<double, Beam, Solid>(
+  this->geometry_pair_ = GeometryPair::geometry_pair_line_to_volume_factory<double, Beam, Solid>(
       element1, element2, geometry_evaluation_data_ptr);
 }
 
@@ -84,8 +84,8 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairBase<ScalarType, Beam, Solid
   // Call pre_evaluate on the geometry Pair.
   if (!meshtying_is_evaluated_)
   {
-    GEOMETRYPAIR::ElementData<Beam, double> beam_coupling_ref;
-    GEOMETRYPAIR::ElementData<Solid, double> solid_coupling_ref;
+    GeometryPair::ElementData<Beam, double> beam_coupling_ref;
+    GeometryPair::ElementData<Solid, double> solid_coupling_ref;
     this->get_coupling_reference_position(beam_coupling_ref, solid_coupling_ref);
     cast_geometry_pair()->pre_evaluate(
         beam_coupling_ref, solid_coupling_ref, this->line_to_3D_segments_);
@@ -188,8 +188,8 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairBase<ScalarType, Beam,
       // Add the left and right boundary point of the segment.
       for (const auto& segmentation_point : {segment.get_eta_a(), segment.get_eta_b()})
       {
-        GEOMETRYPAIR::evaluate_position<Beam>(segmentation_point, this->ele1posref_, X);
-        GEOMETRYPAIR::evaluate_position<Beam>(segmentation_point, this->ele1pos_, r);
+        GeometryPair::evaluate_position<Beam>(segmentation_point, this->ele1posref_, X);
+        GeometryPair::evaluate_position<Beam>(segmentation_point, this->ele1pos_, r);
         u = r;
         u -= X;
         for (unsigned int dim = 0; dim < 3; dim++)
@@ -241,8 +241,8 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairBase<ScalarType, Beam,
         this->evaluate_beam_position_double(projection_point, r, false);
         u = r;
         u -= X;
-        GEOMETRYPAIR::evaluate_position<Solid>(projection_point.get_xi(),
-            GEOMETRYPAIR::ElementDataToDouble<Solid>::to_double(this->ele2pos_), r_solid);
+        GeometryPair::evaluate_position<Solid>(projection_point.get_xi(),
+            GeometryPair::ElementDataToDouble<Solid>::to_double(this->ele2pos_), r_solid);
         evaluate_penalty_force_double(r, r_solid, force_integration_point);
         for (unsigned int dim = 0; dim < 3; dim++)
         {
@@ -281,9 +281,9 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairBase<ScalarType, Beam,
  */
 template <typename ScalarType, typename Beam, typename Solid>
 void BeamInteraction::BeamToSolidVolumeMeshtyingPairBase<ScalarType, Beam,
-    Solid>::get_coupling_reference_position(GEOMETRYPAIR::ElementData<Beam, double>&
+    Solid>::get_coupling_reference_position(GeometryPair::ElementData<Beam, double>&
                                                 beam_coupling_ref,
-    GEOMETRYPAIR::ElementData<Solid, double>& solid_coupling_ref) const
+    GeometryPair::ElementData<Solid, double>& solid_coupling_ref) const
 {
   // Add the offset to the reference position.
   beam_coupling_ref = this->ele1posref_;
@@ -298,7 +298,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairBase<ScalarType, Beam,
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidVolumeMeshtyingPairBase<double, t_hermite, t_hex8>;
   template class BeamToSolidVolumeMeshtyingPairBase<double, t_hermite, t_hex20>;

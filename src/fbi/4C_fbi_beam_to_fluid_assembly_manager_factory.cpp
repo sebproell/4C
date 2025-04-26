@@ -19,7 +19,7 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-std::shared_ptr<BeamInteraction::SUBMODELEVALUATOR::PartitionedBeamInteractionAssemblyManager>
+std::shared_ptr<BeamInteraction::SubmodelEvaluator::PartitionedBeamInteractionAssemblyManager>
 BeamInteraction::BeamToFluidAssemblyManagerFactory::create_assembly_manager(
     std::shared_ptr<const Core::FE::Discretization> discretization1,
     std::shared_ptr<const Core::FE::Discretization> discretization2,
@@ -35,13 +35,13 @@ BeamInteraction::BeamToFluidAssemblyManagerFactory::create_assembly_manager(
   {
     case FBI::BeamToFluidDiscretization::mortar:
       return std::make_shared<
-          BeamInteraction::SUBMODELEVALUATOR::PartitionedBeamInteractionAssemblyManagerIndirect>(
+          BeamInteraction::SubmodelEvaluator::PartitionedBeamInteractionAssemblyManagerIndirect>(
 
           interaction_pairs, discretization1, discretization2, params_ptr);
       break;
     case FBI::BeamToFluidDiscretization::gauss_point_to_segment:
       return std::make_shared<
-          BeamInteraction::SUBMODELEVALUATOR::PartitionedBeamInteractionAssemblyManagerDirect>(
+          BeamInteraction::SubmodelEvaluator::PartitionedBeamInteractionAssemblyManagerDirect>(
 
           interaction_pairs, assemblystrategy);
       break;

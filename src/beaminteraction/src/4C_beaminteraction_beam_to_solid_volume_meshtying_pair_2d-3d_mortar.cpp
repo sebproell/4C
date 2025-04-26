@@ -94,7 +94,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DMortar<Beam, Solid,
       beam_ele->get_circular_cross_section_radius_for_interactions();
 
   // Get the vector with the projection points for this pair.
-  const std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<double>>& projection_points =
+  const std::vector<GeometryPair::ProjectionPoint1DTo3D<double>>& projection_points =
       this->line_to_3D_segments_[0].get_projection_points();
 
   // If there are no projection points, return no contact status.
@@ -165,14 +165,14 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DMortar<Beam, Solid,
     // beam has changed compared to the last Gauss point.
     if (std::abs(eta - eta_last_gauss_point) > 1e-10)
     {
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam_ref);
+      GeometryPair::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam_ref);
       beam_jacobian = dr_beam_ref.norm2();
 
-      GEOMETRYPAIR::evaluate_shape_function_matrix<Beam>(
+      GeometryPair::evaluate_shape_function_matrix<Beam>(
           H, eta, this->ele1pos_.shape_function_data_);
-      GEOMETRYPAIR::evaluate_position<Beam>(eta, this->ele1pos_, pos_beam);
+      GeometryPair::evaluate_position<Beam>(eta, this->ele1pos_, pos_beam);
 
-      GEOMETRYPAIR::evaluate_shape_function_matrix<GEOMETRYPAIR::t_line3>(L, eta);
+      GeometryPair::evaluate_shape_function_matrix<GeometryPair::t_line3>(L, eta);
 
       triad_interpolation_scheme_.get_nodal_generalized_rotation_interpolation_matrices_at_xi(
           I_tilde_vector, eta);
@@ -200,14 +200,14 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DMortar<Beam, Solid,
         atan2(cross_section_vector_ref(2), cross_section_vector_ref(1));
 
     // Get the shape function matrices
-    GEOMETRYPAIR::evaluate_shape_function_matrix<Solid>(
+    GeometryPair::evaluate_shape_function_matrix<Solid>(
         N, projected_gauss_point.get_xi(), this->ele2pos_.shape_function_data_);
-    GEOMETRYPAIR::evaluate_position<Solid>(
+    GeometryPair::evaluate_position<Solid>(
         projected_gauss_point.get_xi(), this->ele2pos_, pos_solid);
     Core::LinAlg::Matrix<2, 1, double> xi_mortar;
     xi_mortar(0) = eta;
     xi_mortar(1) = cross_section_angle_parameter_space;
-    GEOMETRYPAIR::evaluate_shape_function_matrix<Mortar>(psi, xi_mortar);
+    GeometryPair::evaluate_shape_function_matrix<Mortar>(psi, xi_mortar);
 
     // Numerical integration factor for this Gauss point
     const double integration_factor =
@@ -274,7 +274,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DMortar<Beam, Solid,
     local_constraint += local_constraint_gp;
 
     // Fill in the local templated mortar scaling vector kappa
-    GEOMETRYPAIR::evaluate_shape_function_matrix<typename Mortar::curve_discretization_>(
+    GeometryPair::evaluate_shape_function_matrix<typename Mortar::curve_discretization_>(
         psi_curve, projected_gauss_point.get_eta());
     for (unsigned int i_node_mortar_centerline = 0; i_node_mortar_centerline < Mortar::n_nodes_;
         i_node_mortar_centerline++)
@@ -440,7 +440,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DMortar<Beam, Solid,
       beam_tracker_2d_3d_continuous->insert(this->element1()->id());
 
       // Setup variables.
-      GEOMETRYPAIR::ElementData<Mortar, double> element_data_lambda;
+      GeometryPair::ElementData<Mortar, double> element_data_lambda;
       Core::LinAlg::Matrix<3, 1, double> X;
       Core::LinAlg::Matrix<3, 1, double> r;
       Core::LinAlg::Matrix<3, 1, double> u;
@@ -535,8 +535,8 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DMortar<Beam, Solid,
             cross_section_vector_ref.multiply(triad_ref, cross_section_vector_material);
             cross_section_vector_current.multiply(triad, cross_section_vector_material);
 
-            GEOMETRYPAIR::evaluate_position<Beam>(xi(0), this->ele1posref_, X);
-            GEOMETRYPAIR::evaluate_position<Beam>(xi(0), this->ele1pos_, r);
+            GeometryPair::evaluate_position<Beam>(xi(0), this->ele1posref_, X);
+            GeometryPair::evaluate_position<Beam>(xi(0), this->ele1pos_, r);
 
             X += cross_section_vector_ref;
             r += cross_section_vector_current;
@@ -544,7 +544,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DMortar<Beam, Solid,
             u = r;
             u -= X;
 
-            GEOMETRYPAIR::evaluate_position<Mortar>(xi, element_data_lambda, lambda_interpolated);
+            GeometryPair::evaluate_position<Mortar>(xi, element_data_lambda, lambda_interpolated);
 
             // Add to output data.
             for (unsigned int dim = 0; dim < 3; dim++)
@@ -611,17 +611,17 @@ BeamInteraction::create_beam_to_solid_volume_pair_mortar_cross_section(
       switch (n_fourier_modes)
       {
         case 0:
-          return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GEOMETRYPAIR::t_hermite,
-              GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_line2_fourier_0>>();
+          return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GeometryPair::t_hermite,
+              GeometryPair::t_hex8, GeometryPair::t_line2_fourier_0>>();
         case 1:
-          return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GEOMETRYPAIR::t_hermite,
-              GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_line2_fourier_1>>();
+          return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GeometryPair::t_hermite,
+              GeometryPair::t_hex8, GeometryPair::t_line2_fourier_1>>();
         case 2:
-          return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GEOMETRYPAIR::t_hermite,
-              GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_line2_fourier_2>>();
+          return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GeometryPair::t_hermite,
+              GeometryPair::t_hex8, GeometryPair::t_line2_fourier_2>>();
         case 3:
-          return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GEOMETRYPAIR::t_hermite,
-              GEOMETRYPAIR::t_hex8, GEOMETRYPAIR::t_line2_fourier_3>>();
+          return std::make_shared<BeamToSolidVolumeMeshtyingPair2D3DMortar<GeometryPair::t_hermite,
+              GeometryPair::t_hex8, GeometryPair::t_line2_fourier_3>>();
         default:
           FOUR_C_THROW("Got wrong number of fourier mortar modes {}.", n_fourier_modes);
       }

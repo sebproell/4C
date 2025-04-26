@@ -35,18 +35,18 @@ namespace BeamInteraction
 {
   /**
    * \brief Class for beam to solid meshtying using Gauss point projection.
-   * @param beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @param solid Type from GEOMETRYPAIR::ElementDiscretization... representing the solid.
+   * @param beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @param solid Type from GeometryPair::ElementDiscretization... representing the solid.
    */
   template <typename Beam, typename Solid>
   class BeamToSolidVolumeMeshtyingPairGaussPoint
       : public BeamToSolidVolumeMeshtyingPairBase<
-            GEOMETRYPAIR::line_to_volume_scalar_type<Beam, Solid>, Beam, Solid>
+            GeometryPair::line_to_volume_scalar_type<Beam, Solid>, Beam, Solid>
   {
    protected:
     //! Shortcut to the base class.
     using base_class =
-        BeamToSolidVolumeMeshtyingPairBase<GEOMETRYPAIR::line_to_volume_scalar_type<Beam, Solid>,
+        BeamToSolidVolumeMeshtyingPairBase<GeometryPair::line_to_volume_scalar_type<Beam, Solid>,
             Beam, Solid>;
 
     //! Type to be used for scalar AD variables.
@@ -107,7 +107,7 @@ namespace BeamInteraction
      */
     void evaluate_rotational_coupling_terms(
         const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
-        const GEOMETRYPAIR::ElementData<Solid, scalar_type_rot_2nd>& q_solid,
+        const GeometryPair::ElementData<Solid, scalar_type_rot_2nd>& q_solid,
         const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
             triad_interpolation_scheme,
         const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&

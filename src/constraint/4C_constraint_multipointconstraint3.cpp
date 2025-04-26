@@ -24,7 +24,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  |  ctor (public)                                               tk 07/08|
  *----------------------------------------------------------------------*/
-CONSTRAINTS::MPConstraint3::MPConstraint3(std::shared_ptr<Core::FE::Discretization> discr,
+Constraints::MPConstraint3::MPConstraint3(std::shared_ptr<Core::FE::Discretization> discr,
     const std::string& conditionname, int& offsetID, int& maxID)
     : MPConstraint(discr, conditionname)
 {
@@ -66,7 +66,7 @@ CONSTRAINTS::MPConstraint3::MPConstraint3(std::shared_ptr<Core::FE::Discretizati
 |(public)                                                       tk 08/08  |
 |Initialization routine activates conditions (restart)                    |
 *------------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3::initialize(const double& time)
+void Constraints::MPConstraint3::initialize(const double& time)
 {
   for (auto* cond : constrcond_)
   {
@@ -90,7 +90,7 @@ void CONSTRAINTS::MPConstraint3::initialize(const double& time)
 |(public)                                                        tk 07/08|
 |Evaluate Constraints, choose the right action based on type             |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3::initialize(
+void Constraints::MPConstraint3::initialize(
     Teuchos::ParameterList& params, std::shared_ptr<Core::LinAlg::Vector<double>> systemvector)
 {
   const double time = params.get("total time", -1.0);
@@ -158,7 +158,7 @@ void CONSTRAINTS::MPConstraint3::initialize(
 |(public)                                                        tk 07/08|
 |Evaluate Constraints, choose the right action based on type             |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3::evaluate(Teuchos::ParameterList& params,
+void Constraints::MPConstraint3::evaluate(Teuchos::ParameterList& params,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -189,7 +189,7 @@ void CONSTRAINTS::MPConstraint3::evaluate(Teuchos::ParameterList& params,
  |subroutine creating a new discretization containing constraint elements |
  *------------------------------------------------------------------------*/
 std::map<int, std::shared_ptr<Core::FE::Discretization>>
-CONSTRAINTS::MPConstraint3::create_discretization_from_condition(
+Constraints::MPConstraint3::create_discretization_from_condition(
     std::shared_ptr<Core::FE::Discretization> actdisc,
     std::vector<Core::Conditions::Condition*> constrcondvec, const std::string& discret_name,
     const std::string& element_name, int& startID)
@@ -337,7 +337,7 @@ CONSTRAINTS::MPConstraint3::create_discretization_from_condition(
  |Evaluate method, calling element evaluates of a condition and          |
  |assembing results based on this conditions                             |
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3::evaluate_constraint(std::shared_ptr<Core::FE::Discretization> disc,
+void Constraints::MPConstraint3::evaluate_constraint(std::shared_ptr<Core::FE::Discretization> disc,
     Teuchos::ParameterList& params, std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix1,
     std::shared_ptr<Core::LinAlg::SparseOperator> systemmatrix2,
     std::shared_ptr<Core::LinAlg::Vector<double>> systemvector1,
@@ -478,7 +478,7 @@ void CONSTRAINTS::MPConstraint3::evaluate_constraint(std::shared_ptr<Core::FE::D
  |Evaluate method, calling element evaluates of a condition and          |
  |assembing results based on this conditions                             |
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::MPConstraint3::initialize_constraint(Core::FE::Discretization& disc,
+void Constraints::MPConstraint3::initialize_constraint(Core::FE::Discretization& disc,
     Teuchos::ParameterList& params, Core::LinAlg::Vector<double>& systemvector)
 {
   if (!(disc.filled())) FOUR_C_THROW("fill_complete() was not called");

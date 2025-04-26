@@ -132,7 +132,7 @@ namespace Solid
       std::shared_ptr<const Core::LinAlg::Vector<double>> get_last_time_step_solution_ptr()
           const override;
 
-      const std::shared_ptr<CONSTRAINTS::ConstrManager>& strategy_ptr();
+      const std::shared_ptr<Constraints::ConstrManager>& strategy_ptr();
 
       //! Return the NOX::Nln::CONSTRAINT::Interface::Required member object
       const std::shared_ptr<LAGPENCONSTRAINT::NoxInterface>& nox_interface_ptr();
@@ -142,12 +142,12 @@ namespace Solid
 
      protected:
       //! Returns the underlying contact strategy object
-      CONSTRAINTS::ConstrManager& strategy();
-      const CONSTRAINTS::ConstrManager& strategy() const;
+      Constraints::ConstrManager& strategy();
+      const Constraints::ConstrManager& strategy() const;
 
      private:
       //! all constraint instances
-      std::shared_ptr<CONSTRAINTS::ConstrManager> constrman_;  //!< Constraint manager
+      std::shared_ptr<Constraints::ConstrManager> constrman_;  //!< Constraint manager
 
       //! structural displacement at \f$t_{n+1}\f$
       std::shared_ptr<const Core::LinAlg::Vector<double>> disnp_ptr_;

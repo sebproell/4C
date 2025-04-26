@@ -692,7 +692,7 @@ namespace Solid
     bool have_spring_dashpot() override;
 
     //! Return Teuchos::rcp to ConstraintManager conman_
-    std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager() override
+    std::shared_ptr<Constraints::ConstrManager> get_constraint_manager() override
     {
       return conman_;
     }
@@ -704,7 +704,7 @@ namespace Solid
     }
 
     //! Return Teuchos::rcp to SpringDashpotManager springman_
-    std::shared_ptr<CONSTRAINTS::SpringDashpotManager> get_spring_dashpot_manager() override
+    std::shared_ptr<Constraints::SpringDashpotManager> get_spring_dashpot_manager() override
     {
       return springman_;
     }

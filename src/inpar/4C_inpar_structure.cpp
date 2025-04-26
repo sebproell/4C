@@ -637,12 +637,12 @@ namespace Inpar
         cond.add_component(parameter<std::vector<int>>(
             "FUNCTNONLINSTIFF", {.description = "", .size = from_parameter<int>("NUMDOF")}));
         cond.add_component(
-            deprecated_selection<CONSTRAINTS::SpringDashpot::RobinSpringDashpotType>("DIRECTION",
-                {{"xyz", CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::xyz},
+            deprecated_selection<Constraints::SpringDashpot::RobinSpringDashpotType>("DIRECTION",
+                {{"xyz", Constraints::SpringDashpot::RobinSpringDashpotType::xyz},
                     {"refsurfnormal",
-                        CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::refsurfnormal},
+                        Constraints::SpringDashpot::RobinSpringDashpotType::refsurfnormal},
                     {"cursurfnormal",
-                        CONSTRAINTS::SpringDashpot::RobinSpringDashpotType::cursurfnormal}},
+                        Constraints::SpringDashpot::RobinSpringDashpotType::cursurfnormal}},
                 {.description = "Direction of the spring-dashpot boundary conditions"}));
         cond.add_component(parameter<std::optional<int>>("COUPLING", {.description = ""}));
         condlist.emplace_back(cond);

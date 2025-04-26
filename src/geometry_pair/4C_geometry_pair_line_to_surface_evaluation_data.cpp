@@ -16,20 +16,20 @@ FOUR_C_NAMESPACE_OPEN
 /**
  *
  */
-GEOMETRYPAIR::LineToSurfaceEvaluationData::LineToSurfaceEvaluationData(
+GeometryPair::LineToSurfaceEvaluationData::LineToSurfaceEvaluationData(
     const Teuchos::ParameterList& input_parameter_list)
     : LineTo3DEvaluationData(input_parameter_list),
       face_elements_(),
-      surface_normal_strategy_(Inpar::GEOMETRYPAIR::SurfaceNormals::standard)
+      surface_normal_strategy_(Inpar::GeometryPair::SurfaceNormals::standard)
 {
-  surface_normal_strategy_ = Teuchos::getIntegralValue<Inpar::GEOMETRYPAIR::SurfaceNormals>(
+  surface_normal_strategy_ = Teuchos::getIntegralValue<Inpar::GeometryPair::SurfaceNormals>(
       input_parameter_list, "GEOMETRY_PAIR_SURFACE_NORMALS");
 }
 
 /**
  *
  */
-void GEOMETRYPAIR::LineToSurfaceEvaluationData::clear()
+void GeometryPair::LineToSurfaceEvaluationData::clear()
 {
   // Call reset on the base method.
   LineTo3DEvaluationData::clear();
@@ -39,9 +39,9 @@ void GEOMETRYPAIR::LineToSurfaceEvaluationData::clear()
 /**
  *
  */
-void GEOMETRYPAIR::LineToSurfaceEvaluationData::setup(
+void GeometryPair::LineToSurfaceEvaluationData::setup(
     const std::shared_ptr<const Core::FE::Discretization>& discret,
-    const std::unordered_map<int, std::shared_ptr<GEOMETRYPAIR::FaceElement>>& face_elements)
+    const std::unordered_map<int, std::shared_ptr<GeometryPair::FaceElement>>& face_elements)
 {
   face_elements_ = face_elements;
 
@@ -57,7 +57,7 @@ void GEOMETRYPAIR::LineToSurfaceEvaluationData::setup(
 /**
  *
  */
-void GEOMETRYPAIR::LineToSurfaceEvaluationData::set_state(
+void GeometryPair::LineToSurfaceEvaluationData::set_state(
     const std::shared_ptr<const Core::LinAlg::Vector<double>>& displacement_col_np)
 {
   for (const auto& [id, face_element] : face_elements_)

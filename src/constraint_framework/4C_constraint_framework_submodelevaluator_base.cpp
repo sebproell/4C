@@ -20,7 +20,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-bool CONSTRAINTS::SUBMODELEVALUATOR::ConstraintBase::evaluate_force_stiff(
+bool Constraints::SubmodelEvaluator::ConstraintBase::evaluate_force_stiff(
     const Core::LinAlg::Vector<double>& displacement_vector,
     std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& global_state_ptr,
     std::shared_ptr<Core::LinAlg::SparseMatrix> me_stiff_ptr,
@@ -54,7 +54,7 @@ bool CONSTRAINTS::SUBMODELEVALUATOR::ConstraintBase::evaluate_force_stiff(
   return true;
 }
 
-void CONSTRAINTS::SUBMODELEVALUATOR::ConstraintBase::evaluate_coupling_terms(
+void Constraints::SubmodelEvaluator::ConstraintBase::evaluate_coupling_terms(
     Solid::TimeInt::BaseDataGlobalState& gstate)
 {
   // Get the number of multipoint equations

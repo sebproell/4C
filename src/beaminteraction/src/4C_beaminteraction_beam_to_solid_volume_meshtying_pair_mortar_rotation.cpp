@@ -70,7 +70,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, 
   // Set the FAD variables for the solid DOFs. For the terms calculated here we only need first
   // order derivatives.
   auto q_solid =
-      GEOMETRYPAIR::InitializeElementData<Solid, scalar_type_rot_1st>::initialize(this->element2());
+      GeometryPair::InitializeElementData<Solid, scalar_type_rot_1st>::initialize(this->element2());
   for (unsigned int i_solid = 0; i_solid < Solid::n_dof_; i_solid++)
     q_solid.element_position_(i_solid) =
         Core::FADUtils::HigherOrderFadValue<scalar_type_rot_1st>::apply(3 + Solid::n_dof_,
@@ -153,7 +153,7 @@ template <typename Beam, typename Solid, typename Mortar, typename MortarRot>
 void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, Mortar,
     MortarRot>::evaluate_rotational_coupling_terms(  //
     const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
-    const GEOMETRYPAIR::ElementData<Solid, scalar_type_rot_1st>& q_solid,
+    const GeometryPair::ElementData<Solid, scalar_type_rot_1st>& q_solid,
     const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
         triad_interpolation_scheme,
     const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
@@ -217,11 +217,11 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, 
     for (unsigned int i_gp = 0; i_gp < n_gp; i_gp++)
     {
       // Get the current Gauss point.
-      const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+      const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
           this->line_to_3D_segments_[i_segment].get_projection_points()[i_gp];
 
       // Get the jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(
+      GeometryPair::evaluate_position_derivative1<Beam>(
           projected_gauss_point.get_eta(), this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
@@ -257,7 +257,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, 
       Core::LinAlg::inverse(T_solid_inv);
 
       // Evaluate shape functions.
-      GEOMETRYPAIR::EvaluateShapeFunction<MortarRot>::evaluate(
+      GeometryPair::EvaluateShapeFunction<MortarRot>::evaluate(
           lambda_shape_functions, projected_gauss_point.get_eta());
       for (unsigned int i_node = 0; i_node < MortarRot::n_nodes_; i_node++)
         for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
@@ -359,7 +359,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, 
   // Set the FAD variables for the solid DOFs. For the terms calculated here we only need first
   // order derivatives.
   auto q_solid =
-      GEOMETRYPAIR::InitializeElementData<Solid, scalar_type_rot_2nd>::initialize(this->element2());
+      GeometryPair::InitializeElementData<Solid, scalar_type_rot_2nd>::initialize(this->element2());
   for (unsigned int i_solid = 0; i_solid < Solid::n_dof_; i_solid++)
     q_solid.element_position_(i_solid) =
         Core::FADUtils::HigherOrderFadValue<scalar_type_rot_2nd>::apply(3 + Solid::n_dof_,
@@ -436,7 +436,7 @@ template <typename Beam, typename Solid, typename Mortar, typename MortarRot>
 void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, Mortar, MortarRot>::
     evaluate_rotational_coupling_stiff_terms(
         const Inpar::BeamToSolid::BeamToSolidRotationCoupling& rot_coupling_type,
-        const GEOMETRYPAIR::ElementData<Solid, scalar_type_rot_2nd>& q_solid,
+        const GeometryPair::ElementData<Solid, scalar_type_rot_2nd>& q_solid,
         Core::LinAlg::Matrix<MortarRot::n_dof_, 1, double>& lambda_rot,
         const LargeRotations::TriadInterpolationLocalRotationVectors<3, double>&
             triad_interpolation_scheme,
@@ -507,11 +507,11 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, 
         i_gp < this->line_to_3D_segments_[i_segment].get_projection_points().size(); i_gp++)
     {
       // Get the current Gauss point.
-      const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+      const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
           this->line_to_3D_segments_[i_segment].get_projection_points()[i_gp];
 
       // Get the jacobian in the reference configuration.
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(
+      GeometryPair::evaluate_position_derivative1<Beam>(
           projected_gauss_point.get_eta(), this->ele1posref_, dr_beam_ref);
 
       // Jacobian including the segment length.
@@ -549,7 +549,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, 
       Core::LinAlg::inverse(T_solid_inv);
 
       // Evaluate shape functions.
-      GEOMETRYPAIR::EvaluateShapeFunction<MortarRot>::evaluate(
+      GeometryPair::EvaluateShapeFunction<MortarRot>::evaluate(
           lambda_shape_functions, projected_gauss_point.get_eta());
       for (unsigned int i_node = 0; i_node < MortarRot::n_nodes_; i_node++)
         for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
@@ -627,7 +627,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPairMortarRotation<Beam, Solid, 
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
 #define initialize_template_beam_to_solid_volume_meshtying_pair_mortar_rotation(            \
     mortar, mortar_rot)                                                                     \

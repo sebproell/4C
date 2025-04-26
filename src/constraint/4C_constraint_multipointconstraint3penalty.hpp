@@ -16,13 +16,13 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   /*!
   \brief This class can handle multi point constraints in 3D.
   It is derived from the basic multipointconstraint class.
   */
-  class MPConstraint3Penalty : public CONSTRAINTS::MPConstraint
+  class MPConstraint3Penalty : public Constraints::MPConstraint
   {
    public:
     /*!
@@ -136,7 +136,7 @@ namespace CONSTRAINTS
 
 
   };  // class
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 FOUR_C_NAMESPACE_CLOSE
 
 #endif

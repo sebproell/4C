@@ -16,21 +16,21 @@
 #include "4C_geometry_pair_utility_classes.hpp"
 #include "4C_inpar_beam_to_solid.hpp"
 
-using namespace GEOMETRYPAIR;
+using namespace GeometryPair;
 
 namespace
 {
 
   void set_up_default_parameters_line_to_3d(Teuchos::ParameterList& list)
   {
-    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GEOMETRYPAIR::LineTo3DStrategy::segmentation);
+    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GeometryPair::LineTo3DStrategy::segmentation);
     list.set("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 6);
     list.set("GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
-        Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction::fail);
+        Inpar::GeometryPair::NotAllGaussPointsProjectValidAction::fail);
     list.set("GAUSS_POINTS", 6);
     list.set("INTEGRATION_POINTS_CIRCUMFERENCE", 6);
 
-    list.set("GEOMETRY_PAIR_SURFACE_NORMALS", Inpar::GEOMETRYPAIR::SurfaceNormals::standard);
+    list.set("GEOMETRY_PAIR_SURFACE_NORMALS", Inpar::GeometryPair::SurfaceNormals::standard);
   }
 
   /**
@@ -48,7 +48,7 @@ namespace
       Teuchos::ParameterList line_to_surface_params_list;
       set_up_default_parameters_line_to_3d(line_to_surface_params_list);
       evaluation_data_ =
-          std::make_shared<GEOMETRYPAIR::LineToSurfaceEvaluationData>(line_to_surface_params_list);
+          std::make_shared<GeometryPair::LineToSurfaceEvaluationData>(line_to_surface_params_list);
     }
 
     /**
@@ -57,13 +57,13 @@ namespace
      */
     template <typename A, typename B>
     void set_is_unit_test(
-        GEOMETRYPAIR::GeometryPairLineToSurface<double, A, B>& pair, const int is_unit_test)
+        GeometryPair::GeometryPairLineToSurface<double, A, B>& pair, const int is_unit_test)
     {
       pair.is_unit_test_ = is_unit_test;
     }
 
     //! Evaluation data container for geometry pairs.
-    std::shared_ptr<GEOMETRYPAIR::LineToSurfaceEvaluationData> evaluation_data_;
+    std::shared_ptr<GeometryPair::LineToSurfaceEvaluationData> evaluation_data_;
   };  // namespace
 
   /**
@@ -74,7 +74,7 @@ namespace
     // Set up the pair.
     std::shared_ptr<Core::Elements::Element> beam =
         std::make_shared<Discret::Elements::Beam3r>(0, 0);
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tri3>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_tri3>
         pair(beam.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -98,7 +98,7 @@ namespace
     xi_result(1) = 0.2853120425437799;
     xi_result(2) = 0.03218342274405913;
     for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
-      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GeometryPair::Constants::projection_xi_eta_tol);
   }
 
   /**
@@ -109,7 +109,7 @@ namespace
     // Set up the pair.
     std::shared_ptr<Core::Elements::Element> beam =
         std::make_shared<Discret::Elements::Beam3r>(0, 0);
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tri6>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_tri6>
         pair(beam.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -133,7 +133,7 @@ namespace
     xi_result(1) = 0.1649919700896869;
     xi_result(2) = 0.2749865824042791;
     for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
-      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GeometryPair::Constants::projection_xi_eta_tol);
   }
 
   /**
@@ -144,7 +144,7 @@ namespace
     // Set up the pair.
     std::shared_ptr<Core::Elements::Element> beam =
         std::make_shared<Discret::Elements::Beam3r>(0, 0);
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad4>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_quad4>
         pair(beam.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -168,7 +168,7 @@ namespace
     xi_result(1) = -0.2391123963538002;
     xi_result(2) = 0.1168739495183324;
     for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
-      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GeometryPair::Constants::projection_xi_eta_tol);
   }
 
   /**
@@ -179,7 +179,7 @@ namespace
     // Set up the pair.
     std::shared_ptr<Core::Elements::Element> beam =
         std::make_shared<Discret::Elements::Beam3r>(0, 0);
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad8>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_quad8>
         pair(beam.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -203,7 +203,7 @@ namespace
     xi_result(1) = 0.1593451990533972;
     xi_result(2) = 0.6729448863050194;
     for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
-      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GeometryPair::Constants::projection_xi_eta_tol);
   }
 
   /**
@@ -214,7 +214,7 @@ namespace
     // Set up the pair.
     std::shared_ptr<Core::Elements::Element> beam =
         std::make_shared<Discret::Elements::Beam3r>(0, 0);
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad9>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_quad9>
         pair(beam.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -238,7 +238,7 @@ namespace
     xi_result(1) = -0.436333510864013;
     xi_result(2) = 0.2483249147920992;
     for (unsigned int i_dim = 0; i_dim < 3; i_dim++)
-      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+      EXPECT_NEAR(xi(i_dim), xi_result(i_dim), GeometryPair::Constants::projection_xi_eta_tol);
   }
 
   /**
@@ -250,7 +250,7 @@ namespace
     const auto [element_line, element_data_line] = xtest_setup_beam();
 
     // Set up the pair.
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tri3>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_tri3>
         pair(element_line.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -281,11 +281,11 @@ namespace
     for (unsigned int i_intersection = 0; i_intersection < 2; i_intersection++)
     {
       EXPECT_NEAR(intersection_points[i_intersection].get_eta(), eta_result(i_intersection),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
 
       for (unsigned int i_dir = 0; i_dir < 3; i_dir++)
         EXPECT_NEAR(intersection_points[i_intersection].get_xi()(i_dir),
-            xi_result(i_dir, i_intersection), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+            xi_result(i_dir, i_intersection), GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -298,7 +298,7 @@ namespace
     const auto [element_line, element_data_line] = xtest_setup_beam();
 
     // Set up the pair.
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_tri6>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_tri6>
         pair(element_line.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -328,11 +328,11 @@ namespace
     for (unsigned int i_intersection = 0; i_intersection < 2; i_intersection++)
     {
       EXPECT_NEAR(intersection_points[i_intersection].get_eta(), eta_result(i_intersection),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
 
       for (unsigned int i_dir = 0; i_dir < 3; i_dir++)
         EXPECT_NEAR(intersection_points[i_intersection].get_xi()(i_dir),
-            xi_result(i_dir, i_intersection), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+            xi_result(i_dir, i_intersection), GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -345,7 +345,7 @@ namespace
     const auto [element_line, element_data_line] = xtest_setup_beam();
 
     // Set up the pair.
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad4>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_quad4>
         pair(element_line.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -376,11 +376,11 @@ namespace
     for (unsigned int i_intersection = 0; i_intersection < 2; i_intersection++)
     {
       EXPECT_NEAR(intersection_points[i_intersection].get_eta(), eta_result(i_intersection),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
 
       for (unsigned int i_dir = 0; i_dir < 3; i_dir++)
         EXPECT_NEAR(intersection_points[i_intersection].get_xi()(i_dir),
-            xi_result(i_dir, i_intersection), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+            xi_result(i_dir, i_intersection), GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -393,7 +393,7 @@ namespace
     const auto [element_line, element_data_line] = xtest_setup_beam();
 
     // Set up the pair.
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad8>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_quad8>
         pair(element_line.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
 
@@ -424,11 +424,11 @@ namespace
     for (unsigned int i_intersection = 0; i_intersection < 2; i_intersection++)
     {
       EXPECT_NEAR(intersection_points[i_intersection].get_eta(), eta_result(i_intersection),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
 
       for (unsigned int i_dir = 0; i_dir < 3; i_dir++)
         EXPECT_NEAR(intersection_points[i_intersection].get_xi()(i_dir),
-            xi_result(i_dir, i_intersection), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+            xi_result(i_dir, i_intersection), GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 
@@ -441,7 +441,7 @@ namespace
     const auto [element_line, element_data_line] = xtest_setup_beam();
 
     // Set up the pair.
-    GEOMETRYPAIR::GeometryPairLineToSurface<double, GEOMETRYPAIR::t_hermite, GEOMETRYPAIR::t_quad9>
+    GeometryPair::GeometryPairLineToSurface<double, GeometryPair::t_hermite, GeometryPair::t_quad9>
         pair(element_line.get(), nullptr, evaluation_data_);
     set_is_unit_test(pair, true);
     // Define the coordinates for the solid element.
@@ -471,11 +471,11 @@ namespace
     for (unsigned int i_intersection = 0; i_intersection < 2; i_intersection++)
     {
       EXPECT_NEAR(intersection_points[i_intersection].get_eta(), eta_result(i_intersection),
-          GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+          GeometryPair::Constants::projection_xi_eta_tol);
 
       for (unsigned int i_dir = 0; i_dir < 3; i_dir++)
         EXPECT_NEAR(intersection_points[i_intersection].get_xi()(i_dir),
-            xi_result(i_dir, i_intersection), GEOMETRYPAIR::Constants::projection_xi_eta_tol);
+            xi_result(i_dir, i_intersection), GeometryPair::Constants::projection_xi_eta_tol);
     }
   }
 

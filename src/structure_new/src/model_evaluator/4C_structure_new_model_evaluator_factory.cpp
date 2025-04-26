@@ -97,7 +97,7 @@ Solid::ModelEvaluator::Factory::build_model_evaluators(
         (*model_map)[*mt_iter] = std::make_shared<Solid::ModelEvaluator::Meshtying>();
         break;
       case Inpar::Solid::model_constraints:
-        (*model_map)[*mt_iter] = std::make_shared<Solid::ModelEvaluator::Constraints>();
+        (*model_map)[*mt_iter] = std::make_shared<Solid::ModelEvaluator::Constraint>();
         break;
       case Inpar::Solid::model_multiscale:
         (*model_map)[*mt_iter] = std::make_shared<Solid::ModelEvaluator::Multiscale>();

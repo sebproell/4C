@@ -20,21 +20,21 @@ namespace Core::Elements
 {
   class Element;
 }
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
-  class GeometryPair;
+  class GeometryPairBase;
   class GeometryEvaluationDataBase;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   /**
    * \brief Create the correct geometry pair for line to volume coupling.
    * @return RCP to created geometry pair.
    */
   template <typename ScalarType, typename Line, typename Volume>
-  std::shared_ptr<GeometryPair> geometry_pair_line_to_volume_factory(
+  std::shared_ptr<GeometryPairBase> geometry_pair_line_to_volume_factory(
       const Core::Elements::Element* element1, const Core::Elements::Element* element2,
       const std::shared_ptr<GeometryEvaluationDataBase>& geometry_evaluation_data_ptr);
 
@@ -43,7 +43,7 @@ namespace GEOMETRYPAIR
    * @return RCP to created geometry pair.
    */
   template <typename ScalarType, typename Line, typename Surface>
-  std::shared_ptr<GeometryPair> geometry_pair_line_to_surface_factory(
+  std::shared_ptr<GeometryPairBase> geometry_pair_line_to_surface_factory(
       const Core::Elements::Element* element1, const Core::Elements::Element* element2,
       const std::shared_ptr<GeometryEvaluationDataBase>& geometry_evaluation_data_ptr);
 
@@ -56,10 +56,10 @@ namespace GEOMETRYPAIR
    * @return RCP to created geometry pair.
    */
   template <typename ScalarType, typename Line, typename Surface>
-  std::shared_ptr<GeometryPair> geometry_pair_line_to_surface_factory_fad(
+  std::shared_ptr<GeometryPairBase> geometry_pair_line_to_surface_factory_fad(
       const Core::Elements::Element* element1, const Core::Elements::Element* element2,
       const std::shared_ptr<GeometryEvaluationDataBase>& geometry_evaluation_data_ptr);
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE
 

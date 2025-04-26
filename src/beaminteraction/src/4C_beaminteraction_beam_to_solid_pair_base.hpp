@@ -24,8 +24,8 @@ namespace BeamInteraction
    * \brief Base class for beam to solid interactions.
    * @tparam scalar_type Scalar FAD type to be used in this pair.
    * @tparam segments_scalar_type Scalar FAD type to be used for the beam-to-solid segments.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam solid Type from GEOMETRYPAIR::ElementDiscretization... representing the solid.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam solid Type from GeometryPair::ElementDiscretization... representing the solid.
    */
   template <typename ScalarType, typename SegmentsScalarType, typename Beam, typename Solid>
   class BeamToSolidPairBase : public BeamContactPair
@@ -172,18 +172,18 @@ namespace BeamInteraction
      * position is calculated.
      */
     virtual void evaluate_beam_position_double(
-        const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& integration_point,
+        const GeometryPair::ProjectionPoint1DTo3D<double>& integration_point,
         Core::LinAlg::Matrix<3, 1, double>& r_beam, bool reference) const;
 
    protected:
     //! Vector with the segments of the line to 3D pair.
-    std::vector<GEOMETRYPAIR::LineSegment<SegmentsScalarType>> line_to_3D_segments_;
+    std::vector<GeometryPair::LineSegment<SegmentsScalarType>> line_to_3D_segments_;
 
     //! Current nodal positions (and tangents) of the beam.
-    GEOMETRYPAIR::ElementData<Beam, ScalarType> ele1pos_;
+    GeometryPair::ElementData<Beam, ScalarType> ele1pos_;
 
     //! Reference nodal positions (and tangents) of the beam.
-    GEOMETRYPAIR::ElementData<Beam, double> ele1posref_;
+    GeometryPair::ElementData<Beam, double> ele1posref_;
   };
 }  // namespace BeamInteraction
 

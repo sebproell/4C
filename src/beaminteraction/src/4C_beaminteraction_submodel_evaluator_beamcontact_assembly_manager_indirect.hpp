@@ -26,7 +26,7 @@ namespace BeamInteraction
 
 namespace BeamInteraction
 {
-  namespace SUBMODELEVALUATOR
+  namespace SubmodelEvaluator
   {
     /**
      * \brief This class collects local coupling terms of the pairs (D and M) and assembles them
@@ -72,7 +72,7 @@ namespace BeamInteraction
       std::shared_ptr<BeamInteraction::BeamToSolidMortarManager> mortar_manager_;
     };
 
-  }  // namespace SUBMODELEVALUATOR
+  }  // namespace SubmodelEvaluator
 }  // namespace BeamInteraction
 
 FOUR_C_NAMESPACE_CLOSE

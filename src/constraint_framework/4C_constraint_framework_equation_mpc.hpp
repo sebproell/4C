@@ -16,7 +16,7 @@
 
 
 FOUR_C_NAMESPACE_OPEN
-namespace CONSTRAINTS::SUBMODELEVALUATOR
+namespace Constraints::SubmodelEvaluator
 {
   /*! \brief The MultiPointConstraintEquationBase class serves as a base interface
    * for managing multi-point constraint equations within the constraint framework
@@ -100,7 +100,7 @@ namespace CONSTRAINTS::SUBMODELEVALUATOR
     //! Vector with the data of the terms of a single equation
     std::vector<TermData> equation_data_;
   };
-}  // namespace CONSTRAINTS::SUBMODELEVALUATOR
+}  // namespace Constraints::SubmodelEvaluator
 
 FOUR_C_NAMESPACE_CLOSE
 #endif

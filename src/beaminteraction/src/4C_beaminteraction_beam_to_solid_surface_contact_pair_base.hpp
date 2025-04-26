@@ -30,7 +30,7 @@ namespace Core::LinAlg
   class SerialDenseVector;
   class SerialDenseMatrix;
 }  // namespace Core::LinAlg
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template <typename ScalarType, typename Line, typename Surface>
   class GeometryPairLineToSurface;
@@ -39,7 +39,7 @@ namespace GEOMETRYPAIR
 
   template <typename Surface, typename ScalarType>
   class FaceElementTemplate;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 namespace BeamInteraction
 {
   class BeamToSolidOutputWriterVisualization;
@@ -51,8 +51,8 @@ namespace BeamInteraction
   /**
    * \brief Base class for beam to surface surface contact.
    * @tparam scalar_type Type for scalar DOF values.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam surface Type from GEOMETRYPAIR::ElementDiscretization... representing the surface.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam surface Type from GeometryPair::ElementDiscretization... representing the surface.
    */
   template <typename ScalarType, typename Beam, typename Surface>
   class BeamToSolidSurfaceContactPairBase
@@ -110,21 +110,21 @@ namespace BeamInteraction
      */
     void create_geometry_pair(const Core::Elements::Element* element1,
         const Core::Elements::Element* element2,
-        const std::shared_ptr<GEOMETRYPAIR::GeometryEvaluationDataBase>&
+        const std::shared_ptr<GeometryPair::GeometryEvaluationDataBase>&
             geometry_evaluation_data_ptr) override;
 
     /**
      * \brief Link the contact pair with the face element storing information on the averaged nodal
      * normals (derived).
      */
-    void set_face_element(std::shared_ptr<GEOMETRYPAIR::FaceElement>& face_element) override;
+    void set_face_element(std::shared_ptr<GeometryPair::FaceElement>& face_element) override;
 
    protected:
     /**
      * \brief Return a cast of the geometry pair to the type for this contact pair.
      * @return RPC with the type of geometry pair for this beam contact pair.
      */
-    std::shared_ptr<GEOMETRYPAIR::GeometryPairLineToSurface<ScalarType, Beam, Surface>>
+    std::shared_ptr<GeometryPair::GeometryPairLineToSurface<ScalarType, Beam, Surface>>
     cast_geometry_pair() const;
 
     /**
@@ -133,7 +133,7 @@ namespace BeamInteraction
     std::tuple<Core::LinAlg::Matrix<3, 1, ScalarType>, Core::LinAlg::Matrix<3, 1, ScalarType>,
         Core::LinAlg::Matrix<3, 1, ScalarType>, ScalarType>
     evaluate_contact_kinematics_at_projection_point(
-        const GEOMETRYPAIR::ProjectionPoint1DTo3D<ScalarType>& projection_point,
+        const GeometryPair::ProjectionPoint1DTo3D<ScalarType>& projection_point,
         const double beam_cross_section_radius) const;
 
    private:
@@ -145,13 +145,13 @@ namespace BeamInteraction
      */
     void add_visualization_integration_points(
         BeamToSolidOutputWriterVisualization& visualization_writer,
-        const std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<ScalarType>>& points,
+        const std::vector<GeometryPair::ProjectionPoint1DTo3D<ScalarType>>& points,
         const Teuchos::ParameterList& visualization_params) const;
 
    protected:
     //! Pointer to the face element object which manages the positions on the surface, including the
     //! averaged nodal normals.
-    std::shared_ptr<GEOMETRYPAIR::FaceElementTemplate<Surface, ScalarType>> face_element_;
+    std::shared_ptr<GeometryPair::FaceElementTemplate<Surface, ScalarType>> face_element_;
   };
 }  // namespace BeamInteraction
 

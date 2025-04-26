@@ -76,7 +76,7 @@ namespace Adapter
     }
 
     /// get constraint manager defined in the structure
-    virtual std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager()
+    virtual std::shared_ptr<Constraints::ConstrManager> get_constraint_manager()
     {
       return structure_->get_constraint_manager();
     }

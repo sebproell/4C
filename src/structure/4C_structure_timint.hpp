@@ -43,12 +43,12 @@ namespace Utils
   class Cardiovascular0DManager;
 }  // namespace Utils
 
-namespace CONSTRAINTS
+namespace Constraints
 {
   class ConstrManager;
   class ConstraintSolver;
   class SpringDashpotManager;
-}  // namespace CONSTRAINTS
+}  // namespace Constraints
 
 namespace CONTACT
 {
@@ -784,10 +784,10 @@ namespace Solid
     bool have_spring_dashpot() override = 0;
 
     //! get constraint manager defined in the structure
-    std::shared_ptr<CONSTRAINTS::ConstrManager> get_constraint_manager() override = 0;
+    std::shared_ptr<Constraints::ConstrManager> get_constraint_manager() override = 0;
 
     //! get spring dashpot manager defined in the structure
-    std::shared_ptr<CONSTRAINTS::SpringDashpotManager> get_spring_dashpot_manager() override = 0;
+    std::shared_ptr<Constraints::SpringDashpotManager> get_spring_dashpot_manager() override = 0;
 
     //@}
 
@@ -1076,14 +1076,14 @@ namespace Solid
     //@{
 
     //! whatever constraints
-    std::shared_ptr<CONSTRAINTS::ConstrManager> conman_;      //!< constraint manager
-    std::shared_ptr<CONSTRAINTS::ConstraintSolver> consolv_;  //!< constraint solver
+    std::shared_ptr<Constraints::ConstrManager> conman_;      //!< constraint manager
+    std::shared_ptr<Constraints::ConstraintSolver> consolv_;  //!< constraint solver
 
     // for 0D cardiovascular models
     std::shared_ptr<Utils::Cardiovascular0DManager> cardvasc0dman_;  //!< Cardiovascular0D manager
 
     // spring dashpot
-    std::shared_ptr<CONSTRAINTS::SpringDashpotManager> springman_;
+    std::shared_ptr<Constraints::SpringDashpotManager> springman_;
 
     //! bridge for meshtying and contact
     std::shared_ptr<CONTACT::MeshtyingContactBridge> cmtbridge_;

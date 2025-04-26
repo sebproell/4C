@@ -21,7 +21,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  |  ctor (public)                                               tk 07/08|
  *----------------------------------------------------------------------*/
-CONSTRAINTS::Monitor::Monitor(std::shared_ptr<Core::FE::Discretization> discr,
+Constraints::Monitor::Monitor(std::shared_ptr<Core::FE::Discretization> discr,
     const std::string& conditionname, int& minID, int& maxID)
     : actdisc_(discr)
 {
@@ -53,7 +53,7 @@ CONSTRAINTS::Monitor::Monitor(std::shared_ptr<Core::FE::Discretization> discr,
 /*-----------------------------------------------------------------------*
 |(private)                                                       tk 07/08|
 *-----------------------------------------------------------------------*/
-CONSTRAINTS::Monitor::MoniType CONSTRAINTS::Monitor::get_moni_type(const std::string& name)
+Constraints::Monitor::MoniType Constraints::Monitor::get_moni_type(const std::string& name)
 {
   if (name == "VolumeMonitor_3D")
     return volmonitor3d;
@@ -69,7 +69,7 @@ CONSTRAINTS::Monitor::MoniType CONSTRAINTS::Monitor::get_moni_type(const std::st
 |(public)                                                        tk 07/08|
 |Evaluate Monitors, choose the right action based on type             |
 *-----------------------------------------------------------------------*/
-void CONSTRAINTS::Monitor::evaluate(
+void Constraints::Monitor::evaluate(
     Teuchos::ParameterList& params, Core::LinAlg::Vector<double>& systemvector)
 {
   switch (montype_)
@@ -97,7 +97,7 @@ void CONSTRAINTS::Monitor::evaluate(
  |Evaluate method, calling element evaluates of a condition and          |
  |assembing results based on this conditions                             |
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::Monitor::evaluate_monitor(
+void Constraints::Monitor::evaluate_monitor(
     Teuchos::ParameterList& params, Core::LinAlg::Vector<double>& systemvector)
 {
   if (!(actdisc_->filled())) FOUR_C_THROW("fill_complete() was not called");
@@ -155,7 +155,7 @@ void CONSTRAINTS::Monitor::evaluate_monitor(
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::Monitor::set_state(
+void Constraints::Monitor::set_state(
     const std::string& state, std::shared_ptr<Core::LinAlg::Vector<double>> V)
 {
   actdisc_->set_state(state, *V);

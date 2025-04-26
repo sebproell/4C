@@ -73,7 +73,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DFull<Beam, Solid>::evalu
     FOUR_C_THROW("GetBeamTriadInterpolationScheme is only implemented for SR beams.");
 
   // Get the vector with the projection points for this pair.
-  const std::vector<GEOMETRYPAIR::ProjectionPoint1DTo3D<double>>& projection_points =
+  const std::vector<GeometryPair::ProjectionPoint1DTo3D<double>>& projection_points =
       this->line_to_3D_segments_[0].get_projection_points();
 
   // If there are no projection points, return no contact status.
@@ -87,15 +87,15 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DFull<Beam, Solid>::evalu
           n_dof_fad_, fad_offset + i_dof, Core::FADUtils::cast_to_double(q_original(i_dof)));
   };
   auto q_beam =
-      GEOMETRYPAIR::InitializeElementData<Beam, scalar_type_pair>::initialize(this->element1());
+      GeometryPair::InitializeElementData<Beam, scalar_type_pair>::initialize(this->element1());
   auto q_solid =
-      GEOMETRYPAIR::InitializeElementData<Solid, scalar_type_pair>::initialize(this->element2());
+      GeometryPair::InitializeElementData<Solid, scalar_type_pair>::initialize(this->element2());
   set_q_fad(this->ele1pos_.element_position_, q_beam.element_position_);
   set_q_fad(this->ele2pos_.element_position_, q_solid.element_position_, Beam::n_dof_);
 
   // Shape function data for Lagrange functions for rotations
   auto q_rot =
-      GEOMETRYPAIR::InitializeElementData<GEOMETRYPAIR::t_line3, scalar_type_pair>::initialize(
+      GeometryPair::InitializeElementData<GeometryPair::t_line3, scalar_type_pair>::initialize(
           nullptr);
 
   // Initialize pair wise vectors and matrices.
@@ -145,7 +145,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DFull<Beam, Solid>::evalu
       i_integration_point++)
   {
     // Get the current Gauss point.
-    const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>& projected_gauss_point =
+    const GeometryPair::ProjectionPoint1DTo3D<double>& projected_gauss_point =
         projection_points[i_integration_point];
     eta = projected_gauss_point.get_eta();
 
@@ -153,13 +153,13 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DFull<Beam, Solid>::evalu
     // beam has changed compared to the last Gauss point.
     if (std::abs(eta - eta_last_gauss_point) > 1e-10)
     {
-      GEOMETRYPAIR::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam_ref);
+      GeometryPair::evaluate_position_derivative1<Beam>(eta, this->ele1posref_, dr_beam_ref);
       beam_jacobian = dr_beam_ref.norm2();
 
-      GEOMETRYPAIR::evaluate_shape_function_matrix<Beam>(H, eta, q_beam.shape_function_data_);
-      GEOMETRYPAIR::evaluate_position<Beam>(eta, q_beam, pos_beam);
+      GeometryPair::evaluate_shape_function_matrix<Beam>(H, eta, q_beam.shape_function_data_);
+      GeometryPair::evaluate_position<Beam>(eta, q_beam, pos_beam);
 
-      GEOMETRYPAIR::evaluate_shape_function_matrix<GEOMETRYPAIR::t_line3>(
+      GeometryPair::evaluate_shape_function_matrix<GeometryPair::t_line3>(
           L, eta, q_rot.shape_function_data_);
 
       triad_interpolation_scheme_.get_nodal_generalized_rotation_interpolation_matrices_at_xi(
@@ -179,9 +179,9 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DFull<Beam, Solid>::evalu
     }
 
     // Get the shape function matrices.
-    GEOMETRYPAIR::evaluate_shape_function_matrix<Solid>(
+    GeometryPair::evaluate_shape_function_matrix<Solid>(
         N, projected_gauss_point.get_xi(), q_solid.shape_function_data_);
-    GEOMETRYPAIR::evaluate_position<Solid>(projected_gauss_point.get_xi(), q_solid, pos_solid);
+    GeometryPair::evaluate_position<Solid>(projected_gauss_point.get_xi(), q_solid, pos_solid);
 
     // Get the cross section vector.
     cross_section_vector_ref(0) = 0.0;
@@ -319,7 +319,7 @@ void BeamInteraction::BeamToSolidVolumeMeshtyingPair2D3DFull<Beam, Solid>::get_t
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   template class BeamToSolidVolumeMeshtyingPair2D3DFull<t_hermite, t_hex8>;
   template class BeamToSolidVolumeMeshtyingPair2D3DFull<t_hermite, t_hex20>;

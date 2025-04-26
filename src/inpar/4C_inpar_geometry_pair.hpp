@@ -23,7 +23,7 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Inpar
 {
-  namespace GEOMETRYPAIR
+  namespace GeometryPair
   {
     /**
      * Method to be used for line to 3D pairs.
@@ -81,7 +81,7 @@ namespace Inpar
      */
     void set_valid_parameters_line_to_surface(std::vector<Core::IO::InputSpec>& list);
 
-  }  // namespace GEOMETRYPAIR
+  }  // namespace GeometryPair
 
 }  // namespace Inpar
 

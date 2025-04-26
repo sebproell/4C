@@ -19,7 +19,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-BeamInteraction::SUBMODELEVALUATOR::Generic::Generic()
+BeamInteraction::SubmodelEvaluator::Generic::Generic()
     : isinit_(false),
       issetup_(false),
       discret_ptr_(nullptr),
@@ -37,7 +37,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::Generic()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Generic::init(
+void BeamInteraction::SubmodelEvaluator::Generic::init(
     std::shared_ptr<Core::FE::Discretization> const& ia_discret,
     std::shared_ptr<Core::FE::Discretization> const& bindis,
     std::shared_ptr<Solid::TimeInt::BaseDataGlobalState> const& gstate,
@@ -65,21 +65,21 @@ void BeamInteraction::SUBMODELEVALUATOR::Generic::init(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Generic::check_init_setup() const
+void BeamInteraction::SubmodelEvaluator::Generic::check_init_setup() const
 {
   if (!is_init() or !is_setup()) FOUR_C_THROW("Call init() and setup() first!");
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void BeamInteraction::SUBMODELEVALUATOR::Generic::check_init() const
+void BeamInteraction::SubmodelEvaluator::Generic::check_init() const
 {
   if (not is_init()) FOUR_C_THROW("Call init() first!");
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Core::FE::Discretization& BeamInteraction::SUBMODELEVALUATOR::Generic::discret()
+Core::FE::Discretization& BeamInteraction::SubmodelEvaluator::Generic::discret()
 {
   check_init();
   return *discret_ptr_;
@@ -88,7 +88,7 @@ Core::FE::Discretization& BeamInteraction::SUBMODELEVALUATOR::Generic::discret()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Core::FE::Discretization>&
-BeamInteraction::SUBMODELEVALUATOR::Generic::discret_ptr()
+BeamInteraction::SubmodelEvaluator::Generic::discret_ptr()
 {
   check_init();
   return discret_ptr_;
@@ -97,7 +97,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::discret_ptr()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<const Core::FE::Discretization>
-BeamInteraction::SUBMODELEVALUATOR::Generic::discret_ptr() const
+BeamInteraction::SubmodelEvaluator::Generic::discret_ptr() const
 {
   check_init();
   return discret_ptr_;
@@ -105,7 +105,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::discret_ptr() const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Core::FE::Discretization const& BeamInteraction::SUBMODELEVALUATOR::Generic::discret() const
+Core::FE::Discretization const& BeamInteraction::SubmodelEvaluator::Generic::discret() const
 {
   check_init();
   return *discret_ptr_;
@@ -113,7 +113,7 @@ Core::FE::Discretization const& BeamInteraction::SUBMODELEVALUATOR::Generic::dis
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Core::FE::Discretization& BeamInteraction::SUBMODELEVALUATOR::Generic::bin_discret()
+Core::FE::Discretization& BeamInteraction::SubmodelEvaluator::Generic::bin_discret()
 {
   check_init();
   return *bindis_ptr_;
@@ -122,7 +122,7 @@ Core::FE::Discretization& BeamInteraction::SUBMODELEVALUATOR::Generic::bin_discr
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Core::FE::Discretization>&
-BeamInteraction::SUBMODELEVALUATOR::Generic::bin_discret_ptr()
+BeamInteraction::SubmodelEvaluator::Generic::bin_discret_ptr()
 {
   check_init();
   return bindis_ptr_;
@@ -131,7 +131,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::bin_discret_ptr()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<const Core::FE::Discretization>
-BeamInteraction::SUBMODELEVALUATOR::Generic::bin_discret_ptr() const
+BeamInteraction::SubmodelEvaluator::Generic::bin_discret_ptr() const
 {
   check_init();
   return bindis_ptr_;
@@ -139,7 +139,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::bin_discret_ptr() const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Core::FE::Discretization const& BeamInteraction::SUBMODELEVALUATOR::Generic::bin_discret() const
+Core::FE::Discretization const& BeamInteraction::SubmodelEvaluator::Generic::bin_discret() const
 {
   check_init();
   return *bindis_ptr_;
@@ -147,7 +147,7 @@ Core::FE::Discretization const& BeamInteraction::SUBMODELEVALUATOR::Generic::bin
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Solid::TimeInt::BaseDataGlobalState& BeamInteraction::SUBMODELEVALUATOR::Generic::g_state()
+Solid::TimeInt::BaseDataGlobalState& BeamInteraction::SubmodelEvaluator::Generic::g_state()
 {
   check_init();
   return *gstate_ptr_;
@@ -156,7 +156,7 @@ Solid::TimeInt::BaseDataGlobalState& BeamInteraction::SUBMODELEVALUATOR::Generic
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>&
-BeamInteraction::SUBMODELEVALUATOR::Generic::g_state_ptr()
+BeamInteraction::SubmodelEvaluator::Generic::g_state_ptr()
 {
   check_init();
   return gstate_ptr_;
@@ -164,7 +164,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::g_state_ptr()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Solid::TimeInt::BaseDataGlobalState const& BeamInteraction::SUBMODELEVALUATOR::Generic::g_state()
+Solid::TimeInt::BaseDataGlobalState const& BeamInteraction::SubmodelEvaluator::Generic::g_state()
     const
 {
   check_init();
@@ -173,7 +173,7 @@ Solid::TimeInt::BaseDataGlobalState const& BeamInteraction::SUBMODELEVALUATOR::G
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Solid::TimeInt::BaseDataIO& BeamInteraction::SUBMODELEVALUATOR::Generic::g_in_output()
+Solid::TimeInt::BaseDataIO& BeamInteraction::SubmodelEvaluator::Generic::g_in_output()
 {
   check_init();
   return *gio_ptr_;
@@ -181,7 +181,7 @@ Solid::TimeInt::BaseDataIO& BeamInteraction::SUBMODELEVALUATOR::Generic::g_in_ou
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Solid::TimeInt::BaseDataIO const& BeamInteraction::SUBMODELEVALUATOR::Generic::g_in_output() const
+Solid::TimeInt::BaseDataIO const& BeamInteraction::SubmodelEvaluator::Generic::g_in_output() const
 {
   check_init();
   return *gio_ptr_;
@@ -190,7 +190,7 @@ Solid::TimeInt::BaseDataIO const& BeamInteraction::SUBMODELEVALUATOR::Generic::g
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 Solid::ModelEvaluator::BeamInteractionDataState&
-BeamInteraction::SUBMODELEVALUATOR::Generic::beam_interaction_data_state()
+BeamInteraction::SubmodelEvaluator::Generic::beam_interaction_data_state()
 {
   check_init();
   return *beaminteractiondatastate_;
@@ -199,7 +199,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::beam_interaction_data_state()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Solid::ModelEvaluator::BeamInteractionDataState>&
-BeamInteraction::SUBMODELEVALUATOR::Generic::beam_interaction_data_state_ptr()
+BeamInteraction::SubmodelEvaluator::Generic::beam_interaction_data_state_ptr()
 {
   check_init();
   return beaminteractiondatastate_;
@@ -208,7 +208,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::beam_interaction_data_state_ptr()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 Solid::ModelEvaluator::BeamInteractionDataState const&
-BeamInteraction::SUBMODELEVALUATOR::Generic::beam_interaction_data_state() const
+BeamInteraction::SubmodelEvaluator::Generic::beam_interaction_data_state() const
 {
   check_init();
   return *beaminteractiondatastate_;
@@ -217,7 +217,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::beam_interaction_data_state() const
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 BeamInteraction::BeamCrosslinkerHandler&
-BeamInteraction::SUBMODELEVALUATOR::Generic::beam_crosslinker_handler()
+BeamInteraction::SubmodelEvaluator::Generic::beam_crosslinker_handler()
 {
   check_init();
   return *beam_crosslinker_handler_;
@@ -226,7 +226,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::beam_crosslinker_handler()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<BeamInteraction::BeamCrosslinkerHandler>&
-BeamInteraction::SUBMODELEVALUATOR::Generic::beam_crosslinker_handler_ptr()
+BeamInteraction::SubmodelEvaluator::Generic::beam_crosslinker_handler_ptr()
 {
   check_init();
   return beam_crosslinker_handler_;
@@ -235,7 +235,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::beam_crosslinker_handler_ptr()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 Core::Binstrategy::BinningStrategy const&
-BeamInteraction::SUBMODELEVALUATOR::Generic::bin_strategy() const
+BeamInteraction::SubmodelEvaluator::Generic::bin_strategy() const
 {
   check_init();
   return *binstrategy_;
@@ -243,7 +243,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::bin_strategy() const
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Core::Binstrategy::BinningStrategy& BeamInteraction::SUBMODELEVALUATOR::Generic::bin_strategy()
+Core::Binstrategy::BinningStrategy& BeamInteraction::SubmodelEvaluator::Generic::bin_strategy()
 {
   check_init();
   return *binstrategy_;
@@ -252,7 +252,7 @@ Core::Binstrategy::BinningStrategy& BeamInteraction::SUBMODELEVALUATOR::Generic:
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Core::Binstrategy::BinningStrategy>&
-BeamInteraction::SUBMODELEVALUATOR::Generic::bin_strategy_ptr()
+BeamInteraction::SubmodelEvaluator::Generic::bin_strategy_ptr()
 {
   check_init();
   return binstrategy_;
@@ -261,7 +261,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::bin_strategy_ptr()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 BeamInteraction::BeamCrosslinkerHandler const&
-BeamInteraction::SUBMODELEVALUATOR::Generic::beam_crosslinker_handler() const
+BeamInteraction::SubmodelEvaluator::Generic::beam_crosslinker_handler() const
 {
   check_init();
   return *beam_crosslinker_handler_;
@@ -270,7 +270,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::beam_crosslinker_handler() const
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 Core::Geo::MeshFree::BoundingBox&
-BeamInteraction::SUBMODELEVALUATOR::Generic::periodic_bounding_box()
+BeamInteraction::SubmodelEvaluator::Generic::periodic_bounding_box()
 {
   check_init();
   return *periodic_boundingbox_;
@@ -279,7 +279,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::periodic_bounding_box()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<Core::Geo::MeshFree::BoundingBox>&
-BeamInteraction::SUBMODELEVALUATOR::Generic::periodic_bounding_box_ptr()
+BeamInteraction::SubmodelEvaluator::Generic::periodic_bounding_box_ptr()
 {
   check_init();
   return periodic_boundingbox_;
@@ -288,7 +288,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::periodic_bounding_box_ptr()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 Core::Geo::MeshFree::BoundingBox const&
-BeamInteraction::SUBMODELEVALUATOR::Generic::periodic_bounding_box() const
+BeamInteraction::SubmodelEvaluator::Generic::periodic_bounding_box() const
 {
   check_init();
   return *periodic_boundingbox_;
@@ -297,7 +297,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::periodic_bounding_box() const
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 BeamInteraction::Utils::MapExtractor&
-BeamInteraction::SUBMODELEVALUATOR::Generic::ele_type_map_extractor()
+BeamInteraction::SubmodelEvaluator::Generic::ele_type_map_extractor()
 {
   check_init();
   eletypeextractor_->check_for_valid_map_extractor();
@@ -307,7 +307,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::ele_type_map_extractor()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::shared_ptr<BeamInteraction::Utils::MapExtractor>&
-BeamInteraction::SUBMODELEVALUATOR::Generic::ele_type_map_extractor_ptr()
+BeamInteraction::SubmodelEvaluator::Generic::ele_type_map_extractor_ptr()
 {
   check_init();
   eletypeextractor_->check_for_valid_map_extractor();
@@ -317,7 +317,7 @@ BeamInteraction::SUBMODELEVALUATOR::Generic::ele_type_map_extractor_ptr()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 BeamInteraction::Utils::MapExtractor const&
-BeamInteraction::SUBMODELEVALUATOR::Generic::ele_type_map_extractor() const
+BeamInteraction::SubmodelEvaluator::Generic::ele_type_map_extractor() const
 {
   check_init();
   eletypeextractor_->check_for_valid_map_extractor();

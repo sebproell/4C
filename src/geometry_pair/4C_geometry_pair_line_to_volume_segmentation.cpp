@@ -19,10 +19,10 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<ScalarType, Line,
+GeometryPair::GeometryPairLineToVolumeSegmentation<ScalarType, Line,
     Volume>::GeometryPairLineToVolumeSegmentation(const Core::Elements::Element* element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData>& evaluation_data)
+    const std::shared_ptr<GeometryPair::LineTo3DEvaluationData>& evaluation_data)
     : GeometryPairLineToVolume<ScalarType, Line, Volume>(element1, element2, evaluation_data)
 {
   // Check if a segment tracker exists for this line element. If not a new one is created.
@@ -43,7 +43,7 @@ GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<ScalarType, Line,
  *
  */
 template <typename ScalarType, typename Line, typename Volume>
-void GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<ScalarType, Line, Volume>::evaluate(
+void GeometryPair::GeometryPairLineToVolumeSegmentation<ScalarType, Line, Volume>::evaluate(
     const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Volume, ScalarType>& element_data_volume,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -57,19 +57,19 @@ void GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<ScalarType, Line, Volume
 /**
  * Explicit template initialization of template class.
  */
-template class GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex8>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex20>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_hex27>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tet4>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_tet10>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_nurbs27>;
-template class GEOMETRYPAIR::GeometryPairLineToVolumeSegmentation<double, GEOMETRYPAIR::t_hermite,
-    GEOMETRYPAIR::t_wedge6>;
+template class GeometryPair::GeometryPairLineToVolumeSegmentation<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex8>;
+template class GeometryPair::GeometryPairLineToVolumeSegmentation<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex20>;
+template class GeometryPair::GeometryPairLineToVolumeSegmentation<double, GeometryPair::t_hermite,
+    GeometryPair::t_hex27>;
+template class GeometryPair::GeometryPairLineToVolumeSegmentation<double, GeometryPair::t_hermite,
+    GeometryPair::t_tet4>;
+template class GeometryPair::GeometryPairLineToVolumeSegmentation<double, GeometryPair::t_hermite,
+    GeometryPair::t_tet10>;
+template class GeometryPair::GeometryPairLineToVolumeSegmentation<double, GeometryPair::t_hermite,
+    GeometryPair::t_nurbs27>;
+template class GeometryPair::GeometryPairLineToVolumeSegmentation<double, GeometryPair::t_hermite,
+    GeometryPair::t_wedge6>;
 
 FOUR_C_NAMESPACE_CLOSE

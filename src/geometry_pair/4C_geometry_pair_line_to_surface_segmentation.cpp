@@ -18,10 +18,10 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-GEOMETRYPAIR::GeometryPairLineToSurfaceSegmentation<ScalarType, Line,
+GeometryPair::GeometryPairLineToSurfaceSegmentation<ScalarType, Line,
     Surface>::GeometryPairLineToSurfaceSegmentation(const Core::Elements::Element* element1,
     const Core::Elements::Element* element2,
-    const std::shared_ptr<GEOMETRYPAIR::LineToSurfaceEvaluationData>&
+    const std::shared_ptr<GeometryPair::LineToSurfaceEvaluationData>&
         line_to_surface_evaluation_data)
     : GeometryPairLineToSurface<ScalarType, Line, Surface>(
           element1, element2, line_to_surface_evaluation_data)
@@ -43,7 +43,7 @@ GEOMETRYPAIR::GeometryPairLineToSurfaceSegmentation<ScalarType, Line,
  *
  */
 template <typename ScalarType, typename Line, typename Surface>
-void GEOMETRYPAIR::GeometryPairLineToSurfaceSegmentation<ScalarType, Line, Surface>::evaluate(
+void GeometryPair::GeometryPairLineToSurfaceSegmentation<ScalarType, Line, Surface>::evaluate(
     const ElementData<Line, ScalarType>& element_data_line,
     const ElementData<Surface, ScalarType>& element_data_surface,
     std::vector<LineSegment<ScalarType>>& segments) const
@@ -57,7 +57,7 @@ void GEOMETRYPAIR::GeometryPairLineToSurfaceSegmentation<ScalarType, Line, Surfa
 /**
  * Explicit template initialization of template class.
  */
-namespace GEOMETRYPAIR
+namespace GeometryPair
 {
   template class GeometryPairLineToSurfaceSegmentation<double, t_line2, t_tri3>;
   template class GeometryPairLineToSurfaceSegmentation<double, t_line2, t_tri6>;
@@ -125,6 +125,6 @@ namespace GEOMETRYPAIR
       t_quad9>;
   template class GeometryPairLineToSurfaceSegmentation<
       line_to_surface_patch_scalar_type_fixed_size<t_hermite, t_nurbs9>, t_hermite, t_nurbs9>;
-}  // namespace GEOMETRYPAIR
+}  // namespace GeometryPair
 
 FOUR_C_NAMESPACE_CLOSE

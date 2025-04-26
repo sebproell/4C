@@ -28,7 +28,7 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-CONSTRAINTS::ConstrManager::ConstrManager()
+Constraints::ConstrManager::ConstrManager()
     : offset_id_(-1),
       max_constr_id_(0),
       num_constr_id_(-1),
@@ -47,7 +47,7 @@ CONSTRAINTS::ConstrManager::ConstrManager()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::init(
+void Constraints::ConstrManager::init(
     std::shared_ptr<Core::FE::Discretization> discr, const Teuchos::ParameterList& params)
 {
   set_is_setup(false);
@@ -99,7 +99,7 @@ void CONSTRAINTS::ConstrManager::init(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::setup(
+void Constraints::ConstrManager::setup(
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp, Teuchos::ParameterList params)
 {
   check_is_init();
@@ -214,7 +214,7 @@ void CONSTRAINTS::ConstrManager::setup(
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::evaluate_force_stiff(const double time,
+void Constraints::ConstrManager::evaluate_force_stiff(const double time,
     std::shared_ptr<const Core::LinAlg::Vector<double>> displast,
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp,
     std::shared_ptr<Core::LinAlg::Vector<double>> fint,
@@ -299,7 +299,7 @@ void CONSTRAINTS::ConstrManager::evaluate_force_stiff(const double time,
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::compute_error(
+void Constraints::ConstrManager::compute_error(
     double time, std::shared_ptr<Core::LinAlg::Vector<double>> disp)
 {
   check_is_init();
@@ -336,7 +336,7 @@ void CONSTRAINTS::ConstrManager::compute_error(
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::read_restart(
+void Constraints::ConstrManager::read_restart(
     Core::IO::DiscretizationReader& reader, const double& time)
 {
   //  double uzawatemp = reader.ReadDouble("uzawaparameter");
@@ -352,7 +352,7 @@ void CONSTRAINTS::ConstrManager::read_restart(
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::set_ref_base_values(
+void Constraints::ConstrManager::set_ref_base_values(
     Core::LinAlg::Vector<double>& newrefval, const double& time)
 {
   volconstr3d_->initialize(time);
@@ -367,7 +367,7 @@ void CONSTRAINTS::ConstrManager::set_ref_base_values(
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::update_lagr_mult(double factor)
+void Constraints::ConstrManager::update_lagr_mult(double factor)
 {
   lagr_mult_vec_->update(factor, *constrainterr_, 1.0);
   if (volconstr3d_->have_constraint())
@@ -384,23 +384,23 @@ void CONSTRAINTS::ConstrManager::update_lagr_mult(double factor)
   }
 }
 
-void CONSTRAINTS::ConstrManager::update() { lagr_mult_vec_old_->update(1.0, *lagr_mult_vec_, 0.0); }
+void Constraints::ConstrManager::update() { lagr_mult_vec_old_->update(1.0, *lagr_mult_vec_, 0.0); }
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::update_lagr_mult(Core::LinAlg::Vector<double>& vect)
+void Constraints::ConstrManager::update_lagr_mult(Core::LinAlg::Vector<double>& vect)
 {
   lagr_mult_vec_->update(1.0, vect, 1.0);
 }
 
-void CONSTRAINTS::ConstrManager::update_tot_lagr_mult(Core::LinAlg::Vector<double>& vect)
+void Constraints::ConstrManager::update_tot_lagr_mult(Core::LinAlg::Vector<double>& vect)
 {
   lagr_mult_vec_->update(1.0, vect, 1.0, *lagr_mult_vec_old_, 0.0);
 }
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::compute_monitor_values(
+void Constraints::ConstrManager::compute_monitor_values(
     std::shared_ptr<Core::LinAlg::Vector<double>> disp)
 {
   std::vector<Core::Conditions::Condition*> monitcond(0);
@@ -421,7 +421,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
 
 /*-----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::compute_monitor_values(
+void Constraints::ConstrManager::compute_monitor_values(
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp)
 {
   std::vector<Core::Conditions::Condition*> monitcond(0);
@@ -454,7 +454,7 @@ void CONSTRAINTS::ConstrManager::compute_monitor_values(
 
 /*----------------------------------------------------------------------*
  *-----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::print_monitor_values() const
+void Constraints::ConstrManager::print_monitor_values() const
 {
   if (num_monitor_id_ == 1)
     printf("Monitor value:\n");
@@ -476,7 +476,7 @@ void CONSTRAINTS::ConstrManager::print_monitor_values() const
   }
 }
 
-void CONSTRAINTS::ConstrManager::build_moni_type()
+void Constraints::ConstrManager::build_moni_type()
 {
   Teuchos::ParameterList p1;
   // build distributed and redundant dummy monitor vector
@@ -524,7 +524,7 @@ void CONSTRAINTS::ConstrManager::build_moni_type()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void CONSTRAINTS::ConstrManager::use_block_matrix(
+void Constraints::ConstrManager::use_block_matrix(
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> domainmaps,
     std::shared_ptr<const Core::LinAlg::MultiMapExtractor> rangemaps)
 {

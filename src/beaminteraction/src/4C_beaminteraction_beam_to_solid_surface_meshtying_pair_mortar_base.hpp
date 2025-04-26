@@ -22,8 +22,8 @@ namespace BeamInteraction
   /**
    * \brief Base class for Mortar beam to surface surface mesh tying.
    * @tparam scalar_type Type for scalar variables.
-   * @tparam beam Type from GEOMETRYPAIR::ElementDiscretization... representing the beam.
-   * @tparam surface Type from GEOMETRYPAIR::ElementDiscretization... representing the surface.
+   * @tparam beam Type from GeometryPair::ElementDiscretization... representing the beam.
+   * @tparam surface Type from GeometryPair::ElementDiscretization... representing the surface.
    * @tparam mortar Type from BeamInteraction::ElementDiscretization... representing the mortar
    * shape functions.
    */

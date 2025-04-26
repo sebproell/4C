@@ -44,8 +44,8 @@ void BeamInteraction::BeamToSolidPairBase<ScalarType, SegmentsScalarType, Beam, 
   BeamContactPair::setup();
 
   // Get the beam element data container
-  ele1posref_ = GEOMETRYPAIR::InitializeElementData<Beam, double>::initialize(element1());
-  ele1pos_ = GEOMETRYPAIR::InitializeElementData<Beam, ScalarType>::initialize(element1());
+  ele1posref_ = GeometryPair::InitializeElementData<Beam, double>::initialize(element1());
+  ele1pos_ = GeometryPair::InitializeElementData<Beam, ScalarType>::initialize(element1());
 
   // Set reference nodal positions (and tangents) for beam element
   for (unsigned int n = 0; n < Beam::n_nodes_; ++n)
@@ -108,7 +108,7 @@ void BeamInteraction::BeamToSolidPairBase<ScalarType, SegmentsScalarType, Beam, 
     const std::vector<double>& solid_nodal_dofvec)
 {
   // Set the current configuration of the beam element
-  ele1pos_ = GEOMETRYPAIR::InitializeElementData<Beam, ScalarType>::initialize(element1());
+  ele1pos_ = GeometryPair::InitializeElementData<Beam, ScalarType>::initialize(element1());
   for (unsigned int i = 0; i < Beam::n_dof_; i++)
     ele1pos_.element_position_(i) = Core::FADUtils::HigherOrderFadValue<ScalarType>::apply(
         Beam::n_dof_ + Solid::n_dof_, i, beam_centerline_dofvec[i]);
@@ -179,15 +179,15 @@ void BeamInteraction::BeamToSolidPairBase<ScalarType, SegmentsScalarType, Beam,
  */
 template <typename ScalarType, typename SegmentsScalarType, typename Beam, typename Solid>
 void BeamInteraction::BeamToSolidPairBase<ScalarType, SegmentsScalarType, Beam,
-    Solid>::evaluate_beam_position_double(const GEOMETRYPAIR::ProjectionPoint1DTo3D<double>&
+    Solid>::evaluate_beam_position_double(const GeometryPair::ProjectionPoint1DTo3D<double>&
                                               integration_point,
     Core::LinAlg::Matrix<3, 1, double>& r_beam, bool reference) const
 {
   if (reference)
-    GEOMETRYPAIR::evaluate_position<Beam>(integration_point.get_eta(), ele1posref_, r_beam);
+    GeometryPair::evaluate_position<Beam>(integration_point.get_eta(), ele1posref_, r_beam);
   else
-    GEOMETRYPAIR::evaluate_position<Beam>(integration_point.get_eta(),
-        GEOMETRYPAIR::ElementDataToDouble<Beam>::to_double(ele1pos_), r_beam);
+    GeometryPair::evaluate_position<Beam>(integration_point.get_eta(),
+        GeometryPair::ElementDataToDouble<Beam>::to_double(ele1pos_), r_beam);
 }
 
 
@@ -196,7 +196,7 @@ void BeamInteraction::BeamToSolidPairBase<ScalarType, SegmentsScalarType, Beam,
  */
 namespace BeamInteraction
 {
-  using namespace GEOMETRYPAIR;
+  using namespace GeometryPair;
 
   // Beam-to-volume pairs
   template class BeamToSolidPairBase<double, double, t_hermite, t_hex8>;

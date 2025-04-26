@@ -29,10 +29,10 @@ namespace
 
   void set_up_default_parameters_line_to_3d(Teuchos::ParameterList& list)
   {
-    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GEOMETRYPAIR::LineTo3DStrategy::segmentation);
+    list.set("GEOMETRY_PAIR_STRATEGY", Inpar::GeometryPair::LineTo3DStrategy::segmentation);
     list.set("GEOMETRY_PAIR_SEGMENTATION_SEARCH_POINTS", 6);
     list.set("GEOMETRY_PAIR_SEGMENTATION_NOT_ALL_GAUSS_POINTS_PROJECT_VALID_ACTION",
-        Inpar::GEOMETRYPAIR::NotAllGaussPointsProjectValidAction::fail);
+        Inpar::GeometryPair::NotAllGaussPointsProjectValidAction::fail);
     list.set("GAUSS_POINTS", 6);
     list.set("INTEGRATION_POINTS_CIRCUMFERENCE", 6);
   }
@@ -53,7 +53,7 @@ namespace
       Teuchos::ParameterList line_to_volume_params_list;
       set_up_default_parameters_line_to_3d(line_to_volume_params_list);
       evaluation_data_ =
-          std::make_shared<GEOMETRYPAIR::LineTo3DEvaluationData>(line_to_volume_params_list);
+          std::make_shared<GeometryPair::LineTo3DEvaluationData>(line_to_volume_params_list);
     }
 
     /**
@@ -108,13 +108,13 @@ namespace
       pair.init(intersection_params, pair_elements);
 
       pair.ele1pos_ =
-          GEOMETRYPAIR::InitializeElementData<BeamType, double>::initialize(beam_element.get());
+          GeometryPair::InitializeElementData<BeamType, double>::initialize(beam_element.get());
       pair.ele1posref_ =
-          GEOMETRYPAIR::InitializeElementData<BeamType, double>::initialize(beam_element.get());
+          GeometryPair::InitializeElementData<BeamType, double>::initialize(beam_element.get());
       pair.ele1poscur_ =
-          GEOMETRYPAIR::InitializeElementData<BeamType, double>::initialize(beam_element.get());
+          GeometryPair::InitializeElementData<BeamType, double>::initialize(beam_element.get());
       pair.ele1vel_ =
-          GEOMETRYPAIR::InitializeElementData<BeamType, double>::initialize(beam_element.get());
+          GeometryPair::InitializeElementData<BeamType, double>::initialize(beam_element.get());
       pair.ele1posref_.element_position_ = q_beam;
       pair.ele2posref_.element_position_ = q_fluid;
 
@@ -158,7 +158,7 @@ namespace
 
    private:
     //! Evaluation data container for geometry pairs.
-    std::shared_ptr<GEOMETRYPAIR::LineTo3DEvaluationData> evaluation_data_;
+    std::shared_ptr<GeometryPair::LineTo3DEvaluationData> evaluation_data_;
   };
 
   /**
@@ -167,8 +167,8 @@ namespace
   TEST_F(BeamToFluidMeshtyingPairGPTSTest, TestBeamToFluidMeshtyingHex8MovingBeam)
   {
     // Element types.
-    using beam_type = GEOMETRYPAIR::t_hermite;
-    using fluid_type = GEOMETRYPAIR::t_hex8;
+    using beam_type = GeometryPair::t_hermite;
+    using fluid_type = GeometryPair::t_hex8;
 
     // Definition of variables for this test case.
     Core::LinAlg::Matrix<beam_type::n_dof_, 1, double> q_beam;
