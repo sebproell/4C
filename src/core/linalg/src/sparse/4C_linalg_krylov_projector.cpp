@@ -18,7 +18,6 @@
 #include "4C_utils_exceptions.hpp"
 
 #include <Epetra_Import.h>
-#include <Epetra_Operator.h>
 #include <Teuchos_SerialDenseSolver.hpp>
 
 FOUR_C_NAMESPACE_OPEN

@@ -12,8 +12,6 @@
 
 #include "4C_linalg_multi_vector.hpp"
 
-#include <Epetra_BlockMap.h>
-
 #include <memory>
 #include <vector>
 

@@ -10,11 +10,8 @@
 
 #include "4C_config.hpp"
 
-#include <Epetra_Import.h>
 #include <Epetra_Operator.h>
-#include <mpi.h>
 #include <NOX_Abstract_Group.H>
-#include <NOX_Common.H>
 #include <NOX_Epetra_Interface_Jacobian.H>
 #include <NOX_Epetra_Interface_Required.H>
 #include <NOX_Epetra_Vector.H>

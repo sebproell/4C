@@ -9,7 +9,6 @@
 
 #include "4C_linalg_sparsematrix.hpp"
 
-#include <Epetra_Distributor.h>
 #include <Epetra_Export.h>
 
 FOUR_C_NAMESPACE_OPEN

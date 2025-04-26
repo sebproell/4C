@@ -15,7 +15,6 @@
 #include "4C_linear_solver_method_linalg.hpp"
 
 #include <Epetra_CrsMatrix.h>
-#include <Epetra_LinearProblem.h>
 #include <Epetra_Operator.h>
 #include <Epetra_RowMatrix.h>
 #include <Epetra_VbrMatrix.h>

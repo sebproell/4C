@@ -19,7 +19,6 @@
 #include "4C_inpar_structure.hpp"
 #include "4C_lubrication_input.hpp"
 
-#include <Epetra_FEVector.h>
 #include <Teuchos_Time.hpp>
 
 FOUR_C_NAMESPACE_OPEN

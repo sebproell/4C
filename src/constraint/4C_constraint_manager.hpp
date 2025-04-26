@@ -14,9 +14,6 @@
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
-#include <Epetra_Operator.h>
-#include <Epetra_RowMatrix.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -166,7 +163,7 @@ namespace CONSTRAINTS
     std::shared_ptr<Core::LinAlg::Vector<double>> get_error() const { return constrainterr_; }
 
     /*!
-     \brief Return EpetraMap that determined distribution of constraints and lagrange
+     \brief Return map that determined distribution of constraints and lagrange
      multiplier over processors
     */
     std::shared_ptr<Core::LinAlg::Map> get_constraint_map() const { return constrmap_; };

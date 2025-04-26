@@ -10,15 +10,11 @@
 #include "4C_linalg_vector.hpp"
 
 #include "4C_comm_mpi_utils.hpp"
+#include "4C_linalg_map.hpp"
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 
 #include <Epetra_Map.h>
-
-
-
-// Epetra related headers
-#include "4C_linalg_map.hpp"
 
 #include <memory>
 

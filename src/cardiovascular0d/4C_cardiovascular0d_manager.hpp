@@ -15,8 +15,6 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
-#include <Epetra_Operator.h>
-#include <Epetra_RowMatrix.h>
 #include <Teuchos_ParameterList.hpp>
 
 #include <memory>
@@ -157,7 +155,7 @@ namespace Utils
     }
 
     /*!
-     \brief Return EpetraMap that determined distribution of Cardiovascular0D functions and
+     \brief Return map that determined distribution of Cardiovascular0D functions and
      pressures over processors
     */
     std::shared_ptr<Core::LinAlg::Map> get_cardiovascular0_d_map() const

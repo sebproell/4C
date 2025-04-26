@@ -25,8 +25,6 @@
 #include "4C_structure_aux.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_LinearProblem.h>
-
 FOUR_C_NAMESPACE_OPEN
 
 

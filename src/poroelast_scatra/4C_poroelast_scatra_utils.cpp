@@ -27,8 +27,6 @@
 #include "4C_w1_poro_p1_scatra_eletypes.hpp"
 #include "4C_w1_poro_scatra_eletypes.hpp"
 
-#include <Epetra_Time.h>
-
 FOUR_C_NAMESPACE_OPEN
 
 

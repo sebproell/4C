@@ -15,8 +15,6 @@
 #include "4C_mortar_coupling3d_classes.hpp"
 
 #include <Epetra_CrsMatrix.h>
-#include <Epetra_Export.h>
-#include <Epetra_Import.h>
 
 #include <memory>
 
