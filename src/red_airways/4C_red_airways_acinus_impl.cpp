@@ -119,13 +119,11 @@ void sysmat(Discret::Elements::RedAcinus* ele, Core::LinAlg::SerialDenseVector& 
 template <Core::FE::CellType distype>
 int Discret::Elements::AcinusImpl<distype>::evaluate(RedAcinus* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& lm,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat)
 {
-  const int elemVecdim = elevec1_epetra.length();
+  const int elemVecdim = elevec1.length();
 
   Discret::ReducedLung::EvaluationData& evaluation_data =
       Discret::ReducedLung::EvaluationData::get();
@@ -195,15 +193,14 @@ int Discret::Elements::AcinusImpl<distype>::evaluate(RedAcinus* ele, Teuchos::Pa
   elem_params.lungVolume_nm = evaluation_data.lungVolume_nm;
 
   // Call routine for calculating element matrix and right hand side
-  sysmat<distype>(
-      ele, epnp, epn, epnm, elemat1_epetra, elevec1_epetra, *mat, elem_params, time, dt);
+  sysmat<distype>(ele, epnp, epn, epnm, elemat1, elevec1, *mat, elem_params, time, dt);
 
   // Put zeros on second line of matrix and rhs in case of interacinar linker
   if (myial[1] > 0.0)
   {
-    elemat1_epetra(1, 0) = 0.0;
-    elemat1_epetra(1, 1) = 0.0;
-    elevec1_epetra(1) = 0.0;
+    elemat1(1, 0) = 0.0;
+    elemat1(1, 1) = 0.0;
+    elevec1(1) = 0.0;
   }
 
   return 0;

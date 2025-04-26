@@ -91,7 +91,7 @@ namespace Cut
    private:
     MPI_Comm get_comm() const
     {
-      if (not comm_) FOUR_C_THROW("Epetra communicator was not initialized!");
+      if (not comm_) FOUR_C_THROW("MPI communicator was not initialized!");
 
       return comm_;
     }

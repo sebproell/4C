@@ -989,7 +989,7 @@ bool Beam3ContactOctTree::locate_all()
   bbox2octant_ = std::make_shared<Core::LinAlg::MultiVector<double>>(
       *(searchdis_.element_col_map()), maxnumoctglobal, true);
 
-  // fill epetra vector
+  // fill vector
   if (!Core::Communication::my_mpi_rank(searchdis_.get_comm()))
   {
     bbox2octant_->PutScalar(-9.0);

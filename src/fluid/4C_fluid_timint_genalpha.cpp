@@ -286,7 +286,7 @@ void FLD::TimIntGenAlpha::gen_alpha_intermediate_values(
   //       n+alphaF
   //    vec         = alpha_F * vecnp     + (1-alpha_F) *  vecn
 
-  // do stupid conversion into Epetra map
+  // do stupid conversion into map
   Core::LinAlg::Map vecmap(vecnp->get_block_map().NumGlobalElements(),
       vecnp->get_block_map().NumMyElements(), vecnp->get_block_map().MyGlobalElements(), 0,
       vecnp->get_block_map().Comm());

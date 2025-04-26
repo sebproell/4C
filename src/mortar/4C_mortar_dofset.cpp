@@ -75,7 +75,7 @@ int Mortar::DofSet::assign_degrees_of_freedom(
     }
   }
 
-  // we have new vectors, so recreate Epetra maps and replace old ones with them
+  // we have new vectors, so recreate maps and replace old ones with them
   std::shared_ptr<Core::LinAlg::Map> newdofrowmap =
       std::make_shared<Core::LinAlg::Map>(-1, nummyrow, myrow.data(), 0, dofrowmap_->Comm());
   std::shared_ptr<Core::LinAlg::Map> newdofcolmap =

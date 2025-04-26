@@ -243,7 +243,7 @@ void Constraints::ConstrManager::evaluate_force_stiff(const double time,
   p.set("scaleConstrMat", scConMat);
   p.set("vector curve factors", fact_);
   // Convert Core::LinAlg::Vector<double> containing lagrange multipliers to an completely
-  // redundant Epetra_vector since every element with the constraint condition needs them
+  // redundant vector since every element with the constraint condition needs them
   std::shared_ptr<Core::LinAlg::Vector<double>> lagrMultVecDense =
       std::make_shared<Core::LinAlg::Vector<double>>(*redconstrmap_);
   Core::LinAlg::export_to(*lagr_mult_vec_, *lagrMultVecDense);

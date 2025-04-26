@@ -77,7 +77,7 @@ void FLD::XFluidState::CouplingState::complete_coupling_matrices_and_rhs(
 {
   if (!is_active_) return;
 
-  // REMARK: for EpetraFECrs matrices Complete() calls the GlobalAssemble() routine to gather
+  // REMARK: for matrices Complete() calls the GlobalAssemble() routine to gather
   // entries from all processors (domain-map are the columns, range-map are the rows)
   C_xs_->complete(slavedofrowmap, xfluiddofrowmap);
   C_sx_->complete(xfluiddofrowmap, slavedofrowmap);
@@ -141,7 +141,7 @@ FLD::XFluidState::XFluidState(const std::shared_ptr<XFEM::ConditionManager>& con
  *----------------------------------------------------------------------*/
 void FLD::XFluidState::init_system_matrix()
 {
-  // create an EpetraFECrs matrix that does communication for non-local rows and columns
+  // create a matrix that does communication for non-local rows and columns
   // * this enables to do the evaluate loop over just row elements instead of col elements
   // * time consuming assemble for cut elements is done only once on a unique row processor
   // REMARK: call the SparseMatrix: * explicitdirichlet = false (is used in ApplyDirichlet, true

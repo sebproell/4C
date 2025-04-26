@@ -25,11 +25,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleCalcCardiacMonodomain<distype, probdim>::evaluate_action(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, const ScaTra::Action& action,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   //(for now) only first dof set considered
   const std::vector<int>& lm = la[0].lm_;
@@ -182,8 +180,8 @@ int Discret::Elements::ScaTraEleCalcCardiacMonodomain<distype, probdim>::evaluat
 
     default:
     {
-      my::evaluate_action(ele, params, discretization, action, la, elemat1_epetra, elemat2_epetra,
-          elevec1_epetra, elevec2_epetra, elevec3_epetra);
+      my::evaluate_action(
+          ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
       break;
     }
   }  // switch(action)

@@ -911,12 +911,12 @@ inline void Discret::Elements::Ale3Impl<distype>::ale3_tors_spring_nurbs27(
 /*----------------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
 void Discret::Elements::Ale3Impl<distype>::static_ke_spring(Ale3* ele,
-    Core::LinAlg::SerialDenseMatrix& sys_mat_epetra,
-    Core::LinAlg::SerialDenseVector& residual_epetra, const std::vector<double>& displacements,
+    Core::LinAlg::SerialDenseMatrix& element_matrix,
+    Core::LinAlg::SerialDenseVector& element_residual, const std::vector<double>& displacements,
     const bool spatialconfiguration)
 {
-  Core::LinAlg::Matrix<3 * iel, 3 * iel> sys_mat(sys_mat_epetra.values(), true);
-  Core::LinAlg::Matrix<3 * iel, 1> residual(residual_epetra.values(), true);
+  Core::LinAlg::Matrix<3 * iel, 3 * iel> sys_mat(element_matrix.values(), true);
+  Core::LinAlg::Matrix<3 * iel, 1> residual(element_residual.values(), true);
   int node_i, node_j;  // end nodes of spring
   double length;       // length of edge
   double dx, dy, dz;   // deltas in each direction
@@ -1347,13 +1347,12 @@ void Discret::Elements::Ale3Impl<distype>::static_ke_spring(Ale3* ele,
 template <Core::FE::CellType distype>
 void Discret::Elements::Ale3Impl<distype>::static_ke_nonlinear(Ale3* ele,
     Core::FE::Discretization& dis, std::vector<int>& lm,
-    Core::LinAlg::SerialDenseMatrix& sys_mat_epetra,
-    Core::LinAlg::SerialDenseVector& residual_epetra, std::vector<double>& my_dispnp,
+    Core::LinAlg::SerialDenseMatrix& element_matrix,
+    Core::LinAlg::SerialDenseVector& element_residual, std::vector<double>& my_dispnp,
     Teuchos::ParameterList& params, const bool spatialconfiguration)
 {
   const int numdof = NODDOF_ALE3 * iel;
-  // A view to sys_mat_epetra
-  Core::LinAlg::Matrix<numdof, numdof> sys_mat(sys_mat_epetra.values(), true);
+  Core::LinAlg::Matrix<numdof, numdof> sys_mat(element_matrix.values(), true);
   // update element geometry
   Core::LinAlg::Matrix<iel, NUMDIM_ALE3> xrefe;  // material coord. of element
   Core::LinAlg::Matrix<iel, NUMDIM_ALE3> xcurr;  // current  coord. of element
@@ -1530,7 +1529,7 @@ void Discret::Elements::Ale3Impl<distype>::static_ke_nonlinear(Ale3* ele,
     // end of call material law ccccccccccccccccccccccccccccccccccccccccccccccc
 
     // integrate internal force vector f = f + (B^T . sigma) * detJ * w(gp)
-    Core::LinAlg::Matrix<numdof, 1> residual(residual_epetra, true);
+    Core::LinAlg::Matrix<numdof, 1> residual(element_residual, true);
     residual.multiply_tn(detJ * intpoints.qwgt[iquad], bop, stress_f, 1.0);
 
     // integrate `elastic' and `initial-displacement' stiffness matrix
@@ -1570,7 +1569,7 @@ void Discret::Elements::Ale3Impl<distype>::static_ke_nonlinear(Ale3* ele,
 /*----------------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
 void Discret::Elements::Ale3Impl<distype>::static_ke_laplace(Ale3* ele,
-    Core::FE::Discretization& dis, Core::LinAlg::SerialDenseMatrix& sys_mat_epetra,
+    Core::FE::Discretization& dis, Core::LinAlg::SerialDenseMatrix& element_matrix,
     Core::LinAlg::SerialDenseVector& residual, std::vector<double>& my_dispnp,
     std::shared_ptr<Core::Mat::Material> material, const bool spatialconfiguration)
 {
@@ -1579,8 +1578,7 @@ void Discret::Elements::Ale3Impl<distype>::static_ke_laplace(Ale3* ele,
   //      "using it.");
 
   const int nd = 3 * iel;
-  // A view to sys_mat_epetra
-  Core::LinAlg::Matrix<nd, nd> sys_mat(sys_mat_epetra.values(), true);
+  Core::LinAlg::Matrix<nd, nd> sys_mat(element_matrix.values(), true);
 
   //  get material using class StVenantKirchhoff
   //  if (material->material_type()!=Core::Materials::m_stvenant)

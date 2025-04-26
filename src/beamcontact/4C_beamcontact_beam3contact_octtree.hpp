@@ -195,40 +195,40 @@ class Beam3ContactOctTree
   //! \brief translate std::vec<std::vec<type> > > to Core::LinAlg::MultiVector<double>
   template <class TYPE>
   void std_vec_to_epetra_multi_vec(
-      std::vector<std::vector<TYPE>>& stdvec, Core::LinAlg::MultiVector<double>& epetravec)
+      std::vector<std::vector<TYPE>>& stdvector, Core::LinAlg::MultiVector<double>& vector)
   {
     if (std::strcmp(typeid(TYPE).name(), "i") != 0 && std::strcmp(typeid(TYPE).name(), "f") != 0 &&
         std::strcmp(typeid(TYPE).name(), "d") != 0)
       FOUR_C_THROW("Template of wrong type {}! Only int, float, and double are permitted!",
           typeid(TYPE).name());
-    if (epetravec.MyLength() != (int)stdvec.size()) FOUR_C_THROW("Sizes differ!");
-    for (int i = 0; i < (int)stdvec.size(); i++)
+    if (vector.MyLength() != (int)stdvector.size()) FOUR_C_THROW("Sizes differ!");
+    for (int i = 0; i < (int)stdvector.size(); i++)
     {
-      if ((int)stdvec[i].size() > epetravec.NumVectors())
-        FOUR_C_THROW("stdvec[{}].size() = {} is larger than epetravec.NumVectors() = {}", i,
-            (int)stdvec[i].size(), epetravec.NumVectors());
-      for (int j = 0; j < (int)stdvec[i].size(); j++) epetravec(j)[i] = (TYPE)stdvec[i][j];
+      if ((int)stdvector[i].size() > vector.NumVectors())
+        FOUR_C_THROW("stdvector[{}].size() = {} is larger than vector.NumVectors() = {}", i,
+            (int)stdvector[i].size(), vector.NumVectors());
+      for (int j = 0; j < (int)stdvector[i].size(); j++) vector(j)[i] = (TYPE)stdvector[i][j];
     }
     return;
   }
   //! \brief translate Core::LinAlg::MultiVector<double> to std::vec<std::vec<type> > >
   template <class TYPE>
   void epetra_multi_vec_to_std_vec(
-      Core::LinAlg::MultiVector<double>& epetravec, std::vector<std::vector<TYPE>>& stdvec)
+      Core::LinAlg::MultiVector<double>& vector, std::vector<std::vector<TYPE>>& stdvector)
   {
     if (std::strcmp(typeid(TYPE).name(), "i") != 0 && std::strcmp(typeid(TYPE).name(), "f") != 0 &&
         std::strcmp(typeid(TYPE).name(), "d") != 0)
       FOUR_C_THROW("Template of wrong type {}! Only int, float, and double are permitted!",
           typeid(TYPE).name());
-    if (epetravec.MyLength() != (int)stdvec.size()) FOUR_C_THROW("Sizes differ!");
-    for (int i = 0; i < epetravec.NumVectors(); i++)
+    if (vector.MyLength() != (int)stdvector.size()) FOUR_C_THROW("Sizes differ!");
+    for (int i = 0; i < vector.NumVectors(); i++)
     {
-      for (int j = 0; j < epetravec.MyLength(); j++)
+      for (int j = 0; j < vector.MyLength(); j++)
       {
-        if ((int)stdvec[j].size() < epetravec.NumVectors())
-          FOUR_C_THROW("stdvec[{}].size() = {} is larger than epetravec.NumVectors() = {}", j,
-              (int)stdvec[j].size(), epetravec.NumVectors());
-        stdvec[j][i] = epetravec(i)[j];
+        if ((int)stdvector[j].size() < vector.NumVectors())
+          FOUR_C_THROW("stdvector[{}].size() = {} is larger than vector.NumVectors() = {}", j,
+              (int)stdvector[j].size(), vector.NumVectors());
+        stdvector[j][i] = vector(i)[j];
       }
     }
     return;

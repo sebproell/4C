@@ -130,11 +130,11 @@ namespace ReducedLung
   };
 
   /*!
-   * @brief Create the Epetra map with the locally owned dofs spanning the computation domain that
+   * @brief Create the map with the locally owned dofs spanning the computation domain that
    * are necessary for the solution vector.
    *
    * The 4C discretization gives a mpi distribution of the Reduced Lung elements. From this
-   * distribution and the knowledge about the number of dofs in every element, the new Epetra map
+   * distribution and the knowledge about the number of dofs in every element, the new map
    * mapping the local dofs to their global ids is created. Example: The dofs of element k have
    * global ids in the range first_global_dof_of_ele[k] to first_global_dof_of_ele[k] + dofs of
    * element k.
@@ -142,18 +142,18 @@ namespace ReducedLung
    * @param comm Communicator of the 4C discretization.
    * @param airways Vector of locally owned airways.
    * @param terminal_units Vector of locally owned terminal units.
-   * @return Epetra map specifying the dof-distribution over all ranks.
+   * @return map specifying the dof-distribution over all ranks.
    */
   Core::LinAlg::Map create_domain_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units);
 
   /*!
-   * @brief Create the Epetra map with the locally owned row indices of the system matrix, i.e. the
+   * @brief Create the map with the locally owned row indices of the system matrix, i.e. the
    * distribution of the system's equation.
    *
    * The row indices are uniquely tied to the system equations. Given the locally owned
    * elements and nodes in the 4C discretization, the related equation ids are created and stored in
-   * this Epetra map. Every element provides state equations, every node provides information about
+   * this map. Every element provides state equations, every node provides information about
    * its elements. Depending on the number of connected elements at one node, different sets and
    * numbers of equations are needed.
    * Per owned element: one or two equations and row ids.
@@ -170,7 +170,7 @@ namespace ReducedLung
    * child element ids).
    * @param boundary_conditions Vector with boundary condition information. Here, only the boundary
    * element ids are needed.
-   * @return Epetra map with locally owned rows.
+   * @return map with locally owned rows.
    */
   Core::LinAlg::Map create_row_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units, const std::vector<Connection>& connections,
@@ -178,7 +178,7 @@ namespace ReducedLung
       const std::vector<BoundaryCondition>& boundary_conditions);
 
   /*!
-   * @brief Create the Epetra map with the dof indices relevant for the locally owned
+   * @brief Create the map with the dof indices relevant for the locally owned
    * equations/rows.
    *
    * This map connects the equations (rows of matrix and rhs vector) with their relevant dofs.
@@ -197,7 +197,7 @@ namespace ReducedLung
    * child element ids).
    * @param boundary_conditions Vector with boundary condition information. Here, only the boundary
    * element ids are needed.
-   * @return Epetra map with distribution of column indices for the system matrix.
+   * @return map with distribution of column indices for the system matrix.
    */
   Core::LinAlg::Map create_column_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units, const std::map<int, int>& global_dof_per_ele,

@@ -101,11 +101,9 @@ Thermo::TemperBoundaryImpl<distype>::TemperBoundaryImpl(int numdofpernode)
 template <Core::FE::CellType distype>
 int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     Teuchos::ParameterList& params, const Core::FE::Discretization& discretization,
-    const Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    const Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   // what actions are available
   // ( action=="calc_thermo_fextconvection" )
@@ -135,8 +133,8 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
         ele, xyze_);
 
     // set views, here we assemble on the boundary dofs only!
-    Core::LinAlg::Matrix<nen_, nen_> etang(elemat1_epetra.values(), true);  // view only!
-    Core::LinAlg::Matrix<nen_, 1> efext(elevec1_epetra.values(), true);     // view only!
+    Core::LinAlg::Matrix<nen_, nen_> etang(elemat1.values(), true);  // view only!
+    Core::LinAlg::Matrix<nen_, 1> efext(elevec1.values(), true);     // view only!
 
     // get current condition
     std::shared_ptr<Core::Conditions::Condition> cond =
@@ -250,7 +248,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     {
       // set views, here we assemble on the boundary dofs only!
       Core::LinAlg::Matrix<nen_, (nsd_ + 1) * nen_> etangcoupl(
-          elemat2_epetra.values(), true);  // view only!
+          elemat2.values(), true);  // view only!
 
       // and now get the current displacements/velocities
       if (discretization.has_state(1, "displacement"))
@@ -343,7 +341,7 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
 
         // set views, here we assemble on the boundary dofs only!
         Core::LinAlg::Matrix<nen_, (nsd_ + 1) * nen_> etangcoupl(
-            elemat1_epetra.values(), true);  // view only!
+            elemat1.values(), true);  // view only!
 
         // get current condition
         std::shared_ptr<Core::Conditions::Condition> cond =

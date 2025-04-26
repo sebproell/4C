@@ -41,11 +41,9 @@ template <Core::FE::CellType distype>
 int Discret::Elements::FluidEleCalcPoroP1<distype>::evaluate(Discret::Elements::Fluid* ele,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, const Core::FE::GaussIntegration& intpoints)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, const Core::FE::GaussIntegration& intpoints)
 {
   //----------------------------------------------------------------
   // Now do the nurbs specific stuff (for isogeometric elements)
@@ -184,12 +182,12 @@ int Discret::Elements::FluidEleCalcPoroP1<distype>::evaluate(Discret::Elements::
       ele, Base::xyze_);
 
   // construct views
-  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, (nsd_ + 1) * nen_> elemat1(elemat1_epetra, true);
-  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, 1> elevec1(elevec1_epetra, true);
+  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, (nsd_ + 1) * nen_> elemat_1(elemat1, true);
+  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, 1> elevec_1(elevec1, true);
   // elemat2 and elevec2+3 are currently not in use
 
   // call inner evaluate (does not know about element or discretization object)
-  int result = Base::evaluate(params, ebofoaf, elemat1, elevec1, evelaf, epreaf, evelnp, eveln,
+  int result = Base::evaluate(params, ebofoaf, elemat_1, elevec_1, evelaf, epreaf, evelnp, eveln,
       eprenp, epren, emhist, echist, epressnp_timederiv, epressam_timederiv, epressn_timederiv,
       eaccam, edispnp, edispn, egridv, egridvn, escaaf, &eporositynp, &eporositydot, &eporositydotn,
       mat, ele->is_ale(), intpoints);
@@ -277,11 +275,9 @@ template <Core::FE::CellType distype>
 int Discret::Elements::FluidEleCalcPoroP1<distype>::evaluate_od(Discret::Elements::Fluid* ele,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, const Core::FE::GaussIntegration& intpoints)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, const Core::FE::GaussIntegration& intpoints)
 {
   //----------------------------------------------------------------
   // Now do the nurbs specific stuff (for isogeometric elements)
@@ -307,10 +303,10 @@ int Discret::Elements::FluidEleCalcPoroP1<distype>::evaluate_od(Discret::Element
   Base::rotsymmpbc_->setup(ele);
 
   // construct views
-  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, (nsd_ + 1) * nen_> elemat1(elemat1_epetra, true);
+  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, (nsd_ + 1) * nen_> elemat_1(elemat1, true);
   //  Core::LinAlg::Matrix<(nsd_+1)*nen_,(nsd_+1)*nen_>
-  //  elemat2(elemat2_epetra,true);
-  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, 1> elevec1(elevec1_epetra, true);
+  //  elemat_2(elemat2,true);
+  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, 1> elevec_1(elevec1, true);
   // elevec2 and elevec3 are currently not in use
 
   // ---------------------------------------------------------------------
@@ -408,9 +404,10 @@ int Discret::Elements::FluidEleCalcPoroP1<distype>::evaluate_od(Discret::Element
       ele, Base::xyze_);
 
   // call inner evaluate (does not know about element or discretization object)
-  int result = evaluate_od(params, ebofoaf, elemat1, elevec1, evelaf, epreaf, evelnp, eveln, eprenp,
-      epren, emhist, echist, epressnp_timederiv, epressam_timederiv, epressn_timederiv, eaccam,
-      edispnp, edispn, egridv, egridvn, escaaf, &eporositynp, mat, ele->is_ale(), intpoints);
+  int result =
+      evaluate_od(params, ebofoaf, elemat_1, elevec_1, evelaf, epreaf, evelnp, eveln, eprenp, epren,
+          emhist, echist, epressnp_timederiv, epressam_timederiv, epressn_timederiv, eaccam,
+          edispnp, edispn, egridv, egridvn, escaaf, &eporositynp, mat, ele->is_ale(), intpoints);
 
   return result;
 }

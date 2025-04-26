@@ -106,7 +106,7 @@ namespace BeamInteraction
      *
      * Some nodes / elements in the discretization need additional Lagrange multiplier DOFs. We need
      * to be able to know which pair refers to which Lagrange multipliers. In this setup routine, a
-     * Epetra multi vector is created, that maps all centerline nodes and beam elements, to a
+     * multi vector is created, that maps all centerline nodes and beam elements, to a
      * Lagrange multiplier DOF.
      *
      * @param discret Pointer to the discretization.

@@ -631,7 +631,7 @@ void PoroPressureBased::TimIntImpl::collect_runtime_output_data()
   // solid pressure
   if (output_solidpress_)
   {
-    // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
+    // convert dof-based vector into node-based multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> solidpressure_multi =
         PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *solidpressure_, nds_solidpressure_, 1);
@@ -647,7 +647,7 @@ void PoroPressureBased::TimIntImpl::collect_runtime_output_data()
         discret_->get_state(nds_disp_, "dispnp");
     if (dispnp == nullptr) FOUR_C_THROW("Cannot extract displacement field from discretization");
 
-    // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
+    // convert dof-based vector into node-based multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> dispnp_multi =
         PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *dispnp, nds_disp_, nsd_);
@@ -718,7 +718,7 @@ void PoroPressureBased::TimIntImpl::collect_runtime_output_data()
   // porosity
   if (output_porosity_)
   {
-    // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
+    // convert dof-based vector into node-based multi-vector for postprocessing
     std::shared_ptr<Core::LinAlg::MultiVector<double>> porosity_multi =
         PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
             *discret_, *porosity_, nds_solidpressure_, 1);

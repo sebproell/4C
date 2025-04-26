@@ -62,19 +62,15 @@ namespace Discret
        */
       virtual int evaluate(Core::Elements::Element* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra) = 0;
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3) = 0;
 
       virtual int evaluate_ehl_mon(Core::Elements::Element* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra) = 0;
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3) = 0;
 
       /*!
         This class does not provide a definition for this function; it
@@ -84,11 +80,9 @@ namespace Discret
       */
       virtual int evaluate_service(Core::Elements::Element* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra) = 0;
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3) = 0;
     };
   }  // namespace Elements
 }  // namespace Discret

@@ -83,7 +83,7 @@ namespace Mortar
     //! @name Access methods
 
     /*!
-    \brief Get Epetra communicator
+    \brief Get communicator
 
     */
     MPI_Comm get_comm() const { return comm_; }

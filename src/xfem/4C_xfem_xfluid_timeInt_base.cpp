@@ -92,7 +92,7 @@ void XFEM::XfluidTimeintBase::type(int iter, int iterMax)
 
 
 /*------------------------------------------------------------------------------------------------*
- * assign the Epetra vectors which shall be computed to the                                       *
+ * assign the vectors which shall be computed to the                                              *
  * algorithms data structure                                                         schott 07/12 *
  *------------------------------------------------------------------------------------------------*/
 void XFEM::XfluidTimeintBase::handle_vectors(
@@ -3168,8 +3168,8 @@ bool XFEM::XfluidStd::within_limits(Core::LinAlg::Matrix<3, 1>& xsi_, const doub
 }
 
 /*------------------------------------------------------------------------------------------------*
- * setting the computed data for the standard degrees of freedom into the according * Epetra
- *Vectors for all handled nodes                                              schott 07/12 *
+ * setting the computed data for the standard degrees of freedom into the according        *
+ * vectors for all handled nodes                                              schott 07/12 *
  *------------------------------------------------------------------------------------------------*/
 void XFEM::XfluidStd::set_final_data()
 {

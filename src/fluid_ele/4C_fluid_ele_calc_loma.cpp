@@ -48,18 +48,16 @@ template <Core::FE::CellType distype>
 int Discret::Elements::FluidEleCalcLoma<distype>::evaluate(Discret::Elements::Fluid* ele,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, bool offdiag)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, bool offdiag)
 {
   if (not offdiag)
-    return my::evaluate(ele, discretization, lm, params, mat, elemat1_epetra, elemat2_epetra,
-        elevec1_epetra, elevec2_epetra, elevec3_epetra, my::intpoints_);
+    return my::evaluate(ele, discretization, lm, params, mat, elemat1, elemat2, elevec1, elevec2,
+        elevec3, my::intpoints_);
   else
-    return evaluate_od(ele, discretization, lm, params, mat, elemat1_epetra, elemat2_epetra,
-        elevec1_epetra, elevec2_epetra, elevec3_epetra, my::intpoints_);
+    return evaluate_od(ele, discretization, lm, params, mat, elemat1, elemat2, elevec1, elevec2,
+        elevec3, my::intpoints_);
 }
 
 
@@ -70,17 +68,15 @@ template <Core::FE::CellType distype>
 int Discret::Elements::FluidEleCalcLoma<distype>::evaluate_od(Discret::Elements::Fluid* ele,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, const Core::FE::GaussIntegration& intpoints)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, const Core::FE::GaussIntegration& intpoints)
 {
   // rotationally symmetric periodic bc's: do setup for current element
   my::rotsymmpbc_->setup(ele);
 
   // construct view
-  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, nen_> elemat1(elemat1_epetra, true);
+  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, nen_> elemat_1(elemat1, true);
 
   // ---------------------------------------------------------------------
   // call routine for calculation of body force in element nodes,
@@ -198,7 +194,7 @@ int Discret::Elements::FluidEleCalcLoma<distype>::evaluate_od(Discret::Elements:
   // set element id
   my::eid_ = ele->id();
   // call inner evaluate (does not know about element or discretization object)
-  int result = evaluate_od(params, ebofoaf, eprescpgaf, elemat1, evelaf, epreaf, epream, escaaf,
+  int result = evaluate_od(params, ebofoaf, eprescpgaf, elemat_1, evelaf, epreaf, epream, escaaf,
       emhist, eaccam, escadtam, escabofoaf, eveln, escaam, edispnp, egridv, mat, ele->is_ale(),
       CsDeltaSq, CiDeltaSq, intpoints);
 

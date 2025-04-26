@@ -929,7 +929,7 @@ void Discret::Elements::Beam3eb::calc_internal_and_inertia_forces_and_stiff(
 
         R_bending.scale(EI * wgt / std::pow(jacobi_, 3));
 
-        // shifting values from fixed size matrix to epetra matrix *stiffmatrix
+        // shifting values from fixed size matrix to flexible size matrix *stiffmatrix
         for (int i = 0; i < dofpn * nnode; i++)
         {
           for (int j = 0; j < dofpn * nnode; j++)
@@ -971,7 +971,7 @@ void Discret::Elements::Beam3eb::calc_internal_and_inertia_forces_and_stiff(
         Res_bending.scale(EI * wgt);
         Res_tension.scale(EA * wgt);
 
-        // shifting values from fixed size vector to epetra vector *force
+        // shifting values from fixed size vector to flexible size vector *force
         for (int i = 0; i < dofpn * nnode; i++)
         {
 #ifndef ANS_BEAM3EB
@@ -1276,7 +1276,7 @@ void Discret::Elements::Beam3eb::calc_internal_and_inertia_forces_and_stiff(
 #ifdef SWITCHINEXTENSIBLEON
     if (force != nullptr)
     {
-      // shifting values from fixed size vector to epetra vector *force
+      // shifting values from fixed size vector to flexible size vector *force
       for (int i = 0; i < 15; i++)
       {
         (*force)(i) += Res_inextensibility(i).val();
@@ -1582,7 +1582,7 @@ void Discret::Elements::Beam3eb::calc_internal_and_inertia_forces_and_stiff(
         R_bending.scale(EI * wgt / jacobi_);
 
 #ifndef INEXTENSIBLE
-        // shifting values from fixed size matrix to epetra matrix *stiffmatrix
+        // shifting values from fixed size matrix to flexible size matrix *stiffmatrix
         for (int i = 0; i < dofpn * nnode; i++)
         {
           for (int j = 0; j < dofpn * nnode; j++)
@@ -1599,7 +1599,7 @@ void Discret::Elements::Beam3eb::calc_internal_and_inertia_forces_and_stiff(
           }
         }  // for(int i = 0; i < dofpn*nnode; i++)
 #else
-        // shifting values from fixed size matrix to epetra matrix *stiffmatrix
+        // shifting values from fixed size matrix to flexible size matrix *stiffmatrix
         int i1 = 0;
         int j1 = 0;
         for (int i = 0; i < 12; i++)
@@ -1663,7 +1663,7 @@ void Discret::Elements::Beam3eb::calc_internal_and_inertia_forces_and_stiff(
         Res_tension.scale(EA * wgt);
 
 #ifndef INEXTENSIBLE
-        // shifting values from fixed size vector to epetra vector *force
+        // shifting values from fixed size vector to flexible size vector *force
         for (int i = 0; i < dofpn * nnode; i++)
         {
 #ifndef ANS_BEAM3EB
@@ -1678,7 +1678,7 @@ void Discret::Elements::Beam3eb::calc_internal_and_inertia_forces_and_stiff(
         }
 #else
         int i1 = 0;
-        // shifting values from fixed size vector to epetra vector *force
+        // shifting values from fixed size vector to flexible size vector *force
         for (int i = 0; i < dofpn * nnode; i++)
         {
           if (i < 6)
@@ -2084,7 +2084,7 @@ void Discret::Elements::Beam3eb::evaluate_stochastic_forces(
   Core::LinAlg::Matrix<3, 1> gamma(Core::LinAlg::Initialization::zero);
   get_damping_coefficients(gamma);
 
-  /*get pointer at Epetra multivector in parameter list linking to random numbers for stochastic
+  /*get pointer at multivector in parameter list linking to random numbers for stochastic
    * forces with zero mean and standard deviation (2*kT / dt)^0.5; note carefully: a space between
    * the two subsequal ">" signs is mandatory for the C++ parser in order to avoid confusion with
    * ">>" for streams*/

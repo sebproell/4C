@@ -69,13 +69,13 @@ namespace Cardiovascular0D
     void read_pod_basis_vectors_from_file(const std::string& absolute_path_to_pod_file,
         std::shared_ptr<Core::LinAlg::MultiVector<double>>& projmatrix);
 
-    //! Multiply two Epetra MultiVectors
-    void multiply_epetra_multi_vectors(Core::LinAlg::MultiVector<double>&, char,
+    //! Multiply two multi vectors
+    void multiply_multi_vectors(Core::LinAlg::MultiVector<double>&, char,
         Core::LinAlg::MultiVector<double>&, char, Core::LinAlg::Map&, Epetra_Import&,
         Core::LinAlg::MultiVector<double>&);
 
     //! Core::LinAlg::MultiVector<double> to Core::LinAlg::SparseMatrix
-    void epetra_multi_vector_to_linalg_sparse_matrix(Core::LinAlg::MultiVector<double>& multivect,
+    void multi_vector_to_linalg_sparse_matrix(Core::LinAlg::MultiVector<double>& multivect,
         Core::LinAlg::Map& rangemap, std::shared_ptr<Core::LinAlg::Map> domainmap,
         Core::LinAlg::SparseMatrix& sparsemat);
 

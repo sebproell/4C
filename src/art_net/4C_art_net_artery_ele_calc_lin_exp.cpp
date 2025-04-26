@@ -67,18 +67,17 @@ Discret::Elements::ArteryEleCalcLinExp<distype>::instance(
 template <Core::FE::CellType distype>
 int Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate(Artery* ele,
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3,
+    std::shared_ptr<Core::Mat::Material> mat)
 {
   // the number of nodes
   const int numnode = my::iel_;
 
   // construct views
-  Core::LinAlg::Matrix<2 * my::iel_, 2 * my::iel_> elemat1(elemat1_epetra.values(), true);
-  Core::LinAlg::Matrix<2 * my::iel_, 1> elevec1(elevec1_epetra.values(), true);
+  Core::LinAlg::Matrix<2 * my::iel_, 2 * my::iel_> elemat_1(elemat1.values(), true);
+  Core::LinAlg::Matrix<2 * my::iel_, 1> elevec_1(elevec1.values(), true);
   // elemat2, elevec2, and elevec3 are never used anyway
 
   //----------------------------------------------------------------------
@@ -122,7 +121,7 @@ int Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate(Artery* ele,
   // ---------------------------------------------------------------------
   // call routine for calculating element matrix and right hand side
   // ---------------------------------------------------------------------
-  sysmat(ele, eqnp, eareanp, elemat1, elevec1, mat, dt);
+  sysmat(ele, eqnp, eareanp, elemat_1, elevec_1, mat, dt);
 
 
   return 0;
@@ -133,11 +132,9 @@ template <Core::FE::CellType distype>
 int Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_service(Artery* ele,
     const Arteries::Action action, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat)
 {
   switch (action)
   {
@@ -191,18 +188,16 @@ int Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_service(Artery* el
 template <Core::FE::CellType distype>
 int Discret::Elements::ArteryEleCalcLinExp<distype>::scatra_evaluate(Artery* ele,
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization, std::vector<int>& lm,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat)
 {
   // the number of nodes
   const int numnode = my::iel_;
 
   // construct views
-  Core::LinAlg::Matrix<2 * my::iel_, 2 * my::iel_> elemat1(elemat1_epetra.values(), true);
-  Core::LinAlg::Matrix<2 * my::iel_, 1> elevec1(elevec1_epetra.values(), true);
+  Core::LinAlg::Matrix<2 * my::iel_, 2 * my::iel_> elemat_1(elemat1.values(), true);
+  Core::LinAlg::Matrix<2 * my::iel_, 1> elevec_1(elevec1.values(), true);
   // elemat2, elevec2, and elevec3 are never used anyway
 
   //----------------------------------------------------------------------
@@ -275,7 +270,7 @@ int Discret::Elements::ArteryEleCalcLinExp<distype>::scatra_evaluate(Artery* ele
   }
 
   // call routine for calculating element matrix and right hand side
-  scatra_sysmat(ele, escatran, ewfnp, ewbnp, eareanp, earean, elemat1, elevec1, *mat, dt);
+  scatra_sysmat(ele, escatran, ewfnp, ewbnp, eareanp, earean, elemat_1, elevec_1, *mat, dt);
   return 0;
 }
 

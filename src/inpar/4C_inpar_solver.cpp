@@ -52,7 +52,7 @@ namespace Inpar::SOLVER
             },
             {.description =
                     "Type of internal preconditioner to use.\nNote! this preconditioner will "
-                    "only be used if the input operator\nsupports the Epetra_RowMatrix "
+                    "only be used if the input operator\nsupports the Epetra "
                     "interface and the client does not pass\nin an external preconditioner!",
                 .default_value = Core::LinearSolver::PreconditionerType::ilu}),
 

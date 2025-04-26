@@ -74,15 +74,12 @@ template <Core::FE::CellType distype>
 int Discret::Elements::FluidEleCalcHDGWeakComp<distype>::evaluate(Discret::Elements::Fluid* ele,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, const Core::FE::GaussIntegration&,
-    bool offdiag)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, const Core::FE::GaussIntegration&, bool offdiag)
 {
-  return this->evaluate(ele, discretization, lm, params, mat, elemat1_epetra, elemat2_epetra,
-      elevec1_epetra, elevec2_epetra, elevec3_epetra, offdiag);
+  return this->evaluate(
+      ele, discretization, lm, params, mat, elemat1, elemat2, elevec1, elevec2, elevec3, offdiag);
 }
 
 

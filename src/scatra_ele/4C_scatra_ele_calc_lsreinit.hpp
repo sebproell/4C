@@ -55,19 +55,16 @@ namespace Discret
       //! evaluate the element
       int evaluate(Core::Elements::Element* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra) override;
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3) override;
 
       int evaluate_action(Core::Elements::Element* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, const ScaTra::Action& action,
-          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra) override;
+          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+          Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3) override;
 
      protected:
       //! calculate matrix and rhs. Here the whole thing is hidden. Hyperbolic reinit.
@@ -104,18 +101,17 @@ namespace Discret
 
       void eval_reinitialization(const Core::LinAlg::Vector<double>& phinp,
           const std::vector<int>& lm, Core::Elements::Element* ele, Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra);
+          Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseVector& elevec1);
 
       void eval_reinitialization_embedded(const std::vector<int>& lm, Core::Elements::Element* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra);
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseVector& elevec1);
 
       void eval_reinitialization_std(const Core::LinAlg::Vector<double>& phinp,
           const std::vector<int>& lm, Core::Elements::Element* ele, Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra);
+          Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseVector& elevec1);
 
       /*========================================================================*/
       //! @name overloaded methods for evaluation of individual terms

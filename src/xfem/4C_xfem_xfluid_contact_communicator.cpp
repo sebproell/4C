@@ -334,7 +334,7 @@ void XFEM::XFluidContactComm::get_states(const int fluidele_id, const std::vecto
   }
 
   // 2 // get element xyze
-  /// element coordinates in EpetraMatrix
+  /// element coordinates in matrix
   ele_xyze.shape(3, fluidele->num_node());
   for (int i = 0; i < fluidele->num_node(); ++i)
   {

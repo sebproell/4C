@@ -47,16 +47,16 @@ namespace Discret
       //!  This class does not provide a definition for this function, it
       //!  must be defined in TemperImpl.
       virtual int evaluate(const Core::Elements::Element* ele,  //!< current element
-          Teuchos::ParameterList& params,                   //!< parameter list, containing e.g., dt
-          const Core::FE::Discretization& discretization,   //!< current discretisation
-          const Core::Elements::LocationArray& la,          //!< location array
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,  //!< conductivity matrix
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,  //!< capacity matrix
+          Teuchos::ParameterList& params,                  //!< parameter list, containing e.g., dt
+          const Core::FE::Discretization& discretization,  //!< current discretisation
+          const Core::Elements::LocationArray& la,         //!< location array
+          Core::LinAlg::SerialDenseMatrix& elemat1,        //!< conductivity matrix
+          Core::LinAlg::SerialDenseMatrix& elemat2,        //!< capacity matrix
           Core::LinAlg::SerialDenseVector&
-              elevec1_epetra,  //!< internal force, view on heat flux in x-direction
+              elevec1,  //!< internal force, view on heat flux in x-direction
           Core::LinAlg::SerialDenseVector&
-              elevec2_epetra,  //!< external force, view on heat flux in y-direction
-          Core::LinAlg::SerialDenseVector& elevec3_epetra  //!< view on heat flux in z-direction
+              elevec2,  //!< external force, view on heat flux in y-direction
+          Core::LinAlg::SerialDenseVector& elevec3  //!< view on heat flux in z-direction
           ) = 0;
 
       //! Evaluate the element
@@ -68,8 +68,8 @@ namespace Discret
           const Core::FE::Discretization& discretization,               //!< current discretisation
           const std::vector<int>&
               lm,  //!< location vector, EvalNeumann is called only on own discretisation
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,  //!< view on external force vector
-          Core::LinAlg::SerialDenseMatrix* elemat1_epetra   //!< matrix is not needed
+          Core::LinAlg::SerialDenseVector& elevec1,  //!< view on external force vector
+          Core::LinAlg::SerialDenseMatrix* elemat1   //!< matrix is not needed
           ) = 0;
 
       //! Internal implementation class for thermo elements
@@ -124,17 +124,17 @@ namespace Discret
       static constexpr int nquad_ = Thermo::DisTypeToNumGaussPoints<distype>::nquad;
 
       //! Evaluate for multiple dofsets
-      int evaluate(const Core::Elements::Element* ele,      //!< current element
-          Teuchos::ParameterList& params,                   //!< parameter list, containing e.g., dt
-          const Core::FE::Discretization& discretization,   //!< current discretisation
-          const Core::Elements::LocationArray& la,          //!< location array
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,  //!< conductivity matrix
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,  //!< capacity matrix
+      int evaluate(const Core::Elements::Element* ele,     //!< current element
+          Teuchos::ParameterList& params,                  //!< parameter list, containing e.g., dt
+          const Core::FE::Discretization& discretization,  //!< current discretisation
+          const Core::Elements::LocationArray& la,         //!< location array
+          Core::LinAlg::SerialDenseMatrix& elemat1,        //!< conductivity matrix
+          Core::LinAlg::SerialDenseMatrix& elemat2,        //!< capacity matrix
           Core::LinAlg::SerialDenseVector&
-              elevec1_epetra,  //!< internal force, view on heat flux in x-direction
+              elevec1,  //!< internal force, view on heat flux in x-direction
           Core::LinAlg::SerialDenseVector&
-              elevec2_epetra,  //!< external force, view on heat flux in y-direction
-          Core::LinAlg::SerialDenseVector& elevec3_epetra  //!< view on heat flux in z-direction
+              elevec2,  //!< external force, view on heat flux in y-direction
+          Core::LinAlg::SerialDenseVector& elevec3  //!< view on heat flux in z-direction
           ) override;
 
       //! Evaluate the element
@@ -143,8 +143,8 @@ namespace Discret
           const Core::FE::Discretization& discretization,       //!< current discretisation
           const std::vector<int>&
               lm,  //!< location vector, EvalNeumann is called only on own discretisation
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,  //!< view on external force vector
-          Core::LinAlg::SerialDenseMatrix* elemat1_epetra   //!< matrix is not needed
+          Core::LinAlg::SerialDenseVector& elevec1,  //!< view on external force vector
+          Core::LinAlg::SerialDenseMatrix* elemat1   //!< matrix is not needed
           ) override;
 
      private:

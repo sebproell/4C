@@ -90,11 +90,9 @@ Discret::Elements::LubricationEleCalc<distype, probdim>::instance(const std::str
 template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate(Core::Elements::Element* ele,
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   //--------------------------------------------------------------------------------
   // preparations for element
@@ -112,7 +110,7 @@ int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate(Core::Elem
   // calculate element coefficient matrix and rhs
   //--------------------------------------------------------------------------------
 
-  sysmat(ele, elemat1_epetra, elevec1_epetra);
+  sysmat(ele, elemat1, elevec1);
 
   return 0;
 }
@@ -126,11 +124,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate_ehl_mon(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3)
 {
   //--------------------------------------------------------------------------------
   // preparations for element
@@ -152,7 +148,7 @@ int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate_ehl_mon(
   // calculate element off-diagonal-matrix for height linearization in monolithic EHL
   //--------------------------------------------------------------------------------
 
-  matrixfor_ehl_mon(ele, elemat1_epetra, elemat2_epetra);
+  matrixfor_ehl_mon(ele, elemat1, elemat2);
 
   return 0;
 }
@@ -1224,11 +1220,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate_service(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3)
 {
   // setup
   if (setup_calc(ele, discretization) == -1) return 0;
@@ -1237,8 +1231,8 @@ int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate_service(
   const auto action = Teuchos::getIntegralValue<FourC::Lubrication::Action>(params, "action");
 
   // evaluate action
-  evaluate_action(ele, params, discretization, action, la, elemat1_epetra, elemat2_epetra,
-      elevec1_epetra, elevec2_epetra, elevec3_epetra);
+  evaluate_action(
+      ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
 
   return 0;
 }
@@ -1250,11 +1244,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate_action(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, const FourC::Lubrication::Action& action,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   //(for now) only first dof set considered
   const std::vector<int>& lm = la[0].lm_;
@@ -1264,14 +1256,14 @@ int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate_action(
     case FourC::Lubrication::calc_error:
     {
       // check if length suffices
-      if (elevec1_epetra.length() < 1) FOUR_C_THROW("Result vector too short");
+      if (elevec1.length() < 1) FOUR_C_THROW("Result vector too short");
 
       // need current solution
       std::shared_ptr<const Core::LinAlg::Vector<double>> prenp = discretization.get_state("prenp");
       if (prenp == nullptr) FOUR_C_THROW("Cannot get state vector 'prenp'");
       Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*prenp, eprenp_, lm);
 
-      cal_error_compared_to_analyt_solution(ele, params, elevec1_epetra);
+      cal_error_compared_to_analyt_solution(ele, params, elevec1);
 
       break;
     }
@@ -1288,7 +1280,7 @@ int Discret::Elements::LubricationEleCalc<distype, probdim>::evaluate_action(
       Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*prenp, eprenp_, lm);
 
       // calculate pressures and domain integral
-      calculate_pressures(ele, elevec1_epetra, inverting);
+      calculate_pressures(ele, elevec1, inverting);
 
       break;
     }

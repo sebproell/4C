@@ -504,8 +504,7 @@ template <Core::FE::CellType bdistype, Core::FE::CellType pdistype>
 void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
     Discret::Elements::FluidBoundary* surfele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& plm,
-    Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra,
-    Core::LinAlg::SerialDenseVector::Base& elevec_epetra)
+    Core::LinAlg::SerialDenseMatrix::Base& elemat1, Core::LinAlg::SerialDenseVector::Base& elevec1)
 {
   // initialize pressure value and pressure derivative at boundary
   double pressure = 0.0;
@@ -607,10 +606,10 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
 
     // reshape element matrices and vectors and init to zero, construct views
     const int peledim = (nsd + 1) * piel;
-    elemat_epetra.shape(peledim, peledim);
-    elevec_epetra.size(peledim);
-    Core::LinAlg::Matrix<peledim, peledim> elemat(elemat_epetra.values(), true);
-    Core::LinAlg::Matrix<peledim, 1> elevec(elevec_epetra.values(), true);
+    elemat1.shape(peledim, peledim);
+    elevec1.size(peledim);
+    Core::LinAlg::Matrix<peledim, peledim> elemat(elemat1.values(), true);
+    Core::LinAlg::Matrix<peledim, 1> elevec(elevec1.values(), true);
 
     // get local node coordinates
     Core::LinAlg::Matrix<nsd, piel> pxyze(Core::LinAlg::Initialization::zero);
@@ -1241,8 +1240,7 @@ template <Core::FE::CellType bdistype, Core::FE::CellType pdistype>
 void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
     Discret::Elements::FluidBoundary* surfele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& plm,
-    Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra,
-    Core::LinAlg::SerialDenseVector::Base& elevec_epetra)
+    Core::LinAlg::SerialDenseMatrix::Base& elemat1, Core::LinAlg::SerialDenseVector::Base& elevec1)
 {
   //---------------------------------------------------------------------
   // get time-integration parameters
@@ -1266,10 +1264,10 @@ void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
 
   // reshape element matrices and vectors and init to zero, construct views
   const int peledim = (nsd + 1) * piel;
-  elemat_epetra.shape(peledim, peledim);
-  elevec_epetra.size(peledim);
-  Core::LinAlg::Matrix<peledim, peledim> elemat(elemat_epetra.values(), true);
-  Core::LinAlg::Matrix<peledim, 1> elevec(elevec_epetra.values(), true);
+  elemat1.shape(peledim, peledim);
+  elevec1.size(peledim);
+  Core::LinAlg::Matrix<peledim, peledim> elemat(elemat1.values(), true);
+  Core::LinAlg::Matrix<peledim, 1> elevec(elevec1.values(), true);
 
   // get local node coordinates
   Core::LinAlg::Matrix<nsd, piel> pxyze(Core::LinAlg::Initialization::zero);
@@ -1574,8 +1572,7 @@ template <Core::FE::CellType bdistype, Core::FE::CellType pdistype>
 void Discret::Elements::FluidBoundaryParent<distype>::navier_slip_bc(
     Discret::Elements::FluidBoundary* surfele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& plm,
-    Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra,
-    Core::LinAlg::SerialDenseVector::Base& elevec_epetra)
+    Core::LinAlg::SerialDenseMatrix::Base& elemat1, Core::LinAlg::SerialDenseVector::Base& elevec1)
 {
   //---------------------------------------------------------------------
   // get time-integration parameters
@@ -1599,10 +1596,10 @@ void Discret::Elements::FluidBoundaryParent<distype>::navier_slip_bc(
 
   // reshape element matrices and vectors and init to zero, construct views
   const int peledim = (nsd + 1) * piel;
-  elemat_epetra.shape(peledim, peledim);
-  elevec_epetra.size(peledim);
-  Core::LinAlg::Matrix<peledim, peledim> elemat(elemat_epetra.values(), true);
-  Core::LinAlg::Matrix<peledim, 1> elevec(elevec_epetra.values(), true);
+  elemat1.shape(peledim, peledim);
+  elevec1.size(peledim);
+  Core::LinAlg::Matrix<peledim, peledim> elemat(elemat1.values(), true);
+  Core::LinAlg::Matrix<peledim, 1> elevec(elevec1.values(), true);
 
   // get local node coordinates
   Core::LinAlg::Matrix<nsd, piel> pxyze(Core::LinAlg::Initialization::zero);
@@ -1834,8 +1831,7 @@ template <Core::FE::CellType bdistype, Core::FE::CellType pdistype>
 void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
     Discret::Elements::FluidBoundary* surfele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& plm,
-    Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra,
-    Core::LinAlg::SerialDenseVector::Base& elevec_epetra)
+    Core::LinAlg::SerialDenseMatrix::Base& elemat1, Core::LinAlg::SerialDenseVector::Base& elevec1)
 {
   //---------------------------------------------------------------------
   // get condition information
@@ -1941,10 +1937,10 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
 
   // reshape element matrices and vectors and init to zero, construct views
   const int peledim = (nsd + 1) * piel;
-  elemat_epetra.shape(peledim, peledim);
-  elevec_epetra.size(peledim);
-  Core::LinAlg::Matrix<peledim, peledim> elemat(elemat_epetra.values(), true);
-  Core::LinAlg::Matrix<peledim, 1> elevec(elevec_epetra.values(), true);
+  elemat1.shape(peledim, peledim);
+  elevec1.size(peledim);
+  Core::LinAlg::Matrix<peledim, peledim> elemat(elemat1.values(), true);
+  Core::LinAlg::Matrix<peledim, 1> elevec(elevec1.values(), true);
 
   // get local node coordinates
   Core::LinAlg::Matrix<nsd, piel> pxyze(Core::LinAlg::Initialization::zero);
@@ -3718,8 +3714,7 @@ template <Core::FE::CellType bdistype, Core::FE::CellType pdistype>
 void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max_eigenvalue(
     Core::Elements::FaceElement* surfele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& blm,
-    Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra1,
-    Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra2)
+    Core::LinAlg::SerialDenseMatrix::Base& elemat1, Core::LinAlg::SerialDenseMatrix::Base& elemat2)
 {
   //---------------------------------------------------------------------
   // get parent element data
@@ -3737,10 +3732,10 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
 
   // reshape element matrices and vectors and init to zero, construct views
   const int peledim = nsd * piel;
-  elemat_epetra1.shape(peledim, peledim);
-  elemat_epetra2.shape(peledim, peledim);
-  Core::LinAlg::Matrix<peledim, peledim> Amat(elemat_epetra1.values(), true);
-  Core::LinAlg::Matrix<peledim, peledim> Bmat(elemat_epetra2.values(), true);
+  elemat1.shape(peledim, peledim);
+  elemat2.shape(peledim, peledim);
+  Core::LinAlg::Matrix<peledim, peledim> Amat(elemat1.values(), true);
+  Core::LinAlg::Matrix<peledim, peledim> Bmat(elemat2.values(), true);
 
   // get local node coordinates
   Core::LinAlg::Matrix<nsd, piel> pxyze(Core::LinAlg::Initialization::zero);
@@ -4243,7 +4238,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
 
   // Solve the local eigen value problem Ax = lambda Bx. The function generalized_eigen
   // returns the maximum Eigenvalue of the problem.
-  const double maxeigenvalue = Core::LinAlg::generalized_eigen(elemat_epetra1, elemat_epetra2);
+  const double maxeigenvalue = Core::LinAlg::generalized_eigen(elemat1, elemat2);
 
   // fill the map: every side id has it's own parameter beta
   (*params.get<std::shared_ptr<std::map<int, double>>>(
@@ -4260,8 +4255,7 @@ template <Core::FE::CellType bdistype, Core::FE::CellType pdistype>
 void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
     Discret::Elements::FluidBoundary* surfele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& plm,
-    Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra,
-    Core::LinAlg::SerialDenseVector::Base& elevec_epetra)
+    Core::LinAlg::SerialDenseMatrix::Base& elemat, Core::LinAlg::SerialDenseVector::Base& elevec)
 {
   //--------------------------------------------------
   // get my parent element
@@ -4305,11 +4299,11 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
   // Reshape element matrices and vectors and init to zero, construct views
   const int peledim = (nsd + 1) * piel;
 
-  elemat_epetra.shape(peledim, peledim);
-  elevec_epetra.size(peledim);
+  elemat.shape(peledim, peledim);
+  elevec.size(peledim);
 
-  Core::LinAlg::Matrix<peledim, peledim> elemat(elemat_epetra.values(), true);
-  Core::LinAlg::Matrix<peledim, 1> elevec(elevec_epetra.values(), true);
+  Core::LinAlg::Matrix<peledim, peledim> elemat1(elemat.values(), true);
+  Core::LinAlg::Matrix<peledim, 1> elevec1(elevec.values(), true);
 
   //--------------------------------------------------
   // get the condition information
@@ -5701,9 +5695,9 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
           {
             for (int j = 0; j < nsd + 1; ++j)
             {
-              elemat(A * (nsd + 1) + i, B * (nsd + 1) + j) -= mat_v_sigma_o_n(A * nsd + i, rr) *
-                                                              inv_r_sigma(rr, mm) *
-                                                              mat_r_up_block(mm, B * (nsd + 1) + j);
+              elemat1(A * (nsd + 1) + i, B * (nsd + 1) + j) -=
+                  mat_v_sigma_o_n(A * nsd + i, rr) * inv_r_sigma(rr, mm) *
+                  mat_r_up_block(mm, B * (nsd + 1) + j);
             }
           }
         }
@@ -5719,9 +5713,9 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
       {
         for (int mm = 0; mm < numstressdof_ * piel; ++mm)
         {
-          elevec(A * (nsd + 1) + i) -= timefacrhs * mat_v_sigma_o_n(A * nsd + i, rr) *
-                                       inv_r_sigma(rr, mm) *
-                                       (-vec_r_o_n_u_minus_g(mm) - vec_r_epsu(mm) - vec_r_p(mm));
+          elevec1(A * (nsd + 1) + i) -= timefacrhs * mat_v_sigma_o_n(A * nsd + i, rr) *
+                                        inv_r_sigma(rr, mm) *
+                                        (-vec_r_o_n_u_minus_g(mm) - vec_r_epsu(mm) - vec_r_p(mm));
         }
       }
     }

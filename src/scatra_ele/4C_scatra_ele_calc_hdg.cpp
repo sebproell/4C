@@ -169,11 +169,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3)
 {
   // check if this is an hdg element
   Discret::Elements::ScaTraHDG* hdgele = dynamic_cast<Discret::Elements::ScaTraHDG*>(ele);
@@ -207,7 +205,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
       shapes_->evaluate(*ele);
       read_global_vectors(ele, discretization, la);
 
-      return update_interior_variables(hdgele, params, elevec1_epetra);
+      return update_interior_variables(hdgele, params, elevec1);
       break;
     }
 
@@ -215,7 +213,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
     {
       shapes_->evaluate(*ele);
       read_global_vectors(ele, discretization, la);
-      return node_based_values(ele, discretization, elevec1_epetra);
+      return node_based_values(ele, discretization, elevec1);
       break;
     }
 
@@ -224,7 +222,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
       element_init(ele);
       prepare_material_params(ele);
       // set initial field
-      return set_initial_field(ele, params, elevec1_epetra, elevec2_epetra);
+      return set_initial_field(ele, params, elevec1, elevec2);
 
       break;
     }
@@ -239,8 +237,8 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
         local_solver_->compute_matrices(ele);
         local_solver_->condense_local_part(hdgele);
       }
-      elemat1_epetra.putScalar(0.0);
-      local_solver_->add_diff_mat(elemat1_epetra, hdgele);
+      elemat1.putScalar(0.0);
+      local_solver_->add_diff_mat(elemat1, hdgele);
 
       break;
     }
@@ -252,7 +250,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
     case ScaTra::Action::project_field:
     {
       shapes_->evaluate(*ele);
-      return project_field(ele, discretization, params, elevec1_epetra, elevec2_epetra, la);
+      return project_field(ele, discretization, params, elevec1, elevec2, la);
       break;
     }
     case ScaTra::Action::time_update_material:
@@ -274,7 +272,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
     {
       if (params.isParameter("faceconsider"))
       {
-        return project_dirich_field(ele, params, discretization, la, elevec1_epetra);
+        return project_dirich_field(ele, params, discretization, la, elevec1);
       }
       break;
     }
@@ -289,7 +287,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
         int nfdofs = Core::FE::PolynomialSpaceCache<nsd_ - 1>::instance().create(parameter)->size();
         sumindex += nfdofs;
       }
-      local_solver_->compute_neumann_bc(ele, params, face, elevec1_epetra, sumindex);
+      local_solver_->compute_neumann_bc(ele, params, face, elevec1, sumindex);
       break;
     }
     case ScaTra::Action::calc_padaptivity:
@@ -303,7 +301,7 @@ int Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::evaluate_service(
     {
       shapes_->evaluate(*ele);
       read_global_vectors(ele, discretization, la);
-      return calc_error(ele, params, elevec1_epetra);
+      return calc_error(ele, params, elevec1);
       break;
     }
     default:

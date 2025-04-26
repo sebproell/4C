@@ -24,11 +24,9 @@ template <Core::FE::CellType distype, unsigned prob_dim>
 int Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::evaluate_action(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, const ScaTra::Action& action,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   const std::vector<int>& lm = la[0].lm_;
 
@@ -69,7 +67,7 @@ int Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::evaluate_action
       // Step 2: calculate matrix and rhs
       //------------------------------------------------------
 
-      sysmat_correction(penalty, elemat1_epetra, elevec1_epetra);
+      sysmat_correction(penalty, elemat1, elevec1);
 
       break;
     }
@@ -87,14 +85,14 @@ int Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::evaluate_action
       // get current direction
       const int dir = params.get<int>("direction");
 
-      sysmat_nodal_vel(dir, elemat1_epetra, elevec1_epetra);
+      sysmat_nodal_vel(dir, elemat1, elevec1);
 
       break;
     }
     default:
     {
-      my::evaluate_action(ele, params, discretization, action, la, elemat1_epetra, elemat2_epetra,
-          elevec1_epetra, elevec2_epetra, elevec3_epetra);
+      my::evaluate_action(
+          ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
       break;
     }
   }  // switch(action)

@@ -274,8 +274,7 @@ void Discret::Elements::FluidIntFaceImpl<distype>::assemble_internal_faces_using
   {
     TEUCHOS_FUNC_TIME_MONITOR("XFEM::Edgestab EOS: assemble FE matrix");
 
-    // calls the Assemble function for EpetraFECrs matrices including communication of non-row
-    // entries
+    // calls the Assemble function for matrices including communication of non-row entries
     if (assemblemat)
     {
       if (eos_gp_pattern == Inpar::FLUID::EOS_GP_Pattern_uvwp)

@@ -196,11 +196,9 @@ template <Core::FE::CellType distype, Discret::Elements::Fluid::EnrichmentType e
 int Discret::Elements::FluidEleCalcXWall<distype, enrtype>::evaluate(Discret::Elements::Fluid* ele,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, bool offdiag)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, bool offdiag)
 {
   calcoldandnewpsi_ = false;
 
@@ -229,8 +227,8 @@ int Discret::Elements::FluidEleCalcXWall<distype, enrtype>::evaluate(Discret::El
     if (nodecount != 0)
       FOUR_C_THROW("something is wrong in this element with the number of virtual nodes vs dofs");
 
-    int err = my::evaluate(ele, discretization, lm, params, mat, elemat1_epetra, elemat2_epetra,
-        elevec1_epetra, elevec2_epetra, elevec3_epetra, my::intpoints_);
+    int err = my::evaluate(ele, discretization, lm, params, mat, elemat1, elemat2, elevec1, elevec2,
+        elevec3, my::intpoints_);
 
     int row1 = 0;
     int col1 = 0;
@@ -243,9 +241,9 @@ int Discret::Elements::FluidEleCalcXWall<distype, enrtype>::evaluate(Discret::El
           ++j)
       {
         if (*i == 0 && *j == 0 && row1 == col1)
-          elemat1_epetra[col1][row1] = 1.0;
+          elemat1[col1][row1] = 1.0;
         else if (*i == 0 or *j == 0)
-          elemat1_epetra[col1][row1] = 0.0;
+          elemat1[col1][row1] = 0.0;
         ++row1;
       }
       ++col1;
@@ -256,7 +254,7 @@ int Discret::Elements::FluidEleCalcXWall<distype, enrtype>::evaluate(Discret::El
     for (std::vector<int>::const_iterator i = assembletoggle.begin(); i != assembletoggle.end();
         ++i)
     {
-      if (*i == 0) elevec1_epetra[row1] = 0.0;
+      if (*i == 0) elevec1[row1] = 0.0;
       ++row1;
     }
 
@@ -951,12 +949,12 @@ double Discret::Elements::FluidEleCalcXWall<distype, enrtype>::calc_mk()
     intpoints = intpointsplane;
   }
 
-  Core::LinAlg::SerialDenseMatrix elemat_epetra1;
-  Core::LinAlg::SerialDenseMatrix elemat_epetra2;
-  elemat_epetra1.shape(nen_, nen_);
-  elemat_epetra2.shape(nen_, nen_);
-  Core::LinAlg::Matrix<nen_, nen_> Amat(elemat_epetra1.values(), true);
-  Core::LinAlg::Matrix<nen_, nen_> Bmat(elemat_epetra2.values(), true);
+  Core::LinAlg::SerialDenseMatrix elemat1;
+  Core::LinAlg::SerialDenseMatrix elemat2;
+  elemat1.shape(nen_, nen_);
+  elemat2.shape(nen_, nen_);
+  Core::LinAlg::Matrix<nen_, nen_> Amat(elemat1.values(), true);
+  Core::LinAlg::Matrix<nen_, nen_> Bmat(elemat2.values(), true);
 
   double vol = 0.0;
   //------------------------------------------------------------------
@@ -1008,7 +1006,7 @@ double Discret::Elements::FluidEleCalcXWall<distype, enrtype>::calc_mk()
     vol += my::fac_;
   }  // gauss loop
 
-  const double maxeigenvalue = Core::LinAlg::generalized_eigen(elemat_epetra1, elemat_epetra2);
+  const double maxeigenvalue = Core::LinAlg::generalized_eigen(elemat1, elemat2);
 
   double h_u = 0.0;
   if (my::fldpara_->which_tau() == Inpar::FLUID::tau_franca_barrenechea_valentin_frey_wall ||

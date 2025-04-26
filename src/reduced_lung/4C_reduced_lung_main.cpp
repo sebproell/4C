@@ -360,7 +360,7 @@ namespace ReducedLung
       n_local_equations++;
     }
 
-    // Create all necessary epetra maps for matrix, rhs, and dof-vector.
+    // Create all necessary maps for matrix, rhs, and dof-vector.
     const auto& epetra_comm = Core::Communication::as_epetra_comm(comm);
     // Map with all dof ids belonging to the local elements (airways and terminal units).
     const Core::LinAlg::Map locally_owned_dof_map =

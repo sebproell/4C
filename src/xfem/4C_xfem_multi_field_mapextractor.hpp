@@ -658,7 +658,6 @@ namespace XFEM
 
     int max_num_reserved_dofs_per_node_;
 
-    /// Epetra communicator
     MPI_Comm comm_;
 
     /// vector containing pointers to all the input discretizations

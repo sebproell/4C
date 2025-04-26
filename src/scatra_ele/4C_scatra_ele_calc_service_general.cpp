@@ -28,11 +28,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, const ScaTra::Action& action,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   //(for now) only first dof set considered
   const std::vector<int>& lm = la[0].lm_;
@@ -54,7 +52,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
         const double fac = eval_shape_func_and_derivs_at_int_point(intpoints, iquad);
 
         // loop over dofs
-        for (int k = 0; k < numdofpernode_; ++k) calc_mat_mass(elemat1_epetra, k, fac, 1.);
+        for (int k = 0; k < numdofpernode_; ++k) calc_mat_mass(elemat1, k, fac, 1.);
       }  // loop over integration points
 
       break;
@@ -64,7 +62,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
     case ScaTra::Action::calc_initial_time_deriv:
     {
       // calculate matrix and rhs
-      calc_initial_time_derivative(ele, elemat1_epetra, elevec1_epetra, params, discretization, la);
+      calc_initial_time_derivative(ele, elemat1, elevec1, params, discretization, la);
       break;
     }
 
@@ -72,7 +70,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
     {
       // calculate integral of shape functions
       const auto dofids = params.get<std::shared_ptr<Core::LinAlg::IntSerialDenseVector>>("dofids");
-      integrate_shape_functions(ele, elevec1_epetra, *dofids);
+      integrate_shape_functions(ele, elevec1, *dofids);
 
       break;
     }
@@ -132,9 +130,9 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
         for (unsigned inode = 0; inode < nen_; inode++)
         {
           const int fvi = inode * numdofpernode_ + k;
-          elevec1_epetra[fvi] += eflux(0, inode);
-          elevec2_epetra[fvi] += eflux(1, inode);
-          elevec3_epetra[fvi] += eflux(2, inode);
+          elevec1[fvi] += eflux(0, inode);
+          elevec2[fvi] += eflux(1, inode);
+          elevec3[fvi] += eflux(2, inode);
         }
       }  // loop over numscal
 
@@ -154,14 +152,14 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
       Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*phinp, ephinp_, lm);
 
       // calculate scalars and domain integral
-      calculate_scalars(ele, elevec1_epetra, inverting, calc_grad_phi);
+      calculate_scalars(ele, elevec1, inverting, calc_grad_phi);
 
       break;
     }
 
     case ScaTra::Action::calc_mean_scalar_time_derivatives:
     {
-      calculate_scalar_time_derivatives(discretization, lm, elevec1_epetra);
+      calculate_scalar_time_derivatives(discretization, lm, elevec1);
       break;
     }
 
@@ -292,8 +290,8 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
           }
         }
 
-        elevec1_epetra(0) = dt_numerator;
-        elevec1_epetra(1) = dt_denominator;
+        elevec1(0) = dt_numerator;
+        elevec1(1) = dt_denominator;
       }
       else
       {
@@ -307,7 +305,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
     // calculate domain integral, i.e., surface area or volume of domain element
     case ScaTra::Action::calc_domain_integral:
     {
-      calc_domain_integral(ele, elevec1_epetra);
+      calc_domain_integral(ele, elevec1);
 
       break;
     }
@@ -316,7 +314,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
     case ScaTra::Action::calc_subgrid_diffusivity_matrix:
     {
       // calculate mass matrix and rhs
-      calc_subgr_diff_matrix(ele, elemat1_epetra);
+      calc_subgr_diff_matrix(ele, elemat1);
 
       break;
     }
@@ -467,7 +465,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
         Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*phinp, ephinp_, lm);
 
         // calculate momentum vector and volume for element.
-        calculate_momentum_and_volume(ele, elevec1_epetra, interface_thickness);
+        calculate_momentum_and_volume(ele, elevec1, interface_thickness);
       }
       break;
     }
@@ -475,14 +473,14 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
     case ScaTra::Action::calc_error:
     {
       // check if length suffices
-      if (elevec1_epetra.length() < 1) FOUR_C_THROW("Result vector too short");
+      if (elevec1.length() < 1) FOUR_C_THROW("Result vector too short");
 
       // need current solution
       std::shared_ptr<const Core::LinAlg::Vector<double>> phinp = discretization.get_state("phinp");
       if (phinp == nullptr) FOUR_C_THROW("Cannot get state vector 'phinp'");
       Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*phinp, ephinp_, lm);
 
-      cal_error_compared_to_analyt_solution(ele, params, elevec1_epetra);
+      cal_error_compared_to_analyt_solution(ele, params, elevec1);
 
       break;
     }
@@ -496,7 +494,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
       for (unsigned inode = 0; inode < nen_; inode++)
       {
         const int fvi = inode * numdofpernode_ + scalartoprovidwithsource;
-        elevec1_epetra[fvi] += segregationconst;
+        elevec1[fvi] += segregationconst;
       }
 
       break;
@@ -666,7 +664,7 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action(
         bodyforce_[idof].clear();
       }
 
-      calc_hetero_reac_mat_and_rhs(ele, elemat1_epetra, elevec1_epetra);
+      calc_hetero_reac_mat_and_rhs(ele, elemat1, elevec1);
 
       break;
     }
@@ -781,11 +779,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_service(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3)
 {
   // setup
   if (setup_calc(ele, discretization) == -1) return 0;
@@ -823,8 +819,8 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_service(
   }
 
   // evaluate action
-  evaluate_action(ele, params, discretization, action, la, elemat1_epetra, elemat2_epetra,
-      elevec1_epetra, elevec2_epetra, elevec3_epetra);
+  evaluate_action(
+      ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
 
   return 0;
 }

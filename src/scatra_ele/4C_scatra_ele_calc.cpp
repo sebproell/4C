@@ -156,11 +156,9 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::setup_calc(
 template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate(Core::Elements::Element* ele,
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   //--------------------------------------------------------------------------------
   // preparations for element
@@ -185,12 +183,12 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate(Core::Elements:
   // calculate element coefficient matrix and rhs
   //--------------------------------------------------------------------------------
 
-  sysmat(ele, elemat1_epetra, elevec1_epetra, elevec2_epetra);
+  sysmat(ele, elemat1, elevec1, elevec2);
 
   // perform finite difference check on element level
   if (scatrapara_->fd_check() == Inpar::ScaTra::fdcheck_local and
       ele->owner() == Core::Communication::my_mpi_rank(discretization.get_comm()))
-    fd_check(ele, elemat1_epetra, elevec1_epetra, elevec2_epetra);
+    fd_check(ele, elemat1, elevec1, elevec2);
 
   // ---------------------------------------------------------------------
   // output values of Prt, diffeff and Cs_delta_sq_Prt (channel flow only)

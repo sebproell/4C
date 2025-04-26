@@ -54,8 +54,7 @@ namespace Discret
       virtual int evaluate_neumann(Discret::Elements::FluidBoundary* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
           Core::Conditions::Condition& condition, std::vector<int>& lm,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseMatrix* elemat1) = 0;
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseMatrix* elemat1) = 0;
     };
 
   }  // namespace Elements

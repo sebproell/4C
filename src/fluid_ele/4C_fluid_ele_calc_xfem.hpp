@@ -116,19 +116,16 @@ namespace Discret
       /// evaluate the XFEM cut element
       int evaluate_xfem(Discret::Elements::Fluid* ele, Core::FE::Discretization& discretization,
           const std::vector<int>& lm, Teuchos::ParameterList& params,
-          std::shared_ptr<Core::Mat::Material>& mat,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra,
+          std::shared_ptr<Core::Mat::Material>& mat, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+          Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3,
           const std::vector<Core::FE::GaussIntegration>& intpoints,
           const Cut::plain_volumecell_set& cells, bool offdiag = false) override;
 
       /// evaluate the shape functions in the XFEM
       int integrate_shape_function_xfem(Discret::Elements::Fluid* ele,
           Core::FE::Discretization& discretization, const std::vector<int>& lm,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
+          Core::LinAlg::SerialDenseVector& elevec1,
           const std::vector<Core::FE::GaussIntegration>& intpoints,
           const Cut::plain_volumecell_set& cells) override;
 
@@ -171,10 +168,9 @@ namespace Discret
               side_coupling,                          ///< side coupling matrices
           Teuchos::ParameterList& params,             ///< parameter list
           std::shared_ptr<Core::Mat::Material>& mat,  ///< material
-          Core::LinAlg::SerialDenseMatrix&
-              elemat1_epetra,  ///< local system matrix of intersected element
+          Core::LinAlg::SerialDenseMatrix& elemat1,  ///< local system matrix of intersected element
           Core::LinAlg::SerialDenseVector&
-              elevec1_epetra,                      ///< local element vector of intersected element
+              elevec1,                             ///< local element vector of intersected element
           Core::LinAlg::SerialDenseMatrix& Cuiui,  ///< coupling matrix of a side with itself
           const Cut::plain_volumecell_set& vcSet   ///< set of plain volume cells
           ) override;
@@ -191,8 +187,8 @@ namespace Discret
           Teuchos::ParameterList& params,                    ///< parameter list
           std::shared_ptr<Core::Mat::Material>& mat_master,  ///< material for the coupled side
           std::shared_ptr<Core::Mat::Material>& mat_slave,   ///< material for the coupled side
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,   ///< element matrix
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,   ///< element vector
+          Core::LinAlg::SerialDenseMatrix& elemat1,          ///< element matrix
+          Core::LinAlg::SerialDenseVector& elevec1,          ///< element vector
           const Cut::plain_volumecell_set& vcSet,            ///< volumecell sets in this element
           std::map<int, std::vector<Core::LinAlg::SerialDenseMatrix>>&
               side_coupling,                       ///< side coupling matrices
@@ -204,7 +200,7 @@ namespace Discret
       void calculate_continuity_xfem(Discret::Elements::Fluid* ele,  ///< fluid element
           Core::FE::Discretization& dis,                             ///< discretization
           const std::vector<int>& lm,                                ///< local map
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,           ///< element vector
+          Core::LinAlg::SerialDenseVector& elevec1,                  ///< element vector
           const Core::FE::GaussIntegration& intpoints                ///< integration points
           ) override;
 
@@ -212,7 +208,7 @@ namespace Discret
       void calculate_continuity_xfem(Discret::Elements::Fluid* ele,  ///< fluid element
           Core::FE::Discretization& dis,                             ///< discretization
           const std::vector<int>& lm,                                ///< local map
-          Core::LinAlg::SerialDenseVector& elevec1_epetra            ///< element vector
+          Core::LinAlg::SerialDenseVector& elevec1                   ///< element vector
           ) override;
 
      private:
@@ -302,7 +298,7 @@ namespace Discret
           const Core::LinAlg::Matrix<nen_, 1>& funct_m,  ///< coupling master shape functions
           const Core::LinAlg::Matrix<nsd_, 1>&
               itraction_jump,  ///< prescribed interface traction, jump height for coupled problems
-          Core::LinAlg::SerialDenseMatrix::Base& elevec1_epetra  ///< element vector
+          Core::LinAlg::SerialDenseMatrix::Base& elevec1  ///< element vector
       );
 
       //! build traction vector w.r.t fluid domain

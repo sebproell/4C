@@ -47,8 +47,8 @@ namespace PoroPressureBased
   /// convert a dof based vector to a node based multi vector
   /*!
     For postprocessing, only vectors based on the primary dof set
-    of the discretization can be used. Hence, all other EpetraVectors
-    based on secondary dof sets are copied to EpetraMultiVectors with one
+    of the discretization can be used. Hence, all other vectors
+    based on secondary dof sets are copied to multi vectors with one
     node based vector for each component.
 
     This method can be deleted, if the post processors would be adapted to

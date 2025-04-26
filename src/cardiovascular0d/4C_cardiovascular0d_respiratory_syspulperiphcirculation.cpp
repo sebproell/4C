@@ -1240,7 +1240,7 @@ void Utils::CardiovascularRespiratory0DSysPulPeriphCirculation::evaluate_respira
   (*volvec)[34] = V_alv_np;
 
   // we misuse the vol vector to carry information about the O2 saturation S_O2 of the respective
-  // compartment in order to avoid introducing another Epetra vector for this purpose the vol vector
+  // compartment in order to avoid introducing another vector for this purpose the vol vector
   // has plenty of zero entries after LID 34, and it is time-integrated and post-processed to
   // t_{n+\theta} inside the manager
 

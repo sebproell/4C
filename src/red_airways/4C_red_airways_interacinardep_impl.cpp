@@ -67,11 +67,9 @@ Discret::Elements::InterAcinarDepImpl<distype>::InterAcinarDepImpl()
 template <Core::FE::CellType distype>
 int Discret::Elements::InterAcinarDepImpl<distype>::evaluate(RedInterAcinarDep* ele,
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization, std::vector<int>& lm,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat)
 {
   // Get the vector with inter-acinar linkers
   std::shared_ptr<const Core::LinAlg::Vector<double>> ial =
@@ -81,7 +79,7 @@ int Discret::Elements::InterAcinarDepImpl<distype>::evaluate(RedInterAcinarDep* 
   std::vector<double> myial = Core::FE::extract_values(*ial, lm);
 
   // Calculate the system matrix for inter-acinar linkers
-  sysmat(myial, elemat1_epetra, elevec1_epetra);
+  sysmat(myial, elemat1, elevec1);
 
   return 0;
 }

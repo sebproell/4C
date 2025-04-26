@@ -398,11 +398,11 @@ namespace XFEM
     //! initialize data to be set in every computation
     void handle_vectors(std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>& newRowVectorsn);
 
-    //! return the number of Epetra vectors which shall get new values for a given node with
+    //! return the number of vectors which shall get new values for a given node with
     //! according data
     size_t vector_size(TimeIntData* data) const { return vector_size(data->type_); };
 
-    //! return the number of Epetra vectors which shall get new values for a given type
+    //! return the number of vectors which shall get new values for a given type
     size_t vector_size(TimeIntData::Type currtype) const
     {
       if (newVectors_.size() == 0)

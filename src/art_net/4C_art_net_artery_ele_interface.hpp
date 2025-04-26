@@ -50,32 +50,24 @@ namespace Discret
       //! evaluate the element
       virtual int evaluate(Artery* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra,
-          std::shared_ptr<Core::Mat::Material> mat) = 0;
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat) = 0;
 
       //! evaluate service (other quantities apart from rhs and matrix)
       virtual int evaluate_service(Artery* ele, const Arteries::Action action,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra,
+          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+          Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3,
           std::shared_ptr<Core::Mat::Material> mat) = 0;
 
       //! evaluate scalar transport (only lin-exp formulation uses this)
       virtual int scatra_evaluate(Artery* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, std::vector<int>& lm,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra,
-          std::shared_ptr<Core::Mat::Material> mat) = 0;
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat) = 0;
     };
   }  // namespace Elements
 }  // namespace Discret

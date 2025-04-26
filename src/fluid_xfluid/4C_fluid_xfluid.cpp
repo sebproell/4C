@@ -778,7 +778,7 @@ void FLD::XFluid::assemble_mat_and_rhs(int itnum)
 
     //-------------------------------------------------------------------------------
     // finalize the complete matrix
-    // REMARK: for EpetraFECrs matrices Complete() calls the GlobalAssemble() routine to gather
+    // REMARK: for matrices Complete() calls the GlobalAssemble() routine to gather
     // entries from all processors and calls a fill_complete for the first run. For further
     // Newton-steps then the optimized FEAssemble routine is used for speedup.
     state_->sysmat_->complete();
@@ -838,7 +838,7 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
   const int numrowele = discret_->num_my_row_elements();
 
   // REMARK: in this XFEM framework the whole evaluate routine uses only row elements
-  // and assembles into EpetraFECrs matrix
+  // and assembles into matrix
   // this is 4C-unusual but more efficient in all XFEM applications
   for (int i = 0; i < numrowele; ++i)
   {
@@ -1212,8 +1212,7 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
             Core::Communication::my_mpi_rank(strategy.systemvector1()->get_comm()));
         {
           TEUCHOS_FUNC_TIME_MONITOR("FLD::XFluid::XFluidState::Evaluate 6) FEAssemble");
-          // calls the Assemble function for EpetraFECrs matrices including communication of non-row
-          // entries
+          // calls the Assemble function for matrices including communication of non-row entries
           state_->sysmat_->fe_assemble(strategy.elematrix1(), la[0].lm_, myowner, la[0].lm_);
         }
         // REMARK:: call Assemble without lmowner
@@ -1262,8 +1261,7 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
       {
         TEUCHOS_FUNC_TIME_MONITOR("FLD::XFluid::XFluidState::Evaluate 6) FEAssemble");
 
-        // calls the Assemble function for EpetraFECrs matrices including communication of non-row
-        // entries
+        // calls the Assemble function for matrices including communication of non-row entries
         state_->sysmat_->fe_assemble(strategy.elematrix1(), la[0].lm_, myowner, la[0].lm_);
       }
 
@@ -1305,7 +1303,7 @@ void FLD::XFluid::assemble_mat_and_rhs_face_terms(
     const int numrowintfaces = xdiscret->num_my_row_faces();
 
     // REMARK: in this XFEM framework the whole evaluate routine uses only row internal faces
-    // and assembles into EpetraFECrs matrix
+    // and assembles into matrix
     // this is 4C-unusual but more efficient in all XFEM applications
     for (int i = 0; i < numrowintfaces; ++i)
     {
@@ -1350,7 +1348,7 @@ void FLD::XFluid::integrate_shape_function(Teuchos::ParameterList& eleparams,
   const int numrowele = discret.num_my_row_elements();
 
   // REMARK: in this XFEM framework the whole evaluate routine uses only row elements
-  // and assembles into EpetraFECrs matrix
+  // and assembles into matrix
   // this is 4C-unusual but more efficient in all XFEM applications
   for (int i = 0; i < numrowele; ++i)
   {
@@ -1605,7 +1603,7 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
 
   //-------------------------------------------------------------------------------
   // finalize the complete matrix
-  // REMARK: for EpetraFECrs matrices Complete() calls the GlobalAssemble() routine to gather
+  // REMARK: for matrices Complete() calls the GlobalAssemble() routine to gather
   // entries from all processors
   sysmat_gp->complete();
 

@@ -218,7 +218,7 @@ namespace Mortar
     //! Get problem dimension
     int n_dim() const { return dim_; }
 
-    //! Get Epetra communicator
+    //! Get communicator
     MPI_Comm get_comm() const { return comm_; }
 
     //! Get the underlying problem dof row map

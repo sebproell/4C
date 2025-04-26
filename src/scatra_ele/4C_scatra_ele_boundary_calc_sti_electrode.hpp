@@ -161,11 +161,11 @@ namespace Discret
           Core::FE::Discretization& discretization,          //!< discretization
           ScaTra::BoundaryAction action,                     //!< action
           Core::Elements::LocationArray& la,                 //!< location array
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,   //!< element matrix 1
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,   //!< element matrix 2
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,   //!< element right-hand side vector 1
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,   //!< element right-hand side vector 2
-          Core::LinAlg::SerialDenseVector& elevec3_epetra    //!< element right-hand side vector 3
+          Core::LinAlg::SerialDenseMatrix& elemat1,          //!< element matrix 1
+          Core::LinAlg::SerialDenseMatrix& elemat2,          //!< element matrix 2
+          Core::LinAlg::SerialDenseVector& elevec1,          //!< element right-hand side vector 1
+          Core::LinAlg::SerialDenseVector& elevec2,          //!< element right-hand side vector 2
+          Core::LinAlg::SerialDenseVector& elevec3           //!< element right-hand side vector 3
           ) override;
 
       //! extract nodal state variables associated with boundary element
