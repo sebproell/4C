@@ -13,7 +13,6 @@
 #include "4C_linalg_sparseoperator.hpp"
 
 #include <Epetra_CrsMatrix.h>
-#include <Epetra_FECrsMatrix.h>
 
 #include <optional>
 

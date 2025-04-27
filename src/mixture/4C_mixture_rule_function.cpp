@@ -13,8 +13,6 @@
 #include "4C_mixture_constituent.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_ConfigDefs.h>
-
 #include <algorithm>
 #include <iosfwd>
 #include <memory>

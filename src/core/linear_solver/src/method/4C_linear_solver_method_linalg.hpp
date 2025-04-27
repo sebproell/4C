@@ -14,7 +14,6 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_LinearProblem.h>
 #include <Epetra_Operator.h>
 #include <Teuchos_ParameterList.hpp>
 

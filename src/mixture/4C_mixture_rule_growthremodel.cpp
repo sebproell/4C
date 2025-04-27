@@ -14,7 +14,6 @@
 #include "4C_mixture_growth_strategy.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_ConfigDefs.h>
 #include <Teuchos_ParameterList.hpp>
 
 #include <algorithm>

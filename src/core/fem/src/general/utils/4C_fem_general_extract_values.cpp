@@ -13,8 +13,6 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_FEVector.h>
-
 #include <vector>
 
 FOUR_C_NAMESPACE_OPEN

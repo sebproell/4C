@@ -7,8 +7,6 @@
 
 #include "4C_contact_nitsche_utils.hpp"
 
-#include <Epetra_FECrsMatrix.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
