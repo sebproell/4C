@@ -61,16 +61,13 @@ Teuchos::RCP<::NOX::Abstract::Group>& Solid::Nln::SOLVER::Generic::group_ptr()
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-::NOX::Abstract::Group& Solid::Nln::SOLVER::Generic::group()
+::NOX::Abstract::Group& Solid::Nln::SOLVER::Generic::get_solution_group()
 {
-  check_init();
+  check_init_setup();
   FOUR_C_ASSERT(group_ptr_, "The group pointer should be initialized beforehand!");
+
   return *group_ptr_;
 }
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-::NOX::Abstract::Group& Solid::Nln::SOLVER::Generic::solution_group() { return group(); }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/

@@ -122,7 +122,7 @@ Solid::ModelEvaluator::PartitionedFSI::solve_relaxation_linear(
       const_cast<Solid::Nln::SOLVER::Generic&>(*(ti_impl->get_nln_solver_ptr()));
 
   // get the solution group
-  ::NOX::Abstract::Group& grp = nlnsolver.solution_group();
+  ::NOX::Abstract::Group& grp = nlnsolver.get_solution_group();
   NOX::Nln::Group* grp_ptr = dynamic_cast<NOX::Nln::Group*>(&grp);
   if (grp_ptr == nullptr) FOUR_C_THROW("Dynamic cast failed!");
 

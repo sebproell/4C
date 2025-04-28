@@ -197,9 +197,6 @@ enum Inpar::Solid::ConvergenceStatus Solid::Nln::SOLVER::Nox::solve()
   if (data_sdyn().get_divergence_action() == Inpar::Solid::divcont_stop)
     problem_->check_final_status(finalstatus);
 
-  // copy the solution group into the class variable
-  group() = nlnsolver_->getSolutionGroup();
-
   return convert_final_status(finalstatus);
 }
 
