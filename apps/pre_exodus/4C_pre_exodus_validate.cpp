@@ -15,6 +15,7 @@
 #include "4C_global_legacy_module.hpp"
 #include "4C_io_input_file.hpp"
 #include "4C_linalg_utils_densematrix_multiply.hpp"
+#include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -81,14 +82,15 @@ void EXODUS::validate_mesh_element_jacobians(Core::IO::Exodus::Mesh& mymesh)
 
   for (const auto& [eb_id, eb] : mymesh.get_element_blocks())
   {
-    const Core::FE::CellType distype = shape_to_cell_type(eb.get_shape());
+    const Core::FE::CellType distype = eb.get_shape();
     // check and rewind if necessary
     validate_element_jacobian(mymesh, distype, eb);
     // full check at all gausspoints
     int invalid_dets = validate_element_jacobian_fullgp(mymesh, distype, eb);
+    using EnumTools::operator<<;
     if (invalid_dets > 0)
       std::cout << invalid_dets << " negative Jacobian determinants in EB of shape "
-                << shape_to_string(eb.get_shape()) << std::endl;
+                << eb.get_shape() << std::endl;
   }
   return;
 }
@@ -144,29 +146,17 @@ void EXODUS::validate_element_jacobian(Core::IO::Exodus::Mesh& mymesh,
   Core::LinAlg::SerialDenseMatrix deriv(NSD, iel);
 
   // go through all elements
-  std::shared_ptr<std::map<int, std::vector<int>>> eleconn = eb.get_ele_conn();
-  std::map<int, std::vector<int>>::iterator i_ele;
+  const std::map<int, std::vector<int>>& eleconn = eb.get_ele_conn();
   int numrewindedeles = 0;
-  for (i_ele = eleconn->begin(); i_ele != eleconn->end(); ++i_ele)
+  for (auto i_ele = eleconn.begin(); i_ele != eleconn.end(); ++i_ele)
   {
-    int rewcount = 0;
     for (int igp = 0; igp < intpoints.nquad; ++igp)
     {
       Core::FE::shape_function_3d_deriv1(
           deriv, intpoints.qxg[igp][0], intpoints.qxg[igp][1], intpoints.qxg[igp][2], distype);
       if (!positive_ele(i_ele->first, i_ele->second, mymesh, deriv))
       {
-        // rewind the element nodes
-        if (rewcount == 0)
-        {
-          i_ele->second = rewind_ele(i_ele->second, distype);
-          numrewindedeles++;
-        }
-        // double check
-        if (!positive_ele(i_ele->first, i_ele->second, mymesh, deriv))
-          FOUR_C_THROW(
-              "No proper rewinding for element id {} at gauss point {}", i_ele->first, igp);
-        rewcount++;
+        FOUR_C_THROW("Negative Jacobian for element id {} at gauss point {}", i_ele->first, igp);
       }
     }
   }
@@ -231,9 +221,9 @@ int EXODUS::validate_element_jacobian_fullgp(Core::IO::Exodus::Mesh& mymesh,
 
   // go through all elements
   int invalids = 0;
-  std::shared_ptr<std::map<int, std::vector<int>>> eleconn = eb.get_ele_conn();
+  const std::map<int, std::vector<int>>& eleconn = eb.get_ele_conn();
   std::map<int, std::vector<int>>::iterator i_ele;
-  for (i_ele = eleconn->begin(); i_ele != eleconn->end(); ++i_ele)
+  for (auto i_ele = eleconn.begin(); i_ele != eleconn.end(); ++i_ele)
   {
     for (int igp = 0; igp < intpoints.nquad; ++igp)
     {

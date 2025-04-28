@@ -8,14 +8,101 @@
 #include "4C_io_exodus.hpp"
 
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
+#include "4C_utils_enum.hpp"
 
 #include <exodusII.h>
 #include <Teuchos_Time.hpp>
 #include <Teuchos_TimeMonitor.hpp>
 
 #include <fstream>
+#include <ranges>
 
 FOUR_C_NAMESPACE_OPEN
+
+namespace
+{
+
+  Core::FE::CellType cell_type_from_exodus_string(const std::string& shape_exodus)
+  {
+    if (shape_exodus == "SPHERE")
+      return Core::FE::CellType::point1;
+    else if (shape_exodus == "QUAD4")
+      return Core::FE::CellType::quad4;
+    else if (shape_exodus == "QUAD8")
+      return Core::FE::CellType::quad8;
+    else if (shape_exodus == "QUAD9")
+      return Core::FE::CellType::quad9;
+    else if (shape_exodus == "SHELL4")
+      return Core::FE::CellType::quad4;
+    else if (shape_exodus == "SHELL8")
+      return Core::FE::CellType::quad8;
+    else if (shape_exodus == "SHELL9")
+      return Core::FE::CellType::quad9;
+    else if (shape_exodus == "TRI3")
+      return Core::FE::CellType::tri3;
+    else if (shape_exodus == "TRI6")
+      return Core::FE::CellType::tri6;
+    else if (shape_exodus == "HEX8")
+      return Core::FE::CellType::hex8;
+    else if (shape_exodus == "HEX20")
+      return Core::FE::CellType::hex20;
+    else if (shape_exodus == "HEX27")
+      return Core::FE::CellType::hex27;
+    else if (shape_exodus == "HEX")
+      return Core::FE::CellType::hex8;
+    else if (shape_exodus == "TET4")
+      return Core::FE::CellType::tet4;
+    else if (shape_exodus == "TETRA4")
+      return Core::FE::CellType::tet4;
+    else if (shape_exodus == "TETRA10")
+      return Core::FE::CellType::tet10;
+    else if (shape_exodus == "TETRA")
+      return Core::FE::CellType::tet4;
+    else if (shape_exodus == "WEDGE6")
+      return Core::FE::CellType::wedge6;
+    else if (shape_exodus == "WEDGE15")
+      return Core::FE::CellType::wedge15;
+    else if (shape_exodus == "WEDGE")
+      return Core::FE::CellType::wedge6;
+    else if (shape_exodus == "PYRAMID5")
+      return Core::FE::CellType::pyramid5;
+    else if (shape_exodus == "PYRAMID")
+      return Core::FE::CellType::pyramid5;
+    else if (shape_exodus == "BAR2")
+      return Core::FE::CellType::line2;
+    else if (shape_exodus == "BAR3")
+      return Core::FE::CellType::line3;
+    else
+    {
+      FOUR_C_THROW("Unknown Exodus Element Shape Name!");
+    }
+  }
+  void reorder_nodes_exodus_to_four_c(std::vector<int>& nodes, Core::FE::CellType cell_type)
+  {
+    FOUR_C_ASSERT(nodes.size() == static_cast<std::size_t>(Core::FE::num_nodes(cell_type)),
+        "Number of nodes (={}) does not match the number of nodes for the cell type {}.",
+        nodes.size(), cell_type);
+    switch (cell_type)
+    {
+      case Core::FE::CellType::hex27:
+      {
+        auto old = nodes;
+        nodes[20] = old[21];
+        nodes[21] = old[25];
+        nodes[22] = old[24];
+        nodes[23] = old[26];
+        nodes[24] = old[23];
+        nodes[25] = old[22];
+        nodes[26] = old[20];
+        break;
+      }
+      default:
+      {
+        // do nothing
+      }
+    }
+  }
+}  // namespace
 
 /*----------------------------------------------------------------------*
  |  ctor (public)                                              maf 12/07|
@@ -87,21 +174,20 @@ Core::IO::Exodus::Mesh::Mesh(const std::string exofilename)
       std::vector<int> allconn(num_nod_per_elem * num_el_in_blk);
       error = ex_get_conn(exo_handle, EX_ELEM_BLOCK, ebids[i], allconn.data(), nullptr, nullptr);
       if (error != 0) FOUR_C_THROW("exo error returned");
-      std::shared_ptr<std::map<int, std::vector<int>>> eleconn =
-          std::make_shared<std::map<int, std::vector<int>>>();
+      std::map<int, std::vector<int>> eleconn;
       for (int j = 0; j < num_el_in_blk; ++j)
       {
-        std::vector<int> actconn;
+        std::vector<int>& actconn = eleconn[j];
         actconn.reserve(num_nod_per_elem);
         for (int k = 0; k < num_nod_per_elem; ++k)
         {
           actconn.push_back(allconn[k + j * num_nod_per_elem]);
         }
-        eleconn->insert(std::pair<int, std::vector<int>>(j, actconn));
+        reorder_nodes_exodus_to_four_c(actconn, cell_type_from_exodus_string(ele_type));
       }
 
       element_blocks_.emplace(
-          ebids[i], ElementBlock{string_to_shape(ele_type), eleconn, blockname});
+          ebids[i], ElementBlock{cell_type_from_exodus_string(ele_type), eleconn, blockname});
     }
   }  // end of element section
 
@@ -322,19 +408,16 @@ std::vector<double> Core::IO::Exodus::Mesh::node_vec(const int tail, const int h
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Core::IO::Exodus::ElementBlock::ElementBlock(ElementBlock::Shape Distype,
-    std::shared_ptr<std::map<int, std::vector<int>>>& eleconn, std::string name)
-    : distype_(Distype), eleconn_(eleconn), name_(name.c_str())
+Core::IO::Exodus::ElementBlock::ElementBlock(
+    FE::CellType cell_type, std::map<int, std::vector<int>> eleconn, std::string name)
+    : cell_type_(cell_type), eleconn_(std::move(eleconn)), name_(name.c_str())
 {
   // do a sanity check
-  for (std::map<int, std::vector<int>>::const_iterator elem = eleconn->begin();
-      elem != eleconn->end(); ++elem)
+  for (const auto& elem : eleconn_ | std::views::values)
   {
-    if (Core::FE::get_number_of_element_nodes(shape_to_cell_type(Distype)) !=
-        (int)elem->second.size())
-    {
+    // check if the number of nodes in the element block is correct
+    if (static_cast<int>(elem.size()) != Core::FE::get_number_of_element_nodes(cell_type))
       FOUR_C_THROW("number of read nodes does not fit the distype");
-    }
   }
 }
 
@@ -343,17 +426,7 @@ Core::IO::Exodus::ElementBlock::ElementBlock(ElementBlock::Shape Distype,
 /*----------------------------------------------------------------------*/
 const std::vector<int>& Core::IO::Exodus::ElementBlock::get_ele_nodes(int i) const
 {
-  std::map<int, std::vector<int>>::const_iterator it = eleconn_->find(i);
-  return it->second;
-}
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-int Core::IO::Exodus::ElementBlock::get_ele_node(int ele, int node) const
-{
-  std::map<int, std::vector<int>>::const_iterator it = eleconn_->find(ele);
-  if (it == eleconn_->end()) FOUR_C_THROW("Element not found");
-  return get_ele_nodes(ele)[node];
+  return eleconn_.at(i);
 }
 
 
@@ -361,19 +434,19 @@ int Core::IO::Exodus::ElementBlock::get_ele_node(int ele, int node) const
 /*----------------------------------------------------------------------*/
 void Core::IO::Exodus::ElementBlock::print(std::ostream& os, bool verbose) const
 {
+  using EnumTools::operator<<;
+
   os << "Element Block, named: " << name_ << std::endl
-     << "of Shape: " << shape_to_string(distype_) << std::endl
+     << "of Shape: " << cell_type_ << std::endl
      << "has " << get_num_ele() << " Elements" << std::endl;
   if (verbose)
   {
-    std::map<int, std::vector<int>>::const_iterator it;
-    for (it = eleconn_->begin(); it != eleconn_->end(); it++)
+    for (const auto& [id, conn] : eleconn_)
     {
-      os << "Ele " << it->first << ": ";
-      const std::vector<int> myconn = it->second;  // GetEleNodes(int(it));
-      for (int i = 0; i < signed(myconn.size()); i++)
+      os << "Ele " << id << ": ";
+      for (const int i : conn)
       {
-        os << myconn[i] << ",";
+        os << i << ",";
       }
       os << std::endl;
     }
@@ -430,195 +503,5 @@ void Core::IO::Exodus::SideSet::print(std::ostream& os, bool verbose) const
     }
   }
 }
-
-Core::IO::Exodus::ElementBlock::Shape Core::IO::Exodus::string_to_shape(const std::string shape)
-{
-  if (shape.compare("SPHERE") == 0)
-    return ElementBlock::point1;
-  else if (shape.compare("QUAD4") == 0)
-    return ElementBlock::quad4;
-  else if (shape.compare("QUAD8") == 0)
-    return ElementBlock::quad8;
-  else if (shape.compare("QUAD9") == 0)
-    return ElementBlock::quad9;
-  else if (shape.compare("SHELL4") == 0)
-    return ElementBlock::shell4;
-  else if (shape.compare("SHELL8") == 0)
-    return ElementBlock::shell8;
-  else if (shape.compare("SHELL9") == 0)
-    return ElementBlock::shell9;
-  else if (shape.compare("TRI3") == 0)
-    return ElementBlock::tri3;
-  else if (shape.compare("TRI6") == 0)
-    return ElementBlock::tri6;
-  else if (shape.compare("HEX8") == 0)
-    return ElementBlock::hex8;
-  else if (shape.compare("HEX20") == 0)
-    return ElementBlock::hex20;
-  else if (shape.compare("HEX27") == 0)
-    return ElementBlock::hex27;
-  else if (shape.compare("HEX") == 0)
-    return ElementBlock::hex8;  // really needed????? a.g. 08/08
-  else if (shape.compare("TET4") == 0)
-    return ElementBlock::tet4;  // really needed?
-  else if (shape.compare("TETRA4") == 0)
-    return ElementBlock::tet4;
-  else if (shape.compare("TETRA10") == 0)
-    return ElementBlock::tet10;
-  else if (shape.compare("TETRA") == 0)
-    return ElementBlock::tet4;  // really needed????? a.g. 08/08
-  else if (shape.compare("WEDGE6") == 0)
-    return ElementBlock::wedge6;
-  else if (shape.compare("WEDGE15") == 0)
-    return ElementBlock::wedge15;
-  else if (shape.compare("WEDGE") == 0)
-    return ElementBlock::wedge6;  // really needed????? a.g. 08/08
-  else if (shape.compare("PYRAMID5") == 0)
-    return ElementBlock::pyramid5;
-  else if (shape.compare("PYRAMID") == 0)
-    return ElementBlock::pyramid5;  // really needed????? a.g. 08/08
-  else if (shape.compare("BAR2") == 0)
-    return ElementBlock::bar2;
-  else if (shape.compare("BAR3") == 0)
-    return ElementBlock::bar3;
-  else
-  {
-    FOUR_C_THROW("Unknown Exodus Element Shape Name!");
-  }
-}
-
-std::string Core::IO::Exodus::shape_to_string(const ElementBlock::Shape shape)
-{
-  switch (shape)
-  {
-    case ElementBlock::point1:
-      return "SPHERE";
-      break;
-    case ElementBlock::quad4:
-      return "QUAD4";
-      break;
-    case ElementBlock::quad8:
-      return "QUAD8";
-      break;
-    case ElementBlock::quad9:
-      return "QUAD9";
-      break;
-    case ElementBlock::shell4:
-      return "SHELL4";
-      break;
-    case ElementBlock::shell8:
-      return "SHELL8";
-      break;
-    case ElementBlock::shell9:
-      return "SHELL9";
-      break;
-    case ElementBlock::tri3:
-      return "TRI3";
-      break;
-    case ElementBlock::tri6:
-      return "TRI6";
-      break;
-    case ElementBlock::hex8:
-      return "HEX8";
-      break;
-    case ElementBlock::hex20:
-      return "HEX20";
-      break;
-    case ElementBlock::hex27:
-      return "HEX27";
-      break;
-    case ElementBlock::tet4:
-      return "TET4";
-      break;
-    case ElementBlock::tet10:
-      return "TET10";
-      break;
-    case ElementBlock::wedge6:
-      return "WEDGE6";
-      break;
-    case ElementBlock::wedge15:
-      return "WEDGE15";
-      break;
-    case ElementBlock::pyramid5:
-      return "PYRAMID5";
-      break;
-    case ElementBlock::bar2:
-      return "BAR2";
-      break;
-    case ElementBlock::bar3:
-      return "BAR3";
-      break;
-    default:
-      FOUR_C_THROW("Unknown ElementBlock::Shape");
-  }
-}
-
-
-Core::FE::CellType Core::IO::Exodus::shape_to_cell_type(const ElementBlock::Shape shape)
-{
-  switch (shape)
-  {
-    case ElementBlock::point1:
-      return Core::FE::CellType::point1;
-      break;
-    case ElementBlock::quad4:
-      return Core::FE::CellType::quad4;
-      break;
-    case ElementBlock::quad8:
-      return Core::FE::CellType::quad8;
-      break;
-    case ElementBlock::quad9:
-      return Core::FE::CellType::quad9;
-      break;
-    case ElementBlock::shell4:
-      return Core::FE::CellType::quad4;
-      break;
-    case ElementBlock::shell8:
-      return Core::FE::CellType::quad8;
-      break;
-    case ElementBlock::shell9:
-      return Core::FE::CellType::quad9;
-      break;
-    case ElementBlock::tri3:
-      return Core::FE::CellType::tri3;
-      break;
-    case ElementBlock::tri6:
-      return Core::FE::CellType::tri6;
-      break;
-    case ElementBlock::hex8:
-      return Core::FE::CellType::hex8;
-      break;
-    case ElementBlock::hex20:
-      return Core::FE::CellType::hex20;
-      break;
-    case ElementBlock::hex27:
-      return Core::FE::CellType::hex27;
-      break;
-    case ElementBlock::tet4:
-      return Core::FE::CellType::tet4;
-      break;
-    case ElementBlock::tet10:
-      return Core::FE::CellType::tet10;
-      break;
-    case ElementBlock::wedge6:
-      return Core::FE::CellType::wedge6;
-      break;
-    case ElementBlock::wedge15:
-      return Core::FE::CellType::wedge15;
-      break;
-    case ElementBlock::pyramid5:
-      return Core::FE::CellType::pyramid5;
-      break;
-    case ElementBlock::bar2:
-      return Core::FE::CellType::line2;
-      break;
-    case ElementBlock::bar3:
-      return Core::FE::CellType::line3;
-      break;
-    default:
-      FOUR_C_THROW("Unknown ElementBlock::Shape");
-  }
-}
-
 
 FOUR_C_NAMESPACE_CLOSE

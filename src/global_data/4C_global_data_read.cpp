@@ -1496,7 +1496,7 @@ namespace
         for (const auto& [id, eb] : element_blocks)
         {
           std::set<int> nodes;
-          for (const auto& connectivity : *eb.get_ele_conn() | std::views::values)
+          for (const auto& connectivity : eb.get_ele_conn() | std::views::values)
           {
             nodes.insert(connectivity.begin(), connectivity.end());
           }
