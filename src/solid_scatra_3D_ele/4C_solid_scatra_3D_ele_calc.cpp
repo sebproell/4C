@@ -74,7 +74,7 @@ namespace
   template <Core::FE::CellType celltype>
   auto interpolate_quantity_to_point(
       const Discret::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
-      const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>& nodal_quantities)
+      const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>& nodal_quantities)
   {
     std::vector<double> quantities_at_gp(nodal_quantities.size(), 0.0);
 
@@ -88,7 +88,7 @@ namespace
   template <Core::FE::CellType celltype>
   auto interpolate_quantity_to_point(
       const Discret::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
-      const Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>& nodal_quantity)
+      const Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>& nodal_quantity)
   {
     return shape_functions.shapefunctions_.dot(nodal_quantity);
   }
@@ -99,20 +99,20 @@ namespace
   {
     if constexpr (is_scalar)
     {
-      Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1> nodal_quantities(
+      Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1> nodal_quantities(
           Core::LinAlg::Initialization::zero);
-      for (int i = 0; i < Core::FE::num_nodes<celltype>; ++i)
+      for (int i = 0; i < Core::FE::num_nodes(celltype); ++i)
         nodal_quantities(i, 0) = quantities_at_dofs.at(i);
 
       return nodal_quantities;
     }
     else
     {
-      std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>> nodal_quantities(
+      std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>> nodal_quantities(
           num_scalars);
 
       for (int k = 0; k < num_scalars; ++k)
-        for (int i = 0; i < Core::FE::num_nodes<celltype>; ++i)
+        for (int i = 0; i < Core::FE::num_nodes(celltype); ++i)
           (nodal_quantities[k])(i, 0) = quantities_at_dofs.at(num_scalars * i + k);
 
       return nodal_quantities;
@@ -144,8 +144,8 @@ namespace
       const Core::FE::Discretization& discretization, const Core::Elements::LocationArray& la,
       const std::string& field_name)
       -> std::optional<
-          std::conditional_t<is_scalar, Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>,
-              std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>>>
+          std::conditional_t<is_scalar, Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>,
+              std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>>>
   {
     std::optional<int> field_index = detect_field_index(discretization, la, field_name);
     if (!field_index.has_value())
@@ -172,7 +172,7 @@ namespace
   template <Core::FE::CellType celltype>
   void prepare_scalar_in_parameter_list(Teuchos::ParameterList& params, const std::string& name,
       const Discret::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
-      const std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>& nodal_quantities)
+      const std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>& nodal_quantities)
   {
     if (!nodal_quantities.has_value()) return;
 
@@ -184,7 +184,7 @@ namespace
   template <Core::FE::CellType celltype>
   void prepare_scalar_in_parameter_list(Teuchos::ParameterList& params, const std::string& name,
       const Discret::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
-      const std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>>&
+      const std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>>&
           nodal_quantities)
   {
     if (!nodal_quantities) return;
@@ -231,14 +231,14 @@ namespace
     if (linearizations.d_cauchyndir_ds)
     {
       FOUR_C_ASSERT(linearization_dependencies.d_cauchyndir_dF, "Not all tensors are computed!");
-      linearizations.d_cauchyndir_ds->shape(Core::FE::num_nodes<celltype>, 1);
+      linearizations.d_cauchyndir_ds->shape(Core::FE::num_nodes(celltype), 1);
 
       static Core::LinAlg::Matrix<9, 1> d_F_dc(Core::LinAlg::Initialization::zero);
       mat.evaluate_linearization_od(deformation_gradient, (scalars_at_xi)[0], &d_F_dc);
 
       double d_cauchyndir_ds_gp = (*linearization_dependencies.d_cauchyndir_dF).dot(d_F_dc);
 
-      Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>(
+      Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>(
           linearizations.d_cauchyndir_ds->values(), true)
           .update(d_cauchyndir_ds_gp, shape_functions.shapefunctions_, 1.0);
     }
@@ -289,12 +289,12 @@ void Discret::Elements::SolidScatraEleCalc<celltype,
       evaluate_element_nodes<celltype>(ele, discretization, la[0].lm_);
 
   constexpr bool scalars_are_scalar = false;
-  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>> nodal_scalars =
+  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>> nodal_scalars =
       extract_my_nodal_scalars<celltype, scalars_are_scalar>(
           ele, discretization, la, "scalarfield");
 
   constexpr bool temperature_is_scalar = true;
-  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>> nodal_temperatures =
+  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>> nodal_temperatures =
       extract_my_nodal_scalars<celltype, temperature_is_scalar>(
           ele, discretization, la, "temperature");
 
@@ -423,12 +423,12 @@ void Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::evaluate
       evaluate_element_nodes<celltype>(ele, discretization, la[0].lm_);
 
   constexpr bool scalars_are_scalar = false;
-  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>> nodal_scalars =
+  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>> nodal_scalars =
       extract_my_nodal_scalars<celltype, scalars_are_scalar>(
           ele, discretization, la, "scalarfield");
 
   constexpr bool temperature_is_scalar = true;
-  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>> nodal_temperatures =
+  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>> nodal_temperatures =
       extract_my_nodal_scalars<celltype, temperature_is_scalar>(
           ele, discretization, la, "temperature");
 
@@ -463,11 +463,11 @@ void Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::evaluate
 
               // linear B-operator
               const Core::LinAlg::Matrix<Internal::num_str<celltype>,
-                  Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+                  Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
                   bop = SolidFormulation::get_linear_b_operator(linearization);
 
               constexpr int num_dof_per_ele =
-                  Core::FE::dim<celltype> * Core::FE::num_nodes<celltype>;
+                  Core::FE::dim<celltype> * Core::FE::num_nodes(celltype);
 
               // Assemble matrix
               // k_dS = B^T . dS/dc * detJ * N * w(gp)
@@ -479,7 +479,7 @@ void Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::evaluate
               {
                 const double BdSdc_rowi = BdSdc(rowi, 0);
                 // loop over columns
-                for (int coli = 0; coli < Core::FE::num_nodes<celltype>; ++coli)
+                for (int coli = 0; coli < Core::FE::num_nodes(celltype); ++coli)
                 {
                   stiffness_matrix_dScalar(rowi, coli * scatra_column_stride) +=
                       BdSdc_rowi * shape_functions.shapefunctions_(coli, 0);
@@ -532,12 +532,12 @@ void Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::update(
       evaluate_element_nodes<celltype>(ele, discretization, la[0].lm_);
 
   constexpr bool scalars_are_scalar = false;
-  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>> nodal_scalars =
+  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>> nodal_scalars =
       extract_my_nodal_scalars<celltype, scalars_are_scalar>(
           ele, discretization, la, "scalarfield");
 
   constexpr bool temperature_is_scalar = true;
-  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>> nodal_temperatures =
+  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>> nodal_temperatures =
       extract_my_nodal_scalars<celltype, temperature_is_scalar>(
           ele, discretization, la, "temperature");
 
@@ -579,12 +579,12 @@ double Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::calcul
       evaluate_element_nodes<celltype>(ele, discretization, la[0].lm_);
 
   constexpr bool scalars_are_scalar = false;
-  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>> nodal_scalars =
+  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>> nodal_scalars =
       extract_my_nodal_scalars<celltype, scalars_are_scalar>(
           ele, discretization, la, "scalarfield");
 
   constexpr bool temperature_is_scalar = true;
-  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>> nodal_temperatures =
+  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>> nodal_temperatures =
       extract_my_nodal_scalars<celltype, temperature_is_scalar>(
           ele, discretization, la, "temperature");
 
@@ -636,12 +636,12 @@ void Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::calculat
       evaluate_element_nodes<celltype>(ele, discretization, la[0].lm_);
 
   constexpr bool scalars_are_scalar = false;
-  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>>> nodal_scalars =
+  std::optional<std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>>> nodal_scalars =
       extract_my_nodal_scalars<celltype, scalars_are_scalar>(
           ele, discretization, la, "scalarfield");
 
   constexpr bool temperature_is_scalar = true;
-  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>> nodal_temperatures =
+  std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>> nodal_temperatures =
       extract_my_nodal_scalars<celltype, temperature_is_scalar>(
           ele, discretization, la, "temperature");
 

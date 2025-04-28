@@ -85,8 +85,8 @@ namespace Mortar
     }
 
     static constexpr int num_parent_disp_dof =
-        Core::FE::num_nodes<parent_distype> * Core::FE::dim<parent_distype>;
-    static constexpr int num_parent_thermo_dof = Core::FE::num_nodes<parent_distype>;
+        Core::FE::num_nodes(parent_distype) * Core::FE::dim<parent_distype>;
+    static constexpr int num_parent_thermo_dof = Core::FE::num_nodes(parent_distype);
 
     Core::LinAlg::Matrix<num_parent_thermo_dof, 1> rhs_t_;
     std::unordered_map<int, Core::LinAlg::Matrix<num_parent_thermo_dof, 1>> k_tt_;
@@ -107,9 +107,9 @@ namespace Mortar
     }
 
     static constexpr int num_parent_disp_dof =
-        Core::FE::num_nodes<parent_distype> * Core::FE::dim<parent_distype>;
+        Core::FE::num_nodes(parent_distype) * Core::FE::dim<parent_distype>;
     static constexpr int num_parent_pf_dof =
-        Core::FE::num_nodes<parent_distype> * (Core::FE::dim<parent_distype> + 1);
+        Core::FE::num_nodes(parent_distype) * (Core::FE::dim<parent_distype> + 1);
 
     Core::LinAlg::Matrix<num_parent_pf_dof, 1> rhs_p_;
     std::unordered_map<int, Core::LinAlg::Matrix<num_parent_pf_dof, 1>> k_pp_;
@@ -130,8 +130,8 @@ namespace Mortar
     }
 
     static constexpr int num_parent_disp_dof =
-        Core::FE::num_nodes<parent_distype> * Core::FE::dim<parent_distype>;
-    static constexpr int num_parent_scatra_dof = Core::FE::num_nodes<parent_distype>;
+        Core::FE::num_nodes(parent_distype) * Core::FE::dim<parent_distype>;
+    static constexpr int num_parent_scatra_dof = Core::FE::num_nodes(parent_distype);
 
     Core::LinAlg::Matrix<num_parent_scatra_dof, 1> rhs_s_;
     std::unordered_map<int, Core::LinAlg::Matrix<num_parent_scatra_dof, 1>> k_ss_;
@@ -152,8 +152,8 @@ namespace Mortar
     }
 
     static constexpr int num_parent_disp_dof =
-        Core::FE::num_nodes<parent_distype> * Core::FE::dim<parent_distype>;
-    static constexpr int num_parent_elch_dof = Core::FE::num_nodes<parent_distype> * 2;
+        Core::FE::num_nodes(parent_distype) * Core::FE::dim<parent_distype>;
+    static constexpr int num_parent_elch_dof = Core::FE::num_nodes(parent_distype) * 2;
 
     Core::LinAlg::Matrix<num_parent_elch_dof, 1> rhs_e_;
     std::unordered_map<int, Core::LinAlg::Matrix<num_parent_elch_dof, 1>> k_ee_;
@@ -165,7 +165,7 @@ namespace Mortar
   class ElementNitscheData : public ElementNitscheContainer
   {
     using VectorType =
-        Core::LinAlg::Matrix<Core::FE::num_nodes<parent_distype> * Core::FE::dim<parent_distype>,
+        Core::LinAlg::Matrix<Core::FE::num_nodes(parent_distype) * Core::FE::dim<parent_distype>,
             1>;
 
    public:
@@ -205,13 +205,13 @@ namespace Mortar
 
     template <int num_dof_per_node>
     void assemble_rhs(Mortar::Element* mele,
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<parent_distype> * num_dof_per_node, 1>& rhs,
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(parent_distype) * num_dof_per_node, 1>& rhs,
         std::vector<int>& dofs, std::shared_ptr<Epetra_FEVector> fc) const;
 
     template <int num_dof_per_node>
     void assemble_matrix(Mortar::Element* mele,
         const std::unordered_map<int,
-            Core::LinAlg::Matrix<Core::FE::num_nodes<parent_distype> * num_dof_per_node, 1>>& k,
+            Core::LinAlg::Matrix<Core::FE::num_nodes(parent_distype) * num_dof_per_node, 1>>& k,
         std::vector<int>& dofs, std::shared_ptr<Core::LinAlg::SparseMatrix> kc) const;
 
 

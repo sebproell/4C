@@ -88,7 +88,7 @@ namespace Discret
       explicit AcinusImpl();
 
       //! number of nodes
-      static constexpr int iel = Core::FE::num_nodes<distype>;
+      static constexpr int iel = Core::FE::num_nodes(distype);
 
 
       /// Evaluate

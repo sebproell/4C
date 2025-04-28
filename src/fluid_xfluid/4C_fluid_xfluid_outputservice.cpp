@@ -892,7 +892,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
           {
             case Core::FE::CellType::hex8:
             {
-              const int numnodes = Core::FE::num_nodes<Core::FE::CellType::hex8>;
+              const int numnodes = Core::FE::num_nodes(Core::FE::CellType::hex8);
               Core::LinAlg::Matrix<numnodes, 1> funct;
               Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::hex8);
               Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -907,7 +907,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
             case Core::FE::CellType::hex20:
             {
               // TODO: check the output for hex20
-              const int numnodes = Core::FE::num_nodes<Core::FE::CellType::hex20>;
+              const int numnodes = Core::FE::num_nodes(Core::FE::CellType::hex20);
               Core::LinAlg::Matrix<numnodes, 1> funct;
               Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::hex20);
               Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -922,7 +922,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
             case Core::FE::CellType::hex27:
             {
               // TODO: check the output for hex27
-              const int numnodes = Core::FE::num_nodes<Core::FE::CellType::hex27>;
+              const int numnodes = Core::FE::num_nodes(Core::FE::CellType::hex27);
               Core::LinAlg::Matrix<numnodes, 1> funct;
               Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::hex27);
               Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -1019,7 +1019,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
         {
           case Core::FE::CellType::hex8:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::hex8>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::hex8);
             Core::LinAlg::Matrix<numnodes, 1> funct;
             Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::hex8);
             Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -1034,7 +1034,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
           case Core::FE::CellType::hex20:
           {
             // TODO: check the output for hex20
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::hex20>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::hex20);
             Core::LinAlg::Matrix<numnodes, 1> funct;
             Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::hex20);
             Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -1049,7 +1049,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
           case Core::FE::CellType::hex27:
           {
             // TODO: check the output for hex27
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::hex27>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::hex27);
             Core::LinAlg::Matrix<numnodes, 1> funct;
             Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::hex27);
             Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -1063,7 +1063,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
           }
           case Core::FE::CellType::wedge6:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::wedge6>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::wedge6);
             Core::LinAlg::Matrix<numnodes, 1> funct;
             Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::wedge6);
             Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -1077,7 +1077,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
           }
           case Core::FE::CellType::wedge15:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::wedge15>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::wedge15);
             Core::LinAlg::Matrix<numnodes, 1> funct;
             Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::wedge15);
             Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -1091,7 +1091,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
           }
           case Core::FE::CellType::tet4:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::tet4>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::tet4);
             Core::LinAlg::Matrix<numnodes, 1> funct;
             Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::tet4);
             Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -1105,7 +1105,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
           }
           case Core::FE::CellType::tet10:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::tet10>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::tet10);
             Core::LinAlg::Matrix<numnodes, 1> funct;
             Core::FE::shape_function_3d(funct, rst(0), rst(1), rst(2), Core::FE::CellType::tet10);
             Core::LinAlg::Matrix<3, numnodes> velocity(vel, true);
@@ -1225,7 +1225,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_boundary_cell(
         {
           case Core::FE::CellType::quad4:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::quad4>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::quad4);
             Core::LinAlg::Matrix<3, numnodes> xyze(side_xyze, true);
             Core::LinAlg::Matrix<2, numnodes> deriv;
             Core::FE::shape_function_2d_deriv1(deriv, eta(0), eta(1), Core::FE::CellType::quad4);
@@ -1235,7 +1235,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_boundary_cell(
           }
           case Core::FE::CellType::tri3:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::tri3>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::tri3);
             Core::LinAlg::Matrix<3, numnodes> xyze(side_xyze, true);
             Core::LinAlg::Matrix<2, numnodes> deriv;
             Core::FE::shape_function_2d_deriv1(deriv, eta(0), eta(1), Core::FE::CellType::tri3);
@@ -1245,7 +1245,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_boundary_cell(
           }
           case Core::FE::CellType::quad8:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::quad8>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::quad8);
             Core::LinAlg::Matrix<3, numnodes> xyze(side_xyze, true);
             Core::LinAlg::Matrix<2, numnodes> deriv;
             Core::FE::shape_function_2d_deriv1(deriv, eta(0), eta(1), Core::FE::CellType::quad8);
@@ -1255,7 +1255,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_boundary_cell(
           }
           case Core::FE::CellType::quad9:
           {
-            const int numnodes = Core::FE::num_nodes<Core::FE::CellType::quad9>;
+            const int numnodes = Core::FE::num_nodes(Core::FE::CellType::quad9);
             Core::LinAlg::Matrix<3, numnodes> xyze(side_xyze, true);
             Core::LinAlg::Matrix<2, numnodes> deriv;
             Core::FE::shape_function_2d_deriv1(deriv, eta(0), eta(1), Core::FE::CellType::quad9);

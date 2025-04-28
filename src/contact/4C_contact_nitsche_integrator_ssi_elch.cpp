@@ -26,12 +26,12 @@ FOUR_C_NAMESPACE_OPEN
 namespace
 {
   template <Core::FE::CellType celltype, int prob_dim>
-  Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, prob_dim> evaluate_nodal_coordinates(
+  Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), prob_dim> evaluate_nodal_coordinates(
       Core::Nodes::Node** nodes)
   {
-    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, prob_dim> xrefe(
+    Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), prob_dim> xrefe(
         Core::LinAlg::Initialization::zero);
-    for (auto i = 0; i < Core::FE::num_nodes<celltype>; ++i)
+    for (auto i = 0; i < Core::FE::num_nodes(celltype); ++i)
     {
       const auto& x = nodes[i]->x();
       for (auto dim = 0; dim < prob_dim; ++dim) xrefe(i, dim) = x[dim];
@@ -281,7 +281,7 @@ void CONTACT::IntegratorNitscheSsiElch::calculate_spatial_derivative_of_det_f(co
 {
   auto electrode_ele = electrode_quantities.element;
 
-  const int num_ele_nodes = Core::FE::num_nodes<distype>;
+  const int num_ele_nodes = Core::FE::num_nodes(distype);
   const int ele_dim = Core::FE::dim<distype>;
 
   FOUR_C_ASSERT(num_ele_nodes == electrode_ele->num_node(),

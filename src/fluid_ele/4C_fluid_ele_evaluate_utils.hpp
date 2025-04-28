@@ -3063,7 +3063,7 @@ namespace FLD
     // point outwards on nodes at the rim of a basin (e.g. channel-flow).
 
     // get number of nodes
-    const int iel = Core::FE::num_nodes<distype>;
+    const int iel = Core::FE::num_nodes(distype);
 
     // get number of dimensions
     const int nsd = Core::FE::dim<distype>;

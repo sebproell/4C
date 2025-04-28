@@ -80,7 +80,7 @@ namespace Discret
           Core::LinAlg::SerialDenseVector& elevec3) override;
 
       //! number of element nodes
-      static constexpr int bdrynen_ = Core::FE::num_nodes<distype>;
+      static constexpr int bdrynen_ = Core::FE::num_nodes(distype);
 
       //! number of spatial dimensions of boundary element
       static constexpr int bdrynsd_ = Core::FE::dim<distype>;

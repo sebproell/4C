@@ -59,7 +59,7 @@ void Cut::BoundaryCell::transform_local_coords(Element* elem1,
   // TEUCHOS_FUNC_TIME_MONITOR( "Cut::BoundaryCell::transform_local_coords" );
 
 
-  const int numnodes = Core::FE::num_nodes<celldistype>;
+  const int numnodes = Core::FE::num_nodes(celldistype);
   Core::LinAlg::Matrix<3, numnodes> xyzeGlo(this->xyz_, true), xyze;
 
   for (int i = 0; i < numnodes; i++)
@@ -109,7 +109,7 @@ double Cut::Line2BoundaryCell::area() { return Core::Geo::element_area(shape(), 
  *----------------------------------------------------------------------------*/
 double Cut::Tri3BoundaryCell::area()
 {
-  const int numnodes = Core::FE::num_nodes<Core::FE::CellType::tri3>;
+  const int numnodes = Core::FE::num_nodes(Core::FE::CellType::tri3);
 
   const std::vector<Point*> points = this->points();
 
@@ -258,7 +258,7 @@ void Cut::Line2BoundaryCell::dump_gmsh_normal(std::ofstream& file)
 {
   file.precision(16);
 
-  const unsigned num_nodes = Core::FE::num_nodes<Core::FE::CellType::line2>;
+  const unsigned num_nodes = Core::FE::num_nodes(Core::FE::CellType::line2);
 
   file << "VP(";
   Core::LinAlg::Matrix<3, 1> midpoint(Core::LinAlg::Initialization::zero);
@@ -532,7 +532,7 @@ std::vector<std::vector<double>> Cut::BoundaryCell::coordinates_v()
  *----------------------------------------------------------------------------*/
 bool Cut::Tri3BoundaryCell::is_valid_boundary_cell()
 {
-  const int numnodes = Core::FE::num_nodes<Core::FE::CellType::tri3>;
+  const int numnodes = Core::FE::num_nodes(Core::FE::CellType::tri3);
 
   const std::vector<Point*> points = this->points();
 

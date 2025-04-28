@@ -65,11 +65,11 @@ double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue(
     const std::vector<double>& parent_disp, const std::vector<double>& parent_scalar)
 {
   const int dim = Core::FE::dim<dt_vol>;
-  const int num_dof = Core::FE::num_nodes<dt_vol> * Core::FE::dim<dt_vol>;
-  const int dim_image = Core::FE::num_nodes<dt_vol> * Core::FE::dim<dt_vol> -
+  const int num_dof = Core::FE::num_nodes(dt_vol) * Core::FE::dim<dt_vol>;
+  const int dim_image = Core::FE::num_nodes(dt_vol) * Core::FE::dim<dt_vol> -
                         Core::FE::dim<dt_vol> * (Core::FE::dim<dt_vol> + 1) / 2;
 
-  Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3> xrefe, xcurr;
+  Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3> xrefe, xcurr;
 
   for (int i = 0; i < parent_element()->num_node(); ++i)
   {
@@ -106,19 +106,19 @@ double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue(
 
 template <Core::FE::CellType dt_vol>
 void Discret::Elements::SolidSurface::trace_estimate_vol_matrix(
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
     const std::vector<double>& parent_scalar,
-    Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, Core::FE::num_nodes<dt_vol> * 3>& vol)
+    Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, Core::FE::num_nodes(dt_vol) * 3>& vol)
 {
   const int dim = Core::FE::dim<dt_vol>;
 
   double jac;
   Core::LinAlg::Matrix<3, 3> defgrd, rcg;
   Core::LinAlg::Matrix<6, 1> glstrain;
-  Core::LinAlg::Matrix<6, Core::FE::num_nodes<dt_vol> * 3> bop;
-  Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, 6> bc;
-  Core::LinAlg::Matrix<dim, Core::FE::num_nodes<dt_vol>> N_XYZ;
+  Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3> bop;
+  Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> bc;
+  Core::LinAlg::Matrix<dim, Core::FE::num_nodes(dt_vol)> N_XYZ;
 
   Core::FE::IntPointsAndWeights<dim> ip(Discret::Elements::DisTypeToOptGaussRule<dt_vol>::rule);
 
@@ -148,10 +148,10 @@ void Discret::Elements::SolidSurface::trace_estimate_vol_matrix(
 
 template <Core::FE::CellType dt_vol, Core::FE::CellType dt_surf>
 void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
     const std::vector<double>& parent_scalar,
-    Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, Core::FE::num_nodes<dt_vol> * 3>& surf)
+    Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, Core::FE::num_nodes(dt_vol) * 3>& surf)
 {
   const int dim = Core::FE::dim<dt_vol>;
 
@@ -159,7 +159,7 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
   for (int i = 0; i < 3; ++i) id4(i, i) = 1.0;
   for (int i = 3; i < 6; ++i) id4(i, i) = 2.0;
 
-  Core::LinAlg::SerialDenseMatrix xrefe_surf(Core::FE::num_nodes<dt_surf>, dim);
+  Core::LinAlg::SerialDenseMatrix xrefe_surf(Core::FE::num_nodes(dt_surf), dim);
   material_configuration(xrefe_surf);
 
   std::vector<double> n(3);
@@ -167,13 +167,13 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
   double detA, jac;
   Core::LinAlg::Matrix<3, 3> defgrd, rcg, nn;
   Core::LinAlg::Matrix<6, 1> glstrain;
-  Core::LinAlg::Matrix<6, Core::FE::num_nodes<dt_vol> * 3> bop;
-  Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, 6> bc;
-  Core::LinAlg::Matrix<dim, Core::FE::num_nodes<dt_vol>> N_XYZ;
+  Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3> bop;
+  Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> bc;
+  Core::LinAlg::Matrix<dim, Core::FE::num_nodes(dt_vol)> N_XYZ;
 
   Core::FE::IntPointsAndWeights<dim - 1> ip(
       Discret::Elements::DisTypeToOptGaussRule<dt_surf>::rule);
-  Core::LinAlg::SerialDenseMatrix deriv_surf(2, Core::FE::num_nodes<dt_surf>);
+  Core::LinAlg::SerialDenseMatrix deriv_surf(2, Core::FE::num_nodes(dt_surf));
 
   for (int gp = 0; gp < ip.ip().nquad; ++gp)
   {
@@ -217,8 +217,8 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
           ->get_boundary_ele_and_parent_knots(
               parentknots, boundaryknots, normalfac, parent_element()->id(), face_parent_number());
 
-      Core::LinAlg::Matrix<Core::FE::num_nodes<dt_surf>, 1> weights, shapefcn;
-      for (int i = 0; i < Core::FE::num_nodes<dt_surf>; ++i)
+      Core::LinAlg::Matrix<Core::FE::num_nodes(dt_surf), 1> weights, shapefcn;
+      for (int i = 0; i < Core::FE::num_nodes(dt_surf); ++i)
         weights(i) = dynamic_cast<Core::FE::Nurbs::ControlPoint*>(nodes()[i])->w();
 
       Core::LinAlg::Matrix<2, 1> xi_surf;
@@ -247,7 +247,7 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
     tmp1.multiply(tmp2, id4);
     tmp2.multiply(tmp1, cmat);
 
-    Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, 6> tmp3;
+    Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> tmp3;
     tmp3.multiply_tn(bop, tmp2);
 
     surf.multiply(detA * ip.ip().qwgt[gp], tmp3, bop, 1.0);
@@ -257,15 +257,15 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
 
 template <Core::FE::CellType dt_vol>
 void Discret::Elements::SolidSurface::strains(
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
     const Core::LinAlg::Matrix<3, 1>& xi, double& jac, Core::LinAlg::Matrix<3, 3>& defgrd,
     Core::LinAlg::Matrix<6, 1>& glstrain, Core::LinAlg::Matrix<3, 3>& rcg,
-    Core::LinAlg::Matrix<6, Core::FE::num_nodes<dt_vol> * 3>& bop,
-    Core::LinAlg::Matrix<3, Core::FE::num_nodes<dt_vol>>& N_XYZ)
+    Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3>& bop,
+    Core::LinAlg::Matrix<3, Core::FE::num_nodes(dt_vol)>& N_XYZ)
 {
   const int dim = Core::FE::dim<dt_vol>;
-  const int num_node = Core::FE::num_nodes<dt_vol>;
+  const int num_node = Core::FE::num_nodes(dt_vol);
   Core::LinAlg::Matrix<dim, num_node> deriv;
 
   if (dt_vol == Core::FE::CellType::nurbs27)
@@ -276,9 +276,9 @@ void Discret::Elements::SolidSurface::strains(
         ->get_knot_vector()
         ->get_ele_knots(knots, parent_element_id());
 
-    Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 1> weights, shapefcn;
+    Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 1> weights, shapefcn;
 
-    for (int i = 0; i < Core::FE::num_nodes<dt_vol>; ++i)
+    for (int i = 0; i < Core::FE::num_nodes(dt_vol); ++i)
       weights(i) = dynamic_cast<Core::FE::Nurbs::ControlPoint*>(parent_element()->nodes()[i])->w();
 
     Core::FE::Nurbs::nurbs_get_3d_funct_deriv(shapefcn, deriv, xi, knots, weights, dt_vol);
@@ -329,13 +329,13 @@ void Discret::Elements::SolidSurface::strains(
 
 template <Core::FE::CellType dt_vol>
 void Discret::Elements::SolidSurface::subspace_projector(
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
-    Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * Core::FE::dim<dt_vol>,
-        Core::FE::num_nodes<dt_vol> * Core::FE::dim<dt_vol> -
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
+    Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * Core::FE::dim<dt_vol>,
+        Core::FE::num_nodes(dt_vol) * Core::FE::dim<dt_vol> -
             Core::FE::dim<dt_vol>*(Core::FE::dim<dt_vol> + 1) / 2>& proj)
 {
   const int dim = Core::FE::dim<dt_vol>;
-  const int num_node = Core::FE::num_nodes<dt_vol>;
+  const int num_node = Core::FE::num_nodes(dt_vol);
   if (dim != 3) FOUR_C_THROW("this should be 3D");
 
   Core::LinAlg::Matrix<3, 1> c;
@@ -442,11 +442,11 @@ double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue_ts
     std::vector<double>& parent_disp)
 {
   const int dim = Core::FE::dim<dt_vol>;
-  const int num_dof = Core::FE::num_nodes<dt_vol>;
-  const int dim_image = Core::FE::num_nodes<dt_vol> - 1;
+  const int num_dof = Core::FE::num_nodes(dt_vol);
+  const int dim_image = Core::FE::num_nodes(dt_vol) - 1;
 
-  Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3> xrefe;
-  Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3> xcurr;
+  Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3> xrefe;
+  Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3> xcurr;
 
   for (int i = 0; i < parent_element()->num_node(); ++i)
     for (int d = 0; d < dim; ++d)
@@ -481,19 +481,19 @@ double Discret::Elements::SolidSurface::estimate_nitsche_trace_max_eigenvalue_ts
 
 template <Core::FE::CellType dt_vol>
 void Discret::Elements::SolidSurface::trace_estimate_vol_matrix_tsi(
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
-    Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol>>& vol)
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
+    Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), Core::FE::num_nodes(dt_vol)>& vol)
 {
   const int dim = Core::FE::dim<dt_vol>;
-  const int num_node = Core::FE::num_nodes<dt_vol>;
+  const int num_node = Core::FE::num_nodes(dt_vol);
 
   double jac;
   Core::LinAlg::Matrix<3, 3> defgrd;
   Core::LinAlg::Matrix<3, 3> rcg;
   Core::LinAlg::Matrix<6, 1> glstrain;
-  Core::LinAlg::Matrix<6, Core::FE::num_nodes<dt_vol> * 3> bop;
-  Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, 6> bc;
+  Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3> bop;
+  Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> bc;
   Core::LinAlg::Matrix<dim, num_node> N_XYZ, iC_N_XYZ;
 
   Core::FE::IntPointsAndWeights<dim> ip(Discret::Elements::DisTypeToOptGaussRule<dt_vol>::rule);
@@ -524,23 +524,23 @@ void Discret::Elements::SolidSurface::trace_estimate_vol_matrix_tsi(
 
 template <Core::FE::CellType dt_vol, Core::FE::CellType dt_surf>
 void Discret::Elements::SolidSurface::trace_estimate_surf_matrix_tsi(
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
-    Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol>>& surf)
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
+    Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), Core::FE::num_nodes(dt_vol)>& surf)
 {
   const int dim = Core::FE::dim<dt_vol>;
-  const int num_node = Core::FE::num_nodes<dt_vol>;
+  const int num_node = Core::FE::num_nodes(dt_vol);
 
   double jac;
   Core::LinAlg::Matrix<3, 3> defgrd;
   Core::LinAlg::Matrix<3, 3> rcg;
   Core::LinAlg::Matrix<6, 1> glstrain;
-  Core::LinAlg::Matrix<6, Core::FE::num_nodes<dt_vol> * 3> bop;
-  Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, 6> bc;
+  Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3> bop;
+  Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> bc;
   Core::LinAlg::Matrix<dim, num_node> N_XYZ;
   Core::LinAlg::Matrix<1, num_node> iCn_N_XYZ;
 
-  Core::LinAlg::SerialDenseMatrix xrefe_surf(Core::FE::num_nodes<dt_surf>, dim);
+  Core::LinAlg::SerialDenseMatrix xrefe_surf(Core::FE::num_nodes(dt_surf), dim);
   material_configuration(xrefe_surf);
 
   std::vector<double> n(3);
@@ -549,7 +549,7 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix_tsi(
 
   Core::FE::IntPointsAndWeights<dim - 1> ip(
       Discret::Elements::DisTypeToOptGaussRule<dt_surf>::rule);
-  Core::LinAlg::SerialDenseMatrix deriv_surf(2, Core::FE::num_nodes<dt_surf>);
+  Core::LinAlg::SerialDenseMatrix deriv_surf(2, Core::FE::num_nodes(dt_surf));
 
   if (parent_element()->num_material() < 2) FOUR_C_THROW("where's my second material");
   std::shared_ptr<Mat::Fourier> mat_thermo =
@@ -596,9 +596,9 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix_tsi(
 
 template <Core::FE::CellType dt_vol>
 void Discret::Elements::SolidSurface::subspace_projector_scalar(
-    Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol> - 1>& proj)
+    Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), Core::FE::num_nodes(dt_vol) - 1>& proj)
 {
-  const int num_node = Core::FE::num_nodes<dt_vol>;
+  const int num_node = Core::FE::num_nodes(dt_vol);
   Core::LinAlg::Matrix<num_node, 1> basis[num_node];
 
   for (int i = 0; i < num_node; ++i) basis[0](i) = 1.;

@@ -376,7 +376,7 @@ Cut::VolumeCell* Cut::Mesh::new_volume_cell(const plain_facet_set& facets,
 Cut::Point1BoundaryCell* Cut::Mesh::new_point1_cell(
     VolumeCell* volume, Facet* facet, const std::vector<Point*>& points)
 {
-  const unsigned num_nodes = Core::FE::num_nodes<Core::FE::CellType::point1>;
+  const unsigned num_nodes = Core::FE::num_nodes(Core::FE::CellType::point1);
   if (points.size() != num_nodes) FOUR_C_THROW("Mismatch of point and node number!");
 
   Core::LinAlg::SerialDenseMatrix xyz(3, 1);
@@ -393,7 +393,7 @@ Cut::Point1BoundaryCell* Cut::Mesh::new_point1_cell(
 Cut::Line2BoundaryCell* Cut::Mesh::new_line2_cell(
     VolumeCell* volume, Facet* facet, const std::vector<Point*>& points)
 {
-  const unsigned num_nodes = Core::FE::num_nodes<Core::FE::CellType::line2>;
+  const unsigned num_nodes = Core::FE::num_nodes(Core::FE::CellType::line2);
   if (points.size() != num_nodes) FOUR_C_THROW("Mismatch of point and node number!");
 
   Core::LinAlg::SerialDenseMatrix xyze(3, num_nodes);
@@ -482,7 +482,7 @@ Cut::ArbitraryBoundaryCell* Cut::Mesh::new_arbitrary_cell(VolumeCell* volume, Fa
 Cut::Line2IntegrationCell* Cut::Mesh::new_line2_cell(
     Point::PointPosition position, const std::vector<Point*>& points, VolumeCell* cell)
 {
-  const unsigned num_nodes = Core::FE::num_nodes<Core::FE::CellType::line2>;
+  const unsigned num_nodes = Core::FE::num_nodes(Core::FE::CellType::line2);
   if (points.size() != num_nodes) FOUR_C_THROW("Mismatch of point and node number!");
 
   Core::LinAlg::SerialDenseMatrix xyze(3, num_nodes);
@@ -501,7 +501,7 @@ Cut::Line2IntegrationCell* Cut::Mesh::new_line2_cell(
 Cut::Tri3IntegrationCell* Cut::Mesh::new_tri3_cell(
     Point::PointPosition position, const std::vector<Point*>& points, VolumeCell* cell)
 {
-  const unsigned num_nodes = Core::FE::num_nodes<Core::FE::CellType::tri3>;
+  const unsigned num_nodes = Core::FE::num_nodes(Core::FE::CellType::tri3);
   if (points.size() != num_nodes) FOUR_C_THROW("Mismatch of point and node number!");
 
   Core::LinAlg::SerialDenseMatrix xyze(3, num_nodes);
@@ -520,7 +520,7 @@ Cut::Tri3IntegrationCell* Cut::Mesh::new_tri3_cell(
 Cut::Quad4IntegrationCell* Cut::Mesh::new_quad4_cell(
     Point::PointPosition position, const std::vector<Point*>& points, VolumeCell* cell)
 {
-  const unsigned num_nodes = Core::FE::num_nodes<Core::FE::CellType::quad4>;
+  const unsigned num_nodes = Core::FE::num_nodes(Core::FE::CellType::quad4);
   if (points.size() != num_nodes) FOUR_C_THROW("Mismatch of point and node number!");
 
   Core::LinAlg::SerialDenseMatrix xyze(3, num_nodes);

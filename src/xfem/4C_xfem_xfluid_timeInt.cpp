@@ -1873,9 +1873,9 @@ bool XFEM::XFluidTimeInt::within_space_time_side(
   std::shared_ptr<const Core::LinAlg::Vector<double>> idisp_old = cutter_dis->get_state(state_old);
 
 
-  const int numnode_space_time = Core::FE::num_nodes<space_time_distype>;
+  const int numnode_space_time = Core::FE::num_nodes(space_time_distype);
 
-  const int numnode_side = Core::FE::num_nodes<space_time_distype> / 2;
+  const int numnode_side = Core::FE::num_nodes(space_time_distype) / 2;
 
   // space time side coordinates
   Core::LinAlg::Matrix<3, numnode_space_time> xyze_st;

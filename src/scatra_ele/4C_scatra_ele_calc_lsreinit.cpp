@@ -1228,7 +1228,7 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::calc_penalty_t
 )
 {
   // get number of vertices of cell
-  const unsigned numvertices = Core::FE::num_nodes<celldistype>;
+  const unsigned numvertices = Core::FE::num_nodes(celldistype);
   const unsigned nsd = 3;
   if (nsd_ != 3) FOUR_C_THROW("Extend for other dimensions");
   const size_t nsd_cell = 2;  // nsd_-1;

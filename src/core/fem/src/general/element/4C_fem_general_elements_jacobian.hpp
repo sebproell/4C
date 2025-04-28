@@ -27,7 +27,7 @@ namespace Core::Elements
   double get_minimal_jac_determinant_at_nodes(const Core::LinAlg::Matrix<numdim, numnode>& xcurr)
   {
     // check input
-    static_assert(numnode == Core::FE::num_nodes<type>, "Wrong matrix dimension.");
+    static_assert(numnode == Core::FE::num_nodes(type), "Wrong matrix dimension.");
     static_assert(numdim == Core::FE::dim<type>, "Wrong matrix dimension.");
 
     Core::LinAlg::Matrix<numdim, numnode> deriv_at_c(Core::LinAlg::Initialization::uninitialized);

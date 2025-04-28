@@ -136,7 +136,7 @@ namespace Discret::Elements
 
    private:
     /// static values for matrix sizes
-    static constexpr int num_nodes_ = Core::FE::num_nodes<celltype>;
+    static constexpr int num_nodes_ = Core::FE::num_nodes(celltype);
     static constexpr int num_dim_ = Core::FE::dim<celltype>;
     static constexpr int num_dof_per_ele_ = num_nodes_ * num_dim_;
     static constexpr int num_str_ = num_dim_ * (num_dim_ + 1) / 2;

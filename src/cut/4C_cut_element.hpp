@@ -409,7 +409,7 @@ namespace Cut
     double scalar_from_local_to_global(
         double scalar, std::string transformType, bool shadow = false)
     {
-      const int nen = Core::FE::num_nodes<distype>;
+      const int nen = Core::FE::num_nodes(distype);
       const int dim = Core::FE::dim<distype>;
       Core::LinAlg::Matrix<probdim, nen> xyze;
       Core::LinAlg::Matrix<probdim, 1> xei;
@@ -636,7 +636,7 @@ namespace Cut
    *
    *  */
   template <unsigned probdim, Core::FE::CellType elementtype,
-      unsigned num_nodes_element = Core::FE::num_nodes<elementtype>,
+      unsigned num_nodes_element = Core::FE::num_nodes(elementtype),
       unsigned dim = Core::FE::dim<elementtype>>
   class ConcreteElement : public Element
   {

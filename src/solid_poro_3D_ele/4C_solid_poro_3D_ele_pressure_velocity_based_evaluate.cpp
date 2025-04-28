@@ -358,8 +358,8 @@ double Discret::Elements::SolidPoroPressureVelocityBased::get_normal_cauchy_stre
         if (linearizations.d_cauchyndir_dp || linearizations.solid.d_cauchyndir_dn ||
             linearizations.solid.d_cauchyndir_ddir || linearizations.solid.d_cauchyndir_dxi)
         {
-          linearizations.d_cauchyndir_dp->reshape(Core::FE::num_nodes<celltype>, 1);
-          for (unsigned node = 0; node < Core::FE::num_nodes<celltype>; ++node)
+          linearizations.d_cauchyndir_dp->reshape(Core::FE::num_nodes(celltype), 1);
+          for (unsigned node = 0; node < Core::FE::num_nodes(celltype); ++node)
           {
             if (linearizations.d_cauchyndir_dp)
               (*linearizations.d_cauchyndir_dp)(node, 0) =

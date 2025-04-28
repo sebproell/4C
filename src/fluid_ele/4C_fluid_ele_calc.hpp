@@ -78,7 +78,7 @@ namespace Discret
      public:
       //! nen_: number of element nodes (T. Hughes: The Finite Element Method)
       static constexpr int nen_ =
-          Discret::Elements::MultipleNumNode<enrtype>::multipleNode * Core::FE::num_nodes<distype>;
+          Discret::Elements::MultipleNumNode<enrtype>::multipleNode * Core::FE::num_nodes(distype);
 
       //! number of space dimensions
       static constexpr int nsd_ = Core::FE::dim<distype>;

@@ -391,8 +391,8 @@ namespace Cut
   template <unsigned probdim, Core::FE::CellType edgetype, Core::FE::CellType sidetype,
       bool debug = false, unsigned dimedge = Core::FE::dim<edgetype>,
       unsigned dimside = Core::FE::dim<sidetype>,
-      unsigned num_nodes_edge = Core::FE::num_nodes<edgetype>,
-      unsigned num_nodes_side = Core::FE::num_nodes<sidetype>>
+      unsigned num_nodes_edge = Core::FE::num_nodes(edgetype),
+      unsigned num_nodes_side = Core::FE::num_nodes(sidetype)>
   class Intersection : public IntersectionBase
   {
    public:

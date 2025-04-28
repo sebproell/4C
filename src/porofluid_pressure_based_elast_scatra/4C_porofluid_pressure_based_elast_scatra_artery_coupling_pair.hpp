@@ -249,9 +249,9 @@ namespace PoroPressureBased
    private:
     // static variables
     //! number of nodes of 1D artery element
-    static constexpr unsigned numnodesart_ = Core::FE::num_nodes<distype_art>;
+    static constexpr unsigned numnodesart_ = Core::FE::num_nodes(distype_art);
     //! number of nodes of 2D/3D continuous element
-    static constexpr unsigned numnodescont_ = Core::FE::num_nodes<distype_cont>;
+    static constexpr unsigned numnodescont_ = Core::FE::num_nodes(distype_cont);
     //! number of nodes of spatial dimensions
     static constexpr unsigned numdim_ = Core::FE::dim<distype_cont>;
 

@@ -90,7 +90,7 @@ namespace Core::FE
   {
    public:
     //! nen_: number of element nodes (T. Hughes: The Finite Element Method)
-    static constexpr unsigned int nen_ = Core::FE::num_nodes<distype>;
+    static constexpr unsigned int nen_ = Core::FE::num_nodes(distype);
 
     //! number of space dimensions
     static constexpr unsigned int nsd_ = Core::FE::dim<distype>;
@@ -176,7 +176,7 @@ namespace Core::FE
   {
    public:
     //! nen_: number of element nodes (T. Hughes: The Finite Element Method)
-    static constexpr unsigned int nen_ = Core::FE::num_nodes<distype>;
+    static constexpr unsigned int nen_ = Core::FE::num_nodes(distype);
 
     ///! number of nodes on faces
     static constexpr unsigned int nfn_ = Core::FE::DisTypeToNumNodePerFace<distype>::numNodePerFace;

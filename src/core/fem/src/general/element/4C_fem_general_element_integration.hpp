@@ -31,7 +31,7 @@ namespace Core::Elements
     /*!
      * @brief Position of nodes in the reference configuration
      */
-    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, dim> coordinates;
+    Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), dim> coordinates;
   };
 
   template <Core::FE::CellType celltype, unsigned dim>
@@ -41,7 +41,7 @@ namespace Core::Elements
     /*!
      * @brief Position of nodes in the reference configuration
      */
-    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, dim> coordinates;
+    Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), dim> coordinates;
 
     /*!
      * @brief Knot span of a NURBS element
@@ -51,7 +51,7 @@ namespace Core::Elements
     /*!
      * @brief Weights of control points
      */
-    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1, double> weights;
+    Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1, double> weights;
   };
 
   /*!
@@ -67,7 +67,7 @@ namespace Core::Elements
       const Core::FE::Discretization& discretization, const Core::Elements::Element& ele)
   {
     ElementNodes<celltype, dim> element_nodes;
-    for (int i = 0; i < Core::FE::num_nodes<celltype>; ++i)
+    for (int i = 0; i < Core::FE::num_nodes(celltype); ++i)
     {
       const std::vector<double>& x = ele.nodes()[i]->x();
       for (unsigned d = 0; d < dim; ++d)
@@ -115,8 +115,8 @@ namespace Core::Elements
   template <Core::FE::CellType celltype>
   struct ShapeFunctionsAndDerivatives
   {
-    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1> values{};
-    Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes<celltype>> derivatives{};
+    Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1> values{};
+    Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes(celltype)> derivatives{};
   };
 
   /*!

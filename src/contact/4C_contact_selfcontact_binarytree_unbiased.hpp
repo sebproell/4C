@@ -151,9 +151,9 @@ namespace CONTACT
       const Core::LinAlg::Matrix<Core::FE::dim<distype>, 1>& xi,
       Core::LinAlg::Matrix<probdim, 1>& coord)
   {
-    static Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1> funct(
+    static Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1> funct(
         Core::LinAlg::Initialization::zero);
-    static Core::LinAlg::Matrix<probdim, Core::FE::num_nodes<distype>> nodecoords(
+    static Core::LinAlg::Matrix<probdim, Core::FE::num_nodes(distype)> nodecoords(
         Core::LinAlg::Initialization::zero);
 
     Core::FE::shape_function<distype>(xi, funct);
@@ -165,7 +165,7 @@ namespace CONTACT
     FOUR_C_ASSERT_ALWAYS(probdim == nodedim,
         "Problem dimension: {} and dimension of nodes: {} does not match!", probdim, nodedim);
 
-    for (int i = 0; i < Core::FE::num_nodes<distype>; ++i)
+    for (int i = 0; i < Core::FE::num_nodes(distype); ++i)
     {
       for (int j = 0; j < nodedim; ++j)
       {
@@ -191,9 +191,9 @@ namespace CONTACT
   {
     static Core::LinAlg::Matrix<3, Core::FE::dim<distype>> gxieta(
         Core::LinAlg::Initialization::zero);
-    static Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>> deriv(
+    static Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)> deriv(
         Core::LinAlg::Initialization::zero);
-    static Core::LinAlg::Matrix<3, Core::FE::num_nodes<distype>> nodecoords(
+    static Core::LinAlg::Matrix<3, Core::FE::num_nodes(distype)> nodecoords(
         Core::LinAlg::Initialization::zero);
 
     Core::FE::shape_function_deriv1<distype>(xi, deriv);
@@ -204,7 +204,7 @@ namespace CONTACT
     FOUR_C_ASSERT_ALWAYS(nodes, "ERROR: Did not get nodes of element!");
     FOUR_C_ASSERT_ALWAYS(nodedim == 3, "ERROR: Only implemented for 3D cases so far!");
 
-    for (int i = 0; i < Core::FE::num_nodes<distype>; ++i)
+    for (int i = 0; i < Core::FE::num_nodes(distype); ++i)
     {
       for (int j = 0; j < nodedim; ++j)
       {

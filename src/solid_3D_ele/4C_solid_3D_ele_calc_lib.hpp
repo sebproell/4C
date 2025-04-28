@@ -45,7 +45,7 @@ namespace Discret::Elements
 namespace Discret::Elements::Internal
 {
   template <Core::FE::CellType celltype>
-  inline static constexpr int num_nodes = Core::FE::num_nodes<celltype>;
+  inline static constexpr int num_nodes = Core::FE::num_nodes(celltype);
 
   template <Core::FE::CellType celltype>
   inline static constexpr int num_dim = Core::FE::dim<celltype>;
@@ -183,7 +183,7 @@ namespace Discret::Elements
   {
     const Core::LinAlg::Vector<double>& displacements = *discretization.get_state("displacement");
 
-    constexpr unsigned num_dofs = Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>;
+    constexpr unsigned num_dofs = Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>;
     std::array<double, num_dofs> mydisp =
         Core::FE::extract_values_as_array<num_dofs>(displacements, lm);
 
@@ -683,9 +683,9 @@ namespace Discret::Elements
   Core::LinAlg::Matrix<Internal::num_str<celltype>, 1> evaluate_linear_gl_strain(
       const ElementNodes<celltype>& nodal_coordinates,
       const Core::LinAlg::Matrix<Internal::num_str<celltype>,
-          Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>& linear_b_operator)
+          Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>& linear_b_operator)
   {
-    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1u> nodal_displs =
+    Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1u> nodal_displs =
         Core::FE::get_element_dof_vector_view<celltype>(nodal_coordinates.displacements);
 
     Core::LinAlg::Matrix<Internal::num_str<celltype>, 1> gl_strain;
@@ -702,7 +702,7 @@ namespace Discret::Elements
    * @param spatial_material_mapping (in) :An object holding quantities of the spatial material
    * mapping (deformation_gradient, inverse_deformation_gradient,
    * determinant_deformation_gradient)
-   * @return Core::LinAlg::Matrix<num_str<celltype>, num_dim<celltype> * num_nodes<celltype>> :
+   * @return Core::LinAlg::Matrix<num_str<celltype>, num_dim<celltype> * num_nodes(celltype)> :
    * B-Operator
    */
   template <Core::FE::CellType celltype>
@@ -1153,14 +1153,14 @@ namespace Discret::Elements
   struct SolidFormulationLinearization
   {
     /// Derivative of the deformation gradient w.r.t. nodal displacements
-    Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>> d_F_dd{};
+    Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>> d_F_dd{};
 
     /// Derivative of the deformation gradient w.r.t. xi
     Core::LinAlg::Matrix<9, Core::FE::dim<celltype>> d_F_dxi{};
 
     /// 2. Derivative of the deformation gradient w.r.t. xi and nodal displacements
     Core::LinAlg::Matrix<9,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
         d2_F_dxi_dd{};
   };
 

@@ -87,8 +87,8 @@ namespace
     const double factor4 = (1.0 - 1.0 / stc_factor);
 
     Core::LinAlg::SerialDenseMatrix stc_matrix(
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>);
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>);
 
     std::vector<Core::Conditions::Condition*> cond0;
     int condnum0 = 1000;    // minimum STCid of layer with nodes 0..3
@@ -97,7 +97,7 @@ namespace
     std::vector<Core::Conditions::Condition*> cond1;
     int condnum1 = 1000;    // minimum STCid of layer with nodes 4..7
     bool current1 = false;  // minimum STCid of layer with nodes 4..7
-    (nodes[Core::FE::num_nodes<celltype> / 2])->get_condition("STC Layer", cond1);
+    (nodes[Core::FE::num_nodes(celltype) / 2])->get_condition("STC Layer", cond1);
 
     for (auto& conu : cond0)
     {
@@ -114,11 +114,11 @@ namespace
     }
     if (condnum1 == stc_layer) current1 = true;
 
-    std::array<int, Core::FE::num_nodes<celltype>> number_adj_elements{};
-    std::transform(nodes, nodes + Core::FE::num_nodes<celltype>, number_adj_elements.begin(),
+    std::array<int, Core::FE::num_nodes(celltype)> number_adj_elements{};
+    std::transform(nodes, nodes + Core::FE::num_nodes(celltype), number_adj_elements.begin(),
         [](const Core::Nodes::Node* node) { return node->num_element(); });
 
-    constexpr int numdof = Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>;
+    constexpr int numdof = Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>;
 
     // both surfaces are to be scaled
     if (current0 and current1)

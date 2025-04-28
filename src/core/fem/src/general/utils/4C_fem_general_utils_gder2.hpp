@@ -66,7 +66,7 @@ namespace Core::FE
       Core::LinAlg::Matrix<Core::FE::DisTypeToNumDeriv2<distype>::numderiv2, num_node>& derxy2)
   {
     // some numbers already known during compilation
-    const int numnode = Core::FE::num_nodes<distype>;
+    const int numnode = Core::FE::num_nodes(distype);
     FOUR_C_ASSERT(numnode <= num_node, "Expect at least numNodePerElement matrix columns");
     const int nsd = prob_dim;
     const int numderiv2 = Core::FE::DisTypeToNumDeriv2<distype>::numderiv2;

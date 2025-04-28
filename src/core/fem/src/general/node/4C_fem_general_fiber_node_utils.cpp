@@ -16,11 +16,11 @@ FOUR_C_NAMESPACE_OPEN
 
 template <Core::FE::CellType distype>
 void Core::Nodes::project_fibers_to_gauss_points(const Core::Nodes::Node* const* nodes,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>>& shapefcts,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>>& shapefcts,
     NodalFiberHolder& gpFiberHolder)
 {
   // number of nodes per element
-  constexpr int nen = Core::FE::num_nodes<distype>;
+  constexpr int nen = Core::FE::num_nodes(distype);
   std::array<const Core::Nodes::FiberNode*, nen> fiberNodes;
   std::vector<std::array<std::array<double, 3>, nen>> fibers;
   std::map<Core::Nodes::CoordinateSystemDirection, std::array<std::array<double, 3>, nen>>
@@ -140,14 +140,14 @@ void Core::Nodes::project_fibers_to_gauss_points(const Core::Nodes::Node* const*
 
 template <Core::FE::CellType distype, std::size_t dim>
 void Core::Nodes::project_quantity_with_shape_functions(
-    const std::array<std::array<double, dim>, Core::FE::num_nodes<distype>> quantity,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>>& shapefcts,
+    const std::array<std::array<double, dim>, Core::FE::num_nodes(distype)> quantity,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>>& shapefcts,
     std::vector<Core::LinAlg::Matrix<dim, 1>>& quantityProjected)
 {
   quantityProjected.resize(shapefcts.size());
 
   // number of nodes per element
-  constexpr std::size_t nen = Core::FE::num_nodes<distype>;
+  constexpr std::size_t nen = Core::FE::num_nodes(distype);
 
   // spatial dimension
   constexpr std::size_t nsd = Core::FE::dim<distype>;
@@ -174,14 +174,14 @@ void Core::Nodes::project_quantity_with_shape_functions(
 
 template <Core::FE::CellType distype>
 void Core::Nodes::project_quantity_with_shape_functions(
-    const std::array<double, Core::FE::num_nodes<distype>> quantity,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>>& shapefcts,
+    const std::array<double, Core::FE::num_nodes(distype)> quantity,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>>& shapefcts,
     std::vector<double>& quantityProjected)
 {
   quantityProjected.resize(shapefcts.size());
 
   // number of nodes per element
-  constexpr int nen = Core::FE::num_nodes<distype>;
+  constexpr int nen = Core::FE::num_nodes(distype);
 
   // number of gauss points
   const int ngp = shapefcts.size();
@@ -203,7 +203,7 @@ void Core::Nodes::project_quantity_with_shape_functions(
 template <Core::FE::CellType distype>
 bool Core::Nodes::have_nodal_fibers(const Core::Nodes::Node* const* nodes)
 {
-  constexpr int numberOfNodes = Core::FE::num_nodes<distype>;
+  constexpr int numberOfNodes = Core::FE::num_nodes(distype);
 
   // check whether node can be casted to FiberNode
   auto nodeHasFibers = [](const Core::Nodes::Node* n)
@@ -212,77 +212,77 @@ bool Core::Nodes::have_nodal_fibers(const Core::Nodes::Node* const* nodes)
 }
 
 template void Core::Nodes::project_quantity_with_shape_functions<Core::FE::CellType::tet4>(
-    const std::array<double, Core::FE::num_nodes<Core::FE::CellType::tet4>> quantity,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::tet4>, 1>>&
+    const std::array<double, Core::FE::num_nodes(Core::FE::CellType::tet4)> quantity,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::tet4), 1>>&
         shapefcts,
     std::vector<double>& quantityProjected);
 template void Core::Nodes::project_quantity_with_shape_functions<Core::FE::CellType::tet10>(
-    const std::array<double, Core::FE::num_nodes<Core::FE::CellType::tet10>> quantity,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::tet10>, 1>>&
+    const std::array<double, Core::FE::num_nodes(Core::FE::CellType::tet10)> quantity,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::tet10), 1>>&
         shapefcts,
     std::vector<double>& quantityProjected);
 template void Core::Nodes::project_quantity_with_shape_functions<Core::FE::CellType::hex8>(
-    const std::array<double, Core::FE::num_nodes<Core::FE::CellType::hex8>> quantity,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::hex8>, 1>>&
+    const std::array<double, Core::FE::num_nodes(Core::FE::CellType::hex8)> quantity,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::hex8), 1>>&
         shapefcts,
     std::vector<double>& quantityProjected);
 template void Core::Nodes::project_quantity_with_shape_functions<Core::FE::CellType::tri3>(
-    const std::array<double, Core::FE::num_nodes<Core::FE::CellType::tri3>> quantity,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::tri3>, 1>>&
+    const std::array<double, Core::FE::num_nodes(Core::FE::CellType::tri3)> quantity,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::tri3), 1>>&
         shapefcts,
     std::vector<double>& quantityProjected);
 
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::tet4>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::tet4>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::tet4), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::tet10>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::tet10>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::tet10), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::hex8>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::hex8>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::hex8), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::hex18>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::hex18>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::hex18), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::hex20>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::hex20>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::hex20), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::hex27>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::hex27>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::hex27), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::nurbs27>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::nurbs27>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::nurbs27), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::tri3>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::tri3>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::tri3), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::quad4>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::quad4>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::quad4), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::quad9>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::quad9>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::quad9), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::pyramid5>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::pyramid5>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::pyramid5), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::wedge6>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::wedge6>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::wedge6), 1>>&,
     NodalFiberHolder&);
 template void Core::Nodes::project_fibers_to_gauss_points<Core::FE::CellType::nurbs9>(
     const Core::Nodes::Node* const*,
-    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<Core::FE::CellType::nurbs9>, 1>>&,
+    const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(Core::FE::CellType::nurbs9), 1>>&,
     NodalFiberHolder&);
 
 template bool Core::Nodes::have_nodal_fibers<Core::FE::CellType::tet4>(

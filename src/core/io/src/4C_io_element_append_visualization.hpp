@@ -83,7 +83,7 @@ namespace Core::IO
       const Core::FE::Discretization& discret, std::vector<uint8_t>& cell_types,
       std::vector<double>& point_coordinates)
   {
-    constexpr int number_of_output_points = Core::FE::num_nodes<celltype>;
+    constexpr int number_of_output_points = Core::FE::num_nodes(celltype);
     constexpr int dim_nurbs = Core::FE::dim<celltype>;
     constexpr int dim_output = 3;
 
@@ -273,7 +273,7 @@ namespace Core::IO
       const Core::LinAlg::Vector<double>& result_data_dofbased,
       const unsigned int read_result_data_from_dofindex, std::vector<double>& vtu_point_result_data)
   {
-    constexpr int number_of_output_points = Core::FE::num_nodes<celltype>;
+    constexpr int number_of_output_points = Core::FE::num_nodes(celltype);
     constexpr int dim_nurbs = Core::FE::dim<celltype>;
 
     // Get the vtk cell information
@@ -360,7 +360,7 @@ namespace Core::IO
       const Core::LinAlg::MultiVector<double>& result_data_nodebased,
       std::vector<double>& vtu_point_result_data)
   {
-    constexpr int number_of_output_points = Core::FE::num_nodes<celltype>;
+    constexpr int number_of_output_points = Core::FE::num_nodes(celltype);
     constexpr int dim_nurbs = Core::FE::dim<celltype>;
 
     // Get the vtk cell information

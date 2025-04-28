@@ -240,7 +240,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::fpsi_coupling(
   }
 
   // number of parentnodes
-  static const int nenparent = Core::FE::num_nodes<pdistype>;
+  static const int nenparent = Core::FE::num_nodes(pdistype);
 
   // get the parent element
   Discret::Elements::Fluid* pele = ele->parent_element();
@@ -1832,7 +1832,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::compute_flow_rate(
   ele->Core::Elements::Element::location_vector(discretization, lm, lmowner, lmstride);
 
   // number of parentnodes
-  static const int nenparent = Core::FE::num_nodes<pdistype>;
+  static const int nenparent = Core::FE::num_nodes(pdistype);
 
   // get the parent element
   Discret::Elements::Fluid* pele = ele->parent_element();
@@ -2540,7 +2540,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::poro_boundary(
   ele->Core::Elements::Element::location_vector(discretization, lm, lmowner, lmstride);
 
   // number of parentnodes
-  static const int nenparent = Core::FE::num_nodes<pdistype>;
+  static const int nenparent = Core::FE::num_nodes(pdistype);
 
   // get the parent element
   Discret::Elements::Fluid* pele = ele->parent_element();
@@ -3283,7 +3283,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::no_penetration_mat_an
   Discret::Elements::Fluid* pele = ele->parent_element();
 
   // number of parentnodes
-  static const int nenparent = Core::FE::num_nodes<pdistype>;
+  static const int nenparent = Core::FE::num_nodes(pdistype);
 
   // get element location vector and ownerships
   std::vector<int> plm;
@@ -3672,7 +3672,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::no_penetration_mat_od
   Discret::Elements::Fluid* pele = ele->parent_element();
 
   // number of parentnodes
-  static const int nenparent = Core::FE::num_nodes<pdistype>;
+  static const int nenparent = Core::FE::num_nodes(pdistype);
 
   // get element location vector and ownerships
   std::vector<int> plm;
@@ -4265,7 +4265,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::no_penetration_mat_od
   Discret::Elements::Fluid* pele = ele->parent_element();
 
   // number of parentnodes
-  static const int nenparent = Core::FE::num_nodes<pdistype>;
+  static const int nenparent = Core::FE::num_nodes(pdistype);
 
   // get element location vector and ownerships
   std::vector<int> plm;
@@ -4629,7 +4629,7 @@ void Discret::Elements::FluidEleBoundaryCalcPoro<distype>::no_penetration_mat_od
   Discret::Elements::Fluid* pele = ele->parent_element();
 
   // number of parentnodes
-  static const int nenparent = Core::FE::num_nodes<pdistype>;
+  static const int nenparent = Core::FE::num_nodes(pdistype);
 
   std::vector<double> parentdispnp = Core::FE::extract_values(*dispnp, plm);
 

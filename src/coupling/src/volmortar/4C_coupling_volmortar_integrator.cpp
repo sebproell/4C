@@ -446,10 +446,10 @@ bool Coupling::VolMortar::vol_mortar_ele_based_gp(Core::Elements::Element& sele,
     int dofsetb, const Core::LinAlg::Map& PAB_dofrowmap, const Core::LinAlg::Map& PAB_dofcolmap)
 {
   //! ns_: number of slave element nodes
-  static const int ns_ = Core::FE::num_nodes<distype_s>;
+  static const int ns_ = Core::FE::num_nodes(distype_s);
 
   //! nm_: number of master element nodes
-  static const int nm_ = Core::FE::num_nodes<distype_m>;
+  static const int nm_ = Core::FE::num_nodes(distype_m);
 
   // create empty vectors for shape fct. evaluation
   Core::LinAlg::Matrix<ns_, 1> sval_A;
@@ -2091,7 +2091,7 @@ bool Coupling::VolMortar::cons_interpolator_eval(Core::Nodes::Node* node,
     const Core::LinAlg::Map& P_dofcolmap)
 {
   //! ns_: number of slave element nodes
-  static const int n_ = Core::FE::num_nodes<distype>;
+  static const int n_ = Core::FE::num_nodes(distype);
 
   double xi[3] = {0.0, 0.0, 0.0};
   bool converged = true;

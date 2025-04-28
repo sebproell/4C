@@ -137,7 +137,7 @@ namespace Cut
 
    *  */
   template <unsigned probdim, Core::FE::CellType distype, typename Valtype,
-      unsigned num_nodes_element = Core::FE::num_nodes<distype>,
+      unsigned num_nodes_element = Core::FE::num_nodes(distype),
       unsigned dim = Core::FE::dim<distype>>
   Valtype eval_derivs_in_parameter_space(
       const Core::LinAlg::Matrix<probdim, num_nodes_element, Valtype>& xyze,
@@ -252,7 +252,7 @@ namespace Cut
    *
    */
   template <unsigned probdim, Core::FE::CellType distype, typename Valtype,
-      unsigned num_nodes_element = Core::FE::num_nodes<distype>,
+      unsigned num_nodes_element = Core::FE::num_nodes(distype),
       unsigned dim = Core::FE::dim<distype>>
   inline Valtype eval_derivs_in_parameter_space(
       const Core::LinAlg::Matrix<probdim, num_nodes_element, Valtype>& xyze,
@@ -377,7 +377,7 @@ namespace Cut
    *
    *  */
   template <unsigned probdim, Core::FE::CellType distype, class T1, class T2, class T3,
-      unsigned num_nodes_element = Core::FE::num_nodes<distype>,
+      unsigned num_nodes_element = Core::FE::num_nodes(distype),
       unsigned dim = Core::FE::dim<distype>>
   void eval_normal_vectors(const T1& xyze, const T2& rst, T3& normalvec1, T3* normalvec2 = nullptr,
       bool unit_normal = true)

@@ -93,7 +93,7 @@ namespace Core::FE::Internal
   /// @{
   template <CellType celltype, typename CelltypeSequence, typename Function,
       typename UnsupportedCellTypeCallable>
-  auto cell_type_switch_item([[maybe_unused]] Function fct,
+  constexpr auto cell_type_switch_item([[maybe_unused]] Function fct,
       UnsupportedCellTypeCallable unsupported_celltype_callable) -> std::invoke_result_t<Function,
       std::integral_constant<CellType, first_celltype_in_sequence<CelltypeSequence>::value>>
   {

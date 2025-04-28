@@ -418,7 +418,7 @@ namespace XFEM
       const size_t nsd = Core::FE::dim<distype>;
 
       // number of nodes of element
-      const size_t nen = Core::FE::num_nodes<distype>;
+      const size_t nen = Core::FE::num_nodes(distype);
 
       // Should this be provided as well by the input?
       Core::Elements::Element* actele = cutter_dis_->g_element(eid);
@@ -562,7 +562,7 @@ namespace XFEM
     const size_t nsd = Core::FE::dim<distype>;
 
     // number of nodes of element
-    const size_t nen = Core::FE::num_nodes<distype>;
+    const size_t nen = Core::FE::num_nodes(distype);
 
     // smoothed normal at cutter element nodes, the Gaussian point lies in
     Core::LinAlg::SerialDenseMatrix esmoothedgradphi(nsd, nen);
@@ -585,7 +585,7 @@ namespace XFEM
     //    const size_t nsd = Core::FE::dim<DISTYPE>;
 
     // number of nodes of element
-    const size_t nen = Core::FE::num_nodes<distype>;
+    const size_t nen = Core::FE::num_nodes(distype);
 
     // smoothed normal at cutter element nodes, the Gaussian point lies in
     Core::LinAlg::SerialDenseMatrix ephinp(nen, 1);

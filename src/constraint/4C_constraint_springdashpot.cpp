@@ -61,15 +61,15 @@ namespace
   template <SpringDashpotEvaluable SpringDashpot, Core::FE::CellType celltype, unsigned int dim>
   void add_robin_spring_dashpot_contribution_xyz(const Core::Elements::Element& surface_element,
       const Core::Elements::ElementNodes<celltype, dim> element_nodes,
-      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes<celltype>>& displacements,
-      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes<celltype>>& displacement_offset,
+      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes(celltype)>& displacements,
+      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes(celltype)>& displacement_offset,
       const std::vector<double>& constant_offset,
-      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes<celltype>>& velocity,
+      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes(celltype)>& velocity,
       const std::vector<SpringDashpot>& spring_dashpot_evaluator, const double time_factor,
       const Core::FE::GaussIntegration& gauss_integration, const std::vector<bool>& onoff,
-      std::optional<Core::LinAlg::Matrix<dim * Core::FE::num_nodes<celltype>, 1>>& residual_vector,
-      std::optional<Core::LinAlg::Matrix<dim * Core::FE::num_nodes<celltype>,
-          dim * Core::FE::num_nodes<celltype>>>& stiffness_matrix)
+      std::optional<Core::LinAlg::Matrix<dim * Core::FE::num_nodes(celltype), 1>>& residual_vector,
+      std::optional<Core::LinAlg::Matrix<dim * Core::FE::num_nodes(celltype),
+          dim * Core::FE::num_nodes(celltype)>>& stiffness_matrix)
   {
     Core::Elements::for_each_gauss_point<celltype>(element_nodes, gauss_integration,
         [&](const Core::LinAlg::Matrix<Core::FE::dim<celltype>, 1>& xi,
@@ -102,7 +102,7 @@ namespace
             // evaluate residual force
             if (residual_vector)
             {
-              for (int node = 0; node < Core::FE::num_nodes<celltype>; ++node)
+              for (int node = 0; node < Core::FE::num_nodes(celltype); ++node)
                 residual_vector.value()(node * dim + axis_direction) +=
                     shape_functions.values(node) * force * integration_factor;
             }
@@ -110,9 +110,9 @@ namespace
             // evaluate stiffness matrix
             if (stiffness_matrix)
             {
-              for (int i = 0; i < Core::FE::num_nodes<celltype>; ++i)
+              for (int i = 0; i < Core::FE::num_nodes(celltype); ++i)
               {
-                for (int j = 0; j < Core::FE::num_nodes<celltype>; ++j)
+                for (int j = 0; j < Core::FE::num_nodes(celltype); ++j)
                 {
                   (*stiffness_matrix)(i* dim + axis_direction, j * dim + axis_direction) +=
                       shape_functions.values(i) * shape_functions.values(j) *
@@ -146,15 +146,15 @@ namespace
   void add_robin_spring_dashpot_contribution_ref_normal(
       const Core::Elements::Element& surface_element,
       const Core::Elements::ElementNodes<celltype, dim> element_nodes,
-      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes<celltype>>& displacements,
-      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes<celltype>>& displacement_offset,
+      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes(celltype)>& displacements,
+      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes(celltype)>& displacement_offset,
       double constant_offset,
-      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes<celltype>>& velocity,
+      const Core::LinAlg::Matrix<dim, Core::FE::num_nodes(celltype)>& velocity,
       const SpringDashpot& spring_dashpot_evaluator, const double time_factor,
       const Core::FE::GaussIntegration& gauss_integration,
-      std::optional<Core::LinAlg::Matrix<dim * Core::FE::num_nodes<celltype>, 1>>& residual_vector,
-      std::optional<Core::LinAlg::Matrix<dim * Core::FE::num_nodes<celltype>,
-          dim * Core::FE::num_nodes<celltype>>>& stiffness_matrix)
+      std::optional<Core::LinAlg::Matrix<dim * Core::FE::num_nodes(celltype), 1>>& residual_vector,
+      std::optional<Core::LinAlg::Matrix<dim * Core::FE::num_nodes(celltype),
+          dim * Core::FE::num_nodes(celltype)>>& stiffness_matrix)
   {
     // compute nodal normals of the element
     Core::Elements::for_each_gauss_point<celltype>(element_nodes, gauss_integration,
@@ -186,7 +186,7 @@ namespace
           {
             for (unsigned axis_direction = 0; axis_direction < dim; ++axis_direction)
             {
-              for (int node = 0; node < Core::FE::num_nodes<celltype>; ++node)
+              for (int node = 0; node < Core::FE::num_nodes(celltype); ++node)
               {
                 residual_vector.value()(node * dim + axis_direction) +=
                     shape_functions.values(node) * force * normal_at_gp(axis_direction) *
@@ -202,9 +202,9 @@ namespace
             {
               for (unsigned axis_direction2 = 0; axis_direction2 < dim; ++axis_direction2)
               {
-                for (int i = 0; i < Core::FE::num_nodes<celltype>; ++i)
+                for (int i = 0; i < Core::FE::num_nodes(celltype); ++i)
                 {
-                  for (int j = 0; j < Core::FE::num_nodes<celltype>; ++j)
+                  for (int j = 0; j < Core::FE::num_nodes(celltype); ++j)
                   {
                     (*stiffness_matrix)(i* dim + axis_direction1, j * dim + axis_direction2) +=
                         shape_functions.values(i) * shape_functions.values(j) *
@@ -429,7 +429,7 @@ void Constraints::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
                       *actdisc_, *curr.second);
 
               std::optional<
-                  Core::LinAlg::Matrix<num_dof_per_node * Core::FE::num_nodes<celltype>, 1>>
+                  Core::LinAlg::Matrix<num_dof_per_node * Core::FE::num_nodes(celltype), 1>>
                   residual_vector;
               if (assvec)
               {
@@ -437,19 +437,19 @@ void Constraints::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
                 residual_vector.value().clear();
               }
 
-              std::optional<Core::LinAlg::Matrix<num_dof_per_node * Core::FE::num_nodes<celltype>,
-                  num_dof_per_node * Core::FE::num_nodes<celltype>>>
+              std::optional<Core::LinAlg::Matrix<num_dof_per_node * Core::FE::num_nodes(celltype),
+                  num_dof_per_node * Core::FE::num_nodes(celltype)>>
                   stiffness_matrix;
               if (assmat)
               {
                 stiffness_matrix.emplace(elestiff.values(), true);
                 (*stiffness_matrix).clear();
               }
-              const Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes<celltype>>
+              const Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes(celltype)>
                   ele_displacements =
                       Core::FE::get_element_dof_matrix<celltype, num_dof_per_node>(displacements);
 
-              const Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes<celltype>>
+              const Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes(celltype)>
                   nodal_offset = Core::FE::get_element_dof_matrix<celltype, num_dof_per_node>(
                       displacement_offset);
 
@@ -462,7 +462,7 @@ void Constraints::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
               }
 
 
-              Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes<celltype>>
+              Core::LinAlg::Matrix<num_dof_per_node, Core::FE::num_nodes(celltype)>
                   velocity_matrix =
                       Core::FE::get_element_dof_matrix<celltype, num_dof_per_node>(velocities);
 

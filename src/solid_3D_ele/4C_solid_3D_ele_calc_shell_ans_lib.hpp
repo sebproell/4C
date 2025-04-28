@@ -46,7 +46,7 @@ namespace Discret::Elements
     Core::LinAlg::Matrix<3, 3> current_jacobian{};
 
     // modified B-operator at local parametric space
-    Core::LinAlg::Matrix<num_ans, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+    Core::LinAlg::Matrix<num_ans, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
         bop_ans_local{};
   };
 
@@ -65,7 +65,7 @@ namespace Discret::Elements
     current_jacobian.multiply_nt(
         1.0, shape_functions.derivatives_, element_nodes.displacements, 1.0);
 
-    for (int inode = 0; inode < Core::FE::num_nodes<Core::FE::CellType::hex8>; ++inode)
+    for (int inode = 0; inode < Core::FE::num_nodes(Core::FE::CellType::hex8); ++inode)
     {
       for (int dim = 0; dim < Core::FE::dim<Core::FE::CellType::hex8>; ++dim)
       {
@@ -122,7 +122,7 @@ namespace Discret::Elements
     current_jacobian.multiply_nt(
         1.0, shape_functions.derivatives_, element_nodes.displacements, 1.0);
 
-    for (int inode = 0; inode < Core::FE::num_nodes<Core::FE::CellType::wedge6>; ++inode)
+    for (int inode = 0; inode < Core::FE::num_nodes(Core::FE::CellType::wedge6); ++inode)
     {
       for (int dim = 0; dim < Core::FE::dim<Core::FE::CellType::wedge6>; ++dim)
       {
@@ -379,9 +379,9 @@ namespace Discret::Elements
           Internal::num_dim<Core::FE::CellType::hex8> *
               Internal::num_nodes<Core::FE::CellType::hex8>>& stiffness_matrix)
   {
-    for (int inod = 0; inod < Core::FE::num_nodes<Core::FE::CellType::hex8>; ++inod)
+    for (int inod = 0; inod < Core::FE::num_nodes(Core::FE::CellType::hex8); ++inod)
     {
-      for (int jnod = 0; jnod < Core::FE::num_nodes<Core::FE::CellType::hex8>; ++jnod)
+      for (int jnod = 0; jnod < Core::FE::num_nodes(Core::FE::CellType::hex8); ++jnod)
       {
         Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> G_ij;
         G_ij(0) = shape_functions.derivatives_(0, inod) *
@@ -461,9 +461,9 @@ namespace Discret::Elements
           Internal::num_dim<Core::FE::CellType::wedge6> *
               Internal::num_nodes<Core::FE::CellType::wedge6>>& stiffness_matrix)
   {
-    for (int inod = 0; inod < Core::FE::num_nodes<Core::FE::CellType::wedge6>; ++inod)
+    for (int inod = 0; inod < Core::FE::num_nodes(Core::FE::CellType::wedge6); ++inod)
     {
-      for (int jnod = 0; jnod < Core::FE::num_nodes<Core::FE::CellType::wedge6>; ++jnod)
+      for (int jnod = 0; jnod < Core::FE::num_nodes(Core::FE::CellType::wedge6); ++jnod)
       {
         Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> G_ij;
         G_ij(0) = shape_functions.derivatives_(0, inod) *
@@ -539,7 +539,7 @@ namespace Discret::Elements
 
       const Core::LinAlg::Matrix<3, 3>& current_jacobian = sampling_point_data[i].current_jacobian;
       // build local ans b-operator
-      for (int inode = 0; inode < Core::FE::num_nodes<celltype>; ++inode)
+      for (int inode = 0; inode < Core::FE::num_nodes(celltype); ++inode)
       {
         for (int dim = 0; dim < Core::FE::dim<celltype>; ++dim)
         {

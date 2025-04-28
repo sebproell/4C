@@ -31,7 +31,7 @@ namespace Discret
     {
      public:
       //! nen_: number of element nodes (T. Hughes: The Finite Element Method)
-      static constexpr unsigned int nen_ = Core::FE::num_nodes<distype>;
+      static constexpr unsigned int nen_ = Core::FE::num_nodes(distype);
 
       //! number of space dimensions
       static constexpr unsigned int nsd_ = probdim;

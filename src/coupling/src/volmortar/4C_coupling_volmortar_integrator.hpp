@@ -48,10 +48,10 @@ namespace Coupling::VolMortar
     virtual ~VolMortarIntegrator() = default;
 
     //! ns_: number of slave element nodes
-    static constexpr int ns_ = Core::FE::num_nodes<distype_s>;
+    static constexpr int ns_ = Core::FE::num_nodes(distype_s);
 
     //! nm_: number of master element nodes
-    static constexpr int nm_ = Core::FE::num_nodes<distype_m>;
+    static constexpr int nm_ = Core::FE::num_nodes(distype_m);
 
     //! number of space dimensions ("+1" due to considering only interface elements)
     static constexpr int ndim_ = Core::FE::dim<distype_s>;
@@ -159,7 +159,7 @@ namespace Coupling::VolMortar
     virtual ~VolMortarIntegratorEleBased() = default;
 
     //! ns_: number of slave element nodes
-    static constexpr int ns_ = Core::FE::num_nodes<distype_s>;
+    static constexpr int ns_ = Core::FE::num_nodes(distype_s);
 
     //! number of space dimensions ("+1" due to considering only interface elements)
     static constexpr int ndim_ = Core::FE::dim<distype_s>;

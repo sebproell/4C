@@ -2335,7 +2335,7 @@ void XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress(Core::Elements::El
 
   constexpr Core::FE::CellType celltype = Core::FE::CellType::hex8;
   constexpr int num_dim = Core::FE::dim<celltype>;
-  constexpr int num_dof = Core::FE::dim<celltype> * Core::FE::num_nodes<celltype>;
+  constexpr int num_dof = Core::FE::dim<celltype> * Core::FE::num_nodes(celltype);
 
 
   auto evaluate_cauchy_n_dir_and_derivatives = std::invoke(

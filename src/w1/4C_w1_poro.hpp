@@ -63,7 +63,7 @@ namespace Discret
       //!@}
 
       //! number of element nodes (
-      static constexpr int numnod_ = Core::FE::num_nodes<distype>;
+      static constexpr int numnod_ = Core::FE::num_nodes(distype);
 
       //! number of strains per node
       static constexpr int numstr_ = 3;

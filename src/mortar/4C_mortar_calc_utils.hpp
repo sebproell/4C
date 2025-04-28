@@ -41,7 +41,7 @@ namespace Mortar
       if (!xi) FOUR_C_THROW("ERROR: local_to_global called with xi=nullptr");
       if (!globcoord) FOUR_C_THROW("ERROR: local_to_global called with globcoord=nullptr");
 
-      static constexpr int n = Core::FE::num_nodes<distype>;
+      static constexpr int n = Core::FE::num_nodes(distype);
       static constexpr int ndim = Core::FE::dim<distype> + 1;
 
       const Core::Nodes::Node* const* mynodes = ele.points();
@@ -303,7 +303,7 @@ namespace Mortar
       if (!xi) FOUR_C_THROW("ERROR: local_to_global called with xi=nullptr");
       if (!globcoord) FOUR_C_THROW("ERROR: local_to_global called with globcoord=nullptr");
 
-      static constexpr int n = Core::FE::num_nodes<distype>;
+      static constexpr int n = Core::FE::num_nodes(distype);
       static constexpr int ndim = Core::FE::dim<distype> + 1;
 
       Core::Nodes::Node** mynodes = ele.nodes();
@@ -356,7 +356,7 @@ namespace Mortar
       if (!xi) FOUR_C_THROW("ERROR: local_to_global called with xi=nullptr");
       if (!globcoord) FOUR_C_THROW("ERROR: local_to_global called with globcoord=nullptr");
 
-      static constexpr int n = Core::FE::num_nodes<distype>;
+      static constexpr int n = Core::FE::num_nodes(distype);
       static constexpr int ndim = Core::FE::dim<distype>;
 
       if ((int)edisp.size() != n * globdim)
@@ -402,7 +402,7 @@ namespace Mortar
         double* xgl,                                    // global position (input)
         double* xi)                                     // local position  (output)
     {
-      static constexpr int numnod = Core::FE::num_nodes<distype>;
+      static constexpr int numnod = Core::FE::num_nodes(distype);
       static constexpr int ndim = Core::FE::dim<distype>;
 
       Core::LinAlg::Matrix<numnod, 1> funct(Core::LinAlg::Initialization::zero);
@@ -530,7 +530,7 @@ namespace Mortar
         double* xi,
         bool& converged)  // converged solution ?
     {
-      static constexpr int numnod = Core::FE::num_nodes<distype>;
+      static constexpr int numnod = Core::FE::num_nodes(distype);
       static constexpr int ndim = Core::FE::dim<distype>;
 
       // converged
@@ -656,7 +656,7 @@ namespace Mortar
         double* xi, bool& converged,
         double& residual)  // converged solution ?
     {
-      static constexpr int numnod = Core::FE::num_nodes<distype>;
+      static constexpr int numnod = Core::FE::num_nodes(distype);
       static constexpr int ndim = Core::FE::dim<distype>;
 
       // converged

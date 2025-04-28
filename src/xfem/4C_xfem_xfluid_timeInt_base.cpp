@@ -428,7 +428,7 @@ bool XFEM::XfluidTimeintBase::call_side_edge_intersection_t(Cut::SideHandle* sh,
 ) const
 {
   const int nsd = 3;
-  const int numNodesSurface = Core::FE::num_nodes<sidetype>;
+  const int numNodesSurface = Core::FE::num_nodes(sidetype);
 
   Core::LinAlg::Matrix<nsd, 2> xyze_lineElement(Core::LinAlg::Initialization::zero);
 
@@ -553,7 +553,7 @@ void XFEM::XfluidTimeintBase::x_to_xi_coords(
 ) const
 {
   const int nsd = 3;                                 // dimension
-  const int numnode = Core::FE::num_nodes<distype>;  // number of nodes of
+  const int numnode = Core::FE::num_nodes(distype);  // number of nodes of
                                                      // element
 
   Core::LinAlg::Matrix<nsd, numnode> xyze(xyz);
@@ -1124,7 +1124,7 @@ void XFEM::XfluidStd::get_gp_values_t(Core::Elements::Element* ele,  ///< pointe
   const int nsd = 3;  // dimension
 
   const int numdofpernode = nsd + 1;
-  const int numnode = Core::FE::num_nodes<distype>;  // number of element
+  const int numnode = Core::FE::num_nodes(distype);  // number of element
                                                      // nodes
 
   //-------------------------------------------------------
@@ -2133,7 +2133,7 @@ void XFEM::XfluidStd::get_normal_side_tn(
     Core::LinAlg::Matrix<2, 1>& xi_side  ///< local coordinates of projected point w.r.t side
 )
 {
-  const int side_nen_ = Core::FE::num_nodes<side_distype>;
+  const int side_nen_ = Core::FE::num_nodes(side_distype);
 
   // add displacements
   addeidisp<side_distype, numdof>(side_xyze, *boundarydis_, "idispn", lm);
@@ -2251,7 +2251,7 @@ void XFEM::XfluidStd::get_projxn_line(
     double& xi_line  ///< local coordinates of projected point w.r.t line
 )
 {
-  const int line_nen_ = Core::FE::num_nodes<line_distype>;
+  const int line_nen_ = Core::FE::num_nodes(line_distype);
 
   // add displacements
   addeidisp<line_distype, numdof>(line_xyze, *boundarydis_, "idispn", lm);
@@ -2289,7 +2289,7 @@ void XFEM::XfluidStd::addeidisp(
     const std::vector<int>& lm               ///< local map
 )
 {
-  const int nen = Core::FE::num_nodes<distype>;
+  const int nen = Core::FE::num_nodes(distype);
 
   Core::LinAlg::Matrix<3, nen> eidisp(Core::LinAlg::Initialization::zero);
 
@@ -2740,7 +2740,7 @@ bool XFEM::XfluidStd::project_on_side(
     double& dist                           ///< distance from point to its projection
 )
 {
-  const int side_nen_ = Core::FE::num_nodes<side_distype>;
+  const int side_nen_ = Core::FE::num_nodes(side_distype);
 
   // add displacements
   addeidisp<side_distype, numdof>(side_xyze, *boundarydis_, state, lm);
@@ -3009,7 +3009,7 @@ bool XFEM::XfluidStd::project_on_line(
 {
   bool on_line = false;
 
-  const int line_nen_ = Core::FE::num_nodes<line_distype>;
+  const int line_nen_ = Core::FE::num_nodes(line_distype);
 
   // add displacements
   addeidisp<line_distype, numdof>(line_xyze, *boundarydis_, state, lm);

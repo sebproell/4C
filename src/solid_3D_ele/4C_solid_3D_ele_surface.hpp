@@ -334,36 +334,36 @@ namespace Discret::Elements
     //! unlike the "full" stiffness matrix we don't use the geometric term here
     template <Core::FE::CellType dt_vol>
     void trace_estimate_vol_matrix(
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
         const std::vector<double>& parent_scalar,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, Core::FE::num_nodes<dt_vol> * 3>&
+        Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, Core::FE::num_nodes(dt_vol) * 3>&
             vol);
 
     //! the surface stiffness matrix
     template <Core::FE::CellType dt_vol, Core::FE::CellType dt_surf>
     void trace_estimate_surf_matrix(
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
         const std::vector<double>& parent_scalar,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * 3, Core::FE::num_nodes<dt_vol> * 3>&
+        Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, Core::FE::num_nodes(dt_vol) * 3>&
             surf);
 
     //! evaluate the kinematics
     template <Core::FE::CellType dt_vol>
-    void strains(const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
+    void strains(const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
         const Core::LinAlg::Matrix<3, 1>& xi, double& jac, Core::LinAlg::Matrix<3, 3>& defgrd,
         Core::LinAlg::Matrix<6, 1>& glstrain, Core::LinAlg::Matrix<3, 3>& rcg,
-        Core::LinAlg::Matrix<6, Core::FE::num_nodes<dt_vol> * 3>& bop,
-        Core::LinAlg::Matrix<3, Core::FE::num_nodes<dt_vol>>& N_XYZ);
+        Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3>& bop,
+        Core::LinAlg::Matrix<3, Core::FE::num_nodes(dt_vol)>& N_XYZ);
 
 
     //! setup projector for removing the rigid body modes from the generalized eigenvalue problem
     template <Core::FE::CellType dt_vol>
-    void subspace_projector(const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol> * Core::FE::dim<dt_vol>,
-            Core::FE::num_nodes<dt_vol> * Core::FE::dim<dt_vol> -
+    void subspace_projector(const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
+        Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * Core::FE::dim<dt_vol>,
+            Core::FE::num_nodes(dt_vol) * Core::FE::dim<dt_vol> -
                 Core::FE::dim<dt_vol>*(Core::FE::dim<dt_vol> + 1) / 2>& proj);
 
 
@@ -375,22 +375,22 @@ namespace Discret::Elements
     //! unlike the "full" stiffness matrix we don't use the geometric term here
     template <Core::FE::CellType dt_vol>
     void trace_estimate_vol_matrix_tsi(
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol>>& vol);
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
+        Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), Core::FE::num_nodes(dt_vol)>& vol);
 
     //! the surface stiffness matrix
     template <Core::FE::CellType dt_vol, Core::FE::CellType dt_surf>
     void trace_estimate_surf_matrix_tsi(
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xrefe,
-        const Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, 3>& xcurr,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol>>& surf);
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
+        const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
+        Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), Core::FE::num_nodes(dt_vol)>& surf);
 
 
     //! setup projector for removing the rigid body modes from the generalized eigenvalue problem
     template <Core::FE::CellType dt_vol>
     void subspace_projector_scalar(
-        Core::LinAlg::Matrix<Core::FE::num_nodes<dt_vol>, Core::FE::num_nodes<dt_vol> - 1>& proj);
+        Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), Core::FE::num_nodes(dt_vol) - 1>& proj);
     //@}
 
   };  // class SolidSurface : public Core::Elements::Element

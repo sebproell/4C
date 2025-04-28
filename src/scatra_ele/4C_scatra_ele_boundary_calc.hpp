@@ -71,7 +71,7 @@ namespace Discret
     {
      public:
       //! number of element nodes (nomenclature: T. Hughes, The finite element method)
-      static constexpr int nen_ = Core::FE::num_nodes<distype>;
+      static constexpr int nen_ = Core::FE::num_nodes(distype);
 
       //! number of boundary(!) space dimensions
       static constexpr int nsd_ = probdim;
@@ -87,7 +87,7 @@ namespace Discret
         double elediam = 0.0;
 
         // number of nodes of this element
-        const size_t numnode = Core::FE::num_nodes<pdistype>;
+        const size_t numnode = Core::FE::num_nodes(pdistype);
 
         // check all possible connections between nodes of an element
         // node 1 to 2
@@ -201,12 +201,12 @@ namespace Discret
       template <Core::FE::CellType distype_master>
       static void evaluate_s2_i_coupling_at_integration_point(
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& eslavephinp,
-          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>>&
+          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>>&
               emasterphinp,
           double pseudo_contact_fac, const Core::LinAlg::Matrix<nen_, 1>& funct_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& funct_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& funct_master,
           const Core::LinAlg::Matrix<nen_, 1>& test_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& test_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& test_master,
           int numscal,
           const Discret::Elements::ScaTraEleParameterBoundary* const scatra_parameter_boundary,
           double timefacfac, double timefacrhsfac, Core::LinAlg::SerialDenseMatrix& k_ss,

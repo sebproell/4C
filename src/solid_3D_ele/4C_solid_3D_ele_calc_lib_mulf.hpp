@@ -40,11 +40,11 @@ namespace Discret::Elements
   Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::dim<celltype>>
   evaluate_mulf_deformation_gradient_update(
       const Discret::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
-      const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes<celltype>>&
+      const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes(celltype)>&
           nodal_displacements,
       const Discret::Elements::MulfHistoryData<celltype>& mulf_history_data)
   {
-    Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes<celltype>> N_xyz;
+    Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes(celltype)> N_xyz;
 
     N_xyz.multiply(mulf_history_data.inverse_jacobian, shape_functions.derivatives_);
 
@@ -63,7 +63,7 @@ namespace Discret::Elements
   Discret::Elements::SpatialMaterialMapping<celltype> evaluate_mulf_spatial_material_mapping(
       const Discret::Elements::JacobianMapping<celltype>& jacobian_mapping,
       const Discret::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
-      const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes<celltype>>&
+      const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes(celltype)>&
           nodal_displacements,
       const Discret::Elements::MulfHistoryData<celltype>& mulf_history_data)
   {

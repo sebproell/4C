@@ -316,7 +316,7 @@ namespace Coupling::VolMortar
     double jacobian(const double* xi, const Core::Elements::Element& ele)
     {
       //! nn_: number of master element nodes
-      static constexpr int nn = Core::FE::num_nodes<distype>;
+      static constexpr int nn = Core::FE::num_nodes(distype);
 
       //! number of space dimensions ("+1" due to considering only interface elements)
       static constexpr int ndim = Core::FE::dim<distype>;
@@ -456,7 +456,7 @@ namespace Coupling::VolMortar
     )
     {
       //! nn_: number of master element nodes
-      static constexpr int nn = Core::FE::num_nodes<distype>;
+      static constexpr int nn = Core::FE::num_nodes(distype);
 
       //! number of space dimensions ("+1" due to considering only interface elements)
       static constexpr int ndim = Core::FE::dim<distype>;
@@ -1062,7 +1062,7 @@ namespace Coupling::VolMortar
           static constexpr int ndim = Core::FE::dim<distype>;
 
           //! number of element nodes
-          static constexpr int nnodes = Core::FE::num_nodes<distype>;
+          static constexpr int nnodes = Core::FE::num_nodes(distype);
 
           // get gauss rule
           const Core::FE::IntPointsAndWeights<ndim> intpoints(DisTypeToOptGaussRule<distype>::rule);
@@ -1138,7 +1138,7 @@ namespace Coupling::VolMortar
           static constexpr int ndim = Core::FE::dim<distype>;
 
           //! number of element nodes
-          static constexpr int nnodes = Core::FE::num_nodes<distype>;
+          static constexpr int nnodes = Core::FE::num_nodes(distype);
 
           // get gauss rule
           const Core::FE::IntPointsAndWeights<ndim> intpoints(DisTypeToOptGaussRule<distype>::rule);
@@ -1234,7 +1234,7 @@ namespace Coupling::VolMortar
           static constexpr int ndim = Core::FE::dim<distype>;
 
           //! number of element nodes
-          static constexpr int nnodes = Core::FE::num_nodes<distype>;
+          static constexpr int nnodes = Core::FE::num_nodes(distype);
 
           // get gauss rule
           const Core::FE::IntPointsAndWeights<ndim> intpoints(DisTypeToOptGaussRule<distype>::rule);
@@ -1308,7 +1308,7 @@ namespace Coupling::VolMortar
           static constexpr int ndim = Core::FE::dim<distype>;
 
           //! number of element nodes
-          static constexpr int nnodes = Core::FE::num_nodes<distype>;
+          static constexpr int nnodes = Core::FE::num_nodes(distype);
 
           // get gauss rule
           const Core::FE::IntPointsAndWeights<ndim> intpoints(DisTypeToOptGaussRule<distype>::rule);
@@ -1394,7 +1394,7 @@ namespace Coupling::VolMortar
           static constexpr int ndim = Core::FE::dim<distype>;
 
           //! number of element nodes
-          static constexpr int nnodes = Core::FE::num_nodes<distype>;
+          static constexpr int nnodes = Core::FE::num_nodes(distype);
 
           // get gauss rule
           const Core::FE::IntPointsAndWeights<ndim> intpoints(DisTypeToOptGaussRule<distype>::rule);
@@ -1483,7 +1483,7 @@ namespace Coupling::VolMortar
           static constexpr int ndim = Core::FE::dim<distype>;
 
           //! number of element nodes
-          static constexpr int nnodes = Core::FE::num_nodes<distype>;
+          static constexpr int nnodes = Core::FE::num_nodes(distype);
 
           // get gauss rule
           const Core::FE::IntPointsAndWeights<ndim> intpoints(DisTypeToOptGaussRule<distype>::rule);
@@ -1770,7 +1770,7 @@ namespace Coupling::VolMortar
       if (Core::FE::is_nurbs<distype>)
         FOUR_C_THROW("ERROR: Lagr. local_to_global called for NURBS!");
 
-      static constexpr int n = Core::FE::num_nodes<distype>;
+      static constexpr int n = Core::FE::num_nodes(distype);
       static constexpr int ndim = Core::FE::dim<distype>;
 
       const Core::Nodes::Node* const* mynodes = ele.nodes();

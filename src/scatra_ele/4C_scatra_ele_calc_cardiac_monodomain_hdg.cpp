@@ -112,7 +112,7 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::pre
 
     shapes->evaluate(*ele);
 
-    std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>> shapefcns(shapes->nqpoints_);
+    std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>> shapefcns(shapes->nqpoints_);
 
     for (std::size_t q = 0; q < shapes->nqpoints_; ++q)
     {
@@ -197,7 +197,7 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::pre
         ScaTra::DisTypeToMatGaussRule<distype>::get_gauss_rule(2 * hdgele->degree()));
     const std::size_t numgp = intpoints.ip().nquad;
 
-    std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>> shapefcns(numgp);
+    std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>> shapefcns(numgp);
 
     Core::LinAlg::Matrix<probdim, 1> gp_coord(Core::LinAlg::Initialization::zero);
     for (std::size_t q = 0; q < numgp; ++q)

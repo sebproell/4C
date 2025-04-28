@@ -95,8 +95,8 @@ namespace Cut
     template <Core::FE::CellType celldistype>
     void assign_offset(int idx, double offset)
     {
-      Core::LinAlg::Matrix<3, Core::FE::num_nodes<celldistype>> xyz_mat(xyz_, true);
-      for (unsigned int n = 0; n < Core::FE::num_nodes<celldistype>; ++n) xyz_mat(idx, n) += offset;
+      Core::LinAlg::Matrix<3, Core::FE::num_nodes(celldistype)> xyz_mat(xyz_, true);
+      for (unsigned int n = 0; n < Core::FE::num_nodes(celldistype); ++n) xyz_mat(idx, n) += offset;
     }
 
     /*! \brief Get the coordinates of the corner points of boundarycell
@@ -166,7 +166,7 @@ namespace Cut
     void transform(const Core::LinAlg::Matrix<2, 1>& eta, Core::LinAlg::Matrix<3, 1>& x_gp_lin,
         Core::LinAlg::Matrix<3, 1>& normal, double& drs, bool referencepos = false)
     {
-      const int numnodes = Core::FE::num_nodes<celldistype>;
+      const int numnodes = Core::FE::num_nodes(celldistype);
       Core::LinAlg::Matrix<3, numnodes> xyze(xyz_, true);
       if (referencepos) xyze = Core::LinAlg::Matrix<3, numnodes>(xyz_ref_, true);
 
@@ -243,7 +243,7 @@ namespace Cut
     template <Core::FE::CellType distype>
     double my_area()
     {
-      const int numnodes = Core::FE::num_nodes<distype>;
+      const int numnodes = Core::FE::num_nodes(distype);
       Core::LinAlg::Matrix<3, numnodes> xyze(this->xyz_, true);
       Core::LinAlg::Matrix<numnodes, 1> funct;
       Core::LinAlg::Matrix<2, numnodes> deriv;
@@ -272,7 +272,7 @@ namespace Cut
     template <Core::FE::CellType distype>
     void my_element_center(Core::LinAlg::Matrix<3, 1>& center, Core::LinAlg::Matrix<3, 1>& midpoint)
     {
-      const int numnodes = Core::FE::num_nodes<distype>;
+      const int numnodes = Core::FE::num_nodes(distype);
       Core::LinAlg::Matrix<3, numnodes> xyze(this->xyz_, true);
       Core::LinAlg::Matrix<numnodes, 1> funct;
       Core::FE::shape_function<distype>(center, funct);

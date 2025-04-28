@@ -325,7 +325,7 @@ bool XFEM::MeshProjector::check_position_and_project(const Core::Elements::Eleme
     const Core::LinAlg::Matrix<3, 1>& node_xyz, Core::LinAlg::Matrix<8, 1>& interpolatedvec)
 {
   // number of element's nodes
-  const unsigned int src_numnodes = Core::FE::num_nodes<distype>;
+  const unsigned int src_numnodes = Core::FE::num_nodes(distype);
   // nodal coordinates
   Core::LinAlg::Matrix<3, src_numnodes> src_xyze(Core::LinAlg::Initialization::zero);
 

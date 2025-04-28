@@ -1243,7 +1243,7 @@ bool ScaTra::LevelSetAlgorithm::project_node_on_patch(const Core::LinAlg::Matrix
   // number space dimensions for 3d combustion problems
   const size_t nsd = 3;
   // here, a triangular boundary integration cell is assumed (numvertices = 3)
-  const size_t numvertices = Core::FE::num_nodes<distype>;
+  const size_t numvertices = Core::FE::num_nodes(distype);
 
   // get coordinates of vertices of flame front patch
   // remark: here we only get a view (bool true) on the SerialDenseMatrix returned by

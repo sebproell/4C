@@ -199,7 +199,7 @@ std::shared_ptr<Core::FE::GaussPoints> project_boundary_cell_gauss_rule_on_inter
 {
   // Get the coordinates of the vertices of the boundary cell
   const Core::LinAlg::SerialDenseMatrix vertices_boundary_cell = boundary_cell->coordinates();
-  const unsigned num_vertices = Core::FE::num_nodes<boundarycell_distype>;
+  const unsigned num_vertices = Core::FE::num_nodes(boundarycell_distype);
   Core::LinAlg::Matrix<2, num_vertices> projected_vertices_xi;
 
   for (unsigned i_vertex = 0; i_vertex < num_vertices; i_vertex++)
@@ -523,7 +523,7 @@ template <Core::FE::CellType celldistype>
 double calculate_determinant_interface_element(
     const Core::LinAlg::Matrix<2, 1>& eta, const Core::Elements::Element& interface_element)
 {
-  const int numnodes = Core::FE::num_nodes<celldistype>;
+  const int numnodes = Core::FE::num_nodes(celldistype);
   Core::LinAlg::Matrix<3, numnodes> xyze;
 
   // Get the position of the nodes of the interface element

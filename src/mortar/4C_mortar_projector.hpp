@@ -86,7 +86,7 @@ namespace Mortar
         Core::Utils::SingletonAction action = Core::Utils::SingletonAction::create);
 
     //! n_: number of element nodes
-    static constexpr int n_ = Core::FE::num_nodes<distype>;
+    static constexpr int n_ = Core::FE::num_nodes(distype);
 
     //! number of space dimensions ("+1" due to considering only interface elements)
     static constexpr int ndim_ = Core::FE::dim<distype> + 1;
@@ -295,10 +295,10 @@ namespace Mortar
         Core::Utils::SingletonAction action = Core::Utils::SingletonAction::create);
 
     //! ns_: number of slave element nodes
-    static constexpr int ns_ = Core::FE::num_nodes<distype_s>;
+    static constexpr int ns_ = Core::FE::num_nodes(distype_s);
 
     //! nm_: number of master element nodes
-    static constexpr int nm_ = Core::FE::num_nodes<distype_m>;
+    static constexpr int nm_ = Core::FE::num_nodes(distype_m);
 
     //! number of space dimensions ("+1" due to considering only interface elements)
     static constexpr int ndim_ = Core::FE::dim<distype_s> + 1;

@@ -28,7 +28,7 @@ namespace Discret::Elements
   struct DisplacementBasedLinearKinematicsLinearizationContainer
   {
     Core::LinAlg::Matrix<Internal::num_str<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
         linear_b_operator_{};
   };
 
@@ -67,7 +67,7 @@ namespace Discret::Elements
           Core::LinAlg::identity_matrix<Core::FE::dim<celltype>>(), gl_strain, linearization);
     }
 
-    static inline Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+    static inline Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
     evaluate_d_deformation_gradient_d_displacements(const Core::Elements::Element& ele,
         const ElementNodes<celltype>& element_nodes,
         const Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>& xi,
@@ -77,7 +77,7 @@ namespace Discret::Elements
             deformation_gradient)
     {
       // linearization is zero for small displacements
-      return Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>(
+      return Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>(
           Core::LinAlg::Initialization::zero);
     }
 
@@ -95,7 +95,7 @@ namespace Discret::Elements
     }
 
     static inline Core::LinAlg::Matrix<9,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
     evaluate_d_deformation_gradient_d_displacements_d_xi(const Core::Elements::Element& ele,
         const ElementNodes<celltype>& element_nodes,
         const Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>& xi,
@@ -106,12 +106,12 @@ namespace Discret::Elements
     {
       // linearization is zero for small displacements
       return Core::LinAlg::Matrix<9,
-          Core::FE::num_nodes<celltype> * Core::FE::dim<celltype> * Core::FE::dim<celltype>>(
+          Core::FE::num_nodes(celltype) * Core::FE::dim<celltype> * Core::FE::dim<celltype>>(
           Core::LinAlg::Initialization::zero);
     }
 
     static Core::LinAlg::Matrix<Internal::num_str<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
     get_linear_b_operator(
         const DisplacementBasedLinearKinematicsLinearizationContainer<celltype>& linearization)
     {
@@ -122,7 +122,7 @@ namespace Discret::Elements
     static void add_internal_force_vector(
         const DisplacementBasedLinearKinematicsLinearizationContainer<celltype>& linearization,
         const Stress<celltype>& stress, const double integration_factor,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1>&
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1>&
             force_vector)
     {
       Discret::Elements::add_internal_force_vector(
@@ -134,8 +134,8 @@ namespace Discret::Elements
         const DisplacementBasedLinearKinematicsLinearizationContainer<celltype>& linearization,
         const JacobianMapping<celltype>& jacobian_mapping, const Stress<celltype>& stress,
         const double integration_factor,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-            Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>& stiffness_matrix)
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+            Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>& stiffness_matrix)
     {
       Discret::Elements::add_elastic_stiffness_matrix(
           linearization.linear_b_operator_, stress, integration_factor, stiffness_matrix);
