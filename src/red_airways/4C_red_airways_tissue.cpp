@@ -14,6 +14,7 @@
 #include "4C_io.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_red_airways_implicitintegration.hpp"
+#include "4C_red_airways_input.hpp"
 
 #include <stdio.h>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -512,8 +513,7 @@ void Airway::RedAirwayTissue::setup_red_airways()
 
   // Solver parameters
   // Solver type
-  airwaystimeparams.set(
-      "solver type", Teuchos::getIntegralValue<RedAirwaysDyntype>(rawdyn, "SOLVERTYPE"));
+  airwaystimeparams.set("solver type", rawdyn.get<Airway::RedAirwaysSolvertype>("SOLVERTYPE"));
   // Tolerance
   airwaystimeparams.set("tolerance", rawdyn.get<double>("TOLERANCE"));
   // Maximum number of iterations

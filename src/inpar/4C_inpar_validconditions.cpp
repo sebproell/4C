@@ -32,6 +32,7 @@
 #include "4C_inpar_xfem.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
+#include "4C_red_airways_input.hpp"
 #include "4C_thermo_input.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -834,7 +835,7 @@ std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
   Inpar::XFEM::set_valid_conditions(condlist);
   Inpar::BioFilm::set_valid_conditions(condlist);
   Inpar::ArteryNetwork::set_valid_conditions(condlist);
-  Inpar::ReducedLung::set_valid_conditions(condlist);
+  Airway::set_valid_conditions(condlist);
   Inpar::Cardiovascular0D::set_valid_conditions(condlist);
   Inpar::Solid::set_valid_conditions(condlist);
   Thermo::set_valid_conditions(condlist);

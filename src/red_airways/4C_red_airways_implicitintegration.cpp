@@ -21,6 +21,7 @@
 #include "4C_rebalance_binning_based.hpp"
 #include "4C_rebalance_print.hpp"
 #include "4C_red_airways_evaluation_data.hpp"
+#include "4C_red_airways_input.hpp"
 #include "4C_red_airways_resulttest.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -636,13 +637,15 @@ void Airway::RedAirwayImplicitTimeInt::time_step(
   }
 
   // Get the solver type parameter: linear or nonlinear solver and solve current timestep
-  if (params_.get<RedAirwaysDyntype>("solver type") == RedAirwaysDyntype::nonlinear)
+  if (Teuchos::getIntegralValue<Airway::RedAirwaysSolvertype>(params_, "solver type") ==
+      Airway::RedAirwaysSolvertype::Nonlinear)
   {
     // Nonlinear solve of current timestep
     non_lin_solve(CouplingTo3DParams);
     if (!myrank_) std::cout << std::endl;
   }
-  else if (params_.get<RedAirwaysDyntype>("solver type") == RedAirwaysDyntype::linear)
+  else if (Teuchos::getIntegralValue<Airway::RedAirwaysSolvertype>(params_, "solver type") ==
+           Airway::RedAirwaysSolvertype::Linear)
   {
     // Linear solve of current timestep
     solve(CouplingTo3DParams);
@@ -650,8 +653,7 @@ void Airway::RedAirwayImplicitTimeInt::time_step(
   }
   else
   {
-    FOUR_C_THROW("RedAirwaysDynType {} is not a defined solver",
-        params_.get<RedAirwaysDyntype>("solver type"));
+    FOUR_C_THROW("Not supported solver type!");
   }
 
   // Update solution: current solution becomes old solution of next timestep
@@ -690,20 +692,21 @@ void Airway::RedAirwayImplicitTimeInt::integrate_step(
   }
 
   // Get the solver type parameter: linear or nonlinear solver and solve current timestep
-  if (params_.get<RedAirwaysDyntype>("solver type") == RedAirwaysDyntype::nonlinear)
+  if (Teuchos::getIntegralValue<Airway::RedAirwaysSolvertype>(params_, "solver type") ==
+      Airway::RedAirwaysSolvertype::Nonlinear)
   {
     non_lin_solve(CouplingTo3DParams);
     if (!myrank_) std::cout << std::endl;
   }
-  else if (params_.get<RedAirwaysDyntype>("solver type") == RedAirwaysDyntype::linear)
+  else if (Teuchos::getIntegralValue<Airway::RedAirwaysSolvertype>(params_, "solver type") ==
+           Airway::RedAirwaysSolvertype::Linear)
   {
     solve(CouplingTo3DParams);
     if (!myrank_) std::cout << std::endl << std::endl;
   }
   else
   {
-    FOUR_C_THROW("RedAirwaysDynType {} is not a defined solver",
-        params_.get<RedAirwaysDyntype>("solver type"));
+    FOUR_C_THROW("Not supported solver type!");
   }
 
 }  // RedAirwayImplicitTimeInt::IntegrateStep
@@ -1051,8 +1054,7 @@ void Airway::RedAirwayImplicitTimeInt::solve(
     eleparams.set("action", "calc_flow_rates");
 
     // Set solution type
-    eleparams.set(
-        "solver type", Teuchos::getIntegralValue<RedAirwaysDyntype>(params_, "solver type"));
+    eleparams.set("solver type", params_.get<Airway::RedAirwaysSolvertype>("solver type"));
 
     // Set vector values needed by elements
     discret_->clear_state();

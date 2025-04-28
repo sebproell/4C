@@ -13,11 +13,11 @@ PROBLEMTYPE                      ReducedDimensionalAirWays
 RESTART                         0
 -----------------------------------------REDUCED DIMENSIONAL AIRWAYS DYNAMIC
 LINEAR_SOLVER                   1
-DYNAMICTYPE                      OneStepTheta
+DYNAMICTYPE                     OneStepTheta
 NUMSTEP                         1000
 TIMESTEP                        1.0e-3
-RESTARTEVERY                     1000
-RESULTSEVERY                           1000
+RESTARTEVERY                    1000
+RESULTSEVERY                    1000
 SOLVERTYPE                      Nonlinear
 MAXITERATIONS                   40
 TOLERANCE                       1E-7
