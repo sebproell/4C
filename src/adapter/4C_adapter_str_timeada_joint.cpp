@@ -29,7 +29,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 Adapter::StructureTimeAdaJoint::StructureTimeAdaJoint(std::shared_ptr<Structure> structure)
-    : StructureTimeAda(structure), sta_(nullptr), sta_wrapper_(nullptr)
+    : StructureTimeAda(structure), sta_(nullptr)
 {
   if (stm_->is_setup()) setup_auxiliary();
 }
@@ -91,9 +91,6 @@ void Adapter::StructureTimeAdaJoint::setup_auxiliary()
   // setup auxiliary integrator
   sta_->init(dataio, datasdyn, dataglobalstate);
   sta_->setup();
-
-  // setup wrapper
-  sta_wrapper_ = std::make_shared<Adapter::StructureTimeLoop>(sta_);
 
   const int restart = Global::Problem::instance()->restart();
   if (restart)

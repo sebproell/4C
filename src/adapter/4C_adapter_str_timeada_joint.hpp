@@ -69,9 +69,6 @@ namespace Adapter
     //! the auxiliary integrator
     std::shared_ptr<Solid::TimeInt::Base> sta_;
 
-    //! wrapper of the auxiliary integrator
-    std::shared_ptr<Structure> sta_wrapper_;
-
     /*! \brief Make one step with auxiliary scheme
      *
      *  Afterwards, the auxiliary solutions are stored in the local error
