@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_fem_condition_definition.hpp"
 #include "4C_io_input_spec.hpp"
 #include "4C_legacy_enum_definitions_materials.hpp"
 #include "4C_utils_function_manager.hpp"
@@ -61,6 +62,14 @@ struct ModuleCallbacks
    * materials.
    */
   std::function<std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec>()> materials;
+
+
+  /**
+   * A callback to return conditions known by the module.
+   *
+   * @return A vector of all valid condition definitions known by the module.
+   */
+  std::function<std::vector<Core::Conditions::ConditionDefinition>()> conditions;
 };
 
 FOUR_C_NAMESPACE_CLOSE

@@ -38,6 +38,7 @@
 #include "4C_fluid_functions.hpp"
 #include "4C_fluid_xfluid_functions.hpp"
 #include "4C_fluid_xfluid_functions_combust.hpp"
+#include "4C_global_legacy_module_validconditions.hpp"
 #include "4C_global_legacy_module_validmaterials.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_io_input_file_utils.hpp"
@@ -505,6 +506,7 @@ ModuleCallbacks global_legacy_module_callbacks()
   callbacks.AttachFunctionDefinitions = attach_function_definitions;
   callbacks.valid_result_description_lines = valid_result_lines;
   callbacks.materials = Global::valid_materials;
+  callbacks.conditions = Global::valid_conditions;
 
   return callbacks;
 }

@@ -15,8 +15,8 @@
 #include "4C_fem_general_element_definition.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
+#include "4C_global_legacy_module_validconditions.hpp"
 #include "4C_global_legacy_module_validmaterials.hpp"
-#include "4C_inpar_validconditions.hpp"
 #include "4C_inpar_validparameters.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
@@ -120,7 +120,7 @@ namespace RTD
       FOUR_C_THROW("failed to open file: {}", conditiondocumentationfilename);
     conditiondocumentationfile << "..\n   Created using 4C version (git SHA1):\n";
     conditiondocumentationfile << "   " << VersionControl::git_hash << "\n\n";
-    write_conditions_reference(conditiondocumentationfile, Input::valid_conditions());
+    write_conditions_reference(conditiondocumentationfile, Global::valid_conditions());
 
     write_contact_law_reference(
         conditiondocumentationfile, CONTACT::CONSTITUTIVELAW::valid_contact_constitutive_laws());

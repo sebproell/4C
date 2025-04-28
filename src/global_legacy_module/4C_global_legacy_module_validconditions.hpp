@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_INPAR_VALIDCONDITIONS_HPP
-#define FOUR_C_INPAR_VALIDCONDITIONS_HPP
+#ifndef FOUR_C_GLOBAL_LEGACY_MODULE_VALIDCONDITIONS_HPP
+#define FOUR_C_GLOBAL_LEGACY_MODULE_VALIDCONDITIONS_HPP
 
 #include "4C_config.hpp"
 
@@ -25,16 +25,14 @@ namespace Core::Conditions
 }
 
 
-namespace Input
+namespace Global
 {
   /// construct list with all conditions and documentation
   std::vector<Core::Conditions::ConditionDefinition> valid_conditions();
-
   /// print all known condition sections without contents
   void print_empty_condition_definitions(
       std::ostream& stream, std::vector<Core::Conditions::ConditionDefinition>& condlist);
-
-}  // namespace Input
+}  // namespace Global
 
 FOUR_C_NAMESPACE_CLOSE
 
