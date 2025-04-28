@@ -44,7 +44,7 @@ void Discret::Elements::evaluate_neumann(Core::Elements::Element& element,
     const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
     Core::LinAlg::SerialDenseVector& element_force_vector, double total_time)
 {
-  constexpr auto numnod = Core::FE::num_nodes<celltype>;
+  constexpr auto numnod = Core::FE::num_nodes(celltype);
   Core::FE::GaussIntegration gauss_integration = Core::FE::create_gauss_integration<celltype>(
       Discret::Elements::get_gauss_rule_stiffness_matrix<celltype>());
 

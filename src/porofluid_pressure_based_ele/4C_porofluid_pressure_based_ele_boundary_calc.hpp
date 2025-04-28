@@ -42,7 +42,7 @@ namespace Discret
 
 
       //! number of element nodes (nomenclature: T. Hughes, The finite element method)
-      static constexpr int nen_ = Core::FE::num_nodes<distype>;
+      static constexpr int nen_ = Core::FE::num_nodes(distype);
 
       //! number of boundary(!) space dimensions
       static constexpr int nsd_ = Core::FE::dim<distype>;

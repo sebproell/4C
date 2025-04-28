@@ -33,7 +33,7 @@ namespace Core::Nodes
    */
   template <Core::FE::CellType distype>
   void project_fibers_to_gauss_points(const Core::Nodes::Node* const* nodes,
-      const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>>& shapefcts,
+      const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>>& shapefcts,
       NodalFiberHolder& gpFiberHolder);
 
   /*!
@@ -49,8 +49,8 @@ namespace Core::Nodes
    */
   template <Core::FE::CellType distype, std::size_t dim>
   void project_quantity_with_shape_functions(
-      const std::array<std::array<double, dim>, Core::FE::num_nodes<distype>> quantity,
-      const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>>& shapefcts,
+      const std::array<std::array<double, dim>, Core::FE::num_nodes(distype)> quantity,
+      const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>>& shapefcts,
       std::vector<Core::LinAlg::Matrix<dim, 1>>& quantityProjected);
 
   /*!
@@ -64,8 +64,8 @@ namespace Core::Nodes
    */
   template <Core::FE::CellType distype>
   void project_quantity_with_shape_functions(
-      const std::array<double, Core::FE::num_nodes<distype>> quantity,
-      const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>>& shapefcts,
+      const std::array<double, Core::FE::num_nodes(distype)> quantity,
+      const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>>& shapefcts,
       std::vector<double>& quantityProjected);
 
   /*!

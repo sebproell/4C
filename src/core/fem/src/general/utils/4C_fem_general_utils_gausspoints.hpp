@@ -281,7 +281,7 @@ namespace Core::FE
     /// Create Gauss integration rule of given degree
     template <Core::FE::CellType distype>
     static std::shared_ptr<GaussPoints> create_projected(
-        const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& xie,
+        const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& xie,
         int degree)
     {
       std::shared_ptr<GaussPoints> gp = create_gauss_points(distype, degree);
@@ -299,11 +299,11 @@ namespace Core::FE
     /// coordinate system
     template <Core::FE::CellType distype>
     static void project_gauss_points_local_to_global(
-        const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& xie,
+        const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& xie,
         GaussIntegration& intpoints, CollectedGaussPoints& cgp)
     {
       const int nsd = Core::FE::dim<distype>;
-      const int nen = Core::FE::num_nodes<distype>;
+      const int nen = Core::FE::num_nodes(distype);
 
       Core::LinAlg::Matrix<nen, 1> funct;
       Core::LinAlg::Matrix<nsd, nen> deriv;
@@ -337,11 +337,11 @@ namespace Core::FE
     /// coordinate system
     template <Core::FE::CellType distype>
     static std::shared_ptr<GaussPoints> project_gauss_points_global_to_local(
-        const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& xie,
+        const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& xie,
         GaussIntegration& intpoints, const bool& throw_error = true)
     {
       const int nsd = Core::FE::dim<distype>;
-      const int nen = Core::FE::num_nodes<distype>;
+      const int nen = Core::FE::num_nodes(distype);
 
       Core::LinAlg::Matrix<nen, 1> funct;
       Core::LinAlg::Matrix<nsd, nen> deriv;

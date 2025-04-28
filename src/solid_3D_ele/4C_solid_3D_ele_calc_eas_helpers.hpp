@@ -77,7 +77,7 @@ namespace Discret::Elements
   };
 
   template <Core::FE::CellType celltype>
-  inline static constexpr int num_nodes = Core::FE::num_nodes<celltype>;
+  inline static constexpr int num_nodes = Core::FE::num_nodes(celltype);
 
   template <Core::FE::CellType celltype>
   inline static constexpr int num_dim = Core::FE::dim<celltype>;
@@ -99,7 +99,7 @@ namespace Discret::Elements
     Core::LinAlg::Matrix<num_eas, num_eas> invKaa{Core::LinAlg::Initialization::zero};
 
     /// EAS matrix K_{d alpha}
-    Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, num_eas> Kda{
+    Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, num_eas> Kda{
         Core::LinAlg::Initialization::zero};
 
     /// EAS enhancement vector s
@@ -568,7 +568,7 @@ namespace Discret::Elements
   struct EASKinematics
   {
     static constexpr int num_str = Core::FE::dim<celltype> * (Core::FE::dim<celltype> + 1) / 2;
-    static constexpr int num_dof_per_ele = Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>;
+    static constexpr int num_dof_per_ele = Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>;
     Core::LinAlg::Matrix<num_str, num_dof_per_ele> b_op{};
     Core::LinAlg::Matrix<num_str, 1> enhanced_gl{};
     Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::dim<celltype>>

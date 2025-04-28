@@ -232,7 +232,7 @@ namespace Core::FE
   template <typename CelltypeSequence = all_physical_celltypes, typename Function,
       typename UnsupportedCellTypeCallable =
           Internal::ThrowUnsupportedCellTypeError<CelltypeSequence>>
-  auto cell_type_switch(CellType celltype, Function fct,
+  constexpr auto cell_type_switch(CellType celltype, Function fct,
       UnsupportedCellTypeCallable unsupported_celltype_callable = {})
   {
     switch (celltype)
@@ -380,12 +380,13 @@ namespace Core::FE
   static constexpr int dim = Internal::CellTypeInformation<celltype>::dim;
 
   /*!
-   * @brief Compile time mapping from celltype to number of nodes of the element
-   *
-   * @tparam celltype
+   * @brief Compile-time mapping from @p cell_type to number of nodes of the element.
    */
-  template <CellType celltype>
-  static constexpr int num_nodes = Internal::CellTypeInformation<celltype>::num_nodes;
+  constexpr int num_nodes(CellType cell_type)
+  {
+    return cell_type_switch<all_physical_celltypes>(cell_type,
+        [&](auto cell_type_t) { return Internal::CellTypeInformation<cell_type_t()>::num_nodes; });
+  }
 
   /*!
    * @brief Compile time mapping from celltype to number of element faces

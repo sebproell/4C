@@ -63,7 +63,7 @@ namespace Core::Geo
   void fill_initial_position_array(const Core::Elements::Element* const ele, M& xyze)
   {
     FOUR_C_ASSERT(distype == ele->shape(), "mismatch in distype");
-    const int numnode = Core::FE::num_nodes<distype>;
+    const int numnode = Core::FE::num_nodes(distype);
 
     const Core::Nodes::Node* const* nodes = ele->nodes();
     FOUR_C_ASSERT(nodes != nullptr,
@@ -94,7 +94,7 @@ namespace Core::Geo
   void fill_initial_position_array(const Core::Elements::Element* const ele, M& xyze)
   {
     FOUR_C_ASSERT(distype == ele->shape(), "mismatch in distype");
-    const int numnode = Core::FE::num_nodes<distype>;
+    const int numnode = Core::FE::num_nodes(distype);
 
     const Core::Nodes::Node* const* nodes = ele->nodes();
     FOUR_C_ASSERT(nodes != nullptr,

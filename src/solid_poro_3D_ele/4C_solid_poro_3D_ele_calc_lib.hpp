@@ -298,7 +298,7 @@ namespace Discret::Elements
    */
   template <Core::FE::CellType celltype>
   inline double compute_volume_change(
-      const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes<celltype>>&
+      const Core::LinAlg::Matrix<Core::FE::dim<celltype>, Core::FE::num_nodes(celltype)>&
           displacements,
       const SpatialMaterialMapping<celltype>& spatial_material_mapping,
       const JacobianMapping<celltype>& jacobian_mapping, const Core::Elements::Element& ele,
@@ -505,7 +505,7 @@ namespace Discret::Elements
       const SolidPoroPrimaryVariables<porosity_formulation>& primary_variables)
   {
     std::vector<double> solid_velocity(
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 0.0);
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 0.0);
 
     if (dis.has_state(0, "velocity"))
     {
@@ -539,7 +539,7 @@ namespace Discret::Elements
           .solidvel_nodal =
               Core::FE::get_element_dof_matrix<celltype, Core::FE::dim<celltype>>(solid_velocity),
 
-          .solid_porosity_nodal = Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>(
+          .solid_porosity_nodal = Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>(
               primary_variables.porosity.data(), true),
       };
     }
@@ -679,7 +679,7 @@ namespace Discret::Elements
       const SolidPoroPrimaryVariables<porosity_formulation>& primary_variables)
   {
     FluidVariables<celltype> fluid_variables{
-        .fluidpress_nodal = Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>(
+        .fluidpress_nodal = Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>(
             primary_variables.fluid_pressures.data(), true),
         .fluidvel_nodal = Core::FE::get_element_dof_matrix_view<celltype, Core::FE::dim<celltype>>(
             primary_variables.fluid_velocities)};
@@ -857,9 +857,9 @@ namespace Discret::Elements
 
     FOUR_C_ASSERT(std::all_of(anisotropic_permeability_nodal_coeffs.begin(),
                       anisotropic_permeability_nodal_coeffs.end(), [](const auto& nodal_coeffs)
-                      { return nodal_coeffs.size() == Core::FE::num_nodes<celltype>; }),
+                      { return nodal_coeffs.size() == Core::FE::num_nodes(celltype); }),
         "Given permeability coefficients do not match the number of nodes. Expecting {}.",
-        Core::FE::num_nodes<celltype>);
+        Core::FE::num_nodes(celltype));
 
     for (int node = 0; node < Internal::num_nodes<celltype>; ++node)
     {

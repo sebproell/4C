@@ -79,13 +79,13 @@ namespace Discret
       static void evaluate_s2_i_coupling_od_at_integration_point(const Mat::Electrode& matelectrode,
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& eslavephinp,
           const Core::LinAlg::Matrix<nen_, 1>& eslavetempnp,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& emastertempnp,
-          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>>&
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& emastertempnp,
+          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>>&
               emasterphinp,
           double pseudo_contact_fac, const Core::LinAlg::Matrix<nen_, 1>& funct_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& funct_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& funct_master,
           const Core::LinAlg::Matrix<nen_, 1>& test_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& test_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& test_master,
           const Core::LinAlg::Matrix<nsd_, nen_>& dsqrtdetg_dd,
           const Core::LinAlg::Matrix<nsd_, nen_>& shape_spatial_derivatives,
           const Discret::Elements::ScaTraEleParameterBoundary* const scatra_parameter_boundary,

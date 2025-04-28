@@ -1022,7 +1022,7 @@ void Cut::VolumeCell::integrate_specific_functions_tessellation()
 template <Core::FE::CellType distype>
 std::shared_ptr<Core::FE::GaussPoints> Cut::VolumeCell::create_projected(Cut::IntegrationCell* ic)
 {
-  const unsigned nen = Core::FE::num_nodes<distype>;
+  const unsigned nen = Core::FE::num_nodes(distype);
 
   Core::LinAlg::Matrix<3, nen> xie;
 

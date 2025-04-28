@@ -96,7 +96,7 @@ namespace Discret::Elements
     }
 
     static inline Core::LinAlg::Matrix<9,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
     evaluate_d_deformation_gradient_d_displacements_d_xi(const Core::Elements::Element& ele,
         const ElementNodes<celltype>& element_nodes,
         const Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>& xi,
@@ -112,7 +112,7 @@ namespace Discret::Elements
           "not implemented");
     }
 
-    static inline Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+    static inline Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
     evaluate_d_deformation_gradient_d_displacements(const Core::Elements::Element& ele,
         const ElementNodes<celltype>& element_nodes,
         const Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>& xi,
@@ -129,7 +129,7 @@ namespace Discret::Elements
     }
 
     static Core::LinAlg::Matrix<Internal::num_str<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
     get_linear_b_operator(const EASKinematics<celltype, eastype>& eas_kinematics)
     {
       return eas_kinematics.b_op;
@@ -139,7 +139,7 @@ namespace Discret::Elements
         const Stress<celltype>& stress, const double integration_factor,
         const PreparationData& centeroid_transformation,
         EASHistoryData<celltype, eastype>& eas_data,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1>&
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1>&
             force_vector)
     {
       Discret::Elements::add_internal_force_vector(
@@ -152,8 +152,8 @@ namespace Discret::Elements
         const JacobianMapping<celltype>& jacobian_mapping, const Stress<celltype>& stress,
         const double integration_factor, const PreparationData& preparation_data,
         EASHistoryData<celltype, eastype>& eas_data,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-            Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>& stiffness_matrix)
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+            Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>& stiffness_matrix)
     {
       add_elastic_stiffness_matrix(
           eas_kinematics.b_op, stress, integration_factor, stiffness_matrix);
@@ -247,7 +247,7 @@ namespace Discret::Elements
         const CondensedContributionData& minusKdainvKaa,
         const PreparationData& centeroid_transformation,
         EASHistoryData<celltype, eastype>& eas_data,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1>&
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1>&
             force_vector)
     {
       add_eas_internal_force<celltype, eastype>(
@@ -258,8 +258,8 @@ namespace Discret::Elements
         const CondensedContributionData& minusKdainvKaa,
         const PreparationData& centeroid_transformation,
         EASHistoryData<celltype, eastype>& eas_data,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-            Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>& stiffness_matrix)
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+            Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>& stiffness_matrix)
     {
       add_eas_stiffness_matrix<celltype, eastype>(
           minusKdainvKaa, eas_data.eas_iteration_data.Kda, stiffness_matrix);

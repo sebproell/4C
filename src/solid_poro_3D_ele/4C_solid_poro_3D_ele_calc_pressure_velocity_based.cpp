@@ -76,11 +76,11 @@ namespace
   struct DiagonalBlockMatrixViews<celltype,
       Discret::Elements::PorosityFormulation::from_material_law>
   {
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1>>
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1>>
         force_vector;
 
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>>
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>>
         K_displacement_displacement;
   };
 
@@ -88,25 +88,25 @@ namespace
   struct DiagonalBlockMatrixViews<celltype,
       Discret::Elements::PorosityFormulation::as_primary_variable>
   {
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1>>
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1>>
         force_vector;
 
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1>> porosity_force_vector;
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1>> porosity_force_vector;
 
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>>
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>>
         K_displacement_displacement;
 
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-        Core::FE::num_nodes<celltype>>>
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+        Core::FE::num_nodes(celltype)>>
         K_displacement_porosity;
 
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>>
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype),
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>>
         K_porosity_displacement;
 
     std::optional<
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, Core::FE::num_nodes<celltype>>>
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), Core::FE::num_nodes(celltype)>>
         K_porosity_porosity;
   };
 
@@ -120,8 +120,8 @@ namespace
   struct OffDiagonalBlockMatrixViews<celltype,
       Discret::Elements::PorosityFormulation::from_material_law>
   {
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-        Core::FE::num_nodes<celltype>*(Core::FE::dim<celltype> + 1)>>
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+        Core::FE::num_nodes(celltype) * (Core::FE::dim<celltype> + 1)>>
         K_displacement_fluid_dofs;
   };
 
@@ -129,11 +129,11 @@ namespace
   struct OffDiagonalBlockMatrixViews<celltype,
       Discret::Elements::PorosityFormulation::as_primary_variable>
   {
-    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-        Core::FE::num_nodes<celltype>*(Core::FE::dim<celltype> + 1)>>
+    std::optional<Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+        Core::FE::num_nodes(celltype) * (Core::FE::dim<celltype> + 1)>>
         K_displacement_fluid_dofs;
     std::optional<
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, Core::FE::num_nodes<celltype>>>
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), Core::FE::num_nodes(celltype)>>
         K_porosity_pressure;
   };
 
@@ -148,33 +148,33 @@ namespace
     {
       return {
           .force_vector =
-              make_optional_matrix_view<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>(
+              make_optional_matrix_view<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>(
                   diagonal_block_matrices.force_vector),
-          .porosity_force_vector = make_optional_matrix_view<Core::FE::num_nodes<celltype>>(
+          .porosity_force_vector = make_optional_matrix_view<Core::FE::num_nodes(celltype)>(
               diagonal_block_matrices.porosity_force_vector),
           .K_displacement_displacement =
-              make_optional_matrix_view<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-                  Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>(
+              make_optional_matrix_view<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+                  Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>(
                   diagonal_block_matrices.K_displacement_displacement),
           .K_displacement_porosity =
-              make_optional_matrix_view<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-                  Core::FE::num_nodes<celltype>>(diagonal_block_matrices.K_displacement_porosity),
-          .K_porosity_displacement = make_optional_matrix_view<Core::FE::num_nodes<celltype>,
-              Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>(
+              make_optional_matrix_view<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+                  Core::FE::num_nodes(celltype)>(diagonal_block_matrices.K_displacement_porosity),
+          .K_porosity_displacement = make_optional_matrix_view<Core::FE::num_nodes(celltype),
+              Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>(
               diagonal_block_matrices.K_porosity_displacement),
-          .K_porosity_porosity = make_optional_matrix_view<Core::FE::num_nodes<celltype>,
-              Core::FE::num_nodes<celltype>>(diagonal_block_matrices.K_porosity_porosity),
+          .K_porosity_porosity = make_optional_matrix_view<Core::FE::num_nodes(celltype),
+              Core::FE::num_nodes(celltype)>(diagonal_block_matrices.K_porosity_porosity),
       };
     }
     else
     {
       return {
           .force_vector =
-              make_optional_matrix_view<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>(
+              make_optional_matrix_view<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>(
                   diagonal_block_matrices.force_vector),
           .K_displacement_displacement =
-              make_optional_matrix_view<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-                  Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>(
+              make_optional_matrix_view<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+                  Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>(
                   diagonal_block_matrices.K_displacement_displacement),
       };
     }
@@ -193,19 +193,19 @@ namespace
     {
       return {
           .K_displacement_fluid_dofs =
-              make_optional_matrix_view<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-                  Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>(
+              make_optional_matrix_view<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+                  Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>(
                   off_diagonal_block_matrices.K_displacement_fluid_dofs),
-          .K_porosity_pressure = make_optional_matrix_view<Core::FE::num_nodes<celltype>,
-              Core::FE::num_nodes<celltype>>(off_diagonal_block_matrices.K_displacement_fluid_dofs),
+          .K_porosity_pressure = make_optional_matrix_view<Core::FE::num_nodes(celltype),
+              Core::FE::num_nodes(celltype)>(off_diagonal_block_matrices.K_displacement_fluid_dofs),
       };
     }
     else
     {
       return {
           .K_displacement_fluid_dofs =
-              make_optional_matrix_view<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-                  Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>(
+              make_optional_matrix_view<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+                  Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>(
                   off_diagonal_block_matrices.K_displacement_fluid_dofs),
       };
     }
@@ -540,7 +540,7 @@ void Discret::Elements::SolidPoroPressureVelocityBasedEleCalc<celltype,
           double dW_dp = 0.0;
           double W = 0.0;
 
-          Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1> init_porosity_mat(
+          Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1> init_porosity_mat(
               primary_variables.initial_porosity.data(), true);
           double init_porosity = shape_functions.shapefunctions_.dot(init_porosity_mat);
 
@@ -563,10 +563,10 @@ void Discret::Elements::SolidPoroPressureVelocityBasedEleCalc<celltype,
           {
             const double reacoeff = porofluidmat.compute_reaction_coeff();
 
-            for (int k = 0; k < Core::FE::num_nodes<celltype>; k++)
+            for (int k = 0; k < Core::FE::num_nodes(celltype); k++)
             {
               const double fac = integration_factor * shape_functions.shapefunctions_(k);
-              for (int i = 0; i < Core::FE::num_nodes<celltype>; i++)
+              for (int i = 0; i < Core::FE::num_nodes(celltype); i++)
               {
                 for (int j = 0; j < Core::FE::dim<celltype>; j++)
                 {
@@ -583,10 +583,10 @@ void Discret::Elements::SolidPoroPressureVelocityBasedEleCalc<celltype,
 
           if (matrix_views.K_porosity_displacement)
           {
-            for (int k = 0; k < Core::FE::num_nodes<celltype>; k++)
+            for (int k = 0; k < Core::FE::num_nodes(celltype); k++)
             {
               const double fac = integration_factor * shape_functions.shapefunctions_(k);
-              for (int i = 0; i < Core::FE::dim<celltype> * Core::FE::num_nodes<celltype>; i++)
+              for (int i = 0; i < Core::FE::dim<celltype> * Core::FE::num_nodes(celltype); i++)
               {
                 (*matrix_views.K_porosity_displacement)(k, i) += fac * dW_dJ * dDetDefGrad_dDisp(i);
               }
@@ -738,7 +738,7 @@ void Discret::Elements::SolidPoroPressureVelocityBasedEleCalc<celltype,
           const double porosity = compute_porosity(
               porostructmat, params, solid_variables, shape_functions, fluid_press, gp, volchange);
 
-          Core::LinAlg::Matrix<Core::FE::num_nodes<celltype>, 1> init_porosity_mat(
+          Core::LinAlg::Matrix<Core::FE::num_nodes(celltype), 1> init_porosity_mat(
               primary_variables.initial_porosity.data(), true);
           double init_porosity = shape_functions.shapefunctions_.dot(init_porosity_mat);
 

@@ -456,10 +456,10 @@ namespace Core::FE
       const Core::FE::CellType celltype);
 
   template <Core::FE::CellType celltype>
-  constexpr std::array<std::array<double, Core::FE::dim<celltype>>, Core::FE::num_nodes<celltype>>
+  constexpr std::array<std::array<double, Core::FE::dim<celltype>>, Core::FE::num_nodes(celltype)>
   get_element_nodes_in_parameter_space()
   {
-    std::array<std::array<double, Core::FE::dim<celltype>>, Core::FE::num_nodes<celltype>>
+    std::array<std::array<double, Core::FE::dim<celltype>>, Core::FE::num_nodes(celltype)>
         nodal_parameter_coordinate{};
     switch (celltype)
     {
@@ -468,7 +468,7 @@ namespace Core::FE
       case Core::FE::CellType::quad9:
       case Core::FE::CellType::nurbs9:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
           {
@@ -480,7 +480,7 @@ namespace Core::FE
       }
       case Core::FE::CellType::nurbs4:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -490,7 +490,7 @@ namespace Core::FE
       }
       case Core::FE::CellType::quad6:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -501,7 +501,7 @@ namespace Core::FE
       case Core::FE::CellType::tri3:
       case Core::FE::CellType::tri6:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -513,7 +513,7 @@ namespace Core::FE
       case Core::FE::CellType::hex20:
       case Core::FE::CellType::hex27:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -523,7 +523,7 @@ namespace Core::FE
       }
       case Core::FE::CellType::nurbs8:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -533,7 +533,7 @@ namespace Core::FE
       }
       case Core::FE::CellType::nurbs27:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -543,7 +543,7 @@ namespace Core::FE
       }
       case Core::FE::CellType::hex16:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -553,7 +553,7 @@ namespace Core::FE
       }
       case Core::FE::CellType::hex18:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -564,7 +564,7 @@ namespace Core::FE
       case Core::FE::CellType::wedge6:
       case Core::FE::CellType::wedge15:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
           {
@@ -577,7 +577,7 @@ namespace Core::FE
       case Core::FE::CellType::tet4:
       case Core::FE::CellType::tet10:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -587,7 +587,7 @@ namespace Core::FE
       }
       case Core::FE::CellType::pyramid5:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -598,7 +598,7 @@ namespace Core::FE
       case Core::FE::CellType::line3:
       case Core::FE::CellType::line2:
       {
-        for (int inode = 0; inode < Core::FE::num_nodes<celltype>; inode++)
+        for (int inode = 0; inode < Core::FE::num_nodes(celltype); inode++)
         {
           for (int isd = 0; isd < Core::FE::dim<celltype>; isd++)
             nodal_parameter_coordinate[inode][isd] =
@@ -1068,7 +1068,7 @@ namespace Core::FE
   struct DisTypeToNumNodePerFace
   {
     static constexpr int numNodePerFace =
-        Core::FE::num_nodes<DisTypeToFaceShapeType<distype>::shape>;
+        Core::FE::num_nodes(DisTypeToFaceShapeType<distype>::shape);
   };
 
 

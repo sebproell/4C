@@ -57,7 +57,7 @@ namespace Solid::Elements
 namespace Discret::Elements::Shell::Internal
 {
   template <Core::FE::CellType distype>
-  inline static constexpr int num_node = Core::FE::num_nodes<distype>;
+  inline static constexpr int num_node = Core::FE::num_nodes(distype);
   inline static constexpr int num_dim = 3;
   inline static constexpr int node_dof = 6;
   inline static constexpr int num_internal_variables = 12;

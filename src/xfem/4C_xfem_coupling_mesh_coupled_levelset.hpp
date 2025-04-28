@@ -173,7 +173,7 @@ namespace XFEM
         const Core::FE::CellType shape = Core::FE::CellType::hex8;
         //
         const size_t nsd = Core::FE::dim<shape>;
-        const size_t nen = Core::FE::num_nodes<shape>;
+        const size_t nen = Core::FE::num_nodes(shape);
         Core::LinAlg::Matrix<nen, 1> funct_(funct, true);
         Core::LinAlg::Matrix<nen, nsd> derxy_(derxy, true);
       }
@@ -182,7 +182,7 @@ namespace XFEM
         const Core::FE::CellType shape = Core::FE::CellType::hex27;
         //
         const size_t nsd = Core::FE::dim<shape>;
-        const size_t nen = Core::FE::num_nodes<shape>;
+        const size_t nen = Core::FE::num_nodes(shape);
         Core::LinAlg::Matrix<nen, 1> funct_(funct, true);
         Core::LinAlg::Matrix<nen, nsd> derxy_(derxy, true);
       }
@@ -191,7 +191,7 @@ namespace XFEM
         const Core::FE::CellType shape = Core::FE::CellType::hex20;
         //
         const size_t nsd = Core::FE::dim<shape>;
-        const size_t nen = Core::FE::num_nodes<shape>;
+        const size_t nen = Core::FE::num_nodes(shape);
         Core::LinAlg::Matrix<nen, 1> funct_(funct, true);
         Core::LinAlg::Matrix<nen, nsd> derxy_(derxy, true);
       }

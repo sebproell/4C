@@ -52,7 +52,7 @@ namespace GeometryPair
     static constexpr unsigned int n_val_ = 1 + 2 * n_fourier_modes_;
 
     //! Number of nodes for this element.
-    static constexpr unsigned int n_nodes_ = Core::FE::num_nodes<discretization_>;
+    static constexpr unsigned int n_nodes_ = Core::FE::num_nodes(discretization_);
 
     //! Number of spatial dimensions.
     static const unsigned int spatial_dim_ = spatial_dim;

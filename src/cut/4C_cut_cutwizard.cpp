@@ -372,7 +372,7 @@ void evaluate_position_on_nurbs9(Core::Elements::Element* element,
   std::vector<Core::LinAlg::SerialDenseVector> myknots(2);
   std::vector<Core::LinAlg::SerialDenseVector> mypknots(3);
 
-  const int num_nodes = Core::FE::num_nodes<Core::FE::CellType::nurbs9>;
+  const int num_nodes = Core::FE::num_nodes(Core::FE::CellType::nurbs9);
   const int nurbs_dim = Core::FE::dim<Core::FE::CellType::nurbs9>;
   const int prob_dim = 3;
 

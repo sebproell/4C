@@ -41,7 +41,7 @@ namespace Discret::Elements
     {
     }
 
-    [[nodiscard]] Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+    [[nodiscard]] Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
     evaluate_d_deformation_gradient_d_displacements() const
     {
       return Discret::Elements::evaluate_d_deformation_gradient_d_displacements(ele_,
@@ -58,7 +58,7 @@ namespace Discret::Elements
     }
 
     [[nodiscard]] Core::LinAlg::Matrix<9,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
     evaluate_d2_deformation_gradient_d_displacements_d_xi() const
     {
       return Discret::Elements::evaluate_d_deformation_gradient_d_displacements_d_xi(ele_,

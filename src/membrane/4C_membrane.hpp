@@ -93,7 +93,7 @@ namespace Discret
       Core::Elements::Element* clone() const override;
 
       //! number of element nodes
-      static constexpr int numnod_ = Core::FE::num_nodes<distype>;
+      static constexpr int numnod_ = Core::FE::num_nodes(distype);
 
       //! number of space dimensions
       static constexpr int numdim_ = Core::FE::dim<distype>;
@@ -488,7 +488,7 @@ namespace Discret
           Core::LinAlg::Matrix<noddof_, noddof_>& defgrd_global) const;
 
       // determine extrapolation matrix for postprocessing purposes
-      Core::LinAlg::Matrix<Core::FE::num_nodes<distype>,
+      Core::LinAlg::Matrix<Core::FE::num_nodes(distype),
           Thermo::DisTypeToNumGaussPoints<distype>::nquad>
       mem_extrapolmat() const;
 
@@ -602,7 +602,7 @@ namespace Discret
 
       //! number of nodes per line
       static constexpr int numnod_line_ =
-          Core::FE::num_nodes<Core::FE::DisTypeToFaceShapeType<distype2>::shape>;
+          Core::FE::num_nodes(Core::FE::DisTypeToFaceShapeType<distype2>::shape);
 
       static constexpr int noddof_ = 3;
 

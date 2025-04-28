@@ -480,7 +480,7 @@ namespace Discret
 
      private:
       Ale3Impl() = default;
-      static constexpr int iel = Core::FE::num_nodes<distype>;
+      static constexpr int iel = Core::FE::num_nodes(distype);
       static constexpr int numcnd = DisTypeToNumCornerNodes<distype>::numCornerNodes;
 
       inline void ale3_edge_geometry(int i, int j, const Core::LinAlg::Matrix<3, iel>& xyze,
@@ -785,7 +785,7 @@ namespace Discret
           Core::Utils::SingletonAction action = Core::Utils::SingletonAction::create);
 
       //! number of element nodes
-      static constexpr int bdrynen_ = Core::FE::num_nodes<distype>;
+      static constexpr int bdrynen_ = Core::FE::num_nodes(distype);
 
       //! number of spatial dimensions of boundary element
       static constexpr int bdrynsd_ = Core::FE::dim<distype>;
@@ -802,7 +802,7 @@ namespace Discret
 
      private:
       //  static constexpr int iel =
-      //  Core::FE::num_nodes<distype>; static const int
+      //  Core::FE::num_nodes(distype); static const int
       //  numcnd = DisTypeToNumCornerNodes<distype>::numCornerNodes;
 
       //  inline void ale3_edge_geometry(int i, int j, const Core::LinAlg::Matrix<3, iel>& xyze,

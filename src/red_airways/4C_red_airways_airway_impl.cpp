@@ -38,7 +38,7 @@ namespace
   {
     double length = 0.0;
     // get node coordinates and number of elements per node
-    static const int numnode = Core::FE::num_nodes<distype>;
+    static const int numnode = Core::FE::num_nodes(distype);
     Core::Nodes::Node** nodes = ele->nodes();
     // get airway length
     Core::LinAlg::Matrix<3, numnode> xyze;

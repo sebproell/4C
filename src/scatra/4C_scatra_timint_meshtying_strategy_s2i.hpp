@@ -876,10 +876,10 @@ namespace ScaTra
 
    protected:
     //! number of slave element nodes
-    static constexpr int nen_slave_ = Core::FE::num_nodes<distype_s>;
+    static constexpr int nen_slave_ = Core::FE::num_nodes(distype_s);
 
     //! number of master element nodes
-    static constexpr int nen_master_ = Core::FE::num_nodes<distype_m>;
+    static constexpr int nen_master_ = Core::FE::num_nodes(distype_m);
 
     //! spatial dimensionality of slave elements
     static constexpr int nsd_slave_ = Core::FE::dim<distype_s>;

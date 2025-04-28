@@ -13,12 +13,12 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype, int probdim>
 void Core::FE::evaluate_shape_function_spatial_derivative_in_prob_dim(
-    Core::LinAlg::Matrix<probdim, Core::FE::num_nodes<distype>>& deriv_xyz,
-    const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& deriv,
-    const Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, probdim>& xyze,
+    Core::LinAlg::Matrix<probdim, Core::FE::num_nodes(distype)>& deriv_xyz,
+    const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& deriv,
+    const Core::LinAlg::Matrix<Core::FE::num_nodes(distype), probdim>& xyze,
     const Core::LinAlg::Matrix<probdim, 1>& normal)
 {
-  const int nen = Core::FE::num_nodes<distype>;
+  const int nen = Core::FE::num_nodes(distype);
   const int nsd_ele = Core::FE::dim<distype>;
 
   FOUR_C_ASSERT(nsd_ele != probdim,

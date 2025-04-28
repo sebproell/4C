@@ -89,14 +89,14 @@ namespace Discret
       static void evaluate_s2_i_coupling_at_integration_point(
           const std::shared_ptr<const Mat::Electrode>& matelectrode,
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& eslavephinp,
-          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>>&
+          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>>&
               emasterphinp,
           const Core::LinAlg::Matrix<nen_, 1>& eslavetempnp,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& emastertempnp,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& emastertempnp,
           double pseudo_contact_fac, const Core::LinAlg::Matrix<nen_, 1>& funct_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& funct_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& funct_master,
           const Core::LinAlg::Matrix<nen_, 1>& test_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& test_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& test_master,
           const Discret::Elements::ScaTraEleParameterBoundary* const scatra_parameter_boundary,
           double timefacfac, double timefacrhsfac, double detF, double frt, int num_dof_per_node,
           Core::LinAlg::SerialDenseMatrix& k_ss, Core::LinAlg::SerialDenseMatrix& k_sm,
@@ -136,15 +136,15 @@ namespace Discret
       template <Core::FE::CellType distype_master>
       static void evaluate_s2_i_coupling_capacitance_at_integration_point(
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& eslavephidtnp,
-          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>>&
+          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>>&
               emasterphidtnp,
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& eslavephinp,
-          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>>&
+          const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>>&
               emasterphinp,
           double pseudo_contact_fac, const Core::LinAlg::Matrix<nen_, 1>& funct_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& funct_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& funct_master,
           const Core::LinAlg::Matrix<nen_, 1>& test_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& test_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& test_master,
           const Discret::Elements::ScaTraEleParameterBoundary* const scatra_parameter_boundary,
           double timederivfac, double timefacfac, double timefacrhsfac, int num_dof_per_node,
           Core::LinAlg::SerialDenseMatrix& k_ss, Core::LinAlg::SerialDenseMatrix& k_ms,
@@ -189,9 +189,9 @@ namespace Discret
        */
       template <Core::FE::CellType distype_master>
       static void calculate_rh_sand_global_system(const Core::LinAlg::Matrix<nen_, 1>& funct_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& funct_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& funct_master,
           const Core::LinAlg::Matrix<nen_, 1>& test_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& test_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& test_master,
           double pseudo_contact_fac, double numelectrons, int nen_master, double timefacfac,
           double timefacrhsfac, double dj_dc_slave, double dj_dc_master, double dj_dpot_slave,
           double dj_dpot_master, double j, int num_dof_per_node,
@@ -229,7 +229,7 @@ namespace Discret
       static void calculate_rh_sand_global_system_capacitive_flux(
           const Core::LinAlg::Matrix<nen_, 1>& funct_slave,
           const Core::LinAlg::Matrix<nen_, 1>& test_slave,
-          const Core::LinAlg::Matrix<Core::FE::num_nodes<distype_master>, 1>& test_master,
+          const Core::LinAlg::Matrix<Core::FE::num_nodes(distype_master), 1>& test_master,
           double pseudo_contact_fac, int numelectrons, double timefacfac, double timefacrhsfac,
           int nen_master, double jC, double djC_dpot_slave, int num_dof_per_node,
           Core::LinAlg::SerialDenseMatrix& k_ss, Core::LinAlg::SerialDenseMatrix& k_ms,

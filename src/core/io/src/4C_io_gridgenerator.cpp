@@ -162,8 +162,7 @@ namespace Core::IO::GridGenerator
         {
           std::ostringstream eleargstream;
           eleargstream << inputData.distype_;
-          const int num_nodes = Core::FE::cell_type_switch(
-              distype_enum, [](auto cell_type_t) { return Core::FE::num_nodes<cell_type_t()>; });
+          const int num_nodes = Core::FE::num_nodes(distype_enum);
           for (int i = 0; i < num_nodes; ++i)
           {
             eleargstream << " " << -1;

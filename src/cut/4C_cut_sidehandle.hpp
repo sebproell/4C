@@ -63,7 +63,7 @@ namespace Cut
     template <Core::FE::CellType distype>
     std::shared_ptr<Core::FE::GaussPoints> create_projected(BoundaryCell* bc)
     {
-      const unsigned nen = Core::FE::num_nodes<distype>;
+      const unsigned nen = Core::FE::num_nodes(distype);
 
       Core::LinAlg::Matrix<2, nen> xie;
 

@@ -33,7 +33,7 @@ template <Core::FE::CellType distype>
 std::shared_ptr<Core::FE::GaussPoints> Cut::ElementHandle::create_projected(
     const std::vector<Cut::Point*>& cpoints, std::shared_ptr<Core::FE::GaussPoints> gp_ic)
 {
-  const unsigned nen = Core::FE::num_nodes<distype>;
+  const unsigned nen = Core::FE::num_nodes(distype);
   const unsigned dim = Core::FE::dim<distype>;
   Core::LinAlg::Matrix<dim, nen> xie;
   if (cpoints.size() != nen) FOUR_C_THROW("non-matching number of points");

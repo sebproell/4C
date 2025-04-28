@@ -528,7 +528,7 @@ void Core::FE::Utils::DbcNurbs::fill_matrix_and_rhs_for_ls_dirichlet_boundary(
   const int ndbcdofs = (int)lm.size();
 
   // set element data
-  static const int nen = Core::FE::num_nodes<distype>;
+  static const int nen = Core::FE::num_nodes(distype);
 
   // dofblocks (number of DOFs with Dirichlet condition per node)
   const int dofblock = ndbcdofs / nen;
@@ -668,7 +668,7 @@ void Core::FE::Utils::DbcNurbs::fill_matrix_and_rhs_for_ls_dirichlet_domain(
   const int ndbcdofs = (int)lm.size();
 
   // set element data
-  static const int nen = Core::FE::num_nodes<distype>;
+  static const int nen = Core::FE::num_nodes(distype);
 
   // dofblocks (number of DOFs with Dirichlet condition per node)
   const int dofblock = ndbcdofs / nen;

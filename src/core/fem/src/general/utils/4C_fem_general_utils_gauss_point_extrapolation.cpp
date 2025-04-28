@@ -122,7 +122,7 @@ namespace
     Core::LinAlg::SerialDenseMatrix mat(intpoints.num_points(), base_numnod);
 
     // Obtain weights and knot vector of element
-    Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1> weights(
+    Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1> weights(
         Core::LinAlg::Initialization::zero);
     std::vector<Core::LinAlg::SerialDenseVector> myknots(true);
 
@@ -219,9 +219,9 @@ namespace
     constexpr int nsd = Core::FE::dim<distype>;
     int base_numnod = Core::FE::get_number_of_element_nodes(base_distype);
 
-    Core::LinAlg::SerialDenseMatrix matrix_base_to_dis(Core::FE::num_nodes<distype>, base_numnod);
+    Core::LinAlg::SerialDenseMatrix matrix_base_to_dis(Core::FE::num_nodes(distype), base_numnod);
 
-    for (int dis_inode = 0; dis_inode < Core::FE::num_nodes<distype>; ++dis_inode)
+    for (int dis_inode = 0; dis_inode < Core::FE::num_nodes(distype); ++dis_inode)
     {
       Core::LinAlg::SerialDenseMatrix reference_nodes =
           Core::FE::get_ele_node_numbering_nodes_paramspace(distype);
@@ -256,7 +256,7 @@ namespace
     }
 
     Core::LinAlg::SerialDenseMatrix matrix_gp_to_nodes(
-        Core::FE::num_nodes<distype>, matrix_gp_to_base.numCols());
+        Core::FE::num_nodes(distype), matrix_gp_to_base.numCols());
 
     // extend matrix from base_distype to distype
     Core::LinAlg::multiply(matrix_gp_to_nodes, matrix_base_to_dis, matrix_gp_to_base);
@@ -419,7 +419,7 @@ void Core::FE::extrapolate_gp_quantity_to_nodes_and_assemble(const Core::Element
     const Core::LinAlg::SerialDenseMatrix& gp_data, Core::LinAlg::MultiVector<double>& global_data,
     bool nodal_average, const GaussIntegration& integration)
 {
-  Core::LinAlg::SerialDenseMatrix nodal_quantity(Core::FE::num_nodes<distype>, gp_data.numCols());
+  Core::LinAlg::SerialDenseMatrix nodal_quantity(Core::FE::num_nodes(distype), gp_data.numCols());
   Core::LinAlg::multiply(nodal_quantity,
       evaluate_gauss_points_to_nodes_extrapolation_matrix<distype>(integration), gp_data);
 
@@ -432,7 +432,7 @@ void Core::FE::extrapolate_gp_quantity_to_nurbs_knots_and_assemble(
     const LinAlg::SerialDenseMatrix& gp_data, Core::LinAlg::MultiVector<double>& global_data,
     bool nodal_average, const GaussIntegration& integration)
 {
-  Core::LinAlg::SerialDenseMatrix nodal_quantity(Core::FE::num_nodes<distype>, gp_data.numCols());
+  Core::LinAlg::SerialDenseMatrix nodal_quantity(Core::FE::num_nodes(distype), gp_data.numCols());
   Core::LinAlg::multiply(nodal_quantity,
       evaluate_gauss_points_to_nurbs_knots_extrapolation_matrix<distype>(dis, ele, integration),
       gp_data);

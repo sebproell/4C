@@ -41,7 +41,7 @@ namespace Discret::Elements::SolidPoroPressureVelocityBasedInternal
     {
       return all_of({
           parameter<std::vector<int>>(
-              Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes<celltype>}),
+              Core::FE::cell_type_to_string(celltype), {.size = Core::FE::num_nodes(celltype)}),
           parameter<int>("MAT"),
           deprecated_selection<Inpar::Solid::KinemType>("KINEM",
               {
@@ -82,11 +82,11 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex8>(),
       parameter<std::optional<std::vector<double>>>(
-          "POROANISONODALCOEFFS1", {.size = Core::FE::num_nodes<Core::FE::CellType::hex8>}),
+          "POROANISONODALCOEFFS1", {.size = Core::FE::num_nodes(Core::FE::CellType::hex8)}),
       parameter<std::optional<std::vector<double>>>(
-          "POROANISONODALCOEFFS2", {.size = Core::FE::num_nodes<Core::FE::CellType::hex8>}),
+          "POROANISONODALCOEFFS2", {.size = Core::FE::num_nodes(Core::FE::CellType::hex8)}),
       parameter<std::optional<std::vector<double>>>(
-          "POROANISONODALCOEFFS3", {.size = Core::FE::num_nodes<Core::FE::CellType::hex8>}),
+          "POROANISONODALCOEFFS3", {.size = Core::FE::num_nodes(Core::FE::CellType::hex8)}),
   });
 
   defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex27)] =
@@ -98,11 +98,11 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::tet4>(),
       parameter<std::optional<std::vector<double>>>(
-          "POROANISONODALCOEFFS1", {.size = Core::FE::num_nodes<Core::FE::CellType::tet4>}),
+          "POROANISONODALCOEFFS1", {.size = Core::FE::num_nodes(Core::FE::CellType::tet4)}),
       parameter<std::optional<std::vector<double>>>(
-          "POROANISONODALCOEFFS2", {.size = Core::FE::num_nodes<Core::FE::CellType::tet4>}),
+          "POROANISONODALCOEFFS2", {.size = Core::FE::num_nodes(Core::FE::CellType::tet4)}),
       parameter<std::optional<std::vector<double>>>(
-          "POROANISONODALCOEFFS3", {.size = Core::FE::num_nodes<Core::FE::CellType::tet4>}),
+          "POROANISONODALCOEFFS3", {.size = Core::FE::num_nodes(Core::FE::CellType::tet4)}),
   });
 
 

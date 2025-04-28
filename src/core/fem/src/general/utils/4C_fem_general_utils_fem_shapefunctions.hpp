@@ -21,14 +21,6 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::FE
 {
-  namespace Internal
-  {
-    inline int num_nodes(CellType celltype)
-    {
-      return cell_type_switch<all_physical_celltypes>(
-          celltype, [&](auto celltype_t) { return Core::FE::num_nodes<celltype_t()>; });
-    }
-  }  // namespace Internal
   /*!
    \brief Fill a vector of type VectorType with with 3D shape function
    */
@@ -44,7 +36,7 @@ namespace Core::FE
     static_assert(!std::is_integral_v<NumberType>);
 
     FOUR_C_ASSERT_ALWAYS(
-        static_cast<int>(funct.num_rows() * funct.num_cols()) >= Internal::num_nodes(distype),
+        static_cast<int>(funct.num_rows() * funct.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     const NumberType Q18 = 0.125;
@@ -371,7 +363,7 @@ namespace Core::FE
     // if the given template parameter is of type int, the error occurs during compilation
     static_assert(!std::is_integral_v<NumberType>);
 
-    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv1.num_cols()) >= Internal::num_nodes(distype),
+    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv1.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     const int dr = 0;
@@ -1024,7 +1016,7 @@ namespace Core::FE
     // if the given template parameter is of type int, the error occurs during compilation
     static_assert(!std::is_integral_v<NumberType>);
 
-    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv2.num_cols()) >= Internal::num_nodes(distype),
+    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv2.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     const NumberType Q18 = 1.0 / 8.0;
@@ -1998,7 +1990,7 @@ namespace Core::FE
     static_assert(!std::is_integral_v<NumberType>);
 
     FOUR_C_ASSERT_ALWAYS(
-        static_cast<int>(funct.num_rows() * funct.num_cols()) >= Internal::num_nodes(distype),
+        static_cast<int>(funct.num_rows() * funct.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     switch (distype)
@@ -2139,7 +2131,7 @@ namespace Core::FE
     // if the given template parameter is of type int, the error occurs during compilation
     static_assert((not std::is_same<int, NumberType>::value));
 
-    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv1.num_cols()) >= Internal::num_nodes(distype),
+    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv1.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     const int dr = 0;
@@ -2336,7 +2328,7 @@ namespace Core::FE
     // if the given template parameter is of type int, the error occurs during compilation
     static_assert(not std::is_same_v<int, NumberType>);
 
-    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv2.num_cols()) >= Internal::num_nodes(distype),
+    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv2.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     const int drdr = 0;
@@ -2578,7 +2570,7 @@ namespace Core::FE
     static_assert(!std::is_integral_v<NumberType>);
 
     FOUR_C_ASSERT_ALWAYS(
-        static_cast<int>(funct.num_rows() * funct.num_cols()) >= Internal::num_nodes(distype),
+        static_cast<int>(funct.num_rows() * funct.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     switch (distype)
@@ -2688,7 +2680,7 @@ namespace Core::FE
     // if the given template parameter is of type int, the error occurs during compilation
     static_assert(!std::is_integral_v<NumberType>);
 
-    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv1.num_cols()) >= Internal::num_nodes(distype),
+    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv1.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     const int dr = 0;
@@ -2797,7 +2789,7 @@ namespace Core::FE
     // if the given template parameter is of type int, the error occurs during compilation
     static_assert(!std::is_integral_v<NumberType>);
 
-    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv2.num_cols()) >= Internal::num_nodes(distype),
+    FOUR_C_ASSERT_ALWAYS(static_cast<int>(deriv2.num_cols()) >= Core::FE::num_nodes(distype),
         "Internal error: size mismatch.");
 
     const int drdr = 0;
@@ -3230,9 +3222,9 @@ namespace Core::FE
    */
   template <Core::FE::CellType distype, int probdim>
   void evaluate_shape_function_spatial_derivative_in_prob_dim(
-      Core::LinAlg::Matrix<probdim, Core::FE::num_nodes<distype>>& deriv_xyz,
-      const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& deriv,
-      const Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, probdim>& xyze,
+      Core::LinAlg::Matrix<probdim, Core::FE::num_nodes(distype)>& deriv_xyz,
+      const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& deriv,
+      const Core::LinAlg::Matrix<Core::FE::num_nodes(distype), probdim>& xyze,
       const Core::LinAlg::Matrix<probdim, 1>& normal);
 }  // namespace Core::FE
 

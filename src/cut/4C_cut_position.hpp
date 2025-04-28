@@ -248,7 +248,7 @@ namespace Cut
    *
    */
   template <unsigned probdim, Core::FE::CellType eletype,
-      unsigned num_nodes_element = Core::FE::num_nodes<eletype>,
+      unsigned num_nodes_element = Core::FE::num_nodes(eletype),
       unsigned dim = Core::FE::dim<eletype>, CutFloatType floattype = floattype_double>
   class PositionGeneric : public Position
   {
@@ -392,7 +392,7 @@ namespace Cut
    *
    *  */
   template <unsigned probdim, Core::FE::CellType eletype,
-      unsigned num_nodes_element = Core::FE::num_nodes<eletype>,
+      unsigned num_nodes_element = Core::FE::num_nodes(eletype),
       unsigned dim = Core::FE::dim<eletype>, CutFloatType floattype = floattype_double>
   class ComputePosition
       : public PositionGeneric<probdim, eletype, num_nodes_element, dim, floattype>
@@ -437,7 +437,7 @@ namespace Cut
    *
    *  */
   template <unsigned probdim, Core::FE::CellType eletype,
-      unsigned num_nodes_element = Core::FE::num_nodes<eletype>,
+      unsigned num_nodes_element = Core::FE::num_nodes(eletype),
       unsigned dim = Core::FE::dim<eletype>, CutFloatType floattype = floattype_double>
   class ComputeEmbeddedPosition
       : public PositionGeneric<probdim, eletype, num_nodes_element, dim, floattype>
@@ -586,7 +586,7 @@ namespace Cut
    private:
     /// template class for the actual position creation
     template <bool isembedded, unsigned probdim, unsigned dim, Core::FE::CellType eletype,
-        unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
+        unsigned num_nodes_element = Core::FE::num_nodes(eletype)>
     class PositionCreator
     {
      public:
@@ -747,7 +747,7 @@ namespace Cut
      *
      *  */
     template <unsigned probdim, Core::FE::CellType eletype, unsigned dim = Core::FE::dim<eletype>,
-        unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
+        unsigned num_nodes_element = Core::FE::num_nodes(eletype)>
     std::shared_ptr<Position> build_position(
         const Element& element, const Point& point, CutFloatType floattype = floattype_double) const
     {
@@ -815,7 +815,7 @@ namespace Cut
      *
      *  */
     template <unsigned probdim, Core::FE::CellType eletype, unsigned dim = Core::FE::dim<eletype>,
-        unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
+        unsigned num_nodes_element = Core::FE::num_nodes(eletype)>
     static std::shared_ptr<Position> build_position(const Element& element,
         const Core::LinAlg::Matrix<probdim, 1>& xyz, CutFloatType floattype = floattype_double)
     {
@@ -887,7 +887,7 @@ namespace Cut
      *
      *  */
     template <unsigned probdim, Core::FE::CellType eletype, unsigned dim = Core::FE::dim<eletype>,
-        unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
+        unsigned num_nodes_element = Core::FE::num_nodes(eletype)>
     static std::shared_ptr<Position> build_position(
         const Core::LinAlg::Matrix<probdim, num_nodes_element>& xyze,
         const Core::LinAlg::Matrix<probdim, 1>& xyz, CutFloatType floattype = floattype_double)
@@ -917,7 +917,7 @@ namespace Cut
     std::shared_ptr<Position> create_concrete_position(
         const double* xyze, const double* xyz, CutFloatType floattype = floattype_double) const
     {
-      const unsigned num_nodes_ele = Core::FE::num_nodes<eletype>;
+      const unsigned num_nodes_ele = Core::FE::num_nodes(eletype);
       switch (probdim_)
       {
         case 2:
@@ -953,7 +953,7 @@ namespace Cut
      *
      *  */
     template <unsigned probdim, Core::FE::CellType eletype, unsigned dim = Core::FE::dim<eletype>,
-        unsigned num_nodes_element = Core::FE::num_nodes<eletype>>
+        unsigned num_nodes_element = Core::FE::num_nodes(eletype)>
     static std::shared_ptr<Position> build_position(const std::vector<Node*> nodes,
         const Core::LinAlg::Matrix<probdim, 1>& xyz, CutFloatType floattype = floattype_double)
     {

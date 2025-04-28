@@ -25,7 +25,7 @@ namespace Discret::Elements
   struct MulfLinearizationContainer
   {
     Core::LinAlg::Matrix<Internal::num_str<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
         Bop{};
   };
 
@@ -71,7 +71,7 @@ namespace Discret::Elements
           evaluate_green_lagrange_strain(cauchygreen);
 
       Core::LinAlg::Matrix<Internal::num_str<celltype>,
-          Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+          Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
           Bop = evaluate_strain_gradient(jacobian_mapping, spatial_material_mapping);
 
       const MulfLinearizationContainer<celltype> linearization = std::invoke(
@@ -85,7 +85,7 @@ namespace Discret::Elements
     }
 
     static Core::LinAlg::Matrix<Internal::num_str<celltype>,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
     get_linear_b_operator(const MulfLinearizationContainer<celltype>& linearization)
     {
       return linearization.Bop;
@@ -94,7 +94,7 @@ namespace Discret::Elements
     static void add_internal_force_vector(const MulfLinearizationContainer<celltype>& linearization,
         const Stress<celltype>& stress, const double integration_factor,
         MulfHistoryData<celltype>& history_data,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1>&
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1>&
             force_vector)
     {
       Discret::Elements::add_internal_force_vector(
@@ -106,8 +106,8 @@ namespace Discret::Elements
         const MulfLinearizationContainer<celltype>& linearization,
         const JacobianMapping<celltype>& jacobian_mapping, const Stress<celltype>& stress,
         const double integration_factor, MulfHistoryData<celltype>& history_data,
-        Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-            Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>& stiffness_matrix)
+        Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+            Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>& stiffness_matrix)
     {
       Discret::Elements::add_elastic_stiffness_matrix(
           linearization.Bop, stress, integration_factor, stiffness_matrix);

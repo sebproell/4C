@@ -54,7 +54,7 @@ namespace Discret::Elements
    */
   template <Core::FE::CellType celltype>
   void evaluate_d_cauchy_n_dir_d_displacements(
-      const Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>&
+      const Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>&
           d_F_dd,
       const Core::LinAlg::Matrix<9, 1>& d_cauchyndir_dF,
       Core::LinAlg::SerialDenseMatrix& d_cauchyndir_dd)
@@ -74,7 +74,7 @@ namespace Discret::Elements
    */
   template <Core::FE::CellType celltype>
   void evaluate_d2_cauchy_n_dir_d_displacements_d_normal(
-      const Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>&
+      const Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>&
           d_F_dd,
       const Core::LinAlg::Matrix<9, Core::FE::dim<celltype>>& d2_cauchyndir_dF_dn,
       Core::LinAlg::SerialDenseMatrix& d2_cauchyndir_dd_dn)
@@ -94,7 +94,7 @@ namespace Discret::Elements
    */
   template <Core::FE::CellType celltype>
   void evaluate_d2_cauchy_n_dir_d_displacements_d_dir(
-      const Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>&
+      const Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>&
           d_F_dd,
       const Core::LinAlg::Matrix<9, Core::FE::dim<celltype>>& d2_cauchyndir_dF_ddir,
       Core::LinAlg::SerialDenseMatrix& d2_cauchyndir_dd_ddir)
@@ -113,12 +113,12 @@ namespace Discret::Elements
    */
   template <Core::FE::CellType celltype>
   void evaluate_d2_cauchy_n_dir_d_displacements2(
-      const Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>&
+      const Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>&
           d_F_dd,
       const Core::LinAlg::Matrix<9, 9>& d2_cauchyndir_dF2,
       Core::LinAlg::SerialDenseMatrix& d2_cauchyndir_dd_dd)
   {
-    Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+    Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
         d2_cauchyndir_dF_2d_F_dd(Core::LinAlg::Initialization::uninitialized);
     d2_cauchyndir_dF_2d_F_dd.multiply(d2_cauchyndir_dF2, d_F_dd);
     Internal::multiply_tn(d_F_dd, d2_cauchyndir_dF_2d_F_dd, d2_cauchyndir_dd_dd);
@@ -152,12 +152,12 @@ namespace Discret::Elements
    */
   template <Core::FE::CellType celltype>
   void evaluate_d2_cauchy_n_dir_d_displacements_d_xi(
-      const Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype> *
+      const Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype> *
                                         Core::FE::dim<celltype>>& d2_F_dxi_dd,
       const Core::LinAlg::Matrix<9, 1>& d_cauchyndir_dF,
       Core::LinAlg::SerialDenseMatrix& d2_cauchyndir_dd_dxi)
   {
-    constexpr int num_dof = Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>;
+    constexpr int num_dof = Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>;
 
     d2_cauchyndir_dd_dxi.reshape(num_dof, Core::FE::dim<celltype>);
 
@@ -165,7 +165,7 @@ namespace Discret::Elements
     {
       for (int j = 0; j < Core::FE::dim<celltype>; ++j)
       {
-        for (int k = 0; k < Core::FE::num_nodes<celltype>; ++k)
+        for (int k = 0; k < Core::FE::num_nodes(celltype); ++k)
         {
           for (int l = 0; l < Core::FE::dim<celltype>; ++l)
           {
@@ -231,7 +231,7 @@ namespace Discret::Elements
   template <Core::FE::CellType celltype>
   struct CauchyNDirLinearizationDependencies
   {
-    std::optional<Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>>
+    std::optional<Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>>
         d_F_dd{};
     std::optional<Core::LinAlg::Matrix<9, Core::FE::dim<celltype>>> d_F_dxi{};
     std::optional<Core::LinAlg::Matrix<9, 1>> d_cauchyndir_dF{};
@@ -239,7 +239,7 @@ namespace Discret::Elements
     std::optional<Core::LinAlg::Matrix<9, 3>> d2_cauchyndir_dF_ddir{};
     std::optional<Core::LinAlg::Matrix<9, 3>> d2_cauchyndir_dF_dn{};
     std::optional<Core::LinAlg::Matrix<9,
-        Core::FE::num_nodes<celltype> * Core::FE::dim<celltype> * Core::FE::dim<celltype>>>
+        Core::FE::num_nodes(celltype) * Core::FE::dim<celltype> * Core::FE::dim<celltype>>>
         d2_F_dxi_dd{};
   };
 

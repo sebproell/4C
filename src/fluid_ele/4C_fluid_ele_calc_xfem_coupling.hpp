@@ -259,7 +259,7 @@ namespace Discret
       {
        public:
         /// number of nodes per master element
-        static constexpr unsigned nen_ = Core::FE::num_nodes<distype>;
+        static constexpr unsigned nen_ = Core::FE::num_nodes(distype);
         /// number of spatial dimensions
         static constexpr unsigned nsd_ = SlaveElementInterface<distype>::nsd_;
         /// number of nodal DOF for master element (always a xfem-fluid element)
@@ -403,7 +403,7 @@ namespace Discret
       {
        public:
         /// number of nodes per master (xfluid) element
-        static constexpr unsigned nen_ = Core::FE::num_nodes<distype>;
+        static constexpr unsigned nen_ = Core::FE::num_nodes(distype);
         /// number of spatial dimensions of the master element (xfem-fluid)
         static constexpr unsigned nsd_ = SlaveElementInterface<distype>::nsd_;
         /// number of nodal dof for master element (coupling master is always a fluid element!)

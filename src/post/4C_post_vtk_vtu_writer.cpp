@@ -583,7 +583,7 @@ void PostVtuWriter::write_geo_nurbs_ele(const Core::Elements::Element* ele,
 {
   using namespace FourC;
 
-  const unsigned NUMNODES = Core::FE::num_nodes<nurbs_type>;
+  const unsigned NUMNODES = Core::FE::num_nodes(nurbs_type);
   const unsigned DIM = Core::FE::dim<nurbs_type>;
 
   const Core::FE::CellType mapped_dis_type = map_nurbs_dis_type_to_lagrange_dis_type(nurbs_type);
@@ -753,7 +753,7 @@ void PostVtuWriter::write_dof_result_step_nurbs_ele(const Core::Elements::Elemen
 {
   using namespace FourC;
 
-  const unsigned NUMNODES = Core::FE::num_nodes<nurbs_type>;
+  const unsigned NUMNODES = Core::FE::num_nodes(nurbs_type);
   const unsigned DIM = Core::FE::dim<nurbs_type>;
 
   const std::shared_ptr<const Core::FE::Discretization> dis = field_->discretization();
@@ -942,7 +942,7 @@ void PostVtuWriter::write_nodal_result_step_nurbs_ele(const Core::Elements::Elem
 {
   using namespace FourC;
 
-  const unsigned NUMNODES = Core::FE::num_nodes<nurbs_type>;
+  const unsigned NUMNODES = Core::FE::num_nodes(nurbs_type);
   const unsigned DIM = Core::FE::dim<nurbs_type>;
 
   const std::shared_ptr<const Core::FE::Discretization> dis = field_->discretization();

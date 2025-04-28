@@ -43,13 +43,13 @@ namespace Discret
       {
        public:
         /// number of nodes per master (xfem-fluid) element
-        static constexpr unsigned nen_ = Core::FE::num_nodes<distype>;
+        static constexpr unsigned nen_ = Core::FE::num_nodes(distype);
         /// number of spatial dimensions of the master element (xfem-fluid)
         static constexpr unsigned nsd_ = Core::FE::dim<distype>;
         /// number of spatial dimensions of the slave side
         static constexpr unsigned slave_nsd_ = Core::FE::dim<slave_distype>;
         /// number of slave element's nodes
-        static constexpr unsigned slave_nen_ = Core::FE::num_nodes<slave_distype>;
+        static constexpr unsigned slave_nen_ = Core::FE::num_nodes(slave_distype);
 
         //! ctor
         SlaveElementRepresentation(Core::LinAlg::SerialDenseMatrix::Base& slave_xyze)
@@ -266,7 +266,7 @@ namespace Discret
       {
        public:
         /// number of nodes per master (xfem-fluid) element
-        static constexpr unsigned nen_ = Core::FE::num_nodes<distype>;
+        static constexpr unsigned nen_ = Core::FE::num_nodes(distype);
         /// number of spatial dimensions of the master element (xfem-fluid)
         static constexpr unsigned nsd_ = Core::FE::dim<distype>;
         /// number of spatial dimensions of the slave side

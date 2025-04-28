@@ -370,7 +370,7 @@ namespace Discret::Elements
    * @brief Evaluate the derivative of the deformation gradient w.r.t. the displacements
    */
   template <typename SolidFormulation, Core::FE::CellType celltype>
-  inline Core::LinAlg::Matrix<9, Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+  inline Core::LinAlg::Matrix<9, Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
   evaluate_d_deformation_gradient_d_displacements(const Core::Elements::Element& ele,
       const ElementNodes<celltype>& element_nodes,
       const Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>& xi,
@@ -437,7 +437,7 @@ namespace Discret::Elements
    */
   template <typename SolidFormulation, Core::FE::CellType celltype>
   inline Core::LinAlg::Matrix<9,
-      Core::FE::num_nodes<celltype> * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
+      Core::FE::num_nodes(celltype) * Core::FE::dim<celltype> * Core::FE::dim<celltype>>
   evaluate_d_deformation_gradient_d_displacements_d_xi(const Core::Elements::Element& ele,
       const ElementNodes<celltype>& element_nodes,
       const Core::LinAlg::Matrix<Internal::num_dim<celltype>, 1>& xi,
@@ -471,7 +471,7 @@ namespace Discret::Elements
    */
   template <typename SolidFormulation, Core::FE::CellType celltype>
   static Core::LinAlg::Matrix<Core::FE::dim<celltype>*(Core::FE::dim<celltype> + 1) / 2,
-      Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>
+      Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>
   get_linear_b_operator(const typename SolidFormulation::LinearizationContainer& linearization)
   {
     return SolidFormulation::get_linear_b_operator(linearization);
@@ -486,7 +486,7 @@ namespace Discret::Elements
       const Stress<celltype>& stress, const double integration_factor,
       const PreparationData<SolidFormulation>& preparation_data,
       SolidFormulationHistory<SolidFormulation>& history_data, const int gp,
-      Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1>&
+      Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1>&
           force_vector)
   {
     std::apply([](auto&&... args)
@@ -507,8 +507,8 @@ namespace Discret::Elements
       const JacobianMapping<celltype>& jacobian_mapping, const Stress<celltype>& stress,
       const double integration_factor, const PreparationData<SolidFormulation>& preparation_data,
       SolidFormulationHistory<SolidFormulation>& history_data, const int gp,
-      Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-          Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>& stiffness_matrix)
+      Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+          Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>& stiffness_matrix)
   {
     std::apply([](auto&&... args)
         { SolidFormulation::add_stiffness_matrix(std::forward<decltype(args)>(args)...); },
@@ -668,7 +668,7 @@ namespace Discret::Elements
       const typename SolidFormulation::CondensedContributionData& condensed_contribution_data,
       const PreparationData<SolidFormulation>& preparation_data,
       SolidFormulationHistory<SolidFormulation>& history_data,
-      Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>, 1>&
+      Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>, 1>&
           force_vector)
   {
     std::apply(
@@ -697,8 +697,8 @@ namespace Discret::Elements
       const typename SolidFormulation::CondensedContributionData& condensed_contribution_data,
       const PreparationData<SolidFormulation>& preparation_data,
       SolidFormulationHistory<SolidFormulation>& history_data,
-      Core::LinAlg::Matrix<Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>,
-          Core::FE::num_nodes<celltype> * Core::FE::dim<celltype>>& stiffness_matrix)
+      Core::LinAlg::Matrix<Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>,
+          Core::FE::num_nodes(celltype) * Core::FE::dim<celltype>>& stiffness_matrix)
   {
     std::apply(
         [](auto&&... args)

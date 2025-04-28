@@ -1129,8 +1129,8 @@ Core::LinAlg::SerialDenseMatrix Core::FE::get_ele_node_numbering_nodes_paramspac
         else
         {
           Core::LinAlg::SerialDenseMatrix map(
-              Core::FE::dim<my_celltype>, Core::FE::num_nodes<my_celltype>);
-          for (int inode = 0; inode < Core::FE::num_nodes<my_celltype>; inode++)
+              Core::FE::dim<my_celltype>, Core::FE::num_nodes(my_celltype));
+          for (int inode = 0; inode < Core::FE::num_nodes(my_celltype); inode++)
           {
             for (int isd = 0; isd < Core::FE::dim<my_celltype>; isd++)
               map(isd, inode) = get_element_nodes_in_parameter_space<my_celltype>()[inode][isd];

@@ -653,7 +653,7 @@ namespace Cut
    *
    *  */
   template <unsigned probdim, Core::FE::CellType sidetype,
-      unsigned num_nodes_side = Core::FE::num_nodes<sidetype>,
+      unsigned num_nodes_side = Core::FE::num_nodes(sidetype),
       unsigned dim = Core::FE::dim<sidetype>>
   class ConcreteSide : public Side, public ConcreteElement<probdim, sidetype>
   {

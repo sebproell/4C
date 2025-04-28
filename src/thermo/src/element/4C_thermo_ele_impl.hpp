@@ -112,7 +112,7 @@ namespace Discret
           Core::Utils::SingletonAction action = Core::Utils::SingletonAction::create);
 
       //! number of nodes
-      static constexpr int nen_ = Core::FE::num_nodes<distype>;
+      static constexpr int nen_ = Core::FE::num_nodes(distype);
 
       //! number of space dimensions
       static constexpr int nsd_ = Core::FE::dim<distype>;

@@ -608,8 +608,8 @@ namespace Core::FE
   //! normal vector at the Gauss-point (template)
   template <Core::FE::CellType distype, int probdim, typename ValueType>
   void compute_metric_tensor_for_boundary_ele(
-      const Core::LinAlg::Matrix<probdim, Core::FE::num_nodes<distype>, ValueType>& xyze,
-      const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>, ValueType>&
+      const Core::LinAlg::Matrix<probdim, Core::FE::num_nodes(distype), ValueType>& xyze,
+      const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype), ValueType>&
           deriv,
       Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::dim<distype>, ValueType>& metrictensor,
       ValueType& sqrtdetg, const bool throw_error,
@@ -741,8 +741,8 @@ namespace Core::FE
   //! normal vector at the Gausspoint (template)
   template <Core::FE::CellType distype>
   void compute_metric_tensor_for_boundary_ele(
-      const Core::LinAlg::Matrix<(1 + Core::FE::dim<distype>), Core::FE::num_nodes<distype>>& xyze,
-      const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& deriv,
+      const Core::LinAlg::Matrix<(1 + Core::FE::dim<distype>), Core::FE::num_nodes(distype)>& xyze,
+      const Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& deriv,
       Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::dim<distype>>& metrictensor,
       double& sqrtdetg, Core::LinAlg::Matrix<(1 + Core::FE::dim<distype>), 1>* normalvec = nullptr)
   {
@@ -1570,11 +1570,11 @@ namespace Core::FE
    *----------------------------------------------------------------------*/
   template <Core::FE::CellType distype>
   void eval_shape_func_at_bou_int_point(
-      Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>& funct,
-      Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& deriv,
+      Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>& funct,
+      Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& deriv,
       double& fac, Core::LinAlg::Matrix<Core::FE::dim<distype> + 1, 1>& unitnormal, double& drs,
       Core::LinAlg::Matrix<Core::FE::dim<distype>, 1>& xsi,
-      Core::LinAlg::Matrix<Core::FE::dim<distype> + 1, Core::FE::num_nodes<distype>>& xyze,
+      Core::LinAlg::Matrix<Core::FE::dim<distype> + 1, Core::FE::num_nodes(distype)>& xyze,
       const Core::FE::IntPointsAndWeights<Core::FE::dim<distype>>& intpoints, const int gpid,
       const std::vector<Core::LinAlg::SerialDenseVector>* myknots,
       const Core::LinAlg::SerialDenseVector* weights, const bool isnurbs)
@@ -1617,11 +1617,11 @@ namespace Core::FE
   /*----------------------------------------------------------------------*
    *----------------------------------------------------------------------*/
   template <Core::FE::CellType distype>
-  void element_node_normal(Core::LinAlg::Matrix<Core::FE::num_nodes<distype>, 1>& funct,
-      Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& deriv,
+  void element_node_normal(Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>& funct,
+      Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& deriv,
       double& fac, Core::LinAlg::Matrix<Core::FE::dim<distype> + 1, 1>& unitnormal, double& drs,
       Core::LinAlg::Matrix<Core::FE::dim<distype>, 1>& xsi,
-      Core::LinAlg::Matrix<Core::FE::dim<distype> + 1, Core::FE::num_nodes<distype>>& xyze,
+      Core::LinAlg::Matrix<Core::FE::dim<distype> + 1, Core::FE::num_nodes(distype)>& xyze,
       Core::Elements::Element* ele, Core::FE::Discretization& discretization,
       Core::LinAlg::SerialDenseVector& elevec1, const std::vector<double>& edispnp,
       const bool isnurbs, const bool isale)
@@ -1636,7 +1636,7 @@ namespace Core::FE
     static constexpr int nsd = bdrynsd + 1;
 
     // Number of nodes of boundary element
-    static constexpr int bdrynen = Core::FE::num_nodes<distype>;
+    static constexpr int bdrynen = Core::FE::num_nodes(distype);
 
     // Number of degrees of freedom per node
     int numdofpernode = nsd + 1;  // standard case is 'fluid'

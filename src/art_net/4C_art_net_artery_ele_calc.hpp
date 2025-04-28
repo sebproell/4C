@@ -64,7 +64,7 @@ namespace Discret
 
      public:
       //! number of nodes
-      static constexpr int iel_ = Core::FE::num_nodes<distype>;
+      static constexpr int iel_ = Core::FE::num_nodes(distype);
 
       /*!
        * \brief  calculate element length

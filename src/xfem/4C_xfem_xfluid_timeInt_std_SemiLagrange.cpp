@@ -1211,13 +1211,13 @@ void XFEM::XfluidSemiLagrange::call_back_tracking(
   {
     case Core::FE::CellType::hex8:
     {
-      const int numnode = Core::FE::num_nodes<Core::FE::CellType::hex8>;
+      const int numnode = Core::FE::num_nodes(Core::FE::CellType::hex8);
       back_tracking<numnode, Core::FE::CellType::hex8>(ele, data, xi, backTrackingType);
     }
     break;
     case Core::FE::CellType::hex20:
     {
-      const int numnode = Core::FE::num_nodes<Core::FE::CellType::hex20>;
+      const int numnode = Core::FE::num_nodes(Core::FE::CellType::hex20);
       back_tracking<numnode, Core::FE::CellType::hex20>(ele, data, xi, backTrackingType);
     }
     break;

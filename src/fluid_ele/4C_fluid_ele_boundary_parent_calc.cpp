@@ -603,7 +603,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
     static const int nsd = Core::FE::dim<pdistype>;
 
     // number of parent element nodes
-    static const int piel = Core::FE::num_nodes<pdistype>;
+    static const int piel = Core::FE::num_nodes(pdistype);
 
     // reshape element matrices and vectors and init to zero, construct views
     const int peledim = (nsd + 1) * piel;
@@ -631,7 +631,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
     static const int bnsd = Core::FE::dim<bdistype>;
 
     // number of boundary element nodes
-    static const int biel = Core::FE::num_nodes<bdistype>;
+    static const int biel = Core::FE::num_nodes(bdistype);
 
     // get local node coordinates
     Core::LinAlg::Matrix<nsd, biel> bxyze(Core::LinAlg::Initialization::zero);
@@ -1262,7 +1262,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
   static const int nsd = Core::FE::dim<pdistype>;
 
   // number of parent element nodes
-  static const int piel = Core::FE::num_nodes<pdistype>;
+  static const int piel = Core::FE::num_nodes(pdistype);
 
   // reshape element matrices and vectors and init to zero, construct views
   const int peledim = (nsd + 1) * piel;
@@ -1290,7 +1290,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::slip_supp_bc(
   static const int bnsd = Core::FE::dim<bdistype>;
 
   // number of boundary element nodes
-  static const int biel = Core::FE::num_nodes<bdistype>;
+  static const int biel = Core::FE::num_nodes(bdistype);
 
   // get local node coordinates
   Core::LinAlg::Matrix<nsd, biel> bxyze(Core::LinAlg::Initialization::zero);
@@ -1595,7 +1595,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::navier_slip_bc(
   static const int nsd = Core::FE::dim<pdistype>;
 
   // number of parent element nodes
-  static const int piel = Core::FE::num_nodes<pdistype>;
+  static const int piel = Core::FE::num_nodes(pdistype);
 
   // reshape element matrices and vectors and init to zero, construct views
   const int peledim = (nsd + 1) * piel;
@@ -1623,7 +1623,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::navier_slip_bc(
   static const int bnsd = Core::FE::dim<bdistype>;
 
   // number of boundary element nodes
-  static const int biel = Core::FE::num_nodes<bdistype>;
+  static const int biel = Core::FE::num_nodes(bdistype);
 
   // get local node coordinates
   Core::LinAlg::Matrix<nsd, biel> bxyze(Core::LinAlg::Initialization::zero);
@@ -1937,7 +1937,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   static const int nsd = Core::FE::dim<pdistype>;
 
   // number of parent element nodes
-  static const int piel = Core::FE::num_nodes<pdistype>;
+  static const int piel = Core::FE::num_nodes(pdistype);
 
   // reshape element matrices and vectors and init to zero, construct views
   const int peledim = (nsd + 1) * piel;
@@ -1965,7 +1965,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   static const int bnsd = Core::FE::dim<bdistype>;
 
   // number of boundary element nodes
-  static const int biel = Core::FE::num_nodes<bdistype>;
+  static const int biel = Core::FE::num_nodes(bdistype);
 
   // get local node coordinates
   Core::LinAlg::Matrix<nsd, biel> bxyze(Core::LinAlg::Initialization::zero);
@@ -3733,7 +3733,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
   static const int nsd = Core::FE::dim<pdistype>;
 
   // number of parent element nodes
-  static const int piel = Core::FE::num_nodes<pdistype>;
+  static const int piel = Core::FE::num_nodes(pdistype);
 
   // reshape element matrices and vectors and init to zero, construct views
   const int peledim = nsd * piel;
@@ -3767,7 +3767,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::estimate_nitsche_trace_max
   static const int bnsd = Core::FE::dim<bdistype>;
 
   // number of boundary element nodes
-  static const int biel = Core::FE::num_nodes<bdistype>;
+  static const int biel = Core::FE::num_nodes(bdistype);
 
   // get local node coordinates
   Core::LinAlg::Matrix<nsd, biel> bxyze(Core::LinAlg::Initialization::zero);
@@ -4284,10 +4284,10 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
     FOUR_C_THROW("Only incompressible flow with density 1.0 allowed for weak DBCs so far!");
 
   /// number of parentnodes
-  static const int piel = Core::FE::num_nodes<pdistype>;
+  static const int piel = Core::FE::num_nodes(pdistype);
 
   /// number of surfacenodes
-  static const int biel = Core::FE::num_nodes<bdistype>;
+  static const int biel = Core::FE::num_nodes(bdistype);
 
   /// number of spatial dimensions
   static const int nsd = Core::FE::dim<pdistype>;

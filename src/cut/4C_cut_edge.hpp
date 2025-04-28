@@ -284,7 +284,7 @@ namespace Cut
   /*--------------------------------------------------------------------------*/
   template <unsigned prob_dim, Core::FE::CellType edge_type,
       unsigned dim_edge = Core::FE::dim<edge_type>,
-      unsigned num_nodes_edge = Core::FE::num_nodes<edge_type>>
+      unsigned num_nodes_edge = Core::FE::num_nodes(edge_type)>
   class ConcreteEdge : public Edge
   {
    public:

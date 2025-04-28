@@ -112,7 +112,7 @@ namespace Discret
           ) override;
 
      private:
-      const static int enren_ = Core::FE::num_nodes<distype>;
+      const static int enren_ = Core::FE::num_nodes(distype);
 
       /// private Constructor since we are a Singleton.
       FluidEleCalcXWall();

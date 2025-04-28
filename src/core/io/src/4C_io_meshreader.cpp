@@ -858,8 +858,7 @@ namespace
         // number of dummy nodes (that we are not going to use).
         std::stringstream ss;
         ss << cell_type_string;
-        const int numnodes = Core::FE::cell_type_switch(
-            cell_type, [](auto cell_type_t) { return Core::FE::num_nodes<cell_type_t()>; });
+        const int numnodes = Core::FE::num_nodes(cell_type);
         for (int i = 0; i < numnodes; ++i) ss << " " << 0;  // dummy node id
         ss << " " << current_block_data->get<std::string>("ELEMENT_DATA");
         std::string element_string = ss.str();

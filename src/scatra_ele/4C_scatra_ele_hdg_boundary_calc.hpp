@@ -69,7 +69,7 @@ namespace Discret
       ScaTraHDGBoundaryImpl();
 
       //! number of element nodes
-      static constexpr int bdrynen_ = Core::FE::num_nodes<distype>;
+      static constexpr int bdrynen_ = Core::FE::num_nodes(distype);
 
       //! number of space dimensions of the ScaTraHDGBoundary element
       static constexpr int bdrynsd_ = Core::FE::dim<distype>;

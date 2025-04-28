@@ -48,7 +48,7 @@ bool Cut::IntegrationCell::contains(Core::LinAlg::Matrix<3, 1>& x)
 template <unsigned probdim, Core::FE::CellType celltype>
 bool Cut::IntegrationCell::contains(Core::LinAlg::Matrix<probdim, 1>& x)
 {
-  const int n_corner_nodes = Core::FE::num_nodes<celltype>;
+  const int n_corner_nodes = Core::FE::num_nodes(celltype);
 
   Core::LinAlg::Matrix<probdim, n_corner_nodes> coords(xyz_);
 

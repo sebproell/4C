@@ -36,9 +36,9 @@ namespace FLD
    public:
     /// number of nodes for this element type including virtual nodes
     static constexpr int elenumnode =
-        Discret::Elements::MultipleNumNode<enrtype>::multipleNode * Core::FE::num_nodes<distype>;
+        Discret::Elements::MultipleNumNode<enrtype>::multipleNode * Core::FE::num_nodes(distype);
     /// number of nodes for this element type (only real nodes)
-    static constexpr int elenumnodereal = Core::FE::num_nodes<distype>;
+    static constexpr int elenumnodereal = Core::FE::num_nodes(distype);
 
     /// standard constructor
     explicit RotationallySymmetricPeriodicBC()

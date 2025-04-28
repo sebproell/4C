@@ -89,7 +89,7 @@ namespace Discret
       AirwayImpl() = default;
 
       //! number of nodes
-      static constexpr int iel = Core::FE::num_nodes<distype>;
+      static constexpr int iel = Core::FE::num_nodes(distype);
 
 
       /// Evaluate

@@ -32,7 +32,7 @@ namespace Core::Geo
   static inline void element_to_current_coordinates_t(
       const M& xyze, const V& xsi, Core::LinAlg::Matrix<prob_dim, 1>& x)
   {
-    const int numNodes = Core::FE::num_nodes<distype>;
+    const int numNodes = Core::FE::num_nodes(distype);
     static Core::LinAlg::Matrix<numNodes, 1> funct;
 
     Core::FE::shape_function<distype>(xsi, funct);
@@ -582,7 +582,7 @@ namespace Core::Geo
       const M2& xyze                          ///< nodal position array (3,numNodes)
   )
   {
-    const int numNodes = Core::FE::num_nodes<distype>;
+    const int numNodes = Core::FE::num_nodes(distype);
     static Core::LinAlg::Matrix<dim, numNodes> deriv1;
     Core::FE::shape_function_deriv1<distype>(xsi, deriv1);
 
@@ -606,7 +606,7 @@ namespace Core::Geo
       const M1& xyze  ///< nodal coordinates of an element with shape DISTYPE
   )
   {
-    const int numNodes = Core::FE::num_nodes<distype>;
+    const int numNodes = Core::FE::num_nodes(distype);
     static Core::LinAlg::Matrix<numNodes, 1> funct;
     funct.clear();
     Core::FE::shape_function<distype>(xsi, funct);
@@ -651,7 +651,7 @@ namespace Core::Geo
     const size_t dim = Core::FE::dim<distype>;
 
     // number of nodes of element
-    const size_t nen = Core::FE::num_nodes<distype>;
+    const size_t nen = Core::FE::num_nodes(distype);
     bool nodeWithinElement = true;
     const int maxiter = 20;  // 40;
     double residual = 1.0;
@@ -814,7 +814,7 @@ namespace Core::Geo
   static inline void update_jacobian_for_map3_to2(Core::LinAlg::Matrix<3, 2>& Jacobi,
       const Core::LinAlg::Matrix<2, 1>& xsi, const M& xyze_surfaceElement)
   {
-    const int numNodes = Core::FE::num_nodes<distype>;
+    const int numNodes = Core::FE::num_nodes(distype);
 
     static Core::LinAlg::Matrix<2, numNodes> deriv1;
     Core::FE::shape_function_2d_deriv1(deriv1, xsi(0), xsi(1), distype);
@@ -841,7 +841,7 @@ namespace Core::Geo
       const Core::LinAlg::Matrix<2, 1>& xsi, const Core::LinAlg::Matrix<3, 1>& x,
       const M& xyze_surfaceElement)
   {
-    const int numNodes = Core::FE::num_nodes<distype>;
+    const int numNodes = Core::FE::num_nodes(distype);
     static Core::LinAlg::Matrix<numNodes, 1> funct;
     Core::FE::shape_function_2d(funct, xsi(0), xsi(1), distype);
 
@@ -868,7 +868,7 @@ namespace Core::Geo
       const Core::LinAlg::Matrix<3, 2>& Jacobi, const Core::LinAlg::Matrix<3, 1>& F,
       const Core::LinAlg::Matrix<2, 1>& xsi, const M& xyze_surfaceElement)
   {
-    const int numNodes = Core::FE::num_nodes<distype>;
+    const int numNodes = Core::FE::num_nodes(distype);
     static Core::LinAlg::Matrix<3, numNodes> deriv2;
     Core::FE::shape_function_2d_deriv2(deriv2, xsi(0), xsi(1), distype);
 
@@ -997,7 +997,7 @@ namespace Core::Geo
   static void current_to_line_element_coordinates_t(const M& xyze_lineElement,
       const Core::LinAlg::Matrix<3, 1>& physCoord, Core::LinAlg::Matrix<1, 1>& eleCoord)
   {
-    const int numNodes = Core::FE::num_nodes<distype>;
+    const int numNodes = Core::FE::num_nodes(distype);
 
     const int maxiter = 20;
     int iter = 0;
@@ -1099,14 +1099,14 @@ namespace Core::Geo
   */
   template <Core::FE::CellType distype>
   static bool compute_local_coordinates(
-      Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes<distype>>& xyze,
+      Core::LinAlg::Matrix<Core::FE::dim<distype>, Core::FE::num_nodes(distype)>& xyze,
       Core::LinAlg::Matrix<Core::FE::dim<distype>, 1>& x,
       Core::LinAlg::Matrix<Core::FE::dim<distype>, 1>& xsi)
   {
     bool inelement = true;
 
     const int numDim = Core::FE::dim<distype>;
-    const int numNodes = Core::FE::num_nodes<distype>;
+    const int numNodes = Core::FE::num_nodes(distype);
 
     const int maxiter = 20;
     double residual = 1.0;
