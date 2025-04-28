@@ -55,6 +55,9 @@ namespace Adapter
     //! Provide type of algorithm
     enum AdaEnum method_adapt_dis() const override;
 
+    //! Override since we need to setup the auxiliary time integrator
+    void post_setup() override;
+
    protected:
     /// setup of the auxiliary time integrator
     void setup_auxiliary() override;

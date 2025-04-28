@@ -241,4 +241,15 @@ void Adapter::StructureTimeAdaJoint::reset_step()
   sta_->reset_step();
 }
 
+/*----------------------------------------------------------------------*/
+/*----------------------------------------------------------------------*/
+void Adapter::StructureTimeAdaJoint::post_setup()
+{
+  // base post setup
+  Adapter::StructureTimeAda::post_setup();
+
+  // post setup the auxiliary time integrator
+  sta_->post_setup();
+}
+
 FOUR_C_NAMESPACE_CLOSE
