@@ -12,6 +12,7 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_global_data.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_map.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -98,8 +99,8 @@ namespace ReducedLung
 
   struct Airway
   {
-    int global_equation_id;
-    int local_equation_id;
+    int global_element_id;
+    int local_element_id;
     int local_airway_id;
     AirwayType airway_type;
     // dofs: {p1, p2, q} for resistive airways; {p1, p2, q1, q2} for compliant airways
@@ -117,8 +118,8 @@ namespace ReducedLung
   // Save rheological model and (non-)linear elasticity separately
   struct TerminalUnit
   {
-    int global_equation_id;
-    int local_equation_id;
+    int global_element_id;
+    int local_element_id;
     int local_terminal_unit_id;
     TerminalUnitType tu_type;
     double E;
@@ -203,6 +204,11 @@ namespace ReducedLung
       const std::map<int, int>& first_global_dof_of_ele, const std::vector<Connection>& connections,
       const std::vector<Bifurcation>& bifurcations,
       const std::vector<BoundaryCondition>& boundary_conditions);
+
+  void collect_runtime_output_data(
+      Core::IO::DiscretizationVisualizationWriterMesh& visualization_writer,
+      const std::vector<Airway>& airways, const std::vector<TerminalUnit>& terminal_units,
+      const Core::LinAlg::Vector<double>& dofs, const Core::LinAlg::Map* element_row_map);
 }  // namespace ReducedLung
 
 FOUR_C_NAMESPACE_CLOSE
