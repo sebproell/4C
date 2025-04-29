@@ -56,7 +56,8 @@ namespace Core::IO
     /**
      * \brief Add @data to the container at the given key @name.
      *
-     * If an entry with given @p name already exists, it will be overwritten.
+     * If an entry with given @p name already exists, it will be overwritten. The type must be
+     * one of the SupportedType of the input framework.
      */
     template <typename T>
     void add(const std::string& name, const T& data);
@@ -77,7 +78,7 @@ namespace Core::IO
     [[nodiscard]] auto groups() const;
 
     /**
-     * Check if a group with the name @p name exists.
+     * Check if a group with the given @p name exists.
      */
     [[nodiscard]] bool has_group(const std::string& name) const;
 
