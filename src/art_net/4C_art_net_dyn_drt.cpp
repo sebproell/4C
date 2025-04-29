@@ -12,7 +12,6 @@
 #include "4C_art_net_utils.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_io_control.hpp"
 #include "4C_utils_result_test.hpp"
 

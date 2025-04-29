@@ -10,7 +10,6 @@
 #include "4C_config.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_legacy_enum_definitions_materials.hpp"
 
 #include <map>

@@ -17,7 +17,6 @@
 #include "4C_fsi_debugwriter.hpp"
 #include "4C_fsi_statustest.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_io_control.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"

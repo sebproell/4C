@@ -10,7 +10,6 @@
 #include "4C_fem_dofset_predefineddofnumber.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_loma_algorithm.hpp"
 #include "4C_scatra_ele.hpp"
 #include "4C_scatra_timint_implicit.hpp"

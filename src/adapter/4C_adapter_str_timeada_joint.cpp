@@ -10,7 +10,6 @@
 #include "4C_adapter_str_timeloop.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io_control.hpp"
 #include "4C_structure_new_solver_factory.hpp"

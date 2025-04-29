@@ -15,7 +15,6 @@
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_fsi_dirichletneumann_volcoupl.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_io.hpp"
 

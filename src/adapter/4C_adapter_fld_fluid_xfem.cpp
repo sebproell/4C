@@ -11,7 +11,6 @@
 #include "4C_coupling_adapter.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 

@@ -18,7 +18,6 @@
 #include "4C_comm_utils.hpp"
 #include "4C_contact_input.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_inpar_poroelast.hpp"
 #include "4C_inpar_structure.hpp"

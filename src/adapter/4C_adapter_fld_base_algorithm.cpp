@@ -33,7 +33,6 @@
 #include "4C_fluid_xfluid.hpp"
 #include "4C_fluid_xfluid_fluid.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_inpar_elch.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_inpar_fsi.hpp"

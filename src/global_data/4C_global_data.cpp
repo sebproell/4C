@@ -14,7 +14,6 @@
 #include "4C_fem_discretization_hdg.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_legacy_module.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_inpar_problemtype.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"

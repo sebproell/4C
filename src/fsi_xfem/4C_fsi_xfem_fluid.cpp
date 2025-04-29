@@ -9,7 +9,6 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_io_pstream.hpp"
 
 FOUR_C_NAMESPACE_OPEN

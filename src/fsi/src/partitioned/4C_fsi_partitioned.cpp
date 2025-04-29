@@ -26,7 +26,6 @@
 #include "4C_fsi_nox_sd.hpp"
 #include "4C_fsi_utils.hpp"
 #include "4C_global_data.hpp"
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_io_control.hpp"
 #include "4C_structure_aux.hpp"

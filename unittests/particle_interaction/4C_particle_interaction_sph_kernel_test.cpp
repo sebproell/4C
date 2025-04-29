@@ -9,7 +9,6 @@
 
 #include "4C_particle_interaction_sph_kernel.hpp"
 
-#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_particle_interaction_utils.hpp"
 #include "4C_unittest_utils_assertions_test.hpp"
 
