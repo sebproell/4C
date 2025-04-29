@@ -47,14 +47,14 @@ namespace Core::DOFSets
 
     /// Get Max of all GID assigned in the DofSets in front of current one in the list
     /// #static_dofsets_
-    int max_gi_din_list(MPI_Comm comm) const override;
+    int max_gid_in_list(MPI_Comm comm) const override;
 
     //@}
 
     //! @name Construction
 
     /// Add Dof Set to list #static_dofsets_
-    void add_dof_setto_list() override;
+    void add_dof_set_to_list() override;
 
     /// Replace a Dof Set in list #static_dofsets_ with this
     void replace_in_static_dofsets(std::shared_ptr<DofSetInterface> olddofset) override;

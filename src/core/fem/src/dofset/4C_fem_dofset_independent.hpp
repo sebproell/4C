@@ -55,7 +55,7 @@ namespace Core::DOFSets
     std::shared_ptr<DofSet> clone() override { return std::make_shared<IndependentDofSet>(*this); }
 
     /// Add Dof Set to list #static_dofsets_
-    void add_dof_setto_list() override;
+    void add_dof_set_to_list() override;
 
    protected:
     /// get first number to be used as Dof GID in assign_degrees_of_freedom

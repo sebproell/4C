@@ -31,7 +31,7 @@ Core::DOFSets::DofSetProxy::~DofSetProxy()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::DOFSets::DofSetProxy::add_dof_setto_list()
+void Core::DOFSets::DofSetProxy::add_dof_set_to_list()
 {
   // We do nothing here as a proxy does not show up in the dof set list.
   return;
