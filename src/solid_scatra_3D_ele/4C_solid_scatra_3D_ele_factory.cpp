@@ -13,8 +13,6 @@
 #include "4C_solid_3D_ele_properties.hpp"
 #include "4C_utils_enum.hpp"
 
-#include <magic_enum/magic_enum_switch.hpp>
-
 FOUR_C_NAMESPACE_OPEN
 
 namespace
@@ -122,13 +120,13 @@ Discret::Elements::create_solid_scatra_calculation_interface(Core::FE::CellType 
   return Core::FE::cell_type_switch<Internal::ImplementedSolidScatraCellTypes>(celltype,
       [&](auto celltype_t)
       {
-        return magic_enum::enum_switch(
+        return EnumTools::enum_switch(
             [&](auto kinemtype_t)
             {
-              return magic_enum::enum_switch(
+              return EnumTools::enum_switch(
                   [&](auto eletech_t)
                   {
-                    return magic_enum::enum_switch(
+                    return EnumTools::enum_switch(
                         [&](auto prestress_tech_t) -> SolidScatraCalcVariant
                         {
                           constexpr Core::FE::CellType celltype_c = celltype_t();

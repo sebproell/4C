@@ -1710,6 +1710,7 @@ inline void PoroPressureBased::TimIntImpl::print_convergence_values_first_iter(
 {
   if (myrank_ == 0)
   {
+    using EnumTools::operator<<;
     std::cout << "|  " << std::setw(3) << itnum << "/" << std::setw(3) << itemax << "   | "
               << std::setw(10) << std::setprecision(3) << std::scientific << ittolres_ << " ["
               << std::setw(3) << vectornormfres_ << "]  | ";
@@ -1744,6 +1745,7 @@ inline void PoroPressureBased::TimIntImpl::print_convergence_values(
 {
   if (myrank_ == 0)
   {
+    using EnumTools::operator<<;
     std::cout << "|  " << std::setw(3) << itnum << "/" << std::setw(3) << itemax << "   | "
               << std::setw(10) << std::setprecision(3) << std::scientific << ittolres_ << " ["
               << std::setw(3) << vectornormfres_ << "]  | ";

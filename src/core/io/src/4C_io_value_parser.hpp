@@ -12,9 +12,8 @@
 
 #include "4C_io_input_types.hpp"
 #include "4C_utils_demangle.hpp"
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
-
-#include <magic_enum/magic_enum.hpp>
 
 #include <array>
 #include <filesystem>
@@ -199,7 +198,7 @@ namespace Core::IO
     {
       std::string string;
       read_internal(string);
-      auto val = magic_enum::enum_cast<Enum>(string);
+      auto val = EnumTools::enum_cast<Enum>(string);
       if (val)
       {
         value = *val;
@@ -207,7 +206,7 @@ namespace Core::IO
       else
       {
         FOUR_C_THROW("Could not parse value '{}' as an enum constant of type '{}'.", string,
-            magic_enum::enum_type_name<Enum>());
+            EnumTools::enum_type_name<Enum>());
       }
     }
 

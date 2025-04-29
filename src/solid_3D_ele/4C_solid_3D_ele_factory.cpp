@@ -21,8 +21,6 @@
 #include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <magic_enum/magic_enum_switch.hpp>
-
 #include <type_traits>
 
 FOUR_C_NAMESPACE_OPEN
@@ -206,13 +204,13 @@ Discret::Elements::SolidCalcVariant Discret::Elements::create_solid_calculation_
   return Core::FE::cell_type_switch<Internal::ImplementedSolidCellTypes>(celltype,
       [&](auto celltype_t)
       {
-        return magic_enum::enum_switch(
+        return EnumTools::enum_switch(
             [&](auto kinemtype_t)
             {
-              return magic_enum::enum_switch(
+              return EnumTools::enum_switch(
                   [&](auto eletech_t)
                   {
-                    return magic_enum::enum_switch(
+                    return EnumTools::enum_switch(
                         [&](auto prestress_tech_t) -> SolidCalcVariant
                         {
                           constexpr Core::FE::CellType celltype_c = celltype_t();

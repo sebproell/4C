@@ -2843,7 +2843,7 @@ void Solid::TimInt::set_force_interface(
 
 std::string Solid::TimInt::method_title() const
 {
-  return std::string(magic_enum::enum_name(method_name()));
+  return std::string(EnumTools::enum_name(method_name()));
 }
 
 /*----------------------------------------------------------------------*/

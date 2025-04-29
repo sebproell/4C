@@ -10,9 +10,9 @@
 
 #include "4C_config.hpp"
 
+#include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <magic_enum/magic_enum.hpp>
 #include <ryml.hpp>      // IWYU pragma: export
 #include <ryml_std.hpp>  // IWYU pragma: export
 
@@ -173,7 +173,7 @@ namespace Core::IO
   {
     FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
     auto substr = node.node.val();
-    auto val = magic_enum::enum_cast<T>(std::string_view(substr.data(), substr.size()));
+    auto val = EnumTools::enum_cast<T>(std::string_view(substr.data(), substr.size()));
     if (val)
     {
       value = *val;
@@ -181,7 +181,7 @@ namespace Core::IO
     else
     {
       FOUR_C_THROW("Could not parse value '{}' as an enum constant of type '{}'.",
-          std::string_view(substr.data(), substr.size()), magic_enum::enum_type_name<T>());
+          std::string_view(substr.data(), substr.size()), EnumTools::enum_type_name<T>());
     }
   }
 
@@ -233,7 +233,7 @@ template <typename T>
   requires(std::is_enum_v<T>)
 void Core::IO::emit_value_as_yaml(YamlNodeRef node, const T& value)
 {
-  std::string_view str = magic_enum::enum_name(value);
+  std::string_view str = EnumTools::enum_name(value);
   node.node << ryml::csubstr(str.data(), str.size());
 }
 
