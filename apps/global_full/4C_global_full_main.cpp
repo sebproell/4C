@@ -15,7 +15,7 @@
 #include "4C_global_data.hpp"
 #include "4C_global_data_read.hpp"
 #include "4C_global_legacy_module.hpp"
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_utils_exceptions.hpp"

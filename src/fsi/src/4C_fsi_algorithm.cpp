@@ -14,7 +14,7 @@
 #include "4C_coupling_adapter.hpp"
 #include "4C_fsi_str_model_evaluator_partitioned.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_io.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>

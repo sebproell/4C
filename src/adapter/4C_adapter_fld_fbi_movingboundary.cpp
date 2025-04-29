@@ -10,7 +10,7 @@
 #include "4C_adapter_fld_base_algorithm.hpp"
 #include "4C_adapter_fld_fbi_wrapper.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_linalg_sparseoperator.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>

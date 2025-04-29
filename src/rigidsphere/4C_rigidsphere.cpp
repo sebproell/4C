@@ -16,7 +16,7 @@
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_fem_general_utils_integration.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensematrix.hpp"

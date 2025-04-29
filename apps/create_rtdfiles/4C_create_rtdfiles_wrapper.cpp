@@ -17,7 +17,7 @@
 #include "4C_global_data.hpp"
 #include "4C_global_legacy_module_validconditions.hpp"
 #include "4C_global_legacy_module_validmaterials.hpp"
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_string.hpp"
@@ -58,7 +58,7 @@ namespace RTD
     headerdocumentationfile << ".. _headerparameters:\n\n";
     headerdocumentationfile << "Header parameters\n";
     headerdocumentationfile << "=================\n\n";
-    auto parameters = Input::valid_parameters();
+    auto parameters = Global::valid_parameters();
 
     for (const auto& [section_name, spec] : parameters)
     {

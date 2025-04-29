@@ -19,7 +19,7 @@
 #include "4C_global_legacy_module.hpp"
 #include "4C_global_legacy_module_validconditions.hpp"
 #include "4C_global_legacy_module_validmaterials.hpp"
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_io.hpp"
 #include "4C_io_exodus.hpp"
 #include "4C_io_input_file.hpp"
@@ -116,7 +116,7 @@ namespace
       spec = Core::IO::InputSpecBuilders::list(section_name, spec, {.required = false});
     }
 
-    section_specs.merge(Input::valid_parameters());
+    section_specs.merge(Global::valid_parameters());
   }
 }  // namespace
 
@@ -1281,7 +1281,7 @@ void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input
 {
   std::shared_ptr<Teuchos::ParameterList> list = std::make_shared<Teuchos::ParameterList>("ROOT");
 
-  auto parameter_section_specs = Input::valid_parameters();
+  auto parameter_section_specs = global_legacy_module_callbacks().parameters();
 
   for (const auto& [section_name, _] : parameter_section_specs)
   {

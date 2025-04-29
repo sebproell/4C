@@ -9,7 +9,7 @@
 
 #include "4C_particle_interaction_dem_contact_normal.hpp"
 
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_particle_interaction_utils.hpp"
 
 #include <Teuchos_ParameterList.hpp>

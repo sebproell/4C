@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 
 #include "4C_ale_input.hpp"
 #include "4C_beamcontact_input.hpp"
@@ -82,7 +82,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 
-std::map<std::string, Core::IO::InputSpec> Input::valid_parameters()
+std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
 {
   using namespace Core::IO::InputSpecBuilders;
   std::map<std::string, Core::IO::InputSpec> specs;
