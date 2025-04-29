@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_INPAR_VALIDPARAMETERS_HPP
-#define FOUR_C_INPAR_VALIDPARAMETERS_HPP
+#ifndef FOUR_C_GLOBAL_LEGACY_MODULE_VALIDPARAMETERS_HPP
+#define FOUR_C_GLOBAL_LEGACY_MODULE_VALIDPARAMETERS_HPP
 
 #include "4C_config.hpp"
 
@@ -19,14 +19,14 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Input
+namespace Global
 {
   /**
    * The valid parameters per section.
    */
   std::map<std::string, Core::IO::InputSpec> valid_parameters();
 
-}  // namespace Input
+}  // namespace Global
 
 FOUR_C_NAMESPACE_CLOSE
 

@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_validconditions.hpp"
+#include "4C_global_legacy_module_validconditions.hpp"
 
 #include "4C_ale_input.hpp"
 #include "4C_beaminteraction_potential_input.hpp"
@@ -38,7 +38,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-void Input::print_empty_condition_definitions(
+void Global::print_empty_condition_definitions(
     std::ostream& stream, std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   for (auto& i : condlist)
@@ -47,8 +47,7 @@ void Input::print_empty_condition_definitions(
   }
 }
 
-
-namespace Input
+namespace
 {
   // collect some problem-specific conditions that do not fit in the generic sections
   void set_miscellaneous_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
@@ -74,12 +73,12 @@ namespace Input
 
     condlist.push_back(stclayer);
   }
-}  // namespace Input
+}  // namespace
 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<Core::Conditions::ConditionDefinition> Input::valid_conditions()
+std::vector<Core::Conditions::ConditionDefinition> Global::valid_conditions()
 {
   using namespace Core::IO::InputSpecBuilders;
   std::vector<Core::Conditions::ConditionDefinition> condlist;

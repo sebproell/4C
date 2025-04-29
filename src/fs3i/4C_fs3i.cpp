@@ -19,7 +19,6 @@
 #include "4C_fsi_utils.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_fs3i.hpp"
-#include "4C_inpar_validparameters.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linear_solver_method_linalg.hpp"

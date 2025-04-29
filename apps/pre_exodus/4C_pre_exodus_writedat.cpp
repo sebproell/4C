@@ -10,7 +10,7 @@
 #include "4C_fem_condition_definition.hpp"
 #include "4C_fem_general_cell_type_traits.hpp"
 #include "4C_global_data_read.hpp"
-#include "4C_inpar_validconditions.hpp"
+#include "4C_global_legacy_module_validconditions.hpp"
 #include "4C_io_exodus.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_yaml.hpp"
@@ -101,7 +101,7 @@ void EXODUS::write_dat_conditions(const std::vector<EXODUS::CondDef>& condefs,
 {
   using namespace FourC;
 
-  std::vector<Core::Conditions::ConditionDefinition> condlist = Input::valid_conditions();
+  std::vector<Core::Conditions::ConditionDefinition> condlist = Global::valid_conditions();
 
   // count how often we have one specific condition
   std::map<std::string, std::vector<int>> count_cond;

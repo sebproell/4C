@@ -9,7 +9,6 @@
 
 #include "4C_particle_interaction_dem_contact_tangential.hpp"
 
-#include "4C_inpar_validparameters.hpp"
 #include "4C_particle_interaction_utils.hpp"
 #include "4C_unittest_utils_assertions_test.hpp"
 

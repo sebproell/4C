@@ -8,7 +8,6 @@
 #include "4C_inpar_bio.hpp"
 
 #include "4C_fem_condition_definition.hpp"
-#include "4C_inpar_validparameters.hpp"
 #include "4C_io_input_spec_builders.hpp"
 FOUR_C_NAMESPACE_OPEN
 

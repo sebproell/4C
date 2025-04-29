@@ -17,9 +17,9 @@
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_fem_nurbs_discretization.hpp"
 #include "4C_global_legacy_module.hpp"
+#include "4C_global_legacy_module_validconditions.hpp"
 #include "4C_global_legacy_module_validmaterials.hpp"
-#include "4C_inpar_validconditions.hpp"
-#include "4C_inpar_validparameters.hpp"
+#include "4C_global_legacy_module_validparameters.hpp"
 #include "4C_io.hpp"
 #include "4C_io_exodus.hpp"
 #include "4C_io_input_file.hpp"
@@ -93,7 +93,7 @@ namespace
     }
 
     {
-      auto valid_conditions = Input::valid_conditions();
+      auto valid_conditions = global_legacy_module_callbacks().conditions();
       for (const auto& cond : valid_conditions)
       {
         auto condition_spec = all_of({
@@ -116,7 +116,7 @@ namespace
       spec = Core::IO::InputSpecBuilders::list(section_name, spec, {.required = false});
     }
 
-    section_specs.merge(Input::valid_parameters());
+    section_specs.merge(Global::valid_parameters());
   }
 }  // namespace
 
@@ -1281,7 +1281,7 @@ void Global::read_parameter(Global::Problem& problem, Core::IO::InputFile& input
 {
   std::shared_ptr<Teuchos::ParameterList> list = std::make_shared<Teuchos::ParameterList>("ROOT");
 
-  auto parameter_section_specs = Input::valid_parameters();
+  auto parameter_section_specs = global_legacy_module_callbacks().parameters();
 
   for (const auto& [section_name, _] : parameter_section_specs)
   {
@@ -1558,7 +1558,7 @@ void Global::read_conditions(
   nodeset[3] = &dvol_fenode;
 
   // create list of known conditions
-  std::vector<Core::Conditions::ConditionDefinition> valid_conditions = Input::valid_conditions();
+  std::vector<Core::Conditions::ConditionDefinition> valid_conditions = Global::valid_conditions();
 
   // test for each condition definition (input file condition section)
   // - read all conditions that match the definition

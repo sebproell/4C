@@ -13,7 +13,7 @@
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
 #include "4C_global_legacy_module.hpp"
-#include "4C_inpar_validconditions.hpp"
+#include "4C_global_legacy_module_validconditions.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_pre_exodus_readbc.hpp"
@@ -124,8 +124,8 @@ namespace
 
     // print validconditions as proposal
     defaultbc << "-----------------------------------------VALIDCONDITIONS" << std::endl;
-    std::vector<Core::Conditions::ConditionDefinition> condlist = Input::valid_conditions();
-    Input::print_empty_condition_definitions(defaultbc, condlist);
+    std::vector<Core::Conditions::ConditionDefinition> condlist = Global::valid_conditions();
+    Global::print_empty_condition_definitions(defaultbc, condlist);
 
     // print valid element lines as proposal (parobjects have to be registered for doing this!)
     defaultbc << std::endl << std::endl;

@@ -23,7 +23,6 @@
 #include "4C_fsi_monolithic.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_scatra.hpp"
-#include "4C_inpar_validparameters.hpp"
 #include "4C_io_control.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_linear_solver_method_linalg.hpp"

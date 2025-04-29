@@ -9,7 +9,6 @@
 
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_validparameters.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_utils_exceptions.hpp"
 

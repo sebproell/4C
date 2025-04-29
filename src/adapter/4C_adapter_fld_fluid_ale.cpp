@@ -16,7 +16,6 @@
 #include "4C_fsi_dirichletneumann_volcoupl.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_fsi.hpp"
-#include "4C_inpar_validparameters.hpp"
 #include "4C_io.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>

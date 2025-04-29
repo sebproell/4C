@@ -29,7 +29,6 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_s2i.hpp"
 #include "4C_inpar_ssi.hpp"
-#include "4C_inpar_validparameters.hpp"
 #include "4C_inpar_wear.hpp"
 #include "4C_io.hpp"
 #include "4C_io_pstream.hpp"
