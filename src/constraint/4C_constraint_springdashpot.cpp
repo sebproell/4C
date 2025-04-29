@@ -656,7 +656,7 @@ void Constraints::SpringDashpot::evaluate_force(Core::LinAlg::Vector<double>& fi
           offset_prestr_[gid];  // get nodal displacement values of last time step for MULF offset
 
       const int numdof = actdisc_->num_dof(0, node);
-      assert(numdof == 3);
+      FOUR_C_ASSERT(numdof == 3, "Only implemented for 3 DoFs per node.");
       std::vector<int> dofs = actdisc_->dof(0, node);
 
       // initialize
@@ -779,7 +779,7 @@ void Constraints::SpringDashpot::evaluate_force_stiff(Core::LinAlg::SparseMatrix
                                      // offset
 
       const int numdof = actdisc_->num_dof(0, node);
-      assert(numdof == 3);
+      FOUR_C_ASSERT(numdof == 3, "Only implemented for 3 DoFs per node.");
       std::vector<int> dofs = actdisc_->dof(0, node);
 
       // initialize
@@ -931,7 +931,7 @@ void Constraints::SpringDashpot::reset_prestress(const Core::LinAlg::Vector<doub
         if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
 
         const int numdof = actdisc_->num_dof(0, node);
-        assert(numdof == 3);
+        FOUR_C_ASSERT(numdof == 3, "Only implemented for 3 DoFs per node.");
         std::vector<int> dofs = actdisc_->dof(0, node);
 
         // initialize. calculation of displacements differs for each spring variant
@@ -966,7 +966,7 @@ void Constraints::SpringDashpot::set_restart_old(Core::LinAlg::MultiVector<doubl
       if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
 
       [[maybe_unused]] const int numdof = actdisc_->num_dof(0, node);
-      assert(numdof == 3);
+      FOUR_C_ASSERT(numdof == 3, "Only implemented for 3 DoFs per node.");
       std::vector<int> dofs = actdisc_->dof(0, node);
 
 
@@ -1245,7 +1245,7 @@ void Constraints::SpringDashpot::initialize_prestr_offset()
       int numdof = actdisc_->num_dof(0, node);
       std::vector<int> dofs = actdisc_->dof(0, node);
 
-      assert(numdof == 3);
+      FOUR_C_ASSERT(numdof == 3, "Only implemented for 3 DoFs per node.");
 
       std::vector<double> temp(numdof, 0.0);
 
