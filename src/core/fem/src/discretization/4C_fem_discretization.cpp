@@ -318,7 +318,8 @@ void Core::FE::Discretization::print(std::ostream& os) const
       // loop over dofsets
       for (int nds = 0; nds < num_dof_sets(); ++nds)
       {
-        os << "\n------------------------ Dofset " << nds << " :\n\n";
+        os << "\n------------------------ Dofset " << nds << " out of " << num_dof_sets()
+           << " :\n\n";
         // print elements
         {
           os << "-------------------------- Proc " << proc << " :\n";
