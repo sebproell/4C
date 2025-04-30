@@ -180,7 +180,8 @@ namespace ReducedLung
   void collect_runtime_output_data(
       Core::IO::DiscretizationVisualizationWriterMesh& visualization_writer,
       const std::vector<Airway>& airways, const std::vector<TerminalUnit>& terminal_units,
-      const Core::LinAlg::Vector<double>& dofs, const Core::LinAlg::Map* element_row_map)
+      const Core::LinAlg::Vector<double>& locally_relevant_dofs,
+      const Core::LinAlg::Map* element_row_map)
   {
     Core::LinAlg::Vector<double> pressure_in(*element_row_map, true);
     Core::LinAlg::Vector<double> pressure_out(*element_row_map, true);
@@ -188,37 +189,37 @@ namespace ReducedLung
     for (const auto& airway : airways)
     {
       [[maybe_unused]] int err = pressure_in.replace_local_value(
-          airway.local_element_id, 0, dofs[airway.local_dof_ids[p_in]]);
+          airway.local_element_id, 0, locally_relevant_dofs[airway.local_dof_ids[p_in]]);
       FOUR_C_ASSERT(err == 0,
           "Internal error: replace_local_value for runtime output (p_in from airways) did not "
           "work.");
       err = pressure_out.replace_local_value(
-          airway.local_element_id, 0, dofs[airway.local_dof_ids[p_out]]);
+          airway.local_element_id, 0, locally_relevant_dofs[airway.local_dof_ids[p_out]]);
       FOUR_C_ASSERT(err == 0,
           "Internal error: replace_local_value for runtime output (p_out from airways) did not "
           "work.");
-      err =
-          flow_in.replace_local_value(airway.local_element_id, 0, dofs[airway.local_dof_ids[q_in]]);
+      err = flow_in.replace_local_value(
+          airway.local_element_id, 0, locally_relevant_dofs[airway.local_dof_ids[q_in]]);
       FOUR_C_ASSERT(err == 0,
           "Internal error: replace_local_value for runtime output (q_in from airways) did not "
           "work.");
     }
     for (const auto& terminal_unit : terminal_units)
     {
-      [[maybe_unused]] int err = pressure_in.replace_local_value(
-          terminal_unit.local_element_id, 0, dofs[terminal_unit.local_dof_ids[p_in]]);
+      [[maybe_unused]] int err = pressure_in.replace_local_value(terminal_unit.local_element_id, 0,
+          locally_relevant_dofs[terminal_unit.local_dof_ids[p_in]]);
       FOUR_C_ASSERT(err == 0,
           "Internal error: replace_local_value for runtime output (p_in from terminal units) did "
           "not "
           "work.");
-      err = pressure_out.replace_local_value(
-          terminal_unit.local_element_id, 0, dofs[terminal_unit.local_dof_ids[p_out]]);
+      err = pressure_out.replace_local_value(terminal_unit.local_element_id, 0,
+          locally_relevant_dofs[terminal_unit.local_dof_ids[p_out]]);
       FOUR_C_ASSERT(err == 0,
           "Internal error: replace_local_value for runtime output (p_out from terminal units) did "
           "not "
           "work.");
-      err = flow_in.replace_local_value(
-          terminal_unit.local_element_id, 0, dofs[terminal_unit.local_dof_ids[q_in]]);
+      err = flow_in.replace_local_value(terminal_unit.local_element_id, 0,
+          locally_relevant_dofs[terminal_unit.local_dof_ids[q_in]]);
       FOUR_C_ASSERT(err == 0,
           "Internal error: replace_local_value for runtime output (q_in from terminal units) did "
           "not "
