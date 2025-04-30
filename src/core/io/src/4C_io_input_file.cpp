@@ -95,11 +95,6 @@ namespace Core::IO
       {
         //! Node in the tree of the associated InputFileImpl.
         ryml::NodeRef node;
-
-        //! String representation of the section in the .dat format. This is intended as a buffer
-        //! to store the content if it should be requested via `get_as_dat_style_string()`. Do not
-        //! assume this to contain a particular content.
-        std::string dat_style_string{};
       };
 
       //! Content of the section is either in the .dat format or in the yaml format.
@@ -573,55 +568,8 @@ namespace Core::IO
       }
       else
       {
-        // flatten the yaml node into a string
-        std::ostringstream ss;
-        ss << node;
-        // replace all the yaml markup characters with spaces to receive a dat-style string
-        auto& str = pimpl_->section->as_yaml().dat_style_string;
-        str = ss.str();
-        std::replace(str.begin(), str.end(), '\n', ' ');
-        std::replace(str.begin(), str.end(), ':', ' ');
-        std::replace(str.begin(), str.end(), ',', ' ');
-        std::replace(str.begin(), str.end(), '[', ' ');
-        std::replace(str.begin(), str.end(), ']', ' ');
-        str = Core::Utils::trim(str);
-
-        return std::string_view(str);
-      }
-    }
-  }
-
-
-  std::optional<InputParameterContainer> InputFile::Fragment::match(const InputSpec& spec) const
-  {
-    FOUR_C_ASSERT(pimpl_, "Implementation error: fragment is not initialized.");
-
-    if (std::holds_alternative<std::string_view>(pimpl_->fragment))
-    {
-      Core::IO::ValueParser parser{get_as_dat_style_string(),
-          {.base_path = std::filesystem::path(pimpl_->section->file).parent_path()}};
-      InputParameterContainer container;
-      spec.fully_parse(parser, container);
-      return container;
-    }
-    else
-    {
-      const auto node = std::get<ryml::ConstNodeRef>(pimpl_->fragment);
-      // We need to check whether the node contains structured yaml or just a dat-style string.
-      if (node.is_val())
-      {
-        std::string_view dat_style_string{node.val().data(), node.val().size()};
-        Core::IO::ValueParser parser{dat_style_string,
-            {.base_path = std::filesystem::path(pimpl_->section->file).parent_path()}};
-        InputParameterContainer container;
-        spec.fully_parse(parser, container);
-        return container;
-      }
-      else
-      {
-        InputParameterContainer container;
-        spec.match(ConstYamlNodeRef(node, pimpl_->section->file), container);
-        return container;
+        FOUR_C_THROW(
+            "Yaml node does not contain a string. This legacy function is only meant for strings.");
       }
     }
   }
