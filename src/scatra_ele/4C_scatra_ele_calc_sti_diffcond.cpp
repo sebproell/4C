@@ -323,16 +323,16 @@ void Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::calc_mat_and_rhs_sore
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
 int Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::evaluate_action_od(
-    Core::Elements::Element* ele,                     //!< current element
-    Teuchos::ParameterList& params,                   //!< parameter list
-    Core::FE::Discretization& discretization,         //!< discretization
-    const ScaTra::Action& action,                     //!< action parameter
-    Core::Elements::LocationArray& la,                //!< location array
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,  //!< element matrix 1
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,  //!< element matrix 2
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,  //!< element right-hand side vector 1
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,  //!< element right-hand side vector 2
-    Core::LinAlg::SerialDenseVector& elevec3_epetra   //!< element right-hand side vector 3
+    Core::Elements::Element* ele,              //!< current element
+    Teuchos::ParameterList& params,            //!< parameter list
+    Core::FE::Discretization& discretization,  //!< discretization
+    const ScaTra::Action& action,              //!< action parameter
+    Core::Elements::LocationArray& la,         //!< location array
+    Core::LinAlg::SerialDenseMatrix& elemat1,  //!< element matrix 1
+    Core::LinAlg::SerialDenseMatrix& elemat2,  //!< element matrix 2
+    Core::LinAlg::SerialDenseVector& elevec1,  //!< element right-hand side vector 1
+    Core::LinAlg::SerialDenseVector& elevec2,  //!< element right-hand side vector 2
+    Core::LinAlg::SerialDenseVector& elevec3   //!< element right-hand side vector 3
 )
 {
   // determine and evaluate action
@@ -340,7 +340,7 @@ int Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::evaluate_action_od(
   {
     case ScaTra::Action::calc_scatra_mono_odblock_thermoscatra:
     {
-      sysmat_od_thermo_scatra(ele, elemat1_epetra);
+      sysmat_od_thermo_scatra(ele, elemat1);
 
       break;
     }
@@ -348,8 +348,8 @@ int Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::evaluate_action_od(
     default:
     {
       // call base class routine
-      my::evaluate_action_od(ele, params, discretization, action, la, elemat1_epetra,
-          elemat2_epetra, elevec1_epetra, elevec2_epetra, elevec3_epetra);
+      my::evaluate_action_od(
+          ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
 
       break;
     }

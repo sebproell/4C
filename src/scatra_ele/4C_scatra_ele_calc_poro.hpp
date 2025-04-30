@@ -53,41 +53,40 @@ namespace Discret
       //                        Teuchos::ParameterList&       params,
       //                        Core::FE::Discretization &         discretization,
       //                        const std::vector<int> &      lm,
-      //                        Core::LinAlg::SerialDenseMatrix&     elemat1_epetra,
-      //                        Core::LinAlg::SerialDenseMatrix&     elemat2_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec1_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec2_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec3_epetra);
+      //                        Core::LinAlg::SerialDenseMatrix&     elemat1,
+      //                        Core::LinAlg::SerialDenseMatrix&     elemat2,
+      //                        Core::LinAlg::SerialDenseVector&     elevec1,
+      //                        Core::LinAlg::SerialDenseVector&     elevec2,
+      //                        Core::LinAlg::SerialDenseVector&     elevec3);
 
      protected:
       //! evaluate action
       int evaluate_action(Core::Elements::Element* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, const ScaTra::Action& action,
-          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra) override;
+          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+          Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3) override;
 
       //   int EvaluateODMesh(  Core::Elements::Element*                 ele,
       //                        Teuchos::ParameterList&       params,
       //                        Core::FE::Discretization &         discretization,
       //                        const std::vector<int> &      lm,
-      //                        Core::LinAlg::SerialDenseMatrix&     elemat1_epetra,
-      //                        Core::LinAlg::SerialDenseMatrix&     elemat2_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec1_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec2_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec3_epetra);
+      //                        Core::LinAlg::SerialDenseMatrix&     elemat1,
+      //                        Core::LinAlg::SerialDenseMatrix&     elemat2,
+      //                        Core::LinAlg::SerialDenseVector&     elevec1,
+      //                        Core::LinAlg::SerialDenseVector&     elevec2,
+      //                        Core::LinAlg::SerialDenseVector&     elevec3);
       //
       //   int EvaluateODFluid(  Core::Elements::Element*                 ele,
       //                        Teuchos::ParameterList&       params,
       //                        Core::FE::Discretization &         discretization,
       //                        const std::vector<int> &      lm,
-      //                        Core::LinAlg::SerialDenseMatrix&     elemat1_epetra,
-      //                        Core::LinAlg::SerialDenseMatrix&     elemat2_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec1_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec2_epetra,
-      //                        Core::LinAlg::SerialDenseVector&     elevec3_epetra);
+      //                        Core::LinAlg::SerialDenseMatrix&     elemat1,
+      //                        Core::LinAlg::SerialDenseMatrix&     elemat2,
+      //                        Core::LinAlg::SerialDenseVector&     elevec1,
+      //                        Core::LinAlg::SerialDenseVector&     elevec2,
+      //                        Core::LinAlg::SerialDenseVector&     elevec3);
       //
       //   //! calculate matrix and rhs. Here the whole thing is hidden.
       //   virtual void sysmat_od_mesh(

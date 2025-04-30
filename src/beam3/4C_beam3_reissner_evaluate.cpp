@@ -2684,7 +2684,7 @@ void Discret::Elements::Beam3r::evaluate_stochastic_forces(Teuchos::ParameterLis
   get_damping_coefficients(sqrt_gamma);
   for (unsigned int i = 0; i < 2; ++i) sqrt_gamma(i) = std::sqrt(sqrt_gamma(i));
 
-  /* get pointer at Epetra multivector in parameter list linking to random numbers for stochastic
+  /* get pointer at multivector in parameter list linking to random numbers for stochastic
    * forces with zero mean and standard deviation (2*kT / dt)^0.5 */
   std::shared_ptr<Core::LinAlg::MultiVector<double>> randomforces =
       brownian_dyn_params_interface().get_random_forces();

@@ -22,11 +22,9 @@ FOUR_C_NAMESPACE_OPEN
 template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_od(Core::Elements::Element* ele,
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   //--------------------------------------------------------------------------------
   // preparations for element
@@ -48,8 +46,8 @@ int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_od(Core::Elemen
   const auto action = Teuchos::getIntegralValue<ScaTra::Action>(params, "action");
 
   // evaluate action
-  evaluate_action_od(ele, params, discretization, action, la, elemat1_epetra, elemat2_epetra,
-      elevec1_epetra, elevec2_epetra, elevec3_epetra);
+  evaluate_action_od(
+      ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
 
   return 0;
 }
@@ -62,25 +60,23 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleCalc<distype, probdim>::evaluate_action_od(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, const ScaTra::Action& action,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   // determine and evaluate action
   switch (action)
   {
     case ScaTra::Action::calc_scatra_mono_odblock_mesh:
     {
-      sysmat_od_mesh(ele, elemat1_epetra, nsd_);
+      sysmat_od_mesh(ele, elemat1, nsd_);
 
       break;
     }
 
     case ScaTra::Action::calc_scatra_mono_odblock_fluid:
     {
-      sysmat_od_fluid(ele, elemat1_epetra, nsd_ + 1);
+      sysmat_od_fluid(ele, elemat1, nsd_ + 1);
 
       break;
     }

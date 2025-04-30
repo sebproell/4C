@@ -48,8 +48,8 @@ namespace Discret
        */
       virtual int evaluate_neumann(Discret::Elements::ScaTraHDGBoundary* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra) = 0;
+          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseVector& elevec1) = 0;
 
       //! Internal implementation class for ScaTraHDGBoundary elements
       static ScaTraHDGBoundaryImplInterface* impl(const Core::Elements::Element* ele);
@@ -80,8 +80,8 @@ namespace Discret
       //! Evaluate a Neumann boundary condition
       int evaluate_neumann(Discret::Elements::ScaTraHDGBoundary* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra) override;
+          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseVector& elevec1) override;
 
      private:
       //! node coordinates for boundary element

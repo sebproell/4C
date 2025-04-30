@@ -58,16 +58,16 @@ Discret::Elements::ScaTraEleBoundaryCalcElchDiffCond<distype,
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleBoundaryCalcElchDiffCond<distype, probdim>::evaluate_action(
-    Core::Elements::FaceElement* ele,                 //!< boundary element
-    Teuchos::ParameterList& params,                   //!< parameter list
-    Core::FE::Discretization& discretization,         //!< discretization
-    ScaTra::BoundaryAction action,                    //!< action
-    Core::Elements::LocationArray& la,                //!< location array
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,  //!< element matrix 1
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,  //!< element matrix 2
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,  //!< element right-hand side vector 1
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,  //!< element right-hand side vector 2
-    Core::LinAlg::SerialDenseVector& elevec3_epetra   //!< element right-hand side vector 3
+    Core::Elements::FaceElement* ele,          //!< boundary element
+    Teuchos::ParameterList& params,            //!< parameter list
+    Core::FE::Discretization& discretization,  //!< discretization
+    ScaTra::BoundaryAction action,             //!< action
+    Core::Elements::LocationArray& la,         //!< location array
+    Core::LinAlg::SerialDenseMatrix& elemat1,  //!< element matrix 1
+    Core::LinAlg::SerialDenseMatrix& elemat2,  //!< element matrix 2
+    Core::LinAlg::SerialDenseVector& elevec1,  //!< element right-hand side vector 1
+    Core::LinAlg::SerialDenseVector& elevec2,  //!< element right-hand side vector 2
+    Core::LinAlg::SerialDenseVector& elevec3   //!< element right-hand side vector 3
 )
 {
   // determine and evaluate action
@@ -102,16 +102,16 @@ int Discret::Elements::ScaTraEleBoundaryCalcElchDiffCond<distype, probdim>::eval
         FOUR_C_THROW("Invalid material!");
 
       // process electrode kinetics boundary condition
-      myelch::calc_elch_boundary_kinetics(ele, params, discretization, la, elemat1_epetra,
-          elevec1_epetra, dmedc_->get_phase_poro(0));
+      myelch::calc_elch_boundary_kinetics(
+          ele, params, discretization, la, elemat1, elevec1, dmedc_->get_phase_poro(0));
 
       break;
     }
 
     default:
     {
-      myelch::evaluate_action(ele, params, discretization, action, la, elemat1_epetra,
-          elemat2_epetra, elevec1_epetra, elevec2_epetra, elevec3_epetra);
+      myelch::evaluate_action(
+          ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
 
       break;
     }

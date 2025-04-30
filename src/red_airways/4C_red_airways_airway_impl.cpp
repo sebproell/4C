@@ -568,13 +568,11 @@ Discret::Elements::RedAirwayImplInterface* Discret::Elements::RedAirwayImplInter
 template <Core::FE::CellType distype>
 int Discret::Elements::AirwayImpl<distype>::evaluate(RedAirway* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& lm,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat)
 {
-  const int elemVecdim = elevec1_epetra.length();
+  const int elemVecdim = elevec1.length();
 
   Discret::ReducedLung::EvaluationData& evaluation_data =
       Discret::ReducedLung::EvaluationData::get();
@@ -670,7 +668,7 @@ int Discret::Elements::AirwayImpl<distype>::evaluate(RedAirway* ele, Teuchos::Pa
   // ---------------------------------------------------------------------
   // call routine for calculating element matrix and right hand side
   // ---------------------------------------------------------------------
-  sysmat<distype>(ele, epnp, epn, epnm, elemat1_epetra, elevec1_epetra, mat, elem_params, time, dt,
+  sysmat<distype>(ele, epnp, epn, epnm, elemat1, elevec1, mat, elem_params, time, dt,
       evaluation_data.compute_awacinter);
 
   return 0;

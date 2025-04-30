@@ -1763,7 +1763,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
     auto convel = discret_->get_state(nds_vel(), "convective velocity field");
     if (convel == nullptr) FOUR_C_THROW("Cannot get state vector convective velocity");
 
-    // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
+    // convert dof-based vector into node-based multi-vector for postprocessing
     auto convel_multi = Core::LinAlg::MultiVector<double>(*discret_->node_row_map(), nsd_, true);
     for (int inode = 0; inode < discret_->num_my_row_nodes(); ++inode)
     {
@@ -1811,7 +1811,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
         discret_->get_state(nds_disp(), "dispnp");
     if (dispnp == nullptr) FOUR_C_THROW("Cannot extract displacement field from discretization");
 
-    // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
+    // convert dof-based vector into node-based multi-vector for postprocessing
     auto dispnp_multi = Core::LinAlg::MultiVector<double>(*discret_->node_row_map(), nsd_, true);
     for (int inode = 0; inode < discret_->num_my_row_nodes(); ++inode)
     {

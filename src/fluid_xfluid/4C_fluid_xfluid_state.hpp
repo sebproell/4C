@@ -199,7 +199,7 @@ namespace FLD
     /// dof-colmap of intersected fluid
     std::shared_ptr<const Core::LinAlg::Map> xfluiddofcolmap_;
 
-    /// system matrix (internally EpetraFECrs)
+    /// system matrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_;
 
     /// a vector of zeros to be used to enforce zero dirichlet boundary conditions

@@ -207,14 +207,12 @@ template <Core::FE::CellType distype, Discret::Elements::Fluid::EnrichmentType e
 int Discret::Elements::FluidEleCalc<distype, enrtype>::evaluate(Discret::Elements::Fluid* ele,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, bool offdiag)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, bool offdiag)
 {
-  return evaluate(ele, discretization, lm, params, mat, elemat1_epetra, elemat2_epetra,
-      elevec1_epetra, elevec2_epetra, elevec3_epetra, intpoints_, offdiag);
+  return evaluate(ele, discretization, lm, params, mat, elemat1, elemat2, elevec1, elevec2, elevec3,
+      intpoints_, offdiag);
 }
 
 
@@ -222,11 +220,9 @@ template <Core::FE::CellType distype, Discret::Elements::Fluid::EnrichmentType e
 int Discret::Elements::FluidEleCalc<distype, enrtype>::evaluate(Discret::Elements::Fluid* ele,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, const Core::FE::GaussIntegration& intpoints,
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, const Core::FE::GaussIntegration& intpoints,
     bool offdiag)
 {
   // TEUCHOS_FUNC_TIME_MONITOR( "FLD::FluidEleCalc::Evaluate" );
@@ -235,9 +231,9 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::evaluate(Discret::Element
   rotsymmpbc_->setup(ele);
 
   // construct views
-  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, (nsd_ + 1) * nen_> elemat1(elemat1_epetra, true);
-  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, (nsd_ + 1) * nen_> elemat2(elemat2_epetra, true);
-  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, 1> elevec1(elevec1_epetra, true);
+  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, (nsd_ + 1) * nen_> elemat_1(elemat1, true);
+  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, (nsd_ + 1) * nen_> elemat_2(elemat2, true);
+  Core::LinAlg::Matrix<(nsd_ + 1) * nen_, 1> elevec_1(elevec1, true);
   // elevec2 and elevec3 are currently not in use
 
   // ---------------------------------------------------------------------
@@ -529,8 +525,8 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::evaluate(Discret::Element
   eid_ = ele->id();
 
   // call inner evaluate (does not know about element or discretization object)
-  int result = evaluate(params, ebofoaf_, eprescpgaf_, ebofon_, eprescpgn_, elemat1, elemat2,
-      elevec1, evelaf_, epreaf_, evelam_, epream_, eprenp_, evelnp_, escaaf_, emhist_, eaccam_,
+  int result = evaluate(params, ebofoaf_, eprescpgaf_, ebofon_, eprescpgn_, elemat_1, elemat_2,
+      elevec_1, evelaf_, epreaf_, evelam_, epream_, eprenp_, evelnp_, escaaf_, emhist_, eaccam_,
       escadtam_, eveldtam_, epredtam_, escabofoaf_, escabofon_, eveln_, epren_, escaam_, edispnp_,
       egridv_, egridvn_, fsevelaf_, fsescaaf_, evel_hat_, ereynoldsstress_hat_, eporo_,
       gradphieletot_,    // gradphiele,
@@ -540,7 +536,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::evaluate(Discret::Element
       CiDeltaSq, saccn, sveln, svelnp, intpoints, offdiag);
 
   // rotate matrices and vectors if we have a rotationally symmetric problem
-  rotsymmpbc_->rotate_matand_vec_if_necessary(elemat1, elemat2, elevec1);
+  rotsymmpbc_->rotate_matand_vec_if_necessary(elemat_1, elemat_2, elevec_1);
 
   return result;
 }
@@ -8503,7 +8499,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::calc_mass_matrix(
     Discret::Elements::Fluid* ele,
     //    Teuchos::ParameterList&              params,
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
-    std::shared_ptr<Core::Mat::Material>& mat, Core::LinAlg::SerialDenseMatrix& elemat1_epetra)
+    std::shared_ptr<Core::Mat::Material>& mat, Core::LinAlg::SerialDenseMatrix& elemat1)
 {
   // set element id
   eid_ = ele->id();
@@ -8584,7 +8580,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::calc_mass_matrix(
 
         for (int idim = 0; idim < nsd_; ++idim)
         {
-          elemat1_epetra(numdof_vi + idim, numdof_ui_jdim) += estif_u(nsd_vi + idim, nsd_ui_jdim);
+          elemat1(numdof_vi + idim, numdof_ui_jdim) += estif_u(nsd_vi + idim, nsd_ui_jdim);
         }  // end for (idim)
       }  // end for (vi)
     }  // end for (jdim)
@@ -8644,7 +8640,7 @@ int Discret::Elements::FluidEleCalc<distype, enrtype>::calc_mass_matrix(
       {
         const int numdof_vi = numdofpernode_ * vi;
 
-        elemat1_epetra(numdof_vi + nsd_, numdof_ui + nsd_) += ppmat(vi, ui);
+        elemat1(numdof_vi + nsd_, numdof_ui + nsd_) += ppmat(vi, ui);
       }  // end for (vi)
     }  // end for (ui)
   }

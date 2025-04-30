@@ -87,11 +87,9 @@ namespace Discret
     int FluidEleCalcXFEM<distype>::evaluate_xfem(Discret::Elements::Fluid* ele,
         Core::FE::Discretization& discretization, const std::vector<int>& lm,
         Teuchos::ParameterList& params, std::shared_ptr<Core::Mat::Material>& mat,
-        Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-        Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-        Core::LinAlg::SerialDenseVector& elevec1_epetra,
-        Core::LinAlg::SerialDenseVector& elevec2_epetra,
-        Core::LinAlg::SerialDenseVector& elevec3_epetra,
+        Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+        Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+        Core::LinAlg::SerialDenseVector& elevec3,
         const std::vector<Core::FE::GaussIntegration>& intpoints,
         const Cut::plain_volumecell_set& cells, bool offdiag)
     {
@@ -101,8 +99,8 @@ namespace Discret
           i != intpoints.end(); ++i)
       {
         const Core::FE::GaussIntegration intpoints_cell = *i;
-        err = my::evaluate(ele, discretization, lm, params, mat, elemat1_epetra, elemat2_epetra,
-            elevec1_epetra, elevec2_epetra, elevec3_epetra, intpoints_cell, offdiag);
+        err = my::evaluate(ele, discretization, lm, params, mat, elemat1, elemat2, elevec1, elevec2,
+            elevec3, intpoints_cell, offdiag);
         if (err) return err;
       }
       return err;
@@ -114,7 +112,7 @@ namespace Discret
     template <Core::FE::CellType distype>
     int FluidEleCalcXFEM<distype>::integrate_shape_function_xfem(Discret::Elements::Fluid* ele,
         Core::FE::Discretization& discretization, const std::vector<int>& lm,
-        Core::LinAlg::SerialDenseVector& elevec1_epetra,
+        Core::LinAlg::SerialDenseVector& elevec1,
         const std::vector<Core::FE::GaussIntegration>& intpoints,
         const Cut::plain_volumecell_set& cells)
     {
@@ -124,7 +122,7 @@ namespace Discret
           i != intpoints.end(); ++i)
       {
         const Core::FE::GaussIntegration gint = *i;
-        err = my::integrate_shape_function(ele, discretization, lm, elevec1_epetra, gint);
+        err = my::integrate_shape_function(ele, discretization, lm, elevec1, gint);
         if (err) return err;
       }
 
@@ -820,7 +818,7 @@ namespace Discret
 
       // ---------------------------------------------------------------------
 
-      /// element coordinates in EpetraMatrix
+      /// element coordinates
       Core::LinAlg::SerialDenseMatrix ele_xyze(nsd_, nen_);
       for (int i = 0; i < nen_; ++i)
       {
@@ -1283,12 +1281,10 @@ namespace Discret
             side_coupling,                          ///< side coupling matrices
         Teuchos::ParameterList& params,             ///< parameter list
         std::shared_ptr<Core::Mat::Material>& mat,  ///< material
-        Core::LinAlg::SerialDenseMatrix&
-            elemat1_epetra,  ///< local system matrix of intersected element
-        Core::LinAlg::SerialDenseVector&
-            elevec1_epetra,                      ///< local element vector of intersected element
-        Core::LinAlg::SerialDenseMatrix& Cuiui,  ///< coupling matrix of a side with itself
-        const Cut::plain_volumecell_set& vcSet   ///< set of plain volume cells
+        Core::LinAlg::SerialDenseMatrix& elemat1,   ///< local system matrix of intersected element
+        Core::LinAlg::SerialDenseVector& elevec1,   ///< local element vector of intersected element
+        Core::LinAlg::SerialDenseMatrix& Cuiui,     ///< coupling matrix of a side with itself
+        const Cut::plain_volumecell_set& vcSet      ///< set of plain volume cells
     )
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -1354,7 +1350,7 @@ namespace Discret
 
       // ---------------------------------------------------------------------
 
-      /// element coordinates in EpetraMatrix
+      /// element coordinates
       Core::LinAlg::SerialDenseMatrix ele_xyze(nsd_, nen_);
       for (int i = 0; i < nen_; ++i)
       {
@@ -1763,14 +1759,14 @@ namespace Discret
               Core::LinAlg::SerialDenseMatrix& C_uiui = side_matrices_extra[3];
 
               si_nit[coup_sid] = Discret::Elements::XFLUID::NitscheInterface<
-                  distype>::create_nitsche_coupling_x_fluid_sided(side, side_xyze, elemat1_epetra,
-                  C_you, C_uui, C_uiui, elevec1_epetra, rhC_ui, *fldparaxfem_);
+                  distype>::create_nitsche_coupling_x_fluid_sided(side, side_xyze, elemat1, C_you,
+                  C_uui, C_uiui, elevec1, rhC_ui, *fldparaxfem_);
             }
             else
             {
               si_nit[coup_sid] = Discret::Elements::XFLUID::NitscheInterface<
-                  distype>::create_nitsche_coupling_x_fluid_wdbc(side, side_xyze, elemat1_epetra,
-                  elevec1_epetra, *fldparaxfem_);
+                  distype>::create_nitsche_coupling_x_fluid_wdbc(side, side_xyze, elemat1, elevec1,
+                  *fldparaxfem_);
             }
 
             // set velocity for current time step
@@ -1789,8 +1785,7 @@ namespace Discret
             else
             {
               si_nit[coup_sid] = Discret::Elements::XFLUID::NitscheInterface<
-                  distype>::create_nitsche_coupling_x_fluid_wdbc(elemat1_epetra, elevec1_epetra,
-                  *fldparaxfem_);
+                  distype>::create_nitsche_coupling_x_fluid_wdbc(elemat1, elevec1, *fldparaxfem_);
             }
           }
           else
@@ -1955,7 +1950,7 @@ namespace Discret
                   my::funct_,               ///< coupling master shape functions
                   itraction_jump,  ///< prescribed interface traction, jump height for coupled
                                    ///< problems
-                  elevec1_epetra   ///< element rhs vector
+                  elevec1          ///< element rhs vector
               );
 
               if (my::fldparatimint_->is_new_ost_implementation())
@@ -2173,9 +2168,8 @@ namespace Discret
       invK_ss.add_view(Sigmazz, Sigmazz, invbK_ss);
 
       // create views
-      Core::LinAlg::Matrix<numdofpernode_ * nen_, numdofpernode_ * nen_> elemat(
-          elemat1_epetra, true);
-      Core::LinAlg::Matrix<numdofpernode_ * nen_, 1> elevec(elevec1_epetra, true);
+      Core::LinAlg::Matrix<numdofpernode_ * nen_, numdofpernode_ * nen_> elemat(elemat1, true);
+      Core::LinAlg::Matrix<numdofpernode_ * nen_, 1> elevec(elevec1, true);
 
       // now the matrix products involving the inverse matrix will be computed!
 
@@ -2542,7 +2536,7 @@ namespace Discret
       Core::LinAlg::SerialDenseMatrix G_uis(patchelementslm.size(), numstressdof_ * nen_);
       Core::LinAlg::SerialDenseMatrix Cuiui_conv(patchelementslm.size(), patchelementslm.size());
 
-      // transform the block matrix invK_ss to an EpetraSerialDenseMatrix,
+      // transform the block matrix invK_ss to an serial dense matrix,
       // to be later multiplied with G_sui & G_uis!
       Core::LinAlg::SerialDenseMatrix InvKss(nen_ * numstressdof_, nen_ * numstressdof_);
 
@@ -3198,8 +3192,8 @@ namespace Discret
         Teuchos::ParameterList& params,
         std::shared_ptr<Core::Mat::Material>& mat_master,  ///< material for the background
         std::shared_ptr<Core::Mat::Material>& mat_slave,   ///< material for the coupled side
-        Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-        Core::LinAlg::SerialDenseVector& elevec1_epetra, const Cut::plain_volumecell_set& vcSet,
+        Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseVector& elevec1,
+        const Cut::plain_volumecell_set& vcSet,
         std::map<int, std::vector<Core::LinAlg::SerialDenseMatrix>>& side_coupling,
         Core::LinAlg::SerialDenseMatrix& Cuiui, bool evaluated_cut)
     {
@@ -3232,7 +3226,7 @@ namespace Discret
 
       // ---------------------------------------------------------------------
 
-      /// element coordinates in EpetraMatrix
+      /// element coordinates
       Core::LinAlg::SerialDenseMatrix ele_xyze(nsd_, nen_);
       for (int i = 0; i < nen_; ++i)
       {
@@ -3501,14 +3495,13 @@ namespace Discret
                                     // field, currently only one-sided
           {
             ci = Discret::Elements::XFLUID::NitscheInterface<
-                distype>::create_nitsche_coupling_x_fluid_wdbc(elemat1_epetra, elevec1_epetra,
-                *fldparaxfem_);
+                distype>::create_nitsche_coupling_x_fluid_wdbc(elemat1, elevec1, *fldparaxfem_);
           }
           else if (is_mesh_coupling_side)
           {
             ci = Discret::Elements::XFLUID::NitscheInterface<
-                distype>::create_nitsche_coupling_x_fluid_wdbc(coupl_ele, coupl_xyze,
-                elemat1_epetra, elevec1_epetra, *fldparaxfem_);
+                distype>::create_nitsche_coupling_x_fluid_wdbc(coupl_ele, coupl_xyze, elemat1,
+                elevec1, *fldparaxfem_);
           }
         }
         else  // coupling
@@ -3533,14 +3526,14 @@ namespace Discret
           {
             // create interface for the embedded element and the associated side
             ci = Discret::Elements::XFLUID::NitscheInterface<
-                distype>::create_nitsche_coupling_two_sided(coupl_ele, coupl_xyze, elemat1_epetra,
-                C_you, C_uui, eleCuiui, elevec1_epetra, rhC_ui, *fldparaxfem_);
+                distype>::create_nitsche_coupling_two_sided(coupl_ele, coupl_xyze, elemat1, C_you,
+                C_uui, eleCuiui, elevec1, rhC_ui, *fldparaxfem_);
           }
           else  // ... for xfluid-sided coupling
           {
             ci = Discret::Elements::XFLUID::NitscheInterface<
-                distype>::create_nitsche_coupling_x_fluid_sided(coupl_ele, coupl_xyze,
-                elemat1_epetra, C_you, C_uui, eleCuiui, elevec1_epetra, rhC_ui, *fldparaxfem_);
+                distype>::create_nitsche_coupling_x_fluid_sided(coupl_ele, coupl_xyze, elemat1,
+                C_you, C_uui, eleCuiui, elevec1, rhC_ui, *fldparaxfem_);
           }
         }
 
@@ -3767,7 +3760,7 @@ namespace Discret
                   my::funct_,               ///< coupling master shape functions
                   itraction_jump_,  ///< prescribed interface traction, jump height for coupled
                                     ///< problems
-                  elevec1_epetra    ///< element rhs vector
+                  elevec1           ///< element rhs vector
               );
 
               if (my::fldparatimint_->is_new_ost_implementation())
@@ -4475,11 +4468,11 @@ namespace Discret
         const Core::LinAlg::Matrix<nen_, 1>& funct_m,  ///< coupling master shape functions
         const Core::LinAlg::Matrix<nsd_, 1>&
             itraction_jump,  ///< prescribed interface traction, jump height for coupled problems
-        Core::LinAlg::SerialDenseMatrix::Base& elevec1_epetra  ///< element vector
+        Core::LinAlg::SerialDenseMatrix::Base& elevec1  ///< element vector
     )
     {
       const int master_numdof = nsd_ + 1;
-      Core::LinAlg::Matrix<master_numdof * nen_, 1> rhC_um(elevec1_epetra.values(), true);
+      Core::LinAlg::Matrix<master_numdof * nen_, 1> rhC_um(elevec1.values(), true);
 
       // funct_m * timefac * fac
       Core::LinAlg::Matrix<nen_, 1> funct_m_timefacfac(funct_m);
@@ -4511,14 +4504,14 @@ namespace Discret
      *--------------------------------------------------------------------------------*/
     template <Core::FE::CellType distype>
     void FluidEleCalcXFEM<distype>::calculate_continuity_xfem(
-        Discret::Elements::Fluid* ele,                    ///< fluid element
-        Core::FE::Discretization& dis,                    ///< discretization
-        const std::vector<int>& lm,                       ///< local map
-        Core::LinAlg::SerialDenseVector& elevec1_epetra,  ///< element vector
-        const Core::FE::GaussIntegration& intpoints       ///< integration points
+        Discret::Elements::Fluid* ele,               ///< fluid element
+        Core::FE::Discretization& dis,               ///< discretization
+        const std::vector<int>& lm,                  ///< local map
+        Core::LinAlg::SerialDenseVector& elevec1,    ///< element vector
+        const Core::FE::GaussIntegration& intpoints  ///< integration points
     )
     {
-      Core::LinAlg::Matrix<numdofpernode_ * nen_, 1> elevec1(elevec1_epetra, true);
+      Core::LinAlg::Matrix<numdofpernode_ * nen_, 1> elevec_1(elevec1, true);
       Core::LinAlg::Matrix<numdofpernode_, nen_> tmpvel;
       my::eid_ = ele->id();
 
@@ -4549,7 +4542,7 @@ namespace Discret
                  \           /
             */
 
-            elevec1(fui + idim) += my::fac_ * my::derxy_(idim, ui);
+            elevec_1(fui + idim) += my::fac_ * my::derxy_(idim, ui);
           }
         }
       }
@@ -4561,13 +4554,13 @@ namespace Discret
      *--------------------------------------------------------------------------------*/
     template <Core::FE::CellType distype>
     void FluidEleCalcXFEM<distype>::calculate_continuity_xfem(
-        Discret::Elements::Fluid* ele,                   ///< fluid element
-        Core::FE::Discretization& dis,                   ///< discretization
-        const std::vector<int>& lm,                      ///< local map
-        Core::LinAlg::SerialDenseVector& elevec1_epetra  ///< element vector
+        Discret::Elements::Fluid* ele,            ///< fluid element
+        Core::FE::Discretization& dis,            ///< discretization
+        const std::vector<int>& lm,               ///< local map
+        Core::LinAlg::SerialDenseVector& elevec1  ///< element vector
     )
     {
-      calculate_continuity_xfem(ele, dis, lm, elevec1_epetra, my::intpoints_);
+      calculate_continuity_xfem(ele, dis, lm, elevec1, my::intpoints_);
     }
 
 

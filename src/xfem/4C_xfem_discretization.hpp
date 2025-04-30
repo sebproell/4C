@@ -32,7 +32,7 @@ namespace XFEM
     \brief Standard Constructor
 
     \param name (in): name of this discretization
-    \param comm (in): An epetra comm object associated with this discretization
+    \param comm (in): An comm object associated with this discretization
     */
     DiscretizationXFEM(const std::string name, MPI_Comm comm, unsigned int n_dim);
 

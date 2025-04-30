@@ -160,8 +160,8 @@ namespace Discret
       template <Core::FE::CellType bdistype, Core::FE::CellType pdistype>
       void estimate_nitsche_trace_max_eigenvalue(Core::Elements::FaceElement* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          std::vector<int>& lm, Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra1,
-          Core::LinAlg::SerialDenseMatrix::Base& elemat_epetra2);
+          std::vector<int>& lm, Core::LinAlg::SerialDenseMatrix::Base& elemat1,
+          Core::LinAlg::SerialDenseMatrix::Base& elemat2);
 
       template <Core::FE::CellType bdistype, Core::FE::CellType pdistype>
       void mix_hyb_dirichlet(Discret::Elements::FluidBoundary* ele, Teuchos::ParameterList& params,

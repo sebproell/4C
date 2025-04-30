@@ -458,13 +458,12 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   // Here we start the principal stress based algorithm
   // ***************************************************
 
-  // convert to epetra format and solve eigenvalue problem
+  // convert and solve eigenvalue problem
   // this matrix contains spatial eigen directions (the second
   // index corresponds to the eigenvalue)
   Core::LinAlg::SerialDenseMatrix n(3, 3);
   Core::LinAlg::SerialDenseVector lambda_trial_square(3);
 
-  // convert Input Matrix in Epetra format
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < 3; j++) n(i, j) = Be_trial(i, j);
 

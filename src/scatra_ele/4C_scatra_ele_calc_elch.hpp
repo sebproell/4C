@@ -48,20 +48,17 @@ namespace Discret
       //! evaluate the element
       int evaluate(Core::Elements::Element* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra) override;
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3) override;
 
       //! evaluate action
       int evaluate_action(Core::Elements::Element* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, const ScaTra::Action& action,
-          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra) override;
+          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+          Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3) override;
 
      protected:
       /*========================================================================*/
@@ -165,8 +162,8 @@ namespace Discret
           Teuchos::ParameterList& params,                                   ///< parameter list
           Core::FE::Discretization& discretization,                         ///< discretization
           std::vector<int>& lm,                                             ///< location vector
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,                  ///< element matrix
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,  ///< element right-hand side vector
+          Core::LinAlg::SerialDenseMatrix& elemat1,                         ///< element matrix
+          Core::LinAlg::SerialDenseVector& elevec1,  ///< element right-hand side vector
           const double
               scalar  ///< scaling factor for element matrix and right-hand side contributions
       );

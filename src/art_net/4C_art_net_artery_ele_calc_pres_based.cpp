@@ -57,23 +57,22 @@ Discret::Elements::ArteryEleCalcPresBased<distype>::instance(
 template <Core::FE::CellType distype>
 int Discret::Elements::ArteryEleCalcPresBased<distype>::evaluate(Artery* ele,
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3,
+    std::shared_ptr<Core::Mat::Material> mat)
 {
   // the number of nodes
   const int numnode = my::iel_;
 
   // construct views
-  Core::LinAlg::Matrix<numnode, numnode> elemat1(elemat1_epetra.values(), true);
-  Core::LinAlg::Matrix<numnode, 1> elevec1(elevec1_epetra.values(), true);
+  Core::LinAlg::Matrix<numnode, numnode> elemat_1(elemat1.values(), true);
+  Core::LinAlg::Matrix<numnode, 1> elevec_1(elevec1.values(), true);
 
   // ---------------------------------------------------------------------
   // call routine for calculating element matrix and right hand side
   // ---------------------------------------------------------------------
-  sysmat(ele, discretization, la, elemat1, elevec1, mat);
+  sysmat(ele, discretization, la, elemat_1, elevec_1, mat);
 
   return 0;
 }
@@ -84,16 +83,14 @@ template <Core::FE::CellType distype>
 int Discret::Elements::ArteryEleCalcPresBased<distype>::evaluate_service(Artery* ele,
     const Arteries::Action action, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat)
 {
   switch (action)
   {
     case Arteries::calc_flow_pressurebased:
-      evaluate_flow(ele, discretization, la, elevec1_epetra, mat);
+      evaluate_flow(ele, discretization, la, elevec1, mat);
       break;
     default:
       FOUR_C_THROW("Unknown type of action {} for Artery (PressureBased formulation)", action);
@@ -105,11 +102,9 @@ int Discret::Elements::ArteryEleCalcPresBased<distype>::evaluate_service(Artery*
 template <Core::FE::CellType distype>
 int Discret::Elements::ArteryEleCalcPresBased<distype>::scatra_evaluate(Artery* ele,
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization, std::vector<int>& lm,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra, std::shared_ptr<Core::Mat::Material> mat)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat)
 {
   FOUR_C_THROW(
       "not implemented by pressure-based formulation, should be done by cloned "

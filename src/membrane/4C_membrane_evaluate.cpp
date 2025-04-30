@@ -76,18 +76,16 @@ namespace Internal
 template <Core::FE::CellType distype>
 int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& lm,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3)
 {
   // determine size of each element matrix
-  Core::LinAlg::Matrix<numdof_, numdof_> elemat1(elemat1_epetra.values(), true);
-  Core::LinAlg::Matrix<numdof_, numdof_> elemat2(elemat2_epetra.values(), true);
-  Core::LinAlg::Matrix<numdof_, 1> elevec1(elevec1_epetra.values(), true);
-  Core::LinAlg::Matrix<numdof_, 1> elevec2(elevec2_epetra.values(), true);
-  Core::LinAlg::Matrix<numdof_, 1> elevec3(elevec3_epetra.values(), true);
+  Core::LinAlg::Matrix<numdof_, numdof_> elemat_1(elemat1.values(), true);
+  Core::LinAlg::Matrix<numdof_, numdof_> elemat_2(elemat2.values(), true);
+  Core::LinAlg::Matrix<numdof_, 1> elevec_1(elevec1.values(), true);
+  Core::LinAlg::Matrix<numdof_, 1> elevec_2(elevec2.values(), true);
+  Core::LinAlg::Matrix<numdof_, 1> elevec_3(elevec3.values(), true);
 
   // set params interface pointer
   set_params_interface_ptr(params);
@@ -138,9 +136,9 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
       std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       Core::LinAlg::Matrix<numdof_, numdof_>* matptr = nullptr;
-      if (elemat1.is_initialized()) matptr = &elemat1;
+      if (elemat_1.is_initialized()) matptr = &elemat_1;
 
-      mem_nlnstiffmass(lm, mydisp, matptr, nullptr, &elevec1, nullptr, nullptr, params,
+      mem_nlnstiffmass(lm, mydisp, matptr, nullptr, &elevec_1, nullptr, nullptr, params,
           Inpar::Solid::stress_none, Inpar::Solid::strain_none);
     }
     break;
@@ -156,9 +154,9 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
       std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
       Core::LinAlg::Matrix<numdof_, numdof_>* matptr = nullptr;
-      if (elemat1.is_initialized()) matptr = &elemat1;
+      if (elemat_1.is_initialized()) matptr = &elemat_1;
 
-      mem_nlnstiffmass(lm, mydisp, matptr, &elemat2, &elevec1, nullptr, nullptr, params,
+      mem_nlnstiffmass(lm, mydisp, matptr, &elemat_2, &elevec_1, nullptr, nullptr, params,
           Inpar::Solid::stress_none, Inpar::Solid::strain_none);
     }
     break;
@@ -174,7 +172,7 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       if (disp == nullptr) FOUR_C_THROW("Cannot get state vector 'displacement'");
       std::vector<double> mydisp = Core::FE::extract_values(*disp, lm);
 
-      mem_nlnstiffmass(lm, mydisp, nullptr, nullptr, &elevec1, nullptr, nullptr, params,
+      mem_nlnstiffmass(lm, mydisp, nullptr, nullptr, &elevec_1, nullptr, nullptr, params,
           Inpar::Solid::stress_none, Inpar::Solid::strain_none);
     }
     break;
@@ -419,9 +417,9 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
       else  // old structural time integration
       {
         // check length of elevec1
-        if (elevec1_epetra.length() < 1) FOUR_C_THROW("The given result vector is too short.");
+        if (elevec1.length() < 1) FOUR_C_THROW("The given result vector is too short.");
 
-        elevec1_epetra(0) = intenergy;
+        elevec1(0) = intenergy;
       }
     }
     break;
@@ -508,8 +506,8 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
 template <Core::FE::CellType distype>
 int Discret::Elements::Membrane<distype>::evaluate_neumann(Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
-    std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseMatrix* elemat1_epetra)
+    std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseMatrix* elemat1)
 {
   // set params interface pointer
   set_params_interface_ptr(params);
@@ -624,15 +622,14 @@ int Discret::Elements::Membrane<distype>::evaluate_neumann(Teuchos::ParameterLis
     for (int i = 0; i < numnod_; ++i)
     {
       // assemble external force vector
-      elevec1_epetra[noddof_ * i + 0] += fac * xcurr_cross(0) * (shapefcts)(i);
-      elevec1_epetra[noddof_ * i + 1] += fac * xcurr_cross(1) * (shapefcts)(i);
-      elevec1_epetra[noddof_ * i + 2] += fac * xcurr_cross(2) * (shapefcts)(i);
+      elevec1[noddof_ * i + 0] += fac * xcurr_cross(0) * (shapefcts)(i);
+      elevec1[noddof_ * i + 1] += fac * xcurr_cross(1) * (shapefcts)(i);
+      elevec1[noddof_ * i + 2] += fac * xcurr_cross(2) * (shapefcts)(i);
 
       // evaluate external stiffness matrix if needed
-      if (elemat1_epetra != nullptr)
+      if (elemat1 != nullptr)
       {
-        // determine P matrix for all 4 nodes, Gruttmann92 equation (41) and directly fill up
-        // elemat1_epetra
+        // determine P matrix for all 4 nodes, Gruttmann92 equation (41) and directly fill up elemat
         for (int j = 0; j < numnod_; ++j)
         {
           double p1_ij =
@@ -643,12 +640,12 @@ int Discret::Elements::Membrane<distype>::evaluate_neumann(Teuchos::ParameterLis
               (dxds1(2) * derivs_ortho(1, i) - dxds2(2) * derivs_ortho(0, i)) * (shapefcts)(j);
 
           // entries of P matrix are in round brackets
-          (*elemat1_epetra)(noddof_* i + 0, noddof_ * j + 1) += fac * -p3_ij;
-          (*elemat1_epetra)(noddof_* i + 0, noddof_ * j + 2) += fac * +p2_ij;
-          (*elemat1_epetra)(noddof_* i + 1, noddof_ * j + 0) += fac * +p3_ij;
-          (*elemat1_epetra)(noddof_* i + 1, noddof_ * j + 2) += fac * -p1_ij;
-          (*elemat1_epetra)(noddof_* i + 2, noddof_ * j + 0) += fac * -p2_ij;
-          (*elemat1_epetra)(noddof_* i + 2, noddof_ * j + 1) += fac * +p1_ij;
+          (*elemat1)(noddof_* i + 0, noddof_ * j + 1) += fac * -p3_ij;
+          (*elemat1)(noddof_* i + 0, noddof_ * j + 2) += fac * +p2_ij;
+          (*elemat1)(noddof_* i + 1, noddof_ * j + 0) += fac * +p3_ij;
+          (*elemat1)(noddof_* i + 1, noddof_ * j + 2) += fac * -p1_ij;
+          (*elemat1)(noddof_* i + 2, noddof_ * j + 0) += fac * -p2_ij;
+          (*elemat1)(noddof_* i + 2, noddof_ * j + 1) += fac * +p1_ij;
         }
       }
     }

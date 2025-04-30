@@ -68,11 +68,9 @@ void Discret::Elements::Wall1Poro<distype>::pre_evaluate(Teuchos::ParameterList&
 template <Core::FE::CellType distype>
 int Discret::Elements::Wall1Poro<distype>::evaluate(Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3)
 {
   if (not init_) FOUR_C_THROW("internal element data not initialized!");
 
@@ -109,8 +107,7 @@ int Discret::Elements::Wall1Poro<distype>::evaluate(Teuchos::ParameterList& para
       // in some cases we need to write/change some data before evaluating
       pre_evaluate(params, discretization, la);
 
-      my_evaluate(params, discretization, la, elemat1_epetra, elemat2_epetra, elevec1_epetra,
-          elevec2_epetra, elevec3_epetra);
+      my_evaluate(params, discretization, la, elemat1, elemat2, elevec1, elevec2, elevec3);
     }
     break;
     //==================================================================================
@@ -120,12 +117,11 @@ int Discret::Elements::Wall1Poro<distype>::evaluate(Teuchos::ParameterList& para
       pre_evaluate(params, discretization, la);
 
       // evaluate parent solid element
-      Discret::Elements::Wall1::evaluate(params, discretization, la[0].lm_, elemat1_epetra,
-          elemat2_epetra, elevec1_epetra, elevec2_epetra, elevec3_epetra);
+      Discret::Elements::Wall1::evaluate(
+          params, discretization, la[0].lm_, elemat1, elemat2, elevec1, elevec2, elevec3);
 
       // add volume coupling specific terms
-      my_evaluate(params, discretization, la, elemat1_epetra, elemat2_epetra, elevec1_epetra,
-          elevec2_epetra, elevec3_epetra);
+      my_evaluate(params, discretization, la, elemat1, elemat2, elevec1, elevec2, elevec3);
     }
     break;
   }
@@ -136,11 +132,9 @@ int Discret::Elements::Wall1Poro<distype>::evaluate(Teuchos::ParameterList& para
 template <Core::FE::CellType distype>
 int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3)
 {
   this->set_params_interface_ptr(params);
   Core::Elements::ActionType act = Core::Elements::none;
@@ -210,11 +204,11 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
     case Core::Elements::struct_calc_nlnstiff:
     {
       // stiffness
-      Core::LinAlg::Matrix<numdof_, numdof_> elemat1(elemat1_epetra.values(), true);
+      Core::LinAlg::Matrix<numdof_, numdof_> elemat_1(elemat1.values(), true);
       // damping
-      Core::LinAlg::Matrix<numdof_, numdof_> elemat2(elemat2_epetra.values(), true);
+      Core::LinAlg::Matrix<numdof_, numdof_> elemat_2(elemat2.values(), true);
       // internal force vector
-      Core::LinAlg::Matrix<numdof_, 1> elevec1(elevec1_epetra.values(), true);
+      Core::LinAlg::Matrix<numdof_, 1> elevec_1(elevec1.values(), true);
 
       // elevec2+3 are not used anyway
 
@@ -224,12 +218,13 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
       extract_values_from_global_vector(discretization, 0, lm, &mydisp, nullptr, "displacement");
 
       Core::LinAlg::Matrix<numdof_, numdof_>* matptr = nullptr;
-      if (elemat1.is_initialized()) matptr = &elemat1;
+      if (elemat_1.is_initialized()) matptr = &elemat_1;
 
       enum Inpar::Solid::DampKind damping =
           params.get<enum Inpar::Solid::DampKind>("damping", Inpar::Solid::damp_none);
       Core::LinAlg::Matrix<numdof_, numdof_>* matptr2 = nullptr;
-      if (elemat2.is_initialized() and (damping == Inpar::Solid::damp_material)) matptr2 = &elemat2;
+      if (elemat_2.is_initialized() and (damping == Inpar::Solid::damp_material))
+        matptr2 = &elemat_2;
 
       if (la.size() > 1)
       {
@@ -252,7 +247,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
 
           // calculate tangent stiffness matrix
           nonlinear_stiffness_poroelast(
-              lm, mydisp, myvel, myfluidvel, myepreaf, matptr, matptr2, &elevec1, params);
+              lm, mydisp, myvel, myfluidvel, myepreaf, matptr, matptr2, &elevec_1, params);
         }
         else if (la.size() > 2)
         {
@@ -266,7 +261,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
 
             // calculate tangent stiffness matrix
             nonlinear_stiffness_poroelast_pressure_based(
-                lm, mydisp, myephi, matptr, &elevec1, params);
+                lm, mydisp, myephi, matptr, &elevec_1, params);
           }
         }
       }
@@ -278,9 +273,9 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
     case Core::Elements::struct_calc_nlnstiffmass:
     {
       // stiffness
-      Core::LinAlg::Matrix<numdof_, numdof_> elemat1(elemat1_epetra.values(), true);
+      Core::LinAlg::Matrix<numdof_, numdof_> elemat_1(elemat1.values(), true);
       // internal force vector
-      Core::LinAlg::Matrix<numdof_, 1> elevec1(elevec1_epetra.values(), true);
+      Core::LinAlg::Matrix<numdof_, 1> elevec_1(elevec1.values(), true);
 
       // elemat2,elevec2+3 are not used anyway
 
@@ -292,7 +287,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
           discretization, 0, la[0].lm_, &mydisp, nullptr, "displacement");
 
       Core::LinAlg::Matrix<numdof_, numdof_>* matptr = nullptr;
-      if (elemat1.is_initialized()) matptr = &elemat1;
+      if (elemat_1.is_initialized()) matptr = &elemat_1;
 
       // we skip this evaluation if the coupling is not setup yet, i.e.
       // if the secondary dofset or the secondary material was not set
@@ -322,7 +317,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
               discretization, 1, la[1].lm_, &myfluidvel, &myepreaf, "fluidvel");
 
           nonlinear_stiffness_poroelast(
-              lm, mydisp, myvel, myfluidvel, myepreaf, matptr, nullptr, &elevec1, params);
+              lm, mydisp, myvel, myfluidvel, myepreaf, matptr, nullptr, &elevec_1, params);
         }
         else if (la.size() > 2)
         {
@@ -336,7 +331,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
 
             // calculate tangent stiffness matrix
             nonlinear_stiffness_poroelast_pressure_based(
-                lm, mydisp, myephi, matptr, &elevec1, params);
+                lm, mydisp, myephi, matptr, &elevec_1, params);
           }
         }
       }
@@ -348,7 +343,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
     case Core::Elements::struct_poro_calc_fluidcoupling:
     {
       // stiffness
-      Core::LinAlg::Matrix<numdof_, (numdim_ + 1) * numnod_> elemat1(elemat1_epetra.values(), true);
+      Core::LinAlg::Matrix<numdof_, (numdim_ + 1) * numnod_> elemat_1(elemat1.values(), true);
 
       // elemat2,elevec1-3 are not used anyway
 
@@ -356,7 +351,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
       std::vector<int> lm = la[0].lm_;
 
       Core::LinAlg::Matrix<numdof_, (numdim_ + 1) * numnod_>* matptr = nullptr;
-      if (elemat1.is_initialized()) matptr = &elemat1;
+      if (elemat_1.is_initialized()) matptr = &elemat_1;
 
       // need current fluid state,
       // call the fluid discretization: fluid equates 2nd dofset
@@ -397,7 +392,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
               discretization, 0, la[0].lm_, &mydisp, nullptr, "displacement");
 
           // calculate OD-Matrix
-          coupling_poroelast_pressure_based(lm, mydisp, myephi, elemat1_epetra, params);
+          coupling_poroelast_pressure_based(lm, mydisp, myephi, elemat1, params);
         }
         else
           FOUR_C_THROW("cannot find global states displacement or solidpressure");
@@ -410,7 +405,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
     case Core::Elements::struct_calc_internalforce:
     {
       // internal force vector
-      Core::LinAlg::Matrix<numdof_, 1> elevec1(elevec1_epetra.values(), true);
+      Core::LinAlg::Matrix<numdof_, 1> elevec_1(elevec1.values(), true);
 
       // elemat1+2,elevec2+3 are not used anyway
 
@@ -437,7 +432,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
 
         // calculate tangent stiffness matrix
         nonlinear_stiffness_poroelast(
-            lm, mydisp, myvel, myfluidvel, myepreaf, nullptr, nullptr, &elevec1, params);
+            lm, mydisp, myvel, myfluidvel, myepreaf, nullptr, nullptr, &elevec_1, params);
       }
       else if (la.size() > 2)
       {
@@ -451,7 +446,7 @@ int Discret::Elements::Wall1Poro<distype>::my_evaluate(Teuchos::ParameterList& p
 
           // calculate tangent stiffness matrix
           nonlinear_stiffness_poroelast_pressure_based(
-              lm, mydisp, myephi, nullptr, &elevec1, params);
+              lm, mydisp, myephi, nullptr, &elevec_1, params);
         }
       }
     }

@@ -80,11 +80,9 @@ template <Core::FE::CellType distype, unsigned prob_dim>
 int Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::evaluate(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+    Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+    Core::LinAlg::SerialDenseVector& elevec3)
 {
   // setup
   if (setup_calc(ele, discretization) == -1) return 0;
@@ -96,7 +94,7 @@ int Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::evaluate(
   if (phinp == nullptr) FOUR_C_THROW("Cannot get state vector 'phinp'");
   Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*phinp, my::ephinp_, lm);
 
-  eval_reinitialization(*phinp, lm, ele, params, discretization, elemat1_epetra, elevec1_epetra);
+  eval_reinitialization(*phinp, lm, ele, params, discretization, elemat1, elevec1);
 
   return 0;
 }
@@ -108,19 +106,18 @@ template <Core::FE::CellType distype, unsigned prob_dim>
 void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitialization(
     const Core::LinAlg::Vector<double>& phinp, const std::vector<int>& lm,
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra)
+    Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseVector& elevec1)
 {
   // --- standard case --------------------------------------------------------
   if (prob_dim == this->nsd_ele_)
   {
-    eval_reinitialization_std(
-        phinp, lm, ele, params, discretization, elemat1_epetra, elevec1_epetra);
+    eval_reinitialization_std(phinp, lm, ele, params, discretization, elemat1, elevec1);
   }
   // --- embedded case --------------------------------------------------------
   else
   {
-    eval_reinitialization_embedded(lm, ele, params, discretization, elemat1_epetra, elevec1_epetra);
+    eval_reinitialization_embedded(lm, ele, params, discretization, elemat1, elevec1);
   }
 }
 
@@ -130,8 +127,8 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitial
 template <Core::FE::CellType distype, unsigned prob_dim>
 void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitialization_embedded(
     const std::vector<int>& lm, Core::Elements::Element* ele, Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra)
+    Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseVector& elevec1)
 {
   // distinguish reinitialization
   switch (lsreinitparams_->reinit_type())
@@ -190,18 +187,17 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitial
       {
         case ScaTra::Action::calc_mat_and_rhs:
         {
-          elliptic_newton_system(
-              &elemat1_epetra, &elevec1_epetra, el2sysmat_diag_inv, boundaryIntCells);
+          elliptic_newton_system(&elemat1, &elevec1, el2sysmat_diag_inv, boundaryIntCells);
           break;
         }
         case ScaTra::Action::calc_rhs:
         {
-          elliptic_newton_system(nullptr, &elevec1_epetra, el2sysmat_diag_inv, boundaryIntCells);
+          elliptic_newton_system(nullptr, &elevec1, el2sysmat_diag_inv, boundaryIntCells);
           break;
         }
         case ScaTra::Action::calc_mat:
         {
-          elliptic_newton_system(&elemat1_epetra, nullptr, el2sysmat_diag_inv, boundaryIntCells);
+          elliptic_newton_system(&elemat1, nullptr, el2sysmat_diag_inv, boundaryIntCells);
           break;
         }
         default:
@@ -346,8 +342,8 @@ template <Core::FE::CellType distype, unsigned prob_dim>
 void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitialization_std(
     const Core::LinAlg::Vector<double>& phinp, const std::vector<int>& lm,
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra)
+    Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseVector& elevec1)
 {
   // distinguish reinitialization
   switch (lsreinitparams_->reinit_type())
@@ -375,7 +371,7 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitial
       }
 
       // calculate element coefficient matrix and rhs
-      sysmat_hyperbolic(elemat1_epetra, elevec1_epetra);
+      sysmat_hyperbolic(elemat1, elevec1);
       break;
     }
     case Inpar::ScaTra::reinitaction_ellipticeq:
@@ -407,7 +403,7 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitial
       }
 
       // calculate element coefficient matrix and rhs
-      sysmat_elliptic(elemat1_epetra, elevec1_epetra, boundaryIntCells);
+      sysmat_elliptic(elemat1, elevec1, boundaryIntCells);
       break;
     }
     default:

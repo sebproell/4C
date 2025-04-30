@@ -381,7 +381,6 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   cauchy_green_tensor.multiply_nt(*defgrd, *defgrd);
 
   // To compute the spectral decomposition, the Cauchy-Green tensor
-  // must be converted to Epetra format
   Core::LinAlg::SerialDenseMatrix cauchy_green_eigenvectors(3, 3);
   Core::LinAlg::SerialDenseVector cauchy_green_eigenvalues(3);
 

@@ -404,20 +404,23 @@ namespace Discret
                                            ///< configuration (false)
           ) = 0;
 
-      virtual void static_ke_nonlinear(Ale3* ele,     ///< pointer to element
-          Core::FE::Discretization& discretization,   ///< discretization
-          std::vector<int>& lm,                       ///< node owner procs
-          Core::LinAlg::SerialDenseMatrix& sys_mat,   ///< element stiffness matrix (to be filled)
-          Core::LinAlg::SerialDenseVector& residual,  ///< element residual vector (to be filled)
-          std::vector<double>& my_dispnp,             ///< nodal displacements
-          Teuchos::ParameterList& params,             ///< parameter list
+      virtual void static_ke_nonlinear(Ale3* ele,    ///< pointer to element
+          Core::FE::Discretization& discretization,  ///< discretization
+          std::vector<int>& lm,                      ///< node owner procs
+          Core::LinAlg::SerialDenseMatrix&
+              element_matrix,  ///< element stiffness matrix (to be filled)
+          Core::LinAlg::SerialDenseVector&
+              element_residual,            ///< element residual vector (to be filled)
+          std::vector<double>& my_dispnp,  ///< nodal displacements
+          Teuchos::ParameterList& params,  ///< parameter list
           const bool spatialconfiguration  ///< use spatial configuration (true), material
                                            ///< configuration (false)
           ) = 0;
 
-      virtual void static_ke_laplace(Ale3* ele,       ///< pointer to element
-          Core::FE::Discretization& dis,              ///< discretization
-          Core::LinAlg::SerialDenseMatrix& sys_mat,   ///< element stiffnes matrix (to be filled)
+      virtual void static_ke_laplace(Ale3* ele,  ///< pointer to element
+          Core::FE::Discretization& dis,         ///< discretization
+          Core::LinAlg::SerialDenseMatrix&
+              element_matrix,                         ///< element stiffnes matrix (to be filled)
           Core::LinAlg::SerialDenseVector& residual,  ///< element residual vector (to be filled)
           std::vector<double>& my_dispnp,             ///< nodal displacements
           std::shared_ptr<Core::Mat::Material> material,  ///< material law
@@ -437,9 +440,10 @@ namespace Discret
       static Ale3Impl<distype>* instance(
           Core::Utils::SingletonAction action = Core::Utils::SingletonAction::create);
 
-      void static_ke_laplace(Ale3* ele,               ///< pointer to element
-          Core::FE::Discretization& dis,              ///< discretization
-          Core::LinAlg::SerialDenseMatrix& sys_mat,   ///< element stiffnes matrix (to be filled)
+      void static_ke_laplace(Ale3* ele,   ///< pointer to element
+          Core::FE::Discretization& dis,  ///< discretization
+          Core::LinAlg::SerialDenseMatrix&
+              element_matrix,                         ///< element stiffnes matrix (to be filled)
           Core::LinAlg::SerialDenseVector& residual,  ///< element residual vector (to be filled)
           std::vector<double>& my_dispnp,             ///< nodal displacements
           std::shared_ptr<Core::Mat::Material> material,  ///< material law
@@ -449,21 +453,23 @@ namespace Discret
 
       void static_ke_spring(Ale3* ele,  ///< pointer to element
           Core::LinAlg::SerialDenseMatrix&
-              sys_mat_epetra,  ///< element stiffness matrix (to be filled)
+              element_matrix,  ///< element stiffness matrix (to be filled)
           Core::LinAlg::SerialDenseVector&
-              residual_epetra,                       ///< element residual vector (to be filled)
+              element_residual,                      ///< element residual vector (to be filled)
           const std::vector<double>& displacements,  ///< nodal displacements
           const bool spatialconfiguration            ///< use spatial configuration (true), material
                                                      ///< configuration (false)
           ) override;
 
-      void static_ke_nonlinear(Ale3* ele,             ///< pointer to element
-          Core::FE::Discretization& discretization,   ///< discretization
-          std::vector<int>& lm,                       ///< node owner procs
-          Core::LinAlg::SerialDenseMatrix& sys_mat,   ///< element stiffness matrix (to be filled)
-          Core::LinAlg::SerialDenseVector& residual,  ///< element residual vector (to be filled)
-          std::vector<double>& my_dispnp,             ///< nodal displacements
-          Teuchos::ParameterList& params,             ///< parameter list
+      void static_ke_nonlinear(Ale3* ele,            ///< pointer to element
+          Core::FE::Discretization& discretization,  ///< discretization
+          std::vector<int>& lm,                      ///< node owner procs
+          Core::LinAlg::SerialDenseMatrix&
+              element_matrix,  ///< element stiffness matrix (to be filled)
+          Core::LinAlg::SerialDenseVector&
+              element_residual,            ///< element residual vector (to be filled)
+          std::vector<double>& my_dispnp,  ///< nodal displacements
+          Teuchos::ParameterList& params,  ///< parameter list
           const bool spatialconfiguration  ///< use spatial configuration (true), material
                                            ///< configuration (false)
           ) override;

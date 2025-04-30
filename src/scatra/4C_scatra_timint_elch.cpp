@@ -2930,7 +2930,7 @@ void ScaTra::ScaTraTimIntElch::apply_dirichlet_bc(const double time,
         }  // relevant condition
       }  // loop over all conditions
 
-      // transform set into vector and then into Epetra map
+      // transform set into vector and then into map
       std::vector<int> dbcgidsvec(dbcgids.begin(), dbcgids.end());
       auto dbcmap = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(dbcgids.size()),
           dbcgidsvec.data(), dof_row_map()->IndexBase(), dof_row_map()->Comm());

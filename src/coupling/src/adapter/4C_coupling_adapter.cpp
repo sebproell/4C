@@ -128,7 +128,7 @@ void Coupling::Adapter::Coupling::setup_coupling(const Core::FE::Discretization&
   match_nodes(
       masterdis, slavedis, patchedmasternodes, permslavenodes, slavenodes, matchall, tolerance);
 
-  // Epetra maps in original distribution
+  // maps in original distribution
 
   std::shared_ptr<Core::LinAlg::Map> masternodemap =
       std::make_shared<Core::LinAlg::Map>(-1, patchedmasternodes.size(), patchedmasternodes.data(),
@@ -271,7 +271,7 @@ void Coupling::Adapter::Coupling::setup_coupling(const Core::FE::Discretization&
 
   match_nodes(masterdis, slavedis, mastervect, permslavenodes, slavevect, matchall, tolerance);
 
-  // Epetra maps in original distribution
+  // maps in original distribution
 
   std::shared_ptr<Core::LinAlg::Map> masternodemap =
       std::make_shared<Core::LinAlg::Map>(-1, mastervect.size(), mastervect.data(), 0,
@@ -300,7 +300,7 @@ void Coupling::Adapter::Coupling::setup_coupling(const Core::FE::Discretization&
     FOUR_C_THROW("got {} master nodes but {} slave nodes for coupling",
         masternodemap.NumGlobalElements(), slavenodemap.NumGlobalElements());
 
-  // just copy Epetra maps
+  // just copy maps
 
   std::shared_ptr<Core::LinAlg::Map> mymasternodemap =
       std::make_shared<Core::LinAlg::Map>(masternodemap);

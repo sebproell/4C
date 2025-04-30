@@ -3027,7 +3027,7 @@ void Discret::Elements::Beam3k::evaluate_stochastic_forces(
   Core::LinAlg::Matrix<3, 1> gamma(Core::LinAlg::Initialization::zero);
   get_damping_coefficients(gamma);
 
-  /* get pointer at Epetra multivector in parameter list linking to random numbers for stochastic
+  /* get pointer at multivector in parameter list linking to random numbers for stochastic
    * forces with zero mean and standard deviation (2*kT / dt)^0.5 */
   std::shared_ptr<Core::LinAlg::MultiVector<double>> randomforces =
       brownian_dyn_params_interface().get_random_forces();

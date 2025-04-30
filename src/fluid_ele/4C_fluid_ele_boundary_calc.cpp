@@ -213,8 +213,8 @@ template <Core::FE::CellType distype>
 int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
     Discret::Elements::FluidBoundary* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
-    std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseMatrix* elemat1_epetra)
+    std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseMatrix* elemat1)
 {
   // find out whether we will use a time curve
   const double time = fldparatimint_->time();
@@ -432,11 +432,11 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
           const double valfac = val[idim] * fac_time_dens * functfac;
           for (int inode = 0; inode < bdrynen_; ++inode)
           {
-            elevec1_epetra[inode * numdofpernode_ + idim] += funct_(inode) * valfac;
+            elevec1[inode * numdofpernode_ + idim] += funct_(inode) * valfac;
             if (fldparatimint_->is_new_ost_implementation())
             {
               const double valfacn = val[idim] * fac_time_densn * functfacn;
-              elevec1_epetra[inode * numdofpernode_ + idim] += funct_(inode) * valfacn;
+              elevec1[inode * numdofpernode_ + idim] += funct_(inode) * valfacn;
             }
           }  // end is_new_ost_implementation
         }  // if onoff
@@ -470,13 +470,12 @@ int Discret::Elements::FluidBoundaryImpl<distype>::evaluate_neumann(
           const double valfac = val[0] * fac_time_dens * functfac;
           for (int inode = 0; inode < bdrynen_; ++inode)
           {
-            elevec1_epetra[inode * numdofpernode_ + idim] +=
-                funct_(inode) * valfac * (-unitnormal_(idim));
+            elevec1[inode * numdofpernode_ + idim] += funct_(inode) * valfac * (-unitnormal_(idim));
 
             if (fldparatimint_->is_new_ost_implementation())
             {
               const double valfacn = val[0] * fac_time_densn * functfacn;
-              elevec1_epetra[inode * numdofpernode_ + idim] +=
+              elevec1[inode * numdofpernode_ + idim] +=
                   funct_(inode) * valfacn * (-unitnormal_(idim));
             }
           }  // end is_new_ost_implementation
@@ -574,7 +573,7 @@ void Discret::Elements::FluidBoundaryImpl<distype>::neumann_inflow(
   myvelaf = Core::FE::extract_values(*velaf, lm);
   myscaaf = Core::FE::extract_values(*scaaf, lm);
 
-  // create Epetra objects for scalar array and velocities
+  // create objects for scalar array and velocities
   Core::LinAlg::Matrix<nsd_, bdrynen_> evelaf(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<bdrynen_, 1> epreaf(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<bdrynen_, 1> escaaf(Core::LinAlg::Initialization::zero);

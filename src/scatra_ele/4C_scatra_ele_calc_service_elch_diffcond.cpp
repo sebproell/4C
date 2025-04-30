@@ -144,11 +144,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::evaluate_action(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, const ScaTra::Action& action,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   // determine and evaluate action
   switch (action)
@@ -182,24 +180,23 @@ int Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::evaluate_act
         FOUR_C_THROW("Invalid material!");
 
       // process electrode boundary kinetics point condition
-      myelch::calc_elch_boundary_kinetics_point(ele, params, discretization, la[0].lm_,
-          elemat1_epetra, elevec1_epetra, diff_manager()->get_phase_poro(0));
+      myelch::calc_elch_boundary_kinetics_point(ele, params, discretization, la[0].lm_, elemat1,
+          elevec1, diff_manager()->get_phase_poro(0));
 
       break;
     }
 
     case ScaTra::Action::calc_elch_domain_kinetics:
     {
-      calc_elch_domain_kinetics(
-          ele, params, discretization, la[0].lm_, elemat1_epetra, elevec1_epetra);
+      calc_elch_domain_kinetics(ele, params, discretization, la[0].lm_, elemat1, elevec1);
 
       break;
     }
 
     default:
     {
-      myelectrode::evaluate_action(ele, params, discretization, action, la, elemat1_epetra,
-          elemat2_epetra, elevec1_epetra, elevec2_epetra, elevec3_epetra);
+      myelectrode::evaluate_action(
+          ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
 
       break;
     }
@@ -214,8 +211,7 @@ template <Core::FE::CellType distype, int probdim>
 void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_domain_kinetics(
     Core::Elements::Element* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, std::vector<int>& lm,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra)
+    Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseVector& elevec1)
 {
   // from scatra_ele_boundary_calc_elch_diffcond.cpp
   std::shared_ptr<Core::Mat::Material> material = ele->material();
@@ -338,15 +334,15 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
 
     if (zerocur == 0)
     {
-      evaluate_elch_domain_kinetics(ele, elemat1_epetra, elevec1_epetra, ephinp, ehist, timefac,
-          *cond, nume, *stoich, kinetics, pot0);
+      evaluate_elch_domain_kinetics(
+          ele, elemat1, elevec1, ephinp, ehist, timefac, *cond, nume, *stoich, kinetics, pot0);
     }
 
     // realize correct scaling of rhs contribution for gen.alpha case
     // with dt*(gamma/alpha_M) = timefac/alpha_F
     // matrix contributions are already scaled correctly with
     // timefac=dt*(gamma*alpha_F/alpha_M)
-    elevec1_epetra.scale(rhsfac);
+    elevec1.scale(rhsfac);
   }
 
   else
@@ -368,8 +364,8 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
       if (timefac < 0.) FOUR_C_THROW("time factor is negative.");
     }
 
-    evaluate_electrode_status(ele, elevec1_epetra, params, *cond, ephinp, ephidtnp, kinetics,
-        *stoich, nume, pot0, timefac);
+    evaluate_electrode_status(
+        ele, elevec1, params, *cond, ephinp, ephidtnp, kinetics, *stoich, nume, pot0, timefac);
   }
 }
 

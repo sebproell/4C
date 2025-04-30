@@ -200,7 +200,7 @@ int PostProblem::field_pos(const PostField* field) const
 
 
 /*----------------------------------------------------------------------*
- * returns the Epetra Communicator object
+ * returns the MPI communicator object
  *----------------------------------------------------------------------*/
 MPI_Comm PostProblem::get_comm() { return comm_; }
 
@@ -857,7 +857,7 @@ void PostResult::open_result_files(MAP* field_info)
 
 /*----------------------------------------------------------------------*
  * reads the data of the result vector 'name' from the current result
- * block and returns it as an Epetra Vector.
+ * block and returns it as an vector.
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::Vector<double>> PostResult::read_result(const std::string name)
 {
@@ -918,7 +918,7 @@ PostResult::read_result_serialdensematrix(const std::string name)
 
 /*----------------------------------------------------------------------*
  * reads the data of the result vector 'name' from the current result
- * block and returns it as an Epetra Vector.
+ * block and returns it as an multi vector.
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>> PostResult::read_multi_result(
     const std::string name)

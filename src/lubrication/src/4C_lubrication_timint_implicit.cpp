@@ -1001,7 +1001,7 @@ void Lubrication::TimIntImpl::output_state()
         discret_->get_state(nds_disp_, "dispnp");
     if (dispnp == nullptr) FOUR_C_THROW("Cannot extract displacement field from discretization");
 
-    // convert dof-based Epetra vector into node-based Epetra multi-vector for postprocessing
+    // convert dof-based vector into node-based multi-vector for postprocessing
     Core::LinAlg::MultiVector<double> dispnp_multi(*discret_->node_row_map(), nsd_, true);
     for (int inode = 0; inode < discret_->num_my_row_nodes(); ++inode)
     {

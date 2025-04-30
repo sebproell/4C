@@ -992,7 +992,7 @@ void ScaTra::LevelSetAlgorithm::redistribute(Core::LinAlg::Graph& nodegraph)
   //      to be redistributed, too
   FOUR_C_THROW("Fix Redistribution!");
   //--------------------------------------------------------------------
-  // Now update all Core::LinAlg::Vectors and Epetra_Matrix to the new dofmap
+  // Now update all vectors and matrices to the new dofmap
   //--------------------------------------------------------------------
 
   discret_->compute_null_space_if_necessary(solver_->params(), true);

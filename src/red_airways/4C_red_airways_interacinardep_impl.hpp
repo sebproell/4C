@@ -37,22 +37,18 @@ namespace Discret
       virtual ~RedInterAcinarDepImplInterface() = default;  /// Evaluate the element
       virtual int evaluate(RedInterAcinarDep* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, std::vector<int>& lm,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra,
-          std::shared_ptr<Core::Mat::Material> mat) = 0;
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3, std::shared_ptr<Core::Mat::Material> mat) = 0;
 
       virtual void initial(RedInterAcinarDep* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, std::vector<int>& lm,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra,
+          Core::LinAlg::SerialDenseVector& elevec3,
           std::shared_ptr<const Core::Mat::Material> material) = 0;
 
       virtual void evaluate_terminal_bc(RedInterAcinarDep* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, std::vector<int>& lm,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          std::shared_ptr<Core::Mat::Material> mat) = 0;
+          Core::LinAlg::SerialDenseVector& elevec1, std::shared_ptr<Core::Mat::Material> mat) = 0;
 
       virtual void calc_flow_rates(RedInterAcinarDep* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, Core::LinAlg::SerialDenseVector& a_volumen,
@@ -95,11 +91,9 @@ namespace Discret
        */
       int evaluate(RedInterAcinarDep* ele, Teuchos::ParameterList& params,
           Core::FE::Discretization& discretization, std::vector<int>& lm,
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,
-          Core::LinAlg::SerialDenseVector& elevec3_epetra,
+          Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+          Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+          Core::LinAlg::SerialDenseVector& elevec3,
           std::shared_ptr<Core::Mat::Material> mat) override;
 
       /*!

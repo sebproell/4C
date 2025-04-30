@@ -51,11 +51,11 @@ namespace Discret
           Core::FE::Discretization& discretization,          //!< discretization
           ScaTra::BoundaryAction action,                     //!< action
           Core::Elements::LocationArray& la,                 //!< location array
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,   //!< element matrix 1
-          Core::LinAlg::SerialDenseMatrix& elemat2_epetra,   //!< element matrix 2
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,   //!< element right-hand side vector 1
-          Core::LinAlg::SerialDenseVector& elevec2_epetra,   //!< element right-hand side vector 2
-          Core::LinAlg::SerialDenseVector& elevec3_epetra    //!< element right-hand side vector 3
+          Core::LinAlg::SerialDenseMatrix& elemat1,          //!< element matrix 1
+          Core::LinAlg::SerialDenseMatrix& elemat2,          //!< element matrix 2
+          Core::LinAlg::SerialDenseVector& elevec1,          //!< element right-hand side vector 1
+          Core::LinAlg::SerialDenseVector& elevec2,          //!< element right-hand side vector 2
+          Core::LinAlg::SerialDenseVector& elevec3           //!< element right-hand side vector 3
           ) override;
 
       //! evaluate an electrode kinetics boundary condition
@@ -84,8 +84,8 @@ namespace Discret
           Teuchos::ParameterList& params,                                 ///< parameter list
           Core::FE::Discretization& discretization,                       ///< discretization
           Core::Elements::LocationArray& la,                              ///< location array
-          Core::LinAlg::SerialDenseMatrix& elemat1_epetra,                ///< element matrix
-          Core::LinAlg::SerialDenseVector& elevec1_epetra,  ///< element right-hand side vector
+          Core::LinAlg::SerialDenseMatrix& elemat1,                       ///< element matrix
+          Core::LinAlg::SerialDenseVector& elevec1,  ///< element right-hand side vector
           const double
               scalar  ///< scaling factor for element matrix and right-hand side contributions
       );
@@ -111,8 +111,8 @@ namespace Discret
       //! evaluate linearization of nernst equation
       void calc_nernst_linearization(Core::Elements::FaceElement* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-          Core::LinAlg::SerialDenseVector& elevec1_epetra);
+          Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+          Core::LinAlg::SerialDenseVector& elevec1);
 
       //! calculate cell voltage
       void calc_cell_voltage(

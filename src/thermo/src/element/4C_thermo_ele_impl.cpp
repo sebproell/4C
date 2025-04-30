@@ -141,11 +141,11 @@ template <Core::FE::CellType distype>
 int Discret::Elements::TemperImpl<distype>::evaluate(
     const Core::Elements::Element* ele, Teuchos::ParameterList& params,
     const Core::FE::Discretization& discretization, const Core::Elements::LocationArray& la,
-    Core::LinAlg::SerialDenseMatrix& elemat1_epetra,  // Tangent ("stiffness")
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,  // Capacity ("mass")
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,  // internal force vector
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,  // external force vector
-    Core::LinAlg::SerialDenseVector& elevec3_epetra   // capacity vector
+    Core::LinAlg::SerialDenseMatrix& elemat1,  // Tangent ("stiffness")
+    Core::LinAlg::SerialDenseMatrix& elemat2,  // Capacity ("mass")
+    Core::LinAlg::SerialDenseVector& elevec1,  // internal force vector
+    Core::LinAlg::SerialDenseVector& elevec2,  // external force vector
+    Core::LinAlg::SerialDenseVector& elevec3   // capacity vector
 )
 {
   prepare_nurbs_eval(ele, discretization);
@@ -212,9 +212,8 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   {
     // set views
     Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> etang(
-        elemat1_epetra.values(), true);  // view only!
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(
-        elevec1_epetra.values(), true);  // view only!
+        elemat1.values(), true);                                                   // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(elevec1.values(), true);  // view only!
     // ecapa, efext, efcap not needed for this action
     // econd: conductivity matrix
     // etang: tangent of thermal problem.
@@ -228,8 +227,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   else if (action == Thermo::calc_thermo_fint)
   {
     // set views
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(
-        elevec1_epetra.values(), true);  // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(elevec1.values(), true);  // view only!
     // etang, ecapa, efext, efcap not needed for this action
 
     evaluate_tang_capa_fint(
@@ -243,9 +241,8 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   {
     // set views
     Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> ecapa(
-        elemat2_epetra.values(), true);  // view only!
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(
-        elevec1_epetra.values(), true);  // view only!
+        elemat2.values(), true);                                                   // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(elevec1.values(), true);  // view only!
     // etang, efext, efcap not needed for this action
 
     evaluate_tang_capa_fint(
@@ -290,13 +287,11 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   {
     // set views
     Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> etang(
-        elemat1_epetra.values(), true);  // view only!
+        elemat1.values(), true);  // view only!
     Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> ecapa(
         Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(
-        elevec1_epetra.values(), true);  // view only!
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efcap(
-        elevec3_epetra.values(), true);  // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(elevec1.values(), true);  // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efcap(elevec3.values(), true);  // view only!
 
     // etang: effective dynamic tangent of thermal problem
     // --> etang == k_{T,effdyn}^{(e)} = timefac_capa ecapa + timefac_cond econd
@@ -317,11 +312,11 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
       calculate_lump_matrix(&ecapa);
     }
 
-    // explicitly insert capacity matrix into corresponding Epetra matrix if existing
-    if (elemat2_epetra.values() != nullptr)
+    // explicitly insert capacity matrix into corresponding matrix if existing
+    if (elemat2.values() != nullptr)
     {
       Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> ecapa_export(
-          elemat2_epetra.values(), true);  // view only!
+          elemat2.values(), true);  // view only!
       ecapa_export.update(ecapa);
     }
 
@@ -460,11 +455,10 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   {
     // set views
     Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> etang(
-        elemat1_epetra.values(), true);  // view only!
+        elemat1.values(), true);  // view only!
     Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * numdofpernode_> ecapa(
-        elemat2_epetra.values(), true);  // view only!
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(
-        elevec1_epetra.values(), true);  // view only!
+        elemat2.values(), true);                                                   // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efint(elevec1.values(), true);  // view only!
     // efext, efcap not needed for this action
 
     const std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>
@@ -477,9 +471,9 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
         ((*gpheatfluxmap)[gid])->values(), true);  // view only!
 
     // set views to components
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efluxx(elevec1_epetra, true);  // view only!
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efluxy(elevec2_epetra, true);  // view only!
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efluxz(elevec3_epetra, true);  // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efluxx(elevec1, true);  // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efluxy(elevec2, true);  // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efluxz(elevec3, true);  // view only!
 
     // catch unknown heatflux types
     bool processed = false;
@@ -529,7 +523,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   {
     // calculate integral of shape functions
     const auto dofids = params.get<std::shared_ptr<Core::LinAlg::IntSerialDenseVector>>("dofids");
-    integrate_shape_functions(ele, elevec1_epetra, *dofids);
+    integrate_shape_functions(ele, elevec1, *dofids);
   }
 
   //============================================================================
@@ -560,7 +554,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   else if (action == Thermo::calc_thermo_energy)
   {
     // check length of elevec1
-    if (elevec1_epetra.length() < 1) FOUR_C_THROW("The given result vector is too short.");
+    if (elevec1.length() < 1) FOUR_C_THROW("The given result vector is too short.");
 
     // get node coordinates
     Core::Geo::fill_initial_position_array<distype, nsd_, Core::LinAlg::Matrix<nsd_, nen_>>(
@@ -591,7 +585,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
 
     }  // -------------------------------- end loop over Gauss Points
 
-    elevec1_epetra(0) = intenergy;
+    elevec1(0) = intenergy;
 
   }  // evaluation of internal energy
 
@@ -601,7 +595,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   else if (action == Thermo::calc_thermo_coupltang)
   {
     Core::LinAlg::Matrix<nen_ * numdofpernode_, nen_ * nsd_ * numdofpernode_> etangcoupl(
-        elemat1_epetra.values(), true);
+        elemat1.values(), true);
 
     // if it's a TSI problem and there are the current displacements/velocities
     evaluate_coupled_tang(ele, discretization, la, &etangcoupl, params);
@@ -610,8 +604,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
   //============================================================================
   else if (action == Thermo::calc_thermo_error)
   {
-    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> evector(
-        elevec1_epetra.values(), true);  // view only!
+    Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> evector(elevec1.values(), true);  // view only!
 
     compute_error(ele, evector, params);
   }
@@ -628,8 +621,8 @@ int Discret::Elements::TemperImpl<distype>::evaluate(
 template <Core::FE::CellType distype>
 int Discret::Elements::TemperImpl<distype>::evaluate_neumann(const Core::Elements::Element* ele,
     const Teuchos::ParameterList& params, const Core::FE::Discretization& discretization,
-    const std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseMatrix* elemat1_epetra)
+    const std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseMatrix* elemat1)
 {
   // prepare nurbs
   prepare_nurbs_eval(ele, discretization);
@@ -637,7 +630,7 @@ int Discret::Elements::TemperImpl<distype>::evaluate_neumann(const Core::Element
   // check length
   if (lm.size() != nen_ * numdofpernode_) FOUR_C_THROW("Location vector length does not match!");
   // set views
-  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efext(elevec1_epetra, true);  // view only!
+  Core::LinAlg::Matrix<nen_ * numdofpernode_, 1> efext(elevec1, true);  // view only!
   // disassemble temperature
   if (discretization.has_state(0, "temperature"))
   {

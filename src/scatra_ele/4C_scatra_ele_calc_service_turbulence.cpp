@@ -1631,9 +1631,9 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::calc_dissipation(
     // we have to set a vector, which is however only required for one
     // special case (computation of fine-scale subgrid diffusivity for non-incremental
     // solver -> only artificial subgrid diffusivity) not considered here
-    Core::LinAlg::SerialDenseVector elevec1_epetra_subgrdiff_dummy;
+    Core::LinAlg::SerialDenseVector elevec1_subgrdiff_dummy;
     if (turbparams_->fssgd())
-      calc_fine_scale_subgr_diff(sgdiff, elevec1_epetra_subgrdiff_dummy, ele, vol, 0, densnp[0],
+      calc_fine_scale_subgr_diff(sgdiff, elevec1_subgrdiff_dummy, ele, vol, 0, densnp[0],
           diffmanager_->get_isotropic_diff(0), scatravarmanager_->con_vel(0));
 
     // calculation of stabilization parameter at element center
@@ -1751,9 +1751,9 @@ void Discret::Elements::ScaTraEleCalc<distype, probdim>::calc_dissipation(
       // we have to set a vector, which is however only required for one
       // special case (computation of fine-scale subgrid diffusivity for non-incremental
       // solver -> only artificial subgrid diffusivity) not considered here
-      Core::LinAlg::SerialDenseVector elevec1_epetra_subgrdiff_dummy;
+      Core::LinAlg::SerialDenseVector elevec1_subgrdiff_dummy;
       if (turbparams_->fssgd())
-        calc_fine_scale_subgr_diff(sgdiff, elevec1_epetra_subgrdiff_dummy, ele, vol, 0, densnp[0],
+        calc_fine_scale_subgr_diff(sgdiff, elevec1_subgrdiff_dummy, ele, vol, 0, densnp[0],
             diffmanager_->get_isotropic_diff(0), scatravarmanager_->con_vel(0));
 
       // calculation of subgrid-scale velocity at integration point if required

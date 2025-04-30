@@ -41,11 +41,9 @@ namespace Thermo
     //! must be defined in TemperBoundaryImpl.
     virtual int evaluate(const FaceElement* ele, Teuchos::ParameterList& params,
         const Core::FE::Discretization& discretization, const Core::Elements::LocationArray& la,
-        Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-        Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-        Core::LinAlg::SerialDenseVector& elevec1_epetra,
-        Core::LinAlg::SerialDenseVector& elevec2_epetra,
-        Core::LinAlg::SerialDenseVector& elevec3_epetra) = 0;
+        Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+        Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+        Core::LinAlg::SerialDenseVector& elevec3) = 0;
 
     //! Evaluate a Neumann boundary condition
     //!
@@ -54,7 +52,7 @@ namespace Thermo
     virtual int evaluate_neumann(const Core::Elements::Element* ele, Teuchos::ParameterList& params,
         const Core::FE::Discretization& discretization,
         const Core::Conditions::Condition& condition, const std::vector<int>& lm,
-        Core::LinAlg::SerialDenseVector& elevec1_epetra) = 0;
+        Core::LinAlg::SerialDenseVector& elevec1) = 0;
 
     //! Internal implementation class for thermo elements
     static TemperBoundaryImplInterface* impl(const Core::Elements::Element* ele);
@@ -115,17 +113,15 @@ namespace Thermo
     //! Evaluate (la required in case of multiple dofsets)
     int evaluate(const FaceElement* ele, Teuchos::ParameterList& params,
         const Core::FE::Discretization& discretization, const Core::Elements::LocationArray& la,
-        Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-        Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-        Core::LinAlg::SerialDenseVector& elevec1_epetra,
-        Core::LinAlg::SerialDenseVector& elevec2_epetra,
-        Core::LinAlg::SerialDenseVector& elevec3_epetra) override;
+        Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseMatrix& elemat2,
+        Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseVector& elevec2,
+        Core::LinAlg::SerialDenseVector& elevec3) override;
 
     //! Evaluate a Neumann boundary condition
     int evaluate_neumann(const Core::Elements::Element* ele, Teuchos::ParameterList& params,
         const Core::FE::Discretization& discretization,
         const Core::Conditions::Condition& condition, const std::vector<int>& lm,
-        Core::LinAlg::SerialDenseVector& elevec1_epetra) override;
+        Core::LinAlg::SerialDenseVector& elevec1) override;
 
    private:
     //! prepare the evaluation of NURBS shape functions

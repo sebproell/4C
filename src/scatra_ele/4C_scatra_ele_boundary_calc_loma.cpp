@@ -64,11 +64,9 @@ template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleBoundaryCalcLoma<distype, probdim>::evaluate_action(
     Core::Elements::FaceElement* ele, Teuchos::ParameterList& params,
     Core::FE::Discretization& discretization, ScaTra::BoundaryAction action,
-    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1_epetra,
-    Core::LinAlg::SerialDenseMatrix& elemat2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec1_epetra,
-    Core::LinAlg::SerialDenseVector& elevec2_epetra,
-    Core::LinAlg::SerialDenseVector& elevec3_epetra)
+    Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseMatrix& elemat1,
+    Core::LinAlg::SerialDenseMatrix& elemat2, Core::LinAlg::SerialDenseVector& elevec1,
+    Core::LinAlg::SerialDenseVector& elevec2, Core::LinAlg::SerialDenseVector& elevec3)
 {
   // determine and evaluate action
   switch (action)
@@ -82,8 +80,8 @@ int Discret::Elements::ScaTraEleBoundaryCalcLoma<distype, probdim>::evaluate_act
 
     default:
     {
-      my::evaluate_action(ele, params, discretization, action, la, elemat1_epetra, elemat2_epetra,
-          elevec1_epetra, elevec2_epetra, elevec3_epetra);
+      my::evaluate_action(
+          ele, params, discretization, action, la, elemat1, elemat2, elevec1, elevec2, elevec3);
 
       break;
     }

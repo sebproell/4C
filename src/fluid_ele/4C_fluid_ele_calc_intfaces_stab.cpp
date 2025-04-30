@@ -1225,7 +1225,7 @@ int Discret::Elements::FluidInternalSurfaceStab<distype, pdistype,
       }
     }
     else
-      FOUR_C_THROW("unknown assembly pattern for given number of epetra block matrices");
+      FOUR_C_THROW("unknown assembly pattern for given number of block matrices");
   }
 
   // elemat.print(cout);

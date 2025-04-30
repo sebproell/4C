@@ -743,7 +743,7 @@ void ScaTra::ScaTraTimIntElchSCL::setup_coupling()
     write_coupling_to_csv(
         glob_macro_micro_coupled_node_gids, glob_macro_slave_node_master_node_gids);
 
-  // setup Epetra maps for coupled nodes
+  // setup maps for coupled nodes
   Core::LinAlg::Map master_node_map(-1, static_cast<int>(my_macro_node_gids.size()),
       &my_macro_node_gids[0], 0, Core::Communication::as_epetra_comm(comm));
   Core::LinAlg::Map slave_node_map(-1, static_cast<int>(my_micro_node_gids.size()),
