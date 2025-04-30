@@ -14,7 +14,6 @@
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_porofluid_pressure_based_timint_implicit.hpp"
-#include "4C_porofluid_pressure_based_timint_ost.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>

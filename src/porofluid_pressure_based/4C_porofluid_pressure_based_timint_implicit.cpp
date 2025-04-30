@@ -119,6 +119,7 @@ PoroPressureBased::TimIntImpl::TimIntImpl(std::shared_ptr<Core::FE::Discretizati
       starting_dbc_time_end_(poroparams_.get<double>("STARTING_DBC_TIME_END")),
       starting_dbc_onoff_(std::vector<bool>()),
       starting_dbc_funct_(std::vector<int>()),
+      theta_(poroparams_.get<double>("THETA")),
       visualization_writer_(nullptr)
 {
   const int restart_step = Global::Problem::instance()->restart();
@@ -439,6 +440,62 @@ void PoroPressureBased::TimIntImpl::prepare_time_step()
 }
 
 
+void PoroPressureBased::TimIntImpl::set_element_time_step_parameter() const
+{
+  Teuchos::ParameterList eleparams;
+
+  // the total time definitely changes
+  eleparams.set<double>("total time", time_);
+  // we set the time step and related, just in case we want adaptive time stepping
+  eleparams.set<double>("time-step length", dt_);
+  eleparams.set<double>("time factor", theta_ * dt_);
+
+  Discret::Elements::PoroFluidMultiPhaseEleParameter::instance(discret_->name())
+      ->set_time_step_parameters(eleparams);
+}
+
+
+void PoroPressureBased::TimIntImpl::set_time_for_neumann_evaluation(Teuchos::ParameterList& params)
+{
+  params.set("total time", time_);
+}
+
+
+void PoroPressureBased::TimIntImpl::set_old_part_of_righthandside()
+{
+  // hist_ = phin_ + dt*(1-Theta)*phidtn_
+  hist_->update(1.0, *phin_, dt_ * (1.0 - theta_), *phidtn_, 0.0);
+}
+
+
+void PoroPressureBased::TimIntImpl::add_neumann_to_residual()
+{
+  residual_->update(theta_ * dt_, *neumann_loads_, 1.0);
+}
+
+
+void PoroPressureBased::TimIntImpl::explicit_predictor() { phinp_->update(dt_, *phidtn_, 1.0); }
+
+
+void PoroPressureBased::TimIntImpl::add_time_integration_specific_vectors()
+{
+  discret_->set_state("hist", *hist_);
+  discret_->set_state("phinp_fluid", *phinp_);
+  discret_->set_state("phin_fluid", *phin_);
+  discret_->set_state("phidtnp", *phidtnp_);
+}
+
+
+void PoroPressureBased::TimIntImpl::compute_time_derivative()
+{
+  // time derivative of phi:
+  // *phidt(n+1) = (phi(n+1)-phi(n)) / (theta*dt) + (1-(1/theta))*phidt(n)
+  const double fact1 = 1.0 / (theta_ * dt_);
+  const double fact2 = 1.0 - (1.0 / theta_);
+  phidtnp_->update(fact2, *phidtn_, 0.0);
+  phidtnp_->update(fact1, *phinp_, -fact1, *phin_, 1.0);
+}
+
 /*------------------------------------------------------------------------------*
  | initialization procedure prior to evaluation of first time step  vuong 08/16 |
  *------------------------------------------------------------------------------*/
@@ -528,12 +585,23 @@ void PoroPressureBased::TimIntImpl::solve()
   return;
 }
 
-/*----------------------------------------------------------------------*
- | contains the call of linear/nonlinear solver             vuong 08/16 |
- *----------------------------------------------------------------------*/
+
 void PoroPressureBased::TimIntImpl::update()
 {
-  if (artery_coupling_active_) meshtying_->update();
+  if (artery_coupling_active_)
+  {
+    meshtying_->update();
+  }
+
+  // compute time derivative at time n+1
+  compute_time_derivative();
+
+  // solution of this step becomes most recent solution of the last step
+  phin_->update(1.0, *phinp_, 0.0);
+
+  // time deriv. of this step becomes most recent time derivative of
+  // last step
+  phidtn_->update(1.0, *phidtnp_, 0.0);
 }
 
 
@@ -569,9 +637,15 @@ void PoroPressureBased::TimIntImpl::apply_mesh_movement(
 inline void PoroPressureBased::TimIntImpl::print_time_step_info()
 {
   if (myrank_ == 0)
-    printf("TIME: %11.4E/%11.4E  DT = %11.4E  Stationary  STEP = %4d/%4d \n", time_, maxtime_, dt_,
-        step_, stepmax_);
-}  // POROFLUIDMULTIPHASE::TimIntImpl::print_time_step_info
+  {
+    std::cout << "| TIME: " << std::setw(11) << std::setprecision(4) << std::scientific << time_
+              << "/" << std::setw(11) << std::setprecision(4) << std::scientific << maxtime_
+              << "  DT = " << std::setw(11) << std::setprecision(4) << std::scientific << dt_
+              << "  " << "One-Step-Theta (theta = " << std::setw(3) << std::setprecision(2)
+              << theta_ << ") STEP = " << std::setw(4) << step_ << "/" << std::setw(4) << stepmax_
+              << "            |" << '\n';
+  }
+}
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -778,6 +852,10 @@ void PoroPressureBased::TimIntImpl::output_restart()
 
   // solution
   output_->write_vector("phinp_fluid", phinp_);
+
+  // additional state vectors that are needed for One-Step-Theta restart
+  output_->write_vector("phidtn_fluid", phidtn_);
+  output_->write_vector("phin_fluid", phin_);
 }
 
 /*----------------------------------------------------------------------*
@@ -2162,7 +2240,22 @@ void PoroPressureBased::TimIntImpl::read_restart(const int step)
   {
     meshtying_->read_restart(step);
   }
-  return;
+
+  std::shared_ptr<Core::IO::DiscretizationReader> reader(nullptr);
+  reader = std::make_shared<Core::IO::DiscretizationReader>(
+      discret_, Global::Problem::instance()->input_control_file(), step);
+
+  time_ = reader->read_double("time");
+  step_ = reader->read_int("step");
+
+  if (myrank_ == 0)
+    std::cout << "Reading POROFLUIDMULTIPHASE restart data (time=" << time_ << " ; step=" << step_
+              << ")" << '\n';
+
+  // read state vectors that are needed for One-Step-Theta restart
+  reader->read_vector(phinp_, "phinp_fluid");
+  reader->read_vector(phin_, "phin_fluid");
+  reader->read_vector(phidtn_, "phidtn_fluid");
 }
 
 /*--------------------------------------------------------------------*
@@ -2179,6 +2272,15 @@ void PoroPressureBased::TimIntImpl::calc_initial_time_derivative()
                  "discretization \""
               << discret_->name().c_str() << "\" (step " << step() << ", time " << time()
               << ") ... ... ";
+
+  // standard general element parameter without stabilization
+  set_element_general_parameters();
+
+  // we also have to modify the time-parameter list (incremental solve)
+  // actually we do not need a time integration scheme for calculating the initial time derivatives,
+  // but the rhs of the standard element routine is used as starting point for this special system
+  // of equations. Therefore, the rhs vector has to be scaled correctly.
+  set_element_time_step_parameter();
 
   // reset global system matrix
   sysmat_->zero();
@@ -2248,7 +2350,9 @@ void PoroPressureBased::TimIntImpl::calc_initial_time_derivative()
     std::cout << "MAX value: " << maxval << std::endl;
   }
 
-  return;
+  // and finally undo our temporary settings
+  set_element_general_parameters();
+  set_element_time_step_parameter();
 }
 /*----------------------------------------------------------------------------------------------*
  | finite difference check for scalar transport system matrix (for debugging only)   vuong 08/16 |

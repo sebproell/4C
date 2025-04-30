@@ -93,7 +93,7 @@ namespace PoroPressureBased
     /*--- set, prepare, and predict ------------------------------------------*/
 
     //! add global state vectors specific for time-integration scheme
-    virtual void add_time_integration_specific_vectors() = 0;
+    void compute_intermediate_values() { return; };
 
     //! prepare time loop
     void prepare_time_loop() override;
@@ -128,10 +128,10 @@ namespace PoroPressureBased
     void update() override;
 
     ///  compute time derivative
-    virtual void compute_time_derivative() = 0;
+    void compute_time_derivative();
 
-    ///  compute intermediate values if necessary
-    virtual void compute_intermediate_values() = 0;
+    /// add parameters specific for time-integration scheme
+    void add_time_integration_specific_vectors();
 
     //! apply moving mesh data
     void apply_mesh_movement(
@@ -317,27 +317,20 @@ namespace PoroPressureBased
     //! don't want copy constructor
     TimIntImpl(const TimIntImpl& old);
 
-    /*========================================================================*/
-    //! @name set element parameters
-    /*========================================================================*/
-
-    //! Set element time step parameters (varying every time step)
-    virtual void set_element_time_step_parameter() const = 0;
+    /// set time parameter for element evaluation (called before every time step)
+    void set_element_time_step_parameter() const;
 
     //! set time for evaluation of Neumann boundary conditions
-    virtual void set_time_for_neumann_evaluation(Teuchos::ParameterList& params) = 0;
+    void set_time_for_neumann_evaluation(Teuchos::ParameterList& params);
 
     //! Set general element parameters
     void set_element_general_parameters() const;
 
-    /*========================================================================*/
-    //! @name general framework
-    /*========================================================================*/
+    //! Set the part of the residual vector belonging to the last timestep.
+    void set_old_part_of_righthandside();
 
-    /*--- set, prepare, and predict ------------------------------------------*/
-
-    //! Set the part of the righthandside belonging to the last timestep.
-    virtual void set_old_part_of_righthandside() = 0;
+    /// do explicit predictor step (-> better starting value for nonlinear solver)
+    void explicit_predictor();
 
     /*--- calculate and update -----------------------------------------------*/
 
@@ -352,7 +345,7 @@ namespace PoroPressureBased
     void scaling_and_neumann();
 
     //! add actual Neumann loads multiplied with time factor to the residual
-    virtual void add_neumann_to_residual() = 0;
+    virtual void add_neumann_to_residual();
 
     //! Apply Neumann boundary conditions
     void apply_neumann_bc(Core::LinAlg::Vector<double>& neumann_loads  //!< Neumann loads
@@ -379,7 +372,7 @@ namespace PoroPressureBased
         std::shared_ptr<Core::LinAlg::SparseOperator> k_pfs) override;
 
     //! return the right time-scaling-factor for the true residual
-    virtual double residual_scaling() const = 0;
+    double residual_scaling() const { return 1.0 / (dt_ * theta_); }
 
     //! contains the nonlinear iteration loop
     virtual void nonlinear_solve();
@@ -704,6 +697,9 @@ namespace PoroPressureBased
 
     //! function ID prescribing the starting Dirichlet boundary condition
     std::vector<int> starting_dbc_funct_;
+
+    //! time factor for one-step-theta time integration
+    double theta_;
 
    private:
     std::unique_ptr<Core::IO::DiscretizationVisualizationWriterMesh> visualization_writer_;
