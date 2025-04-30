@@ -291,12 +291,12 @@ function(four_c_test)
     set(test_command
         "mkdir -p ${test_directory} \
                 && ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> --to-yaml ${base_test_file} ${test_directory}/converted_input.yaml \
-                && ${MPIEXEC_EXECUTABLE} ${MPIEXEC_EXTRA_OPTS_FOR_TESTING} -np ${base_NP} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> ${test_directory}/converted_input.yaml ${test_directory}/xxx"
+                && ${MPIEXEC_EXECUTABLE} ${_mpiexec_all_args_for_testing} -np ${base_NP} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> ${test_directory}/converted_input.yaml ${test_directory}/xxx"
         )
   else()
     set(test_command
         "mkdir -p ${test_directory} \
-                && ${MPIEXEC_EXECUTABLE} ${MPIEXEC_EXTRA_OPTS_FOR_TESTING} -np ${base_NP} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> ${base_test_file} ${test_directory}/xxx"
+                && ${MPIEXEC_EXECUTABLE} ${_mpiexec_all_args_for_testing} -np ${base_NP} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> ${base_test_file} ${test_directory}/xxx"
         )
   endif()
 
@@ -362,7 +362,7 @@ function(four_c_test)
         )
     set(restart_test_directory ${PROJECT_BINARY_DIR}/framework_test_output/${name_of_test})
     set(test_command
-        "mkdir -p ${restart_test_directory} && ${MPIEXEC_EXECUTABLE} ${MPIEXEC_EXTRA_OPTS_FOR_TESTING} -np ${restart_NP} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> ${restart_test_file} ${restart_test_directory}/xxx restartfrom=${test_directory}/xxx restart=${_parsed_RESTART_STEP}"
+        "mkdir -p ${restart_test_directory} && ${MPIEXEC_EXECUTABLE} ${_mpiexec_all_args_for_testing} -np ${restart_NP} $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> ${restart_test_file} ${restart_test_directory}/xxx restartfrom=${test_directory}/xxx restart=${_parsed_RESTART_STEP}"
         )
 
     # Optional OpenMP threads per processor
@@ -419,7 +419,7 @@ function(four_c_test)
     # parallel run
     set(name_of_ensight_test "${name_of_test}-post_ensight_parallel")
     set(ensight_command
-        "${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${_parsed_NP}\ ./post_ensight\ --file=${test_directory}/xxx\ --output=${test_directory}/xxx_parallel --outputtype=bin\ --stress=ndxyz && ${FOUR_C_PYTHON_VENV_BUILD}/bin/python3 ${PROJECT_SOURCE_DIR}/tests/post_processing_test/ensight_comparison.py ${source_file} ${test_directory}/xxx_parallel_structure.case"
+        "${MPIEXEC_EXECUTABLE}\ ${_mpiexec_all_args_for_testing}\ -np\ ${_parsed_NP}\ ./post_ensight\ --file=${test_directory}/xxx\ --output=${test_directory}/xxx_parallel --outputtype=bin\ --stress=ndxyz && ${FOUR_C_PYTHON_VENV_BUILD}/bin/python3 ${PROJECT_SOURCE_DIR}/tests/post_processing_test/ensight_comparison.py ${source_file} ${test_directory}/xxx_parallel_structure.case"
         )
     _add_test_with_options(
       NAME_OF_TEST
@@ -484,7 +484,7 @@ function(four_c_test_nested_parallelism name_of_input_file_1 name_of_input_file_
     NAME ${name_of_input_file_1}-nestedPar
     COMMAND
       bash -c
-      "mkdir -p ${test_directory} &&  ${MPIEXEC_EXECUTABLE} ${MPIEXEC_EXTRA_OPTS_FOR_TESTING} -np 3 $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> -ngroup=2 -glayout=1,2 -nptype=separateDatFiles ${PROJECT_SOURCE_DIR}/tests/input_files/${name_of_input_file_1} ${test_directory}/xxx ${PROJECT_SOURCE_DIR}/tests/input_files/${name_of_input_file_2} ${test_directory}/xxxAdditional"
+      "mkdir -p ${test_directory} &&  ${MPIEXEC_EXECUTABLE} ${_mpiexec_all_args_for_testing} -np 3 $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> -ngroup=2 -glayout=1,2 -nptype=separateDatFiles ${PROJECT_SOURCE_DIR}/tests/input_files/${name_of_input_file_1} ${test_directory}/xxx ${PROJECT_SOURCE_DIR}/tests/input_files/${name_of_input_file_2} ${test_directory}/xxxAdditional"
     )
 
   require_fixture(${name_of_input_file_1}-nestedPar test_cleanup)
@@ -497,7 +497,7 @@ function(four_c_test_nested_parallelism name_of_input_file_1 name_of_input_file_
       NAME ${name_of_input_file_1}-nestedPar-restart
       COMMAND
         bash -c
-        "${MPIEXEC_EXECUTABLE} ${MPIEXEC_EXTRA_OPTS_FOR_TESTING} -np 3 $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> -ngroup=2 -glayout=1,2 -nptype=separateDatFiles ${PROJECT_SOURCE_DIR}/tests/input_files/${name_of_input_file_1} ${test_directory}/xxx restart=${restart_step} ${PROJECT_SOURCE_DIR}/tests/input_files/${name_of_input_file_2} ${test_directory}/xxxAdditional restart=${restart_step}"
+        "${MPIEXEC_EXECUTABLE} ${_mpiexec_all_args_for_testing} -np 3 $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}> -ngroup=2 -glayout=1,2 -nptype=separateDatFiles ${PROJECT_SOURCE_DIR}/tests/input_files/${name_of_input_file_1} ${test_directory}/xxx restart=${restart_step} ${PROJECT_SOURCE_DIR}/tests/input_files/${name_of_input_file_2} ${test_directory}/xxxAdditional restart=${restart_step}"
       )
 
     require_fixture(
@@ -558,7 +558,7 @@ function(four_c_test_framework)
   endif()
 
   set(_run_4C
-      ${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${num_proc}\ $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>\ ${test_directory}/xxx.4C.yaml\ ${test_directory}/xxx
+      ${MPIEXEC_EXECUTABLE}\ ${_mpiexec_all_args_for_testing}\ -np\ ${num_proc}\ $<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>\ ${test_directory}/xxx.4C.yaml\ ${test_directory}/xxx
       ) # 4C is run using the generated input file
 
   add_test(
@@ -584,7 +584,7 @@ function(four_c_test_cut_test num_proc)
 
   set(RUNTESTS
       # Run all the cuttests with num_proc except from alex53
-      ${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${num_proc}\ ${PROJECT_BINARY_DIR}/cut_test\ --ignore_test=alex53
+      ${MPIEXEC_EXECUTABLE}\ ${_mpiexec_all_args_for_testing}\ -np\ ${num_proc}\ ${PROJECT_BINARY_DIR}/cut_test\ --ignore_test=alex53
       # Run alex53 serially
       ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ${PROJECT_BINARY_DIR}/cut_test\ --test=alex53
       )
@@ -645,7 +645,7 @@ function(
       ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ ./post_ensight\ --file=${test_directory}/xxx${IDENTIFIER}\ --output=${test_directory}/xxx${IDENTIFIER}_SER_${name_of_input_file}\ --stress=${stresstype}\ --strain=${straintype}\ --start=${startstep}
       )
   set(RUNPOSTFILTER_PAR
-      ${MPIEXEC_EXECUTABLE}\ ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}\ -np\ ${num_proc}\ ./post_ensight\ --file=${test_directory}/xxx${IDENTIFIER}\ --output=${test_directory}/xxx${IDENTIFIER}_PAR_${name_of_input_file}\ --stress=${stresstype}\ --strain=${straintype}\ --start=${startstep}
+      ${MPIEXEC_EXECUTABLE}\ ${_mpiexec_all_args_for_testing}\ -np\ ${num_proc}\ ./post_ensight\ --file=${test_directory}/xxx${IDENTIFIER}\ --output=${test_directory}/xxx${IDENTIFIER}_PAR_${name_of_input_file}\ --stress=${stresstype}\ --strain=${straintype}\ --start=${startstep}
       )
 
   # remove file ending of input file for reference file

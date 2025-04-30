@@ -137,13 +137,21 @@ enable_testing()
 
 # NOTE: --mca orte_tmpdir_base [...] can be removed for openmpi >= 4.1.1 according to
 # https://github.com/open-mpi/ompi/issues/8510#issuecomment-1329297350
-set(MPIEXEC_EXTRA_OPTS_FOR_TESTING
-    "--bind-to none --use-hwthread-cpus --mca orte_tmpdir_base ${PROJECT_BINARY_DIR}/tmp"
-    )
+four_c_process_cache_variable(
+  FOUR_C_MPIEXEC_ARGS_FOR_TESTING
+  TYPE
+  STRING
+  DESCRIPTION
+  "Arguments to pass to mpiexec for testing."
+  DEFAULT
+  "--bind-to none --use-hwthread-cpus --mca orte_tmpdir_base ${PROJECT_BINARY_DIR}/tmp"
+  )
+# We might need to add more arguments. Initialize with the user input.
+set(_mpiexec_all_args_for_testing ${FOUR_C_MPIEXEC_ARGS_FOR_TESTING})
 
 if(FOUR_C_ENABLE_ADDRESS_SANITIZER)
   # Do not detect leaks, we only care about UB inducing memory issues
-  string(APPEND MPIEXEC_EXTRA_OPTS_FOR_TESTING " -x LSAN_OPTIONS=detect_leaks=0")
+  string(APPEND _mpiexec_all_args_for_testing " -x LSAN_OPTIONS=detect_leaks=0")
   set(FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS "LSAN_OPTIONS=detect_leaks=0")
 endif()
 

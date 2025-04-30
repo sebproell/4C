@@ -209,6 +209,16 @@ function(four_c_configure_dependency _package_name)
   four_c_process_global_option(
     FOUR_C_WITH_${_package_name_sanitized} "Build 4C with ${_package_name}" ${_parsed_DEFAULT}
     )
+  # Add a cache entry to set the root directory of the package.
+  four_c_process_cache_variable(
+    FOUR_C_${_package_name_sanitized}_ROOT
+    TYPE
+    PATH
+    DESCRIPTION
+    "Root directory of ${_package_name}"
+    DEFAULT
+    ""
+    )
 
   if(${_parsed_DEFAULT} STREQUAL "ON")
     if(NOT FOUR_C_WITH_${_package_name_sanitized})
