@@ -16,12 +16,24 @@
 // 2) Include magic_enum header.
 #include <magic_enum/magic_enum_format.hpp>
 #include <magic_enum/magic_enum_iostream.hpp>
+#include <magic_enum/magic_enum_switch.hpp>
 
 FOUR_C_NAMESPACE_OPEN
 
-// Import the stream insertion and extraction operators for enums.
-using magic_enum::iostream_operators::operator<<;
-using magic_enum::iostream_operators::operator>>;
+/**
+ * This namespace contains helpers for static reflection of enums.
+ *
+ * @note The implementation is currently provided by the magic_enum library.
+ */
+namespace EnumTools
+{
+  // Import the stream insertion and extraction operators for enums.
+  using magic_enum::iostream_operators::operator<<;
+  using magic_enum::iostream_operators::operator>>;
+
+  // Import everything from magic_enum into our namespace.
+  using namespace magic_enum;
+}  // namespace EnumTools
 
 FOUR_C_NAMESPACE_CLOSE
 

@@ -45,7 +45,7 @@ namespace Core::IO
       template <SupportedType T>
       void operator()(std::ostream& out, const T& val) const
       {
-        using magic_enum::iostream_operators::operator<<;
+        using EnumTools::operator<<;
         out << val;
       }
 
@@ -118,7 +118,7 @@ namespace Core::IO
       requires(std::is_enum_v<Enum>)
     struct PrettyTypeName<Enum>
     {
-      std::string operator()() { return std::string{magic_enum::enum_type_name<Enum>()}; }
+      std::string operator()() { return std::string{EnumTools::enum_type_name<Enum>()}; }
     };
 
     template <typename T>
@@ -174,7 +174,7 @@ namespace Core::IO
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         node["type"] = "enum";
         node["choices"] |= ryml::SEQ;
-        for (const auto& choice_string : magic_enum::enum_values<Enum>())
+        for (const auto& choice_string : EnumTools::enum_values<Enum>())
         {
           auto entry = node["choices"].append_child();
           // Write every choice entry as a map to easily extend the information at a later point.
@@ -1445,7 +1445,7 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     if constexpr (std::is_enum_v<T>)
     {
       std::string choices_string;
-      for (const auto& e : magic_enum::enum_names<T>())
+      for (const auto& e : EnumTools::enum_names<T>())
       {
         choices_string += std::string(e) + "|";
       }
@@ -1850,7 +1850,7 @@ void Core::IO::Internal::SelectionSpec<T>::print(std::ostream& stream, std::size
   {
     stream << "\n";
     stream << "//" << std::string(indent + 2, ' ') << " if value of " << based_on.selector << " is "
-           << magic_enum::enum_name<T>(selector_value);
+           << EnumTools::enum_name<T>(selector_value);
     spec.impl().print(stream, indent + 4);
   }
   stream << "\n";
@@ -1973,12 +1973,12 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
     std::string name, Internal::BasedOn<T> based_on, SelectionData data)
 {
   // Ensure that every enum constant is mapped to a spec.
-  for (const auto& e : magic_enum::enum_values<T>())
+  for (const auto& e : EnumTools::enum_values<T>())
   {
     FOUR_C_ASSERT_ALWAYS(based_on.choices.contains(e),
         "You need to give an InputSpec for every possible value of enum '{}'. Missing "
         "choice for enum constant '{}'.",
-        magic_enum::enum_type_name<T>(), magic_enum::enum_name(e));
+        EnumTools::enum_type_name<T>(), EnumTools::enum_name(e));
   }
 
   std::size_t max_specs_for_choices = std::ranges::max_element(

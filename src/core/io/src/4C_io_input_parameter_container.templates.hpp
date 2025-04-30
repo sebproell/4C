@@ -22,27 +22,34 @@ FOUR_C_NAMESPACE_OPEN
 // into this special templates file.
 namespace Core::IO::Internal::InputParameterContainerImplementation
 {
-  // Default printer if not printable.
+  template <typename T>
+  concept StreamInsertable = requires(std::ostream& os, const std::any& data) {
+    { os << std::any_cast<T>(data) };
+  };
+
+  // Helper struct to print the data in the container.
   template <typename T>
   struct PrintHelper
   {
-    void operator()(std::ostream& os, const std::any& data) { os << "<not printable> "; }
+    void operator()(std::ostream& os, const std::any& data) const
+    {
+      if constexpr (StreamInsertable<std::remove_reference_t<T>> || std::is_enum_v<T>)
+      {
+        using EnumTools::operator<<;
+        os << std::any_cast<T>(data) << " ";
+      }
+      else
+      {
+        os << "<not printable> ";
+      }
+    }
   };
 
-  template <typename T>
-  concept StreamInsertable = requires(std::ostream& os, const T& t) { os << t; };
-
-  // Specialization for stream insert.
-  template <StreamInsertable T>
-  struct PrintHelper<T>
-  {
-    void operator()(std::ostream& os, const std::any& data) { os << std::any_cast<T>(data) << " "; }
-  };
-
-  template <StreamInsertable T>
+  // Specialization for std::optional.
+  template <SupportedType T>
   struct PrintHelper<std::optional<T>>
   {
-    void operator()(std::ostream& os, const std::any& data)
+    void operator()(std::ostream& os, const std::any& data) const
     {
       auto val = std::any_cast<std::optional<T>>(data);
       if (val.has_value())
@@ -53,10 +60,10 @@ namespace Core::IO::Internal::InputParameterContainerImplementation
   };
 
   // Specialization for vectors.
-  template <typename T>
+  template <SupportedType T>
   struct PrintHelper<std::vector<T>>
   {
-    void operator()(std::ostream& os, const std::any& data)
+    void operator()(std::ostream& os, const std::any& data) const
     {
       FOUR_C_ASSERT(typeid(std::vector<T>) == data.type(), "Implementation error.");
       const auto& vec = std::any_cast<std::vector<T>>(data);
@@ -68,10 +75,10 @@ namespace Core::IO::Internal::InputParameterContainerImplementation
   };
 
   // Specialization for maps.
-  template <typename Key, typename Value>
+  template <typename Key, SupportedType Value>
   struct PrintHelper<std::map<Key, Value>>
   {
-    void operator()(std::ostream& os, const std::any& data)
+    void operator()(std::ostream& os, const std::any& data) const
     {
       FOUR_C_ASSERT(typeid(std::map<Key, Value>) == data.type(), "Implementation error.");
       const auto& map = std::any_cast<std::map<Key, Value>>(data);

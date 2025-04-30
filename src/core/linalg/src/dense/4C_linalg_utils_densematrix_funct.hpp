@@ -23,9 +23,6 @@ exponential and the logarithm, along with specific derivatives in namespace Core
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 
-#include <magic_enum/magic_enum.hpp>
-
-#include <cstddef>
 #include <optional>
 
 FOUR_C_NAMESPACE_OPEN

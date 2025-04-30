@@ -102,7 +102,7 @@ Thermo::TimIntGenAlpha::TimIntGenAlpha(const Teuchos::ParameterList& ioparams,
               << "   alpha_f = " << alphaf_ << std::endl
               << "   alpha_m = " << alpham_ << std::endl
               << "   gamma = " << gamma_ << std::endl
-              << "   midavg = " << magic_enum::enum_name(midavg_) << std::endl;
+              << "   midavg = " << EnumTools::enum_name(midavg_) << std::endl;
   }
 
   // determine capacity and initial temperature rates

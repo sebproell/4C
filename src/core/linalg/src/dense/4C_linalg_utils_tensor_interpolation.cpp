@@ -573,7 +573,7 @@ Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<loc_dim>::get_i
     FOUR_C_THROW(
         "We do not have an implementation for RotationInterpolationType {} and EigenvalInterpType "
         "{}!",
-        magic_enum::enum_name(rot_interp_type_), magic_enum::enum_name(eigenval_interp_type_));
+        rot_interp_type_, eigenval_interp_type_);
   }
   return output;
 }

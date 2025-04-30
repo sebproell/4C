@@ -924,7 +924,7 @@ bool Solid::TimeInt::Base::has_final_state_been_written() const
 
 std::string Solid::TimeInt::Base::method_title() const
 {
-  return std::string(magic_enum::enum_name(method_name()));
+  return std::string(EnumTools::enum_name(method_name()));
 }
 
 FOUR_C_NAMESPACE_CLOSE

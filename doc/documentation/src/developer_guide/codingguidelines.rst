@@ -82,8 +82,9 @@ Enums
 - By default, use scoped ``enum class`` instead of unscoped ``enum``.
 - Use enums instead of strings for parameters that take one from a fixed set of values.
 - You do not have to write conversion functions between enum constants and strings.
-  Use ``magic_enum::enum_name`` to get the name of an enum constant and ``magic_enum::enum_cast`` to convert a string to
-  an enum constant.
+  Use ``EnumTools::enum_name`` to get the name of an enum constant and ``EnumTools::enum_cast`` to convert a string to
+  an enum constant. ``EnumTools::operator<<`` and ``EnumTools::operator>>`` allow for easy interaction
+  with std streams.
 
 See also `Enum.3 <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#enum3-prefer-class-enums-over-plain-enums>`_.
 
