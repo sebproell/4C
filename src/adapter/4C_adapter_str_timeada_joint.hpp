@@ -55,6 +55,9 @@ namespace Adapter
     //! Provide type of algorithm
     enum AdaEnum method_adapt_dis() const override;
 
+    //! Override since we need to setup the auxiliary time integrator
+    void post_setup() override;
+
    protected:
     /// setup of the auxiliary time integrator
     void setup_auxiliary() override;
@@ -65,9 +68,6 @@ namespace Adapter
 
     //! the auxiliary integrator
     std::shared_ptr<Solid::TimeInt::Base> sta_;
-
-    //! wrapper of the auxiliary integrator
-    std::shared_ptr<Structure> sta_wrapper_;
 
     /*! \brief Make one step with auxiliary scheme
      *
