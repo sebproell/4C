@@ -95,6 +95,8 @@ void Adapter::StructureTimeAdaJoint::setup_auxiliary()
   const int restart = Global::Problem::instance()->restart();
   if (restart)
   {
+    sta_->post_setup();
+
     const Solid::TimeInt::Base& sti = *stm_;
     const auto& gstate = sti.data_global_state();
     dataglobalstate->get_dis_n()->update(1.0, *(gstate.get_dis_n()), 0.0);
