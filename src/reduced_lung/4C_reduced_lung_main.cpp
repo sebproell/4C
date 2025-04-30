@@ -748,8 +748,8 @@ namespace ReducedLung
       if (n % results_every == 0)
       {
         visualization_writer->reset();
-        collect_runtime_output_data(
-            *visualization_writer, airways, terminal_units, dofs, actdis->element_row_map());
+        collect_runtime_output_data(*visualization_writer, airways, terminal_units,
+            locally_relevant_dofs, actdis->element_row_map());
         visualization_writer->write_to_disk(dt * n, n);
       }
     }

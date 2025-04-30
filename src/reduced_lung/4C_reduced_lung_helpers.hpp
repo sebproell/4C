@@ -106,6 +106,7 @@ namespace ReducedLung
     // dofs: {p1, p2, q} for resistive airways; {p1, p2, q1, q2} for compliant airways
     std::vector<int> global_dof_ids{};
     int n_state_equations = 1;
+    // local dof ids in locally relevant dof map!
     std::vector<int> local_dof_ids{};
   };
 
@@ -126,6 +127,7 @@ namespace ReducedLung
     double eta;
     std::vector<int> global_dof_ids{};
     int n_state_equations = 1;
+    // local dof ids in locally relevant dof map!
     std::vector<int> local_dof_ids{};
   };
 
@@ -208,7 +210,8 @@ namespace ReducedLung
   void collect_runtime_output_data(
       Core::IO::DiscretizationVisualizationWriterMesh& visualization_writer,
       const std::vector<Airway>& airways, const std::vector<TerminalUnit>& terminal_units,
-      const Core::LinAlg::Vector<double>& dofs, const Core::LinAlg::Map* element_row_map);
+      const Core::LinAlg::Vector<double>& locally_relevant_dofs,
+      const Core::LinAlg::Map* element_row_map);
 }  // namespace ReducedLung
 
 FOUR_C_NAMESPACE_CLOSE
