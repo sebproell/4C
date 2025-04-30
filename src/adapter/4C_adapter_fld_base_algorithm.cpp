@@ -101,8 +101,7 @@ void Adapter::FluidBaseAlgorithm::setup_fluid(const Teuchos::ParameterList& prbd
   if (!actdis->have_dofs())
   {
     if (probtype == Core::ProblemType::fsi_xfem or probtype == Core::ProblemType::fluid_xfem or
-        (probtype == Core::ProblemType::fpsi_xfem and disname == "fluid") or
-        probtype == Core::ProblemType::fluid_xfem_ls)
+        (probtype == Core::ProblemType::fpsi_xfem and disname == "fluid"))
     {
       actdis->fill_complete(false, false, false);
     }
@@ -209,7 +208,7 @@ void Adapter::FluidBaseAlgorithm::setup_fluid(const Teuchos::ParameterList& prbd
 
   // compute null space information
   if (probtype != Core::ProblemType::fsi_xfem and probtype != Core::ProblemType::fpsi_xfem and
-      probtype != Core::ProblemType::fluid_xfem and probtype != Core::ProblemType::fluid_xfem_ls and
+      probtype != Core::ProblemType::fluid_xfem and
       !(probtype == Core::ProblemType::fsi and
           Global::Problem::instance()->x_fluid_dynamic_params().sublist("GENERAL").get<bool>(
               "XFLUIDFLUID")))
@@ -295,8 +294,7 @@ void Adapter::FluidBaseAlgorithm::setup_fluid(const Teuchos::ParameterList& prbd
               "XFLUIDFLUID")) or
       (probtype == Core::ProblemType::fsi and
           Global::Problem::instance()->x_fluid_dynamic_params().sublist("GENERAL").get<bool>(
-              "XFLUIDFLUID")) or
-      probtype == Core::ProblemType::fluid_xfem_ls)
+              "XFLUIDFLUID")))
   {
     // get also scatra stabilization sublist
     const Teuchos::ParameterList& xdyn = Global::Problem::instance()->xfem_general_params();
@@ -735,19 +733,6 @@ void Adapter::FluidBaseAlgorithm::setup_fluid(const Teuchos::ParameterList& prbd
         else
           fluid_ = std::make_shared<XFluidFSI>(
               tmpfluid, condition_name, solver, fluidtimeparams, output);
-      }
-      break;
-      case Core::ProblemType::fluid_xfem_ls:
-      {
-        std::shared_ptr<Core::FE::Discretization> soliddis =
-            Global::Problem::instance()->get_dis("structure");
-        std::shared_ptr<Core::FE::Discretization> scatradis = nullptr;
-
-        if (Global::Problem::instance()->does_exist_dis("scatra"))
-          scatradis = Global::Problem::instance()->get_dis("scatra");
-
-        fluid_ = std::make_shared<FLD::XFluid>(
-            actdis, soliddis, scatradis, solver, fluidtimeparams, output);
       }
       break;
       case Core::ProblemType::fsi:

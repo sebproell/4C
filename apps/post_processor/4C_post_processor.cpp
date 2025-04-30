@@ -277,7 +277,6 @@ namespace
       }
       case Core::ProblemType::fsi_xfem:
       case Core::ProblemType::fpsi_xfem:
-      case Core::ProblemType::fluid_xfem_ls:
       {
         std::cout
             << "|=============================================================================|"

@@ -81,18 +81,14 @@ void Adapter::ScaTraFluidCouplingAlgorithm::setup()
   // set also initial field
   set_initial_flow_field(Global::Problem::instance()->fluid_dynamic_params());
 
-  if (Global::Problem::instance()->get_problem_type() != Core::ProblemType::fluid_xfem_ls)
-  {
-    // transfer the initial convective velocity from initial fluid field to scalar transport field
-    // subgrid scales not transferred since they are zero at time t=0.0
-    if (!volcoupl_fluidscatra_)
-      scatra_field()->set_velocity_field(
-          fluid_field()->convective_vel(), nullptr, nullptr, nullptr);
-    else
-      scatra_field()->set_velocity_field(
-          volcoupl_fluidscatra_->apply_vector_mapping21(*fluid_field()->convective_vel()), nullptr,
-          nullptr, nullptr);
-  }
+  // transfer the initial convective velocity from initial fluid field to scalar transport field
+  // subgrid scales not transferred since they are zero at time t=0.0
+  if (!volcoupl_fluidscatra_)
+    scatra_field()->set_velocity_field(fluid_field()->convective_vel(), nullptr, nullptr, nullptr);
+  else
+    scatra_field()->set_velocity_field(
+        volcoupl_fluidscatra_->apply_vector_mapping21(*fluid_field()->convective_vel()), nullptr,
+        nullptr, nullptr);
 
   // ensure that both single field solvers use the same
   // time integration scheme

@@ -14,7 +14,6 @@
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_levelset_timint_ost.hpp"
-#include "4C_levelset_timint_stat.hpp"
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_scatra_resulttest_hdg.hpp"
@@ -257,86 +256,26 @@ Adapter::ScaTraBaseAlgorithm::ScaTraBaseAlgorithm(const Teuchos::ParameterList& 
       }
       default:
         FOUR_C_THROW("Unknown time integration scheme for electrochemistry!");
-        break;
     }
   }
 
-  // levelset
-  else if (probtype == Core::ProblemType::level_set or probtype == Core::ProblemType::fluid_xfem_ls)
+  // level-set
+  else if (probtype == Core::ProblemType::level_set)
   {
-    std::shared_ptr<Teuchos::ParameterList> lsparams = nullptr;
-    switch (probtype)
-    {
-      case Core::ProblemType::level_set:
-        lsparams = std::make_shared<Teuchos::ParameterList>(prbdyn);
-        break;
-      default:
-      {
-        if (!lsparams)
-          lsparams = std::make_shared<Teuchos::ParameterList>(
-              Global::Problem::instance()->level_set_control());
-        // overrule certain parameters for coupled problems
-        // this has already been ensured for scatratimeparams, but has also been ensured for the
-        // level-set parameter in a hybrid approach time step size
-        lsparams->set<double>("TIMESTEP", prbdyn.get<double>("TIMESTEP"));
-        // maximum simulation time
-        lsparams->set<double>("MAXTIME", prbdyn.get<double>("MAXTIME"));
-        // maximum number of timesteps
-        lsparams->set<int>("NUMSTEP", prbdyn.get<int>("NUMSTEP"));
-        // restart
-        lsparams->set<int>("RESTARTEVERY", prbdyn.get<int>("RESTARTEVERY"));
-        // solution output
-        lsparams->set<int>("RESULTSEVERY", prbdyn.get<int>("RESULTSEVERY"));
-
-        break;
-      }
-    }
+    auto lsparams = std::make_shared<Teuchos::ParameterList>(prbdyn);
 
     switch (timintscheme)
     {
       case Inpar::ScaTra::timeint_one_step_theta:
       {
-        // create instance of time integration class (call the constructor)
+        // create an instance of time integration class
         scatra_ = std::make_shared<ScaTra::LevelSetTimIntOneStepTheta>(
             discret, solver, lsparams, scatratimeparams, extraparams, output);
         break;
       }
-      case Inpar::ScaTra::timeint_stationary:
-      {
-        // create instance of time integration class (call the constructor)
-        switch (probtype)
-        {
-          case Core::ProblemType::level_set:
-          {
-            FOUR_C_THROW(
-                "Stationary time integration scheme only supported for a selection of coupled "
-                "level-set problems!");
-            exit(EXIT_FAILURE);
-          }
-          default:
-          {
-            scatra_ = std::make_shared<ScaTra::LevelSetTimIntStationary>(
-                discret, solver, lsparams, scatratimeparams, extraparams, output);
-            break;
-          }
-        }
-        break;
-      }
-      case Inpar::ScaTra::timeint_gen_alpha:
-      {
-        switch (probtype)
-        {
-          default:
-            FOUR_C_THROW("Unknown time-integration scheme for level-set problem");
-            exit(EXIT_FAILURE);
-        }
-
-        break;
-      }
       default:
         FOUR_C_THROW("Unknown time-integration scheme for level-set problem");
-        break;
-    }  // switch(timintscheme)
+    }
   }
 
   // cardiac monodomain

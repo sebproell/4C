@@ -523,18 +523,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       break;
     }
 
-    case Core::ProblemType::fluid_xfem_ls:
-    {
-      // create empty discretizations
-      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
-      if (problem.get_problem_type() == Core::ProblemType::fluid_xfem_ls)
-        discretization_types["fluid"] = {DiscretizationType::xfem, "FLUID"};
-      else
-        discretization_types["fluid"] = {DiscretizationType::faces, "FLUID"};
-      discretization_types["scatra"] = {DiscretizationType::plain, "TRANSPORT"};
-      break;
-    }
-
     case Core::ProblemType::elch:
     {
       // create empty discretizations
