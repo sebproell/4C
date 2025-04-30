@@ -10,7 +10,8 @@
 
 #include "4C_config.hpp"
 
-#include "4C_porofluid_pressure_based_meshtying_strategy_base.hpp"
+#include "4C_linear_solver_method_linalg.hpp"
+#include "4C_porofluid_pressure_based_timint_implicit.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -22,87 +23,101 @@ namespace PoroPressureBased
 
 namespace PoroPressureBased
 {
-  class MeshtyingStrategyArtery : public MeshtyingStrategyBase
+  class MeshtyingArtery
   {
    public:
     //! constructor
-    explicit MeshtyingStrategyArtery(PoroPressureBased::TimIntImpl* porofluidmultitimint,
+    explicit MeshtyingArtery(TimIntImpl* porofluidmultitimint,
         const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams);
 
 
     //! prepare time loop
-    void prepare_time_loop() override;
+    void prepare_time_loop();
 
     //! prepare time step
-    void prepare_time_step() override;
+    void prepare_time_step();
 
     //! update
-    void update() override;
+    void update();
 
     //! output
-    void output() override;
+    void output();
 
     //! Initialize the linear solver
-    void initialize_linear_solver(std::shared_ptr<Core::LinAlg::Solver> solver) override;
+    void initialize_linear_solver(std::shared_ptr<Core::LinAlg::Solver> solver);
 
     //! solve linear system of equations
     void linear_solve(std::shared_ptr<Core::LinAlg::Solver> solver,
         std::shared_ptr<Core::LinAlg::SparseOperator> sysmat,
         std::shared_ptr<Core::LinAlg::Vector<double>> increment,
         std::shared_ptr<Core::LinAlg::Vector<double>> residual,
-        Core::LinAlg::SolverParams& solver_params) override;
+        Core::LinAlg::SolverParams& solver_params);
 
     //! calculate norms for convergence checks
     void calculate_norms(std::vector<double>& preresnorm, std::vector<double>& incprenorm,
         std::vector<double>& prenorm,
-        const std::shared_ptr<const Core::LinAlg::Vector<double>> increment) override;
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> increment);
 
     //! create the field test
-    void create_field_test() override;
+    void create_field_test();
 
     //! restart
-    void read_restart(const int step) override;
+    void read_restart(const int step);
 
     //! evaluate mesh tying
-    void evaluate() override;
+    void evaluate();
 
     //! extract increments and update mesh tying
     std::shared_ptr<const Core::LinAlg::Vector<double>> extract_and_update_iter(
-        const std::shared_ptr<const Core::LinAlg::Vector<double>> inc) override;
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> inc);
 
     // return arterial network time integrator
-    std::shared_ptr<Adapter::ArtNet> art_net_tim_int() override { return artnettimint_; }
+    std::shared_ptr<Adapter::ArtNet> art_net_tim_int() { return artnettimint_; }
 
     //! access dof row map
-    std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const override;
+    std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const;
 
     //! right-hand side alias the dynamic force residual for coupled system
-    std::shared_ptr<const Core::LinAlg::Vector<double>> artery_porofluid_rhs() const override;
+    std::shared_ptr<const Core::LinAlg::Vector<double>> artery_porofluid_rhs() const;
 
     //! access to block system matrix of artery poro problem
-    std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> artery_porofluid_sysmat() const override;
+    std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> artery_porofluid_sysmat() const;
 
     //! get global (combined) increment of coupled problem
     std::shared_ptr<const Core::LinAlg::Vector<double>> combined_increment(
-        const std::shared_ptr<const Core::LinAlg::Vector<double>> inc) const override;
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> inc) const;
 
     //! check if initial fields on coupled DOFs are equal
-    void check_initial_fields(
-        std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont) const override;
+    void check_initial_fields(std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont) const;
 
     //! set the element pairs that are close as found by search algorithm
-    void set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearbyelepairs) override;
+    void set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearbyelepairs);
 
     //! setup the strategy
-    void setup() override;
+    void setup();
 
     //! apply the mesh movement
-    void apply_mesh_movement() const override;
+    void apply_mesh_movement() const;
 
     //! return blood vessel volume fraction
-    std::shared_ptr<const Core::LinAlg::Vector<double>> blood_vessel_volume_fraction() override;
+    std::shared_ptr<const Core::LinAlg::Vector<double>> blood_vessel_volume_fraction();
 
-   protected:
+   private:
+    //! porofluid multi time integrator
+    TimIntImpl* porofluidmultitimint_;
+
+    //! parameter list of global control problem
+    const Teuchos::ParameterList& params_;
+
+    //! parameter list of poro fluid multiphase problem
+    const Teuchos::ParameterList& poroparams_;
+
+    //! vector norm for residuals
+    VectorNorm vectornormfres_;
+
+    //! vector norm for increments
+    VectorNorm vectornorminc_;
+
     //! artery time integration
     std::shared_ptr<Adapter::ArtNet> artnettimint_;
 

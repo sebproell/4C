@@ -139,7 +139,10 @@ void PoroPressureBased::TimIntOneStepTheta::compute_time_derivative()
 void PoroPressureBased::TimIntOneStepTheta::update()
 {
   // call base class
-  PoroPressureBased::TimIntImpl::update();
+  if (artery_coupling_active_)
+  {
+    PoroPressureBased::TimIntImpl::update();
+  }
 
   // compute time derivative at time n+1
   compute_time_derivative();

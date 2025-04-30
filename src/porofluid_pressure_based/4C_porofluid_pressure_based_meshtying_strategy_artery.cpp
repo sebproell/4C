@@ -18,9 +18,10 @@
 #include "4C_linear_solver_method_parameters.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_base.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_utils.hpp"
+#include "4C_porofluid_pressure_based_timint_implicit.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
-#include <Teuchos_TimeMonitor.hpp>
+#include <Teuchos_StandardParameterEntryValidators.hpp>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -28,10 +29,16 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | constructor                                (public) kremheller 04/18 |
  *----------------------------------------------------------------------*/
-PoroPressureBased::MeshtyingStrategyArtery::MeshtyingStrategyArtery(
+PoroPressureBased::MeshtyingArtery::MeshtyingArtery(
     PoroPressureBased::TimIntImpl* porofluidmultitimint, const Teuchos::ParameterList& probparams,
     const Teuchos::ParameterList& poroparams)
-    : MeshtyingStrategyBase(porofluidmultitimint, probparams, poroparams)
+    : porofluidmultitimint_(porofluidmultitimint),
+      params_(probparams),
+      poroparams_(poroparams),
+      vectornormfres_(
+          Teuchos::getIntegralValue<PoroPressureBased::VectorNorm>(poroparams_, "VECTORNORM_RESF")),
+      vectornorminc_(
+          Teuchos::getIntegralValue<PoroPressureBased::VectorNorm>(poroparams_, "VECTORNORM_INC"))
 {
   const Teuchos::ParameterList& artdyn = Global::Problem::instance()->arterial_dynamic_params();
 
@@ -114,7 +121,7 @@ PoroPressureBased::MeshtyingStrategyArtery::MeshtyingStrategyArtery(
 /*----------------------------------------------------------------------*
  | prepare time loop                                   kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::prepare_time_loop()
+void PoroPressureBased::MeshtyingArtery::prepare_time_loop()
 {
   artnettimint_->prepare_time_loop();
   return;
@@ -123,7 +130,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::prepare_time_loop()
 /*----------------------------------------------------------------------*
  | setup the variables to do a new time step  (public) kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::prepare_time_step()
+void PoroPressureBased::MeshtyingArtery::prepare_time_step()
 {
   artnettimint_->prepare_time_step();
   return;
@@ -133,7 +140,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::prepare_time_step()
  | current solution becomes most recent solution of next timestep       |
  |                                                     kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::update()
+void PoroPressureBased::MeshtyingArtery::update()
 {
   artnettimint_->time_update();
   return;
@@ -142,7 +149,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::update()
 /*--------------------------------------------------------------------------*
  | initialize the linear solver                            kremheller 07/20 |
  *--------------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::initialize_linear_solver(
+void PoroPressureBased::MeshtyingArtery::initialize_linear_solver(
     std::shared_ptr<Core::LinAlg::Solver> solver)
 {
   const Teuchos::ParameterList& porofluidparams =
@@ -188,8 +195,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::initialize_linear_solver(
 /*--------------------------------------------------------------------------*
  | solve linear system of equations                        kremheller 04/18 |
  *--------------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::linear_solve(
-    std::shared_ptr<Core::LinAlg::Solver> solver,
+void PoroPressureBased::MeshtyingArtery::linear_solve(std::shared_ptr<Core::LinAlg::Solver> solver,
     std::shared_ptr<Core::LinAlg::SparseOperator> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> increment,
     std::shared_ptr<Core::LinAlg::Vector<double>> residual,
@@ -211,7 +217,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::linear_solve(
 /*----------------------------------------------------------------------*
  | Calculate problem specific norm                     kremheller 03/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::calculate_norms(std::vector<double>& preresnorm,
+void PoroPressureBased::MeshtyingArtery::calculate_norms(std::vector<double>& preresnorm,
     std::vector<double>& incprenorm, std::vector<double>& prenorm,
     const std::shared_ptr<const Core::LinAlg::Vector<double>> increment)
 {
@@ -245,7 +251,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::calculate_norms(std::vector<dou
 /*----------------------------------------------------------------------*
  | create result test for this field                   kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::create_field_test()
+void PoroPressureBased::MeshtyingArtery::create_field_test()
 {
   std::shared_ptr<Core::Utils::ResultTest> arteryresulttest = artnettimint_->create_field_test();
   Global::Problem::instance()->add_field_test(arteryresulttest);
@@ -255,7 +261,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::create_field_test()
 /*----------------------------------------------------------------------*
  |  read restart data                                  kremheller 04/18 |
  -----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::read_restart(const int step)
+void PoroPressureBased::MeshtyingArtery::read_restart(const int step)
 {
   artnettimint_->read_restart(step);
 
@@ -265,7 +271,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::read_restart(const int step)
 /*----------------------------------------------------------------------*
  | output of solution vector to BINIO                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::output()
+void PoroPressureBased::MeshtyingArtery::output()
 {
   if (porofluidmultitimint_->step() != 0) artnettimint_->output(false, nullptr);
 
@@ -275,7 +281,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::output()
 /*----------------------------------------------------------------------*
  | evaluate matrix and rhs                             kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::evaluate()
+void PoroPressureBased::MeshtyingArtery::evaluate()
 {
   arttoporofluidcoupling_->set_solution_vectors(
       porofluidmultitimint_->phinp(), porofluidmultitimint_->phin(), artnettimint_->pressurenp());
@@ -301,7 +307,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::evaluate()
  | extract and update                                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::MeshtyingStrategyArtery::extract_and_update_iter(
+PoroPressureBased::MeshtyingArtery::extract_and_update_iter(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> inc)
 {
   std::shared_ptr<const Core::LinAlg::Vector<double>> arterypressinc;
@@ -317,8 +323,8 @@ PoroPressureBased::MeshtyingStrategyArtery::extract_and_update_iter(
 /*----------------------------------------------------------------------*
  | artery dof row map                                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Map>
-PoroPressureBased::MeshtyingStrategyArtery::artery_dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::MeshtyingArtery::artery_dof_row_map()
+    const
 {
   return arttoporofluidcoupling_->artery_dof_row_map();
 }
@@ -327,7 +333,7 @@ PoroPressureBased::MeshtyingStrategyArtery::artery_dof_row_map() const
  | access to block system matrix of artery poro problem kremheller 04/18 |
  *-----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase>
-PoroPressureBased::MeshtyingStrategyArtery::artery_porofluid_sysmat() const
+PoroPressureBased::MeshtyingArtery::artery_porofluid_sysmat() const
 {
   return comb_systemmatrix_;
 }
@@ -336,7 +342,7 @@ PoroPressureBased::MeshtyingStrategyArtery::artery_porofluid_sysmat() const
  | return coupled residual                             kremheller 05/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::MeshtyingStrategyArtery::artery_porofluid_rhs() const
+PoroPressureBased::MeshtyingArtery::artery_porofluid_rhs() const
 {
   return rhs_;
 }
@@ -345,7 +351,7 @@ PoroPressureBased::MeshtyingStrategyArtery::artery_porofluid_rhs() const
  | extract and update                                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::MeshtyingStrategyArtery::combined_increment(
+PoroPressureBased::MeshtyingArtery::combined_increment(
     const std::shared_ptr<const Core::LinAlg::Vector<double>> inc) const
 {
   return comb_increment_;
@@ -354,7 +360,7 @@ PoroPressureBased::MeshtyingStrategyArtery::combined_increment(
 /*----------------------------------------------------------------------*
  | check initial fields                                kremheller 06/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::check_initial_fields(
+void PoroPressureBased::MeshtyingArtery::check_initial_fields(
     std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont) const
 {
   arttoporofluidcoupling_->check_initial_fields(vec_cont, artnettimint_->pressurenp());
@@ -364,7 +370,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::check_initial_fields(
 /*-------------------------------------------------------------------------*
  | set element pairs that are close                       kremheller 03/19 |
  *------------------------------------------------------------------------ */
-void PoroPressureBased::MeshtyingStrategyArtery::set_nearby_ele_pairs(
+void PoroPressureBased::MeshtyingArtery::set_nearby_ele_pairs(
     const std::map<int, std::set<int>>* nearbyelepairs)
 {
   arttoporofluidcoupling_->set_nearby_ele_pairs(nearbyelepairs);
@@ -374,7 +380,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::set_nearby_ele_pairs(
 /*-------------------------------------------------------------------------*
  | setup the strategy                                     kremheller 03/19 |
  *------------------------------------------------------------------------ */
-void PoroPressureBased::MeshtyingStrategyArtery::setup()
+void PoroPressureBased::MeshtyingArtery::setup()
 {
   arttoporofluidcoupling_->setup();
   return;
@@ -383,7 +389,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::setup()
 /*----------------------------------------------------------------------*
  | apply mesh movement                                 kremheller 06/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingStrategyArtery::apply_mesh_movement() const
+void PoroPressureBased::MeshtyingArtery::apply_mesh_movement() const
 {
   arttoporofluidcoupling_->apply_mesh_movement();
   return;
@@ -393,7 +399,7 @@ void PoroPressureBased::MeshtyingStrategyArtery::apply_mesh_movement() const
  | access to blood vessel volume fraction              kremheller 10/19 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::MeshtyingStrategyArtery::blood_vessel_volume_fraction()
+PoroPressureBased::MeshtyingArtery::blood_vessel_volume_fraction()
 {
   return arttoporofluidcoupling_->blood_vessel_volume_fraction();
 }
