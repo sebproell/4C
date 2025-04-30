@@ -14,6 +14,7 @@
 #include "4C_art_net_timint.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_io.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_mapextractor.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_vector.hpp"
@@ -101,6 +102,10 @@ namespace Arteries
 
     */
     void output(bool CoupledTo3D, std::shared_ptr<Teuchos::ParameterList> CouplingParams) override;
+
+    void output_restart(bool CoupledTo3D, int step);
+
+    void collect_runtime_output_data(bool CoupledTo3D, int step);
 
     /*!
     \brief Test results
@@ -261,6 +266,9 @@ namespace Arteries
     //! @name 1D artery values at the junctions
     std::shared_ptr<std::map<const int, std::shared_ptr<Arteries::Utils::JunctionNodeParams>>>
         junc_nodal_vals_;
+
+   private:
+    std::unique_ptr<Core::IO::DiscretizationVisualizationWriterMesh> visualization_writer_{nullptr};
     //@}
 
     //@}
