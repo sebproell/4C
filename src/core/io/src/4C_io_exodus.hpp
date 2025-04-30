@@ -128,54 +128,25 @@ namespace Core::IO::Exodus
   class ElementBlock
   {
    public:
-    enum Shape
-    {
-      dis_none,  ///< unknown dis type
-      quad4,     ///< 4 noded quadrilateral
-      quad8,     ///< 8 noded quadrilateral
-      quad9,     ///< 9 noded quadrilateral
-      shell4,
-      shell8,
-      shell9,
-      tri3,        ///< 3 noded triangle
-      tri6,        ///< 6 noded triangle
-      hex8,        ///< 8 noded hexahedra
-      hex20,       ///< 20 noded hexahedra
-      hex27,       ///< 27 noded hexahedra
-      tet4,        ///< 4 noded tetrahedra
-      tet10,       ///< 10 noded tetrahedra
-      wedge6,      ///< 6 noded wedge
-      wedge15,     ///< 15 noded wedge
-      pyramid5,    ///< 5 noded pyramid
-      bar2,        ///< 2 noded line
-      bar3,        ///< 3 noded line
-      point1,      ///< 1 noded point
-      max_distype  ///<  end marker. must be the last entry
-    };
+    ElementBlock(FE::CellType cell_type, std::map<int, std::vector<int>> eleconn, std::string name);
 
-    ElementBlock(ElementBlock::Shape DisType,
-        std::shared_ptr<std::map<int, std::vector<int>>>& eleconn,  // Element connectivity
-        std::string name);
+    FE::CellType get_shape() const { return cell_type_; }
 
-    ElementBlock::Shape get_shape() const { return distype_; }
+    int get_num_ele() const { return eleconn_.size(); }
 
-    int get_num_ele() const { return eleconn_->size(); }
-
-    std::shared_ptr<std::map<int, std::vector<int>>> get_ele_conn() const { return eleconn_; }
+    const std::map<int, std::vector<int>>& get_ele_conn() const { return eleconn_; }
 
     const std::vector<int>& get_ele_nodes(int i) const;
 
     std::string get_name() const { return name_; }
 
-    int get_ele_node(int ele, int node) const;
-
     void print(std::ostream& os, bool verbose = false) const;
 
    private:
-    Shape distype_;
+    FE::CellType cell_type_;
 
     //! Element Connectivity
-    std::shared_ptr<std::map<int, std::vector<int>>> eleconn_;
+    std::map<int, std::vector<int>> eleconn_;
 
     std::string name_;
   };
@@ -215,13 +186,6 @@ namespace Core::IO::Exodus
     std::map<int, std::vector<int>> sides_;
     std::string name_;
   };
-
-  ElementBlock::Shape string_to_shape(const std::string shape);
-
-  std::string shape_to_string(const ElementBlock::Shape shape);
-
-  Core::FE::CellType shape_to_cell_type(const ElementBlock::Shape shape);
-
 }  // namespace Core::IO::Exodus
 
 FOUR_C_NAMESPACE_CLOSE

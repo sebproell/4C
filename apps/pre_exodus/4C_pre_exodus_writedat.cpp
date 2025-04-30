@@ -337,8 +337,8 @@ std::set<int> EXODUS::get_ns_from_bc_entity(
   {
     std::set<int> allnodes;
     const auto& eb = m.get_element_block(e.id);
-    std::shared_ptr<const std::map<int, std::vector<int>>> eles = eb.get_ele_conn();
-    for (const auto& ele : *eles)
+    const std::map<int, std::vector<int>>& eles = eb.get_ele_conn();
+    for (const auto& ele : eles)
     {
       const std::vector<int> nodes = ele.second;
       for (auto node : nodes) allnodes.insert(node);
@@ -481,14 +481,14 @@ void EXODUS::write_dat_eles(
 void EXODUS::dat_eles(const Core::IO::Exodus::ElementBlock& eb, const EXODUS::ElemDef& acte,
     int& startele, std::ostream& outfile, const int eb_id)
 {
-  auto eles = eb.get_ele_conn();
-  for (const auto& ele : *eles)
+  const auto& eles = eb.get_ele_conn();
+  for (const auto& ele : eles)
   {
     std::stringstream dat;  // first build up the std::string for actual element line
     const std::vector<int> nodes = ele.second;
     dat << "   " << startele;
     dat << " " << acte.ename;  // e.g. "SOLID"
-    dat << " " << Core::FE::cell_type_to_string(shape_to_cell_type(eb.get_shape()));
+    dat << " " << Core::FE::cell_type_to_string(eb.get_shape());
     dat << "  ";
     for (auto node : nodes) dat << node << " ";
     dat << "   " << acte.desc;  // e.g. "MAT 1"
