@@ -116,13 +116,6 @@ namespace Core::IO
       [[nodiscard]] std::string_view get_as_dat_style_string() const;
 
       /**
-       * Match the fragment against a given InputSpec @p spec. If the fragment does not match the
-       * spec, an empty optional is returned. If the fragment matches the spec, an
-       * InputParameterContainer with the parsed content is returned.
-       */
-      [[nodiscard]] std::optional<InputParameterContainer> match(const InputSpec& spec) const;
-
-      /**
        * A raw pointer to implementation details. This pointer will be valid as long as the
        * associated InputFile object is alive.
        *

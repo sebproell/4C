@@ -135,37 +135,42 @@ namespace
         TESTING::get_support_file_path("test_files/yaml_includes/main.yaml");
 
     MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{{"INCLUDED SECTION 2", all_of({
-                                                          parameter<int>("a"),
-                                                          parameter<double>("b"),
-                                                          parameter<bool>("c"),
-                                                      })}},
+    Core::IO::InputFile input(
+        {{"INCLUDED SECTION 2", all_of({
+                                    parameter<int>("a"),
+                                    parameter<double>("b"),
+                                    parameter<bool>("c"),
+                                })},
+            {"SECTION WITH SUBSTRUCTURE", list("SECTION WITH SUBSTRUCTURE",
+                                              all_of({
+                                                  parameter<int>("MAT"),
+                                                  group("THERMO",
+                                                      {
+                                                          parameter<std::vector<double>>("COND"),
+                                                          parameter<double>("CAPA"),
+                                                      }),
+                                              }))}},
         {
             "MAIN SECTION",
             "INCLUDED SECTION 1",
             "INCLUDED SECTION 3",
-            "SECTION WITH SUBSTRUCTURE",
         },
-        comm};
+        comm);
     input.read(input_file_name);
 
     check_section_rank_0_only(input, "INCLUDED SECTION 1", std::vector<std::string>(2, "line"));
-    check_section_rank_0_only(
-        input, "SECTION WITH SUBSTRUCTURE", {"MAT 1 THERMO COND 1 2 3 CAPA 2"});
 
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 2").filename(), "included.yaml");
-
-    auto spec = Core::IO::InputSpecBuilders::all_of({
-        Core::IO::InputSpecBuilders::parameter<int>("a"),
-        Core::IO::InputSpecBuilders::parameter<double>("b"),
-        Core::IO::InputSpecBuilders::parameter<bool>("c"),
-    });
 
     Core::IO::InputParameterContainer container;
     input.match_section("INCLUDED SECTION 2", container);
     EXPECT_EQ(container.get<int>("a"), 1);
     EXPECT_EQ(container.get<double>("b"), 2.0);
     EXPECT_EQ(container.get<bool>("c"), true);
+
+    container.clear();
+    input.match_section("SECTION WITH SUBSTRUCTURE", container);
+    EXPECT_EQ(container.get_list("SECTION WITH SUBSTRUCTURE")[0].get<int>("MAT"), 1);
   }
 
 }  // namespace
