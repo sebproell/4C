@@ -1,7 +1,7 @@
-.. _cmakepresets:
+.. _developer_cmake:
 
-CMake presets
---------------
+CMake
+-----
 
 CMake presets are |FOURC|'s recommended way to configure and manage different configurations of |FOURC|.
 This small article will go through a few of them. The experts should also read the
@@ -70,13 +70,24 @@ Don't be overwhelmed by the options you could potentially set.
   optimizes the build setup for iterative development cycles.
 - We try to detect reasonable defaults for you internally.
 
-Over time you might realize that you want to turn on additional dependencies or features.
-To see which other options you can set, consult the console output of CMake or run `ccmake .` in the build folder.
-Alternatively, all options are also printed with their ``ON`` or ``OFF`` state whenever ``cmake`` runs.
+Reference of all CMake variables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Remark:** Variables either start with the prefix `FOUR_C_` indicating that this variable only affects |FOURC| itself,
-or they start with `CMAKE_` indicating that the variable (potentially) affects all dependent projects in a way
+Over time you might realize that you want to turn on additional dependencies or features.
+To see which other options you can set, consult the console output of CMake or run ``ccmake .`` in the build folder.
+Alternatively, many options are also printed with their ``ON`` or ``OFF`` state whenever ``cmake`` runs.
+
+**Remark:** Variables either start with the prefix ``FOUR_C_`` indicating that this variable only affects |FOURC| itself,
+or they start with ``CMAKE_`` indicating that the variable (potentially) affects all dependent projects in a way
 specified directly in the CMake documentation.
+
+This is a list of all variables that are available to configure |FOURC|:
+
+.. csv-table::
+    :file: /4C-cmake-variables.csv
+    :header-rows: 1
+    :widths: 20, 20, 60
+
 
 Configuration from the IDE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

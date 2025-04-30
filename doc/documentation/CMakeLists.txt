@@ -42,6 +42,10 @@ if(FOUR_C_BUILD_DOCUMENTATION)
       cmake ${PROJECT_SOURCE_DIR} --list-presets >
       ${_sphinx_OUT_DIR}/reference_docs/4C-cmake-presets.txt
     COMMAND
+      bash ${CMAKE_CURRENT_SOURCE_DIR}/scripts/extract_cmake_variables.sh
+      ${PROJECT_BINARY_DIR}/CMakeCache.txt >
+      ${_sphinx_OUT_DIR}/reference_docs/4C-cmake-variables.csv
+    COMMAND
       ${SPHINX_EXECUTABLE} -W -n -q -b html # warnings are errors and be nit-picky
       -i "${CMAKE_CURRENT_SOURCE_DIR}/src" -i "${_sphinx_OUT_DIR}/reference_docs" -i
       "${PROJECT_SOURCE_DIR}/tests/framework-test" -i "${_sphinx_TPLDEPEND_DIR}" -o

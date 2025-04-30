@@ -173,7 +173,7 @@ In a preset within this file, you should define a few options that are important
 - the build directory. It is good practice to indicate the value for ``CMAKE_BUILD_TYPE`` in the folder name, e.g. by
   ``"binaryDir": "<4C-basedir>/builds/release-build"`` (the folder name is completely up to you).
 
-More information about the cmake presets can be found :ref:`here <cmakepresets>`.
+More information about the cmake presets can be found :ref:`here <developer_cmake>`.
 
 
 .. note::
