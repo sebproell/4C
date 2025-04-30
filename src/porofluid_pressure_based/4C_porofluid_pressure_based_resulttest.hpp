@@ -36,7 +36,7 @@ namespace Core::Elements
 namespace PoroPressureBased
 {
   // forward declaration
-  class TimIntImpl;
+  class PorofluidAlgorithm;
 
   /*!
     \brief POROFLUIDMULTIPHASE specific result test class
@@ -48,7 +48,7 @@ namespace PoroPressureBased
     /*!
     \brief constructor
     */
-    ResultTest(TimIntImpl& porotimint);
+    ResultTest(PorofluidAlgorithm& porofluid_algorithm);
 
 
     /// our version of nodal value tests
@@ -83,7 +83,7 @@ namespace PoroPressureBased
 
    private:
     //! time integrator
-    const TimIntImpl& porotimint_;
+    const PorofluidAlgorithm& porofluid_algorithm_;
   };
 }  // namespace PoroPressureBased
 

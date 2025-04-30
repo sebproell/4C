@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_TIMINT_IMPLICIT_HPP
-#define FOUR_C_POROFLUID_PRESSURE_BASED_TIMINT_IMPLICIT_HPP
+#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_ALGORITHM_HPP
+#define FOUR_C_POROFLUID_PRESSURE_BASED_ALGORITHM_HPP
 
 
 
@@ -69,7 +69,7 @@ namespace PoroPressureBased
    * \brief implicit time integration for porous multiphase flow problems
    */
 
-  class TimIntImpl : public Adapter::PoroFluidMultiphase
+  class PorofluidAlgorithm : public Adapter::PoroFluidMultiphase
   {
    public:
     /*========================================================================*/
@@ -77,7 +77,7 @@ namespace PoroPressureBased
     /*========================================================================*/
 
     //! Standard Constructor
-    TimIntImpl(std::shared_ptr<Core::FE::Discretization> dis, const int linsolvernumber,
+    PorofluidAlgorithm(std::shared_ptr<Core::FE::Discretization> dis, const int linsolvernumber,
         const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams,
         std::shared_ptr<Core::IO::DiscretizationWriter> output);
 
@@ -91,9 +91,6 @@ namespace PoroPressureBased
     /*========================================================================*/
 
     /*--- set, prepare, and predict ------------------------------------------*/
-
-    //! add global state vectors specific for time-integration scheme
-    void compute_intermediate_values() { return; };
 
     //! prepare time loop
     void prepare_time_loop() override;
@@ -309,14 +306,7 @@ namespace PoroPressureBased
       return meshtying_;
     }
 
-   protected:
-    /*========================================================================*/
-    //! @name Constructors and destructors and related methods
-    /*========================================================================*/
-
-    //! don't want copy constructor
-    TimIntImpl(const TimIntImpl& old);
-
+   private:
     /// set time parameter for element evaluation (called before every time step)
     void set_element_time_step_parameter() const;
 
@@ -706,7 +696,7 @@ namespace PoroPressureBased
 
     /*========================================================================*/
 
-  };  // class TimIntImpl
+  };  // class Porofluid
 }  // namespace PoroPressureBased
 
 

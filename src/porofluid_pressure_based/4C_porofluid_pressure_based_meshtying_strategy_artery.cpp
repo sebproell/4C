@@ -16,9 +16,9 @@
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_linear_solver_method_parameters.hpp"
+#include "4C_porofluid_pressure_based_algorithm.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_base.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_utils.hpp"
-#include "4C_porofluid_pressure_based_timint_implicit.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -30,9 +30,9 @@ FOUR_C_NAMESPACE_OPEN
  | constructor                                (public) kremheller 04/18 |
  *----------------------------------------------------------------------*/
 PoroPressureBased::MeshtyingArtery::MeshtyingArtery(
-    PoroPressureBased::TimIntImpl* porofluidmultitimint, const Teuchos::ParameterList& probparams,
-    const Teuchos::ParameterList& poroparams)
-    : porofluidmultitimint_(porofluidmultitimint),
+    PoroPressureBased::PorofluidAlgorithm* porofluid_algorithm,
+    const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams)
+    : porofluid_algorithm_(porofluid_algorithm),
       params_(probparams),
       poroparams_(poroparams),
       vectornormfres_(
@@ -63,7 +63,7 @@ PoroPressureBased::MeshtyingArtery::MeshtyingArtery(
   artnettimint_->init(probparams, artdyn, "artery_scatra");
 
   // print user info
-  if (Core::Communication::my_mpi_rank(porofluidmultitimint->discretization()->get_comm()) == 0)
+  if (Core::Communication::my_mpi_rank(porofluid_algorithm->discretization()->get_comm()) == 0)
   {
     std::cout << "\n";
     std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -94,7 +94,7 @@ PoroPressureBased::MeshtyingArtery::MeshtyingArtery(
 
   // initialize mesh tying object
   arttoporofluidcoupling_ = PoroPressureBased::create_and_init_artery_coupling_strategy(arterydis_,
-      porofluidmultitimint->discretization(), poroparams.sublist("ARTERY COUPLING"),
+      porofluid_algorithm->discretization(), poroparams.sublist("ARTERY COUPLING"),
       couplingcondname, "COUPLEDDOFS_ART", "COUPLEDDOFS_PORO", evaluate_on_lateral_surface);
 
   // Initialize rhs vector
@@ -186,7 +186,7 @@ void PoroPressureBased::MeshtyingArtery::initialize_linear_solver(
 
   Teuchos::ParameterList& blocksmootherparams1 = solver->params().sublist("Inverse1");
   Core::LinearSolver::Parameters::compute_solver_parameters(
-      *porofluidmultitimint_->discretization(), blocksmootherparams1);
+      *porofluid_algorithm_->discretization(), blocksmootherparams1);
 
   Teuchos::ParameterList& blocksmootherparams2 = solver->params().sublist("Inverse2");
   Core::LinearSolver::Parameters::compute_solver_parameters(*arterydis_, blocksmootherparams2);
@@ -225,7 +225,7 @@ void PoroPressureBased::MeshtyingArtery::calculate_norms(std::vector<double>& pr
   incprenorm.resize(2);
   prenorm.resize(2);
 
-  prenorm[0] = calculate_vector_norm(vectornorminc_, *porofluidmultitimint_->phinp());
+  prenorm[0] = calculate_vector_norm(vectornorminc_, *porofluid_algorithm_->phinp());
   prenorm[1] = calculate_vector_norm(vectornorminc_, *artnettimint_->pressurenp());
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> arterypressinc;
@@ -273,7 +273,7 @@ void PoroPressureBased::MeshtyingArtery::read_restart(const int step)
  *----------------------------------------------------------------------*/
 void PoroPressureBased::MeshtyingArtery::output()
 {
-  if (porofluidmultitimint_->step() != 0) artnettimint_->output(false, nullptr);
+  if (porofluid_algorithm_->step() != 0) artnettimint_->output(false, nullptr);
 
   return;
 }
@@ -284,7 +284,7 @@ void PoroPressureBased::MeshtyingArtery::output()
 void PoroPressureBased::MeshtyingArtery::evaluate()
 {
   arttoporofluidcoupling_->set_solution_vectors(
-      porofluidmultitimint_->phinp(), porofluidmultitimint_->phin(), artnettimint_->pressurenp());
+      porofluid_algorithm_->phinp(), porofluid_algorithm_->phin(), artnettimint_->pressurenp());
 
   // evaluate the coupling
   arttoporofluidcoupling_->evaluate(comb_systemmatrix_, rhs_);
@@ -296,9 +296,9 @@ void PoroPressureBased::MeshtyingArtery::evaluate()
 
   // SetupCoupledArteryPoroFluidSystem();
   arttoporofluidcoupling_->setup_system(comb_systemmatrix_, rhs_,
-      porofluidmultitimint_->system_matrix(), artnettimint_->system_matrix(),
-      porofluidmultitimint_->rhs(), artnettimint_->rhs(),
-      porofluidmultitimint_->get_dbc_map_extractor(), artnettimint_->get_dbc_map_extractor());
+      porofluid_algorithm_->system_matrix(), artnettimint_->system_matrix(),
+      porofluid_algorithm_->rhs(), artnettimint_->rhs(),
+      porofluid_algorithm_->get_dbc_map_extractor(), artnettimint_->get_dbc_map_extractor());
 
   return;
 }
