@@ -51,11 +51,10 @@ void NOX::Nln::LinSystem::PrePostOperator::reset(Teuchos::ParameterList& linearS
 
   /* Check if a pre/post processor for the linear system is provided
    * by the user. */
-  if (linearSolverSubList.INVALID_TEMPLATE_QUALIFIER isType<Teuchos::RCP<Map>>(
-          "User Defined Pre/Post Operator"))
+  if (linearSolverSubList.isType<Teuchos::RCP<Map>>("User Defined Pre/Post Operator"))
   {
-    prePostOperatorMapPtr_ = linearSolverSubList.INVALID_TEMPLATE_QUALIFIER get<Teuchos::RCP<Map>>(
-        "User Defined Pre/Post Operator");
+    prePostOperatorMapPtr_ =
+        linearSolverSubList.get<Teuchos::RCP<Map>>("User Defined Pre/Post Operator");
     havePrePostOperator_ = true;
   }
 }

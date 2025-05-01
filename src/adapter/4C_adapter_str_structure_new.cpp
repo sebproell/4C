@@ -433,16 +433,15 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
     case Core::ProblemType::ssi:
     case Core::ProblemType::ssti:
     {
-      if (prbdyn_->INVALID_TEMPLATE_QUALIFIER
-              isType<std::shared_ptr<Solid::ModelEvaluator::Generic>>("Partitioned Coupling Model"))
+      if (prbdyn_->isType<std::shared_ptr<Solid::ModelEvaluator::Generic>>(
+              "Partitioned Coupling Model"))
       {
-        if (prbdyn_->INVALID_TEMPLATE_QUALIFIER
-                isType<std::shared_ptr<Solid::ModelEvaluator::Generic>>(
-                    "Monolithic Coupling Model"))
+        if (prbdyn_->isType<std::shared_ptr<Solid::ModelEvaluator::Generic>>(
+                "Monolithic Coupling Model"))
           FOUR_C_THROW("Cannot have both partitioned and monolithic coupling at the same time!");
         const auto coupling_model_ptr =
-            prbdyn_->INVALID_TEMPLATE_QUALIFIER
-                get<std::shared_ptr<Solid::ModelEvaluator::Generic>>("Partitioned Coupling Model");
+            prbdyn_->get<std::shared_ptr<Solid::ModelEvaluator::Generic>>(
+                "Partitioned Coupling Model");
         if (!coupling_model_ptr)
           FOUR_C_THROW("The partitioned coupling model pointer is not allowed to be nullptr!");
         // set the model type
@@ -452,13 +451,12 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
             "Partitioned Coupling Model", coupling_model_ptr);
       }
 
-      else if (prbdyn_->INVALID_TEMPLATE_QUALIFIER
-                   isType<std::shared_ptr<Solid::ModelEvaluator::Generic>>(
-                       "Monolithic Coupling Model"))
+      else if (prbdyn_->isType<std::shared_ptr<Solid::ModelEvaluator::Generic>>(
+                   "Monolithic Coupling Model"))
       {
         const auto coupling_model_ptr =
-            prbdyn_->INVALID_TEMPLATE_QUALIFIER
-                get<std::shared_ptr<Solid::ModelEvaluator::Generic>>("Monolithic Coupling Model");
+            prbdyn_->get<std::shared_ptr<Solid::ModelEvaluator::Generic>>(
+                "Monolithic Coupling Model");
         if (!coupling_model_ptr)
           FOUR_C_THROW("The monolithic coupling model pointer is not allowed to be nullptr!");
         // set the model type
@@ -468,12 +466,11 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
             "Monolithic Coupling Model", coupling_model_ptr);
       }
 
-      else if (prbdyn_->INVALID_TEMPLATE_QUALIFIER
-                   isType<std::shared_ptr<Solid::ModelEvaluator::Generic>>("Basic Coupling Model"))
+      else if (prbdyn_->isType<std::shared_ptr<Solid::ModelEvaluator::Generic>>(
+                   "Basic Coupling Model"))
       {
         const auto coupling_model_ptr =
-            prbdyn_->INVALID_TEMPLATE_QUALIFIER
-                get<std::shared_ptr<Solid::ModelEvaluator::Generic>>("Basic Coupling Model");
+            prbdyn_->get<std::shared_ptr<Solid::ModelEvaluator::Generic>>("Basic Coupling Model");
         if (!coupling_model_ptr)
           FOUR_C_THROW("The basic coupling model pointer is not allowed to be nullptr!");
         // set the model type

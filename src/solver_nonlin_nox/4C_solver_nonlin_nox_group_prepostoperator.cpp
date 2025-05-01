@@ -51,11 +51,10 @@ void NOX::Nln::GROUP::PrePostOperator::reset(Teuchos::ParameterList& groupOption
 
   /* Check if a pre/post operator for the group is provided
    * by the user. */
-  if (groupOptionsSubList.INVALID_TEMPLATE_QUALIFIER isType<Teuchos::RCP<Map>>(
-          "User Defined Pre/Post Operator"))
+  if (groupOptionsSubList.isType<Teuchos::RCP<Map>>("User Defined Pre/Post Operator"))
   {
-    prePostOperatorMapPtr_ = groupOptionsSubList.INVALID_TEMPLATE_QUALIFIER get<Teuchos::RCP<Map>>(
-        "User Defined Pre/Post Operator");
+    prePostOperatorMapPtr_ =
+        groupOptionsSubList.get<Teuchos::RCP<Map>>("User Defined Pre/Post Operator");
     havePrePostOperator_ = true;
   }
 }

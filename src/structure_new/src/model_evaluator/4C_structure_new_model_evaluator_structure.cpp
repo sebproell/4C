@@ -1301,8 +1301,7 @@ void Solid::ModelEvaluator::Structure::evaluate_internal(Teuchos::ParameterList&
         "Please use the Solid::Elements::Interface and its derived "
         "classes to set and get parameters.");
   }
-  if (not p.INVALID_TEMPLATE_QUALIFIER isType<std::shared_ptr<Core::Elements::ParamsInterface>>(
-          "interface"))
+  if (not p.isType<std::shared_ptr<Core::Elements::ParamsInterface>>("interface"))
     FOUR_C_THROW("The given parameter has the wrong type!");
 
   // FixMe as soon as possible: write data to the parameter list.
@@ -1339,8 +1338,7 @@ void Solid::ModelEvaluator::Structure::evaluate_internal_specified_elements(
         "Please use the Solid::Elements::Interface and its derived "
         "classes to set and get parameters.");
   }
-  if (not p.INVALID_TEMPLATE_QUALIFIER isType<std::shared_ptr<Core::Elements::ParamsInterface>>(
-          "interface"))
+  if (not p.isType<std::shared_ptr<Core::Elements::ParamsInterface>>("interface"))
     FOUR_C_THROW("The given parameter has the wrong type!");
 
   // write data to the parameter list.
@@ -1374,8 +1372,7 @@ void Solid::ModelEvaluator::Structure::evaluate_neumann(Teuchos::ParameterList& 
         "Please use the Solid::Elements::Interface and its derived "
         "classes to set and get parameters.");
   }
-  if (not p.INVALID_TEMPLATE_QUALIFIER isType<std::shared_ptr<Core::Elements::ParamsInterface>>(
-          "interface"))
+  if (not p.isType<std::shared_ptr<Core::Elements::ParamsInterface>>("interface"))
     FOUR_C_THROW("The given parameter has the wrong type!");
   discret().evaluate_neumann(p, eval_vec, eval_mat.get());
   discret().clear_state();
