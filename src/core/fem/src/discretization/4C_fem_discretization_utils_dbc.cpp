@@ -40,11 +40,11 @@ std::shared_ptr<const Core::FE::Utils::Dbc> Core::FE::Utils::build_dbc(
 {
   // HDG discretization
   if (dynamic_cast<const Core::FE::DiscretizationHDG*>(discret_ptr) != nullptr)
-    return std::shared_ptr<const Core::FE::Utils::Dbc>(new const Core::FE::Utils::DbcHDG());
+    return std::make_shared<const Core::FE::Utils::DbcHDG>();
 
   // Nurbs discretization
   if (dynamic_cast<const Core::FE::Nurbs::NurbsDiscretization*>(discret_ptr) != nullptr)
-    return std::shared_ptr<const Core::FE::Utils::Dbc>(new const Core::FE::Utils::DbcNurbs());
+    return std::make_shared<const Core::FE::Utils::DbcNurbs>();
 
   // default case
   return std::make_shared<const Core::FE::Utils::Dbc>();

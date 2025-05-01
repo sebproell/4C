@@ -224,12 +224,7 @@ namespace Core::FE
         }
       };
 
-      /** \brief constructor
-       *
-       *  Intentionally left blank! */
-      Dbc() {};
-
-      /// destructor
+      /// Virtual destructor.
       virtual ~Dbc() = default;
 
       /** \brief Extract parameters and setup some temporal variables, before the actual
@@ -419,12 +414,6 @@ namespace Core::FE
        *  priority. The corresponding entries in the systemvectors remain
        *  untouched.
        *
-       *  \version rauch 06/2016
-       *  Shifted and rearranged parts of the former implementation to
-       *  read_dirichlet_condition(...). This fixes inconsistency in hierarchy
-       *  handling. Now, the Dirichlet conditions are first read by
-       *  read_dirichlet_condition(...). Then, they are applied by
-       *  do_dirichlet_condition(...).
        */
       virtual void do_dirichlet_condition(const Teuchos::ParameterList& params,
           const Core::FE::Discretization& discret, const Core::Conditions::Condition& cond,

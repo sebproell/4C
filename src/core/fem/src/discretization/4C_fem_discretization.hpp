@@ -1789,11 +1789,7 @@ namespace Core::FE
      *  \param condid        (in): condition ID */
     void evaluate_condition(Teuchos::ParameterList& params,
         std::shared_ptr<Core::LinAlg::Vector<double>> systemvector, const std::string& condstring,
-        const int condid = -1)
-    {
-      evaluate_condition(
-          params, nullptr, nullptr, systemvector, nullptr, nullptr, condstring, condid);
-    }
+        const int condid = -1);
 
     /** \brief Evaluate a specified condition
      *
@@ -1806,10 +1802,7 @@ namespace Core::FE
      *  \param condstring (in): Name of condition to be evaluated
      *  \param condid     (in): condition ID */
     void evaluate_condition(
-        Teuchos::ParameterList& params, const std::string& condstring, const int condid = -1)
-    {
-      evaluate_condition(params, nullptr, nullptr, nullptr, nullptr, nullptr, condstring, condid);
-    }
+        Teuchos::ParameterList& params, const std::string& condstring, const int condid = -1);
 
     /*!
     \brief Evaluate a specific condition
@@ -1817,10 +1810,6 @@ namespace Core::FE
     Loop all conditions attached to the discretization and evaluate them.
     This method considers all conditions in condition_ with the names
     matching the user-provided string condstring.
-    It takes a current time from the parameter list params named "total time"
-    and evaluates the appropriate time curves at that time for each
-    condition separately. If "total time" is not included
-    in the parameters, no time curves are used.
 
       \param params (in):        List of parameters for use at element level
       \param systemmatrix1 (out): Sparse matrix that may be changed by
