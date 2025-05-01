@@ -142,9 +142,8 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitial
       Core::Geo::BoundaryIntCellPtrs boundaryIntCells = Core::Geo::BoundaryIntCellPtrs(0);
 
       // check the type: ToDo change to FOUR_C_ASSERT
-      if (not params.INVALID_TEMPLATE_QUALIFIER
-              isType<std::shared_ptr<const std::map<int, Core::Geo::BoundaryIntCellPtrs>>>(
-                  "boundary cells"))
+      if (not params.isType<std::shared_ptr<const std::map<int, Core::Geo::BoundaryIntCellPtrs>>>(
+              "boundary cells"))
         FOUR_C_THROW("The given boundary cells have the wrong type!");
 
       const std::shared_ptr<const std::map<int, Core::Geo::BoundaryIntCellPtrs>>& allcells =

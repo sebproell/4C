@@ -26,11 +26,10 @@ void NOX::Nln::LineSearch::PrePostOperator::reset(Teuchos::ParameterList& linese
 
   /* Check if a pre/post operator for linesearch is provided
    * by the user. */
-  if (linesearchSublist.INVALID_TEMPLATE_QUALIFIER isType<Teuchos::RCP<map>>(
-          "User Defined Pre/Post Operator"))
+  if (linesearchSublist.isType<Teuchos::RCP<map>>("User Defined Pre/Post Operator"))
   {
-    prePostOperatorMapPtr_ = linesearchSublist.INVALID_TEMPLATE_QUALIFIER get<Teuchos::RCP<map>>(
-        "User Defined Pre/Post Operator");
+    prePostOperatorMapPtr_ =
+        linesearchSublist.get<Teuchos::RCP<map>>("User Defined Pre/Post Operator");
     havePrePostOperator_ = true;
   }
 }
