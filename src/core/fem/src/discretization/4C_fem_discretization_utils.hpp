@@ -62,43 +62,6 @@ namespace Core::FE
         const std::shared_ptr<Core::LinAlg::Vector<double>>& systemvector,
         const Core::LinAlg::Map* col_ele_map = nullptr);
 
-    /** \brief Evaluate the elements of the given discretization and fill the
-     *         system matrices and vectors
-     *
-     *  This evaluate routine supports the evaluation of a subset of all column
-     *  elements inside the given discretization. If the \c col_ele_map pointer
-     *  is not set or set to \c nullptr, this routine generates almost no overhead
-     *  and is equivalent to the more familiar implementation in Core::FE::Discretization.
-     *
-     *  \param discret      (in)  : discretization containing the considered elements
-     *  \param eparams      (in)  : element parameter list
-     *  \param systemmatrix (out) : system-matrix vector which is supposed to be filled
-     *  \param systemvector (out) : system-vector vector which is supposed to be filled
-     *  \param col_ele_map  (in)  : column element map, which can be a subset of the
-     *                              discretization column map ( optional )
-     */
-    void evaluate(Core::FE::Discretization& discret, Teuchos::ParameterList& eparams,
-        std::vector<std::shared_ptr<Core::LinAlg::SparseOperator>>& systemmatrices,
-        std::vector<std::shared_ptr<Core::LinAlg::Vector<double>>>& systemvector,
-        const Core::LinAlg::Map* col_ele_map = nullptr);
-
-    /** \brief Evaluate the elements of the given discretization and fill the
-     *         system matrices and vectors
-     *
-     *  This evaluate routine supports the evaluation of a subset of all column
-     *  elements inside the given discretization. If the \c col_ele_map pointer
-     *  is not set or set to \c nullptr, this routine generates almost no overhead
-     *  and is equivalent to the more familiar implementation in Core::FE::Discretization.
-     *
-     *  \param discret      (in)  : discretization containing the considered elements
-     *  \param eparams      (in)  : element parameter list
-     *  \param strategy     (out) : assemble strategy containing all the system vectors
-     *                              and matrices
-     *  \param col_ele_map  (in)  : column element map, which can be a subset of the
-     *                              discretization column map ( optional )
-     */
-    void evaluate(Core::FE::Discretization& discret, Teuchos::ParameterList& eparams,
-        Core::FE::AssembleStrategy& strategy, const Core::LinAlg::Map* col_ele_map = nullptr);
 
     /** \brief Evaluate Dirichlet boundary conditions
      *
