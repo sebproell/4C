@@ -11,6 +11,7 @@
 #include "4C_io_control.hpp"
 #include "4C_rebalance_print.hpp"
 #include "4C_ssi_monolithic.hpp"
+#include "4C_ssi_monolithic_meshtying_strategy.hpp"
 #include "4C_ssi_partitioned_1wc.hpp"
 #include "4C_ssi_partitioned_2wc.hpp"
 #include "4C_ssi_utils.hpp"
@@ -88,7 +89,6 @@ void ssi_drt()
         break;
       default:
         FOUR_C_THROW("unknown coupling algorithm for SSI!");
-        break;
     }
 
     // 3.1.1 initial fill_complete

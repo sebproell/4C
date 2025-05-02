@@ -42,68 +42,84 @@ namespace SSI
   class MeshtyingStrategyBase
   {
    public:
-    /**
-     * Virtual destructor.
-     */
-    virtual ~MeshtyingStrategyBase() = default;
-
     //! constructor
-    explicit MeshtyingStrategyBase(bool is_scatra_manifold,
-        std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps,
-        std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying);
+    MeshtyingStrategyBase() = default;
+
+    //! virtual destructor
+    virtual ~MeshtyingStrategyBase() = default;
 
     /*!
      * @brief apply mesh tying to structure matrix
      *
-     * @param[out] ssi_structure_matrix  structure matrix including mesh tying constraints
-     * @param[in] structure_matrix       structure matrix from structure problem
-     * @param[in] do_uncomplete          flag indicating if we need to uncomplete the matrix before
-     *                                   adding something
+     * @param[out] ssi_structure_matrix    structure matrix including mesh tying constraints
+     * @param[in] structure_matrix         structure matrix from the structure problem
+     * @param[in] ssi_structure_meshtying  ssi mesh tying object providing the relevant maps and
+     *                                     converters for mesh tying
+     * @param[in] do_uncomplete            flag indicating if we need to uncomplete the matrix
+     *                                     before adding something
      */
     void apply_meshtying_to_structure_matrix(Core::LinAlg::SparseMatrix& ssi_structure_matrix,
-        std::shared_ptr<const Core::LinAlg::SparseMatrix> structure_matrix, bool do_uncomplete);
+        const Core::LinAlg::SparseMatrix& structure_matrix,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete);
 
     /*!
      * @brief apply mesh tying to scatra manifold structure matrix
      *
      * @param[in,out] manifold_structure_matrix  scalar transport on manifold structure matrix
+     * @param[in] ssi_maps                       ssi maps object
+     * @param[in] ssi_structure_meshtying        ssi mesh tying object providing the relevant maps
+     *                                           and converters for mesh tying converters for mesh
+     *                                           tying
      * @param[in]     do_uncomplete              flag indicating if we need to uncomplete the matrix
      *                                           before adding something
      */
     virtual void apply_meshtying_to_scatra_manifold_structure(
         std::shared_ptr<Core::LinAlg::SparseOperator> manifold_structure_matrix,
-        bool do_uncomplete) = 0;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) = 0;
 
     /*!
      * @brief apply mesh tying to scatra structure matrix
      *
      * @param[in,out] scatra_structure_matrix  scatra structure matrix
+     * @param[in] ssi_maps                     ssi maps object
+     * @param[in] ssi_structure_meshtying      ssi mesh tying object providing the relevant maps and
+     *                                         converters for mesh tying converters for mesh tying
      * @param[in]     do_uncomplete            flag indicating if we need to uncomplete the matrix
      *                                         before adding something
      */
     virtual void apply_meshtying_to_scatra_structure(
         std::shared_ptr<Core::LinAlg::SparseOperator> scatra_structure_matrix,
-        bool do_uncomplete) = 0;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) = 0;
 
     /*!
      * @brief apply mesh tying to structure right hand side vector
      *
      * @param[in] structure_rhs  structure right hand side vector without mesh tying contributions
+     * @param[in] ssi_maps                 ssi maps object
+     * @param[in] ssi_structure_meshtying  ssi mesh tying object providing the relevant maps and
+     *                                     converters for mesh tying converters for mesh tying
      * @return structure right hand side vector including mesh tying contributions
      */
     Core::LinAlg::Vector<double> apply_meshtying_to_structure_rhs(
-        const Core::LinAlg::Vector<double>& structure_rhs);
+        const Core::LinAlg::Vector<double>& structure_rhs, const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying);
 
     /*!
      * @brief apply mesh tying to the structure scatra matrix
      *
      * @param[in,out] structure_scatra_matrix  structure scatra matrix
+     * @param[in] ssi_maps                     ssi maps object
+     * @param[in] ssi_structure_meshtying      ssi mesh tying object providing the relevant maps and
+     *                                         converters for mesh tying converters for mesh tying
      * @param[in]     do_uncomplete            flag indicating if we need to uncomplete the matrix
      *                                         before adding something
      */
     virtual void apply_meshtying_to_structure_scatra(
         std::shared_ptr<Core::LinAlg::SparseOperator> structure_scatra_matrix,
-        bool do_uncomplete) = 0;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) = 0;
 
    protected:
     /*!
@@ -112,9 +128,12 @@ namespace SSI
      * @param[out] ssi_structure_xxx_matrix  structure xxx matrix block including mesh tying
      *                                       constraints
      * @param[in] structure_xxx_matrix       structure xxx matrix block
+     * @param[in] ssi_structure_meshtying    ssi mesh tying object providing the relevant maps and
+     *                                       converters for mesh tying converters for mesh tying
      */
     void apply_meshtying_to_structure_xxx(Core::LinAlg::SparseMatrix& ssi_structure_xxx_matrix,
-        const Core::LinAlg::SparseMatrix& structure_xxx_matrix);
+        const Core::LinAlg::SparseMatrix& structure_xxx_matrix,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying);
 
     /*!
      * @brief apply mesh tying to xxx-structure block
@@ -122,21 +141,12 @@ namespace SSI
      * @param[out] ssi_xxx_structure_matrix  xxx structure matrix block including mesh tying
      *                                       constraints
      * @param[in] xxx_structure_matrix       xxx structure matrix block
+     * @param[in] ssi_structure_meshtying    ssi mesh tying object providing the relevant maps and
+     *                                       converters for mesh tying converters for mesh tying
      */
     void apply_meshtying_to_xxx_structure(Core::LinAlg::SparseMatrix& ssi_xxx_structure_matrix,
-        const Core::LinAlg::SparseMatrix& xxx_structure_matrix);
-
-    //! solve additional scatra field on manifolds
-    bool is_scatra_manifold() const { return is_scatra_manifold_; }
-
-    //! this object holds all maps relevant to monolithic scalar transport - structure interaction
-    std::shared_ptr<const SSI::Utils::SSIMaps> ssi_maps() const { return ssi_maps_; }
-
-    //! SSI structure meshtying object containing coupling adapters, converters and maps
-    std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying() const
-    {
-      return ssi_structure_meshtying_;
-    }
+        const Core::LinAlg::SparseMatrix& xxx_structure_matrix,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying);
 
     //! scatra structure contribution matrix
     std::shared_ptr<Core::LinAlg::SparseOperator> temp_scatra_struct_mat_;
@@ -153,17 +163,11 @@ namespace SSI
      * write 1.0 on main diagonal of slave side dofs
      *
      * @param[in,out] ssi_structure_matrix  structure matrix with mesh tying constraints
+     * @param[in] ssi_structure_meshtying   ssi mesh tying object providing the relevant maps and
+     *                                      converters for mesh tying converters for mesh tying
      */
-    void finalize_meshtying_structure_matrix(Core::LinAlg::SparseMatrix& ssi_structure_matrix);
-
-    //! solve additional scatra field on manifolds
-    const bool is_scatra_manifold_;
-
-    //! this object holds all maps relevant to monolithic scalar transport - structure interaction
-    std::shared_ptr<const SSI::Utils::SSIMaps> ssi_maps_;
-
-    //! SSI structure meshtying object containing coupling adapters, converters and maps
-    std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying_;
+    void finalize_meshtying_structure_matrix(Core::LinAlg::SparseMatrix& ssi_structure_matrix,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying);
   };
 
   //! SSI problem is represented by one sparse matrix
@@ -171,21 +175,22 @@ namespace SSI
   {
    public:
     //! constructor
-    explicit MeshtyingStrategySparse(bool is_scatra_manifold,
-        std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps,
-        std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying);
+    explicit MeshtyingStrategySparse(bool is_scatra_manifold, const SSI::Utils::SSIMaps& ssi_maps);
 
     void apply_meshtying_to_scatra_manifold_structure(
         std::shared_ptr<Core::LinAlg::SparseOperator> manifold_structure_matrix,
-        bool do_uncomplete) override;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) override;
 
     void apply_meshtying_to_scatra_structure(
         std::shared_ptr<Core::LinAlg::SparseOperator> scatra_structure_matrix,
-        bool do_uncomplete) override;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) override;
 
     void apply_meshtying_to_structure_scatra(
         std::shared_ptr<Core::LinAlg::SparseOperator> structure_scatra_matrix,
-        bool do_uncomplete) override;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) override;
   };
 
   //! SSI problem is composed of sub matrices
@@ -193,34 +198,38 @@ namespace SSI
   {
    public:
     //! constructor
-    explicit MeshtyingStrategyBlock(bool is_scatra_manifold,
-        std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps,
-        std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying);
+    explicit MeshtyingStrategyBlock(bool is_scatra_manifold, const SSI::Utils::SSIMaps& ssi_maps);
 
     void apply_meshtying_to_scatra_manifold_structure(
         std::shared_ptr<Core::LinAlg::SparseOperator> manifold_structure_matrix,
-        bool do_uncomplete) override;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) override;
 
     void apply_meshtying_to_scatra_structure(
         std::shared_ptr<Core::LinAlg::SparseOperator> scatra_structure_matrix,
-        bool do_uncomplete) override;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) override;
 
     void apply_meshtying_to_structure_scatra(
         std::shared_ptr<Core::LinAlg::SparseOperator> structure_scatra_matrix,
-        bool do_uncomplete) override;
+        const SSI::Utils::SSIMaps& ssi_maps,
+        const SSI::Utils::SSIMeshTying& ssi_structure_meshtying, bool do_uncomplete) override;
 
    protected:
     //! position of scatra blocks in system matrix
-    const std::vector<int>& block_position_scatra() const { return block_position_scatra_; }
+    [[nodiscard]] const std::vector<int>& block_position_scatra() const
+    {
+      return block_position_scatra_;
+    }
 
     //! position of scatra manifold blocks in system matrix
-    const std::vector<int>& block_position_scatra_manifold() const
+    [[nodiscard]] const std::vector<int>& block_position_scatra_manifold() const
     {
       return block_position_scatra_manifold_;
     }
 
     //! position of structure block in system matrix
-    int position_structure() const { return position_structure_; };
+    [[nodiscard]] int position_structure() const { return position_structure_; };
 
    private:
     //! position of scatra blocks in system matrix
@@ -234,9 +243,8 @@ namespace SSI
   };
 
   //! build specific mesh tying strategy
-  std::shared_ptr<SSI::MeshtyingStrategyBase> build_meshtying_strategy(bool is_scatra_manifold,
-      Core::LinAlg::MatrixType matrixtype_scatra, std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps,
-      std::shared_ptr<const SSI::Utils::SSIMeshTying> ssi_structure_meshtying);
+  std::unique_ptr<SSI::MeshtyingStrategyBase> build_meshtying_strategy(bool is_scatra_manifold,
+      Core::LinAlg::MatrixType matrixtype_scatra, const SSI::Utils::SSIMaps& ssi_maps);
 }  // namespace SSI
 FOUR_C_NAMESPACE_CLOSE
 

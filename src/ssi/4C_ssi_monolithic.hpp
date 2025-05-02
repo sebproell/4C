@@ -71,29 +71,32 @@ namespace SSI
     );
 
     //! return global map of degrees of freedom
-    const std::shared_ptr<const Core::LinAlg::Map>& dof_row_map() const;
+    [[nodiscard]] const std::shared_ptr<const Core::LinAlg::Map>& dof_row_map() const;
 
     void init(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams,
         const Teuchos::ParameterList& scatraparams, const Teuchos::ParameterList& structparams,
         const std::string& struct_disname, const std::string& scatra_disname, bool isAle) override;
 
     //! return global map extractor (0: scalar transport, 1: structure, [2: scatra manifold])
-    std::shared_ptr<const Core::LinAlg::MultiMapExtractor> maps_sub_problems() const;
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> maps_sub_problems() const;
 
-    //! return map extractor associated with all degrees of freedom inside scatra field
-    std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_scatra() const;
+    //! return map extractor associated with all degrees of freedom inside the scatra field
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_scatra() const;
 
-    //! return map extractor associated with all degrees of freedom inside scatra manifold field
-    std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_scatra_manifold() const;
+    //! return map extractor associated with all degrees of freedom inside the scatra manifold field
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_scatra_manifold()
+        const;
 
-    //! return map extractor associated with all degrees of freedom inside structural field
-    std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure() const;
+    //! return map extractor associated with all degrees of freedom inside the structural field
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_structure()
+        const;
 
     //! return map extractor associated with blocks of global system matrix
-    std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_system_matrix() const;
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_map_system_matrix()
+        const;
 
     //! Return matrix type of global system matrix
-    Core::LinAlg::MatrixType matrix_type() const { return matrixtype_; };
+    [[nodiscard]] Core::LinAlg::MatrixType matrix_type() const { return matrixtype_; };
 
     void read_restart(int restart) override;
 
@@ -104,16 +107,16 @@ namespace SSI
     /*!
      * @brief solves the linear system
      *
-     * @note in case an equilibration method (scaling of rows and columns) is defined this is also
+     * @note in case an equilibration method (scaling of rows and columns) is defined, this is also
      * performed within this call
      */
     void solve_linear_system() const;
 
     //! this object holds all maps relevant to monolithic scalar transport - structure interaction
-    std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps() const { return ssi_maps_; }
+    [[nodiscard]] std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps() const { return ssi_maps_; }
 
-    //! return algebraic solver for global system of equations
-    const Core::LinAlg::Solver& solver() const { return *solver_; };
+    //! return algebraic solver for the global system of equations
+    [[nodiscard]] const Core::LinAlg::Solver& solver() const { return *solver_; };
 
     void timeloop() override;
 
@@ -124,19 +127,19 @@ namespace SSI
     class ConvCheckStrategyElchScaTraManifold;
     class ConvCheckStrategyStd;
 
-    //! apply the contact contributions to matrices and residuals of the sub problems
+    //! apply the contact contributions to matrices and residuals of the subproblems
     void apply_contact_to_sub_problems() const;
 
-    //! apply the Dirichlet boundary conditions to the ssi system, i.e. matrices and residuals
+    //! apply the Dirichlet boundary conditions to the ssi system, i.e., matrices and residuals
     void apply_dbc_to_system() const;
 
     //! apply mesh tying between manifold domains on matrices and residuals
     void apply_manifold_meshtying() const;
 
-    //! perform mesh tying on matrices and residuals as obtained from sub problems
+    //! perform mesh tying on matrices and residuals as obtained from subproblems
     void apply_meshtying_to_sub_problems() const;
 
-    //! assemble global system of equations
+    //! assemble the global system of equations
     void assemble_mat_and_rhs() const;
 
     //! assemble linearization of scatra residuals to system matrix
@@ -151,18 +154,18 @@ namespace SSI
     //! build null spaces associated with blocks of global system matrix
     void build_null_spaces() const;
 
-    //! calc initial potential field for monolithic SSI problem including scatra and scatra manifold
-    //! fields
+    //! calc initial potential field for the monolithic SSI problem including scatra and scatra
+    //! manifold fields
     void calc_initial_potential_field();
 
-    //! calc initial time derivative of transported scalars for monolithic SSI problem including
+    //! calc initial time derivative of transported scalars for the monolithic SSI problem including
     //! scatra and scatra manifold fields
     void calc_initial_time_derivative();
 
     //! call complete on the sub problem matrices
     void complete_subproblem_matrices() const;
 
-    //! distribute solution to all other fields
+    //! distribute the solution to all other fields
     //! \param restore_velocity   restore velocity when structure_field()->set_state() is called
     void distribute_solution_all_fields(bool restore_velocity = false);
 
@@ -179,7 +182,7 @@ namespace SSI
     void evaluate_subproblems();
 
     //! build and return vector of equilibration methods for each block of system matrix
-    std::vector<Core::LinAlg::EquilibrationMethod> get_block_equilibration() const;
+    [[nodiscard]] std::vector<Core::LinAlg::EquilibrationMethod> get_block_equilibration() const;
 
     /*!
      * @note This is only necessary in the first iteration of the simulation, since only there the
@@ -188,11 +191,11 @@ namespace SSI
      * @return flag indicating if we need to uncomplete the matrices before adding the mesh tying
      * contributions.
      */
-    bool is_uncomplete_of_matrices_necessary_for_mesh_tying() const;
+    [[nodiscard]] bool is_uncomplete_of_matrices_necessary_for_mesh_tying() const;
 
     void output() override;
 
-    //! do everything, that has to be done once before first time step
+    //! do everything that has to be done once before the first time step
     void prepare_time_loop();
 
     void prepare_time_step() override;
@@ -203,13 +206,13 @@ namespace SSI
     //! print system matrix, rhs, and map of system matrix to file
     void print_system_matrix_rhs_to_mat_lab_format() const;
 
-    //! print time step size, time, and number of time step
+    //! print time step size, time, and number of the time step
     void print_time_step_info() const;
 
     //! set scatra manifold solution on scatra field
     void set_scatra_manifold_solution(const Core::LinAlg::Vector<double>& phi) const;
 
-    //! evaluate time step using Newton-Raphson iteration
+    //! evaluate the current time step using Newton-Raphson iteration
     void newton_loop();
 
     void update() override;
@@ -217,7 +220,7 @@ namespace SSI
     //! update ScaTra state within Newton iteration
     void update_iter_scatra() const;
 
-    //! update structure state within Newton iteration
+    //! update structure state within the Newton iteration
     void update_iter_structure() const;
 
     //! Dirichlet boundary condition handler
@@ -257,7 +260,7 @@ namespace SSI
     //! this object holds all maps relevant to monolithic scalar transport - structure interaction
     std::shared_ptr<SSI::Utils::SSIMaps> ssi_maps_;
 
-    //! this object holds the system matrix and all sub blocks
+    //! this object holds the system matrix and all subblocks
     std::shared_ptr<SSI::Utils::SSIMatrices> ssi_matrices_;
 
     //! this object holds the system residuals and increment
@@ -279,7 +282,7 @@ namespace SSI
     std::shared_ptr<SSI::ManifoldMeshTyingStrategyBase> strategy_manifold_meshtying_;
 
     //! strategy how to apply mesh tying to system matrix and rhs
-    std::shared_ptr<SSI::MeshtyingStrategyBase> strategy_meshtying_;
+    std::unique_ptr<SSI::MeshtyingStrategyBase> strategy_meshtying_;
 
     //! timer for Newton-Raphson iteration
     std::shared_ptr<Teuchos::Time> timer_;
