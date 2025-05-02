@@ -6,20 +6,32 @@
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
 if(FOUR_C_BUILD_TYPE_UPPER STREQUAL "DEBUG")
-  set(FOUR_C_TEST_TIMEOUT_SCALE
-      4
-      CACHE STRING "Scale timeout of tests by this factor."
-      )
+  set(_default_timeout_scale 4)
 else()
-  set(FOUR_C_TEST_TIMEOUT_SCALE
-      1
-      CACHE STRING "Scale timeout of tests by this factor."
-      )
+  set(_default_timeout_scale 1)
 endif()
-message(STATUS "Global test timeout scale is ${FOUR_C_TEST_TIMEOUT_SCALE}.")
+four_c_process_cache_variable(
+  FOUR_C_TEST_TIMEOUT_SCALE
+  TYPE
+  STRING
+  DESCRIPTION
+  "Scale timeout of tests by this factor."
+  DEFAULT
+  ${_default_timeout_scale}
+  )
 
 math(EXPR FOUR_C_TEST_GLOBAL_TIMEOUT "120*${FOUR_C_TEST_TIMEOUT_SCALE}")
 message(STATUS "The scaled global test timeout is ${FOUR_C_TEST_GLOBAL_TIMEOUT} s.")
+
+four_c_process_cache_variable(
+  FOUR_C_PVPYTHON
+  TYPE
+  FILEPATH
+  DESCRIPTION
+  "Path to the pvpython executable used for post-processing tests"
+  DEFAULT
+  "pvpython-not-set"
+  )
 
 # Fetch GoogleTest and setup the unit tests if option is enabled
 four_c_process_global_option(FOUR_C_WITH_GOOGLETEST "Use GoogleTest for unit testing" ON)

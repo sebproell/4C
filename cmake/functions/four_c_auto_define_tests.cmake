@@ -56,11 +56,11 @@ function(_set_up_unit_test_target _module_under_test _target)
 
   # the first process will write a unit test report
   separate_arguments(
-    MPIEXEC_EXTRA_OPTS_FOR_TESTING_LIST UNIX_COMMAND ${MPIEXEC_EXTRA_OPTS_FOR_TESTING}
+    _mpiexec_all_args_for_testing_list UNIX_COMMAND ${_mpiexec_all_args_for_testing}
     )
 
   set(mpi_arguments
-      ${MPIEXEC_EXTRA_OPTS_FOR_TESTING_LIST}
+      ${_mpiexec_all_args_for_testing_list}
       -np
       1
       $<TARGET_FILE:${_target}>
@@ -73,7 +73,7 @@ function(_set_up_unit_test_target _module_under_test _target)
       APPEND
       mpi_arguments
       :
-      ${MPIEXEC_EXTRA_OPTS_FOR_TESTING_LIST}
+      ${_mpiexec_all_args_for_testing_list}
       -np
       ${remaining_procs}
       $<TARGET_FILE:${_target}>
