@@ -41,7 +41,7 @@ namespace ScaTra
         const int step, std::shared_ptr<Core::IO::InputControl> input = nullptr) override;
 
     /// redistribute the scatra discretization and vectors according to nodegraph
-    void redistribute(Core::LinAlg::Graph& nodegraph);
+    void redistribute(Core::LinAlg::Graph& nodegraph) override;
 
     /// interpolate phi to intermediate time n+theta with 0<theta<1
     std::shared_ptr<Core::LinAlg::Vector<double>> phinptheta(const double theta_inter);
@@ -57,7 +57,7 @@ namespace ScaTra
     void calc_initial_time_derivative() override;
 
     /// additional predictor not intended for level-set methods
-    void explicit_predictor() const override { return; };
+    void explicit_predictor() const override {}
 
     /// Set the part of the righthandside belonging to the last timestep.
     void set_old_part_of_righthandside() override;

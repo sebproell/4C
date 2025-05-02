@@ -242,8 +242,6 @@ void ScaTra::LevelSetTimIntOneStepTheta::redistribute(Core::LinAlg::Graph& nodeg
     fsphinp_ = Core::LinAlg::create_vector(*newdofrowmap, true);
     Core::LinAlg::export_to(*old, *fsphinp_);
   }
-
-  return;
 }
 
 

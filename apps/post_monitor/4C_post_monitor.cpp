@@ -1739,7 +1739,6 @@ int main(int argc, char** argv)
     }
     case Core::ProblemType::structure:
     case Core::ProblemType::loma:
-    case Core::ProblemType::fluid_xfem_ls:
     case Core::ProblemType::fluid:
     case Core::ProblemType::fluid_redmodels:
     case Core::ProblemType::fps3i:
