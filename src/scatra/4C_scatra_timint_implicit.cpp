@@ -1366,22 +1366,18 @@ void ScaTra::ScaTraTimIntImpl::set_external_force() const
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::set_wall_shear_stresses(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> wss)
+    const Core::LinAlg::Vector<double>& wall_shear_stress) const
 {
-  if (wss == nullptr) FOUR_C_THROW("WSS state is nullptr");
-
-#ifdef FOUR_C_ENABLE_ASSERTIONS
   // We rely on the fact, that the nodal distribution of both fields is the same.
   // Although Scatra discretization was constructed as a clone of the fluid or
   // structure mesh, respectively, at the beginning, the nodal distribution may
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not wss->get_map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())))
-    FOUR_C_THROW("Maps are NOT identical. Emergency!");
-#endif
+  FOUR_C_ASSERT(wall_shear_stress.get_map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())),
+      "Maps are NOT identical. Emergency!");
 
-  discret_->set_state(nds_wall_shear_stress(), "WallShearStress", *wss);
+  discret_->set_state(nds_wall_shear_stress(), "WallShearStress", wall_shear_stress);
 }
 
 /*----------------------------------------------------------------------*

@@ -762,7 +762,7 @@ void FS3I::PartFS3I::set_wall_shear_stresses() const
   for (unsigned i = 0; i < scatravec_.size(); ++i)
   {
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-    scatra->scatra_field()->set_wall_shear_stresses(vol_mortar_master_to_slavei(i, wss[i]));
+    scatra->scatra_field()->set_wall_shear_stresses(*vol_mortar_master_to_slavei(i, wss[i]));
   }
 }
 
