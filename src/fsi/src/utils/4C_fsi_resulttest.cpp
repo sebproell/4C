@@ -205,7 +205,6 @@ void FSI::FSIResultTest::test_node(
     const Core::IO::InputParameterContainer& container, int& nerr, int& test_count)
 {
   int node = container.get<int>("NODE");
-  node -= 1;
 
   int havenode(slavedisc_->have_global_node(node));
   int isnodeofanybody(0);

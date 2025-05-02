@@ -34,7 +34,6 @@ void ScaTra::ScaTraResultTest::test_node(
   if (dis != scatratimint_->discretization()->name()) return;
 
   int node = container.get<int>("NODE");
-  node -= 1;
 
   int havenode(scatratimint_->discretization()->have_global_node(node));
   int isnodeofanybody(0);

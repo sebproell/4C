@@ -45,7 +45,6 @@ void FLD::FluidResultTest::test_node(
   if (dis != fluiddis_->name()) return;
 
   int node = container.get<int>("NODE");
-  node -= 1;
 
   int havenode(fluiddis_->have_global_node(node));
   int isnodeofanybody(0);

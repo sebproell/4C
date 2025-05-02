@@ -46,7 +46,6 @@ void Arteries::ArteryResultTest::test_node(
   if (dis != dis_->name()) return;
 
   int node = container.get<int>("NODE");
-  node -= 1;
 
   int havenode(dis_->have_global_node(node));
   int isnodeofanybody(0);
