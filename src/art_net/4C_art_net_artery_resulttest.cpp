@@ -53,7 +53,7 @@ void Arteries::ArteryResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, dis_->name());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node, dis_->name());
   }
   else
   {

@@ -50,7 +50,7 @@ void StruResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, strudisc_->name());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node, strudisc_->name());
   }
   else
   {

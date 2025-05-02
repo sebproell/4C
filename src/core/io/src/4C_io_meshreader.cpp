@@ -694,7 +694,7 @@ namespace
         parser.consume("COORD");
         auto coords = parser.read<std::vector<double>>(3);
 
-        max_node_id = std::max(max_node_id, nodeid) + 1;
+        max_node_id = std::max(max_node_id, nodeid);
         std::vector<std::shared_ptr<Core::FE::Discretization>> dis =
             find_dis_node(element_readers, nodeid);
 
@@ -714,7 +714,7 @@ namespace
         auto coords = parser.read<std::vector<double>>(3);
         double weight = parser.read<double>();
 
-        max_node_id = std::max(max_node_id, cpid) + 1;
+        max_node_id = std::max(max_node_id, cpid);
         if (cpid != line_count + 1)
           FOUR_C_THROW(
               "Reading of control points {} failed: They must be numbered consecutive!!", cpid);
@@ -748,7 +748,7 @@ namespace
         const int nodeid = parser.read<int>();
         parser.consume("COORD");
         auto coords = parser.read<std::vector<double>>(3);
-        max_node_id = std::max(max_node_id, nodeid) + 1;
+        max_node_id = std::max(max_node_id, nodeid);
 
         while (!parser.at_end())
         {

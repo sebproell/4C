@@ -212,7 +212,7 @@ void FSI::FSIResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, slavedisc_->name());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node, slavedisc_->name());
   }
   else
   {

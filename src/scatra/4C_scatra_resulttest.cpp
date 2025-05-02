@@ -42,7 +42,7 @@ void ScaTra::ScaTraResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1,
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node,
         scatratimint_->discretization()->name());
   }
   else

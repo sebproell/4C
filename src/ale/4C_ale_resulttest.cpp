@@ -39,7 +39,7 @@ void ALE::AleResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1, aledis_->name());
+    FOUR_C_THROW("Node {} does not belong to discretization {}", node, aledis_->name());
   }
   else
   {

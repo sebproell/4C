@@ -47,8 +47,8 @@ void PoroPressureBased::ResultTest::test_node(
 
   if (isnodeofanybody == 0)
   {
-    FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1,
-        porotimint_.discretization()->name());
+    FOUR_C_THROW(
+        "Node {} does not belong to discretization {}", node, porotimint_.discretization()->name());
   }
   else
   {
