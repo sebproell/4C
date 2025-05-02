@@ -685,7 +685,7 @@ void FS3I::PartFPS3I::set_pressure_fields()
   for (unsigned i = 0; i < scatravec_.size(); ++i)
   {
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-    scatra->scatra_field()->set_pressure_field(pressure[i]);
+    scatra->scatra_field()->set_pressure_field(*pressure[i]);
   }
 }
 

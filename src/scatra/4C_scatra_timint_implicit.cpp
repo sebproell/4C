@@ -1391,22 +1391,18 @@ void ScaTra::ScaTraTimIntImpl::set_old_part_of_righthandside()
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::set_pressure_field(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> pressure)
+    const Core::LinAlg::Vector<double>& pressure) const
 {
-  if (pressure == nullptr) FOUR_C_THROW("Pressure state is nullptr");
-
-#ifdef FOUR_C_ENABLE_ASSERTIONS
   // We rely on the fact, that the nodal distribution of both fields is the same.
   // Although Scatra discretization was constructed as a clone of the fluid or
   // structure mesh, respectively, at the beginning, the nodal distribution may
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not pressure->get_map().SameAs(*discret_->dof_row_map(nds_pressure())))
-    FOUR_C_THROW("Maps are NOT identical. Emergency!");
-#endif
+  FOUR_C_ASSERT(pressure.get_map().SameAs(*discret_->dof_row_map(nds_pressure())),
+      "Maps are NOT identical. Emergency!");
 
-  discret_->set_state(nds_pressure(), "Pressure", *pressure);
+  discret_->set_state(nds_pressure(), "Pressure", pressure);
 }
 
 /*----------------------------------------------------------------------*

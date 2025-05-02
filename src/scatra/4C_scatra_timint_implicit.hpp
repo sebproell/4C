@@ -262,7 +262,8 @@ namespace ScaTra
     //! set the @wall_shear_stress vector to the scalar transport discretization
     void set_wall_shear_stresses(const Core::LinAlg::Vector<double>& wall_shear_stress) const;
 
-    void set_pressure_field(std::shared_ptr<const Core::LinAlg::Vector<double>> pressure);
+    //! set the @pressure vector to the scalar transport discretization
+    void set_pressure_field(const Core::LinAlg::Vector<double>& pressure) const;
 
     void set_membrane_concentration(
         std::shared_ptr<const Core::LinAlg::Vector<double>> MembraneConc);
