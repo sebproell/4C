@@ -28,7 +28,7 @@ in the future.
 .. _avoid-define-flags:
 
 Avoid define flags
-^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~
 
 Do not introduce new define flags. They complicate testing and lead to untested code.
 
@@ -40,7 +40,7 @@ Do not introduce new define flags. They complicate testing and lead to untested 
 flags are all managed via CMake.
 
 Avoid header-in-header inclusion
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Avoid and actively resolve header-in-header inclusion to speed up compilation time. Use forward declarations instead.
 
@@ -49,7 +49,7 @@ want to avoid including an (expensive) header file via a forward declaration, pu
 file and include this header. This way, the forward declaration is only in one place.
 
 Use of smart pointers
-^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~
 
 If necessary, use smart pointers for their memory management capabilities, e.g., ``std::shared_ptr``, ``std::unique_ptr``
 (you may find more information on passing smart pointers
@@ -60,7 +60,7 @@ By default, pass parameters by const reference and only expose smart pointers if
 See also `<https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rr-owner>`_.
 
 Use of ``Teuchos::ParameterList``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Prefer parameter container classes over ``Teuchos::ParameterList`` for passing parameters to functions. Often,
 a simple struct with all necessary data as public, non-const members is sufficient.
@@ -69,7 +69,7 @@ Reason: ``Teuchos::ParameterList`` is a flexible container for input(!) paramete
 In addition, the string-based lookup is not compile-time checked.
 
 Const-correctness
-^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~
 
 Make code const-correct. Const-correctness is mainly relevant for function parameters and member functions.
 
@@ -77,7 +77,7 @@ Make code const-correct. Const-correctness is mainly relevant for function param
 class from being moved or copied. Instead, use ``const`` member functions to access the fields in a ``const`` context.
 
 Enums
-^^^^^
+~~~~~
 
 - By default, use scoped ``enum class`` instead of unscoped ``enum``.
 - Use enums instead of strings for parameters that take one from a fixed set of values.
@@ -90,7 +90,7 @@ See also `Enum.3 <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#e
 
 
 |FOURC|-specific Naming Conventions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------
 
 - **Namespaces** use CamelCase: ``LinAlg::``
 - **class**, **struct** and **enum** types use CamelCase: ``ClassName``, ``StructName``, ``EnumName``
@@ -108,3 +108,75 @@ The full specification of the naming convention is listed in the
 
 Variable names must not be just a single letter, because they are impossible to find in a global search operation.
 (Exception: loop indices such as i, j, but remember that even loop indices could/should have descriptive names.)
+
+
+Directory structure
+--------------------
+The |FOURC| code comes with documentation, example input files and
+support scripts. The important subdirectories are the following:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Directory
+     - Description
+   * - ``apps``
+     - Contains executables built on top of the |FOURC| library code.
+   * - ``cmake``
+     - Contains the CMake configuration files to build |FOURC|.
+   * - ``dependencies``
+     - Contains installation scripts for the external dependencies of |FOURC|.
+   * - ``doc``
+     - Contains the sources of the documentation you are currently reading.
+   * - ``docker``
+     - Contains the setup files for docker images for running |FOURC| inside of it.
+   * - ``presets``
+     - Contains preset files for CMake.
+   * - ``src``
+     - Contains the bulk of the |FOURC| code organized into several modules.
+   * - ``tests``
+     - Contains end-to-end tests that run |FOURC| as a whole with optional pre- and post-processing steps. The tests are not directly related to one specific feature (these reside next to the sources).
+   * - ``tests/input_files``
+     - Contains various valid and running input files. These input files are also used for automated testing.
+   * - ``unittests``
+     - [Legacy] Contains the source files for stand-alone tests aka unittests. These tests will move closer to the source code into the respective modules.
+   * - ``utilities``
+     - Contains useful scripts to develop and test |FOURC|.
+
+The top-level directory should only contain files that are commonly expected in this location,
+such as the README, LICENSE, and configuration files for tools like clang-format and clang-tidy.
+
+Details of the ``src`` directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``src`` directory contains the modules that make up the |FOURC| library. Each module is
+split into a ``src`` and ``tests`` directory. The ``src`` directory contains the production code
+of the module, while the ``tests`` directory contains the module-related tests.
+
+Types of source files used within |FOURC|
+"""""""""""""""""""""""""""""""""""""""""
+
+The code base consists almost exclusively of C++ source files. To better indicate the intended usage
+of a file, both to the build system and developers, the following file extensions are used:
+
+.. list-table::
+   :header-rows: 1
+
+   * - File Extension
+     - Description
+   * - ``.cpp``
+     - C++ source files. These files are compiled.
+   * - ``.hpp``
+     - C++ header files. These files are included in other source files.
+   * - ``.fwd.hpp``
+     - C++ forward declaration header files. These files contain forward declarations of classes and functions that appear over and over again. They are especially useful for external dependencies to isolate the exposed surface area of the dependency. This type of file is usually included in other header files.
+   * - ``.templates.hpp``
+     - C++ header files which contain additional template definitions. The reason why you might want to separate certain expensive template definitions from the main header file is to speed up compilation times. Sometimes a template definition requires additional expensive includes, which are not necessary for the main header file. In this case, the template definition is best moved to a ``.templates.hpp`` file.
+   * - ``.inst.hpp``
+     - C++ header files which contain explicit template instantiations. These files are included in the corresponding ``.cpp`` file to instantiate the templates. These files are not strictly necessary as you can also instantiate the templates directly in the ``.cpp`` file. However, by moving the instantiations to a separate file, you can reuse the same instantiations in multiple ``.cpp`` files which contain parts of the implementation of the same classes.
+   * - ``.<ext>.in``
+     - These files are templates (not in the C++ sense!) requiring additional configuration via CMake. The CMake script will generate the actual file by replacing placeholders in the template file. The generated file will be placed in the build directory with the extension ``.<ext>``.
+
+
+
+

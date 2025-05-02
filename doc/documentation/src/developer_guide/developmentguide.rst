@@ -7,8 +7,13 @@ Developer guide
 .. toctree::
     :maxdepth: 2
 
-    testing
     codingguidelines
+    testing
+    developer_cmake
+    debugging_profiling
+    doxygen
+    coverage_report
+    developer_ccache
+    developer_cluster
     petra_object_model
-    developer_addedinformation
     development_parts
