@@ -112,7 +112,8 @@ void ElCh::MovingBoundaryAlgorithm::time_loop()
   {
     // transfer convective velocity = fluid velocity - grid velocity
     scatra_field()->set_convective_velocity(*fluid_field()->convective_vel());
-    scatra_field()->set_velocity_field(fluid_field()->hist(), fluid_field()->convective_vel());
+    scatra_field()->set_velocity_field(*fluid_field()->convective_vel());
+    scatra_field()->set_acceleration_field(*fluid_field()->hist());
   }
 
   // transfer moving mesh data
@@ -266,7 +267,8 @@ void ElCh::MovingBoundaryAlgorithm::solve_scatra()
       {
         // transfer convective velocity = fluid velocity - grid velocity
         scatra_field()->set_convective_velocity(*fluid_field()->convective_vel());
-        scatra_field()->set_velocity_field(fluid_field()->hist(), fluid_field()->convective_vel());
+        scatra_field()->set_velocity_field(*fluid_field()->convective_vel());
+        scatra_field()->set_acceleration_field(*fluid_field()->hist());
       }
     }
     break;

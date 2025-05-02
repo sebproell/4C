@@ -313,7 +313,7 @@ void LowMach::Algorithm::initial_calculations()
 {
   // set initial velocity field for evaluation of initial scalar time derivative in SCATRA
   scatra_field()->set_convective_velocity(*fluid_field()->velnp());
-  scatra_field()->set_velocity_field(nullptr, fluid_field()->velnp());
+  scatra_field()->set_velocity_field(*fluid_field()->velnp());
   if (scatra_field()->fine_scale_velocity_field_required())
   {
     scatra_field()->set_fine_scale_velocity(*fluid_field()->fs_vel());
@@ -543,8 +543,9 @@ void LowMach::Algorithm::set_fluid_values_in_scatra()
   {
     case Inpar::FLUID::timeint_afgenalpha:
     {
+      scatra_field()->set_acceleration_field(*fluid_field()->accam());
       scatra_field()->set_convective_velocity(*fluid_field()->velaf());
-      scatra_field()->set_velocity_field(fluid_field()->accam(), fluid_field()->velaf());
+      scatra_field()->set_velocity_field(*fluid_field()->velaf());
       if (scatra_field()->fine_scale_velocity_field_required() and
           fluid_field()->fs_vel() != nullptr)
       {
@@ -555,8 +556,9 @@ void LowMach::Algorithm::set_fluid_values_in_scatra()
     case Inpar::FLUID::timeint_one_step_theta:
     case Inpar::FLUID::timeint_bdf2:
     {
+      scatra_field()->set_acceleration_field(*fluid_field()->hist());
       scatra_field()->set_convective_velocity(*fluid_field()->velnp());
-      scatra_field()->set_velocity_field(fluid_field()->hist(), fluid_field()->velnp());
+      scatra_field()->set_velocity_field(*fluid_field()->velnp());
       if (scatra_field()->fine_scale_velocity_field_required() and
           fluid_field()->fs_vel() != nullptr)
       {

@@ -1463,6 +1463,20 @@ void ScaTra::ScaTraTimIntImpl::set_mean_concentration(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
+void ScaTra::ScaTraTimIntImpl::set_acceleration_field(
+    const Core::LinAlg::Vector<double>& acceleration) const
+{
+  // time measurement
+  TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set acceleration");
+
+  FOUR_C_ASSERT(nds_vel() < discret_->num_dof_sets(), "Too few dof sets on scatra discretization!");
+
+  // provide scatra discretization with acceleration field if required
+  discret_->set_state(nds_vel(), "acceleration field", acceleration);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::set_convective_velocity(
     const Core::LinAlg::Vector<double>& convective_velocity) const
 {
@@ -1515,12 +1529,10 @@ bool ScaTra::ScaTraTimIntImpl::fine_scale_velocity_field_required() const
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::set_velocity_field(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> acc,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> vel)
+void ScaTra::ScaTraTimIntImpl::set_velocity_field(const Core::LinAlg::Vector<double>& velocity)
 {
   // time measurement
-  TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set velocity fields");
+  TEUCHOS_FUNC_TIME_MONITOR("SCATRA: set velocity field");
 
   // checks
   FOUR_C_ASSERT(velocity_field_type_ == Inpar::ScaTra::velocity_Navier_Stokes,
@@ -1528,10 +1540,7 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field(
   FOUR_C_ASSERT(nds_vel() < discret_->num_dof_sets(), "Too few dof sets on scatra discretization!");
 
   // provide scatra discretization with velocity
-  if (vel != nullptr) discret_->set_state(nds_vel(), "velocity field", *vel);
-
-  // provide scatra discretization with acceleration field if required
-  if (acc != nullptr) discret_->set_state(nds_vel(), "acceleration field", *acc);
+  discret_->set_state(nds_vel(), "velocity field", velocity);
 }
 
 /*----------------------------------------------------------------------*

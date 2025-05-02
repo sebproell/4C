@@ -704,8 +704,7 @@ void FS3I::PartFS3I::set_velocity_fields() const
   {
     scatravec_[i]->scatra_field()->set_convective_velocity(
         *vol_mortar_master_to_slavei(i, convel[i]));
-    scatravec_[i]->scatra_field()->set_velocity_field(
-        nullptr, vol_mortar_master_to_slavei(i, vel[i]));
+    scatravec_[i]->scatra_field()->set_velocity_field(*vol_mortar_master_to_slavei(i, vel[i]));
   }
 }
 
