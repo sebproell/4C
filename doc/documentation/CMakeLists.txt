@@ -36,10 +36,12 @@ if(FOUR_C_BUILD_DOCUMENTATION)
 
   add_custom_target(
     documentation ALL
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/doc/tmp"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${_sphinx_HTML_DIR}"
     COMMAND create_rtd
     COMMAND ${FOUR_C_EXECUTABLE_NAME} -h > ${_sphinx_OUT_DIR}/reference_docs/4C-help.txt
     COMMAND
-      cmake ${PROJECT_SOURCE_DIR} --list-presets >
+      ${CMAKE_COMMAND} ${PROJECT_SOURCE_DIR} --list-presets >
       ${_sphinx_OUT_DIR}/reference_docs/4C-cmake-presets.txt
     COMMAND
       bash ${CMAKE_CURRENT_SOURCE_DIR}/scripts/extract_cmake_variables.sh
