@@ -615,11 +615,11 @@ void FS3I::PartFPS3I::set_struct_scatra_solution()
 void FS3I::PartFPS3I::set_mesh_disp()
 {
   // fluid field
-  scatravec_[0]->scatra_field()->apply_mesh_movement(fpsi_->fluid_field()->dispnp());
+  scatravec_[0]->scatra_field()->apply_mesh_movement(*fpsi_->fluid_field()->dispnp());
 
   // Poro field
   scatravec_[1]->scatra_field()->apply_mesh_movement(
-      fpsi_->poro_field()->structure_field()->dispnp());
+      *fpsi_->poro_field()->structure_field()->dispnp());
 }
 
 
@@ -637,10 +637,9 @@ void FS3I::PartFPS3I::set_velocity_fields()
     case Inpar::ScaTra::velocity_zero:
     case Inpar::ScaTra::velocity_function:
     {
-      for (unsigned i = 0; i < scatravec_.size(); ++i)
+      for (auto scatra : scatravec_)
       {
-        std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-        scatra->scatra_field()->set_velocity_field();
+        scatra->scatra_field()->set_velocity_field_from_function();
       }
       break;
     }
@@ -652,8 +651,8 @@ void FS3I::PartFPS3I::set_velocity_fields()
 
       for (unsigned i = 0; i < scatravec_.size(); ++i)
       {
-        std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-        scatra->scatra_field()->set_velocity_field(convel[i], nullptr, vel[i], nullptr);
+        scatravec_[i]->scatra_field()->set_convective_velocity(*convel[i]);
+        scatravec_[i]->scatra_field()->set_velocity_field(*vel[i]);
       }
       break;
     }
@@ -671,7 +670,7 @@ void FS3I::PartFPS3I::set_wall_shear_stresses()
   for (unsigned i = 0; i < scatravec_.size(); ++i)
   {
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-    scatra->scatra_field()->set_wall_shear_stresses(wss[i]);
+    scatra->scatra_field()->set_wall_shear_stresses(*wss[i]);
   }
 }
 
@@ -686,7 +685,7 @@ void FS3I::PartFPS3I::set_pressure_fields()
   for (unsigned i = 0; i < scatravec_.size(); ++i)
   {
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-    scatra->scatra_field()->set_pressure_field(pressure[i]);
+    scatra->scatra_field()->set_pressure_field(*pressure[i]);
   }
 }
 

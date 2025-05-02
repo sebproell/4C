@@ -568,7 +568,7 @@ void SSI::SsiMono::read_restart(int restart)
  *--------------------------------------------------------------------------*/
 void SSI::SsiMono::prepare_time_loop()
 {
-  set_struct_solution(structure_field()->dispnp(), structure_field()->velnp(),
+  set_struct_solution(*structure_field()->dispnp(), structure_field()->velnp(),
       is_s2i_kinetics_with_pseudo_contact());
 
   // calculate initial potential field if needed
@@ -589,7 +589,7 @@ void SSI::SsiMono::prepare_time_step()
   increment_time_and_step();
 
   // pass structural degrees of freedom to scalar transport discretization
-  set_struct_solution(structure_field()->dispnp(), structure_field()->velnp(),
+  set_struct_solution(*structure_field()->dispnp(), structure_field()->velnp(),
       is_s2i_kinetics_with_pseudo_contact());
 
   // prepare time step for scalar transport field
@@ -1155,7 +1155,7 @@ void SSI::SsiMono::distribute_solution_all_fields(const bool restore_velocity)
   }
 
   // distribute states to other fields
-  set_struct_solution(structure_field()->dispnp(), structure_field()->velnp(),
+  set_struct_solution(*structure_field()->dispnp(), structure_field()->velnp(),
       is_s2i_kinetics_with_pseudo_contact());
   set_scatra_solution(scatra_field()->phinp());
   if (is_scatra_manifold()) set_scatra_manifold_solution(*scatra_manifold()->phinp());

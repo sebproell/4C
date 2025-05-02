@@ -311,10 +311,13 @@ void LowMach::Algorithm::time_loop()
 /*----------------------------------------------------------------------*/
 void LowMach::Algorithm::initial_calculations()
 {
-  // set initial velocity field for evaluation of initial scalar time
-  // derivative in SCATRA
-  scatra_field()->set_velocity_field(
-      fluid_field()->velnp(), nullptr, nullptr, fluid_field()->fs_vel());
+  // set initial velocity field for evaluation of initial scalar time derivative in SCATRA
+  scatra_field()->set_convective_velocity(*fluid_field()->velnp());
+  scatra_field()->set_velocity_field(*fluid_field()->velnp());
+  if (scatra_field()->fine_scale_velocity_field_required())
+  {
+    scatra_field()->set_fine_scale_velocity(*fluid_field()->fs_vel());
+  }
 
   // set initial value of thermodynamic pressure in SCATRA
   std::dynamic_pointer_cast<ScaTra::ScaTraTimIntLoma>(scatra_field())->set_initial_therm_pressure();
@@ -328,11 +331,6 @@ void LowMach::Algorithm::initial_calculations()
   fluid_field()->set_scalar_fields(scatra_field()->phinp(),
       std::dynamic_pointer_cast<ScaTra::ScaTraTimIntLoma>(scatra_field())->therm_press_np(),
       nullptr, scatra_field()->discretization());
-
-  // write initial fields
-  // output();
-
-  return;
 }
 
 
@@ -532,8 +530,6 @@ void LowMach::Algorithm::mono_loop()
     // check convergence and stop iteration loop if convergence is achieved
     stopnonliniter = convergence_check(itnum);
   }
-
-  return;
 }
 
 
@@ -547,22 +543,32 @@ void LowMach::Algorithm::set_fluid_values_in_scatra()
   {
     case Inpar::FLUID::timeint_afgenalpha:
     {
-      scatra_field()->set_velocity_field(
-          fluid_field()->velaf(), fluid_field()->accam(), nullptr, fluid_field()->fs_vel(), true);
+      scatra_field()->set_acceleration_field(*fluid_field()->accam());
+      scatra_field()->set_convective_velocity(*fluid_field()->velaf());
+      scatra_field()->set_velocity_field(*fluid_field()->velaf());
+      if (scatra_field()->fine_scale_velocity_field_required() and
+          fluid_field()->fs_vel() != nullptr)
+      {
+        scatra_field()->set_fine_scale_velocity(*fluid_field()->fs_vel());
+      }
     }
     break;
     case Inpar::FLUID::timeint_one_step_theta:
     case Inpar::FLUID::timeint_bdf2:
     {
-      scatra_field()->set_velocity_field(
-          fluid_field()->velnp(), fluid_field()->hist(), nullptr, fluid_field()->fs_vel(), true);
+      scatra_field()->set_acceleration_field(*fluid_field()->hist());
+      scatra_field()->set_convective_velocity(*fluid_field()->velnp());
+      scatra_field()->set_velocity_field(*fluid_field()->velnp());
+      if (scatra_field()->fine_scale_velocity_field_required() and
+          fluid_field()->fs_vel() != nullptr)
+      {
+        scatra_field()->set_fine_scale_velocity(*fluid_field()->fs_vel());
+      }
     }
     break;
     default:
       FOUR_C_THROW("Time integration scheme not supported");
-      break;
   }
-  return;
 }
 
 

@@ -220,8 +220,8 @@ void STI::Algorithm::prepare_time_step()
   increment_time_and_step();
 
   // provide scatra and thermo fields with velocities
-  scatra_->scatra_field()->set_velocity_field();
-  thermo_->scatra_field()->set_velocity_field();
+  scatra_->scatra_field()->set_velocity_field_from_function();
+  thermo_->scatra_field()->set_velocity_field_from_function();
 
   // pass thermo degrees of freedom to scatra discretization for preparation of first time step
   // (calculation of initial time derivatives etc.)

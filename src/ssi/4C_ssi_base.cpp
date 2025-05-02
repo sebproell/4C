@@ -114,7 +114,7 @@ void SSI::SSIBase::setup()
   ssicoupling_->setup();
 
   // in case of an ssi  multi scale formulation we need to set the displacement here
-  auto dummy_vec = std::make_shared<Core::LinAlg::Vector<double>>(
+  auto dummy_vec = Core::LinAlg::Vector<double>(
       *Global::Problem::instance()->get_dis("structure")->dof_row_map(), true);
   ssicoupling_->set_mesh_disp(scatra_base_algorithm(), dummy_vec);
 
@@ -519,7 +519,7 @@ void SSI::SSIBase::test_results(MPI_Comm comm) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::SSIBase::set_struct_solution(std::shared_ptr<const Core::LinAlg::Vector<double>> disp,
+void SSI::SSIBase::set_struct_solution(const Core::LinAlg::Vector<double>& disp,
     std::shared_ptr<const Core::LinAlg::Vector<double>> vel, const bool set_mechanical_stress)
 {
   // safety checks
@@ -614,7 +614,7 @@ void SSI::SSIBase::set_mechanical_stress_state(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::SSIBase::set_mesh_disp(std::shared_ptr<const Core::LinAlg::Vector<double>> disp)
+void SSI::SSIBase::set_mesh_disp(const Core::LinAlg::Vector<double>& disp)
 {
   // safety checks
   check_is_init();

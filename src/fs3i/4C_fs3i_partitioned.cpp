@@ -683,12 +683,12 @@ void FS3I::PartFS3I::set_mesh_disp() const
   // fluid field
   std::shared_ptr<Adapter::ScaTraBaseAlgorithm> fluidscatra = scatravec_[0];
   fluidscatra->scatra_field()->apply_mesh_movement(
-      fluid_to_fluid_scalar(fsi_->fluid_field()->dispnp()));
+      *fluid_to_fluid_scalar(fsi_->fluid_field()->dispnp()));
 
   // structure field
   std::shared_ptr<Adapter::ScaTraBaseAlgorithm> structscatra = scatravec_[1];
   structscatra->scatra_field()->apply_mesh_movement(
-      structure_to_structure_scalar(fsi_->structure_field()->dispnp()));
+      *structure_to_structure_scalar(fsi_->structure_field()->dispnp()));
 }
 
 
@@ -702,9 +702,9 @@ void FS3I::PartFS3I::set_velocity_fields() const
 
   for (unsigned i = 0; i < scatravec_.size(); ++i)
   {
-    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-    scatra->scatra_field()->set_velocity_field(vol_mortar_master_to_slavei(i, convel[i]), nullptr,
-        vol_mortar_master_to_slavei(i, vel[i]), nullptr);
+    scatravec_[i]->scatra_field()->set_convective_velocity(
+        *vol_mortar_master_to_slavei(i, convel[i]));
+    scatravec_[i]->scatra_field()->set_velocity_field(*vol_mortar_master_to_slavei(i, vel[i]));
   }
 }
 
@@ -762,7 +762,7 @@ void FS3I::PartFS3I::set_wall_shear_stresses() const
   for (unsigned i = 0; i < scatravec_.size(); ++i)
   {
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra = scatravec_[i];
-    scatra->scatra_field()->set_wall_shear_stresses(vol_mortar_master_to_slavei(i, wss[i]));
+    scatra->scatra_field()->set_wall_shear_stresses(*vol_mortar_master_to_slavei(i, wss[i]));
   }
 }
 

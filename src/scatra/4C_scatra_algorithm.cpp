@@ -225,7 +225,6 @@ void ScaTra::ScaTraAlgorithm::prepare_time_step_convection()
     default:
     {
       FOUR_C_THROW("Selected time integration scheme is not available!");
-      break;
     }
   }
 
@@ -234,8 +233,11 @@ void ScaTra::ScaTraAlgorithm::prepare_time_step_convection()
   // transfer the initial(!!) convective velocity
   //(fluid initial field was set inside the constructor of fluid base class)
   if (step() == 1)
-    scatra_field()->set_velocity_field(
-        fluid_field()->velnp(), fluid_field()->hist(), nullptr, nullptr);
+  {
+    scatra_field()->set_acceleration_field(*fluid_field()->hist());
+    scatra_field()->set_convective_velocity(*fluid_field()->velnp());
+    scatra_field()->set_velocity_field(*fluid_field()->velnp());
+  }
 
   // prepare time step (+ initialize one-step-theta scheme correctly with
   // velocity given above)
@@ -243,7 +245,6 @@ void ScaTra::ScaTraAlgorithm::prepare_time_step_convection()
 }
 
 /*----------------------------------------------------------------------*
- | Print scatra solver type to screen                        fang 08/14 |
  *----------------------------------------------------------------------*/
 void ScaTra::ScaTraAlgorithm::print_scatra_solver()
 {
@@ -293,34 +294,38 @@ void ScaTra::ScaTraAlgorithm::set_velocity_field()
   //       since it is not yet clear how the grid velocity should be interpolated
   //       properly -> hence, ScaTraAlgorithm does not support moving
   //       meshes yet
-
-  // this is ugly, but FsVel() may give a Null pointer which we canNOT give to the volmortart
-  // framework
-  // TODO (thon): make this somehow prettier..
-  std::shared_ptr<const Core::LinAlg::Vector<double>> fsvel = fluid_field()->fs_vel();
-  if (fsvel != nullptr) fsvel = fluid_to_scatra(fsvel);
-
   switch (fluid_field()->tim_int_scheme())
   {
     case Inpar::FLUID::timeint_npgenalpha:
     case Inpar::FLUID::timeint_afgenalpha:
     {
-      scatra_field()->set_velocity_field(fluid_to_scatra(fluid_field()->velaf()),
-          fluid_to_scatra(fluid_field()->accam()), fluid_to_scatra(fluid_field()->velaf()), fsvel);
+      scatra_field()->set_acceleration_field(*fluid_to_scatra(fluid_field()->accam()));
+      scatra_field()->set_convective_velocity(*fluid_to_scatra(fluid_field()->velaf()));
+      scatra_field()->set_velocity_field(*fluid_to_scatra(fluid_field()->velaf()));
+      if (scatra_field()->fine_scale_velocity_field_required() and
+          fluid_field()->fs_vel() != nullptr)
+      {
+        scatra_field()->set_fine_scale_velocity(*fluid_to_scatra(fluid_field()->fs_vel()));
+      }
       break;
     }
     case Inpar::FLUID::timeint_one_step_theta:
     case Inpar::FLUID::timeint_bdf2:
     case Inpar::FLUID::timeint_stationary:
     {
-      scatra_field()->set_velocity_field(fluid_to_scatra(fluid_field()->velnp()),
-          fluid_to_scatra(fluid_field()->hist()), fluid_to_scatra(fluid_field()->velnp()), fsvel);
+      scatra_field()->set_acceleration_field(*fluid_to_scatra(fluid_field()->hist()));
+      scatra_field()->set_convective_velocity(*fluid_to_scatra(fluid_field()->velnp()));
+      scatra_field()->set_velocity_field(*fluid_to_scatra(fluid_field()->velnp()));
+      if (scatra_field()->fine_scale_velocity_field_required() and
+          fluid_field()->fs_vel() != nullptr)
+      {
+        scatra_field()->set_fine_scale_velocity(*fluid_to_scatra(fluid_field()->fs_vel()));
+      }
       break;
     }
     default:
     {
       FOUR_C_THROW("Time integration scheme not supported");
-      break;
     }
   }
 }

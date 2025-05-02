@@ -145,7 +145,7 @@ void SSI::SSIPart2WC::do_struct_step()
   if (is_s2i_kinetics_with_pseudo_contact()) structure_field()->determine_stress_strain();
 
   //  set mesh displacement and velocity fields
-  return set_struct_solution(structure_field()->dispnp(), structure_field()->velnp(),
+  return set_struct_solution(*structure_field()->dispnp(), structure_field()->velnp(),
       is_s2i_kinetics_with_pseudo_contact());
 }
 
@@ -196,7 +196,7 @@ void SSI::SSIPart2WC::prepare_time_loop()
   constexpr bool force_prepare = true;
   structure_field()->prepare_output(force_prepare);
   structure_field()->output();
-  set_struct_solution(structure_field()->dispnp(), structure_field()->velnp(), false);
+  set_struct_solution(*structure_field()->dispnp(), structure_field()->velnp(), false);
   scatra_field()->prepare_time_loop();
 }
 
@@ -207,7 +207,7 @@ void SSI::SSIPart2WC::prepare_time_step(bool printheader)
 {
   increment_time_and_step();
 
-  set_struct_solution(structure_field()->dispnp(), structure_field()->velnp(), false);
+  set_struct_solution(*structure_field()->dispnp(), structure_field()->velnp(), false);
   scatra_field()->prepare_time_step();
 
   // if adaptive time stepping and different time step size: calculate time step in scatra
@@ -503,7 +503,7 @@ void SSI::SSIPart2WCSolidToScatraRelax::outer_loop()
     // begin nonlinear solver / outer iteration ***************************
 
     // set relaxed mesh displacements and velocity field
-    set_struct_solution(dispnp, velnp, is_s2i_kinetics_with_pseudo_contact());
+    set_struct_solution(*dispnp, velnp, is_s2i_kinetics_with_pseudo_contact());
 
     // solve scalar transport equation
     do_scatra_step();

@@ -214,7 +214,7 @@ namespace SSI
     [[nodiscard]] std::shared_ptr<ScaTra::ScaTraTimIntImpl> scatra_manifold() const;
 
     /// set structure solution on other fields
-    void set_struct_solution(std::shared_ptr<const Core::LinAlg::Vector<double>> disp,
+    void set_struct_solution(const Core::LinAlg::Vector<double>& disp,
         std::shared_ptr<const Core::LinAlg::Vector<double>> vel, bool set_mechanical_stress);
 
     /// set scatra solution on other fields
@@ -377,7 +377,7 @@ namespace SSI
     [[nodiscard]] bool is_init() const { return isinit_; }
 
     /// set structure mesh displacement on scatra field
-    void set_mesh_disp(std::shared_ptr<const Core::LinAlg::Vector<double>> disp);
+    void set_mesh_disp(const Core::LinAlg::Vector<double>& disp);
 
     /// set structure velocity field on scatra field
     void set_velocity_fields(std::shared_ptr<const Core::LinAlg::Vector<double>> vel);

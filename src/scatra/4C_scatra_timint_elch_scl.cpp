@@ -97,7 +97,7 @@ void ScaTra::ScaTraTimIntElchSCL::setup()
 
   redistribute_micro_discretization();
 
-  micro_scatra_field()->set_velocity_field();
+  micro_scatra_field()->set_velocity_field_from_function();
 
   micro_timint_->setup();
 

@@ -84,11 +84,14 @@ void Adapter::ScaTraFluidCouplingAlgorithm::setup()
   // transfer the initial convective velocity from initial fluid field to scalar transport field
   // subgrid scales not transferred since they are zero at time t=0.0
   if (!volcoupl_fluidscatra_)
-    scatra_field()->set_velocity_field(fluid_field()->convective_vel(), nullptr, nullptr, nullptr);
+  {
+    scatra_field()->set_convective_velocity(*fluid_field()->convective_vel());
+  }
   else
-    scatra_field()->set_velocity_field(
-        volcoupl_fluidscatra_->apply_vector_mapping21(*fluid_field()->convective_vel()), nullptr,
-        nullptr, nullptr);
+  {
+    scatra_field()->set_convective_velocity(
+        *volcoupl_fluidscatra_->apply_vector_mapping21(*fluid_field()->convective_vel()));
+  }
 
   // ensure that both single field solvers use the same
   // time integration scheme

@@ -81,7 +81,7 @@ void ElCh::MovingBoundaryAlgorithm::setup()
   }
 
   // transfer moving mesh data
-  scatra_field()->apply_mesh_movement(ale_field()->dispnp());
+  scatra_field()->apply_mesh_movement(*ale_field()->dispnp());
 
   // initialize the multivector for all possible cases
   fluxn_ = scatra_field()->calc_flux_at_boundary(false);
@@ -111,12 +111,13 @@ void ElCh::MovingBoundaryAlgorithm::time_loop()
   if (not pseudotransient_)
   {
     // transfer convective velocity = fluid velocity - grid velocity
-    scatra_field()->set_velocity_field(fluid_field()->convective_vel(),  // = velnp - grid velocity
-        fluid_field()->hist(), nullptr, nullptr);
+    scatra_field()->set_convective_velocity(*fluid_field()->convective_vel());
+    scatra_field()->set_velocity_field(*fluid_field()->convective_vel());
+    scatra_field()->set_acceleration_field(*fluid_field()->hist());
   }
 
   // transfer moving mesh data
-  scatra_field()->apply_mesh_movement(ale_field()->dispnp());
+  scatra_field()->apply_mesh_movement(*ale_field()->dispnp());
 
   // time loop
   while (not_finished())
@@ -248,10 +249,10 @@ void ElCh::MovingBoundaryAlgorithm::solve_scatra()
 {
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
-    std::cout << std::endl;
-    std::cout << "************************" << std::endl;
-    std::cout << "       ELCH SOLVER      " << std::endl;
-    std::cout << "************************" << std::endl;
+    std::cout << '\n';
+    std::cout << "************************" << '\n';
+    std::cout << "       ELCH SOLVER      " << '\n';
+    std::cout << "************************" << '\n';
   }
 
   switch (fluid_field()->tim_int_scheme())
@@ -259,26 +260,24 @@ void ElCh::MovingBoundaryAlgorithm::solve_scatra()
     case Inpar::FLUID::timeint_npgenalpha:
     case Inpar::FLUID::timeint_afgenalpha:
       FOUR_C_THROW("ConvectiveVel() not implemented for Gen.Alpha versions");
-      break;
     case Inpar::FLUID::timeint_one_step_theta:
     case Inpar::FLUID::timeint_bdf2:
     {
       if (not pseudotransient_)
       {
         // transfer convective velocity = fluid velocity - grid velocity
-        scatra_field()->set_velocity_field(
-            fluid_field()->convective_vel(),  // = velnp - grid velocity
-            fluid_field()->hist(), nullptr, nullptr);
+        scatra_field()->set_convective_velocity(*fluid_field()->convective_vel());
+        scatra_field()->set_velocity_field(*fluid_field()->convective_vel());
+        scatra_field()->set_acceleration_field(*fluid_field()->hist());
       }
     }
     break;
     default:
       FOUR_C_THROW("Time integration scheme not supported");
-      break;
   }
 
   // transfer moving mesh data
-  scatra_field()->apply_mesh_movement(ale_field()->dispnp());
+  scatra_field()->apply_mesh_movement(*ale_field()->dispnp());
 
   // solve coupled electrochemistry equations
   scatra_field()->solve();

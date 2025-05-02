@@ -292,7 +292,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraBase::set_poro_solution()
   if (poroscatra == nullptr) FOUR_C_THROW("cast to ScaTraTimIntPoroMulti failed!");
 
   // set displacements
-  poroscatra->apply_mesh_movement(poromulti_->struct_dispnp());
+  poroscatra->apply_mesh_movement(*poromulti_->struct_dispnp());
 
   // set the fluid solution
   poroscatra->set_solution_field_of_multi_fluid(

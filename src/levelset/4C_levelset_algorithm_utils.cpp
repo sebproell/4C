@@ -29,35 +29,12 @@ FOUR_C_NAMESPACE_OPEN
 void ScaTra::LevelSetAlgorithm::set_velocity_field(bool init)
 {
   // call function of base class
-  ScaTraTimIntImpl::set_velocity_field();
+  ScaTraTimIntImpl::set_velocity_field_from_function();
 
   // note: This function is only called from the level-set dyn. This is ok, since
   //       we only want to initialize conveln_ at the beginning of the simulation.
   //       for the remainder, it is updated as usual. For the dependent velocity fields
   //       the base class function is called in prepare_time_step().
-}
-
-
-/*----------------------------------------------------------------------*
- | set convective velocity field (+ pressure and acceleration field as  |
- | well as fine-scale velocity field, if required)      rasthofer 11/13 |
- *----------------------------------------------------------------------*/
-void ScaTra::LevelSetAlgorithm::set_velocity_field(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> convvel,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> acc,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> vel,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> fsvel, bool setpressure, bool init)
-{
-  // call routine of base class
-  ScaTraTimIntImpl::set_velocity_field(convvel, acc, vel, fsvel, setpressure);
-
-  // manipulate velocity field away from the interface
-  if (extract_interface_vel_) manipulate_fluid_field_for_gfunc();
-
-  // estimate velocity at contact points, i.e., intersection points of interface and (no-slip) walls
-  if (cpbc_) apply_contact_point_boundary_condition();
-
-  return;
 }
 
 

@@ -237,7 +237,9 @@ void Mat::ScatraMultiScaleGP::init()
     global_micro_state().microdisnum_microtimint_map_[microdisnum_]->setup();
 
     // set initial velocity field
-    global_micro_state().microdisnum_microtimint_map_[microdisnum_]->set_velocity_field();
+    global_micro_state()
+        .microdisnum_microtimint_map_[microdisnum_]
+        ->set_velocity_field_from_function();
 
     // create counter for number of macro-scale Gauss points associated with micro-scale time
     // integrator

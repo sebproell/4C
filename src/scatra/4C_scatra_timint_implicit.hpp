@@ -227,7 +227,7 @@ namespace ScaTra
     virtual void explicit_predictor() const;
 
     //! set the velocity field (zero or field by function)
-    virtual void set_velocity_field();
+    void set_velocity_field_from_function();
 
     /*! Set external force field
 
@@ -244,20 +244,26 @@ namespace ScaTra
      */
     void set_external_force() const;
 
-    //! set convective velocity field (+ pressure and acceleration field as
-    //! well as fine-scale velocity field, if required)
-    virtual void set_velocity_field(std::shared_ptr<const Core::LinAlg::Vector<double>>
-                                        convvel,  //!< convective velocity/press. vector
-        std::shared_ptr<const Core::LinAlg::Vector<double>> acc,    //!< acceleration vector
-        std::shared_ptr<const Core::LinAlg::Vector<double>> vel,    //!< velocity vector
-        std::shared_ptr<const Core::LinAlg::Vector<double>> fsvel,  //!< fine-scale velocity vector
-        const bool setpressure =
-            false  //!< flag whether the fluid pressure needs to be known for the scatra
-    );
+    //! set the @acceleration vector to the scalar transport discretization
+    void set_acceleration_field(const Core::LinAlg::Vector<double>& acceleration) const;
 
-    void set_wall_shear_stresses(std::shared_ptr<const Core::LinAlg::Vector<double>> wss);
+    //! set the @convective_velocity vector to the scalar transport discretization
+    void set_convective_velocity(const Core::LinAlg::Vector<double>& convective_velocity) const;
 
-    void set_pressure_field(std::shared_ptr<const Core::LinAlg::Vector<double>> pressure);
+    //! set the @fine_scale_velocity vector to the scalar transport discretization
+    void set_fine_scale_velocity(const Core::LinAlg::Vector<double>& fine_scale_velocity) const;
+
+    //! return whether setting of the fine scale velocity is required
+    [[nodiscard]] bool fine_scale_velocity_field_required() const;
+
+    //! set the @velocity vector to the scalar transport discretization
+    void set_velocity_field(const Core::LinAlg::Vector<double>& velocity);
+
+    //! set the @wall_shear_stress vector to the scalar transport discretization
+    void set_wall_shear_stresses(const Core::LinAlg::Vector<double>& wall_shear_stress) const;
+
+    //! set the @pressure vector to the scalar transport discretization
+    void set_pressure_field(const Core::LinAlg::Vector<double>& pressure) const;
 
     void set_membrane_concentration(
         std::shared_ptr<const Core::LinAlg::Vector<double>> MembraneConc);
@@ -383,7 +389,7 @@ namespace ScaTra
      *
      * @param[in] dispnp  displacement vector
      */
-    void apply_mesh_movement(std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp);
+    void apply_mesh_movement(const Core::LinAlg::Vector<double>& dispnp) const;
 
     //! calculate fluxes inside domain and/or on boundary
     void calc_flux(const bool writetofile  //!< flag for writing flux info to file
