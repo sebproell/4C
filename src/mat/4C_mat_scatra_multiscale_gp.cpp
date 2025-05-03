@@ -142,11 +142,26 @@ void Mat::ScatraMultiScaleGP::init()
           "Must have identical one-step-theta time integration factor on macro and micro scales!");
     if (microdis->num_global_elements() == 0)
       FOUR_C_THROW("No elements in TRANSPORT ELEMENTS section of micro-scale input file!");
-    if (microdis->g_node(0)->x()[0] != 0.0)
+
+    // Extract all x-coordinates of the microscale discretization, sort them, and check that the
+    // first and last x-coordinates are 0 and > 0, respectively.
     {
-      FOUR_C_THROW(
-          "Micro-scale domain must have one end at coordinate 0 and the other end at a coordinate "
-          "> 0!");
+      // The micro discretization is replicated on all ranks, so this will catch all x-coordinates.
+      std::vector<double> xcoords;
+      xcoords.reserve(microdis->num_my_row_nodes());
+      for (const auto& node : microdis->my_row_node_range())
+      {
+        xcoords.push_back(node->x()[0]);
+      }
+      std::ranges::sort(xcoords);
+
+      FOUR_C_ASSERT_ALWAYS(xcoords[0] == 0.0,
+          "First x-coordinate of micro-scale discretization must be 0! First x-coordinate is {}",
+          xcoords[0]);
+
+      FOUR_C_ASSERT_ALWAYS(xcoords.back() > 0.0,
+          "Last x-coordinate of micro-scale discretization must be > 0! Last x-coordinate is {}",
+          xcoords.back());
     }
 
     // extract multi-scale coupling conditions from micro-scale discretization
