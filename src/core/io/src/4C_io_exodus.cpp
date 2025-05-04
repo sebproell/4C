@@ -107,7 +107,8 @@ namespace
 /*----------------------------------------------------------------------*
  |  ctor (public)                                              maf 12/07|
  *----------------------------------------------------------------------*/
-Core::IO::Exodus::Mesh::Mesh(const std::string exofilename)
+Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters mesh_data)
+    : mesh_data_(mesh_data)
 {
   int error;
   int CPU_word_size, IO_word_size;
@@ -118,8 +119,8 @@ Core::IO::Exodus::Mesh::Mesh(const std::string exofilename)
 
   // open EXODUS II file
   int exo_handle =
-      ex_open(exofilename.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &exoversion);
-  if (exo_handle <= 0) FOUR_C_THROW("Error while opening EXODUS II file {}", exofilename);
+      ex_open(exodus_file.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &exoversion);
+  if (exo_handle <= 0) FOUR_C_THROW("Error while opening EXODUS II file {}", exodus_file.string());
 
   // read database parameters
   int num_elem_blk, num_node_sets, num_side_sets, num_nodes;
@@ -138,10 +139,12 @@ Core::IO::Exodus::Mesh::Mesh(const std::string exofilename)
     error = ex_get_coord(exo_handle, x.data(), y.data(), z.data());
     if (error != 0) FOUR_C_THROW("exo error returned");
 
+    FOUR_C_ASSERT_ALWAYS(
+        mesh_data_.node_start_id >= 0, "Node start id must be greater than or equal to 0");
+
     for (int i = 0; i < num_nodes; ++i)
     {
-      // Node numbering starts at one in 4C
-      nodes_[i + 1] = {x[i], y[i], z[i]};
+      nodes_[i + mesh_data_.node_start_id] = {x[i], y[i], z[i]};
     }
   }
 
@@ -175,13 +178,16 @@ Core::IO::Exodus::Mesh::Mesh(const std::string exofilename)
       error = ex_get_conn(exo_handle, EX_ELEM_BLOCK, ebids[i], allconn.data(), nullptr, nullptr);
       if (error != 0) FOUR_C_THROW("exo error returned");
       std::map<int, std::vector<int>> eleconn;
+
+      // Compare the desired start ID to Exodus' one-based indexing to get the offset.
+      const int node_offset = mesh_data_.node_start_id - 1;
       for (int j = 0; j < num_el_in_blk; ++j)
       {
         std::vector<int>& actconn = eleconn[j];
         actconn.reserve(num_nod_per_elem);
         for (int k = 0; k < num_nod_per_elem; ++k)
         {
-          actconn.push_back(allconn[k + j * num_nod_per_elem]);
+          actconn.push_back(allconn[k + j * num_nod_per_elem] + node_offset);
         }
         reorder_nodes_exodus_to_four_c(actconn, cell_type_from_exodus_string(ele_type));
       }
@@ -217,10 +223,12 @@ Core::IO::Exodus::Mesh::Mesh(const std::string exofilename)
       else if (error < 0)
         FOUR_C_THROW("error reading node set");
       std::set<int> nodes_in_set;
-      for (int j = 0; j < num_nodes_in_set; ++j) nodes_in_set.insert(node_set_node_list[j]);
+      // Compare the desired start ID to Exodus' one-based indexing to get the offset.
+      const int node_offset = mesh_data_.node_start_id - 1;
+      for (int j = 0; j < num_nodes_in_set; ++j)
+        nodes_in_set.insert(node_set_node_list[j] + node_offset);
       NodeSet actNodeSet(nodes_in_set, nodesetname);
 
-      // Add this NodeSet into Mesh map (here prelim due to pro names)
       node_sets_.insert(std::pair<int, NodeSet>(npropID[i], actNodeSet));
     }
   }  // end of nodeset section
@@ -361,48 +369,6 @@ void Core::IO::Exodus::Mesh::set_nsd(const int nsd)
   if (nsd != 2 && nsd != 3) return;
 
   four_c_dim_ = nsd;
-}
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-std::vector<double> Core::IO::Exodus::Mesh::normal(
-    const int head1, const int origin, const int head2) const
-{
-  std::vector<double> normal(3);
-  std::vector<double> h1 = get_node(head1);
-  std::vector<double> h2 = get_node(head2);
-  std::vector<double> o = get_node(origin);
-
-  normal[0] = ((h1[1] - o[1]) * (h2[2] - o[2]) - (h1[2] - o[2]) * (h2[1] - o[1]));
-  normal[1] = -((h1[0] - o[0]) * (h2[2] - o[2]) - (h1[2] - o[2]) * (h2[0] - o[0]));
-  normal[2] = ((h1[0] - o[0]) * (h2[1] - o[1]) - (h1[1] - o[1]) * (h2[0] - o[0]));
-
-  double length = sqrt(normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]);
-  normal[0] = normal[0] / length;
-  normal[1] = normal[1] / length;
-  normal[2] = normal[2] / length;
-
-  return normal;
-}
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-std::vector<double> Core::IO::Exodus::Mesh::node_vec(const int tail, const int head) const
-{
-  std::vector<double> nv(3);
-  std::vector<double> t = get_node(tail);
-  std::vector<double> h = get_node(head);
-  nv[0] = h[0] - t[0];
-  nv[1] = h[1] - t[1];
-  nv[2] = h[2] - t[2];
-  double length = sqrt(nv[0] * nv[0] + nv[1] * nv[1] + nv[2] * nv[2]);
-  nv[0] = nv[0] / length;
-  nv[1] = nv[1] / length;
-  nv[2] = nv[2] / length;
-  return nv;
 }
 
 

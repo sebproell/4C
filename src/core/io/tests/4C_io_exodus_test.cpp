@@ -29,4 +29,13 @@ namespace
 
     mesh.print(std::cout, true);
   }
+
+  TEST(Exodus, NodeOffset)
+  {
+    Core::IO::Exodus::Mesh mesh(TESTING::get_support_file_path("test_files/exodus/cube.exo"),
+        Core::IO::Exodus::MeshParameters{.node_start_id = 100});
+    EXPECT_EQ(mesh.get_node(100), (std::vector<double>{-5.0, 0.0, 0.0}));
+    EXPECT_EQ(mesh.get_element_block(1).get_ele_nodes(1),
+        (std::vector<int>{108, 100, 103, 109, 110, 104, 107, 111}));
+  }
 }  // namespace
