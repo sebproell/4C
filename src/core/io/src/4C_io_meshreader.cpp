@@ -822,8 +822,11 @@ namespace
 
       const auto& geometry_data = data.group(exodus_reader.section_name);
       const auto& exodus_file = geometry_data.get<std::filesystem::path>("FILE");
-      exodus_reader.mesh_on_rank_zero =
-          std::make_unique<Core::IO::Exodus::Mesh>(exodus_file.string());
+      exodus_reader.mesh_on_rank_zero = std::make_unique<Core::IO::Exodus::Mesh>(
+          exodus_file.string(), Core::IO::Exodus::MeshParameters{
+                                    // We internally depend on node numbers starting at 0.
+                                    .node_start_id = 0,
+                                });
       const auto& mesh = *exodus_reader.mesh_on_rank_zero;
 
       // Initial implementation:
