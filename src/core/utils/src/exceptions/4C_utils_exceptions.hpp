@@ -13,6 +13,7 @@
 #include <exception>
 #include <format>
 #include <memory>
+#include <source_location>
 #include <string>
 
 FOUR_C_NAMESPACE_OPEN
@@ -23,38 +24,15 @@ namespace Core
   {
     class ExceptionImplementation;
 
-    /**
-     * A helper struct taking the file name and line number from the error macro.
-     */
-    struct ErrorHelper
-    {
-      const char* file_name;
-      int line_number;
-      const char* failed_assertion_string = nullptr;
-    };
-
-    /**
-     * Check if a string literal contains C-style format specifiers.
-     */
-    [[nodiscard]] consteval bool contains_c_format_specifiers(std::string_view str)
-    {
-      for (size_t i = 0; i < str.size(); ++i)
-      {
-        // A rough check for C-style format specifiers
-        if (str[i] == '%' && i + 1 < str.size() && str[i + 1] != '%') return true;
-      }
-      return false;
-    }
+    [[noreturn]] void throw_error(
+        const std::source_location& loc, const std::string& formatted_message);
 
     template <typename... Args>
     [[noreturn]] void constexpr format_and_throw_error(
-        ErrorHelper error_helper, std::format_string<Args...> fmt, Args&&... args)
+        const std::source_location& loc, std::format_string<Args...> fmt, Args&&... args)
     {
-      throw_error(error_helper, std::format(std::move(fmt), std::forward<Args>(args)...));
+      throw_error(loc, std::format(std::move(fmt), std::forward<Args>(args)...));
     }
-
-    [[noreturn]] void throw_error(
-        const ErrorHelper& error_helper, const std::string& formatted_message);
   }  // namespace Internal
 
   /**
@@ -113,18 +91,15 @@ namespace Core
  *    FOUR_C_THROW("An error occurred in iteration {}.", iter);
  * @endcode
  */
-#define FOUR_C_THROW(fmt, ...)                                                              \
-  do                                                                                        \
-  {                                                                                         \
-    static_assert(!FourC::Core::Internal::contains_c_format_specifiers(fmt),                \
-        "Use C++20 formatting with braces {} instead of C-style formatting with %.");       \
-    FourC::Core::Internal::format_and_throw_error(                                          \
-        FourC::Core::Internal::ErrorHelper{.file_name = __FILE__, .line_number = __LINE__}, \
-        fmt __VA_OPT__(, ) __VA_ARGS__);                                                    \
-  } while (0)
+#define FOUR_C_THROW(fmt, ...)                   \
+  FourC::Core::Internal::format_and_throw_error( \
+      std::source_location::current(), (fmt)__VA_OPT__(, ) __VA_ARGS__)
 
 /**
- * Assert that @p test is `true`. If not issue an error in the form of a Core::Exception.
+ * Assert that @p test is `true`. If not issue an error in the form of a Core::Exception. In
+ * contrast to FOUR_C_ASSERT, this macro is *always* active and should therefore be used to
+ * check for user-fixable errors. It is not intended to be used for internal consistency checks;
+ * these should be done with FOUR_C_ASSERT.
  *
  * This macro takes an error message, which may contain replacement fields for formatting.
  * The format arguments are passed as additional arguments. For example:
@@ -134,18 +109,14 @@ namespace Core
  *      vector.size(), dim);
  * @endcode
  */
-#define FOUR_C_ASSERT_ALWAYS(test, fmt, ...)                                                     \
-  do                                                                                             \
-  {                                                                                              \
-    static_assert(!FourC::Core::Internal::contains_c_format_specifiers(fmt),                     \
-        "Use C++20 formatting with braces {} instead of C-style formatting with %.");            \
-    if (!(test))                                                                                 \
-    {                                                                                            \
-      FourC::Core::Internal::format_and_throw_error(                                             \
-          FourC::Core::Internal::ErrorHelper{                                                    \
-              .file_name = __FILE__, .line_number = __LINE__, .failed_assertion_string = #test}, \
-          fmt __VA_OPT__(, ) __VA_ARGS__);                                                       \
-    }                                                                                            \
+#define FOUR_C_ASSERT_ALWAYS(test, fmt, ...)                                 \
+  do                                                                         \
+  {                                                                          \
+    if (!static_cast<bool>(test))                                            \
+    {                                                                        \
+      FourC::Core::Internal::format_and_throw_error(                         \
+          std::source_location::current(), (fmt)__VA_OPT__(, ) __VA_ARGS__); \
+    }                                                                        \
   } while (0)
 
 
@@ -171,7 +142,11 @@ namespace Core
 /**
  * This macro would assert that @p test is true, but only if FOUR_C_ENABLE_ASSERTIONS is set.
  */
-#define FOUR_C_ASSERT(test, args...) static_assert(true, "Terminate with a comma.")
+#define FOUR_C_ASSERT(test, args...)  \
+  do                                  \
+  {                                   \
+    /* Assertions are not enabled. */ \
+  } while (0)
 
 #endif
 
