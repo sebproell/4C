@@ -14,6 +14,7 @@ Checks: >-
   readability-function-size,
   readability-inconsistent-declaration-parameter-name,
   cppcoreguidelines-virtual-class-destructor,
+  cppcoreguidelines-pro-type-member-init,
   modernize-*,
   performance-*,
   bugprone-*,
@@ -66,4 +67,5 @@ WarningsAsErrors: >-
   readability-const-return-type,
   readability-identifier-naming,
   readability-inconsistent-declaration-parameter-name,
-  cppcoreguidelines-virtual-class-destructor
+  cppcoreguidelines-virtual-class-destructor,
+  cppcoreguidelines-pro-type-member-init
