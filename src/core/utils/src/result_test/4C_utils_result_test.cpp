@@ -70,7 +70,7 @@ int Core::Utils::ResultTest::compare_values(
 
   if (type != "SPECIAL")
   {
-    msghead << std::left << std::setw(12) << container.get_or<std::string>("DIS", "");
+    msghead << std::left << std::setw(16) << container.get_or<std::string>("DIS", "");
   }
 
   msghead << std::left << std::setw(8) << quantity.c_str();
