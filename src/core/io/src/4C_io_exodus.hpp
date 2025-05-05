@@ -12,6 +12,7 @@
 
 #include "4C_fem_general_element.hpp"
 
+#include <filesystem>
 #include <set>
 #include <string>
 #include <vector>
@@ -26,13 +27,30 @@ namespace Core::IO::Exodus
   class SideSet;
 
   /**
+   * Additional parameters that are used in the constructor.
+   */
+  struct MeshParameters
+  {
+    /**
+     * The ID of the first node in the mesh. This defaults to 1, since this is the default in
+     * the Exodus II mesh format.
+     */
+    int node_start_id{1};
+  };
+
+  /**
    * A class that stores the mesh information read from an Exodus file.
    */
   class Mesh
   {
    public:
-    //! constructor
-    Mesh(std::string exofilename);
+    /**
+     * @brief Read a mesh from an Exodus file.
+     *
+     * Read the data from the Exodus file and store it in the class. The optional @p
+     * mesh_data can be used to set options documented in the MeshData struct.
+     */
+    Mesh(std::filesystem::path exodus_file, MeshParameters mesh_data = {});
 
     //! Print mesh info
     void print(std::ostream& os, bool verbose = false) const;
@@ -76,12 +94,6 @@ namespace Core::IO::Exodus
     //! Get one SideSet
     SideSet get_side_set(const int id) const;
 
-    //! Get edge Normal at node
-    std::vector<double> normal(const int head1, const int origin, const int head2) const;
-
-    //! Get normalized Vector between 2 nodes
-    std::vector<double> node_vec(const int tail, const int head) const;
-
     //! Get Node map
     const std::map<int, std::vector<double>>& get_nodes() const { return nodes_; }
 
@@ -95,6 +107,8 @@ namespace Core::IO::Exodus
     void set_nsd(const int nsd);
 
    private:
+    MeshParameters mesh_data_;
+
     std::map<int, std::vector<double>> nodes_;
 
     std::map<int, ElementBlock> element_blocks_;
