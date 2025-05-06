@@ -44,10 +44,16 @@ namespace Core::LinAlg
   class MultiMapExtractor
   {
    public:
-    /// create an uninitialized (empty) extractor
-    MultiMapExtractor();
+    /**
+     * @brief Default constructor.
+     *
+     * You will need to call setup() before using this object.
+     */
+    MultiMapExtractor() = default;
 
-    /// destructor
+    /**
+     * Virtual destructor.
+     */
     virtual ~MultiMapExtractor() = default;
 
     /// create an extractor from fullmap to the given set of maps
@@ -151,7 +157,7 @@ namespace Core::LinAlg
       \param block number of vector to extract
       \param partial vector to fill
      */
-    virtual void extract_vector(const Core::LinAlg::MultiVector<double>& full, int block,
+    void extract_vector(const Core::LinAlg::MultiVector<double>& full, int block,
         Core::LinAlg::MultiVector<double>& partial) const;
 
 
@@ -182,7 +188,7 @@ namespace Core::LinAlg
       \param block number of partial vector
       \param full vector to copy into
      */
-    virtual void insert_vector(const Core::LinAlg::MultiVector<double>& partial, int block,
+    void insert_vector(const Core::LinAlg::MultiVector<double>& partial, int block,
         Core::LinAlg::MultiVector<double>& full) const;
 
     //@}
@@ -197,7 +203,7 @@ namespace Core::LinAlg
       \param full vector to copy into
       \param scale scaling factor for partial vector
      */
-    virtual void add_vector(const Core::LinAlg::MultiVector<double>& partial, int block,
+    void add_vector(const Core::LinAlg::MultiVector<double>& partial, int block,
         Core::LinAlg::MultiVector<double>& full, double scale = 1.0) const;
 
     //@}
@@ -271,9 +277,7 @@ namespace Core::LinAlg
   void name##_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const         \
   {                                                                                       \
     put_scalar(full, pos, scalar);                                                        \
-  }                                                                                       \
-                                                                                          \
-  double name##_norm2(const Core::LinAlg::Vector<double>& full) const { return norm2(full, pos); }
+  }
 
 
   /// Split a dof row map in two and establish the communication pattern between those maps
@@ -306,14 +310,19 @@ namespace Core::LinAlg
   class MapExtractor : public MultiMapExtractor
   {
    public:
-    /** \brief empty constructor
+    /**
+     * @brief Default constructor.
      *
-     *  You have to call a setup() routine of your choice. */
-    MapExtractor();
+     * You have to call a setup() routine of your choice before you can do anything with this
+     * object.
+     */
+    MapExtractor() = default;
 
-    /** \brief  constructor
+    /**
+     * @brief Constructor
      *
-     *  Calls setup() from known maps */
+     *  Calls setup() from known maps.
+     */
     MapExtractor(const Core::LinAlg::Map& fullmap, std::shared_ptr<const Core::LinAlg::Map> condmap,
         std::shared_ptr<const Core::LinAlg::Map> othermap);
 
@@ -330,23 +339,29 @@ namespace Core::LinAlg
     /** \name Setup */
     //@{
 
-    /// setup from known maps
-    void setup(const Core::LinAlg::Map& fullmap,
-        const std::shared_ptr<const Core::LinAlg::Map>& condmap,
-        const std::shared_ptr<const Core::LinAlg::Map>& othermap);
+    /**
+     * @brief Set up the MapExtractor from a full map, a "cond" map and an "other" map.
+     *
+     * The set union of the indices in @p cond_map and @p other_map must be equal to those in the
+     * @p full_map. The @p cond_map and @p other_map must be non-overlapping.
+     */
+    void setup(const Core::LinAlg::Map& full_map,
+        const std::shared_ptr<const Core::LinAlg::Map>& cond_map,
+        const std::shared_ptr<const Core::LinAlg::Map>& other_map);
 
-    /// setup creates non-overlapping othermap/condmap which is complementary to condmap/othermap
-    /// with respect to fullmap depending on boolean 'iscondmap'
-
-    void setup(const Core::LinAlg::Map& fullmap,
-        const std::shared_ptr<const Core::LinAlg::Map>& partialmap, bool iscondmap = true);
+    /**
+     * @brief Set up the MapExtractor from a full map and a "cond" map.
+     *
+     * In contrast to the other setup() call, this call constructs the other map as the set
+     * difference between @p full_map and the @p cond_map.
+     */
+    void setup(const Core::LinAlg::Map& full_map,
+        const std::shared_ptr<const Core::LinAlg::Map>& cond_map);
 
     //@}
 
     MAP_EXTRACTOR_VECTOR_METHODS(cond, 1)
     MAP_EXTRACTOR_VECTOR_METHODS(other, 0)
-
-   private:
   };
 
 }  // namespace Core::LinAlg
