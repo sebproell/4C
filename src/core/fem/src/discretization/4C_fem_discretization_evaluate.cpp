@@ -377,9 +377,6 @@ void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params
   int row = strategy.first_dof_set();
   int col = strategy.second_dof_set();
 
-  // get the current time
-  const double time = params.get("total time", -1.0);
-
   Core::Elements::LocationArray la(dofsets_.size());
 
   //----------------------------------------------------------------------
@@ -397,31 +394,11 @@ void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params
         // can exist processors which do not own a portion of the elements belonging
         // to the condition geometry
 
-        // Evaluate Loadcurve if defined. Put current load factor in parameter list
-        const auto* curve = cond->parameters().get_if<std::optional<int>>("curve");
-
-        double curvefac = 1.0;
-        if (curve)
-        {
-          if (curve->has_value() && curve->value() > 0)
-          {
-            const auto& function_manager =
-                params.get<const Core::Utils::FunctionManager*>("function_manager");
-            curvefac = function_manager->function_by_id<Core::Utils::FunctionOfTime>(curve->value())
-                           .evaluate(time);
-          }
-        }
-
         // Get ConditionID of current condition if defined and write value in parameter list
         const auto* condID = cond->parameters().get_if<int>("ConditionID");
         if (condID)
         {
           params.set("ConditionID", *condID);
-          params.set("LoadCurveFactor " + std::to_string(*condID), curvefac);
-        }
-        else
-        {
-          params.set("LoadCurveFactor", curvefac);
         }
         params.set<std::shared_ptr<Core::Conditions::Condition>>("condition", cond);
 
@@ -467,7 +444,21 @@ void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params
       }
     }
   }
-}  // end of Core::FE::Discretization::evaluate_condition
+}
+
+void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params,
+    std::shared_ptr<Core::LinAlg::Vector<double>> systemvector, const std::string& condstring,
+    const int condid)
+{
+  evaluate_condition(params, nullptr, nullptr, systemvector, nullptr, nullptr, condstring, condid);
+}
+
+
+void Core::FE::Discretization::evaluate_condition(
+    Teuchos::ParameterList& params, const std::string& condstring, const int condid)
+{
+  evaluate_condition(params, nullptr, nullptr, nullptr, nullptr, nullptr, condstring, condid);
+}
 
 
 /*----------------------------------------------------------------------*
