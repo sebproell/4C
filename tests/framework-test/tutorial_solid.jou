@@ -74,6 +74,6 @@ block 1 material 'metal'
 # ====================
 # ||  WRITE EXODUS  ||
 # ====================
-export mesh "tutorial_solid.e"  overwrite
+export mesh "tutorial_solid_geo.e"  overwrite
 
 

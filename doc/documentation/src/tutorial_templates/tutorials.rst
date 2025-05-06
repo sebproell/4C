@@ -23,6 +23,6 @@ The following tutorials are available to show different features of |FOURC|.
    tut_fluid_preexo
    tut_fsi_preexo
    tut_fsi_preexo_2d
-   tut_solid_preexo
-   /tutorial_contact_3d
+   tut_solid
+   tutorial_contact_3d
    tut_battery

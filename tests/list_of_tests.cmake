@@ -1967,12 +1967,12 @@ four_c_test_nested_parallelism(sohex8_multiscale_macro_2micro.dat sohex8_multisc
 four_c_test_nested_parallelism(tsi_heatconvection_monolithic.dat tsi_heatconvection_monolithic.dat "")
 
 # testing the whole framework: from pre_exodus and 4C to the post-filter:
-four_c_test_framework(PREFIX tutorial_battery NP 2)
-four_c_test_framework(PREFIX tutorial_contact_3d NP 2)
-four_c_test_framework(PREFIX tutorial_fluid NP 2)
-four_c_test_framework(PREFIX tutorial_fsi NP 2)
-four_c_test_framework(PREFIX tutorial_fsi_3d NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/input_files/fsi_part_struct_solver.xml)
-four_c_test_framework(PREFIX tutorial_solid NP 3 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/input_files/xml/multigrid/elasticity_template.xml)
+four_c_test_framework(PREFIX tutorial_battery NP 2 USE_PRE_EXODUS)
+four_c_test_framework(PREFIX tutorial_contact_3d NP 2 USE_PRE_EXODUS)
+four_c_test_framework(PREFIX tutorial_fluid NP 2 USE_PRE_EXODUS)
+four_c_test_framework(PREFIX tutorial_fsi NP 2 USE_PRE_EXODUS)
+four_c_test_framework(PREFIX tutorial_fsi_3d NP 2 USE_PRE_EXODUS COPY_FILES ${PROJECT_SOURCE_DIR}/tests/input_files/fsi_part_struct_solver.xml)
+four_c_test_framework(PREFIX tutorial_solid NP 3 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/input_files/xml/multigrid/elasticity_template.xml ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_solid_geo.e)
 
 # four_c_test_post_processing
 four_c_test_post_processing(constr3D_MPC_direct.dat 2 2 ndxyz ndxyz 25)
