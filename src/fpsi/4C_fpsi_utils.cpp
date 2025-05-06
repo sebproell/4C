@@ -658,7 +658,7 @@ void FPSI::Utils::MapExtractor::setup(std::shared_ptr<const Core::LinAlg::Map>& 
   maps.push_back(mergedothermap);
 
   // append the condition maps subsequently
-  for (int i = 1; i < extractor.num_maps(); ++i) maps.push_back(extractor.Map(i));
+  for (int i = 1; i < extractor.num_maps(); ++i) maps.push_back(extractor.map(i));
 
   // merge
   std::shared_ptr<const Core::LinAlg::Map> fullmap =

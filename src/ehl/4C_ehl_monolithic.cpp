@@ -559,8 +559,8 @@ void EHL::Monolithic::setup_system_matrix()
   k_sl_->add(*slaveiforce_derivp, false, -(1.0 - alphaf), 1.0);
   k_sl_->add(*masteriforce_derivp, false, -(1.0 - alphaf), 1.0);
 
-  k_sl_->complete(*(extractor()->Map(1)),  // pressure dof map
-      *(extractor()->Map(0))               // displacement dof map
+  k_sl_->complete(*(extractor()->map(1)),  // pressure dof map
+      *(extractor()->map(0))               // displacement dof map
   );
 
   // No DBC need to be applied, since lubrication interface disp-dofs must NOT have dbc conditions!
@@ -611,11 +611,11 @@ void EHL::Monolithic::setup_system_matrix()
 
   // Global matrix associated with the discrete film height derivative
   std::shared_ptr<Core::LinAlg::SparseMatrix> k_ls_linH =
-      std::make_shared<Core::LinAlg::SparseMatrix>(*(extractor()->Map(1)), 81, false, false);
+      std::make_shared<Core::LinAlg::SparseMatrix>(*(extractor()->map(1)), 81, false, false);
 
   // Global matrix associated with the discrete tangential velocity derivative
   std::shared_ptr<Core::LinAlg::SparseMatrix> k_ls_linV =
-      std::make_shared<Core::LinAlg::SparseMatrix>(*(extractor()->Map(1)), 81, false, false);
+      std::make_shared<Core::LinAlg::SparseMatrix>(*(extractor()->map(1)), 81, false, false);
 
   // Call elements and assemble
   apply_lubrication_coupl_matrix(k_ls_linH, k_ls_linV);
@@ -630,7 +630,7 @@ void EHL::Monolithic::setup_system_matrix()
 
   Coupling::Adapter::MatrixRowTransform()(*ddgap_dd, 1.0,
       Coupling::Adapter::CouplingMasterConverter(*ada_strDisp_to_lubDisp_), *dh_dd, false);
-  dh_dd->complete(*(extractor()->Map(0)), *ada_strDisp_to_lubDisp_->slave_dof_map());
+  dh_dd->complete(*(extractor()->map(0)), *ada_strDisp_to_lubDisp_->slave_dof_map());
 
   // Multiply with associated matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> k_ls_H =
@@ -654,8 +654,8 @@ void EHL::Monolithic::setup_system_matrix()
   k_ls_->add(*tmp, false, -1.0, 1.0);
 
 
-  k_ls_->complete(*(extractor()->Map(0)),  // displacement dof map
-      *(extractor()->Map(1))               // pressure dof map
+  k_ls_->complete(*(extractor()->map(0)),  // displacement dof map
+      *(extractor()->map(1))               // pressure dof map
   );
 
   // Apply Dirichet to k_ls

@@ -709,7 +709,7 @@ void SSI::Utils::SSIMaps::create_and_check_block_maps_sub_problems(
 
   {
     auto block_positions_scatra = get_block_positions(Subproblem::scalar_transport);
-    partial_maps_system_matrix[block_positions_scatra.at(i)] = block_map_scatra()->Map(i);
+    partial_maps_system_matrix[block_positions_scatra.at(i)] = block_map_scatra()->map(i);
   }
 
   partial_maps_system_matrix.at(get_block_positions(Subproblem::structure).at(0)) =
@@ -721,7 +721,7 @@ void SSI::Utils::SSIMaps::create_and_check_block_maps_sub_problems(
     {
       auto block_positions_manifold = get_block_positions(Subproblem::manifold);
       partial_maps_system_matrix[block_positions_manifold.at(i)] =
-          block_map_scatra_manifold()->Map(i);
+          block_map_scatra_manifold()->map(i);
     }
   }
 
@@ -758,21 +758,21 @@ std::shared_ptr<const Core::LinAlg::MultiMapExtractor> SSI::Utils::SSIMaps::bloc
  *---------------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::scatra_dof_row_map() const
 {
-  return maps_sub_problems()->Map(get_problem_position(Subproblem::scalar_transport));
+  return maps_sub_problems()->map(get_problem_position(Subproblem::scalar_transport));
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::scatra_manifold_dof_row_map() const
 {
-  return maps_sub_problems()->Map(get_problem_position(Subproblem::manifold));
+  return maps_sub_problems()->map(get_problem_position(Subproblem::manifold));
 }
 
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::structure_dof_row_map() const
 {
-  return maps_sub_problems()->Map(get_problem_position(Subproblem::structure));
+  return maps_sub_problems()->map(get_problem_position(Subproblem::structure));
 }
 
 /*---------------------------------------------------------------------------------*

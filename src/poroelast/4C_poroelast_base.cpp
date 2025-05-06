@@ -583,7 +583,7 @@ void PoroElast::NoPenetrationConditionHandle::apply_cond_rhs(
 {
   if (has_cond_)
   {
-    const std::shared_ptr<const Core::LinAlg::Map>& nopenetrationmap = nopenetration_->Map(1);
+    const std::shared_ptr<const Core::LinAlg::Map>& nopenetrationmap = nopenetration_->map(1);
     Core::LinAlg::apply_dirichlet_to_system(iterinc, rhs, *cond_rhs_, *nopenetrationmap);
   }
 }

@@ -125,10 +125,10 @@ namespace Core::LinAlg
     int cols() const { return domainmaps_.num_maps(); }
 
     /// range map for given row block
-    const Core::LinAlg::Map& range_map(int r) const { return *rangemaps_.Map(r); }
+    const Core::LinAlg::Map& range_map(int r) const { return *rangemaps_.map(r); }
 
     /// domain map for given column block
-    const Core::LinAlg::Map& domain_map(int r) const { return *domainmaps_.Map(r); }
+    const Core::LinAlg::Map& domain_map(int r) const { return *domainmaps_.map(r); }
 
     /// total matrix range map with all blocks
     const Core::LinAlg::Map& full_range_map() const { return *rangemaps_.full_map(); }

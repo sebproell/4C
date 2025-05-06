@@ -155,14 +155,6 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::create_vector(
   return std::make_shared<Core::LinAlg::Vector<double>>(rowmap, init);
 }
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::create_multi_vector(
-    const Epetra_BlockMap& rowmap, const int numrows, const bool init)
-{
-  return std::make_shared<Core::LinAlg::MultiVector<double>>(rowmap, numrows, init);
-}
-
 
 std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::create_multi_vector(
     const Map& rowmap, const int numrows, const bool init)
@@ -175,31 +167,18 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::LinAlg::create_multi_ve
 std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::create_map(
     const std::set<int>& gids, MPI_Comm comm)
 {
-  std::vector<int> mapvec;
-  mapvec.reserve(gids.size());
-  mapvec.assign(gids.begin(), gids.end());
-  std::shared_ptr<Core::LinAlg::Map> map = std::make_shared<Core::LinAlg::Map>(
-      -1, mapvec.size(), mapvec.data(), 0, Core::Communication::as_epetra_comm(comm));
-  mapvec.clear();
-  return map;
+  std::vector<int> mapvec(gids.begin(), gids.end());
+  return create_map(mapvec, comm);
 }
 
 /*----------------------------------------------------------------------*
- | create Core::LinAlg::Map with out-of-bound check                 farah 06/14|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::create_map(
     const std::vector<int>& gids, MPI_Comm comm)
 {
-  std::shared_ptr<Core::LinAlg::Map> map;
-
-  if ((int)gids.size() > 0)
-    map = std::make_shared<Core::LinAlg::Map>(
-        -1, gids.size(), gids.data(), 0, Core::Communication::as_epetra_comm(comm));
-  else
-    map = std::make_shared<Core::LinAlg::Map>(
-        -1, gids.size(), nullptr, 0, Core::Communication::as_epetra_comm(comm));
-
-  return map;
+  const int* my_gids = (gids.size() > 0) ? gids.data() : nullptr;
+  return std::make_shared<Core::LinAlg::Map>(
+      -1, gids.size(), my_gids, 0, Core::Communication::as_epetra_comm(comm));
 }
 
 /*----------------------------------------------------------------------*

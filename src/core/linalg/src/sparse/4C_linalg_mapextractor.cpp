@@ -18,11 +18,6 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Core::LinAlg::MultiMapExtractor::MultiMapExtractor() {}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 Core::LinAlg::MultiMapExtractor::MultiMapExtractor(const Core::LinAlg::Map& fullmap,
     const std::vector<std::shared_ptr<const Core::LinAlg::Map>>& maps)
 {
@@ -73,8 +68,6 @@ void Core::LinAlg::MultiMapExtractor::check_for_valid_map_extractor() const
       }
     }
   }
-
-  return;
 }
 
 
@@ -253,7 +246,7 @@ void Core::LinAlg::MultiMapExtractor::add_vector(const Core::LinAlg::MultiVector
 void Core::LinAlg::MultiMapExtractor::put_scalar(
     Core::LinAlg::Vector<double>& full, int block, double scalar) const
 {
-  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();
@@ -273,7 +266,7 @@ void Core::LinAlg::MultiMapExtractor::put_scalar(
 double Core::LinAlg::MultiMapExtractor::norm2(
     const Core::LinAlg::Vector<double>& full, int block) const
 {
-  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();
@@ -302,7 +295,7 @@ double Core::LinAlg::MultiMapExtractor::norm2(
 void Core::LinAlg::MultiMapExtractor::scale(
     Core::LinAlg::Vector<double>& full, int block, double scalar) const
 {
-  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();
@@ -325,11 +318,6 @@ void Core::LinAlg::MultiMapExtractor::scale(
 {
   for (int i = 0; i < full.NumVectors(); ++i) scale(full(i), block, scalar);
 }
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-Core::LinAlg::MapExtractor::MapExtractor() {}
 
 
 /*----------------------------------------------------------------------*/
@@ -372,42 +360,35 @@ Core::LinAlg::MapExtractor::MapExtractor(const Core::LinAlg::Map& fullmap,
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::LinAlg::MapExtractor::setup(const Core::LinAlg::Map& fullmap,
-    const std::shared_ptr<const Core::LinAlg::Map>& condmap,
-    const std::shared_ptr<const Core::LinAlg::Map>& othermap)
+void Core::LinAlg::MapExtractor::setup(const Core::LinAlg::Map& full_map,
+    const std::shared_ptr<const Core::LinAlg::Map>& cond_map,
+    const std::shared_ptr<const Core::LinAlg::Map>& other_map)
 {
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
-  maps.push_back(othermap);
-  maps.push_back(condmap);
-  MultiMapExtractor::setup(fullmap, maps);
+  maps.push_back(other_map);
+  maps.push_back(cond_map);
+  MultiMapExtractor::setup(full_map, maps);
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::LinAlg::MapExtractor::setup(const Core::LinAlg::Map& fullmap,
-    const std::shared_ptr<const Core::LinAlg::Map>& partialmap, bool iscondmap)
+void Core::LinAlg::MapExtractor::setup(
+    const Core::LinAlg::Map& full_map, const std::shared_ptr<const Core::LinAlg::Map>& cond_map)
 {
-  // initialise other DOFs by inserting all DOFs of full map
-  std::set<int> othergids;
-  const int* fullgids = fullmap.MyGlobalElements();
-  copy(fullgids, fullgids + fullmap.NumMyElements(), inserter(othergids, othergids.begin()));
+  std::span<const int> full_gids(full_map.MyGlobalElements(), full_map.NumMyElements());
+  std::span<const int> cond_gids(cond_map->MyGlobalElements(), cond_map->NumMyElements());
 
-  // throw away all DOFs which are in condmap
-  if (partialmap->NumMyElements() > 0)
-  {
-    const int* condgids = partialmap->MyGlobalElements();
-    for (int lid = 0; lid < partialmap->NumMyElements(); ++lid) othergids.erase(condgids[lid]);
-  }
+  // The set_difference algorithm requires the input ranges to be sorted.
+  FOUR_C_ASSERT(std::ranges::is_sorted(full_gids), "Internal error: GIDs in map not sorted.");
+  FOUR_C_ASSERT(std::ranges::is_sorted(cond_gids), "Internal error: GIDs in map not sorted.");
 
-  // create (non-overlapping) othermap for non-condmap DOFs
-  std::shared_ptr<Core::LinAlg::Map> othermap =
-      Core::LinAlg::create_map(othergids, Core::Communication::unpack_epetra_comm(fullmap.Comm()));
+  std::vector<int> other_gids;
+  std::ranges::set_difference(full_gids, cond_gids, std::back_inserter(other_gids));
 
-  // create the extractor based on choice 'iscondmap'
-  if (iscondmap)
-    setup(fullmap, partialmap, othermap);
-  else
-    setup(fullmap, othermap, partialmap);
+  auto other_map = Core::LinAlg::create_map(
+      other_gids, Core::Communication::unpack_epetra_comm(full_map.Comm()));
+
+  setup(full_map, cond_map, other_map);
 }
 
 FOUR_C_NAMESPACE_CLOSE

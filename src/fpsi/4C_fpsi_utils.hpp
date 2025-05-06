@@ -129,9 +129,117 @@ namespace FPSI
       std::shared_ptr<std::set<int>> conditioned_element_map(
           const Core::FE::Discretization& dis) const;
 
-      MAP_EXTRACTOR_VECTOR_METHODS(other, cond_other)
-      MAP_EXTRACTOR_VECTOR_METHODS(fsi_cond, cond_fsi)
-      MAP_EXTRACTOR_VECTOR_METHODS(fpsi_cond, cond_fpsi)
+      std::shared_ptr<Core::LinAlg::Vector<double>> extract_other_vector(
+          const Core::LinAlg::Vector<double>& full) const
+      {
+        return MultiMapExtractor::extract_vector(full, cond_other);
+      }
+      void extract_other_vector(
+          const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+      {
+        extract_vector(full, cond_other, cond);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> insert_other_vector(
+          const Core::LinAlg::Vector<double>& cond) const
+      {
+        return insert_vector(cond, cond_other);
+      }
+      void insert_other_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        insert_vector(cond, cond_other, full);
+      }
+      void add_other_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, cond_other, full);
+      }
+      void add_other_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+          Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, cond_other, full, scale);
+      }
+      const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
+      bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+      void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+      {
+        put_scalar(full, cond_other, scalar);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> extract_fsi_cond_vector(
+          const Core::LinAlg::Vector<double>& full) const
+      {
+        return MultiMapExtractor::extract_vector(full, cond_fsi);
+      }
+      void extract_fsi_cond_vector(
+          const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+      {
+        extract_vector(full, cond_fsi, cond);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> insert_fsi_cond_vector(
+          const Core::LinAlg::Vector<double>& cond) const
+      {
+        return insert_vector(cond, cond_fsi);
+      }
+      void insert_fsi_cond_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        insert_vector(cond, cond_fsi, full);
+      }
+      void add_fsi_cond_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, cond_fsi, full);
+      }
+      void add_fsi_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+          Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, cond_fsi, full, scale);
+      }
+      const std::shared_ptr<const Core::LinAlg::Map>& fsi_cond_map() const { return map(cond_fsi); }
+      bool fsi_cond_relevant() const { return fsi_cond_map()->NumGlobalElements() != 0; }
+      void fsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+      {
+        put_scalar(full, cond_fsi, scalar);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> extract_fpsi_cond_vector(
+          const Core::LinAlg::Vector<double>& full) const
+      {
+        return MultiMapExtractor::extract_vector(full, cond_fpsi);
+      }
+      void extract_fpsi_cond_vector(
+          const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+      {
+        extract_vector(full, cond_fpsi, cond);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> insert_fpsi_cond_vector(
+          const Core::LinAlg::Vector<double>& cond) const
+      {
+        return insert_vector(cond, cond_fpsi);
+      }
+      void insert_fpsi_cond_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        insert_vector(cond, cond_fpsi, full);
+      }
+      void add_fpsi_cond_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, cond_fpsi, full);
+      }
+      void add_fpsi_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+          Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, cond_fpsi, full, scale);
+      }
+      const std::shared_ptr<const Core::LinAlg::Map>& fpsi_cond_map() const
+      {
+        return map(cond_fpsi);
+      }
+      bool fpsi_cond_relevant() const { return fpsi_cond_map()->NumGlobalElements() != 0; }
+      void fpsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+      {
+        put_scalar(full, cond_fpsi, scalar);
+      }
     };
 
   }  // namespace Utils

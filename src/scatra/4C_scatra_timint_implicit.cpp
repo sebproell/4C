@@ -3708,7 +3708,7 @@ void ScaTra::ScaTraTimIntImpl::build_block_null_spaces(
 
     // reduce full null space to match degrees of freedom associated with current matrix block
     Core::LinearSolver::Parameters::fix_null_space("Block " + iblockstr.str(),
-        *discret_->dof_row_map(), *block_maps()->Map(iblock - init_block_number),
+        *discret_->dof_row_map(), *block_maps()->map(iblock - init_block_number),
         blocksmootherparams);
   }
 }

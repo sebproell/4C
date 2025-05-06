@@ -832,7 +832,7 @@ void SSTI::AssembleStrategyBlockBlock::assemble_thermo_scatra_interface(
           *all_maps()->block_map_thermo()->full_map(), 27, false, true);
 
       ScaTra::MeshtyingStrategyS2I::extract_matrix_rows(thermoscatrainterface_subblock, slaveflux,
-          *meshtying_thermo()->block_maps_slave().Map(i));
+          *meshtying_thermo()->block_maps_slave().map(i));
 
       slaveflux.complete(
           *all_maps()->block_map_scatra()->full_map(), *all_maps()->block_map_thermo()->full_map());

@@ -382,7 +382,7 @@ void ALE::Meshtying::multifield_split(std::shared_ptr<Core::LinAlg::SparseOperat
     std::shared_ptr<Core::LinAlg::SparseMatrix> mergedmatrix = sysmatnew->merge();
 
     Core::LinAlg::MapExtractor extractor(
-        *multifield_interface_.full_map(), multifield_interface_.Map(1));
+        *multifield_interface_.full_map(), multifield_interface_.map(1));
 
     std::shared_ptr<Core::LinAlg::BlockSparseMatrix<ALE::Utils::InterfaceSplitStrategy>> mat =
         Core::LinAlg::split_matrix<ALE::Utils::InterfaceSplitStrategy>(

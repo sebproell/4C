@@ -3250,7 +3250,7 @@ void ScaTra::ScaTraTimIntElch::reduce_dimension_null_space_blocks(
     {
       // remove zero null space vector associated with electric potential dofs by truncating
       // null space
-      nullspace.resize(block_maps()->Map(iblock)->NumMyElements());
+      nullspace.resize(block_maps()->map(iblock)->NumMyElements());
     }
     // null space associated with electric potential dofs
     else
@@ -3258,7 +3258,7 @@ void ScaTra::ScaTraTimIntElch::reduce_dimension_null_space_blocks(
       // remove zero null space vector(s) associated with concentration dofs and retain only
       // the last null space vector associated with electric potential dofs
       nullspace.erase(
-          nullspace.begin(), nullspace.end() - block_maps()->Map(iblock)->NumMyElements());
+          nullspace.begin(), nullspace.end() - block_maps()->map(iblock)->NumMyElements());
     }
 
     // decrease null space dimension and number of partial differential equations by one
@@ -3271,7 +3271,7 @@ void ScaTra::ScaTraTimIntElch::reduce_dimension_null_space_blocks(
     const int dimnsnew = mueluparams.get<int>("null space: dimension");
     std::shared_ptr<Core::LinAlg::MultiVector<double>> nspVectornew =
         std::make_shared<Core::LinAlg::MultiVector<double>>(
-            *(block_maps()->Map(iblock)), dimnsnew, true);
+            *(block_maps()->map(iblock)), dimnsnew, true);
     Core::LinAlg::std_vector_to_epetra_multi_vector(nullspace, *nspVectornew, dimnsnew);
 
     mueluparams.set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace", nspVectornew);

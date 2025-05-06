@@ -529,7 +529,7 @@ void SSI::ScatraStructureOffDiagCoupling::
                   iblock, 0);
 
           auto scatra_block_mapi =
-              Core::LinAlg::intersect_map(*scatra_field()->block_maps()->Map(iblock),
+              Core::LinAlg::intersect_map(*scatra_field()->block_maps()->map(iblock),
                   *meshtying_strategy_s2i_->coupling_adapter()->slave_dof_map());
 
           Coupling::Adapter::MatrixLogicalSplitAndTransform()(
@@ -669,7 +669,7 @@ void SSI::ScatraStructureOffDiagCoupling::
           auto slave_iblock = slavematrix_block->matrix(iblock, 0);
 
           auto scatra_slave_block_mapi =
-              Core::LinAlg::intersect_map(*scatra_field()->block_maps()->Map(iblock),
+              Core::LinAlg::intersect_map(*scatra_field()->block_maps()->map(iblock),
                   *meshtying_strategy_s2i_->coupling_adapter()->slave_dof_map());
 
           Coupling::Adapter::MatrixLogicalSplitAndTransform()(evaluate_iblock,

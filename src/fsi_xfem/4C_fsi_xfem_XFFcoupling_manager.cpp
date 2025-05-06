@@ -121,7 +121,7 @@ void XFEM::XffCouplingManager::add_coupling_rhs(std::shared_ptr<Core::LinAlg::Ve
 
   coup_rhs_sum.scale(scaling);
 
-  Core::LinAlg::Vector<double> coup_rhs(*me.Map(idx_[0]), true);
+  Core::LinAlg::Vector<double> coup_rhs(*me.map(idx_[0]), true);
   Core::LinAlg::export_to(coup_rhs_sum, coup_rhs);
   me.add_vector(coup_rhs, idx_[0], *rhs);
 

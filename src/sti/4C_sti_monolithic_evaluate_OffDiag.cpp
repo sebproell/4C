@@ -408,7 +408,7 @@ void STI::ScatraThermoOffDiagCouplingMatchingNodes::copy_slave_to_master_scatra_
 
       // finalize master matrix
       mastermatrix->complete(
-          *interface_map_thermo(), *meshtying_strategy_scatra()->interface_maps()->Map(2));
+          *interface_map_thermo(), *meshtying_strategy_scatra()->interface_maps()->map(2));
 
       break;
     }
@@ -682,7 +682,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
 
   // finalize auxiliary system matrices
   mastermatrix_sparse->complete(
-      *interface_map_thermo(), *meshtying_strategy_scatra()->interface_maps()->Map(2));
+      *interface_map_thermo(), *meshtying_strategy_scatra()->interface_maps()->map(2));
 
   std::shared_ptr<Core::LinAlg::SparseOperator> mastermatrix(nullptr);
   switch (scatra_field()->matrix_type())
@@ -702,7 +702,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
     case Core::LinAlg::MatrixType::sparse:
     {
       slavematrix->complete(
-          *interface_map_thermo(), *meshtying_strategy_scatra()->interface_maps()->Map(1));
+          *interface_map_thermo(), *meshtying_strategy_scatra()->interface_maps()->map(1));
       mastermatrix = mastermatrix_sparse;
 
       break;
@@ -840,7 +840,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
     case Core::LinAlg::MatrixType::sparse:
     {
       slavematrix->complete(
-          *interface_map_scatra(), *meshtying_strategy_thermo()->interface_maps()->Map(1));
+          *interface_map_scatra(), *meshtying_strategy_thermo()->interface_maps()->map(1));
       break;
     }
 

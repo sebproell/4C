@@ -218,7 +218,7 @@ FPSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& fpsidy
   // Check if FSI-Interface exists and set flag
   // Will be used to jump over all sections, which are just for FSI condensation procedure required!
 
-  if (fluid_field()->interface()->Map(FLD::Utils::MapExtractor::cond_fsi)->NumGlobalElements())
+  if (fluid_field()->interface()->map(FLD::Utils::MapExtractor::cond_fsi)->NumGlobalElements())
   {
     FSI_Interface_exists_ = true;
     if (Core::Communication::my_mpi_rank(comm) == 0)

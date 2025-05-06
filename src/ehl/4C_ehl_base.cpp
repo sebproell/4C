@@ -434,7 +434,7 @@ void EHL::Base::set_height_field()
   //  const std::shared_ptr<Core::LinAlg::SparseMatrix> mortardinv =
   //  mortaradapter_->GetDinvMatrix();
   std::shared_ptr<Core::LinAlg::Vector<double>> discretegap =
-      Core::LinAlg::create_vector(*(slaverowmapextr_->Map(0)), true);
+      Core::LinAlg::create_vector(*(slaverowmapextr_->map(0)), true);
 
   // get the weighted gap and store it in slave dof map (for each node, the scalar value is stored
   // in the 0th dof)
@@ -460,7 +460,7 @@ void EHL::Base::set_height_dot()
   heightdot.update(-1.0 / dt(), *heightold_, 1.0 / dt());
 
   std::shared_ptr<Core::LinAlg::Vector<double>> discretegap =
-      Core::LinAlg::create_vector(*(slaverowmapextr_->Map(0)), true);
+      Core::LinAlg::create_vector(*(slaverowmapextr_->map(0)), true);
   // get the weighted heightdot and store it in slave dof map (for each node, the scalar value is
   // stored in the 0th dof)
   int err = slavemaptransform_->multiply(false, heightdot, *discretegap);
@@ -480,7 +480,7 @@ void EHL::Base::set_mesh_disp(const Core::LinAlg::Vector<double>& disp)
 {
   // Extract the structure displacement at the slave-side interface
   std::shared_ptr<Core::LinAlg::Vector<double>> slaveidisp = Core::LinAlg::create_vector(
-      *(slaverowmapextr_->Map(0)), true);  // Structure displacement at the lubricated interface
+      *(slaverowmapextr_->map(0)), true);  // Structure displacement at the lubricated interface
   slaverowmapextr_->extract_vector(disp, 0, *slaveidisp);
 
   // Transfer the displacement vector onto the lubrication field
@@ -766,7 +766,7 @@ void EHL::Base::output(bool forced_writerestart)
   // Additional output on the lubrication field
   {
     std::shared_ptr<Core::LinAlg::Vector<double>> discretegap =
-        Core::LinAlg::create_vector(*(slaverowmapextr_->Map(0)), true);
+        Core::LinAlg::create_vector(*(slaverowmapextr_->map(0)), true);
 
     // get the weighted gap and store it in slave dof map (for each node, the scalar value is stored
     // in the 0th dof)

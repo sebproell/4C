@@ -342,10 +342,10 @@ int Core::LinearSolver::AmGnxnOperator::ApplyInverse(
   for (int i = 0; i < NumBlocks; i++)
   {
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Xi =
-        Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(*(range_ex.Map(i)), NV);
+        Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(*(range_ex.map(i)), NV);
 
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Yi =
-        Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(*(domain_ex.Map(i)), NV);
+        Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(*(domain_ex.map(i)), NV);
 
     range_ex.extract_vector(Core::LinAlg::MultiVector<double>(X), i, *Xi);
     domain_ex.extract_vector(Core::LinAlg::MultiVector<double>(X), i, *Yi);
@@ -461,9 +461,9 @@ int Core::LinearSolver::BlockSmootherOperator::ApplyInverse(
   for (int i = 0; i < NumBlocks; i++)
   {
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Xi =
-        Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(*(range_ex.Map(i)), NV);
+        Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(*(range_ex.map(i)), NV);
     Teuchos::RCP<Core::LinAlg::MultiVector<double>> Yi =
-        Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(*(domain_ex.Map(i)), NV);
+        Teuchos::make_rcp<Core::LinAlg::MultiVector<double>>(*(domain_ex.map(i)), NV);
     range_ex.extract_vector(Core::LinAlg::MultiVector<double>(X), i, *Xi);
     domain_ex.extract_vector(Core::LinAlg::MultiVector<double>(X), i, *Yi);
     Xbl.set_vector(Xi, i);
