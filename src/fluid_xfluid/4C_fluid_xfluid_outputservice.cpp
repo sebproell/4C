@@ -655,12 +655,12 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_element(
   if (nds.size() != 0)  // for element output of ghost values
   {
     // get element location vector, dirichlet flags and ownerships
-    actele->location_vector(discret, nds, la, false);
+    actele->location_vector(discret, nds, la);
   }
   else
   {
     // get element location vector, dirichlet flags and ownerships
-    actele->location_vector(discret, la, false);
+    actele->location_vector(discret, la);
   }
 
   std::vector<double> m = Core::FE::extract_values(vel, la[0].lm_);
@@ -788,7 +788,7 @@ void FLD::XFluidOutputServiceGmsh::gmsh_output_volume_cell(
   Core::Elements::LocationArray la(1);
 
   // get element location vector, dirichlet flags and ownerships
-  actele->location_vector(discret, nds, la, false);
+  actele->location_vector(discret, nds, la);
 
   std::vector<double> m = Core::FE::extract_values(velvec, la[0].lm_);
 

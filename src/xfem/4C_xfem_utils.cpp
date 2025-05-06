@@ -146,7 +146,7 @@ void XFEM::Utils::extract_quantity_at_element(Core::LinAlg::SerialDenseMatrix::B
 {
   // get the other nds-set which is connected to the current one via this boundary-cell
   Core::Elements::LocationArray la(dis.num_dof_sets());
-  element->location_vector(dis, la, false);
+  element->location_vector(dis, la);
 
   const size_t numnode = element->num_node();
 

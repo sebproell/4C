@@ -1050,7 +1050,7 @@ void XFEM::Utils::evaluate_stateat_gp(const Core::Elements::Element* sele,
 {
   vel_s.clear();
   Core::Elements::LocationArray las(1);
-  sele->location_vector(discret, las, false);
+  sele->location_vector(discret, las);
   std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state = discret.get_state(state);
   std::vector<double> ivel = Core::FE::extract_values(*matrix_state, las[0].lm_);
 

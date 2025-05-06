@@ -230,7 +230,7 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
   Core::Elements::LocationArray la(discret_->num_dof_sets());
   for (const auto* ele : discret_->my_row_element_range())
   {
-    ele->location_vector(*discret_, la, false);
+    ele->location_vector(*discret_, la);
 
     const auto* solid_ele = dynamic_cast<const Discret::Elements::Solid*>(ele);
     FOUR_C_ASSERT_ALWAYS(solid_ele,

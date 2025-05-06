@@ -764,7 +764,7 @@ int Discret::Elements::FluidEleCalcHDG<distype>::interpolate_solution_to_nodes(
 
   // we have always two dofsets
   Core::Elements::LocationArray la(2);
-  ele->location_vector(discretization, la, false);
+  ele->location_vector(discretization, la);
   localDofs = la[0].lm_;
   solvalues.resize(localDofs.size());
 

@@ -118,7 +118,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
 
     // get element location vector
     // Core::Elements::LocationArray la(1);
-    actele->location_vector(dis, la, false);
+    actele->location_vector(dis, la);
 
     // Reshape element matrices and vectors and initialize to zero
     elevector1.size(numvec);

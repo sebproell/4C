@@ -53,7 +53,7 @@ namespace
       {
         TEUCHOS_FUNC_TIME_MONITOR("Core::FE::Utils::Evaluate LocationVector");
         // get element location vector, dirichlet flags and ownerships
-        actele->location_vector(discret, la, false);
+        actele->location_vector(discret, la);
       }
 
       {

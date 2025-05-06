@@ -103,7 +103,7 @@ void Core::IO::Gmsh::scalar_field_dof_based_to_gmsh(Core::FE::Discretization& di
     coordinates_to_stream(xyze, distype, s);
 
     Core::Elements::LocationArray la(discret.num_dof_sets());
-    ele->location_vector(discret, la, false);
+    ele->location_vector(discret, la);
 
     // extract local values from the global vector
     Core::LinAlg::SerialDenseVector myscalarfield(la[nds].lm_.size());
@@ -218,7 +218,7 @@ void Core::IO::Gmsh::vector_field_dof_based_to_gmsh(Core::FE::Discretization& di
     }
 
     Core::Elements::LocationArray la(discret.num_dof_sets());
-    ele->location_vector(discret, la, false);
+    ele->location_vector(discret, la);
 
     // extract local values from the global vector
     Core::LinAlg::SerialDenseVector extractmyvectorfield(la[nds].lm_.size());
@@ -291,7 +291,7 @@ void Core::IO::Gmsh::vector_field_multi_vector_dof_based_to_gmsh(
     coordinates_to_stream(xyze, distype, s);
 
     Core::Elements::LocationArray la(discret.num_dof_sets());
-    ele->location_vector(discret, la, false);
+    ele->location_vector(discret, la);
 
     // extract local values from the global vector
     // Core::LinAlg::SerialDenseVector extractmyvectorfield(la[nds].lm_.size());
@@ -402,7 +402,7 @@ void Core::IO::Gmsh::velocity_pressure_field_dof_based_to_gmsh(Core::FE::Discret
     }
 
     Core::Elements::LocationArray la(discret.num_dof_sets());
-    ele->location_vector(discret, la, false);
+    ele->location_vector(discret, la);
 
     // extract local values from the global vector
     Core::LinAlg::SerialDenseVector extractmyvectorfield(la[nds].lm_.size());

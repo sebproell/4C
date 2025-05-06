@@ -115,7 +115,7 @@ int Discret::Elements::TransportBoundary::evaluate_neumann(Teuchos::ParameterLis
   params.set<Core::Conditions::Condition*>("condition", &condition);
 
   Core::Elements::LocationArray la(discretization.num_dof_sets());
-  Core::Elements::Element::location_vector(discretization, la, false);
+  Core::Elements::Element::location_vector(discretization, la);
 
   // evaluate boundary element
   return evaluate(params, discretization, la, *elemat1, *elemat1, elevec1, elevec1, elevec1);
@@ -126,7 +126,7 @@ int Discret::Elements::TransportBoundary::evaluate_neumann(Teuchos::ParameterLis
  |  Get degrees of freedom used by this element                (public) |
  *----------------------------------------------------------------------*/
 void Discret::Elements::TransportBoundary::location_vector(const Core::FE::Discretization& dis,
-    Core::Elements::LocationArray& la, bool doDirichlet, const std::string& condstring,
+    Core::Elements::LocationArray& la, const std::string& condstring,
     Teuchos::ParameterList& params) const
 {
   // check for the action parameter
@@ -138,10 +138,10 @@ void Discret::Elements::TransportBoundary::location_vector(const Core::FE::Discr
       // the inner dofs of its parent element
       // note: using these actions, the element will get the parent location vector
       //       as input in the respective evaluate routines
-      parent_element()->location_vector(dis, la, doDirichlet);
+      parent_element()->location_vector(dis, la);
       break;
     default:
-      Core::Elements::Element::location_vector(dis, la, doDirichlet);
+      Core::Elements::Element::location_vector(dis, la);
       break;
   }
 }

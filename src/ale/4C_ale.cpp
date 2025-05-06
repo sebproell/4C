@@ -809,7 +809,7 @@ bool ALE::Ale::evaluate_element_quality()
 
       // initialize element vectors
       Core::Elements::LocationArray la(discretization()->num_dof_sets());
-      actele->location_vector(*discretization(), la, false);
+      actele->location_vector(*discretization(), la);
 
       // only two entries per element necessary (detJ and quality measure)
       Core::LinAlg::SerialDenseMatrix elematrix1;

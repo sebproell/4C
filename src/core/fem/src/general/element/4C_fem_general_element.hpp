@@ -87,7 +87,6 @@ namespace Core::Elements
     void clear()
     {
       lm_.clear();
-      lmdirich_.clear();
       lmowner_.clear();
       stride_.clear();
     }
@@ -97,9 +96,6 @@ namespace Core::Elements
 
     /// global dof numbers of elemental dofs
     std::vector<int> lm_;
-
-    /// Dirichlet on/off flags
-    std::vector<int> lmdirich_;
 
     /// Owner of dof (that is owner of node or element the dof belongs to)
     std::vector<int> lmowner_;
@@ -815,11 +811,10 @@ might become invalid after a redistribution of the discretization.
     \param dis (in)      : the discretization this element belongs to
     \param nds           : dof set number of each node
     \param la (out)      : location data for all dofsets of the discretization
-    \param doDirichlet (in): whether to get the Dirichlet flags
 
     */
-    virtual void location_vector(const Core::FE::Discretization& dis, const std::vector<int>& nds,
-        LocationArray& la, bool doDirichlet) const;
+    virtual void location_vector(
+        const Core::FE::Discretization& dis, const std::vector<int>& nds, LocationArray& la) const;
 
     /*!
     \brief Return the location vector of this element
@@ -842,11 +837,9 @@ might become invalid after a redistribution of the discretization.
 
     \param dis (in)      : the discretization this element belongs to
     \param la (out)      : location data for all dofsets of the discretization
-    \param doDirichlet (in): whether to get the Dirichlet flags
 
     */
-    virtual void location_vector(
-        const Core::FE::Discretization& dis, LocationArray& la, bool doDirichlet) const;
+    virtual void location_vector(const Core::FE::Discretization& dis, LocationArray& la) const;
 
 
     /*!
@@ -876,12 +869,11 @@ might become invalid after a redistribution of the discretization.
 
     \param dis (in)      : the discretization this element belongs to
     \param la (out)      : location data for all dofsets of the discretization
-    \param doDirichlet (in): whether to get the Dirichlet flags
     \param condstring (in): Name of condition to be evaluated
     \param condstring (in):  List of parameters for use at element level
     */
     virtual void location_vector(const Core::FE::Discretization& dis, LocationArray& la,
-        bool doDirichlet, const std::string& condstring, Teuchos::ParameterList& params) const;
+        const std::string& condstring, Teuchos::ParameterList& params) const;
 
     /*!
     \brief Return the location vector of this element

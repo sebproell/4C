@@ -315,7 +315,7 @@ namespace
     for (int el = 0; el < dis.num_my_col_elements(); ++el)
     {
       Core::Elements::Element* ele = dis.l_col_element(el);
-      ele->location_vector(dis, la, false);
+      ele->location_vector(dis, la);
       interpolVec.size(ele->num_node() * (2 + ndim));
 
       ele->evaluate(eleparams, dis, la, dummyMat, dummyMat, interpolVec, dummyVec, dummyVec);
@@ -537,7 +537,7 @@ void ScaTra::TimIntHDG::set_initial_field(
       for (int iele = 0; iele < discret_->num_my_col_elements(); ++iele)
       {
         Core::Elements::Element* ele = discret_->l_col_element(iele);
-        ele->location_vector(*discret_, la, false);
+        ele->location_vector(*discret_, la);
         if (static_cast<std::size_t>(updateVec1.numRows()) != la[0].lm_.size())
           updateVec1.size(la[0].lm_.size());
         else
@@ -663,7 +663,7 @@ void ScaTra::TimIntHDG::update_interior_variables(
     Core::Elements::Element* ele = discret_->l_col_element(iele);
     if (ele->owner() != Core::Communication::my_mpi_rank(discret_->get_comm())) continue;
 
-    ele->location_vector(*discret_, la, false);
+    ele->location_vector(*discret_, la);
     updateVec.size(discret_->num_dof(nds_intvar_, ele));
 
     ele->evaluate(eleparams, *discret_, la, dummyMat, dummyMat, updateVec, dummyVec, dummyVec);
@@ -733,7 +733,7 @@ void ScaTra::TimIntHDG::fd_check()
   for (int iele = 0; iele < discret_->num_my_col_elements(); ++iele)
   {
     Core::Elements::Element* ele = discret_->l_col_element(iele);
-    ele->location_vector(*discret_, la, false);
+    ele->location_vector(*discret_, la);
 
     strategy.clear_element_storage(la[0].size(), la[0].size());
 
@@ -806,7 +806,7 @@ void ScaTra::TimIntHDG::fd_check()
       for (int iele = 0; iele < discret_->num_my_col_elements(); ++iele)
       {
         Core::Elements::Element* ele = discret_->l_col_element(iele);
-        ele->location_vector(*discret_, la, false);
+        ele->location_vector(*discret_, la);
 
         strategy.clear_element_storage(la[0].size(), la[0].size());
         ele->evaluate(eleparams, *discret_, la, strategy.elematrix1(), strategy.elematrix2(),
@@ -1032,7 +1032,7 @@ void ScaTra::TimIntHDG::calc_mat_initial()
 
     // if the element has only ghosted nodes it will not assemble -> skip evaluation
     if (ele->has_only_ghost_nodes(Core::Communication::my_mpi_rank(discret_->get_comm()))) continue;
-    ele->location_vector(*discret_, la, false);
+    ele->location_vector(*discret_, la);
 
     strategy.clear_element_storage(la[0].size(), la[0].size());
 
@@ -1116,7 +1116,7 @@ void ScaTra::TimIntHDG::adapt_degree()
     Core::Elements::Element* ele = discret_->l_col_element(iele);
 
     // fill location array and store it for later use
-    ele->location_vector(*discret_, la_old[iele], false);
+    ele->location_vector(*discret_, la_old[iele]);
 
     if (ele->owner() == Core::Communication::my_mpi_rank(discret_->get_comm()))
     {
@@ -1319,7 +1319,7 @@ void ScaTra::TimIntHDG::adapt_variable_vector(std::shared_ptr<Core::LinAlg::Vect
     if (ele->has_only_ghost_nodes(Core::Communication::my_mpi_rank(discret_->get_comm()))) continue;
 
     // fill location array for adapted dofsets
-    ele->location_vector(*discret_, la_temp, false);
+    ele->location_vector(*discret_, la_temp);
 
     for (int i = 0; i < discret_->num_dof_sets(); i++)
     {
@@ -1423,7 +1423,7 @@ void ScaTra::TimIntHDG::assemble_rhs()
     // if the element has only ghosted nodes it will not assemble -> skip evaluation
     if (ele->has_only_ghost_nodes(Core::Communication::my_mpi_rank(discret_->get_comm()))) continue;
 
-    ele->location_vector(*discret_, la, false);
+    ele->location_vector(*discret_, la);
 
     strategy.clear_element_storage(la[0].size(), la[0].size());
 

@@ -1632,9 +1632,9 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_mortar_cells(const Core::FE::Discret
 
     // construct slave-side and master-side location arrays
     Core::Elements::LocationArray la_slave(idiscret.num_dof_sets());
-    slaveelement->location_vector(idiscret, la_slave, false);
+    slaveelement->location_vector(idiscret, la_slave);
     Core::Elements::LocationArray la_master(idiscret.num_dof_sets());
-    masterelement->location_vector(idiscret, la_master, false);
+    masterelement->location_vector(idiscret, la_master);
 
     // initialize cell matrices and vectors
     strategy.init_cell_matrices_and_vectors(la_slave, la_master);
@@ -1707,9 +1707,9 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_nts(
 
     // construct slave-side and master-side location arrays
     Core::Elements::LocationArray la_slave(idiscret.num_dof_sets());
-    slaveelement->location_vector(idiscret, la_slave, false);
+    slaveelement->location_vector(idiscret, la_slave);
     Core::Elements::LocationArray la_master(idiscret.num_dof_sets());
-    masterelement->location_vector(idiscret, la_master, false);
+    masterelement->location_vector(idiscret, la_master);
 
     // initialize cell matrices and vectors
     strategy.init_cell_matrices_and_vectors(la_slave, la_master);
@@ -1765,7 +1765,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_mortar_elements(const Core::LinAlg::
 
     // construct location array for current mortar element
     Core::Elements::LocationArray la(idiscret.num_dof_sets());
-    element->location_vector(idiscret, la, false);
+    element->location_vector(idiscret, la);
 
     // initialize element matrices and vectors
     strategy.init_cell_matrices_and_vectors(

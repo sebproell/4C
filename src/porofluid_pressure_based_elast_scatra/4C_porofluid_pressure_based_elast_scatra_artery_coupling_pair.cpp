@@ -796,11 +796,11 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
   // get location array for continuous ele
   Core::Elements::LocationArray la_cont(contdis->num_dof_sets());
-  element2_->location_vector(*contdis, la_cont, false);
+  element2_->location_vector(*contdis, la_cont);
 
   // get location array for artery ele
   Core::Elements::LocationArray la_art(artdis->num_dof_sets());
-  element1_->location_vector(*artdis, la_art, false);
+  element1_->location_vector(*artdis, la_art);
 
   switch (coupltype_)
   {
@@ -825,7 +825,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
         if (artscalarnp != nullptr)
         {
           Core::Elements::LocationArray la(artdis->num_dof_sets());
-          element1_->location_vector(*artdis, la, false);
+          element1_->location_vector(*artdis, la);
           // rebuild scalar vector
           eartscalarnp_.clear();
           eartscalarnp_.resize(numscalart_,
@@ -846,7 +846,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
         if (contscalarnp != nullptr)
         {
           Core::Elements::LocationArray la(contdis->num_dof_sets());
-          element2_->location_vector(*contdis, la, false);
+          element2_->location_vector(*contdis, la);
           // rebuild scalar vector
           econtscalarnp_.clear();
           econtscalarnp_.resize(numscalcont_,
@@ -878,7 +878,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
       if (artpressnp != nullptr)
       {
         Core::Elements::LocationArray la(artdis->num_dof_sets());
-        element1_->location_vector(*artdis, la, false);
+        element1_->location_vector(*artdis, la);
         Core::FE::extract_my_values<Core::LinAlg::Matrix<numnodesart_, 1>>(
             *artpressnp, earterypressurenp_, la[ndsscatra_artery_].lm_);
       }
@@ -1109,7 +1109,7 @@ double PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, di
   {
     std::shared_ptr<const Core::LinAlg::Vector<double>> dispnp = contdis->get_state(1, "dispnp");
     Core::Elements::LocationArray la(contdis->num_dof_sets());
-    element2_->location_vector(*contdis, la, false);
+    element2_->location_vector(*contdis, la);
 
     // construct location vector for displacement related dofs
     std::vector<int> lmdisp(numdim_ * numnodescont_, -1);
@@ -2125,7 +2125,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
   std::shared_ptr<const Core::LinAlg::Vector<double>> velocity =
       contdis.get_state(1, "velocity field");
   Core::Elements::LocationArray la(contdis.num_dof_sets());
-  element2_->location_vector(contdis, la, false);
+  element2_->location_vector(contdis, la);
 
   // construct location vector for displacement related dofs
   std::vector<int> lmdisp(numdim_ * numnodescont_, -1);

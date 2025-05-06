@@ -982,7 +982,7 @@ namespace Discret
               distype>::create_slave_element_representation(side, side_xyze);
 
           // set displacement of side
-          side->location_vector(*cutter_dis, cutla, false);
+          side->location_vector(*cutter_dis, cutla);
           si->add_slave_ele_disp(*cutter_dis, cutla[0].lm_);
 
           if (cond_type == Inpar::XFEM::CouplingCond_SURF_WEAK_DIRICHLET or
@@ -1006,7 +1006,7 @@ namespace Discret
             // set velocity (and pressure) of coupling/slave element at current time step
             const int coup_idx = cond_manager->get_coupling_index(coup_sid, my::eid_);
             coupl_ele->location_vector(
-                *cond_manager->get_coupling_by_idx(coup_idx)->get_cond_dis(), coupl_la, false);
+                *cond_manager->get_coupling_by_idx(coup_idx)->get_cond_dis(), coupl_la);
             ci->set_slave_state(
                 *cond_manager->get_coupling_by_idx(coup_idx)->get_cond_dis(), coupl_la[0].lm_);
           }
@@ -1630,7 +1630,7 @@ namespace Discret
               distype>::create_slave_element_representation(side, side_xyze);
 
           // set displacement of side
-          side->location_vector(*cutter_dis, cutla, false);
+          side->location_vector(*cutter_dis, cutla);
           si->add_slave_ele_disp(*cutter_dis, cutla[0].lm_);
 
           if (cond_type == Inpar::XFEM::CouplingCond_SURF_WEAK_DIRICHLET or
@@ -3463,7 +3463,7 @@ namespace Discret
               distype>::create_slave_element_representation(side, side_xyze);
 
           // set displacement of side
-          side->location_vector(*cutter_dis, cutla, false);
+          side->location_vector(*cutter_dis, cutla);
           si->add_slave_ele_disp(*cutter_dis, cutla[0].lm_);
 
           if (cond_type == Inpar::XFEM::CouplingCond_SURF_WEAK_DIRICHLET or

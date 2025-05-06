@@ -79,7 +79,7 @@ void ScaTra::TimIntCardiacMonodomainHDG::element_material_time_update()
   for (int iele = 0; iele < discret_->num_my_col_elements(); ++iele)
   {
     Core::Elements::Element* ele = discret_->l_col_element(iele);
-    ele->location_vector(*discret_, la, false);
+    ele->location_vector(*discret_, la);
 
     ele->evaluate(eleparams, *discret_, la, dummyMat, dummyMat, dummyVec, dummyVec, dummyVec);
   }

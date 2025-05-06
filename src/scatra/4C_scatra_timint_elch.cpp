@@ -1111,7 +1111,7 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info_point(
 
     // determine location information
     Core::Elements::LocationArray la(discret_->num_dof_sets());
-    element->location_vector(*discret_, la, false);
+    element->location_vector(*discret_, la);
 
     // dummy matrix and right-hand side vector
     Core::LinAlg::SerialDenseMatrix elematrix_dummy;
@@ -2713,7 +2713,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_electrode_boundary_kinetics_point_condit
 
       // determine location information
       Core::Elements::LocationArray la(discret_->num_dof_sets());
-      element->location_vector(*discret_, la, false);
+      element->location_vector(*discret_, la);
 
       // initialize element matrix
       const int size = (int)la[0].lm_.size();

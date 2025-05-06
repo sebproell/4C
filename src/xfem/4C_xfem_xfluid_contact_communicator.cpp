@@ -299,7 +299,7 @@ void XFEM::XFluidContactComm::get_states(const int fluidele_id, const std::vecto
   // 1 // get element states
   {
     Core::Elements::LocationArray la_f(1);
-    fluidele->location_vector(*fluiddis_, fluid_nds, la_f, false);
+    fluidele->location_vector(*fluiddis_, fluid_nds, la_f);
     std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
         fluiddis_->get_state("velaf");
     velpres = Core::FE::extract_values(*matrix_state, la_f[0].lm_);
@@ -318,7 +318,7 @@ void XFEM::XFluidContactComm::get_states(const int fluidele_id, const std::vecto
   }
   {
     Core::Elements::LocationArray la_s(1);
-    sele->location_vector(*mc_[mcidx_]->get_cutter_dis(), la_s, false);
+    sele->location_vector(*mc_[mcidx_]->get_cutter_dis(), la_s);
     std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
         mc_[mcidx_]->get_cutter_dis()->get_state("ivelnp");
     ivel = Core::FE::extract_values(*matrix_state, la_s[0].lm_);
@@ -327,7 +327,7 @@ void XFEM::XFluidContactComm::get_states(const int fluidele_id, const std::vecto
   if (isporo_)
   {
     Core::Elements::LocationArray la_s(1);
-    sele->location_vector(*mcfpi_ps_pf_->get_cutter_dis(), la_s, false);
+    sele->location_vector(*mcfpi_ps_pf_->get_cutter_dis(), la_s);
     std::shared_ptr<const Core::LinAlg::Vector<double>> matrix_state =
         mcfpi_ps_pf_->get_cutter_dis()->get_state("ivelnp");
     ipfvel = Core::FE::extract_values(*matrix_state, la_s[0].lm_);

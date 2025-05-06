@@ -598,13 +598,11 @@ namespace Discret
 
       \param dis (in)      : the discretization this element belongs to
       \param la (out)      : location data for all dofsets of the discretization
-      \param doDirichlet (in): whether to get the Dirichlet flags
       \param condstring (in): Name of condition to be evaluated
       \param condstring (in):  List of parameters for use at element level
       */
       void location_vector(const Core::FE::Discretization& dis, Core::Elements::LocationArray& la,
-          bool doDirichlet, const std::string& condstring,
-          Teuchos::ParameterList& params) const override;
+          const std::string& condstring, Teuchos::ParameterList& params) const override;
 
       /*!
       \brief Return the location vector of this element

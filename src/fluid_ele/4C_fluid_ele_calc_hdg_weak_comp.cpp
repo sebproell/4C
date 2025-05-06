@@ -743,7 +743,7 @@ int Discret::Elements::FluidEleCalcHDGWeakComp<distype>::interpolate_solution_to
 
   // we have always two dofsets
   Core::Elements::LocationArray la(2);
-  ele->location_vector(discretization, la, false);
+  ele->location_vector(discretization, la);
   localDofs = la[0].lm_;
   solvalues.resize(localDofs.size());
 

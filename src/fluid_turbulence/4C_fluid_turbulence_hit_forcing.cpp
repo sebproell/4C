@@ -1940,7 +1940,7 @@ namespace FLD
         }
 
         // 2nd evaluate
-        ele->location_vector(*discret_, la, false);
+        ele->location_vector(*discret_, la);
         if (elevec1.numRows() != discret_->num_dof(1, ele)) elevec1.size(discret_->num_dof(1, ele));
 
         ele->evaluate(

@@ -483,7 +483,7 @@ void XFEM::XfluidTimeintBase::call_x_to_xi_coords(
     std::vector<int> nds(nen, 0);
 
     Core::Elements::LocationArray la(1);
-    ele->location_vector(*discret_, nds, la, false);
+    ele->location_vector(*discret_, nds, la);
 
     // extract local values of the global vectors
     std::vector<double> mydispnp(la[0].lm_.size());
@@ -607,7 +607,7 @@ void XFEM::XfluidTimeintBase::eval_shape_and_deriv(
 
       std::vector<int> nds(nen, 0);
       Core::Elements::LocationArray la(1);
-      element->location_vector(*discret_, nds, la, false);
+      element->location_vector(*discret_, nds, la);
 
       // extract local values of the global vectors
       std::vector<double> mydispnp = Core::FE::extract_values(*dispnp_, la[0].lm_);
@@ -922,8 +922,7 @@ XFEM::XfluidStd::XfluidStd(
             if (dispnp_ != nullptr)  // is alefluid
             {
               //------------------------------------------------------- add ale disp
-              // get node location vector, dirichlet flags and ownerships (discret, nds, la,
-              // doDirichlet)
+              // get node location vector
               std::vector<int> lm;
               std::vector<int> dofs;
               dofset_new_->dof(dofs, node, 0);  // dofs for standard dofset
@@ -1136,7 +1135,7 @@ void XFEM::XfluidStd::get_gp_values_t(Core::Elements::Element* ele,  ///< pointe
   Core::LinAlg::Matrix<nsd, nsd> xji(Core::LinAlg::Initialization::zero);  /// inverse of jacobian
 
   //-------------------------------------------------------
-  // get element location vector, dirichlet flags and ownerships (discret, nds, la, doDirichlet)
+  // get element location vector
   if ((int)(nds.size()) != numnode)
     FOUR_C_THROW("size of nds-vector ({}) != numnode({})", nds.size(), numnode);
 
@@ -1468,7 +1467,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
     }
 
     Core::Elements::LocationArray cutla(1);
-    side->location_vector(*boundarydis_, cutla, false);
+    side->location_vector(*boundarydis_, cutla);
 
     compute_start_point_side(
         side, side_xyze, cutla[0].lm_, proj_xi_side, min_dist, proj_x_n, start_point);
@@ -1583,7 +1582,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
       }
 
       Core::Elements::LocationArray cutla_1(1);
-      side_1->location_vector(*boundarydis_, cutla_1, false);
+      side_1->location_vector(*boundarydis_, cutla_1);
 
       //---------------------------------------------------------
       // side 2
@@ -1602,7 +1601,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
           const double* x = nodes_2[i]->x().data();
           std::copy(x, x + 3, &side_xyze_2(0, i));
         }
-        side_2->location_vector(*boundarydis_, cutla_2, false);
+        side_2->location_vector(*boundarydis_, cutla_2);
       }
       else
       {
@@ -1656,7 +1655,7 @@ void XFEM::XfluidStd::project_and_trackback(TimeIntData& data)
       }
 
       Core::Elements::LocationArray cutla(1);
-      side->location_vector(*boundarydis_, cutla, false);
+      side->location_vector(*boundarydis_, cutla);
 
       surr_sides.push_back(side);
       surr_sides_xyze.push_back(side_xyze);
@@ -2207,7 +2206,7 @@ void XFEM::XfluidStd::call_get_projxn_line(
 
 
   Core::Elements::LocationArray cutla(1);
-  line->location_vector(*boundarydis_, cutla, false);
+  line->location_vector(*boundarydis_, cutla);
 
   // get number of dofs for this side element
   const int numdofpernode = side->num_dof_per_node(*side->nodes()[0]);
@@ -2360,7 +2359,7 @@ void XFEM::XfluidStd::call_project_on_side(
 
 
   Core::Elements::LocationArray cutla(1);
-  side->location_vector(*boundarydis_, cutla, false);
+  side->location_vector(*boundarydis_, cutla);
 
   // get number of dofs for this side element
   const int numdofpernode = side->num_dof_per_node(*side->nodes()[0]);
@@ -2527,7 +2526,7 @@ void XFEM::XfluidStd::call_project_on_line(
 
 
   Core::Elements::LocationArray cutla(1);
-  line->location_vector(*boundarydis_, cutla, false);
+  line->location_vector(*boundarydis_, cutla);
 
   // get number of dofs for this side element
   const int numdofpernode = side->num_dof_per_node(*side->nodes()[0]);
@@ -3388,8 +3387,7 @@ void XFEM::XfluidStd::export_final_data()
       if (dispnp_ != nullptr)  // is alefluid
       {
         //------------------------------------------------------- add ale disp
-        // get node location vector, dirichlet flags and ownerships (discret, nds, la,
-        // doDirichlet)
+        // get node location vector
         std::vector<int> lm;
         std::vector<int> dofs;
         dofset_new_->dof(dofs, discret_->g_node(gid), 0);  // dofs for standard dofset

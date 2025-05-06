@@ -197,7 +197,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::extract_displac
 
     // determine location array information of parent element
     Core::Elements::LocationArray parent_la(discretization.num_dof_sets());
-    ele->parent_element()->location_vector(discretization, parent_la, false);
+    ele->parent_element()->location_vector(discretization, parent_la);
 
     const int num_node_parent_ele = Core::FE::num_nodes(parentdistype);
 
@@ -2156,7 +2156,7 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::weak_dirichlet(
 
   // parent element location array
   Core::Elements::LocationArray pla(discretization.num_dof_sets());
-  pele->location_vector(discretization, pla, false);
+  pele->location_vector(discretization, pla);
 
   // get number of dofset associated with velocity related dofs
   const int ndsvel = scatraparams_->nds_vel();

@@ -69,7 +69,7 @@ int Discret::Elements::FluidPoroBoundary::evaluate(Teuchos::ParameterList& param
 }
 
 void Discret::Elements::FluidPoroBoundary::location_vector(const Core::FE::Discretization& dis,
-    Core::Elements::LocationArray& la, bool doDirichlet, const std::string& condstring,
+    Core::Elements::LocationArray& la, const std::string& condstring,
     Teuchos::ParameterList& params) const
 {
   // get the action required
@@ -83,7 +83,7 @@ void Discret::Elements::FluidPoroBoundary::location_vector(const Core::FE::Discr
       // special cases: the boundary element assembles also into
       // the inner dofs of its parent element
       // note: using these actions, the element will get the parent location vector
-      parent_element()->location_vector(dis, la, doDirichlet);
+      parent_element()->location_vector(dis, la);
       break;
     case FLD::poro_splitnopenetration:
     case FLD::poro_splitnopenetration_OD:
@@ -91,7 +91,7 @@ void Discret::Elements::FluidPoroBoundary::location_vector(const Core::FE::Discr
       // This is a hack ...
       // Remove pressure dofs from location vector!!!
       // call standard fluid boundary element
-      FluidBoundary::location_vector(dis, la, doDirichlet, condstring, params);
+      FluidBoundary::location_vector(dis, la, condstring, params);
       int dim = la[0].stride_[0] - 1;
       // extract velocity dofs from first dofset
       for (int i = num_node(); i > 0; --i)
@@ -107,7 +107,7 @@ void Discret::Elements::FluidPoroBoundary::location_vector(const Core::FE::Discr
       break;
     default:
       // call standard fluid boundary element
-      FluidBoundary::location_vector(dis, la, doDirichlet, condstring, params);
+      FluidBoundary::location_vector(dis, la, condstring, params);
       break;
   }
 }
