@@ -395,8 +395,6 @@ void Core::IO::read_knots(InputFile& input, const std::string& name,
       std::string tmp;
       file >> tmp;
 
-      std::cout << "Token: " << tmp << std::endl;
-
       if (tmp == "NURBS_DIMENSION")
       {
         file >> nurbs_dim;
@@ -480,7 +478,7 @@ void Core::IO::read_knots(InputFile& input, const std::string& name,
       FOUR_C_THROW("wasn't able to read enough patches\n");
     }
 
-    std::cout << "Rank 0 sending out knot vectors to all other processors" << std::endl;
+    std::cout << "Rank 0 sending out knot vectors to all other ranks" << std::endl;
     // Now we have to broadcast the knot vectors to all other processors
     Core::Communication::broadcast(*disknots, 0, input.get_comm());
 
