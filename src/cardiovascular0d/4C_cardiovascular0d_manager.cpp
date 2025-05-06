@@ -1130,11 +1130,11 @@ int Utils::Cardiovascular0DManager::solve(Core::LinAlg::SparseMatrix& mat_struct
   if (have_mor_)
   {
     // initialize and write vector with reduced displacement dofs
-    Core::LinAlg::Vector<double> disp_R(*mapext_R.Map(0));
+    Core::LinAlg::Vector<double> disp_R(*mapext_R.map(0));
     mapext_R.extract_vector(*mergedsol, 0, disp_R);
 
     // initialize and write vector with pressure dofs, replace row map
-    Core::LinAlg::Vector<double> cv0ddof(*mapext_R.Map(1));
+    Core::LinAlg::Vector<double> cv0ddof(*mapext_R.map(1));
     mapext_R.extract_vector(*mergedsol, 1, cv0ddof);
     cv0ddof.replace_map(*cardvasc0drowmap);
 

@@ -1447,8 +1447,8 @@ void PoroElast::Monolithic::evaluate_condition(
   }
 
   const std::shared_ptr<const Core::LinAlg::Map>& nopenetrationmap =
-      nopen_handle_->extractor()->Map(1);
-  const std::shared_ptr<const Core::LinAlg::Map>& othermap = nopen_handle_->extractor()->Map(0);
+      nopen_handle_->extractor()->map(1);
+  const std::shared_ptr<const Core::LinAlg::Map>& othermap = nopen_handle_->extractor()->map(0);
   ConstraintMatrix->apply_dirichlet(*othermap, false);
   Sysmat.apply_dirichlet(*nopenetrationmap, false);
   Sysmat.un_complete();
@@ -1745,12 +1745,12 @@ std::shared_ptr<const Core::LinAlg::Map> PoroElast::Monolithic::dof_row_map()
 
 std::shared_ptr<const Core::LinAlg::Map> PoroElast::Monolithic::dof_row_map_structure()
 {
-  return blockrowdofmap_->Map(0);
+  return blockrowdofmap_->map(0);
 }
 
 std::shared_ptr<const Core::LinAlg::Map> PoroElast::Monolithic::dof_row_map_fluid()
 {
-  return blockrowdofmap_->Map(1);
+  return blockrowdofmap_->map(1);
 }
 
 void PoroElast::Monolithic::recover_lagrange_multiplier_after_newton_step(

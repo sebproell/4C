@@ -364,14 +364,14 @@ void SSTI::SSTIMono::setup_system()
   // initialize evaluation objects for coupling between subproblems
   scatrastructureoffdiagcoupling_ = std::make_shared<SSI::ScatraStructureOffDiagCouplingSSTI>(
       ssti_maps_mono_->block_map_structure(),
-      ssti_maps_mono_->maps_sub_problems()->Map(get_problem_position(Subproblem::scalar_transport)),
-      ssti_maps_mono_->maps_sub_problems()->Map(get_problem_position(Subproblem::structure)),
+      ssti_maps_mono_->maps_sub_problems()->map(get_problem_position(Subproblem::scalar_transport)),
+      ssti_maps_mono_->maps_sub_problems()->map(get_problem_position(Subproblem::structure)),
       ssti_structure_mesh_tying(), meshtying_scatra(), scatra_field(), structure_field());
 
   thermostructureoffdiagcoupling_ = std::make_shared<SSTI::ThermoStructureOffDiagCoupling>(
       ssti_maps_mono_->block_map_structure(), ssti_maps_mono_->block_map_thermo(),
-      ssti_maps_mono_->maps_sub_problems()->Map(get_problem_position(Subproblem::structure)),
-      ssti_maps_mono_->maps_sub_problems()->Map(get_problem_position(Subproblem::thermo)),
+      ssti_maps_mono_->maps_sub_problems()->map(get_problem_position(Subproblem::structure)),
+      ssti_maps_mono_->maps_sub_problems()->map(get_problem_position(Subproblem::thermo)),
       ssti_structure_mesh_tying(), meshtying_thermo(), structure_field(), thermo_field_base());
 
   // Note: STI evaluation of off diagonal coupling is designed to use interface maps for the
@@ -380,10 +380,10 @@ void SSTI::SSTIMono::setup_system()
   scatrathermooffdiagcoupling_ = std::make_shared<STI::ScatraThermoOffDiagCouplingMatchingNodes>(
       ssti_maps_mono_->block_map_thermo(), ssti_maps_mono_->block_map_thermo(),
       ssti_maps_mono_->block_map_thermo(),
-      ssti_maps_mono_->maps_sub_problems()->Map(get_problem_position(Subproblem::scalar_transport)),
-      ssti_maps_mono_->maps_sub_problems()->Map(get_problem_position(Subproblem::thermo)),
-      ssti_maps_mono_->maps_sub_problems()->Map(get_problem_position(Subproblem::scalar_transport)),
-      ssti_maps_mono_->maps_sub_problems()->Map(get_problem_position(Subproblem::thermo)), true,
+      ssti_maps_mono_->maps_sub_problems()->map(get_problem_position(Subproblem::scalar_transport)),
+      ssti_maps_mono_->maps_sub_problems()->map(get_problem_position(Subproblem::thermo)),
+      ssti_maps_mono_->maps_sub_problems()->map(get_problem_position(Subproblem::scalar_transport)),
+      ssti_maps_mono_->maps_sub_problems()->map(get_problem_position(Subproblem::thermo)), true,
       meshtying_scatra(), meshtying_thermo(), scatra_field_base(), thermo_field_base());
 
   // initialize equilibration class

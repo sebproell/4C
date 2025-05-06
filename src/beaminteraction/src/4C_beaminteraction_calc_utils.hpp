@@ -97,7 +97,7 @@ namespace BeamInteraction
       {
         add_vector(cond, beam, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& beam_map() const { return Map(beam); }
+      const std::shared_ptr<const Core::LinAlg::Map>& beam_map() const { return map(beam); }
       bool beam_relevant() const { return beam_map()->NumGlobalElements() != 0; }
       void beam_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
@@ -133,7 +133,7 @@ namespace BeamInteraction
       {
         add_vector(cond, sphere, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& sphere_map() const { return Map(sphere); }
+      const std::shared_ptr<const Core::LinAlg::Map>& sphere_map() const { return map(sphere); }
       bool sphere_relevant() const { return sphere_map()->NumGlobalElements() != 0; }
       void sphere_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
@@ -169,7 +169,7 @@ namespace BeamInteraction
       {
         add_vector(cond, solid, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& solid_map() const { return Map(solid); }
+      const std::shared_ptr<const Core::LinAlg::Map>& solid_map() const { return map(solid); }
       bool solid_relevant() const { return solid_map()->NumGlobalElements() != 0; }
       void solid_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {

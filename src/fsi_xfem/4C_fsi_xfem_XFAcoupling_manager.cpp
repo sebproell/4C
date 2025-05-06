@@ -93,7 +93,7 @@ void XFEM::XfaCouplingManager::set_coupling_states()
 
   // 2 Get AleDisplacements
   std::shared_ptr<Core::LinAlg::Vector<double>> aledisplacements =
-      std::make_shared<Core::LinAlg::Vector<double>>(*get_map_extractor(0)->Map(1), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(*get_map_extractor(0)->map(1), true);
   insert_vector(1, ale_->dispnp(), 0, aledisplacements, CouplingCommManager::partial_to_partial);
   // 3 Set Fluid Dispnp
   get_map_extractor(0)->insert_vector(*aledisplacements, 1, *xfluid_->write_access_dispnp());

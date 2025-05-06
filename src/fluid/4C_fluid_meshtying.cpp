@@ -1680,7 +1680,7 @@ void FLD::Meshtying::multifield_split(std::shared_ptr<Core::LinAlg::SparseOperat
     if (multifield_splitmatrix_)
     {
       Core::LinAlg::MapExtractor extractor(
-          *multifield_domainmaps_.full_map(), multifield_domainmaps_.Map(1));
+          *multifield_domainmaps_.full_map(), multifield_domainmaps_.map(1));
       std::shared_ptr<Core::LinAlg::BlockSparseMatrix<FLD::Utils::InterfaceSplitStrategy>> mat =
           Core::LinAlg::split_matrix<FLD::Utils::InterfaceSplitStrategy>(
               *mergedmatrix, extractor, extractor);
@@ -1731,7 +1731,7 @@ void FLD::Meshtying::multifield_split_shape(
     std::shared_ptr<Core::LinAlg::SparseMatrix> mergedshapederivatives = shapederivatives->merge();
 
     Core::LinAlg::MapExtractor extractor(
-        *multifield_domainmaps_shape_.full_map(), multifield_domainmaps_shape_.Map(1));
+        *multifield_domainmaps_shape_.full_map(), multifield_domainmaps_shape_.map(1));
     std::shared_ptr<Core::LinAlg::BlockSparseMatrix<FLD::Utils::InterfaceSplitStrategy>>
         matshapederivatives = Core::LinAlg::split_matrix<FLD::Utils::InterfaceSplitStrategy>(
             *mergedshapederivatives, extractor, extractor);

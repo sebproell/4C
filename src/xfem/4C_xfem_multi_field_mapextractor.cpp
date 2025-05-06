@@ -608,7 +608,7 @@ void XFEM::MultiFieldMapExtractor::build_master_node_map_extractor()
   // --------------------------------------------------------------------------
   for (unsigned i = 0; i < num_sl_dis(); ++i)
     partial_maps.at(num_sl_dis() + i) =
-        sl_map_extractor(i, map_nodes).Map(MultiField::block_non_interface);
+        sl_map_extractor(i, map_nodes).map(MultiField::block_non_interface);
 
   // --------------------------------------------------------------------------
   // create non-overlapping full dof map
@@ -666,7 +666,7 @@ void XFEM::MultiFieldMapExtractor::build_master_dof_map_extractor()
   // --------------------------------------------------------------------------
   for (unsigned i = 0; i < num_sl_dis(); ++i)
     partial_maps.at(num_sl_dis() + i) =
-        sl_map_extractor(i, map_dofs).Map(MultiField::block_non_interface);
+        sl_map_extractor(i, map_dofs).map(MultiField::block_non_interface);
 
   // --------------------------------------------------------------------------
   // create non-overlapping full dof map
@@ -1211,7 +1211,7 @@ const Core::LinAlg::Map& XFEM::MultiFieldMapExtractor::slave_node_row_map(
     unsigned dis_id, enum MultiField::BlockType btype) const
 {
   check_init();
-  return *(sl_map_extractor(dis_id, map_nodes).Map(btype));
+  return *(sl_map_extractor(dis_id, map_nodes).map(btype));
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -784,7 +784,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::extract_singl
 std::shared_ptr<const Core::LinAlg::Map>
 PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::artery_dof_row_map() const
 {
-  return globalex_->Map(1);
+  return globalex_->map(1);
 }
 
 /*----------------------------------------------------------------------*

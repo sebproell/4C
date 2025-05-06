@@ -91,7 +91,7 @@ namespace ALE
       {
         add_vector(cond, cond_other, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return Map(cond_other); }
+      const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
       bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
       void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
@@ -127,7 +127,7 @@ namespace ALE
       {
         add_vector(cond, cond_fsi, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& fsi_cond_map() const { return Map(cond_fsi); }
+      const std::shared_ptr<const Core::LinAlg::Map>& fsi_cond_map() const { return map(cond_fsi); }
       bool fsi_cond_relevant() const { return fsi_cond_map()->NumGlobalElements() != 0; }
       void fsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
@@ -163,7 +163,7 @@ namespace ALE
       {
         add_vector(cond, cond_fs, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& fs_cond_map() const { return Map(cond_fs); }
+      const std::shared_ptr<const Core::LinAlg::Map>& fs_cond_map() const { return map(cond_fs); }
       bool fs_cond_relevant() const { return fs_cond_map()->NumGlobalElements() != 0; }
       void fs_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
@@ -201,7 +201,7 @@ namespace ALE
       }
       const std::shared_ptr<const Core::LinAlg::Map>& lung_asi_cond_map() const
       {
-        return Map(cond_lung_asi);
+        return map(cond_lung_asi);
       }
       bool lung_asi_cond_relevant() const { return lung_asi_cond_map()->NumGlobalElements() != 0; }
       void lung_asi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
@@ -240,7 +240,7 @@ namespace ALE
       }
       const std::shared_ptr<const Core::LinAlg::Map>& ale_wear_cond_map() const
       {
-        return Map(cond_ale_wear);
+        return map(cond_ale_wear);
       }
       bool ale_wear_cond_relevant() const { return ale_wear_cond_map()->NumGlobalElements() != 0; }
       void ale_wear_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
@@ -277,7 +277,7 @@ namespace ALE
       {
         add_vector(cond, cond_au, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& au_cond_map() const { return Map(cond_au); }
+      const std::shared_ptr<const Core::LinAlg::Map>& au_cond_map() const { return map(cond_au); }
       bool au_cond_relevant() const { return au_cond_map()->NumGlobalElements() != 0; }
       void au_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
@@ -315,7 +315,7 @@ namespace ALE
       }
       const std::shared_ptr<const Core::LinAlg::Map>& fpsi_cond_map() const
       {
-        return Map(cond_fpsi);
+        return map(cond_fpsi);
       }
       bool fpsi_cond_relevant() const { return fpsi_cond_map()->NumGlobalElements() != 0; }
       void fpsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
@@ -354,7 +354,7 @@ namespace ALE
       }
       const std::shared_ptr<const Core::LinAlg::Map>& mortar_map() const
       {
-        return Map(cond_mortar);
+        return map(cond_mortar);
       }
       bool mortar_relevant() const { return mortar_map()->NumGlobalElements() != 0; }
       void mortar_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
@@ -406,47 +406,41 @@ namespace ALE
       {
         add_vector(cond, cond_other, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return Map(cond_other); }
+      const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
       bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
       void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_other, scalar);
       }
-      std::shared_ptr<Core::LinAlg::Vector<double>> extract_FSI_vector(
+      std::shared_ptr<Core::LinAlg::Vector<double>> extract_fsi_vector(
           const Core::LinAlg::Vector<double>& full) const
       {
         return MultiMapExtractor::extract_vector(full, cond_fsi);
       }
-      void extract_FSI_vector(
+      void extract_fsi_vector(
           const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
       {
         extract_vector(full, cond_fsi, cond);
       }
-      std::shared_ptr<Core::LinAlg::Vector<double>> insert_FSI_vector(
+      std::shared_ptr<Core::LinAlg::Vector<double>> insert_fsi_vector(
           const Core::LinAlg::Vector<double>& cond) const
       {
         return insert_vector(cond, cond_fsi);
       }
-      void insert_FSI_vector(
+      void insert_fsi_vector(
           const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
       {
         insert_vector(cond, cond_fsi, full);
       }
-      void add_FSI_vector(
+      void add_fsi_vector(
           const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
       {
         add_vector(cond, cond_fsi, full);
       }
-      void add_FSI_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+      void add_fsi_vector(double scale, const Core::LinAlg::Vector<double>& cond,
           Core::LinAlg::Vector<double>& full) const
       {
         add_vector(cond, cond_fsi, full, scale);
-      }
-      const std::shared_ptr<const Core::LinAlg::Map>& FSI_map() const { return Map(cond_fsi); }
-      bool FSI_relevant() const { return FSI_map()->NumGlobalElements() != 0; }
-      void FSI_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
-      {
-        put_scalar(full, cond_fsi, scalar);
       }
     };
 
@@ -493,7 +487,7 @@ namespace ALE
       {
         add_vector(cond, cond_other, full, scale);
       }
-      const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return Map(cond_other); }
+      const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
       bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
       void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
@@ -531,7 +525,7 @@ namespace ALE
       }
       const std::shared_ptr<const Core::LinAlg::Map>& xfluid_fluid_cond_map() const
       {
-        return Map(cond_xfluidfluid);
+        return map(cond_xfluidfluid);
       }
       bool xfluid_fluid_cond_relevant() const
       {

@@ -158,9 +158,9 @@ void FPSI::MonolithicPlain::setup_system()
   // create combined map
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
-  vecSpaces.push_back(poro_field()->extractor()->Map(0));
+  vecSpaces.push_back(poro_field()->extractor()->map(0));
 
-  vecSpaces.push_back(poro_field()->extractor()->Map(1));
+  vecSpaces.push_back(poro_field()->extractor()->map(1));
 
   vecSpaces.push_back(fluid_field()->dof_row_map());
 

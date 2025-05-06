@@ -79,23 +79,23 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::init()
   // create map extractors needed for artery condition coupling --> continuous field part
   contfieldex_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
   setup_map_extractor(*contfieldex_, *contdis_, coupleddofs_cont_);
-  check_dbc_on_coupled_dofs(*contdis_, contfieldex_->Map(1));
+  check_dbc_on_coupled_dofs(*contdis_, contfieldex_->map(1));
 
   // -----------------------------------------------------------------------------------------------------------------
   // create map extractors needed for artery condition coupling --> artery part
   artex_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
   setup_map_extractor(*artex_, *arterydis_, coupleddofs_art_);
-  check_dbc_on_coupled_dofs(*arterydis_, artex_->Map(1));
+  check_dbc_on_coupled_dofs(*arterydis_, artex_->map(1));
 
   // setup coupling adapter
   artcontfieldcoup_ = std::make_shared<Coupling::Adapter::Coupling>();
-  artcontfieldcoup_->setup_condition_coupling(*contdis_, contfieldex_->Map(1), *arterydis_,
-      artex_->Map(1), condname_, coupleddofs_cont_, coupleddofs_art_);
+  artcontfieldcoup_->setup_condition_coupling(*contdis_, contfieldex_->map(1), *arterydis_,
+      artex_->map(1), condname_, coupleddofs_cont_, coupleddofs_art_);
 
   // full map of continuous field and uncoupled dofs of artery
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
   maps.push_back(contfieldex_->full_map());
-  maps.push_back(artex_->Map(0));
+  maps.push_back(artex_->map(0));
 
   fullmap_ = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
   /// dof row map of coupled problem split in (field) blocks
@@ -136,7 +136,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::setup_map_extract
         dis, condname_, coupleddofs[idof], coupleddofs[idof] + 1));
     mcs.setup_extractor(dis, *dis.dof_row_map(), dummy);
 
-    partialmaps_coupled.push_back(dummy.Map(1));
+    partialmaps_coupled.push_back(dummy.map(1));
   }
   // fullmap coupled -> all coupled dofs
   std::shared_ptr<Core::LinAlg::Map> fullmap_coupled =
@@ -353,7 +353,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::check_initial_fie
 std::shared_ptr<const Core::LinAlg::Map>
 PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::artery_dof_row_map() const
 {
-  return artex_->Map(0);
+  return artex_->map(0);
 }
 
 /*----------------------------------------------------------------------*

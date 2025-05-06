@@ -494,8 +494,8 @@ void FS3I::PartFS3I::setup_system()
   }
 
   scatracoup_->setup_condition_coupling(*(scatravec_[0]->scatra_field()->discretization()),
-      scatrafieldexvec_[0]->Map(1), *(scatravec_[1]->scatra_field()->discretization()),
-      scatrafieldexvec_[1]->Map(1), "ScaTraCoupling",
+      scatrafieldexvec_[0]->map(1), *(scatravec_[1]->scatra_field()->discretization()),
+      scatrafieldexvec_[1]->map(1), "ScaTraCoupling",
       scatravec_[0]
           ->scatra_field()
           ->num_scal());  // we assume here that both discretisation have the same number of scalars
@@ -514,7 +514,7 @@ void FS3I::PartFS3I::setup_system()
   if (infperm_)
   {
     maps.push_back(scatrafieldexvec_[0]->full_map());
-    maps.push_back(scatrafieldexvec_[1]->Map(0));
+    maps.push_back(scatrafieldexvec_[1]->map(0));
   }
   else
   {
@@ -530,11 +530,11 @@ void FS3I::PartFS3I::setup_system()
     for (unsigned i = 0; i < scatravec_.size(); ++i)
     {
       std::shared_ptr<Core::LinAlg::Vector<double>> scatracoupforce =
-          std::make_shared<Core::LinAlg::Vector<double>>(*(scatraglobalex_->Map(i)), true);
+          std::make_shared<Core::LinAlg::Vector<double>>(*(scatraglobalex_->map(i)), true);
       scatracoupforce_.push_back(scatracoupforce);
 
       std::shared_ptr<Core::LinAlg::SparseMatrix> scatracoupmat =
-          std::make_shared<Core::LinAlg::SparseMatrix>(*(scatraglobalex_->Map(i)), 27, false, true);
+          std::make_shared<Core::LinAlg::SparseMatrix>(*(scatraglobalex_->map(i)), 27, false, true);
       scatracoupmat_.push_back(scatracoupmat);
 
       const Core::LinAlg::Map* dofrowmap =

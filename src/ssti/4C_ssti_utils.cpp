@@ -123,8 +123,8 @@ std::shared_ptr<Core::LinAlg::MultiMapExtractor> SSTI::SSTIMaps::maps_interface_
       for (int iblockmap = 0; iblockmap < static_cast<int>(nummaps); ++iblockmap)
       {
         partial_blockmapinterface[iblockmap] = Core::LinAlg::MultiMapExtractor::merge_maps(
-            {meshtyingstrategy->block_maps_slave().Map(iblockmap),
-                meshtyingstrategy->block_maps_master().Map(iblockmap)});
+            {meshtyingstrategy->block_maps_slave().map(iblockmap),
+                meshtyingstrategy->block_maps_master().map(iblockmap)});
       }
       blockmapinterface = std::make_shared<Core::LinAlg::MultiMapExtractor>(
           *interfacemap, partial_blockmapinterface);
@@ -204,14 +204,14 @@ SSTI::SSTIMapsMono::SSTIMapsMono(const SSTI::SSTIMono& ssti_mono_algorithm)
           block_positions_scatra.size() + block_positions_structure.size() +
           block_positions_thermo.size());
       for (int imap = 0; imap < static_cast<int>(block_positions_scatra.size()); ++imap)
-        maps_systemmatrix[block_positions_scatra.at(imap)] = block_map_scatra()->Map(imap);
+        maps_systemmatrix[block_positions_scatra.at(imap)] = block_map_scatra()->map(imap);
 
       // extract map underlying single main-diagonal matrix block associated with structural
       // field
       maps_systemmatrix[block_positions_structure.at(0)] = block_map_structure()->full_map();
 
       for (int imap = 0; imap < static_cast<int>(block_positions_thermo.size()); ++imap)
-        maps_systemmatrix[block_positions_thermo.at(imap)] = block_map_thermo()->Map(imap);
+        maps_systemmatrix[block_positions_thermo.at(imap)] = block_map_thermo()->map(imap);
 
       // initialize map extractor associated with blocks of global system matrix
       block_map_system_matrix_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(

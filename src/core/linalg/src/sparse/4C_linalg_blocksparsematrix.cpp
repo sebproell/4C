@@ -441,9 +441,9 @@ void Core::LinAlg::BlockSparseMatrixBase::get_partial_extractor(
 
   for (const int id : block_ids)
   {
-    p_block_maps.push_back(full_extractor.Map(id));
+    p_block_maps.push_back(full_extractor.map(id));
 
-    full_map = merge_map(full_map, full_extractor.Map(id), false);
+    full_map = merge_map(full_map, full_extractor.map(id), false);
   }
 
   partial_extractor.setup(*full_map, p_block_maps);

@@ -738,7 +738,7 @@ const Core::LinAlg::Map* Solid::TimeInt::BaseDataGlobalState::dof_row_map_view()
 const Core::LinAlg::Map* Solid::TimeInt::BaseDataGlobalState::additive_dof_row_map_view() const
 {
   check_init();
-  return get_element_technology_map_extractor(Inpar::Solid::EleTech::rotvec).Map(0).get();
+  return get_element_technology_map_extractor(Inpar::Solid::EleTech::rotvec).map(0).get();
 }
 
 /*----------------------------------------------------------------------------*
@@ -746,7 +746,7 @@ const Core::LinAlg::Map* Solid::TimeInt::BaseDataGlobalState::additive_dof_row_m
 const Core::LinAlg::Map* Solid::TimeInt::BaseDataGlobalState::rot_vec_dof_row_map_view() const
 {
   check_init();
-  return get_element_technology_map_extractor(Inpar::Solid::EleTech::rotvec).Map(1).get();
+  return get_element_technology_map_extractor(Inpar::Solid::EleTech::rotvec).map(1).get();
 }
 
 /*----------------------------------------------------------------------------*

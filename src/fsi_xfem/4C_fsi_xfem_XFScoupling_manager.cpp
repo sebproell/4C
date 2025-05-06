@@ -45,7 +45,7 @@ XFEM::XfsCouplingManager::XfsCouplingManager(std::shared_ptr<ConditionManager> c
   mcfsi_->set_time_fac(1. / get_interface_timefac());
 
   // safety check
-  if (!mcfsi_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->Map(1)))
+  if (!mcfsi_->i_dispnp()->get_map().SameAs(*get_map_extractor(0)->map(1)))
     FOUR_C_THROW("XFSCoupling_Manager: Maps of Condition and Mesh Coupling do not fit!");
 
   // storage of the resulting Robin-type structural forces from the old timestep
@@ -205,7 +205,7 @@ void XFEM::XfsCouplingManager::add_coupling_rhs(std::shared_ptr<Core::LinAlg::Ve
     coup_rhs_sum.scale(scaling);
   }
 
-  Core::LinAlg::Vector<double> coup_rhs(*me.Map(idx_[0]), true);
+  Core::LinAlg::Vector<double> coup_rhs(*me.map(idx_[0]), true);
   Core::LinAlg::export_to(coup_rhs_sum, coup_rhs);  // use this command as long as poro is not split
                                                     // into two bocks in the monolithic algorithm!
   // insert_vector(0,coup_rhs_sum,0,coup_rhs,Coupling_Comm_Manager::partial_to_full);

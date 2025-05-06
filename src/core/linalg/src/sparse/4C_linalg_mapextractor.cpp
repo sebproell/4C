@@ -246,7 +246,7 @@ void Core::LinAlg::MultiMapExtractor::add_vector(const Core::LinAlg::MultiVector
 void Core::LinAlg::MultiMapExtractor::put_scalar(
     Core::LinAlg::Vector<double>& full, int block, double scalar) const
 {
-  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();
@@ -266,7 +266,7 @@ void Core::LinAlg::MultiMapExtractor::put_scalar(
 double Core::LinAlg::MultiMapExtractor::norm2(
     const Core::LinAlg::Vector<double>& full, int block) const
 {
-  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();
@@ -295,7 +295,7 @@ double Core::LinAlg::MultiMapExtractor::norm2(
 void Core::LinAlg::MultiMapExtractor::scale(
     Core::LinAlg::Vector<double>& full, int block, double scalar) const
 {
-  const Core::LinAlg::Map& bm = *Map(block);
+  const Core::LinAlg::Map& bm = *map(block);
   const Core::LinAlg::Map& fm = *full_map();
 
   int numv = bm.NumMyElements();

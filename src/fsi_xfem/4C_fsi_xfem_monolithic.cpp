@@ -1071,7 +1071,7 @@ bool FSI::MonolithicXFEM::newton()
 
     if (have_ale())
     {
-      ax_sum_ = std::make_shared<Core::LinAlg::Vector<double>>(*(extractor().Map(ale_i_block_)));
+      ax_sum_ = std::make_shared<Core::LinAlg::Vector<double>>(*(extractor().map(ale_i_block_)));
       int errax = ax_sum_->update(1.0,
           *ale_field()->interface()->extract_other_vector(*ale_field()->dispnp()), -1.0,
           *ale_field()->interface()->extract_other_vector(*ale_field()->dispn()), 0.0);
@@ -1085,7 +1085,7 @@ bool FSI::MonolithicXFEM::newton()
     /*
         // save the current structural step-increment (also possible // sx_sum_ = sx;
         sx_sum_ = Teuchos::rcp(new
-       Core::LinAlg::Vector<double>(*(Extractor().Map(structp_block_)))); if(x_sum_ !=
+       Core::LinAlg::Vector<double>(*(Extractor().map(structp_block_)))); if(x_sum_ !=
        nullptr)
         {
           int errsx = sx_sum_->Update(1.0, *Extractor().extract_vector(*x_sum_,structp_block_),

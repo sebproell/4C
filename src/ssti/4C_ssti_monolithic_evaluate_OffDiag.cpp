@@ -362,7 +362,7 @@ void SSTI::ThermoStructureOffDiagCoupling::evaluate_thermo_structure_interface_s
           auto slave_iblock = slavematrix_block->matrix(iblock, 0);
 
           auto scatra_slave_block_mapi =
-              Core::LinAlg::intersect_map(*thermo_->scatra_field()->block_maps()->Map(iblock),
+              Core::LinAlg::intersect_map(*thermo_->scatra_field()->block_maps()->map(iblock),
                   *meshtying_strategy_thermo_->coupling_adapter()->slave_dof_map());
 
           Coupling::Adapter::MatrixLogicalSplitAndTransform()(evaluate_iblock,

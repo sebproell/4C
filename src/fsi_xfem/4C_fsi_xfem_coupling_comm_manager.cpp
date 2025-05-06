@@ -76,7 +76,7 @@ void XFEM::CouplingCommManager::insert_vector(const int idxA,
     {
       std::shared_ptr<Core::LinAlg::MultiMapExtractor> mmeb = get_map_extractor(idxB);
       std::shared_ptr<Core::LinAlg::Vector<double>> tmpvec =
-          std::make_shared<Core::LinAlg::Vector<double>>(*mmeb->Map(1), true);
+          std::make_shared<Core::LinAlg::Vector<double>>(*mmeb->map(1), true);
       insert_vector(idxA, vecA, idxB, tmpvec, CouplingCommManager::full_to_partial, false, scale);
       if (!add)
         mmeb->insert_vector(*tmpvec, 1, *vecB);
@@ -94,7 +94,7 @@ void XFEM::CouplingCommManager::insert_vector(const int idxA,
     {
       std::shared_ptr<Core::LinAlg::MultiMapExtractor> mmeb = get_map_extractor(idxB);
       std::shared_ptr<Core::LinAlg::Vector<double>> tmpvec =
-          std::make_shared<Core::LinAlg::Vector<double>>(*mmeb->Map(1), true);
+          std::make_shared<Core::LinAlg::Vector<double>>(*mmeb->map(1), true);
       insert_vector(
           idxA, vecA, idxB, tmpvec, CouplingCommManager::partial_to_partial, false, scale);
       if (!add)
@@ -137,7 +137,7 @@ void XFEM::CouplingCommManager::insert_vector(const int idxA,
     {
       std::shared_ptr<Core::LinAlg::MultiMapExtractor> mme = get_full_map_extractor();
       std::shared_ptr<Core::LinAlg::Vector<double>> fullvec =
-          std::make_shared<Core::LinAlg::Vector<double>>(*mme->Map(idxB), true);
+          std::make_shared<Core::LinAlg::Vector<double>>(*mme->map(idxB), true);
       insert_vector(idxA, vecA, idxB, fullvec, CouplingCommManager::partial_to_full, false, scale);
       if (!add)
         mme->insert_vector(*fullvec, idxB, *vecB);
@@ -149,7 +149,7 @@ void XFEM::CouplingCommManager::insert_vector(const int idxA,
     {
       std::shared_ptr<Core::LinAlg::MultiMapExtractor> mme = get_full_map_extractor();
       std::shared_ptr<Core::LinAlg::Vector<double>> fullvec =
-          std::make_shared<Core::LinAlg::Vector<double>>(*mme->Map(idxB), true);
+          std::make_shared<Core::LinAlg::Vector<double>>(*mme->map(idxB), true);
       insert_vector(idxA, vecA, idxB, fullvec, CouplingCommManager::full_to_full, false, scale);
       if (!add)
         mme->insert_vector(*fullvec, idxB, *vecB);
@@ -304,8 +304,8 @@ void XFEM::CouplingCommManager::setup_couplings(
       if (betadis == dis.end())
         FOUR_C_THROW("Couldn't find discretization for key {}", (*mmebeta).first);
 
-      coup_[key]->setup_condition_coupling(*(*alphadis).second, (*mmealpha).second->Map(1),
-          *(*betadis).second, (*mmebeta).second->Map(1), cond_name_, enddim_ - startdim_, true);
+      coup_[key]->setup_condition_coupling(*(*alphadis).second, (*mmealpha).second->map(1),
+          *(*betadis).second, (*mmebeta).second->map(1), cond_name_, enddim_ - startdim_, true);
     }
   }
   return;

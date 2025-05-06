@@ -452,7 +452,7 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const std::vector<int>& lmstr
       const int rgid = lmrow[lrow];
 
       // if we have a Dirichlet map check if this row is a Dirichlet row
-      if (dbcmaps_ != nullptr and dbcmaps_->Map(1)->MyGID(rgid)) continue;
+      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid)) continue;
 
       const int rlid = rowmap.LID(rgid);
 
@@ -565,7 +565,7 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const std::vector<int>& lmstr
       // #endif
 
       // if we have a Dirichlet map check if this row is a Dirichlet row
-      if (dbcmaps_ != nullptr and dbcmaps_->Map(1)->MyGID(rgid)) continue;
+      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid)) continue;
 
       for (int lcol = 0; lcol < lcoldim; ++lcol)
       {
@@ -641,7 +641,7 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const Core::LinAlg::SerialDen
       const int rgid = lmrow[lrow];
 
       // if we have a Dirichlet map check if this row is a Dirichlet row
-      if (dbcmaps_ != nullptr and dbcmaps_->Map(1)->MyGID(rgid)) continue;
+      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid)) continue;
 
       const int rlid = rowmap.LID(rgid);
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -671,7 +671,7 @@ void Core::LinAlg::SparseMatrix::assemble(int eid, const Core::LinAlg::SerialDen
 #endif
 
       // if we have a Dirichlet map check if this row is a Dirichlet row
-      if (dbcmaps_ != nullptr and dbcmaps_->Map(1)->MyGID(rgid)) continue;
+      if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid)) continue;
 
       for (int lcol = 0; lcol < lcoldim; ++lcol)
       {
@@ -761,7 +761,7 @@ void Core::LinAlg::SparseMatrix::fe_assemble(const Core::LinAlg::SerialDenseMatr
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::assemble(double val, int rgid, int cgid)
 {
-  if (dbcmaps_ != nullptr and dbcmaps_->Map(1)->MyGID(rgid))
+  if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid))
     FOUR_C_THROW("no assembling to Dirichlet row");
 
   // SumIntoGlobalValues works for filled matrices as well!
@@ -780,7 +780,7 @@ void Core::LinAlg::SparseMatrix::assemble(double val, int rgid, int cgid)
  *----------------------------------------------------------------------*/
 void Core::LinAlg::SparseMatrix::set_value(double val, int rgid, int cgid)
 {
-  if (dbcmaps_ != nullptr and dbcmaps_->Map(1)->MyGID(rgid))
+  if (dbcmaps_ != nullptr and dbcmaps_->map(1)->MyGID(rgid))
     FOUR_C_THROW("no assembling to Dirichlet row");
 
   int errone = sysmat_->ReplaceGlobalValues(rgid, 1, &val, &cgid);
@@ -1077,7 +1077,7 @@ void Core::LinAlg::SparseMatrix::apply_dirichlet(
   if (dbcmaps_ != nullptr)
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (not dbctoggle.SameAs(*dbcmaps_->Map(1)))
+    if (not dbctoggle.SameAs(*dbcmaps_->map(1)))
     {
       FOUR_C_THROW("Dirichlet maps mismatch");
     }

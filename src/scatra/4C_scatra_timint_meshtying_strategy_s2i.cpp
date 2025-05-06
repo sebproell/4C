@@ -143,18 +143,18 @@ void ScaTra::MeshtyingStrategyS2I::condense_mat_and_rhs(
       if (lmside_ == Inpar::S2I::side_slave)
       {
         // initialize temporary matrix for slave-side rows of global system matrix
-        Core::LinAlg::SparseMatrix sparsematrixrowsslave(*interfacemaps_->Map(1), 81);
+        Core::LinAlg::SparseMatrix sparsematrixrowsslave(*interfacemaps_->map(1), 81);
 
         // extract slave-side rows of global system matrix into temporary matrix
-        extract_matrix_rows(*sparsematrix, sparsematrixrowsslave, *interfacemaps_->Map(1));
+        extract_matrix_rows(*sparsematrix, sparsematrixrowsslave, *interfacemaps_->map(1));
 
         // finalize temporary matrix with slave-side rows of global system matrix
-        sparsematrixrowsslave.complete(*interfacemaps_->full_map(), *interfacemaps_->Map(1));
+        sparsematrixrowsslave.complete(*interfacemaps_->full_map(), *interfacemaps_->map(1));
 
         // zero out slave-side rows of global system matrix after having extracted them into
         // temporary matrix
         sparsematrix->complete();
-        sparsematrix->apply_dirichlet(*interfacemaps_->Map(1), false);
+        sparsematrix->apply_dirichlet(*interfacemaps_->map(1), false);
 
         // apply scatra-scatra interface coupling
         if (not slaveonly_)
@@ -190,7 +190,7 @@ void ScaTra::MeshtyingStrategyS2I::condense_mat_and_rhs(
         {
           // replace slave-side entries of global residual vector by projected slave-side entries
           // including interface contributions
-          Core::LinAlg::Vector<double> Q_residualslave(*interfacemaps_->Map(1));
+          Core::LinAlg::Vector<double> Q_residualslave(*interfacemaps_->map(1));
           if (Q_->multiply(true, *residualslave, Q_residualslave))
             FOUR_C_THROW("Matrix-vector multiplication failed!");
           interfacemaps_->insert_vector(Q_residualslave, 1, *scatratimint_->residual());
@@ -205,7 +205,7 @@ void ScaTra::MeshtyingStrategyS2I::condense_mat_and_rhs(
         }
 
         // add projected slave-side entries to master-side entries of global residual vector
-        Core::LinAlg::Vector<double> P_residualslave(*interfacemaps_->Map(2));
+        Core::LinAlg::Vector<double> P_residualslave(*interfacemaps_->map(2));
         if (P_->multiply(true, *residualslave, P_residualslave))
           FOUR_C_THROW("Matrix-vector multiplication failed!");
         interfacemaps_->add_vector(P_residualslave, 2, *scatratimint_->residual());
@@ -214,19 +214,19 @@ void ScaTra::MeshtyingStrategyS2I::condense_mat_and_rhs(
       else
       {
         // initialize temporary matrix for master-side rows of global system matrix
-        Core::LinAlg::SparseMatrix sparsematrixrowsmaster(*interfacemaps_->Map(2), 81);
+        Core::LinAlg::SparseMatrix sparsematrixrowsmaster(*interfacemaps_->map(2), 81);
 
         // extract master-side rows of global system matrix into temporary matrix
-        extract_matrix_rows(*sparsematrix, sparsematrixrowsmaster, *interfacemaps_->Map(2));
+        extract_matrix_rows(*sparsematrix, sparsematrixrowsmaster, *interfacemaps_->map(2));
 
         // finalize temporary matrix with master-side rows of global system matrix
-        sparsematrixrowsmaster.complete(*interfacemaps_->full_map(), *interfacemaps_->Map(2));
+        sparsematrixrowsmaster.complete(*interfacemaps_->full_map(), *interfacemaps_->map(2));
 
         // zero out master-side rows of global system matrix after having extracted them into
         // temporary matrix and replace them by projected master-side rows including interface
         // contributions
         sparsematrix->complete();
-        sparsematrix->apply_dirichlet(*interfacemaps_->Map(2), false);
+        sparsematrix->apply_dirichlet(*interfacemaps_->map(2), false);
         sparsematrix->add(*Core::LinAlg::matrix_multiply(
                               *Q_, true, sparsematrixrowsmaster, false, false, false, true),
             false, 1., 1.);
@@ -245,7 +245,7 @@ void ScaTra::MeshtyingStrategyS2I::condense_mat_and_rhs(
 
         // replace master-side entries of global residual vector by projected master-side entries
         // including interface contributions
-        Core::LinAlg::Vector<double> Q_residualmaster(*interfacemaps_->Map(2));
+        Core::LinAlg::Vector<double> Q_residualmaster(*interfacemaps_->map(2));
         if (Q_->multiply(true, *residualmaster, Q_residualmaster))
           FOUR_C_THROW("Matrix-vector multiplication failed!");
         interfacemaps_->insert_vector(Q_residualmaster, 2, *scatratimint_->residual());
@@ -253,7 +253,7 @@ void ScaTra::MeshtyingStrategyS2I::condense_mat_and_rhs(
             Core::LinAlg::MultiVector<double>(*imasterresidual_), 2, *scatratimint_->residual());
 
         // add projected master-side entries to slave-side entries of global residual vector
-        Core::LinAlg::Vector<double> P_residualmaster(*interfacemaps_->Map(1));
+        Core::LinAlg::Vector<double> P_residualmaster(*interfacemaps_->map(1));
         if (P_->multiply(true, *residualmaster, P_residualmaster))
           FOUR_C_THROW("Matrix-vector multiplication failed!");
         interfacemaps_->add_vector(P_residualmaster, 1, *scatratimint_->residual());
@@ -649,13 +649,13 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
       // finalize auxiliary system matrix for slave side
       if (couplingtype_ == Inpar::S2I::coupling_mortar_standard or
           lmside_ == Inpar::S2I::side_slave or couplingtype_ == Inpar::S2I::coupling_nts_standard)
-        islavematrix_->complete(*interfacemaps_->full_map(), *interfacemaps_->Map(1));
+        islavematrix_->complete(*interfacemaps_->full_map(), *interfacemaps_->map(1));
 
       // finalize auxiliary system matrix and residual vector for master side
       if (couplingtype_ == Inpar::S2I::coupling_mortar_standard or
           lmside_ == Inpar::S2I::side_master or couplingtype_ == Inpar::S2I::coupling_nts_standard)
       {
-        imastermatrix_->complete(*interfacemaps_->full_map(), *interfacemaps_->Map(2));
+        imastermatrix_->complete(*interfacemaps_->full_map(), *interfacemaps_->map(2));
         if (imasterresidual_->GlobalAssemble(Add, true))
           FOUR_C_THROW(
               "Assembly of auxiliary residual vector for master residuals not successful!");
@@ -700,20 +700,20 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
               if (lmside_ == Inpar::S2I::side_slave)
               {
                 // assemble slave-side interface contributions into global residual vector
-                Core::LinAlg::Vector<double> islaveresidual(*interfacemaps_->Map(1));
+                Core::LinAlg::Vector<double> islaveresidual(*interfacemaps_->map(1));
                 if (D_->multiply(true, *lm_, islaveresidual))
                   FOUR_C_THROW("Matrix-vector multiplication failed!");
                 interfacemaps_->add_vector(islaveresidual, 1, *scatratimint_->residual(), -1.);
 
                 // assemble master-side interface contributions into global residual vector
-                Core::LinAlg::Vector<double> imasterresidual(*interfacemaps_->Map(2));
+                Core::LinAlg::Vector<double> imasterresidual(*interfacemaps_->map(2));
                 if (M_->multiply(true, *lm_, imasterresidual))
                   FOUR_C_THROW("Matrix-vector multiplication failed!");
                 interfacemaps_->add_vector(imasterresidual, 2, *scatratimint_->residual());
 
                 // build constraint residual vector associated with Lagrange multiplier dofs
                 Core::LinAlg::Vector<double> ilmresidual(*islaveresidual_);
-                if (ilmresidual.replace_map(*extendedmaps_->Map(1)))
+                if (ilmresidual.replace_map(*extendedmaps_->map(1)))
                   FOUR_C_THROW("Couldn't replace map!");
                 if (lmresidual_->update(1., ilmresidual, 0.)) FOUR_C_THROW("Vector update failed!");
                 if (E_->multiply(true, *lm_, ilmresidual))
@@ -723,20 +723,20 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
               else
               {
                 // assemble slave-side interface contributions into global residual vector
-                Core::LinAlg::Vector<double> islaveresidual(*interfacemaps_->Map(1));
+                Core::LinAlg::Vector<double> islaveresidual(*interfacemaps_->map(1));
                 if (M_->multiply(true, *lm_, islaveresidual))
                   FOUR_C_THROW("Matrix-vector multiplication failed!");
                 interfacemaps_->add_vector(islaveresidual, 1, *scatratimint_->residual());
 
                 // assemble master-side interface contributions into global residual vector
-                Core::LinAlg::Vector<double> imasterresidual(*interfacemaps_->Map(2));
+                Core::LinAlg::Vector<double> imasterresidual(*interfacemaps_->map(2));
                 if (D_->multiply(true, *lm_, imasterresidual))
                   FOUR_C_THROW("Matrix-vector multiplication failed!");
                 interfacemaps_->add_vector(imasterresidual, 2, *scatratimint_->residual(), -1.);
 
                 // build constraint residual vector associated with Lagrange multiplier dofs
                 Core::LinAlg::Vector<double> ilmresidual(*imasterresidual_);
-                if (ilmresidual.replace_map(*extendedmaps_->Map(1)))
+                if (ilmresidual.replace_map(*extendedmaps_->map(1)))
                   FOUR_C_THROW("Couldn't replace map!");
                 if (lmresidual_->update(1., ilmresidual, 0.)) FOUR_C_THROW("Vector update failed!");
                 if (E_->multiply(true, *lm_, ilmresidual))
@@ -756,7 +756,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
                                       *P_, true, *islavematrix_, false, false, false, true),
                     false, -1., 1.);
                 interfacemaps_->add_vector(*islaveresidual_, 1, *scatratimint_->residual());
-                Core::LinAlg::Vector<double> imasterresidual(*interfacemaps_->Map(2));
+                Core::LinAlg::Vector<double> imasterresidual(*interfacemaps_->map(2));
                 if (P_->multiply(true, *islaveresidual_, imasterresidual))
                   FOUR_C_THROW("Matrix-vector multiplication failed!");
                 interfacemaps_->add_vector(imasterresidual, 2, *scatratimint_->residual(), -1.);
@@ -767,7 +767,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
                                       *P_, true, *imastermatrix_, false, false, false, true),
                     false, -1., 1.);
                 systemmatrix->add(*imastermatrix_, false, 1., 1.);
-                Core::LinAlg::Vector<double> islaveresidual(*interfacemaps_->Map(1));
+                Core::LinAlg::Vector<double> islaveresidual(*interfacemaps_->map(1));
                 if (P_->multiply(
                         true, Core::LinAlg::MultiVector<double>(*imasterresidual_), islaveresidual))
                   FOUR_C_THROW("Matrix-vector multiplication failed!");
@@ -1391,7 +1391,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_and_assemble_capacitive_contribution
   imasterslavematrix_->zero();
   islaveresidual_->put_scalar(0.0);
   auto imasterresidual_on_slave_side =
-      std::make_shared<Core::LinAlg::Vector<double>>(*interfacemaps_->Map(1));
+      std::make_shared<Core::LinAlg::Vector<double>>(*interfacemaps_->map(1));
   imasterresidual_on_slave_side->put_scalar(0.0);
 
   // evaluate scatra-scatra interface coupling
@@ -2514,10 +2514,10 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           lmside_ == Inpar::S2I::side_slave or couplingtype_ == Inpar::S2I::coupling_nts_standard)
       {
         // initialize auxiliary system matrix for slave side
-        islavematrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*interfacemaps_->Map(1), 81);
+        islavematrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(*interfacemaps_->map(1), 81);
 
         // initialize auxiliary residual vector for slave side
-        islaveresidual_ = std::make_shared<Core::LinAlg::Vector<double>>(*interfacemaps_->Map(1));
+        islaveresidual_ = std::make_shared<Core::LinAlg::Vector<double>>(*interfacemaps_->map(1));
       }
 
       if (couplingtype_ == Inpar::S2I::coupling_mortar_standard or
@@ -2525,11 +2525,11 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
       {
         // initialize auxiliary system matrix for master side
         imastermatrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-            *interfacemaps_->Map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
+            *interfacemaps_->map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
         // initialize auxiliary residual vector for master side
         imasterresidual_ =
-            std::make_shared<Epetra_FEVector>(interfacemaps_->Map(2)->get_epetra_map());
+            std::make_shared<Epetra_FEVector>(interfacemaps_->map(2)->get_epetra_map());
       }
 
       switch (couplingtype_)
@@ -2541,22 +2541,22 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
         {
           if (lmside_ == Inpar::S2I::side_slave)
           {
-            D_ = std::make_shared<Core::LinAlg::SparseMatrix>(*interfacemaps_->Map(1), 81);
-            M_ = std::make_shared<Core::LinAlg::SparseMatrix>(*interfacemaps_->Map(1), 81);
+            D_ = std::make_shared<Core::LinAlg::SparseMatrix>(*interfacemaps_->map(1), 81);
+            M_ = std::make_shared<Core::LinAlg::SparseMatrix>(*interfacemaps_->map(1), 81);
             if (couplingtype_ == Inpar::S2I::coupling_mortar_saddlepoint_bubnov or
                 couplingtype_ == Inpar::S2I::coupling_mortar_condensed_bubnov)
-              E_ = std::make_shared<Core::LinAlg::SparseMatrix>(*interfacemaps_->Map(1), 81);
+              E_ = std::make_shared<Core::LinAlg::SparseMatrix>(*interfacemaps_->map(1), 81);
           }
           else
           {
             D_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-                *interfacemaps_->Map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
+                *interfacemaps_->map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
             M_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-                *interfacemaps_->Map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
+                *interfacemaps_->map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
             if (couplingtype_ == Inpar::S2I::coupling_mortar_saddlepoint_bubnov or
                 couplingtype_ == Inpar::S2I::coupling_mortar_condensed_bubnov)
               E_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-                  *interfacemaps_->Map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
+                  *interfacemaps_->map(2), 81, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
           }
 
           // loop over all scatra-scatra coupling interfaces
@@ -2596,9 +2596,9 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           // finalize mortar matrices D, M, and E
           D_->complete();
           if (lmside_ == Inpar::S2I::side_slave)
-            M_->complete(*interfacemaps_->Map(2), *interfacemaps_->Map(1));
+            M_->complete(*interfacemaps_->map(2), *interfacemaps_->map(1));
           else
-            M_->complete(*interfacemaps_->Map(1), *interfacemaps_->Map(2));
+            M_->complete(*interfacemaps_->map(1), *interfacemaps_->map(2));
           if (couplingtype_ == Inpar::S2I::coupling_mortar_saddlepoint_bubnov or
               couplingtype_ == Inpar::S2I::coupling_mortar_condensed_bubnov)
             E_->complete();
@@ -2611,9 +2611,9 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               // set up mortar projector P
               std::shared_ptr<Core::LinAlg::Vector<double>> D_diag(nullptr);
               if (lmside_ == Inpar::S2I::side_slave)
-                D_diag = Core::LinAlg::create_vector(*interfacemaps_->Map(1));
+                D_diag = Core::LinAlg::create_vector(*interfacemaps_->map(1));
               else
-                D_diag = Core::LinAlg::create_vector(*interfacemaps_->Map(2));
+                D_diag = Core::LinAlg::create_vector(*interfacemaps_->map(2));
               if (D_->extract_diagonal_copy(*D_diag))
                 FOUR_C_THROW("Couldn't extract main diagonal from mortar matrix D!");
               if (D_diag->reciprocal(*D_diag))
@@ -2652,9 +2652,9 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               std::vector<int> localnumlmdof(numproc, 0);
               std::vector<int> globalnumlmdof(numproc, 0);
               if (lmside_ == Inpar::S2I::side_slave)
-                localnumlmdof[mypid] = interfacemaps_->Map(1)->NumMyElements();
+                localnumlmdof[mypid] = interfacemaps_->map(1)->NumMyElements();
               else
-                localnumlmdof[mypid] = interfacemaps_->Map(2)->NumMyElements();
+                localnumlmdof[mypid] = interfacemaps_->map(2)->NumMyElements();
               Core::Communication::sum_all(
                   localnumlmdof.data(), globalnumlmdof.data(), numproc, comm);
 
@@ -2841,7 +2841,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               std::vector<std::shared_ptr<const Core::LinAlg::Map>> extendedblockmaps(
                   nblockmaps + 1, nullptr);
               for (int iblockmap = 0; iblockmap < static_cast<int>(nblockmaps); ++iblockmap)
-                extendedblockmaps[iblockmap] = scatratimint_->block_maps()->Map(iblockmap);
+                extendedblockmaps[iblockmap] = scatratimint_->block_maps()->map(iblockmap);
               extendedblockmaps[nblockmaps] = dofrowmap_growth;
               extendedblockmaps_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(
                   *extendedmaps_->full_map(), extendedblockmaps);
@@ -3625,21 +3625,21 @@ void ScaTra::MeshtyingStrategyS2I::build_block_map_extractors()
     for (int iblock = 0; iblock < nblocks; ++iblock)
     {
       std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);
-      maps[0] = scatratimint_->block_maps()->Map(iblock);
+      maps[0] = scatratimint_->block_maps()->map(iblock);
       maps[1] = not imortarredistribution_
-                    ? interfacemaps_->Map(1)
+                    ? interfacemaps_->map(1)
                     : std::dynamic_pointer_cast<const Core::LinAlg::Map>(islavemap_);
       blockmaps_slave[iblock] = Core::LinAlg::MultiMapExtractor::intersect_maps(maps);
       maps[1] = not imortarredistribution_
-                    ? interfacemaps_->Map(2)
+                    ? interfacemaps_->map(2)
                     : std::dynamic_pointer_cast<const Core::LinAlg::Map>(imastermap_);
       blockmaps_master[iblock] = Core::LinAlg::MultiMapExtractor::intersect_maps(maps);
     }
     blockmaps_slave_ =
-        std::make_shared<Core::LinAlg::MultiMapExtractor>(*interfacemaps_->Map(1), blockmaps_slave);
+        std::make_shared<Core::LinAlg::MultiMapExtractor>(*interfacemaps_->map(1), blockmaps_slave);
     blockmaps_slave_->check_for_valid_map_extractor();
     blockmaps_master_ = std::make_shared<Core::LinAlg::MultiMapExtractor>(
-        *interfacemaps_->Map(2), blockmaps_master);
+        *interfacemaps_->map(2), blockmaps_master);
     blockmaps_master_->check_for_valid_map_extractor();
   }
 }  // ScaTra::meshtying_strategy_s2_i::build_block_map_extractors
@@ -3741,7 +3741,7 @@ void ScaTra::MeshtyingStrategyS2I::solve(const std::shared_ptr<Core::LinAlg::Sol
             extendedsystemmatrix.matrix(0, 1).add(*D_, true, 1., 0.);
             extendedsystemmatrix.matrix(0, 1).add(*M_, true, -1., 1.);
             extendedsystemmatrix.matrix(1, 0).add(
-                *Mortar::matrix_row_transform_gids(*islavematrix_, *extendedmaps_->Map(1)), false,
+                *Mortar::matrix_row_transform_gids(*islavematrix_, *extendedmaps_->map(1)), false,
                 1., 0.);
           }
           else
@@ -3749,7 +3749,7 @@ void ScaTra::MeshtyingStrategyS2I::solve(const std::shared_ptr<Core::LinAlg::Sol
             extendedsystemmatrix.matrix(0, 1).add(*M_, true, -1., 0.);
             extendedsystemmatrix.matrix(0, 1).add(*D_, true, 1., 1.);
             extendedsystemmatrix.matrix(1, 0).add(
-                *Mortar::matrix_row_transform_gids(*imastermatrix_, *extendedmaps_->Map(1)), false,
+                *Mortar::matrix_row_transform_gids(*imastermatrix_, *extendedmaps_->map(1)), false,
                 1., 0.);
           }
           extendedsystemmatrix.matrix(1, 1).add(*E_, true, -1., 0.);

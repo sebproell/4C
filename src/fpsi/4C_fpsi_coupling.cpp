@@ -160,10 +160,10 @@ void FPSI::FpsiCoupling::setup_interface_coupling()
     //                      --> PoroFluid FPSI-Interface
 
     std::shared_ptr<const Core::LinAlg::Map> s_other_map = Core::LinAlg::merge_map(
-        poro_field()->structure_field()->interface()->Map(Solid::MapExtractor::cond_other),
-        poro_field()->structure_field()->interface()->Map(Solid::MapExtractor::cond_fsi));
+        poro_field()->structure_field()->interface()->map(Solid::MapExtractor::cond_other),
+        poro_field()->structure_field()->interface()->map(Solid::MapExtractor::cond_fsi));
     vecSpaces.push_back(s_other_map);  // other map
-    vecSpaces.push_back(poro_field()->structure_field()->interface()->Map(
+    vecSpaces.push_back(poro_field()->structure_field()->interface()->map(
         Solid::MapExtractor::cond_fpsi));                    // fpsi_coupling
     vecSpaces.push_back(porofluid_extractor_->other_map());  // other map
     vecSpaces.push_back(porofluid_extractor_->cond_map());   // fpsi_coupling

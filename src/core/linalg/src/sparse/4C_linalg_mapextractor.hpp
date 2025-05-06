@@ -108,7 +108,7 @@ namespace Core::LinAlg
     int num_maps() const { return maps_.size(); }
 
     /// get the map
-    const std::shared_ptr<const Core::LinAlg::Map>& Map(int i) const { return maps_[i]; }
+    const std::shared_ptr<const Core::LinAlg::Map>& map(int i) const { return maps_[i]; }
 
     /// the full map
     const std::shared_ptr<const Core::LinAlg::Map>& full_map() const { return fullmap_; }
@@ -121,13 +121,13 @@ namespace Core::LinAlg
     /// create vector to map i
     std::shared_ptr<Core::LinAlg::Vector<double>> vector(int i) const
     {
-      return std::make_shared<Core::LinAlg::Vector<double>>(*Map(i));
+      return std::make_shared<Core::LinAlg::Vector<double>>(*map(i));
     }
 
     /// create multi vector to map i
     std::shared_ptr<Core::LinAlg::MultiVector<double>> vector(int i, int numvec) const
     {
-      return std::make_shared<Core::LinAlg::MultiVector<double>>(*Map(i), numvec);
+      return std::make_shared<Core::LinAlg::MultiVector<double>>(*map(i), numvec);
     }
 
     //@
@@ -342,7 +342,7 @@ namespace Core::LinAlg
     {
       add_vector(cond, 1, full, scale);
     }
-    const std::shared_ptr<const Core::LinAlg::Map>& cond_map() const { return Map(1); }
+    const std::shared_ptr<const Core::LinAlg::Map>& cond_map() const { return map(1); }
     bool cond_relevant() const { return cond_map()->NumGlobalElements() != 0; }
     void cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
     {
@@ -378,7 +378,7 @@ namespace Core::LinAlg
     {
       add_vector(cond, 0, full, scale);
     }
-    const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return Map(0); }
+    const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(0); }
     bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
     void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
     {

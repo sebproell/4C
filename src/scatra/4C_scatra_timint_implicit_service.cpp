@@ -341,7 +341,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
   for (int icond = 0; icond < static_cast<int>(cond.size()); ++icond)
   {
     // extract dofrowmap associated with current boundary segment
-    const Core::LinAlg::Map& dofrowmap = *flux_boundary_maps_->Map(icond + 1);
+    const Core::LinAlg::Map& dofrowmap = *flux_boundary_maps_->map(icond + 1);
 
     // extract part of true residual vector associated with current boundary segment
     const std::shared_ptr<Core::LinAlg::Vector<double>> trueresidual_boundary =
