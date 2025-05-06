@@ -83,7 +83,7 @@ void Core::FE::Discretization::evaluate(Teuchos::ParameterList& params,
   for (auto* actele : my_col_element_range())
   {
     // get element location vector, dirichlet flags and ownerships
-    actele->location_vector(*this, la, false);
+    actele->location_vector(*this, la);
 
     // get dimension of element matrices and vectors
     // Reshape element matrices and vectors and init to zero
@@ -410,7 +410,7 @@ void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params
           // These dofs do not need to be the same as the dofs of the element
           // (this is the standard case, though). Special boundary conditions,
           // like weak Dirichlet conditions, assemble into the dofs of the parent element.
-          ele->location_vector(*this, la, false, condstring, params);
+          ele->location_vector(*this, la, condstring, params);
 
           // get dimension of element matrices and vectors
           // Reshape element matrices and vectors and initialize to zero
@@ -488,7 +488,7 @@ void Core::FE::Discretization::evaluate_scalars(
   {
     // get element location vector
     Core::Elements::LocationArray la(dofsets_.size());
-    actele->location_vector(*this, la, false);
+    actele->location_vector(*this, la);
 
     // define element vector
     Core::LinAlg::SerialDenseVector elescalars(numscalars);
@@ -567,7 +567,7 @@ void Core::FE::Discretization::evaluate_scalars(
           {
             // construct location vector for current element
             Core::Elements::LocationArray la(dofsets_.size());
-            element->location_vector(*this, la, false);
+            element->location_vector(*this, la);
 
             // initialize result vector for current element
             Core::LinAlg::SerialDenseVector elescalars(numscalars);
@@ -631,7 +631,7 @@ void Core::FE::Discretization::evaluate_scalars(
 
     // get element location vector
     Core::Elements::LocationArray la(dofsets_.size());
-    actele->location_vector(*this, la, false);
+    actele->location_vector(*this, la);
 
     // define element vector
     Core::LinAlg::SerialDenseVector elescalars(numscalars);

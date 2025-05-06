@@ -1060,7 +1060,7 @@ void XFEM::XfluidSemiLagrange::new_iteration_nodal_data(
     //----------------------------------------------------------
 
     //-------------------------------------------------------
-    // get node location vector, dirichlet flags and ownerships (discret, nds, la, doDirichlet)
+    // get node location vector
     std::vector<int> lm;
     std::vector<int> dofs;
 
@@ -1083,7 +1083,7 @@ void XFEM::XfluidSemiLagrange::new_iteration_nodal_data(
     if (dispnp_ != nullptr)  // is alefluid
     {
       //------------------------------------------------------- add ale disp
-      // get node location vector, dirichlet flags and ownerships (discret, nds, la, doDirichlet)
+      // get node location vector
 
       Core::LinAlg::Matrix<1, 1> nodepredummy(Core::LinAlg::Initialization::zero);
       extract_nodal_values_from_vector<1>(nodedispnp, nodepredummy, dispnp_, lm);
@@ -1358,7 +1358,7 @@ void XFEM::XfluidSemiLagrange::back_tracking(
   eval_shape_and_deriv<numnode, distype>(ele, xi, xji, shapeFcn, shapeFcnDeriv, compute_deriv);
 
   //-------------------------------------------------------
-  // get element location vector, dirichlet flags and ownerships (discret, nds, la, doDirichlet)
+  // get element location vector
   std::vector<int> lm;
 
   for (int inode = 0; inode < numnode; inode++)

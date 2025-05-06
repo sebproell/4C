@@ -346,7 +346,7 @@ void FLD::TimIntHDGWeakComp::iter_update(
   {
     // get element
     Core::Elements::Element* ele = discret_->l_col_element(el);
-    ele->location_vector(*discret_, la, false);
+    ele->location_vector(*discret_, la);
 
     // evaluate interior local increments
     ele->evaluate(params, *discret_, la[0].lm_, dummyMat, dummyMat, elemintinc, dummyVec, dummyVec);
@@ -445,7 +445,7 @@ void FLD::TimIntHDGWeakComp::set_initial_flow_field(
   {
     Core::Elements::Element* ele = discret_->l_col_element(el);
 
-    ele->location_vector(*discret_, la, false);
+    ele->location_vector(*discret_, la);
     if (static_cast<std::size_t>(elevec1.numRows()) != la[0].lm_.size())
       elevec1.size(la[0].lm_.size());
     if (elevec2.numRows() != discret_->num_dof(1, ele)) elevec2.size(discret_->num_dof(1, ele));

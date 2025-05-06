@@ -41,7 +41,7 @@ Core::LinAlg::Map DealiiWrappers::create_dealii_to_four_c_map(
     const int element_lid = context.pimpl_->cell_index_to_element_lid.at(cell->index());
     Core::Elements::LocationArray location_array{1};
     const auto* four_c_ele = discretization.l_row_element(element_lid);
-    four_c_ele->location_vector(discretization, location_array, false);
+    four_c_ele->location_vector(discretization, location_array);
 
 
     auto reindexing = ElementConversion::reindex_dealii_to_four_c(four_c_ele->shape());

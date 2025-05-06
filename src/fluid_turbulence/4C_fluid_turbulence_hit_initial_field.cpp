@@ -1223,7 +1223,7 @@ namespace FLD
       }
 
       // 2nd evaluate
-      ele->location_vector(*discret_, la, false);
+      ele->location_vector(*discret_, la);
       if (elevec1.numRows() != discret_->num_dof(1, ele)) elevec1.size(discret_->num_dof(1, ele));
       if (static_cast<std::size_t>(elevec3.numRows()) != la[0].lm_.size())
         elevec3.size(la[0].lm_.size());

@@ -2424,7 +2424,7 @@ void XFEM::MeshCouplingFSI::estimate_nitsche_trace_max_eigenvalue(Core::Elements
       coupl_dis_->g_element(solidfaceele->parent_element_id()), solidfaceele->face_parent_number());
 
   Core::Elements::LocationArray la(1);
-  solidfaceele->parent_element()->location_vector(*coupl_dis_, la, false);
+  solidfaceele->parent_element()->location_vector(*coupl_dis_, la);
 
   // extract eledisp here
   // parent and boundary displacement at n+1
@@ -2625,7 +2625,7 @@ void XFEM::MeshCouplingFluidFluid::estimate_nitsche_trace_max_eigenvalue(
   Core::Elements::FaceElement* faceele = dynamic_cast<Core::Elements::FaceElement*>(ele);
   if (!faceele) FOUR_C_THROW("Cast to faceele failed!");  // todo change to FOUR_C_ASSERT
 
-  faceele->location_vector(*coupl_dis_, la, false);
+  faceele->location_vector(*coupl_dis_, la);
 
   Discret::Elements::FluidBoundaryParentInterface::impl(faceele)
       ->estimate_nitsche_trace_max_eigenvalue(

@@ -669,11 +669,11 @@ int Discret::Elements::ScaTraHDGBoundary::evaluate_neumann(Teuchos::ParameterLis
  |  Get degrees of freedom used by this element (public) hoermann 09/15 |
  *----------------------------------------------------------------------*/
 void Discret::Elements::ScaTraHDGBoundary::location_vector(const Core::FE::Discretization& dis,
-    Core::Elements::LocationArray& la, bool doDirichlet, const std::string& condstring,
+    Core::Elements::LocationArray& la, const std::string& condstring,
     Teuchos::ParameterList& params) const
 {
   // we have to do it this way
-  parent_master_element()->location_vector(dis, la, false);
+  parent_master_element()->location_vector(dis, la);
   return;
 }
 

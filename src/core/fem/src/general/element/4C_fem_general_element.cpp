@@ -399,7 +399,7 @@ void Core::Elements::Element::nodal_connectivity(
  |                                                            gee 12/06 |
  *----------------------------------------------------------------------*/
 void Core::Elements::Element::location_vector(const Core::FE::Discretization& dis,
-    const std::vector<int>& nds, Core::Elements::LocationArray& la, bool doDirichlet) const
+    const std::vector<int>& nds, Core::Elements::LocationArray& la) const
 {
   const int numnode = num_node();
   const Core::Nodes::Node* const* nodes = Element::nodes();
@@ -472,7 +472,7 @@ void Core::Elements::Element::location_vector(const Core::FE::Discretization& di
  |                                                            gee 12/06 |
  *----------------------------------------------------------------------*/
 void Core::Elements::Element::location_vector(
-    const Core::FE::Discretization& dis, LocationArray& la, bool doDirichlet) const
+    const Core::FE::Discretization& dis, LocationArray& la) const
 {
   const int numnode = num_node();
   const Core::Nodes::Node* const* nodes = Element::nodes();
@@ -483,7 +483,6 @@ void Core::Elements::Element::location_vector(
   for (int dofset = 0; dofset < la.size(); ++dofset)
   {
     std::vector<int>& lm = la[dofset].lm_;
-    std::vector<int>& lmdirich = la[dofset].lmdirich_;
     std::vector<int>& lmowner = la[dofset].lmowner_;
     std::vector<int>& lmstride = la[dofset].stride_;
 
@@ -511,28 +510,6 @@ void Core::Elements::Element::location_vector(
           lmowner.push_back(owner);
           lm.push_back(dof[j]);
         }
-
-        if (doDirichlet)
-        {
-          const std::vector<int>* flag = nullptr;
-          Core::Conditions::Condition* dirich = node->get_condition("Dirichlet");
-          if (dirich)
-          {
-            if (dirich->type() != Core::Conditions::PointDirichlet &&
-                dirich->type() != Core::Conditions::LineDirichlet &&
-                dirich->type() != Core::Conditions::SurfaceDirichlet &&
-                dirich->type() != Core::Conditions::VolumeDirichlet)
-              FOUR_C_THROW("condition with name Dirichlet is not of type Dirichlet");
-            flag = &dirich->parameters().get<std::vector<int>>("ONOFF");
-          }
-          for (int j = 0; j < size; ++j)
-          {
-            if (flag && (*flag)[j])
-              lmdirich.push_back(1);
-            else
-              lmdirich.push_back(0);
-          }
-        }
       }
     }
 
@@ -559,77 +536,6 @@ void Core::Elements::Element::location_vector(
           lmowner.push_back(owner);
           lm.push_back(j);
         }
-
-        if (doDirichlet)
-        {
-          std::vector<Core::Conditions::Condition*> dirich_vec;
-          dis.get_condition("Dirichlet", dirich_vec);
-          Core::Conditions::Condition* dirich;
-          bool dirichRelevant = false;
-          // Check if there exist a dirichlet condition
-          if (!dirich_vec.empty())
-          {
-            // do only faces where all nodes are present in the node list
-            const int nummynodes = face_[i]->num_node();
-            const int* mynodes = face_[i]->node_ids();
-            // Check if the face belongs to any condition
-            for (auto& iter : dirich_vec)
-            {
-              bool faceRelevant = true;
-              dirich = iter;
-              for (int j = 0; j < nummynodes; ++j)
-              {
-                if (!dirich->contains_node(mynodes[j]))
-                {
-                  faceRelevant = false;
-                  break;
-                }
-              }
-              // If the face is not relevant the dirichlet flag is always zero
-              if (!faceRelevant)
-              {
-                continue;  // This is related to the dirichlet conditions loop
-              }
-              else
-              {
-                dirichRelevant = true;
-                break;  // We found the right dirichlet
-              }
-            }
-
-            if (!dirichRelevant)
-            {
-              for (int j = 0; j < this->num_dof_per_face(i); ++j) lmdirich.push_back(0);
-              continue;
-            }
-
-            const std::vector<int>* flag = nullptr;
-            if (dirich->type() != Core::Conditions::PointDirichlet &&
-                dirich->type() != Core::Conditions::LineDirichlet &&
-                dirich->type() != Core::Conditions::SurfaceDirichlet &&
-                dirich->type() != Core::Conditions::VolumeDirichlet)
-              FOUR_C_THROW("condition with name Dirichlet is not of type Dirichlet");
-            flag = &dirich->parameters().get<std::vector<int>>("ONOFF");
-
-            // Every component gets NumDofPerComponent ones or zeros
-            for (unsigned j = 0; j < flag->size(); ++j)
-              for (int k = 0; k < num_dof_per_component(i); ++k)
-              {
-                if (flag && (*flag)[j])
-                  lmdirich.push_back(1);
-                else
-                  lmdirich.push_back(0);
-              }
-          }
-        }
-      }
-    }
-
-    if (doDirichlet)
-    {
-      for (unsigned j = 0; j < dof.size(); ++j)
-      {
-        lmdirich.push_back(0);
       }
     }
   }
@@ -639,8 +545,7 @@ void Core::Elements::Element::location_vector(
  |  Get degrees of freedom used by this element                (public) |
  *----------------------------------------------------------------------*/
 void Core::Elements::Element::location_vector(const Core::FE::Discretization& dis,
-    LocationArray& la, bool doDirichlet, const std::string& condstring,
-    Teuchos::ParameterList& params) const
+    LocationArray& la, const std::string& condstring, Teuchos::ParameterList& params) const
 {
   /* This method is intended to fill the LocationArray with the dofs
    * the element will assemble into. In the standard case implemented here
@@ -649,7 +554,7 @@ void Core::Elements::Element::location_vector(const Core::FE::Discretization& di
    * into the dofs of a volume element. These elements need to overwrite this
    * method.
    */
-  location_vector(dis, la, doDirichlet);
+  location_vector(dis, la);
 }
 
 /*----------------------------------------------------------------------*

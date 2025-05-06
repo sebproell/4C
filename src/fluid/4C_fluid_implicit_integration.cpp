@@ -1156,7 +1156,7 @@ void FLD::FluidImplicitTimeInt::evaluate_mat_and_rhs(Teuchos::ParameterList& ele
       if (mat->material_type() == Core::Materials::m_matlist)
         FOUR_C_THROW("No matlists allowed here!!");
       // get element location vector, dirichlet flags and ownerships
-      actele->location_vector(*discret_, la, false);
+      actele->location_vector(*discret_, la);
       // get dimension of element matrices and vectors
       // Reshape element matrices and vectors and init to zero
       strategy.clear_element_storage(la[0].size(), la[0].size());

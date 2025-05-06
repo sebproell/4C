@@ -595,7 +595,7 @@ void Arteries::ArtNetImplStationary::reconstruct_flow()
     p.set<Arteries::Action>("action", Arteries::calc_flow_pressurebased);
 
     Core::Elements::LocationArray la(discret_->num_dof_sets());
-    actele->location_vector(*discret_, la, false);
+    actele->location_vector(*discret_, la);
     Core::LinAlg::SerialDenseVector flowVec(1);
 
     actele->evaluate(p, *discret_, la, dummyMat, dummyMat, flowVec, dummyVec, dummyVec);

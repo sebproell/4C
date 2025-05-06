@@ -77,7 +77,7 @@ int Discret::Elements::PoroFluidMultiPhaseBoundary::evaluate_neumann(Teuchos::Pa
 
   // build the location array
   Core::Elements::LocationArray la(discretization.num_dof_sets());
-  Core::Elements::Element::location_vector(discretization, la, false);
+  Core::Elements::Element::location_vector(discretization, la);
 
   // evaluate boundary element
   return evaluate(params, discretization, la, *elemat1, *elemat1, elevec1, elevec1, elevec1);

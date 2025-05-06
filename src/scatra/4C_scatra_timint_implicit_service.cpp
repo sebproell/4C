@@ -1585,7 +1585,7 @@ void ScaTra::ScaTraTimIntImpl::recompute_mean_csgs_b()
 
       // get element location vector, dirichlet flags and ownerships
       Core::Elements::LocationArray la(discret_->num_dof_sets());
-      ele->location_vector(*discret_, la, false);
+      ele->location_vector(*discret_, la);
 
       // call the element evaluate method to integrate functions
       int err = ele->evaluate(myparams, *discret_, la, emat1, emat2, evec1, evec2, evec2);

@@ -225,7 +225,7 @@ namespace
           FOUR_C_ASSERT_ALWAYS(
               ele.shape() == Core::FE::CellType::hex8, "STC only supported for hex8 cell type");
           Core::Elements::LocationArray la(1);
-          ele.location_vector(discret, la, false);
+          ele.location_vector(discret, la);
 
           const std::vector<double> displacements =
               Core::FE::extract_values(global_displacements, la[0].lm_);

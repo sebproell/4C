@@ -123,7 +123,7 @@ int Discret::Elements::FluidBoundary::evaluate_neumann(Teuchos::ParameterList& p
  |  Get degrees of freedom used by this element                (public) |
  *----------------------------------------------------------------------*/
 void Discret::Elements::FluidBoundary::location_vector(const Core::FE::Discretization& dis,
-    Core::Elements::LocationArray& la, bool doDirichlet, const std::string& condstring,
+    Core::Elements::LocationArray& la, const std::string& condstring,
     Teuchos::ParameterList& params) const
 {
   // get the action required
@@ -141,14 +141,14 @@ void Discret::Elements::FluidBoundary::location_vector(const Core::FE::Discretiz
       // the inner dofs of its parent element
       // note: using these actions, the element will get the parent location vector
       //       as input in the respective evaluate routines
-      parent_element()->location_vector(dis, la, doDirichlet);
+      parent_element()->location_vector(dis, la);
       break;
     case FLD::boundary_none:
       FOUR_C_THROW("No action supplied");
       break;
     default:
       // standard case: element assembles into its own dofs only
-      Core::Elements::Element::location_vector(dis, la, doDirichlet);
+      Core::Elements::Element::location_vector(dis, la);
       break;
   }
   return;

@@ -840,7 +840,7 @@ std::shared_ptr<std::vector<double>> FLD::XFluidFluid::evaluate_error_compared_t
     Core::Elements::LocationArray la(1);
 
     // get element location vector, dirichlet flags and ownerships
-    actele->location_vector(*mc_xff_->get_cond_dis(), la, false);
+    actele->location_vector(*mc_xff_->get_cond_dis(), la);
 
     Core::LinAlg::SerialDenseMatrix elemat1;
     Core::LinAlg::SerialDenseMatrix elemat2;

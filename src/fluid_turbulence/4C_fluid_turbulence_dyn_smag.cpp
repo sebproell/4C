@@ -830,7 +830,7 @@ void FLD::DynSmagFilter::dyn_smag_compute_prt(
 
     // get element location vector, dirichlet flags and ownerships
     Core::Elements::LocationArray la(scatradiscret_->num_dof_sets());
-    ele->location_vector(*scatradiscret_, la, false);
+    ele->location_vector(*scatradiscret_, la);
 
     // call the element evaluate method to integrate functions
     // against heaviside function element

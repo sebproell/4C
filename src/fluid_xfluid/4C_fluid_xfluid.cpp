@@ -886,9 +886,8 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
         // for quadratic elements, there are some volume-cells with respect to subelements, that
         // have to be assembled at once
 
-        // get element location vector, dirichlet flags and ownerships (discret, nds, la,
-        // doDirichlet)
-        actele->location_vector(*discret_, nds, la, false);
+        // get element location vector
+        actele->location_vector(*discret_, nds, la);
 
         // get dimension of element matrices and vectors
         // Reshape element matrices and vectors and init to zero (rdim, cdim)
@@ -1097,9 +1096,8 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
                       "For a two-sided level set coupling, we should not enter here with inside "
                       "volume-cells!!!");
 
-                // get element location vector, dirichlet flags and ownerships (discret, nds, la,
-                // doDirichlet)
-                actele->location_vector(*coupl_dis, nds_other, la_other, false);
+                // get element location vector
+                actele->location_vector(*coupl_dis, nds_other, la_other);
                 std::copy(la_other[0].lm_.begin(), la_other[0].lm_.end(),
                     std::inserter(patchlm, patchlm.end()));
               }
@@ -1235,7 +1233,7 @@ void FLD::XFluid::assemble_mat_and_rhs_vol_terms()
         FOUR_C_THROW("No matlists allowed here!!");
 
       // get element location vector, dirichlet flags and ownerships
-      actele->location_vector(*discret_, la, false);
+      actele->location_vector(*discret_, la);
 
       // get dimension of element matrices and vectors
       // Reshape element matrices and vectors and init to zero
@@ -1393,9 +1391,8 @@ void FLD::XFluid::integrate_shape_function(Teuchos::ParameterList& eleparams,
         // to be assembled at once
 
 
-        // get element location vector, dirichlet flags and ownerships (discret, nds, la,
-        // doDirichlet)
-        actele->location_vector(discret, nds, la, false);
+        // get element location vector
+        actele->location_vector(discret, nds, la);
 
         // get dimension of element matrices and vectors
         // Reshape element matrices and vectors and init to zero (rdim, cdim)
@@ -1465,7 +1462,7 @@ void FLD::XFluid::integrate_shape_function(Teuchos::ParameterList& eleparams,
       TEUCHOS_FUNC_TIME_MONITOR("FLD::XFluid::XFluidState::Evaluate 3) standard domain");
 
       // get element location vector, dirichlet flags and ownerships
-      actele->location_vector(discret, la, false);
+      actele->location_vector(discret, la);
 
       // get dimension of element matrices and vectors
       // Reshape element matrices and vectors and init to zero
@@ -1982,7 +1979,7 @@ void FLD::XFluid::compute_error_norms(Core::LinAlg::SerialDenseVector& glob_dom_
         const std::vector<int>& nds = nds_sets[set_counter];
 
         // get element location vector, dirichlet flags and ownerships
-        actele->location_vector(*discret_, nds, la, false);
+        actele->location_vector(*discret_, nds, la);
 
         //------------------------------------------------------------
         // Evaluate interface integral errors
@@ -2006,7 +2003,7 @@ void FLD::XFluid::compute_error_norms(Core::LinAlg::SerialDenseVector& glob_dom_
           if (!has_xfem_integration_rule)  // use standard integration!!!
           {
             // get element location vector, dirichlet flags and ownerships
-            actele->location_vector(*discret_, la, false);
+            actele->location_vector(*discret_, la);
 
             Core::LinAlg::SerialDenseMatrix elemat1;
             Core::LinAlg::SerialDenseMatrix elemat2;
@@ -2048,7 +2045,7 @@ void FLD::XFluid::compute_error_norms(Core::LinAlg::SerialDenseVector& glob_dom_
     else
     {
       // get element location vector, dirichlet flags and ownerships
-      actele->location_vector(*discret_, la, false);
+      actele->location_vector(*discret_, la);
 
       Core::LinAlg::SerialDenseMatrix elemat1;
       Core::LinAlg::SerialDenseMatrix elemat2;

@@ -52,7 +52,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::evaluate_and_solve_
   {
     const int numnode = actele->num_node();
 
-    actele->location_vector(dis, la, false);
+    actele->location_vector(dis, la);
     lmowner = la[0].lmowner_;
     lmstride = la[0].stride_;
     lm = la[0].lm_;

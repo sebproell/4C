@@ -78,7 +78,7 @@ void Discret::Elements::FluidXWallBoundary::print(std::ostream& os) const
  |                                                            gee 12/06 |
  *----------------------------------------------------------------------*/
 void Discret::Elements::FluidXWallBoundary::location_vector(const Core::FE::Discretization& dis,
-    Core::Elements::LocationArray& la, bool doDirichlet, const std::string& condstring,
+    Core::Elements::LocationArray& la, const std::string& condstring,
     Teuchos::ParameterList& params) const
 {
   // get the action required
@@ -96,7 +96,7 @@ void Discret::Elements::FluidXWallBoundary::location_vector(const Core::FE::Disc
       // the inner dofs of its parent element
       // note: using these actions, the element will get the parent location vector
       //       as input in the respective evaluate routines
-      parent_element()->location_vector(dis, la, doDirichlet);
+      parent_element()->location_vector(dis, la);
       break;
     case FLD::boundary_none:
       FOUR_C_THROW("No action supplied");
@@ -112,7 +112,6 @@ void Discret::Elements::FluidXWallBoundary::location_vector(const Core::FE::Disc
       for (int dofset = 0; dofset < la.size(); ++dofset)
       {
         std::vector<int>& lm = la[dofset].lm_;
-        std::vector<int>& lmdirich = la[dofset].lmdirich_;
         std::vector<int>& lmowner = la[dofset].lmowner_;
         std::vector<int>& lmstride = la[dofset].stride_;
 
@@ -139,28 +138,6 @@ void Discret::Elements::FluidXWallBoundary::location_vector(const Core::FE::Disc
               lmowner.push_back(owner);
               lm.push_back(dof[j]);
             }
-
-            if (doDirichlet)
-            {
-              const std::vector<int>* flag = nullptr;
-              Core::Conditions::Condition* dirich = node->get_condition("Dirichlet");
-              if (dirich)
-              {
-                if (dirich->type() != Core::Conditions::PointDirichlet &&
-                    dirich->type() != Core::Conditions::LineDirichlet &&
-                    dirich->type() != Core::Conditions::SurfaceDirichlet &&
-                    dirich->type() != Core::Conditions::VolumeDirichlet)
-                  FOUR_C_THROW("condition with name Dirichlet is not of type Dirichlet");
-                flag = &dirich->parameters().get<std::vector<int>>("ONOFF");
-              }
-              for (unsigned j = 0; j < dof.size(); ++j)
-              {
-                if (flag && (*flag)[j])
-                  lmdirich.push_back(1);
-                else
-                  lmdirich.push_back(0);
-              }
-            }
           }
         }
 
@@ -168,62 +145,11 @@ void Discret::Elements::FluidXWallBoundary::location_vector(const Core::FE::Disc
         //      const int owner = Owner();
         std::vector<int> dofx = dis.dof(dofset, this);
         if (dofx.size()) FOUR_C_THROW("no element dofs expected");
-        //      std::vector<int> dof;
-        //      if(dofx.size())
-        //      {
-        //        //only take the first four dofs (the real dofs, but not the enriched ones)
-        //        dof.push_back(dofx.at(0));
-        //        dof.push_back(dofx.at(1));
-        //        dof.push_back(dofx.at(2));
-        //        dof.push_back(dofx.at(3));
-        //      }
 
-        //      if (dof.size()) lmstride.push_back(dof.size());
-        //      for (unsigned j=0; j<dof.size(); ++j)
-        //      {
-        //        lmowner.push_back(owner);
-        //        lm.push_back(dof[j]);
-        //      }
 
         // fill the vector with face dofs
         if (this->num_dof_per_face(0) > 0)
           FOUR_C_THROW("set face_ from private to protected and uncomment");
-        //      {
-        //        for (int i=0; i<NumFace(); ++i)
-        //        {
-        //          const int owner = face_[i]->Owner();
-        //          std::vector<int> dof = dis.Dof(dofset,face_[i]);
-        //          if (dof.size())
-        //            lmstride.push_back(dof.size());
-        //          for (unsigned j=0; j<dof.size(); ++j)
-        //          {
-        //            lmowner.push_back(owner);
-        //            lm.push_back(dof[j]);
-        //          }
-        //        }
-        //      }
-
-        //      if (doDirichlet)
-        //      {
-        //        const std::vector<int>* flag = nullptr;
-        //        Core::Conditions::Condition* dirich = GetCondition("Dirichlet");
-        //        if (dirich)
-        //        {
-        //          if (dirich->Type()!=Core::Conditions::geometry_type_pointDirichlet &&
-        //              dirich->Type()!=Core::Conditions::geometry_type_lineDirichlet &&
-        //              dirich->Type()!=Core::Conditions::geometry_type_surfaceDirichlet &&
-        //              dirich->Type()!=Core::Conditions::geometry_type_volumeDirichlet)
-        //            FOUR_C_THROW("condition with name Dirichlet is not of type Dirichlet");
-        //          flag = dirich->get<std::vector<int> >("ONOFF");
-        //        }
-        //        for (unsigned j=0; j<dof.size(); ++j)
-        //        {
-        //          if (flag && (*flag)[j])
-        //            lmdirich.push_back(1);
-        //          else
-        //            lmdirich.push_back(0);
-        //        }
-        //      }
 
       }  // for (int dofset=0; dofset<la.Size(); ++dofset)
       break;
