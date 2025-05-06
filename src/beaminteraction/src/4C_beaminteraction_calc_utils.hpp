@@ -67,9 +67,114 @@ namespace BeamInteraction
         solid = 2
       };
 
-      MAP_EXTRACTOR_VECTOR_METHODS(beam, beam)
-      MAP_EXTRACTOR_VECTOR_METHODS(sphere, sphere)
-      MAP_EXTRACTOR_VECTOR_METHODS(solid, solid)
+      std::shared_ptr<Core::LinAlg::Vector<double>> extract_beam_vector(
+          const Core::LinAlg::Vector<double>& full) const
+      {
+        return MultiMapExtractor::extract_vector(full, beam);
+      }
+      void extract_beam_vector(
+          const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+      {
+        extract_vector(full, beam, cond);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> insert_beam_vector(
+          const Core::LinAlg::Vector<double>& cond) const
+      {
+        return insert_vector(cond, beam);
+      }
+      void insert_beam_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        insert_vector(cond, beam, full);
+      }
+      void add_beam_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, beam, full);
+      }
+      void add_beam_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+          Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, beam, full, scale);
+      }
+      const std::shared_ptr<const Core::LinAlg::Map>& beam_map() const { return Map(beam); }
+      bool beam_relevant() const { return beam_map()->NumGlobalElements() != 0; }
+      void beam_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+      {
+        put_scalar(full, beam, scalar);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> extract_sphere_vector(
+          const Core::LinAlg::Vector<double>& full) const
+      {
+        return MultiMapExtractor::extract_vector(full, sphere);
+      }
+      void extract_sphere_vector(
+          const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+      {
+        extract_vector(full, sphere, cond);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> insert_sphere_vector(
+          const Core::LinAlg::Vector<double>& cond) const
+      {
+        return insert_vector(cond, sphere);
+      }
+      void insert_sphere_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        insert_vector(cond, sphere, full);
+      }
+      void add_sphere_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, sphere, full);
+      }
+      void add_sphere_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+          Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, sphere, full, scale);
+      }
+      const std::shared_ptr<const Core::LinAlg::Map>& sphere_map() const { return Map(sphere); }
+      bool sphere_relevant() const { return sphere_map()->NumGlobalElements() != 0; }
+      void sphere_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+      {
+        put_scalar(full, sphere, scalar);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> extract_solid_vector(
+          const Core::LinAlg::Vector<double>& full) const
+      {
+        return MultiMapExtractor::extract_vector(full, solid);
+      }
+      void extract_solid_vector(
+          const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+      {
+        extract_vector(full, solid, cond);
+      }
+      std::shared_ptr<Core::LinAlg::Vector<double>> insert_solid_vector(
+          const Core::LinAlg::Vector<double>& cond) const
+      {
+        return insert_vector(cond, solid);
+      }
+      void insert_solid_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        insert_vector(cond, solid, full);
+      }
+      void add_solid_vector(
+          const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, solid, full);
+      }
+      void add_solid_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+          Core::LinAlg::Vector<double>& full) const
+      {
+        add_vector(cond, solid, full, scale);
+      }
+      const std::shared_ptr<const Core::LinAlg::Map>& solid_map() const { return Map(solid); }
+      bool solid_relevant() const { return solid_map()->NumGlobalElements() != 0; }
+      void solid_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+      {
+        put_scalar(full, solid, scalar);
+      }
     };
 
     /// class for comparing Core::Elements::Element* (and Core::Nodes::Node*) in a std::set

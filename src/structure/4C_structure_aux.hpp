@@ -54,13 +54,267 @@ namespace Solid
     std::shared_ptr<std::set<int>> conditioned_element_map(
         const Core::FE::Discretization& dis) const;
 
-    MAP_EXTRACTOR_VECTOR_METHODS(other, cond_other)
-    MAP_EXTRACTOR_VECTOR_METHODS(fsi_cond, cond_fsi)
-    MAP_EXTRACTOR_VECTOR_METHODS(lung_asi_cond, cond_lung_asi)
-    MAP_EXTRACTOR_VECTOR_METHODS(ale_wear_cond, cond_ale_wear)
-    MAP_EXTRACTOR_VECTOR_METHODS(fpsi_cond, cond_fpsi)
-    MAP_EXTRACTOR_VECTOR_METHODS(immersed_cond, cond_immersed)
-    MAP_EXTRACTOR_VECTOR_METHODS(pasi_cond, cond_pasi)
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_other_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, cond_other);
+    }
+    void extract_other_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, cond_other, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_other_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, cond_other);
+    }
+    void insert_other_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, cond_other, full);
+    }
+    void add_other_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_other, full);
+    }
+    void add_other_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_other, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return Map(cond_other); }
+    bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+    void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, cond_other, scalar);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_fsi_cond_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, cond_fsi);
+    }
+    void extract_fsi_cond_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, cond_fsi, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_fsi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, cond_fsi);
+    }
+    void insert_fsi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, cond_fsi, full);
+    }
+    void add_fsi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_fsi, full);
+    }
+    void add_fsi_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_fsi, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& fsi_cond_map() const { return Map(cond_fsi); }
+    bool fsi_cond_relevant() const { return fsi_cond_map()->NumGlobalElements() != 0; }
+    void fsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, cond_fsi, scalar);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_lung_asi_cond_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, cond_lung_asi);
+    }
+    void extract_lung_asi_cond_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, cond_lung_asi, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_lung_asi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, cond_lung_asi);
+    }
+    void insert_lung_asi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, cond_lung_asi, full);
+    }
+    void add_lung_asi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_lung_asi, full);
+    }
+    void add_lung_asi_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_lung_asi, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& lung_asi_cond_map() const
+    {
+      return Map(cond_lung_asi);
+    }
+    bool lung_asi_cond_relevant() const { return lung_asi_cond_map()->NumGlobalElements() != 0; }
+    void lung_asi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, cond_lung_asi, scalar);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_ale_wear_cond_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, cond_ale_wear);
+    }
+    void extract_ale_wear_cond_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, cond_ale_wear, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_ale_wear_cond_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, cond_ale_wear);
+    }
+    void insert_ale_wear_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, cond_ale_wear, full);
+    }
+    void add_ale_wear_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_ale_wear, full);
+    }
+    void add_ale_wear_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_ale_wear, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& ale_wear_cond_map() const
+    {
+      return Map(cond_ale_wear);
+    }
+    bool ale_wear_cond_relevant() const { return ale_wear_cond_map()->NumGlobalElements() != 0; }
+    void ale_wear_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, cond_ale_wear, scalar);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_fpsi_cond_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, cond_fpsi);
+    }
+    void extract_fpsi_cond_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, cond_fpsi, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_fpsi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, cond_fpsi);
+    }
+    void insert_fpsi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, cond_fpsi, full);
+    }
+    void add_fpsi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_fpsi, full);
+    }
+    void add_fpsi_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_fpsi, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& fpsi_cond_map() const { return Map(cond_fpsi); }
+    bool fpsi_cond_relevant() const { return fpsi_cond_map()->NumGlobalElements() != 0; }
+    void fpsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, cond_fpsi, scalar);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_immersed_cond_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, cond_immersed);
+    }
+    void extract_immersed_cond_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, cond_immersed, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_immersed_cond_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, cond_immersed);
+    }
+    void insert_immersed_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, cond_immersed, full);
+    }
+    void add_immersed_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_immersed, full);
+    }
+    void add_immersed_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_immersed, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& immersed_cond_map() const
+    {
+      return Map(cond_immersed);
+    }
+    bool immersed_cond_relevant() const { return immersed_cond_map()->NumGlobalElements() != 0; }
+    void immersed_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, cond_immersed, scalar);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_pasi_cond_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, cond_pasi);
+    }
+    void extract_pasi_cond_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, cond_pasi, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_pasi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, cond_pasi);
+    }
+    void insert_pasi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, cond_pasi, full);
+    }
+    void add_pasi_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_pasi, full);
+    }
+    void add_pasi_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, cond_pasi, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& pasi_cond_map() const { return Map(cond_pasi); }
+    bool pasi_cond_relevant() const { return pasi_cond_map()->NumGlobalElements() != 0; }
+    void pasi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, cond_pasi, scalar);
+    }
   };
 }  // namespace Solid
 

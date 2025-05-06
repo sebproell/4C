@@ -232,54 +232,6 @@ namespace Core::LinAlg
   };
 
 
-/// Add all kinds of support methods to derived classes of MultiMapExtractor.
-#define MAP_EXTRACTOR_VECTOR_METHODS(name, pos)                                           \
-  std::shared_ptr<Core::LinAlg::Vector<double>> extract_##name##_vector(                  \
-      const Core::LinAlg::Vector<double>& full) const                                     \
-  {                                                                                       \
-    return MultiMapExtractor::extract_vector(full, pos);                                  \
-  }                                                                                       \
-                                                                                          \
-  void extract_##name##_vector(                                                           \
-      const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const \
-  {                                                                                       \
-    extract_vector(full, pos, cond);                                                      \
-  }                                                                                       \
-                                                                                          \
-  std::shared_ptr<Core::LinAlg::Vector<double>> insert_##name##_vector(                   \
-      const Core::LinAlg::Vector<double>& cond) const                                     \
-  {                                                                                       \
-    return insert_vector(cond, pos);                                                      \
-  }                                                                                       \
-                                                                                          \
-  void insert_##name##_vector(                                                            \
-      const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const \
-  {                                                                                       \
-    insert_vector(cond, pos, full);                                                       \
-  }                                                                                       \
-                                                                                          \
-  void add_##name##_vector(                                                               \
-      const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const \
-  {                                                                                       \
-    add_vector(cond, pos, full);                                                          \
-  }                                                                                       \
-                                                                                          \
-  void add_##name##_vector(double scale, const Core::LinAlg::Vector<double>& cond,        \
-      Core::LinAlg::Vector<double>& full) const                                           \
-  {                                                                                       \
-    add_vector(cond, pos, full, scale);                                                   \
-  }                                                                                       \
-                                                                                          \
-  const std::shared_ptr<const Core::LinAlg::Map>& name##_map() const { return Map(pos); } \
-                                                                                          \
-  bool name##_relevant() const { return name##_map()->NumGlobalElements() != 0; }         \
-                                                                                          \
-  void name##_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const         \
-  {                                                                                       \
-    put_scalar(full, pos, scalar);                                                        \
-  }
-
-
   /// Split a dof row map in two and establish the communication pattern between those maps
   /*!
 
@@ -360,8 +312,78 @@ namespace Core::LinAlg
 
     //@}
 
-    MAP_EXTRACTOR_VECTOR_METHODS(cond, 1)
-    MAP_EXTRACTOR_VECTOR_METHODS(other, 0)
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_cond_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, 1);
+    }
+    void extract_cond_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, 1, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_cond_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, 1);
+    }
+    void insert_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, 1, full);
+    }
+    void add_cond_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, 1, full);
+    }
+    void add_cond_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, 1, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& cond_map() const { return Map(1); }
+    bool cond_relevant() const { return cond_map()->NumGlobalElements() != 0; }
+    void cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, 1, scalar);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> extract_other_vector(
+        const Core::LinAlg::Vector<double>& full) const
+    {
+      return MultiMapExtractor::extract_vector(full, 0);
+    }
+    void extract_other_vector(
+        const Core::LinAlg::Vector<double>& full, Core::LinAlg::Vector<double>& cond) const
+    {
+      extract_vector(full, 0, cond);
+    }
+    std::shared_ptr<Core::LinAlg::Vector<double>> insert_other_vector(
+        const Core::LinAlg::Vector<double>& cond) const
+    {
+      return insert_vector(cond, 0);
+    }
+    void insert_other_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      insert_vector(cond, 0, full);
+    }
+    void add_other_vector(
+        const Core::LinAlg::Vector<double>& cond, Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, 0, full);
+    }
+    void add_other_vector(double scale, const Core::LinAlg::Vector<double>& cond,
+        Core::LinAlg::Vector<double>& full) const
+    {
+      add_vector(cond, 0, full, scale);
+    }
+    const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return Map(0); }
+    bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+    void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
+    {
+      put_scalar(full, 0, scalar);
+    }
   };
 
 }  // namespace Core::LinAlg
