@@ -2049,20 +2049,12 @@ namespace Core::FE
     */
     void build_element_to_element_pointers();
 
-    /*!
-    \brief Build the geometry of surfaces belonging to the structure-fluid
-    volume coupling condition -> this is special since an associated volume
-    conditions also needs to be considered
-    */
-    void find_associated_ele_ids(
-        Core::Conditions::Condition& cond, std::set<int>& VolEleIDs, const std::string& name);
-
    protected:
     /*!
     \brief Build the geometry of lines for a certain line condition
 
     */
-    bool build_linesin_condition(
+    bool build_lines_in_condition(
         const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond);
 
     /*!
@@ -2074,14 +2066,14 @@ namespace Core::FE
 
 
     \version rework by Andreas Rauch ( rauch 10/16 )       */
-    bool build_surfacesin_condition(
+    bool build_surfaces_in_condition(
         const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond);
 
     /*!
     \brief Build the geometry of volumes for a certain volume condition
 
     */
-    bool build_volumesin_condition(
+    bool build_volumes_in_condition(
         const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond);
 
     /*!
@@ -2093,8 +2085,6 @@ namespace Core::FE
 
     \note This is a collective call
     */
-    // set protected to be accessible from derived class Discret::MeshFree::MeshfreeDiscretization
-    // (nis) Jan12
     void reset(bool killdofs, bool killcond);
 
     void reset() { this->reset(true, true); }
@@ -2114,11 +2104,11 @@ namespace Core::FE
     void boundary_conditions_geometry();
 
     /*!
-     *  A helper function for build_surfacesin_condition,
-     *  build_linesin_condition, BuildInternalFaces, etc.
+     *  A helper function for build_surfaces_in_condition,
+     *  build_lines_in_condition, BuildInternalFaces, etc.
      *
-     *  A helper method for build_linesin_condition and
-     *  build_surfacesin_condition, below.
+     *  A helper method for build_lines_in_condition and
+     *  build_surfaces_in_condition, below.
      *  Gets a map (vector_of_nodes)->Element that maps
      *
      *  (A map with globally unique ids.)

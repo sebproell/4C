@@ -316,10 +316,6 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "No Penetration Condition";
     case Core::Conditions::TotalTractionCorrectionBorderNodes:
       return "Total traction correction border nodes condition";
-    case Core::Conditions::RedAirwayTissue:
-      return "tissue RedAirway coupling surface condition";
-    case Core::Conditions::RedAirwayNodeTissue:
-      return "tissue RedAirway coupling node condition";
     case Core::Conditions::PoroCoupling:
       return "porous media coupling condition";
     case Core::Conditions::PoroPartInt:

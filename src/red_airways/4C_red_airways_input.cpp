@@ -221,30 +221,6 @@ void Airway::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinit
 
   condlist.push_back(art_3d_to_red_bc);
 
-  /*--------------------------------------------------------------------*/
-  // Coupling of 3D tissue models and reduced-D airway tree
-
-  Core::Conditions::ConditionDefinition surfredairtis("DESIGN SURF TISSUE REDAIRWAY CONDITIONS",
-      "SurfaceNeumann", "tissue RedAirway coupling surface condition",
-      Core::Conditions::RedAirwayTissue, true, Core::Conditions::geometry_type_surface);
-
-  surfredairtis.add_component(parameter<int>("coupling_id"));
-
-  condlist.push_back(surfredairtis);
-
-
-  /*--------------------------------------------------------------------*/
-  // Prescribed BC for reduced dimensional airways
-
-  Core::Conditions::ConditionDefinition noderedairtis("DESIGN NODE TISSUE REDAIRWAY CONDITIONS",
-      "RedAirwayPrescribedCond", "tissue RedAirway coupling node condition",
-      Core::Conditions::RedAirwayNodeTissue, true, Core::Conditions::geometry_type_point);
-
-  noderedairtis.add_component(parameter<int>("coupling_id"));
-
-  condlist.push_back(noderedairtis);
-
-
 
   /*--------------------------------------------------------------------*/
   // Prescribed BC for reduced dimensional airways
