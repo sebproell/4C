@@ -396,36 +396,6 @@ namespace Core::FE
       finalize(sourcedis, targetdis);
     };  // create_matching_discretization
 
-    /// method for cloning a new discretization from an existing condition using the actual
-    /// condition
-    void create_matching_discretization_from_condition(
-        const Core::FE::Discretization& sourcedis,  ///< ref. to source discretization
-        const std::vector<Core::Conditions::Condition*>&
-            conds,  ///< vector of conditions containing the elements to clone
-        Core::FE::Discretization& targetdis,  ///< std::shared_ptr to empty target discretization
-        const std::map<int, int>&
-            matmap  ///< map of material IDs (source element -> target element)
-    )
-    {
-      // check and analyze source and target discretization
-      initial_checks(sourcedis, targetdis);
-
-      std::vector<Core::Conditions::Condition*>::const_iterator cit;
-      for (cit = conds.begin(); cit != conds.end(); ++cit)
-      {
-        // check the source condition
-        if ((*cit)->get_nodes() == nullptr or (*cit)->get_nodes()->size() == 0)
-          FOUR_C_THROW("The condition has no nodes!");
-      }
-
-      // get this condition vector's elements
-      std::map<int, std::shared_ptr<Core::Elements::Element>> sourceelements;
-      Core::Conditions::find_condition_objects(sourceelements, conds);
-
-      create_matching_discretization_from_condition(sourcedis, sourceelements, targetdis, matmap);
-      return;
-    };  // create_matching_discretization_from_condition
-
     /// method for cloning a new discretization from an existing condition using the condition
     /// name
     void create_matching_discretization_from_condition(

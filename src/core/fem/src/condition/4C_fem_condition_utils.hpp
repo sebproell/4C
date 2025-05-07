@@ -54,37 +54,19 @@ namespace Core::Conditions
     bool operator()(int gid) const { return emap_->MyGID(gid); }
   };
 
-  /// find all local nodes from discretization marked with condition
-  /*!
-    Loop all conditions of the given discretization, find the ones with the
-    specified name and collect the locally owned node ids in the supplied
-    set. The nodes vector is unique and ordered on output.
-
-    \param dis : (in) discretization
-    \param condname : (in) name of condition in question
-    \param nodes : (out) empty set on input, filled with nodal gids of local nodes
-  */
+  /**
+   * Loop all conditions of the given Discretization @p dis, find the ones with the
+   * specified name @p condname and collect the locally owned node ids in the supplied
+   * set @p nodes. The @p nodes vector is unique and ordered on output.
+   */
   void find_conditioned_nodes(
       const Core::FE::Discretization& dis, const std::string& condname, std::vector<int>& nodes);
 
-  /// find all local nodes from discretization marked with condition
-  void find_conditioned_nodes(const Core::FE::Discretization& dis, const std::string& condname,
-      std::map<int, Core::Nodes::Node*>& nodes);
-
-  /// find all local nodes from discretization marked with condition
-  void find_conditioned_nodes(
-      const Core::FE::Discretization& dis, const std::string& condname, std::set<int>& nodeset);
-
-  /// find all local nodes from discretization marked with condition
-  /*!
-    Loop all conditions of the given discretization, find the ones with the
-    specified name and collect the locally owned node ids in the supplied
-    set. The nodes vector is unique and ordered on output.
-
-    \param dis : (in) discretization
-    \param conds : (in) conditions in question
-    \param nodes : (out) empty set on input, filled with nodal gids of local nodes
-  */
+  /**
+   * Loop over all conditions @p conds and extract their node IDs, if they are locally owned by the
+   * discretization @p dis. The node IDs are stored in the supplied vector @p nodes. The @p nodes
+   * vector is unique and ordered on output.
+   */
   void find_conditioned_nodes(const Core::FE::Discretization& dis,
       const std::vector<Core::Conditions::Condition*>& conds, std::vector<int>& nodes);
 
@@ -105,22 +87,6 @@ namespace Core::Conditions
       const std::vector<Core::Conditions::Condition*>& conds,
       std::map<int, std::shared_ptr<std::vector<int>>>& nodes, bool use_coupling_id = true);
 
-  /// find all local nodes from discretization marked with condition
-  void find_conditioned_nodes(const Core::FE::Discretization& dis,
-      const std::vector<Core::Conditions::Condition*>& conds, std::set<int>& nodeset);
-
-
-  /// collect all local nodes and elements in a condition
-  /*!
-    \param dis discretization
-    \param nodes unique map of nodes
-    \param elements unique map of elements
-    \param condname name of condition
-   */
-  void find_condition_objects(const Core::FE::Discretization& dis,
-      std::map<int, Core::Nodes::Node*>& nodes,
-      std::map<int, std::shared_ptr<Core::Elements::Element>>& elements,
-      const std::string& condname);
 
   /// collect all nodes (in- and excluding 'ghosts') and
   /// elements (including ghosts) in a condition
@@ -134,14 +100,6 @@ namespace Core::Conditions
   void find_condition_objects(const Core::FE::Discretization& dis,
       std::map<int, Core::Nodes::Node*>& nodes, std::map<int, Core::Nodes::Node*>& gnodes,
       std::map<int, std::shared_ptr<Core::Elements::Element>>& elements,
-      const std::vector<Core::Conditions::Condition*>& conds);
-
-  /// collect all elements in a condition including ghosts
-  /*!
-    \param elements overlapping map of elements
-    \param vector containing condition pointers
-   */
-  void find_condition_objects(std::map<int, std::shared_ptr<Core::Elements::Element>>& elements,
       const std::vector<Core::Conditions::Condition*>& conds);
 
   /// collect all nodes (in- and excluding 'ghosts') and
@@ -207,17 +165,6 @@ namespace Core::Conditions
    */
   std::shared_ptr<std::set<int>> conditioned_element_map(
       const Core::FE::Discretization& dis, const std::string& condname);
-
-  /*!
-   * \brief This method checks whether handed in conditions are defined on the same set of nodes
-   *
-   * @param[in] condition1  first condition to be tested
-   * @param[in] condition2  second condition to be tested
-   * @param[in] mustmatch   both conditions must match
-   * @return flag indicating if both conditions are defined on the same set of nodes
-   */
-  bool have_same_nodes(const Core::Conditions::Condition* const condition1,
-      const Core::Conditions::Condition* const condition2, bool mustmatch);
 
 }  // namespace Core::Conditions
 

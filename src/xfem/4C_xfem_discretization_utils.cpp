@@ -237,39 +237,6 @@ void XFEM::Utils::XFEMDiscretizationBuilder::setup_xfem_discretization(
   return;
 }
 
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-int XFEM::Utils::XFEMDiscretizationBuilder::setup_xfem_discretization(
-    const Teuchos::ParameterList& xgen_params, std::shared_ptr<Core::FE::Discretization> src_dis,
-    std::shared_ptr<Core::FE::Discretization> target_dis,
-    const std::vector<Core::Conditions::Condition*>& boundary_conds) const
-{
-  if (!target_dis->filled()) target_dis->fill_complete();
-
-  if (!src_dis->filled()) src_dis->fill_complete();
-
-  // get the number of DoF's per node
-  int gid_node = src_dis->node_row_map()->MinMyGID();
-  Core::Nodes::Node* node_ptr = src_dis->g_node(gid_node);
-  int num_dof_per_node = src_dis->num_dof(node_ptr);
-
-  std::vector<std::string> conditions_to_copy;
-  src_dis->get_condition_names(conditions_to_copy);
-
-  split_discretization_by_boundary_condition(
-      *src_dis, *target_dis, boundary_conds, conditions_to_copy);
-
-  if (std::dynamic_pointer_cast<XFEM::DiscretizationXFEM>(src_dis))
-    setup_xfem_discretization(xgen_params, src_dis, num_dof_per_node);
-  if (std::dynamic_pointer_cast<XFEM::DiscretizationXFEM>(target_dis))
-    setup_xfem_discretization(xgen_params, target_dis, num_dof_per_node);
-
-  Core::Rebalance::Utils::print_parallel_distribution(*src_dis);
-  Core::Rebalance::Utils::print_parallel_distribution(*target_dis);
-
-  return num_dof_per_node;
-}
-
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
@@ -477,63 +444,6 @@ void XFEM::Utils::XFEMDiscretizationBuilder::redistribute(
 
   dis.fill_complete();
 }
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-void XFEM::Utils::XFEMDiscretizationBuilder::split_discretization_by_boundary_condition(
-    Core::FE::Discretization& sourcedis, Core::FE::Discretization& targetdis,
-    const std::vector<Core::Conditions::Condition*>& boundary_conds,
-    const std::vector<std::string>& conditions_to_copy) const
-{
-  if (not sourcedis.filled()) FOUR_C_THROW("sourcedis is not filled");
-  const int myrank = Core::Communication::my_mpi_rank(targetdis.get_comm());
-
-  // element map
-  std::map<int, std::shared_ptr<Core::Elements::Element>> src_cond_elements;
-
-  // find conditioned nodes (owned and ghosted) and elements
-  Core::Conditions::find_condition_objects(src_cond_elements, boundary_conds);
-
-  std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator cit;
-  std::map<int, std::shared_ptr<Core::Elements::Element>> src_elements;
-  // row node map (id -> pointer)
-  std::map<int, Core::Nodes::Node*> src_my_gnodes;
-  std::vector<int> condnoderowvec;
-  // column node map
-  std::map<int, Core::Nodes::Node*> src_gnodes;
-  std::vector<int> condnodecolvec;
-  // find all parent elements
-  for (cit = src_cond_elements.begin(); cit != src_cond_elements.end(); ++cit)
-  {
-    Core::Elements::FaceElement* src_face_element =
-        dynamic_cast<Core::Elements::FaceElement*>(cit->second.get());
-    if (src_face_element == nullptr)
-      FOUR_C_THROW("Dynamic cast failed! The src element {} is no Core::Elements::FaceElement!",
-          cit->second->id());
-    // get the parent element
-    Core::Elements::Element* src_ele = src_face_element->parent_element();
-    int src_ele_gid = src_face_element->parent_element_id();
-    src_elements[src_ele_gid] = Core::Utils::shared_ptr_from_ref(*src_ele);
-    const int* n = src_ele->node_ids();
-    for (unsigned i = 0; i < static_cast<unsigned>(src_ele->num_node()); ++i)
-    {
-      const int gid = n[i];
-      if (sourcedis.have_global_node(gid))
-      {
-        Core::Nodes::Node* node = sourcedis.g_node(gid);
-        src_gnodes[gid] = node;
-
-        if (node->owner() == myrank) src_my_gnodes[gid] = node;
-      }
-      else
-        FOUR_C_THROW("All nodes of known elements must be known!");
-    }
-  }
-
-  split_discretization(
-      sourcedis, targetdis, src_my_gnodes, src_gnodes, src_elements, conditions_to_copy);
-}
-
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/

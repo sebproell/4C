@@ -63,57 +63,6 @@ namespace XFEM
           std::shared_ptr<Core::FE::Discretization> dis, Core::FE::Discretization& embedded_dis,
           const std::string& embedded_cond_name, int numdof = 4) const;
 
-      /*! \brief Setup xfem discretization and embedded discretization
-       *  by using a boundary condition vector
-       *
-       *  Split the given discretization into a XFEM discretization, which
-       *  is located next to the (enriched) conditioned interfaces and a standard
-       *  discretization
-       *
-       *           ___boundary cond___    _____ enriched and conditioned boundary
-       *          /                   \  /      interface nodes (o)
-       *                                /
-       *          o---o---o---o---o---o
-       *         /   /   /   /   /   /|       enriched element row (xFem discret.)
-       *        o---o---o---o---o---o +   <== (enriched (o) and std. nodes (+))
-       *        | 0 | 1 | 2 | 3 | 4 |/|
-       *        +---+---+---+---+---+ +       standard element row (std. discret.)
-       *        | 5 | 6 | 7 | 8 | 9 |/    <== (only std. nodes (+))
-       *        +---+---+---+---+---+
-       *
-       *                 __
-       *                |  |
-       *               _|  |_
-       *               \    /
-       *                \  /
-       *                 \/
-       *
-       *  We get one new cut xFem discretization, which is connected to the
-       *  conditioned boundary interface (o)
-       *
-       *          o---o---o---o---o---o
-       *         /   /   /   /   /   /|
-       *        o---o---o---o---o---o +
-       *        | 0 | 1 | 2 | 3 | 4 |/   <== xstruct_dis_ptr
-       *        +---+---+---+---+---+
-       *
-       *  and the remaining standard discretization (+)
-       *
-       *          +---+---+---+---+---+
-       *         /   /   /   /   /   /|
-       *        +---+---+---+---+---+ +
-       *        | 5 | 6 | 7 | 8 | 9 |/   <== struct_dis_ptr_
-       *        +---+---+---+---+---+
-       *
-       *  The two discretizations share the same node ID's at the coupling interface,
-       *  but differ in the global degrees of freedom ID's!
-       *
-       */
-      int setup_xfem_discretization(const Teuchos::ParameterList& xgen_params,
-          std::shared_ptr<Core::FE::Discretization> src_dis,
-          std::shared_ptr<Core::FE::Discretization> target_dis,
-          const std::vector<Core::Conditions::Condition*>& boundary_conds) const;
-
      private:
       //! split a discretization into two by removing conditioned nodes
       //! in source and adding to target
@@ -136,20 +85,6 @@ namespace XFEM
       //! re-partitioning of newly created discretizations (e.g. split by condition)
       void redistribute(Core::FE::Discretization& dis, std::vector<int>& noderowvec,
           std::vector<int>& nodecolvec) const;
-
-      /*! \brief Split a discretization into two parts by removing elements near boundary
-       *         conditions
-       *
-       *  Split a volume source discretization into one part which is directly
-       *  connected to the boundary condition face elements and the other. Currently
-       *  not tested.
-       *
-
-       *  */
-      void split_discretization_by_boundary_condition(Core::FE::Discretization& sourcedis,
-          Core::FE::Discretization& targetdis,
-          const std::vector<Core::Conditions::Condition*>& boundary_conds,
-          const std::vector<std::string>& conditions_to_copy) const;
 
       /** \brief remove conditions which are no longer part of the split
        *         partial discretizations, respectively

@@ -111,26 +111,6 @@ namespace Coupling::Adapter
         const std::vector<int>& masterdofs, const std::vector<int>& slavedofs, bool matchall = true,
         const int nds_master = 0, const int nds_slave = 0);
 
-    /// setup coupling of nodes marked with condition1 not belonging
-    /// also to condition2
-    /*!
-      Setup the whole thing. Find matching nodes via octtree, check
-      affiliation to other condition and build appropriate dof maps.
-
-     */
-    void setup_constrained_condition_coupling(
-        const Core::FE::Discretization& masterdis,  ///< discretization of master side
-        std::shared_ptr<const Core::LinAlg::Map>
-            mastercondmap,                         ///< map with condition DOFs of master side
-        const Core::FE::Discretization& slavedis,  ///< discretization of slave side
-        std::shared_ptr<const Core::LinAlg::Map>
-            slavecondmap,              ///< map with condition DOFs of slave side
-        const std::string& condname1,  ///< condition name
-        const std::string& condname2,  ///< condition name
-        const int numdof,              ///< number of DOFs to be coupled at each node
-        bool matchall = true           ///< Do all nodes need to match exactly?
-    );
-
     /*! \brief Setup coupling of given nodes
      *
      *  Setup the whole thing. Find matching nodes via octtree and build
