@@ -240,24 +240,6 @@ namespace Airway
     //@}
 
 
-    //! @name methods related to coupling with 3D tissue models
-
-    void setup_for_coupling();
-    void set_airway_flux_from_tissue(Core::LinAlg::Vector<double>& coupflux);
-    void extract_pressure(Core::LinAlg::Vector<double>& couppres);
-
-    /// Hand over outputwriter to redairway_tissue
-    Core::IO::DiscretizationWriter& get_output_writer() { return output_; }
-
-    /// Hand over restartreader to redairway_tissue
-    std::shared_ptr<Core::IO::DiscretizationReader> get_restart_reader(int step)
-    {
-      return std::make_shared<Core::IO::DiscretizationReader>(
-          discret_, Global::Problem::instance()->input_control_file(), step);
-    }
-
-    //@}
-
    protected:
     //! @name general algorithm parameters
     //! reduced dimensional airway network discretization
@@ -449,19 +431,6 @@ namespace Airway
     //! @name Nonlinear solution parameters
     int maxiter_;
     double non_lin_tol_;
-    //@}
-
-
-    //! @name Additional stuff related to coupling with 3D tissue models
-
-    /// map between coupling ID and conditions on structure
-    std::map<int, Core::Conditions::Condition*> coupcond_;
-
-    /// map of coupling IDs
-    std::shared_ptr<Core::LinAlg::Map> coupmap_;
-
-    std::map<int, double> pres_;
-
     //@}
 
   };  // class RedAirwayImplicitTimeInt

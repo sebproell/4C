@@ -52,7 +52,6 @@ namespace Core
     poromultiphase,        // multiphase flow in elastic porous media
     poromultiphasescatra,  // multiphase flow in elastic porous media with transport of species
     red_airways,           // reduced dimensional airways
-    redairways_tissue,     // coupling of reduced-dimensional airways with 3D tissue model
     reduced_lung,          // New implementation of red_airways with Newton-iteration
     scatra,                // scalar transport problem (e.g. convection-diffusion)
     ssi,                   // scalar structure interaction

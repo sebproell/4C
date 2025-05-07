@@ -278,8 +278,6 @@ std::string_view Core::Conditions::to_string(const Core::Conditions::ConditionTy
       return "Artery reflective boundary condition";
     case Core::Conditions::StructAleCoupling:
       return "Structure - ALE coupling condition";
-    case Core::Conditions::StructFluidSurfCoupling:
-      return "Structure - Fluid surface coupling condition";
     case Core::Conditions::StructFluidVolCoupling:
       return "Structure - Fluid volume coupling condition";
     case Core::Conditions::BioGrCoupling:
