@@ -134,7 +134,7 @@ namespace Core::DOFSets
     virtual bool filled() const = 0;
 
     /// Add Dof Set to list #static_dofsets_
-    virtual void add_dof_setto_list() = 0;
+    virtual void add_dof_set_to_list() = 0;
 
     /// Replace a Dof Set in list #static_dofsets_ with this
     virtual void replace_in_static_dofsets(std::shared_ptr<DofSetInterface> olddofset) = 0;
@@ -156,7 +156,7 @@ namespace Core::DOFSets
 
     /// Get Max of all GID assigned in the DofSets in front of current one in the list
     /// #static_dofsets_
-    virtual int max_gi_din_list(MPI_Comm comm) const = 0;
+    virtual int max_gid_in_list(MPI_Comm comm) const = 0;
 
     /// are the dof maps already initialized?
     virtual bool initialized() const = 0;

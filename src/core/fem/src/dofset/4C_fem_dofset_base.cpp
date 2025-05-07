@@ -45,7 +45,7 @@ Core::DOFSets::DofSetBase::~DofSetBase()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::DOFSets::DofSetBase::add_dof_setto_list()
+void Core::DOFSets::DofSetBase::add_dof_set_to_list()
 {
   if (std::find(static_dofsets_.begin(), static_dofsets_.end(), this) == static_dofsets_.end())
   {
@@ -77,7 +77,7 @@ void Core::DOFSets::DofSetBase::replace_in_static_dofsets(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-int Core::DOFSets::DofSetBase::max_gi_din_list(MPI_Comm comm) const
+int Core::DOFSets::DofSetBase::max_gid_in_list(MPI_Comm comm) const
 {
   int count = -1;
   for (std::list<DofSetInterface*>::const_iterator i = static_dofsets_.begin();

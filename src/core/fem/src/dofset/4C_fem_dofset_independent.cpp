@@ -32,7 +32,7 @@ Core::DOFSets::IndependentDofSet::IndependentDofSet(const IndependentDofSet& old
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::DOFSets::IndependentDofSet::add_dof_setto_list()
+void Core::DOFSets::IndependentDofSet::add_dof_set_to_list()
 {
   // We do nothing here as an independent DofSet should not show up in the dof set list.
   return;

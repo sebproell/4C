@@ -143,7 +143,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
 
   // Add DofSets in order of assignment to list. Once it is there it has its
   // place and will get its starting id from the previous DofSet.
-  add_dof_setto_list();
+  add_dof_set_to_list();
 
   // We assume that all dof sets before this one have been set up. Otherwise
   // we'd have to reorder the list.
@@ -630,7 +630,7 @@ int Core::DOFSets::DofSet::min_all_gid() const
 int Core::DOFSets::DofSet::get_first_gid_number_to_be_used(
     const Core::FE::Discretization& dis) const
 {
-  return max_gi_din_list(dis.get_comm()) + 1;
+  return max_gid_in_list(dis.get_comm()) + 1;
 }
 
 

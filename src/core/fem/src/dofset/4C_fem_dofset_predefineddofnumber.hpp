@@ -95,11 +95,11 @@ namespace Core::DOFSets
     }
 
     /// Add Dof Set to list #static_dofsets_
-    void add_dof_setto_list() override
+    void add_dof_set_to_list() override
     {
       if (unique_gids_)
         // add to static list -> the auxiliary dofs will get unique gids
-        DofSet::add_dof_setto_list();
+        DofSet::add_dof_set_to_list();
       else
         // do nothing -> probably gids assigned to auxiliary dofs will not be unique
         return;

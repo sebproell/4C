@@ -23,7 +23,7 @@ int Constraints::ConstraintDofSet::assign_degrees_of_freedom(
 
   // Add DofSets in order of assignment to list. Once it is there it has its
   // place and will get its starting id from the previous DofSet.
-  add_dof_setto_list();
+  add_dof_set_to_list();
 
   // We assume that all dof sets before this one have been set up. Otherwise
   // we'd have to reorder the list.
@@ -41,7 +41,7 @@ int Constraints::ConstraintDofSet::assign_degrees_of_freedom(
   // try to understand what you do.
 
   // Get highest GID used so far and add one
-  const int count = max_gi_din_list(dis->get_comm()) + 1;
+  const int count = max_gid_in_list(dis->get_comm()) + 1;
 
   // dofrowmap with index base = count, which is undesired
   Core::LinAlg::Map dofrowmap(ndofs, count, Core::Communication::as_epetra_comm(dis->get_comm()));

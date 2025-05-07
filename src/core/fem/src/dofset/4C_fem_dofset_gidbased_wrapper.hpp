@@ -244,10 +244,10 @@ namespace Core::DOFSets
 
     /// Get Max of all GID assigned in the DofSets in front of current one in the list
     /// #static_dofsets_
-    int max_gi_din_list(MPI_Comm comm) const override
+    int max_gid_in_list(MPI_Comm comm) const override
     {
       check_is_assigned();
-      return sourcedofset_->max_gi_din_list(comm);
+      return sourcedofset_->max_gid_in_list(comm);
     };
 
     /// are the dof maps already initialized?
