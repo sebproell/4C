@@ -929,7 +929,6 @@ Solid::TimeInt::BaseDataGlobalState::extract_model_block(Core::LinAlg::SparseOpe
   FOUR_C_THROW(
       "The jacobian has the wrong type! (no Core::LinAlg::SparseMatrix "
       "and no Core::LinAlg::BlockSparseMatrix)");
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -985,7 +984,6 @@ Solid::TimeInt::BaseDataGlobalState::extract_row_of_blocks(
   FOUR_C_THROW(
       "The jacobian has the wrong type! (no Core::LinAlg::SparseMatrix "
       "and no Core::LinAlg::BlockSparseMatrix)");
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -1077,7 +1075,6 @@ int Solid::TimeInt::BaseDataGlobalState::get_nln_iteration_number(const unsigned
   }
 
   FOUR_C_THROW("There is no nonlinear iteration number for the given step {}.", step);
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*

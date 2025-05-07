@@ -96,7 +96,6 @@ void Cut::ElementHandle::volume_cell_gauss_points(
       {
         FOUR_C_THROW("non supported element integration type for given volume-cell {}",
             vc->parent_element()->get_element_integration_type());
-        exit(EXIT_FAILURE);
       }
     }
 
@@ -190,7 +189,6 @@ void Cut::ElementHandle::append_volume_cell_gauss_points_tessellation(
       default:
         FOUR_C_THROW("unsupported integration cell type ( cell type = {} )",
             Core::FE::cell_type_to_string(ic->shape()));
-        exit(EXIT_FAILURE);
     }
   }
 }
@@ -323,7 +321,6 @@ std::shared_ptr<Core::FE::GaussPointsComposite> Cut::ElementHandle::gauss_points
           default:
             FOUR_C_THROW("unsupported integration cell type ( cell type = {} )",
                 Core::FE::cell_type_to_string(ic->shape()));
-            exit(EXIT_FAILURE);
         }
       }
     }

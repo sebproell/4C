@@ -1387,7 +1387,6 @@ namespace
     }
 
     FOUR_C_THROW("The base function for boundarycell integration undefined");
-    exit(1);
     return 0.0;
   }
 
@@ -1960,7 +1959,6 @@ namespace
       return basef_surf;
     }
     FOUR_C_THROW("The base function for boundarycell integration undefined");
-    exit(1);
     return 0.0;
   }
 
@@ -2528,7 +2526,6 @@ namespace
       return basef_surf;
     }
     FOUR_C_THROW("The base function for boundarycell integration undefined");
-    exit(1);
     return 0.0;
   }
 }  // namespace

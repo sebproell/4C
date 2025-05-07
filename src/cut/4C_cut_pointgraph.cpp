@@ -1151,7 +1151,6 @@ std::shared_ptr<Cut::Impl::PointGraph::Graph> Cut::Impl::PointGraph::create_grap
       return std::make_shared<PointGraph::Graph>();
     default:
       FOUR_C_THROW("Unsupported element dimension!");
-      exit(EXIT_FAILURE);
   }
 }
 

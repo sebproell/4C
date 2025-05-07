@@ -558,7 +558,6 @@ bool Mortar::Element::local_coordinates_of_node(int lid, double* xi) const
     // unknown case
     default:
       FOUR_C_THROW("local_coordinates_of_node called for unknown element type");
-      exit(EXIT_FAILURE);
   }
   return true;
 }
@@ -909,7 +908,6 @@ void Mortar::Element::metrics(const double* xi, double* gxi, double* geta) const
     }
     default:
       FOUR_C_THROW("Metrics called for unknown element type");
-      exit(EXIT_FAILURE);
   }
 
   Core::LinAlg::SerialDenseVector val(nnodes);
@@ -1065,7 +1063,6 @@ void Mortar::Element::deriv_jacobian(
     }
     default:
       FOUR_C_THROW("Jac. derivative not implemented for this type of Element");
-      exit(EXIT_FAILURE);
   }
 
   // *********************************************************************

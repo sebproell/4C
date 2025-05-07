@@ -784,7 +784,6 @@ namespace Mortar
         return oldnodecolmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -796,7 +795,6 @@ namespace Mortar
         return oldelecolmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -808,7 +806,6 @@ namespace Mortar
         return snoderowmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -832,7 +829,6 @@ namespace Mortar
         return mnoderowmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -856,7 +852,6 @@ namespace Mortar
         return snodecolmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -868,7 +863,6 @@ namespace Mortar
         return mnodecolmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -880,7 +874,6 @@ namespace Mortar
         return snoderowmapbound_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -892,7 +885,6 @@ namespace Mortar
         return snodecolmapbound_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -904,7 +896,6 @@ namespace Mortar
         return mnoderowmapnobound_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -916,7 +907,6 @@ namespace Mortar
         return mnodecolmapnobound_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -928,7 +918,6 @@ namespace Mortar
         return selerowmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -940,7 +929,6 @@ namespace Mortar
         return melerowmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -952,7 +940,6 @@ namespace Mortar
         return selecolmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -964,7 +951,6 @@ namespace Mortar
         return melecolmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -976,7 +962,6 @@ namespace Mortar
         return sdofrowmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -988,7 +973,6 @@ namespace Mortar
         return sdofcolmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -1012,7 +996,6 @@ namespace Mortar
         return mdofrowmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -1024,7 +1007,6 @@ namespace Mortar
         return mdofcolmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -1048,7 +1030,6 @@ namespace Mortar
         return lmdofmap_;
       else
         FOUR_C_THROW("Mortar::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!

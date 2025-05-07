@@ -388,11 +388,9 @@ double CONTACT::NoxInterface::get_model_value(NOX::Nln::MeritFunction::MeritFctN
     }
     default:
       FOUR_C_THROW("Unsupported Merit function name! (enum = {})", name);
-      exit(EXIT_FAILURE);
   }
 
   FOUR_C_THROW("Impossible to reach this point.");
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -416,11 +414,9 @@ double CONTACT::NoxInterface::get_linearized_model_terms(const Core::LinAlg::Vec
     }
     default:
       FOUR_C_THROW("Unsupported Merit function name! (enum = {})", name);
-      exit(EXIT_FAILURE);
   }
 
   FOUR_C_THROW("Impossible to reach this point.");
-  exit(EXIT_FAILURE);
 }
 
 FOUR_C_NAMESPACE_CLOSE

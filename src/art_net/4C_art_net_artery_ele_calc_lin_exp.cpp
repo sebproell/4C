@@ -1299,7 +1299,6 @@ void Discret::Elements::ArteryEleCalcLinExp<distype>::evaluate_terminal_bc(Arter
       {
         FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
             Core::Communication::my_mpi_rank(discretization.get_comm()));
-        exit(1);
       }
 
       if (TermIO == -1)

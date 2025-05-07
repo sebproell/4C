@@ -81,7 +81,6 @@ Cut::Element* Cut::Mesh::create_element(
       return create_wedge6(eid, nids);
     default:
       FOUR_C_THROW("unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
-      exit(EXIT_FAILURE);
   }
   return nullptr;
 }
@@ -100,7 +99,6 @@ Cut::Side* Cut::Mesh::create_side(int sid, const std::vector<int>& nids, Core::F
       return create_tri3_side(sid, nids);
     default:
       FOUR_C_THROW("unsupported distype ( distype = {} )", Core::FE::cell_type_to_string(distype));
-      exit(EXIT_FAILURE);
   }
   return nullptr;
 }
@@ -2647,9 +2645,7 @@ Cut::Element* Cut::Mesh::get_element(
       return get_element<3>(eid, nodes, top_data, active);
     default:
       FOUR_C_THROW("Element dimension out of range! ( dim = {} )", top_data.dimension);
-      exit(EXIT_FAILURE);
   }
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*

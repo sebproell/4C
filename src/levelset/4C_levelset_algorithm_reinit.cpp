@@ -382,7 +382,6 @@ void ScaTra::LevelSetAlgorithm::calc_node_based_reinit_vel()
         default:
         {
           FOUR_C_THROW("Unknown reinitialization method for projection!");
-          exit(EXIT_FAILURE);
         }
       }
       // call loop over elements

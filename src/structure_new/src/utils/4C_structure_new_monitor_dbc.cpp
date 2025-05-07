@@ -100,7 +100,6 @@ int Solid::MonitorDbc::get_unique_id(int tagged_id, Core::Conditions::GeometryTy
       return tagged_id + 10000;
     default:
       FOUR_C_THROW("Unsupported geometry type! (enum={})", gtype);
-      exit(EXIT_FAILURE);
   }
 }
 

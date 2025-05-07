@@ -3857,7 +3857,6 @@ namespace Core::FE::Nurbs
       }
       default:
         FOUR_C_THROW("dimension of the element is not correct");
-        exit(EXIT_FAILURE);
     }
   }
 
@@ -3886,7 +3885,6 @@ namespace Core::FE::Nurbs
       }
       default:
         FOUR_C_THROW("dimension of the element is not correct");
-        exit(EXIT_FAILURE);
     }
   }
 
@@ -3913,7 +3911,6 @@ namespace Core::FE::Nurbs
       }
       default:
         FOUR_C_THROW("dimension of the element is not correct");
-        exit(EXIT_FAILURE);
     }
   }
 

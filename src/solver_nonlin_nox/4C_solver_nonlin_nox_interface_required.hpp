@@ -76,7 +76,6 @@ namespace NOX
             const enum NOX::Nln::MeritFunction::LinType lintype) const
         {
           FOUR_C_THROW("Not implemented!");
-          exit(EXIT_FAILURE);
         }
 
         //! calculate characteristic/reference norms for forces

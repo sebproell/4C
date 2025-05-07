@@ -63,7 +63,6 @@ namespace Cut
       default:
         return "Unknown IntersectionStatus";
     }
-    exit(EXIT_FAILURE);
   };
 
   inline IntersectionStatus intersection_status2_enum(unsigned num_cut_points)
@@ -77,7 +76,6 @@ namespace Cut
       default:
         return intersect_multiple_cut_points;
     }
-    exit(EXIT_FAILURE);
   }
 
   /*--------------------------------------------------------------------------*/
@@ -301,7 +299,6 @@ namespace Cut
     {
       if (mesh_ptr_ != nullptr) return *mesh_ptr_;
       FOUR_C_THROW("The mesh pointer is not yet initialized!");
-      exit(EXIT_FAILURE);
     }
 
     /// get a pointer to the mesh object
@@ -309,7 +306,6 @@ namespace Cut
     {
       if (mesh_ptr_ != nullptr) return mesh_ptr_;
       FOUR_C_THROW("The mesh pointer is not yet initialized!");
-      exit(EXIT_FAILURE);
     }
 
     /// get a reference to the edge object
@@ -317,7 +313,6 @@ namespace Cut
     {
       if (edge_ptr_ != nullptr) return *edge_ptr_;
       FOUR_C_THROW("The edge pointer is not yet initialized!");
-      exit(EXIT_FAILURE);
     }
 
     /// get a pointer to the edge object
@@ -325,7 +320,6 @@ namespace Cut
     {
       if (edge_ptr_ != nullptr) return edge_ptr_;
       FOUR_C_THROW("The edge pointer is not yet initialized!");
-      exit(EXIT_FAILURE);
     }
 
     /// get a reference to the side object
@@ -333,7 +327,6 @@ namespace Cut
     {
       if (side_ptr_ != nullptr) return *side_ptr_;
       FOUR_C_THROW("The side pointer is not yet initialized!");
-      exit(EXIT_FAILURE);
     }
 
     /// get a pointer to the side object
@@ -341,7 +334,6 @@ namespace Cut
     {
       if (side_ptr_ != nullptr) return side_ptr_;
       FOUR_C_THROW("The side pointer is not yet initialized!");
-      exit(EXIT_FAILURE);
     }
 
     /// get a pointer to the cut options object
@@ -349,7 +341,6 @@ namespace Cut
     {
       if (options_ptr_ != nullptr) return options_ptr_;
       FOUR_C_THROW("The option pointer is not yet initialized!");
-      exit(EXIT_FAILURE);
     }
 
    private:
@@ -1336,9 +1327,7 @@ namespace Cut
               "Unsupported SideType! If meaningful, add your sideType here. \n"
               "Given SideType = {}",
               Core::FE::cell_type_to_string(side_type).c_str());
-          exit(EXIT_FAILURE);
       }
-      exit(EXIT_FAILURE);
     }
 
     template <Core::FE::CellType edge_type, Core::FE::CellType side_type>
@@ -1355,7 +1344,6 @@ namespace Cut
           break;
         default:
           FOUR_C_THROW("Unsupported ProbDim! ( probdim = {} )", probdim);
-          exit(EXIT_FAILURE);
       }
       return inter_ptr;
     };

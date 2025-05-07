@@ -50,8 +50,5 @@ Mixture::PAR::fiber_material_factory(int matid)
           "The referenced material with id {} is not registered as a remodel fiber material!",
           matid);
   }
-
-  // we will not end up here, so make the compiler happy
-  std::exit(1);
 }
 FOUR_C_NAMESPACE_CLOSE

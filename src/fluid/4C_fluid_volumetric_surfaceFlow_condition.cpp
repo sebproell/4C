@@ -46,7 +46,6 @@ FLD::Utils::FluidVolumetricSurfaceFlowWrapper::FluidVolumetricSurfaceFlowWrapper
   if (num_of_wom_conds != num_of_borders)
   {
     FOUR_C_THROW("Each Womersley surface condition must have one and only one border condition");
-    exit(0);
   }
   // Check if each surface has it's corresponding border
   for (unsigned int i = 0; i < womersleycond.size(); i++)
@@ -72,7 +71,6 @@ FLD::Utils::FluidVolumetricSurfaceFlowWrapper::FluidVolumetricSurfaceFlowWrapper
           FOUR_C_THROW(
               "There are more than one Womersley condition lines with the same ID. This can not "
               "yet be handled.");
-          exit(0);
         }
         ConditionIsWrong = false;
         break;
@@ -83,7 +81,6 @@ FLD::Utils::FluidVolumetricSurfaceFlowWrapper::FluidVolumetricSurfaceFlowWrapper
     if (ConditionIsWrong)
     {
       FOUR_C_THROW("Each Womersley surface condition must have one and only one border condition");
-      exit(1);
     }
   }
 
@@ -237,7 +234,6 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   else
   {
     FOUR_C_THROW("[{}]: is not a defined normal evaluation type", normal_info);
-    exit(1);
   }
 
   // get the center of mass
@@ -265,7 +261,6 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   else
   {
     FOUR_C_THROW("[{}]: is not a defined center-of-mass evaluation type", normal_info);
-    exit(1);
   }
 
 
@@ -282,7 +277,6 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   else
   {
     FOUR_C_THROW("[{}]: is not a defined flow-direction-type", normal_info);
-    exit(1);
   }
 
   // check if the flow is with correction
@@ -456,7 +450,6 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::eval_local_normalized_radii(
     if (!inserted)
     {
       FOUR_C_THROW("There are more than one node of the same number. something went wrong");
-      exit(0);
     }
   }
 
@@ -1799,7 +1792,6 @@ FLD::Utils::TotalTractionCorrector::TotalTractionCorrector(
   if (num_of_tr_conds != num_of_borders)
   {
     FOUR_C_THROW("Each Womersley surface condition must have one and only one border condition");
-    exit(0);
   }
   // Check if each surface has it's corresponding border
   for (unsigned int i = 0; i < tractioncond.size(); i++)
@@ -1826,7 +1818,6 @@ FLD::Utils::TotalTractionCorrector::TotalTractionCorrector(
           FOUR_C_THROW(
               "There are more than one impedance condition lines with the same ID. This can not "
               "yet be handled.");
-          exit(0);
         }
 
         ConditionIsWrong = false;
@@ -1840,7 +1831,6 @@ FLD::Utils::TotalTractionCorrector::TotalTractionCorrector(
       FOUR_C_THROW(
           "Each Total traction correction surface condition must have one and only one border "
           "condition");
-      exit(1);
     }
   }
 

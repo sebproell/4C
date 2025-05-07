@@ -34,7 +34,6 @@ namespace Mixture
       std::shared_ptr<Core::Mat::Material> create_material() override
       {
         FOUR_C_THROW("This type of material is not created with create_material()");
-        std::exit(1);
       }
 
       [[nodiscard]] virtual std::unique_ptr<Mixture::RemodelFiberMaterial<T>>

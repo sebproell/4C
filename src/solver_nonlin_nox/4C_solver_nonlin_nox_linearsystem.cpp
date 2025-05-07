@@ -695,7 +695,6 @@ const Core::LinAlg::SparseMatrix& NOX::Nln::LinearSystem::get_jacobian_block(
     {
       FOUR_C_THROW("Unsupported LinSystem::OperatorType: {}",
           NOX::Nln::LinSystem::operator_type_to_string(jacType_));
-      exit(EXIT_FAILURE);
     }
   }
 }
@@ -767,7 +766,6 @@ double NOX::Nln::LinearSystem::compute_serial_condition_number_of_jacobian(
       break;
     default:
       FOUR_C_THROW("Unsupported");
-      exit(EXIT_FAILURE);
   }
   double rcond = 0.0;
 
@@ -881,7 +879,6 @@ void NOX::Nln::LinearSystem::convert_jacobian_to_dense_matrix(
     default:
     {
       FOUR_C_THROW("Unsupported jacobian operator type!");
-      exit(EXIT_FAILURE);
     }
   }
 }

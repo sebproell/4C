@@ -362,7 +362,7 @@ int main(int argc, char* argv[])
           printf("The default is to replace the original suffix by .4C.yaml.\n");
           printf("However, the file '%s' already exists. I will not continue\n",
               outputfile_name.c_str());
-          exit(1);
+          exit(EXIT_FAILURE);
         }
       }
       else

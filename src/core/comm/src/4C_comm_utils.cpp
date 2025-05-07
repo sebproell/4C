@@ -107,7 +107,7 @@ namespace Core::Communication
               printf("Try again!\n");
             }
             MPI_Finalize();
-            exit(1);
+            exit(EXIT_FAILURE);
           }
         }
         // case without given group layout
@@ -130,7 +130,7 @@ namespace Core::Communication
               printf("Try again!\n");
             }
             MPI_Finalize();
-            exit(1);
+            exit(EXIT_FAILURE);
           }
 
           // equal size of the groups
@@ -196,7 +196,7 @@ namespace Core::Communication
             printf("Try again!\n");
           }
           MPI_Finalize();
-          exit(1);
+          exit(EXIT_FAILURE);
         }
       }
 
@@ -216,7 +216,7 @@ namespace Core::Communication
             argument.c_str());
         printf("Please refer to ./4C --help and try again!\n");
         MPI_Finalize();
-        exit(1);
+        exit(EXIT_FAILURE);
       }
 
     }  // end for(int i=0; i<int(conf.size()); i++)
@@ -233,7 +233,7 @@ namespace Core::Communication
         printf("Try again!\n");
       }
       MPI_Finalize();
-      exit(1);
+      exit(EXIT_FAILURE);
     }
 
     // do the splitting of the communicator
@@ -317,7 +317,7 @@ namespace Core::Communication
     // if GPID is not part of the current group
     printf("\n\n\nERROR: GPID (%d) is not in this group (%d) \n\n\n\n", GPID, group_id_);
     MPI_Abort(gcomm_, EXIT_FAILURE);
-    exit(1);
+    exit(EXIT_FAILURE);
 
     return -1;
   }

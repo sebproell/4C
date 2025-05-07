@@ -541,7 +541,6 @@ void Solid::ResultTest::test_special(const Core::IO::InputParameterContainer& co
     {
       FOUR_C_THROW(
           "Solid::ResultTest::test_special: Undefined status type (enum={})!", special_status);
-      exit(EXIT_FAILURE);
     }
   }
 }
@@ -578,8 +577,6 @@ std::optional<double> Solid::ResultTest::get_special_result(
         "Quantity '{}' not supported by special result testing functionality "
         "for structure field!",
         quantity.c_str());
-
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -686,7 +683,6 @@ int Solid::get_integer_number_at_last_position_of_name(const std::string& quanti
         "The correct format is:\n"
         "\"<prefix_name>_<number>\"");
   }
-  exit(EXIT_FAILURE);
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -233,7 +233,6 @@ void XFEM::XFieldField::Coupling::build_dof_maps(const Core::FE::Discretization&
           "per node is unknown or cannot be identified, since it \n"
           "changes from node to node. This case needs extra \n"
           "communication effort and is currently unsupported.");
-      exit(EXIT_FAILURE);
     }
   }
 }

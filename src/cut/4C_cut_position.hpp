@@ -66,7 +66,6 @@ namespace Cut
         default:
           return "Unknown PositionStatus";
       }
-      exit(EXIT_FAILURE);
     };
 
    public:
@@ -169,11 +168,7 @@ namespace Cut
 
     /*! \brief Return the scalar signed perpendicular distance between
      *         given point and embedded element */
-    virtual double distance() const
-    {
-      FOUR_C_THROW("Unsupported for the standard case!");
-      exit(EXIT_FAILURE);
-    }
+    virtual double distance() const { FOUR_C_THROW("Unsupported for the standard case!"); }
 
     /*! \brief Return the signed perpendicular distance vector between
      *         given point and embedded element.
@@ -211,7 +206,6 @@ namespace Cut
     virtual bool within_limits_tol(const double& Tol, const bool& allow_dist) const
     {
       FOUR_C_THROW("Unsupported for the standard case!");
-      exit(EXIT_FAILURE);
     }
 
    protected:
@@ -483,7 +477,6 @@ namespace Cut
           return xsi_aug_(dim, 0);
         default:
           FOUR_C_THROW("A scalar signed distance value is not available!");
-          exit(EXIT_FAILURE);
       }
     }
 
@@ -611,7 +604,6 @@ namespace Cut
         FOUR_C_THROW(
             "Wrong template combination: ProbDim must be unequal"
             " element Dim for the embedded case.");
-        exit(EXIT_FAILURE);
       }
     };
 
@@ -625,7 +617,6 @@ namespace Cut
         FOUR_C_THROW(
             "Wrong template combination: ProbDim must be larger"
             " than the element Dim for the embedded case.");
-        exit(EXIT_FAILURE);
       }
     };
 
@@ -639,7 +630,6 @@ namespace Cut
         FOUR_C_THROW(
             "Wrong template combination: ProbDim must be larger"
             " than the element Dim for the embedded case.");
-        exit(EXIT_FAILURE);
       }
     };
 
@@ -653,7 +643,6 @@ namespace Cut
         FOUR_C_THROW(
             "Wrong template combination: ProbDim must be larger"
             " than the element Dim for the embedded case.");
-        exit(EXIT_FAILURE);
       }
     };
 
@@ -668,7 +657,6 @@ namespace Cut
         FOUR_C_THROW(
             "Wrong template combination: ProbDim must be equal"
             " element Dim for the standard case.");
-        exit(EXIT_FAILURE);
       }
     };
 
@@ -771,8 +759,6 @@ namespace Cut
             "The element dimension is larger than the problem dimension! \n"
             "dim = {}, probdim = {}",
             dim, probdim);
-
-      exit(EXIT_FAILURE);
     }
 
     /// concrete create variant #1
@@ -795,10 +781,7 @@ namespace Cut
           return build_position<3, eletype>(element, point, floattype);
         default:
           FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
-          exit(EXIT_FAILURE);
       }
-
-      exit(EXIT_FAILURE);
     }
 
     /// @}
@@ -837,8 +820,6 @@ namespace Cut
             "The element dimension is larger than the problem dimension! \n"
             "dim = {}, probdim = {}",
             dim, probdim);
-
-      exit(EXIT_FAILURE);
     }
 
    private:
@@ -868,10 +849,7 @@ namespace Cut
         }
         default:
           FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
-          exit(EXIT_FAILURE);
       }
-
-      exit(EXIT_FAILURE);
     }
 
     /// @}
@@ -907,8 +885,6 @@ namespace Cut
             "The element dimension is larger than the problem dimension! \n"
             "dim = {}, probdim = {}",
             dim, probdim);
-
-      exit(EXIT_FAILURE);
     }
 
    private:
@@ -934,10 +910,7 @@ namespace Cut
         }
         default:
           FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
-          exit(EXIT_FAILURE);
       }
-
-      exit(EXIT_FAILURE);
     }
 
     /// @}
@@ -985,8 +958,6 @@ namespace Cut
             "The element dimension is larger than the problem dimension! \n"
             "dim = {}, probdim = {}",
             dim, probdim);
-
-      exit(EXIT_FAILURE);
     }
 
    private:
@@ -1009,10 +980,7 @@ namespace Cut
         }
         default:
           FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
-          exit(EXIT_FAILURE);
       }
-
-      exit(EXIT_FAILURE);
     }
 
     /// @}

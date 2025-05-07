@@ -342,7 +342,6 @@ namespace Wear
         return wdofmap_;
       else
         FOUR_C_THROW("CONTACT::WearInterface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -355,7 +354,6 @@ namespace Wear
         return wmdofmap_;
       else
         FOUR_C_THROW("CONTACT::WearInterface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -368,7 +366,6 @@ namespace Wear
         return sndofmap_;
       else
         FOUR_C_THROW("CONTACT::WearInterface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -381,7 +378,6 @@ namespace Wear
         return mndofmap_;
       else
         FOUR_C_THROW("CONTACT::WearInterface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -394,7 +390,6 @@ namespace Wear
         return activmasternodes_;
       else
         FOUR_C_THROW("CONTACT::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -407,7 +402,6 @@ namespace Wear
         return slipmasternodes_;
       else
         FOUR_C_THROW("CONTACT::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
     /*!
@@ -420,7 +414,6 @@ namespace Wear
         return slipmn_;
       else
         FOUR_C_THROW("CONTACT::Interface::fill_complete was not called");
-      exit(EXIT_FAILURE);  // calm down the compiler
     }
 
 

@@ -786,7 +786,6 @@ void StructMonWriter::write_str_results(std::ofstream& outfile, PostProblem& pro
     else
     {
       FOUR_C_THROW("trying to write something that is not a stress or a strain");
-      exit(1);
     }
 
     // get pointer to discretisation of actual field
@@ -1398,7 +1397,6 @@ void ThermoMonWriter::write_thermo_results(std::ofstream& outfile, PostProblem& 
     else
     {
       FOUR_C_THROW("trying to write something that is not a heatflux or a temperature gradient");
-      exit(1);
     }
 
     // get pointer to discretisation of actual field

@@ -292,7 +292,6 @@ void ThermoFilter::write_heatflux(
   else
   {
     FOUR_C_THROW("trying to write something that is not a heatflux or a temperature gradient");
-    exit(1);
   }
 
   if (kind == nodebased)

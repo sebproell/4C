@@ -794,9 +794,7 @@ namespace Cut::Kernel
         return "FAILED";
       default:
         FOUR_C_THROW("Unknown Newton status!");
-        exit(EXIT_FAILURE);
     }
-    exit(EXIT_FAILURE);
   }
 
   /*--------------------------------------------------------------------------*/
@@ -1900,9 +1898,7 @@ namespace Cut::Kernel
               distance_[0] * distance_[0] + distance_[1] * distance_[1]);
         default:
           FOUR_C_THROW("Unsupported probDim and dimSide combination!");
-          exit(EXIT_FAILURE);
       }
-      exit(EXIT_FAILURE);
     }
 
     /// return the signed distance of the point px_ to the given side
@@ -2183,7 +2179,6 @@ namespace Cut::Kernel
         return normal_in_yz_plane;
 
       FOUR_C_THROW("Couldn't detect a feasible plane for the given normal vector!");
-      exit(EXIT_FAILURE);
     }
 
     /** \build Build the linear system of equations for the Newton scheme
@@ -2307,7 +2302,6 @@ namespace Cut::Kernel
           default:
           {
             FOUR_C_THROW("Shouldn't happen!");
-            exit(EXIT_FAILURE);
           }
         }
 
@@ -2568,7 +2562,6 @@ namespace Cut::Kernel
               break;
             default:
               FOUR_C_THROW("A scalar signed distance value is not available!");
-              exit(EXIT_FAILURE);
           }
         }
         std::pair<bool, Core::CLN::ClnWrapper> cond_pair = this->condition_number();
@@ -2968,7 +2961,6 @@ namespace Cut::Kernel
             break;
           default:
             FOUR_C_THROW("A scalar signed distance value is not available!");
-            exit(EXIT_FAILURE);
         }
       }
       bool got_topology_info = get_topology_information();

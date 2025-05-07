@@ -171,8 +171,6 @@ void NOX::Nln::CONTACT::LinearSystem::set_linear_problem_for_solve(
     {
       FOUR_C_THROW("Unsupported matrix type! Type = {}",
           NOX::Nln::LinSystem::operator_type_to_string(jacType_));
-
-      exit(EXIT_FAILURE);
     }
   }
 }
@@ -379,8 +377,6 @@ void NOX::Nln::CONTACT::LinearSystem::LinearSubProblem::extract_active_blocks(
       FOUR_C_THROW(
           "You are trying to solve a pure diagonal matrix. This is currently not"
           "supported, but feel free to extend the functionality.");
-
-      exit(EXIT_FAILURE);
     }
     case 1:
     {

@@ -152,7 +152,6 @@ bool Cut::Side::find_cut_lines(Mesh& mesh, Element* element, Side& other)
   }
 
   FOUR_C_THROW("How did you get here?");
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -1382,10 +1381,8 @@ unsigned Cut::Side::uncut_facet_number_per_side() const
       return 2;
     default:
       FOUR_C_THROW("Unsupported parent element dimension! (ele->Dim() = {} )", ele_dim);
-      exit(EXIT_FAILURE);
   }
   // can never be reached
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -1798,7 +1795,6 @@ bool Cut::ConcreteSide<probdim, sidetype, num_nodes_side, dim>::local_coordinate
       FOUR_C_THROW(
           "Unsupported dim / probdim combination. I think this can't happen "
           "for side elements. If I'm wrong, just ask me. -- hiermeier");
-      exit(EXIT_FAILURE);
     }
     /* For a 1-D and a 2-D problem, the side dimension is equal to the problem
      * dimension */
