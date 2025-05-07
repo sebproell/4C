@@ -126,21 +126,15 @@ EVALUATION_MAT                  element_center
 --------------------------------------------------------------------SOLVER 1
 SOLVER                          Belos
 AZSOLVE                         GMRES
-AZPREC                          MueLu
-MUELU_XML_FILE                  xml/multigrid/fluid_template.xml
+AZPREC                          ILU
 AZTOL                           1.0E-8
 AZCONV                          AZ_r0
-AZREUSE                         5
-AZOUTPUT                        10
 --------------------------------------------------------------------SOLVER 2
 SOLVER                          Belos
 AZSOLVE                         GMRES
-AZPREC                          MueLu
-MUELU_XML_FILE                  xml/multigrid/scatra_template.xml
+AZPREC                          ILU
 AZTOL                           1.0E-8
 AZCONV                          AZ_r0
-AZREUSE                         5
-AZOUTPUT                        10
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_fluid DYNVISCOSITY 0.0001 DENSITY 1.0
 MAT 2 MAT_scatra DIFFUSIVITY 0.0001 REACOEFF 0.0
