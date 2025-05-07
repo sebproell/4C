@@ -18,6 +18,52 @@
 
 FOUR_C_NAMESPACE_OPEN
 
+namespace
+{
+  void assert_same_nodes(const Core::Conditions::Condition* const condition1,
+      const Core::Conditions::Condition* const condition2)
+  {
+    // get nodes of conditions
+    const auto* condition1nodes = condition1->get_nodes();
+    const auto* condition2nodes = condition2->get_nodes();
+
+    // simple first check just checks the size
+    if (condition1nodes->size() != condition2nodes->size())
+    {
+      FOUR_C_THROW(
+          "Number of nodes that are defined for both conditions do not match! Did you define the "
+          "conditions for the same nodesets?");
+    }
+
+    // loop over all node global IDs belonging to condition1
+    for (auto condition1nodegid : *condition1nodes)
+    {
+      bool found_node = false;
+      // loop over all node global IDs belonging to condition2
+      for (auto condition2nodegid : *condition2nodes)
+      {
+        if (condition1nodegid == condition2nodegid)
+        {
+          found_node = true;
+        }
+      }
+      // throw error if node global ID is not found in condition2
+      if (!found_node)
+      {
+        std::cout << "Node with global ID: " << condition1nodegid
+                  << "  which is part of condition: ";
+        condition1->print(std::cout);
+        std::cout << " is not part of condition: ";
+        condition2->print(std::cout);
+        FOUR_C_THROW(
+            "Did you assign those conditions to the same nodeset? Please check your input file "
+            "and "
+            "fix this inconsistency!");
+      }
+    }
+  }
+}  // namespace
+
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
@@ -118,15 +164,13 @@ void ScaTra::ScaTraUtils::check_consistency_with_s2_i_kinetics_condition(
       {
         case Inpar::S2I::side_slave:
         {
-          if (isslave)
-            Core::Conditions::have_same_nodes(conditionToBeTested, s2ikinetics_cond, true);
+          if (isslave) assert_same_nodes(conditionToBeTested, s2ikinetics_cond);
 
           break;
         }
         case Inpar::S2I::side_master:
         {
-          if (!isslave)
-            Core::Conditions::have_same_nodes(conditionToBeTested, s2ikinetics_cond, true);
+          if (!isslave) assert_same_nodes(conditionToBeTested, s2ikinetics_cond);
 
           break;
         }
