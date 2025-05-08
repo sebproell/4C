@@ -109,7 +109,6 @@ int Cut::Hex8IntegrationCell::cubature_degree(Core::FE::CellType elementshape) c
       return 6;
     default:
       FOUR_C_THROW("no rule defined for this element type");
-      exit(EXIT_FAILURE);
   }
 }
 
@@ -137,7 +136,6 @@ int Cut::Tet4IntegrationCell::cubature_degree(Core::FE::CellType elementshape) c
       return 6;
     default:
       FOUR_C_THROW("no rule defined for this element type");
-      exit(EXIT_FAILURE);
   }
 }
 

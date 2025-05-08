@@ -48,7 +48,6 @@ NOX::Nln::LinSystem::ConditionNumber Solid::Nln::convert2_nox_condition_number_t
       return NOX::Nln::LinSystem::ConditionNumber::inf_norm;
     default:
       FOUR_C_THROW("No known conversion.");
-      exit(EXIT_FAILURE);
   }
 }
 

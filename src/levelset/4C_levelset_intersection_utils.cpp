@@ -317,7 +317,6 @@ void ScaTra::LevelSet::Intersection::prepare_cut(const Core::Elements::Element* 
           break;
         default:
           FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim);
-          exit(EXIT_FAILURE);
       }
       break;
     default:

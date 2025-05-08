@@ -454,7 +454,6 @@ namespace Cut
       default:
         FOUR_C_THROW("Currently unsupported discretization type: {}",
             Core::FE::cell_type_to_string(distype));
-        exit(EXIT_FAILURE);
     }
   }
 }  // namespace Cut

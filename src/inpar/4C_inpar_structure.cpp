@@ -41,7 +41,6 @@ namespace Inpar
           return "ConstDisVelAccPres";
         default:
           FOUR_C_THROW("Cannot make std::string for predictor {}", name);
-          exit(EXIT_FAILURE);
       }
     }
 

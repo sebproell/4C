@@ -595,7 +595,6 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Solid::ModelEvaluator::Structure::
       break;
     default:
       FOUR_C_THROW("Unknown mass linearization type!");
-      exit(EXIT_FAILURE);
   }
 
   return nullptr;

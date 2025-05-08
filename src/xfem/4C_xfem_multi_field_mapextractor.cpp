@@ -1080,10 +1080,7 @@ std::shared_ptr<const Core::LinAlg::Map> XFEM::MultiFieldMapExtractor::node_row_
     }
     default:
       FOUR_C_THROW("Unknown block type!");
-      exit(EXIT_FAILURE);
   }
-  // hoops, shouldn't happen ...
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*

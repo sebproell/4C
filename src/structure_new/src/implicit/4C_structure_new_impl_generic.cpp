@@ -177,7 +177,6 @@ bool Solid::IMPLICIT::Generic::apply_correction_system(const enum NOX::Nln::Corr
           "No action defined for the given second order correction type: "
           "\"{}\"",
           NOX::Nln::correction_type_to_string(type).c_str());
-      exit(EXIT_FAILURE);
     }
   }
 

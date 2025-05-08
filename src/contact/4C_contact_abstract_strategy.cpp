@@ -2924,7 +2924,6 @@ double CONTACT::AbstractStrategy::get_potential_value(
 {
   FOUR_C_THROW("The currently active strategy \"{}\" does not support this method!",
       CONTACT::solving_strategy_to_string(type()));
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -2937,7 +2936,6 @@ double CONTACT::AbstractStrategy::get_linearized_potential_value_terms(
 {
   FOUR_C_THROW("The currently active strategy \"{}\" does not support this method!",
       CONTACT::solving_strategy_to_string(type()));
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------*

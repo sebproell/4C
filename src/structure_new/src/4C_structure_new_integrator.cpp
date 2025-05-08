@@ -367,7 +367,6 @@ double Solid::Integrator::get_model_value(const Core::LinAlg::Vector<double>& x)
   FOUR_C_THROW(
       "This routine is not supported in the currently active time "
       "integration scheme.");
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -780,7 +779,6 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Solid::Integrator::MidTimeEn
     }
     default:
       FOUR_C_THROW("Don't know what to do for the given MidAvg type.");
-      exit(EXIT_FAILURE);
   }
 }
 

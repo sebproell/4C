@@ -55,7 +55,6 @@ namespace Solid
       default:
         return "unknown_type_of_energy";
     }
-    exit(EXIT_FAILURE);
   };
 
   //! Map std::string to energy type
@@ -79,7 +78,6 @@ namespace Solid
       return beam_to_sphere_link_kinetic_energy;
     else
       FOUR_C_THROW("Unknown type of energy {}", type);
-    exit(EXIT_FAILURE);
   };
 
 

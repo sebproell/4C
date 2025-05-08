@@ -478,7 +478,7 @@ SSTI::ConvCheckMono::ConvCheckMono(Teuchos::ParameterList params)
  *---------------------------------------------------------------------------------*/
 bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
 {
-  bool exit(false);
+  bool is_converged(false);
 
   // compute L2 norm of concentration state vector
   double concdofnorm(0.0);
@@ -649,18 +649,18 @@ bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
         potincnorm / potdofnorm <= itertol_ and structureincnorm / structuredofnorm <= itertol_ and
         thermoincnorm / thermodofnorm <= itertol_)
       // exit Newton-Raphson iteration upon convergence
-      exit = true;
+      is_converged = true;
   }
 
   // exit Newton-Raphson iteration when residuals are small enough to prevent unnecessary additional
   // solver calls
   if (concresnorm < restol_ and potresnorm < restol_ and structureresnorm < restol_ and
       thermoresnorm < restol_)
-    exit = true;
+    is_converged = true;
 
   // print warning to screen if maximum number of Newton-Raphson iterations is reached without
   // convergence
-  if (ssti_mono.newton_iteration() == itermax_ and !exit)
+  if (ssti_mono.newton_iteration() == itermax_ and !is_converged)
   {
     if (Core::Communication::my_mpi_rank(ssti_mono.get_comm()) == 0)
     {
@@ -674,10 +674,10 @@ bool SSTI::ConvCheckMono::converged(const SSTI::SSTIMono& ssti_mono)
     }
 
     // proceed to next time step
-    exit = true;
+    is_converged = true;
   }
 
-  return exit;
+  return is_converged;
 }
 
 /*---------------------------------------------------------------------------------*

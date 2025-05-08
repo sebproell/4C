@@ -1842,7 +1842,6 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_crosslinker()
       {
         FOUR_C_THROW(
             "Unrealistic number {} of bonds for a crosslinker.", cldata_i->get_number_of_bonds());
-        exit(EXIT_FAILURE);
       }
     }
   }
@@ -1919,8 +1918,6 @@ int BeamInteraction::SubmodelEvaluator::Crosslinking::get_single_occupied_cl_bsp
     return 1;
   else
     FOUR_C_THROW("numbond = 1 but both binding spots store invalid element GIDs!");
-
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -2751,7 +2748,6 @@ bool BeamInteraction::SubmodelEvaluator::Crosslinking::check_linker_and_filament
     default:
     {
       FOUR_C_THROW("Unknown linker type.");
-      exit(EXIT_FAILURE);
     }
   }
 
@@ -3030,7 +3026,6 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_crosslinker_bin
             "You should not be here, crosslinker has unrealistic number "
             "{} of bonds.",
             cldata_i->get_number_of_bonds());
-        exit(EXIT_FAILURE);
       }
     }
   }
@@ -3104,7 +3099,6 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_element_binding
             "You should not be here, crosslinker has unrealistic number "
             "{} of bonds.",
             cldata_i->get_number_of_bonds());
-        exit(EXIT_FAILURE);
       }
     }
   }
@@ -3317,7 +3311,6 @@ int BeamInteraction::SubmodelEvaluator::Crosslinking::un_bind_crosslinker()
       {
         FOUR_C_THROW(
             "Unrealistic number {} of bonds for a crosslinker.", cldata_i->get_number_of_bonds());
-        exit(EXIT_FAILURE);
       }
     }
   }
@@ -3588,7 +3581,6 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::unbind_crosslinker_in_bin
         {
           FOUR_C_THROW(" Unrealistic number {} of bonds for a crosslinker.",
               cldata_i->get_number_of_bonds());
-          exit(EXIT_FAILURE);
         }
       }
     }

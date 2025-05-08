@@ -95,13 +95,11 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
       if (Rf < 0.0 || Rf > 1.0)
       {
         FOUR_C_THROW("forced reflection (Rf = {}) should always belong to the range :[0  1.0]", Rf);
-        exit(1);
       }
     }
     else
     {
       FOUR_C_THROW("{} is not defined as a 1D artery's inlet BC type", Type);
-      exit(1);
     }
 
     // -----------------------------------------------------------------
@@ -117,7 +115,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     else
     {
       FOUR_C_THROW("no inlet boundary condition defined!");
-      exit(1);
     }
   }
   else if (params.get<std::string>("Condition Name") == "Art_redD_3D_CouplingCond")
@@ -136,7 +133,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
       FOUR_C_THROW(
           "Cannot prescribe a boundary condition from 3D to reduced D, if the parameters passed "
           "don't exist");
-      exit(1);
     }
 
     // -----------------------------------------------------------------
@@ -198,13 +194,11 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     else
     {
       FOUR_C_THROW("{}, is an unimplemented type of coupling", Type);
-      exit(1);
     }
   }
   else
   {
     FOUR_C_THROW("No such condition Name");
-    exit(1);
   }
 
   // -------------------------------------------------------------------
@@ -281,7 +275,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
           FOUR_C_THROW(
               "Inflow boundary condition for Newton-Raphson exceeded the maximum allowed "
               "iterations");
-          exit(1);
         }
       }
     }
@@ -319,7 +312,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     else
     {
       FOUR_C_THROW("{} is not defined!", BC);
-      exit(1);
     }
   }  // If BC is prescribed at the inlet
   else if (IO == 1)  // If BC is prescribed at the outlet
@@ -385,7 +377,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
           FOUR_C_THROW(
               "Inflow boundary condition for Newton-Raphson exceeded the maximum allowed "
               "iterations");
-          exit(1);
         }
       }
     }
@@ -425,7 +416,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
   else
   {
     FOUR_C_THROW("IO flag must be either 1 (for outlets) or 0 (for inlets)\n");
-    exit(1);
   }
 
   // -------------------------------------------------------------------
@@ -441,7 +431,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
       FOUR_C_THROW(
           "Cannot prescribe a boundary condition from 3D to reduced D, if the parameters passed "
           "don't exist");
-      exit(1);
     }
 
     // -----------------------------------------------------------------
@@ -490,7 +479,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     {
       std::string str = (condition->parameters().get<std::string>("ReturnedVariable"));
       FOUR_C_THROW("{}, is an unimplemented type of coupling", str);
-      exit(1);
     }
     std::stringstream returnedBCwithId;
     returnedBCwithId << returnedBC << "_" << ID;
@@ -510,7 +498,6 @@ void Arteries::Utils::solve_prescribed_terminal_bc(Core::FE::Discretization& act
     {
       FOUR_C_THROW(
           "The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]", returnedBC, ID);
-      exit(1);
     }
 
     // update the 1D map
@@ -653,7 +640,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
     if (wk_type == "R")  // a resister with a peripheral Pressure (Pout)
     {
       FOUR_C_THROW("So far, only the 3 element windkessel model is implemented\n");
-      exit(1);
       // ---------------------------------------------------------------
       // Read in the wind kessel parameters
       // ---------------------------------------------------------------
@@ -677,7 +663,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
       if (R < 0.0)
       {
         FOUR_C_THROW("terminal resistance must be greater or equal to zero\n");
-        exit(1);
       }
 
       if (curve[0].has_value() && curve[0].value())
@@ -715,7 +700,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         if (count > 40)
         {
           FOUR_C_THROW("1 windkessel element (resistive) boundary condition didn't converge!");
-          exit(1);
         }
       }
 
@@ -726,7 +710,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
     else if (wk_type == "RC")  // an RC circuit with a peripheral Pressure (Pout)
     {
       FOUR_C_THROW("So far, only the 3 element windkessel model is implemented\n");
-      exit(1);
 
       // ---------------------------------------------------------------
       // Read in the wind kessel parameters
@@ -776,7 +759,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
       if (R <= 0.0 || C <= 0.0)
       {
         FOUR_C_THROW("terminal resistance and capacitance must be always greater than zero\n");
-        exit(1);
       }
 
       // Calculate W2
@@ -854,7 +836,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
       if (R1 < 0.0 || C <= 0.0 || R2 <= 0.0)
       {
         FOUR_C_THROW("terminal resistances and capacitance must always be greater than zero\n");
-        exit(1);
       }
 
       // ---------------------------------------------------------------
@@ -895,7 +876,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
         if (i > 40)
         {
           FOUR_C_THROW("3 element windkessel Newton Raphson is not converging\n");
-          exit(1);
         }
       }
 
@@ -906,7 +886,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
     else if (wk_type == "RCRL")  // four element windkessel model
     {
       FOUR_C_THROW("So far, only the 3 element windkessel model is implemented\n");
-      exit(1);
       // ---------------------------------------------------------------
       // Read in the wind kessel parameters
       // ---------------------------------------------------------------
@@ -982,7 +961,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
       if (R1 <= 0.0 || C <= 0.0 || R2 <= 0.0 || L <= 0.0)
       {
         FOUR_C_THROW("terminal resistance and capacitance must be always greater than zero\n");
-        exit(1);
       }
       // Calculate W2
 
@@ -990,12 +968,10 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
     else if (wk_type == "none")
     {
       FOUR_C_THROW("So far, only the 3 element windkessel model is implemented\n");
-      exit(1);
     }
     else
     {
       FOUR_C_THROW("\"{}\" is not supported type of windkessel model\n", wk_type);
-      exit(1);
     }
 
     // -----------------------------------------------------------------
@@ -1006,7 +982,6 @@ void Arteries::Utils::solve_expl_windkessel_bc(Core::FE::Discretization& actdis,
   else
   {
     FOUR_C_THROW("so far windkessel BC supports only ExplicitWindkessel");
-    exit(1);
   }
 
 }  // void Arteries::Utils::SolveExplWindkesselBC

@@ -467,7 +467,6 @@ void Cut::Quad4BoundaryCell::element_center(Core::LinAlg::Matrix<3, 1>& midpoint
 Core::LinAlg::Matrix<3, 1> Cut::Point1BoundaryCell::get_normal_vector()
 {
   FOUR_C_THROW("There is no normal for Point1 boundarycell");
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -487,7 +486,6 @@ Core::LinAlg::Matrix<3, 1> Cut::Line2BoundaryCell::get_normal_vector()
 Core::LinAlg::Matrix<3, 1> Cut::Tri3BoundaryCell::get_normal_vector()
 {
   FOUR_C_THROW("Call Transform function to get normal for Tri3 boundarycell");
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*
@@ -495,7 +493,6 @@ Core::LinAlg::Matrix<3, 1> Cut::Tri3BoundaryCell::get_normal_vector()
 Core::LinAlg::Matrix<3, 1> Cut::Quad4BoundaryCell::get_normal_vector()
 {
   FOUR_C_THROW("Call Transform function to get normal for Quad4 boundarycell");
-  exit(EXIT_FAILURE);
 }
 
 /*----------------------------------------------------------------------------*

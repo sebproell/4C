@@ -102,7 +102,6 @@ NOX::Nln::LinSystem::LinearSystemType NOX::Nln::Aux::get_linear_system_type(
       FOUR_C_THROW(
           "There is no capable linear system type for the given linear "
           "solver combination! ( 1 linear solver )");
-      exit(EXIT_FAILURE);
     }
     case 2:
     {
@@ -153,7 +152,6 @@ NOX::Nln::LinSystem::LinearSystemType NOX::Nln::Aux::get_linear_system_type(
       FOUR_C_THROW(
           "There is no capable linear system type for the given linear "
           "solver combination!");
-      exit(EXIT_FAILURE);
     }
   }
 

@@ -53,7 +53,6 @@ namespace NOX
         default:
           return "Unknown Solution Type";
       }
-      exit(EXIT_FAILURE);
     };
 
     //! Map quantity std::string to enum
@@ -109,7 +108,6 @@ namespace NOX
         default:
           return "Unknown second order correction Type";
       }
-      exit(EXIT_FAILURE);
     };
 
     namespace LinSystem
@@ -173,7 +171,6 @@ namespace NOX
           default:
             return "unknown operator type";
         }
-        exit(EXIT_FAILURE);
       };
     }  // namespace LinSystem
 
@@ -302,7 +299,6 @@ namespace NOX
           default:
             return "unknown quantity type";
         }
-        exit(EXIT_FAILURE);
       };
 
       /// Map std::string to quantity type

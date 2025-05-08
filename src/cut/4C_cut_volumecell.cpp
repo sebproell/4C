@@ -420,7 +420,6 @@ void Cut::VolumeCell::new_boundary_cell(
       break;
     default:
       FOUR_C_THROW("Unsupported shape ( shape = {} )", Core::FE::cell_type_to_string(shape));
-      exit(EXIT_FAILURE);
   }
 }
 
@@ -538,7 +537,6 @@ void Cut::VolumeCell::new_integration_cell(
       break;
     default:
       FOUR_C_THROW("Unsupported shape ( shape = {} )", Core::FE::cell_type_to_string(shape));
-      exit(EXIT_FAILURE);
   }
 }
 

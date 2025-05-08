@@ -43,7 +43,6 @@ namespace Cut
       FOUR_C_THROW(
           "No dimension information for level set sides. It's "
           "likely that you can't call the calling function for level-set sides!");
-      exit(EXIT_FAILURE);
     }
 
     /// problem dimension
@@ -55,14 +54,12 @@ namespace Cut
       FOUR_C_THROW(
           "No number of nodes information for level set sides. It's "
           "likely that you can't call the calling function for level-set sides!");
-      exit(EXIT_FAILURE);
     }
 
     /// \brief Returns the topology data for the side from Shards library
     const CellTopologyData* topology() const override
     {
       FOUR_C_THROW("No topology data for level-set sides!");
-      exit(EXIT_FAILURE);
     }
 
     /** Get the cut points between the levelset side and the specified edge */
@@ -89,7 +86,6 @@ namespace Cut
     bool is_closer_side(const double* startpoint_xyz, Cut::Side* other, bool& is_closer) override
     {
       FOUR_C_THROW("no is_closer_side routine for level set cut side");
-      exit(EXIT_FAILURE);
     }
 
     /*! \brief Returns the global coordinates of the nodes of this side */
@@ -119,13 +115,11 @@ namespace Cut
     bool within_side(const double* xyz, double* rs, double& dist) override
     {
       FOUR_C_THROW("no WithinSide check implemented");
-      exit(EXIT_FAILURE);
     }
 
     bool ray_cut(const double* p1_xyz, const double* p2_xyz, double* rs, double& line_xi) override
     {
       FOUR_C_THROW("no RayCut with level set cut side implemented");
-      exit(EXIT_FAILURE);
     }
 
     /*! \brief Calculates the local coordinates (rsd) with respect to the element shape
@@ -136,7 +130,6 @@ namespace Cut
         const double* xyz, double* rst, bool allow_dist = false, double tol = POSITIONTOL) override
     {
       FOUR_C_THROW("no local coordinates on level set cut side");
-      exit(EXIT_FAILURE);
     }
 
     /*! \brief get local coordinates (rst) with respect to the element shape

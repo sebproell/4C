@@ -190,7 +190,6 @@ namespace Core::Geo
         return element_area_t<Core::FE::CellType::quad9>(xyze);
       default:
         FOUR_C_THROW("Unsupported surface element type!");
-        exit(EXIT_FAILURE);
     }
 
     return -1.0;

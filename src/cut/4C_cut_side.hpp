@@ -699,7 +699,6 @@ namespace Cut
           FOUR_C_THROW("Unknown sidetype! ({})\n", Core::FE::cell_type_to_string(sidetype));
           break;
       }
-      exit(EXIT_FAILURE);
     }
 
     /// Calculates the points at which the side is cut by this edge
@@ -812,7 +811,6 @@ namespace Cut
         default:
         {
           FOUR_C_THROW("Unknown/unsupported side type!");
-          exit(EXIT_FAILURE);
         }
       }
     }

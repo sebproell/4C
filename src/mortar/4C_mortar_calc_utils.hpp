@@ -109,7 +109,6 @@ namespace Mortar
             default:
             {
               FOUR_C_THROW("Wrong Dimension");
-              exit(EXIT_FAILURE);
             }
           }
 
@@ -261,7 +260,6 @@ namespace Mortar
             default:
             {
               FOUR_C_THROW("Wrong Dimension");
-              exit(EXIT_FAILURE);
             }
           }
 
@@ -286,7 +284,6 @@ namespace Mortar
         default:
         {
           FOUR_C_THROW("ERROR: Invalid interpolation type requested, only 0,1,2!");
-          exit(EXIT_FAILURE);
         }
       }
       return true;

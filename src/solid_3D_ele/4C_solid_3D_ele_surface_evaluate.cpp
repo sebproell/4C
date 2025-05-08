@@ -1398,7 +1398,6 @@ void Discret::Elements::SolidSurface::compute_area_deriv(const Core::LinAlg::Ser
         else
         {
           FOUR_C_THROW("calculation of second derivatives of interfacial area failed");
-          exit(1);
         }
 
         for (int j = 0; j < ndof; ++j)

@@ -219,8 +219,6 @@ namespace Core::Gen
         if (it->first == k) return it;
         ++it;
       }
-
-      exit(EXIT_FAILURE);
     }
 
     /** @brief Quick linear search routine (const version)
@@ -250,8 +248,6 @@ namespace Core::Gen
         if (cit->first == k) return cit;
         ++cit;
       }
-
-      exit(EXIT_FAILURE);
     }
 
     /** @brief repetitive access of the paired_vector entries in the same order

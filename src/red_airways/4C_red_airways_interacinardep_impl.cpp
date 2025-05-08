@@ -216,7 +216,6 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           else
           {
             FOUR_C_THROW("no boundary condition defined!");
-            exit(1);
           }
           // Get factor of FUNCT
           double functionfac = 0.0;
@@ -244,7 +243,6 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
-            exit(1);
           }
         }
         else
@@ -370,7 +368,6 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
         else
         {
           FOUR_C_THROW("Prescribed [{}] is not defined for reduced-inter-acinar linkers", Bc);
-          exit(1);
         }
       }
       /**
@@ -387,7 +384,6 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
-            exit(1);
           }
 
           Discret::ReducedLung::EvaluationData& evaluation_data =

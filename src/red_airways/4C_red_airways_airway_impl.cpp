@@ -166,7 +166,6 @@ namespace
     else
     {
       FOUR_C_THROW("Material law is not a Newtonian fluid");
-      exit(1);
     }
 
     rhs.putScalar(0.0);
@@ -504,7 +503,6 @@ namespace
     else
     {
       FOUR_C_THROW("[{}] is not an implemented element yet", (ele->type()));
-      exit(1);
     }
 
     double Ainv = -0.5 * C / (dt + Rvis * C);
@@ -929,7 +927,6 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
                   "FUNCTION {} has to take either value 0.0 or 1.0. Not clear if flow or pressure "
                   "boundary condition should be active.",
                   (funct_id_switch - 1));
-              exit(1);
             }
 
             BCin = Global::Problem::instance()
@@ -992,7 +989,6 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
-            exit(1);
           }
         }
         else if (ele->nodes()[i]->get_condition("Art_redD_3D_CouplingCond"))
@@ -1010,7 +1006,6 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
             FOUR_C_THROW(
                 "Cannot prescribe a boundary condition from 3D to reduced D, if the parameters "
                 "passed don't exist");
-            exit(1);
           }
 
           // -----------------------------------------------------------------
@@ -1094,7 +1089,6 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
         else
         {
           FOUR_C_THROW("precribed [{}] is not defined for reduced airways", Bc);
-          exit(1);
         }
       }
       else
@@ -1114,7 +1108,6 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
-            exit(1);
           }
 
           // set pressure at node i
@@ -1370,7 +1363,6 @@ void Discret::Elements::AirwayImpl<distype>::get_coupled_values(RedAirway* ele,
           FOUR_C_THROW(
               "Cannot prescribe a boundary condition from 3D to reduced D, if the parameters "
               "passed don't exist");
-          exit(1);
         }
 
 
@@ -1415,7 +1407,6 @@ void Discret::Elements::AirwayImpl<distype>::get_coupled_values(RedAirway* ele,
         {
           std::string str = (condition->parameters().get<std::string>("ReturnedVariable"));
           FOUR_C_THROW("{}, is an unimplemented type of coupling", str);
-          exit(1);
         }
         std::stringstream returnedBCwithId;
         returnedBCwithId << returnedBC << "_" << ID;
@@ -1434,7 +1425,6 @@ void Discret::Elements::AirwayImpl<distype>::get_coupled_values(RedAirway* ele,
         {
           FOUR_C_THROW(
               "The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]", returnedBC, ID);
-          exit(1);
         }
 
         // update the 1D map

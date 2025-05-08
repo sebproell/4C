@@ -644,7 +644,6 @@ void StructureFilter::write_eigen_stress(
   else
   {
     FOUR_C_THROW("trying to write something that is not a stress or a strain");
-    exit(1);
   }
 
 

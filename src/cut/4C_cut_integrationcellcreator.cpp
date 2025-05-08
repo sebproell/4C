@@ -59,7 +59,6 @@ bool Cut::IntegrationCellCreator::create_cells(
       }
       default:
         FOUR_C_THROW("Wrong element dimension! ( element dim = {} )", element->n_dim());
-        exit(EXIT_FAILURE);
     }
 
     // pyramids are not save right now.
@@ -112,7 +111,6 @@ bool Cut::IntegrationCellCreator::create_cell(
     default:
       FOUR_C_THROW(
           "unsupported element shape ( shape = {} )", Core::FE::cell_type_to_string(shape));
-      exit(EXIT_FAILURE);
   }
   // if the create process was successful, we can finally create the integration cell
   if (success)
@@ -176,7 +174,6 @@ void Cut::IntegrationCellCreator::add_side(Cut::BoundaryCellPosition bcell_posit
     default:
     {
       FOUR_C_THROW("Unknown boundary creation position type! ( enum = {} )", bcell_position);
-      exit(EXIT_FAILURE);
     }
   }
 }
@@ -379,7 +376,6 @@ bool Cut::IntegrationCellCreator::create_tet4_cell(
   else
   {
     FOUR_C_THROW("This cannot happen!");
-    exit(EXIT_FAILURE);
   }
 }
 

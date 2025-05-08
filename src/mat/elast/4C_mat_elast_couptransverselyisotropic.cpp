@@ -101,7 +101,6 @@ void Mat::Elastic::CoupTransverselyIsotropic::setup(
     default:
     {
       FOUR_C_THROW("INIT mode not implemented");
-      exit(EXIT_FAILURE);
     }
   }
 }

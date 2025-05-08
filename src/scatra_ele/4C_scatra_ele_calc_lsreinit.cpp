@@ -201,13 +201,11 @@ void Discret::Elements::ScaTraEleCalcLsReinit<distype, prob_dim>::eval_reinitial
         }
         default:
           FOUR_C_THROW("Unsupported action!");
-          exit(EXIT_FAILURE);
       }
       break;
     }
     default:
       FOUR_C_THROW("Unsupported reinitialization equation for the embedded case!");
-      exit(EXIT_FAILURE);
   }
 }
 

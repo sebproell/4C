@@ -141,10 +141,8 @@ char Cut::Output::gmsh_element_type(Core::FE::CellType shape)
     }
     default:
       FOUR_C_THROW("Unsupported cell shape! ( shape = {} )", Core::FE::cell_type_to_string(shape));
-      exit(EXIT_FAILURE);
   }
   // impossible to reach this point
-  exit(EXIT_FAILURE);
 }
 
 /*--------------------------------------------------------------------------------------*
@@ -252,7 +250,6 @@ void Cut::Output::gmsh_side_dump(std::ofstream& file, const Side* s, bool to_loc
       std::stringstream str;
       str << "unknown element type in gmsh_side_dump for " << nodes.size() << " nodes!";
       FOUR_C_THROW("{}", str.str());
-      exit(EXIT_FAILURE);
   }
   gmsh_element_dump(file, nodes, elementtype, to_local, ele);
 }
@@ -277,7 +274,6 @@ void Cut::Output::gmsh_tri_side_dump(
       std::stringstream str;
       str << "unknown element type in GmshTriSideDump for " << points.size() << " points!";
       FOUR_C_THROW("{}", str.str());
-      exit(EXIT_FAILURE);
     }
   }
 

@@ -41,7 +41,7 @@ void ntaini_ccadiscret(int argc, char** argv, std::string& inputfile_name,
       printf("Try again!\n");
     }
     MPI_Finalize();
-    exit(1);
+    exit(EXIT_FAILURE);
   }
   else if (argc <= 2)
   {
@@ -51,7 +51,7 @@ void ntaini_ccadiscret(int argc, char** argv, std::string& inputfile_name,
       printf("Try again!\n");
     }
     MPI_Finalize();
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
 

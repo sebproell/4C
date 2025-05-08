@@ -521,7 +521,6 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
       FOUR_C_THROW(
           "Reduced-dimensional problem, returned a value of type [{}] at the condition ({})",
           ReturnedVariable.c_str(), ID);
-      exit(0);
     }
   }
   return;
@@ -1212,7 +1211,6 @@ void FLD::Utils::FluidCouplingBc::evaluate_dirichlet(
           if ((velnp)[lid] > 1.0)
           {
             FOUR_C_THROW("coupled 3D/Reduced-D must have Dirichlet BC = 1");
-            exit(1);
           }
           std::cout << "[" << dof_gid << "]\t|" << val << "\t<-<" << (velnp)[lid] << "|\t";
           velnp.replace_global_values(1, &val, &dof_gid);
@@ -1221,7 +1219,6 @@ void FLD::Utils::FluidCouplingBc::evaluate_dirichlet(
     }
     std::cout << std::endl;
   }
-  //  exit(1);
 }
 
 FOUR_C_NAMESPACE_CLOSE

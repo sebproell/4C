@@ -1326,8 +1326,7 @@ const std::shared_ptr<const Core::LinAlg::Map>& STI::Monolithic::dof_row_map() c
  *--------------------------------------------------------------------------------*/
 bool STI::Monolithic::exit_newton_raphson()
 {
-  // initialize exit flag
-  bool exit(false);
+  bool is_converged(false);
 
   // perform Newton-Raphson convergence check depending on type of scalar transport
   switch (
@@ -1457,16 +1456,17 @@ bool STI::Monolithic::exit_newton_raphson()
             concincnorm / concdofnorm <= itertol_ and potincnorm / potdofnorm <= itertol_ and
             thermoincnorm / thermodofnorm <= itertol_)
           // exit Newton-Raphson iteration upon convergence
-          exit = true;
+          is_converged = true;
       }
 
       // exit Newton-Raphson iteration when residuals are small enough to prevent unnecessary
       // additional solver calls
-      if (concresnorm < restol_ and potresnorm < restol_ and thermoresnorm < restol_) exit = true;
+      if (concresnorm < restol_ and potresnorm < restol_ and thermoresnorm < restol_)
+        is_converged = true;
 
       // print warning to screen if maximum number of Newton-Raphson iterations is reached without
       // convergence
-      if (iter_ == itermax_ and !exit)
+      if (iter_ == itermax_ and !is_converged)
       {
         if (Core::Communication::my_mpi_rank(get_comm()) == 0)
         {
@@ -1480,11 +1480,11 @@ bool STI::Monolithic::exit_newton_raphson()
         }
 
         // proceed to next time step
-        exit = true;
+        is_converged = true;
       }
 
       // print finish line of convergence table to screen
-      if (exit and Core::Communication::my_mpi_rank(get_comm()) == 0)
+      if (is_converged and Core::Communication::my_mpi_rank(get_comm()) == 0)
       {
         std::cout << "+------------+-------------------+--------------+--------------+-------------"
                      "-+--------------+--------------+--------------+"
@@ -1502,7 +1502,7 @@ bool STI::Monolithic::exit_newton_raphson()
     }
   }
 
-  return exit;
+  return is_converged;
 }  // STI::Monolithic::exit_newton_raphson()
 
 /*--------------------------------------------------------------------------------*

@@ -108,7 +108,6 @@ void sysmat(Discret::Elements::RedAcinus* ele, Core::LinAlg::SerialDenseVector& 
   else
   {
     FOUR_C_THROW("Material law is not a valid reduced dimensional lung acinus material.");
-    exit(1);
   }
 }
 
@@ -338,7 +337,6 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           else
           {
             FOUR_C_THROW("no boundary condition defined!");
-            exit(1);
           }
 
           // Get factor of FUNCT
@@ -367,7 +365,6 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
-            exit(1);
           }
         }
         /**
@@ -388,7 +385,6 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
             FOUR_C_THROW(
                 "Cannot prescribe a boundary condition from 3D to reduced D, if the parameters "
                 "passed don't exist");
-            exit(1);
           }
 
           // -----------------------------------------------------------------
@@ -474,7 +470,6 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           else
           {
             FOUR_C_THROW("no boundary condition defined!");
-            exit(1);
           }
 
           // Get the local id of the node to whom the bc is prescribed
@@ -483,7 +478,6 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
-            exit(1);
           }
         }
         else
@@ -625,7 +619,6 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
         else
         {
           FOUR_C_THROW("prescribed [{}] is not defined for reduced acinuss", Bc);
-          exit(1);
         }
       }
       /**
@@ -642,7 +635,6 @@ void Discret::Elements::AcinusImpl<distype>::evaluate_terminal_bc(RedAcinus* ele
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
                 Core::Communication::my_mpi_rank(discretization.get_comm()));
-            exit(1);
           }
 
           Discret::ReducedLung::EvaluationData& evaluation_data =
@@ -847,7 +839,6 @@ void Discret::Elements::AcinusImpl<distype>::get_coupled_values(RedAcinus* ele,
           FOUR_C_THROW(
               "Cannot prescribe a boundary condition from 3D to reduced D, if the parameters "
               "passed don't exist");
-          exit(1);
         }
 
 
@@ -892,7 +883,6 @@ void Discret::Elements::AcinusImpl<distype>::get_coupled_values(RedAcinus* ele,
         {
           std::string str = (condition->parameters().get<std::string>("ReturnedVariable"));
           FOUR_C_THROW("{}, is an unimplemented type of coupling", str);
-          exit(1);
         }
         std::stringstream returnedBCwithId;
         returnedBCwithId << returnedBC << "_" << ID;
@@ -913,7 +903,6 @@ void Discret::Elements::AcinusImpl<distype>::get_coupled_values(RedAcinus* ele,
         {
           FOUR_C_THROW(
               "The 3D map for (1D - 3D coupling) has no variable ({}) for ID [{}]", returnedBC, ID);
-          exit(1);
         }
 
         // update the 1D map

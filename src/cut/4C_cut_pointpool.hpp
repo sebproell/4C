@@ -178,11 +178,9 @@ namespace Cut
               x, cut_edge, cut_side, get_tolerance(x, tolerance), merge_strategy_);
         default:
           FOUR_C_THROW("Unsupported problem dimension! (probdim = {})", probdim_);
-          exit(EXIT_FAILURE);
       }
 
       FOUR_C_THROW("Impossible to reach this line!");
-      exit(EXIT_FAILURE);
     }
 
     /// get the pointer to a stored point if possible

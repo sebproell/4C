@@ -568,7 +568,6 @@ void PostVtuWriter::write_geo_nurbs_ele(const Core::Elements::Element* ele,
     }
     default:
       FOUR_C_THROW("VTK output not yet implemented for given NURBS element");
-      exit(EXIT_FAILURE);
   }
 
   return;
@@ -658,7 +657,6 @@ Core::FE::CellType PostVtuWriter::map_nurbs_dis_type_to_lagrange_dis_type(
       return Core::FE::CellType::hex27;
     default:
       FOUR_C_THROW("No known mapping from NURBS to Lagrange.");
-      exit(EXIT_FAILURE);
   }
 }
 

@@ -79,13 +79,13 @@ PostProblem::PostProblem(Teuchos::CommandLineProcessor& CLP, int argc, char** ar
 
   if (parseReturn != Teuchos::CommandLineProcessor::PARSE_SUCCESSFUL)
   {
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   if (file == "")
   {
     CLP.printHelpMessage(argv[0], std::cout);
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   if (file.length() <= 8 or file.substr(file.length() - 8, 8) != ".control")

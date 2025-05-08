@@ -188,11 +188,8 @@ bool Cut::Intersection<probdim, edgetype, sidetype, debug, dimedge, dimside, num
           "The given side element type is currently unsupported! \n"
           "( dim = {} | sideType = {} ",
           dimside, Core::FE::cell_type_to_string(sidetype).c_str());
-      exit(EXIT_FAILURE);
     }
   }
-  // this cannot be reached
-  exit(EXIT_FAILURE);
 }
 
 /*--------------------------------------------------------------------------*
@@ -1404,7 +1401,6 @@ std::shared_ptr<Cut::IntersectionBase> Cut::IntersectionFactory::create_intersec
           Core::FE::cell_type_to_string(edge_type).c_str());
       break;
   }
-  exit(EXIT_FAILURE);
 }
 
 

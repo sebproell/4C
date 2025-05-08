@@ -178,7 +178,6 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::SolidType::compute_null_space
           "The null space computation of a solid element of dimension {} is not yet implemented",
           numdof);
   }
-  exit(1);
 }
 
 Discret::Elements::Solid::Solid(int id, int owner) : Core::Elements::Element(id, owner) {}

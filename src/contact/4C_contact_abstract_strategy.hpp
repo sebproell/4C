@@ -202,7 +202,6 @@ namespace CONTACT
     {
       // currently not supported for the abstract strategy
       FOUR_C_THROW("slave_n_dof_row_map() seems currently unsupported!");
-      exit(EXIT_FAILURE);
     }
 
     /*! \brief Return the slave dof row map in the tangential directions
@@ -278,7 +277,6 @@ namespace CONTACT
         const enum CONTACT::VecBlockType& bt) const
     {
       FOUR_C_THROW("Not yet implemented!");
-      exit(EXIT_FAILURE);
 
       return nullptr;
     };
@@ -314,7 +312,6 @@ namespace CONTACT
         Core::LinAlg::Vector<double>& f, const double& timefac_np) const
     {
       FOUR_C_THROW("Not yet implemented!");
-      exit(EXIT_FAILURE);
 
       return nullptr;
     };
@@ -333,7 +330,6 @@ namespace CONTACT
         const CONTACT::ParamsInterface* cparams = nullptr) const
     {
       FOUR_C_THROW("Not yet implemented!");
-      exit(EXIT_FAILURE);
 
       return nullptr;
     };
@@ -353,7 +349,6 @@ namespace CONTACT
         std::shared_ptr<Core::LinAlg::SparseMatrix>& kteff, const double& timefac_np) const
     {
       FOUR_C_THROW("Not yet implemented!");
-      exit(EXIT_FAILURE);
 
       return nullptr;
     };

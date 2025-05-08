@@ -281,7 +281,6 @@ std::vector<double> Cut::FacetIntegration::compute_alpha(
   else
   {
     FOUR_C_THROW("The facet integration type undefined");
-    exit(1);
   }
   return alfa;
 }
@@ -428,7 +427,6 @@ double Cut::FacetIntegration::integrate_facet()
     if (projType != Cut::proj_x and projType != Cut::proj_y and projType != Cut::proj_z)
     {
       FOUR_C_THROW("projection plane is not defined");
-      exit(1);
     }
 
     boundary_facet_integration(cornersLocal, facet_integ, projType);
@@ -527,7 +525,6 @@ void Cut::FacetIntegration::boundary_facet_integration(
     else
     {
       FOUR_C_THROW("The facet integration type not supported");
-      exit(1);
     }
   }
 
@@ -911,7 +908,6 @@ void Cut::FacetIntegration::divergence_integration_rule_new(
         default:
           FOUR_C_THROW("unsupported integration cell type ( cell type = {} )",
               Core::FE::cell_type_to_string(bcell->shape()));
-          exit(EXIT_FAILURE);
       }
       double wei = iquad.weight() * drs * normalX;
 
