@@ -156,9 +156,6 @@ void ntacal()
     case Core::ProblemType::ssti:
       ssti_drt();
       break;
-    case Core::ProblemType::redairways_tissue:
-      redairway_tissue_dyn();
-      break;
 
     case Core::ProblemType::particle:
       particle_drt();

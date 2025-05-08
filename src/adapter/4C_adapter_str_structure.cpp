@@ -10,7 +10,6 @@
 #include "4C_adapter_str_constr_merged.hpp"
 #include "4C_adapter_str_fpsiwrapper.hpp"
 #include "4C_adapter_str_fsi_timint_adaptive.hpp"
-#include "4C_adapter_str_redairway.hpp"
 #include "4C_adapter_str_ssiwrapper.hpp"
 #include "4C_adapter_str_timeloop.hpp"
 #include "4C_adapter_str_timint_adaptive.hpp"
@@ -301,11 +300,6 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
       case Core::ProblemType::ssti:
       {
         structure_ = std::make_shared<SSIStructureWrapper>(tmpstr);
-      }
-      break;
-      case Core::ProblemType::redairways_tissue:
-      {
-        structure_ = std::make_shared<StructureRedAirway>(tmpstr);
       }
       break;
       case Core::ProblemType::poroelast:

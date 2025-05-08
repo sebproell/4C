@@ -739,13 +739,6 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       // no discretizations and nodes needed for supporting procs
       break;
     }
-    case Core::ProblemType::redairways_tissue:
-    {
-      // create empty discretizations
-      discretization_types["structure"] = {DiscretizationType::plain, "STRUCTURE"};
-      discretization_types["red_airway"] = {DiscretizationType::plain, "REDUCED D AIRWAYS"};
-    }
-    break;
     default:
       FOUR_C_THROW("Unknown problem type: {}", problem.get_problem_type());
       break;

@@ -352,11 +352,6 @@ Poroelasticity
 
 One has to define solvers for the following dynamics:
 
-RedAirways_Tissue
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-One has to define solvers for the following dynamics:
-
 Scalar_Thermo_Interaction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

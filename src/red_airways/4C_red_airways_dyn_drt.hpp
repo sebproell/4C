@@ -21,9 +21,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-
 void dyn_red_airways_drt();
-void redairway_tissue_dyn();
 
 std::shared_ptr<Airway::RedAirwayImplicitTimeInt> dyn_red_airways_drt(bool CoupledTo3D);
 

@@ -227,19 +227,6 @@ namespace
         }
         break;
       }
-      case Core::ProblemType::redairways_tissue:
-      {
-        PostField* structfield = problem.get_discretization(0);
-        StructureFilter structwriter(
-            structfield, problem.outname(), problem.stresstype(), problem.straintype());
-        structwriter.write_files();
-
-        PostField* fluidfield = problem.get_discretization(1);
-        StructureFilter fluidwriter(
-            fluidfield, problem.outname(), problem.stresstype(), problem.straintype());
-        fluidwriter.write_files();
-        break;
-      }
       case Core::ProblemType::ale:
       {
         PostField* field = problem.get_discretization(0);

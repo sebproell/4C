@@ -11,7 +11,6 @@
 #include "4C_adapter_str_fbiwrapper.hpp"
 #include "4C_adapter_str_fpsiwrapper.hpp"
 #include "4C_adapter_str_pasiwrapper.hpp"
-#include "4C_adapter_str_redairway.hpp"
 #include "4C_adapter_str_ssiwrapper.hpp"
 #include "4C_adapter_str_timeada.hpp"
 #include "4C_adapter_str_timeloop.hpp"
@@ -851,9 +850,6 @@ void Adapter::StructureBaseAlgorithmNew::create_wrapper(
       str_wrapper_ = std::make_shared<PASIStructureWrapper>(ti_strategy);
       break;
     }
-    case Core::ProblemType::redairways_tissue:
-      str_wrapper_ = std::make_shared<StructureRedAirway>(ti_strategy);
-      break;
     case Core::ProblemType::poroelast:
     case Core::ProblemType::poroscatra:
     case Core::ProblemType::fpsi:
