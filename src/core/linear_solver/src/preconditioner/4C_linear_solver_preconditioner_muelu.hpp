@@ -52,12 +52,11 @@ namespace Core::LinearSolver
      * it re-uses the existing preconditioner and only updates the fine level matrix
      * for the Krylov solver.
      *
-     * @param create Boolean flag to enforce (re-)creation of the preconditioner
      * @param matrix Epetra_Operator to be used as input for the preconditioner
      * @param x Solution of the linear system
      * @param b Right-hand side of the linear system
      */
-    void setup(bool create, Epetra_Operator* matrix, Core::LinAlg::MultiVector<double>* x,
+    void setup(Epetra_Operator* matrix, Core::LinAlg::MultiVector<double>* x,
         Core::LinAlg::MultiVector<double>* b) override;
 
     //! linear operator used for preconditioning

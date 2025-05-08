@@ -44,12 +44,9 @@ std::shared_ptr<Epetra_Operator> Core::LinearSolver::AmGnxnPreconditioner::prec_
 /*------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------*/
 
-void Core::LinearSolver::AmGnxnPreconditioner::setup(bool create, Epetra_Operator* matrix,
+void Core::LinearSolver::AmGnxnPreconditioner::setup(Epetra_Operator* matrix,
     Core::LinAlg::MultiVector<double>* x, Core::LinAlg::MultiVector<double>* b)
 {
-  // Decide if the setup has to be done
-  if (!create) return;
-
   // Check whether this is a block sparse matrix
   Core::LinAlg::BlockSparseMatrixBase* A_bl =
       dynamic_cast<Core::LinAlg::BlockSparseMatrixBase*>(matrix);
@@ -59,8 +56,6 @@ void Core::LinearSolver::AmGnxnPreconditioner::setup(bool create, Epetra_Operato
 
   // Do all the setup
   setup(Core::Utils::shared_ptr_from_ref(*A_bl));
-
-  return;
 }
 
 /*------------------------------------------------------------------------------*/

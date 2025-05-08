@@ -33,7 +33,7 @@ namespace Core::LinearSolver
    public:
     TekoPreconditioner(Teuchos::ParameterList& tekolist);
 
-    void setup(bool create, Epetra_Operator* matrix, Core::LinAlg::MultiVector<double>* x,
+    void setup(Epetra_Operator* matrix, Core::LinAlg::MultiVector<double>* x,
         Core::LinAlg::MultiVector<double>* b) override;
 
     /// linear operator used for preconditioning
