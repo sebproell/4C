@@ -36,135 +36,132 @@ Core::LinearSolver::TekoPreconditioner::TekoPreconditioner(Teuchos::ParameterLis
 
 //----------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------
-void Core::LinearSolver::TekoPreconditioner::setup(bool create, Epetra_Operator* matrix,
+void Core::LinearSolver::TekoPreconditioner::setup(Epetra_Operator* matrix,
     Core::LinAlg::MultiVector<double>* x, Core::LinAlg::MultiVector<double>* b)
 {
   using EpetraMultiVector = Xpetra::EpetraMultiVectorT<GlobalOrdinal, Node>;
   using XpetraMultiVector = Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>;
 
-  if (create)
+  if (!tekolist_.sublist("Teko Parameters").isParameter("TEKO_XML_FILE"))
+    FOUR_C_THROW("TEKO_XML_FILE parameter not set!");
+  auto xmlFileName = tekolist_.sublist("Teko Parameters").get<std::string>("TEKO_XML_FILE");
+
+  Teuchos::ParameterList tekoParams;
+  auto comm = Core::Communication::to_teuchos_comm<int>(
+      Core::Communication::unpack_epetra_comm(matrix->Comm()));
+  Teuchos::updateParametersFromXmlFileAndBroadcast(xmlFileName, Teuchos::Ptr(&tekoParams), *comm);
+
+  std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> A =
+      std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(
+          Core::Utils::shared_ptr_from_ref(*matrix));
+
+  if (!A)
   {
-    if (!tekolist_.sublist("Teko Parameters").isParameter("TEKO_XML_FILE"))
-      FOUR_C_THROW("TEKO_XML_FILE parameter not set!");
-    auto xmlFileName = tekolist_.sublist("Teko Parameters").get<std::string>("TEKO_XML_FILE");
-
-    Teuchos::ParameterList tekoParams;
-    auto comm = Core::Communication::to_teuchos_comm<int>(
-        Core::Communication::unpack_epetra_comm(matrix->Comm()));
-    Teuchos::updateParametersFromXmlFileAndBroadcast(xmlFileName, Teuchos::Ptr(&tekoParams), *comm);
-
-    std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> A =
-        std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(
-            Core::Utils::shared_ptr_from_ref(*matrix));
-
-    if (!A)
+    if (tekolist_.sublist("Teko Parameters").isParameter("extractor"))
     {
-      if (tekolist_.sublist("Teko Parameters").isParameter("extractor"))
-      {
-        std::shared_ptr<Core::LinAlg::MultiMapExtractor> extractor =
-            tekolist_.sublist("Teko Parameters")
-                .get<std::shared_ptr<Core::LinAlg::MultiMapExtractor>>("extractor");
+      std::shared_ptr<Core::LinAlg::MultiMapExtractor> extractor =
+          tekolist_.sublist("Teko Parameters")
+              .get<std::shared_ptr<Core::LinAlg::MultiMapExtractor>>("extractor");
 
-        auto crsA =
-            std::dynamic_pointer_cast<Epetra_CrsMatrix>(Core::Utils::shared_ptr_from_ref(*matrix));
-        Core::LinAlg::SparseMatrix sparseA =
-            Core::LinAlg::SparseMatrix(crsA, LinAlg::DataAccess::View);
+      auto crsA =
+          std::dynamic_pointer_cast<Epetra_CrsMatrix>(Core::Utils::shared_ptr_from_ref(*matrix));
+      Core::LinAlg::SparseMatrix sparseA =
+          Core::LinAlg::SparseMatrix(crsA, LinAlg::DataAccess::View);
 
-        A = Core::LinAlg::split_matrix<Core::LinAlg::DefaultBlockMatrixStrategy>(
-            sparseA, *extractor, *extractor);
-        A->complete();
-      }
+      A = Core::LinAlg::split_matrix<Core::LinAlg::DefaultBlockMatrixStrategy>(
+          sparseA, *extractor, *extractor);
+      A->complete();
     }
-
-    // wrap linear operators
-    if (!A)
-    {
-      auto A_crs = Teuchos::rcp_dynamic_cast<Epetra_CrsMatrix>(Teuchos::rcpFromRef(*matrix));
-      pmatrix_ = Thyra::epetraLinearOp(A_crs);
-    }
-    else
-    {
-      pmatrix_ = Thyra::defaultBlockedLinearOp<double>();
-
-      Teko::toBlockedLinearOp(pmatrix_)->beginBlockFill(A->rows(), A->cols());
-      for (int row = 0; row < A->rows(); row++)
-      {
-        for (int col = 0; col < A->cols(); col++)
-        {
-          auto A_crs = Teuchos::make_rcp<Epetra_CrsMatrix>(*A->matrix(row, col).epetra_matrix());
-          Teko::toBlockedLinearOp(pmatrix_)->setBlock(row, col, Thyra::epetraLinearOp(A_crs));
-        }
-      }
-      Teko::toBlockedLinearOp(pmatrix_)->endBlockFill();
-
-      // check if multigrid is used as preconditioner for single field inverse approximation and
-      // attach nullspace and coordinate information to the respective inverse parameter list.
-      for (int block = 0; block < A->rows(); block++)
-      {
-        std::string inverse = "Inverse" + std::to_string(block + 1);
-
-        if (tekolist_.isSublist(inverse))
-        {
-          // get the single field preconditioner sub-list of a matrix block hardwired under
-          // "Inverse<1...n>".
-          Teuchos::ParameterList& inverseList = tekolist_.sublist(inverse);
-
-          if (tekoParams.sublist("Inverse Factory Library")
-                  .sublist(inverse)
-                  .get<std::string>("Type") == "MueLu")
-          {
-            const int number_of_equations = inverseList.get<int>("PDE equations");
-
-            Teuchos::RCP<XpetraMultiVector> nullspace =
-                Teuchos::make_rcp<EpetraMultiVector>(Teuchos::rcpFromRef(*inverseList
-                        .get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace")
-                        ->get_ptr_of_Epetra_MultiVector()));
-
-            Teuchos::RCP<XpetraMultiVector> coordinates =
-                Teuchos::make_rcp<EpetraMultiVector>(Teuchos::rcpFromRef(*inverseList
-                        .get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("Coordinates")
-                        ->get_ptr_of_Epetra_MultiVector()));
-
-            tekoParams.sublist("Inverse Factory Library")
-                .sublist(inverse)
-                .set("number of equations", number_of_equations);
-            Teuchos::ParameterList& userParamList =
-                tekoParams.sublist("Inverse Factory Library").sublist(inverse).sublist("user data");
-            userParamList.set("Nullspace", nullspace);
-            userParamList.set("Coordinates", coordinates);
-          }
-        }
-      }
-    }
-
-    // setup preconditioner builder and enable relevant packages
-    Stratimikos::LinearSolverBuilder<double> builder;
-
-    // enable block preconditioning and multigrid
-    Stratimikos::enableMueLu<Scalar, LocalOrdinal, GlobalOrdinal, Node>(builder);
-    Teko::addTekoToStratimikosBuilder(builder);
-
-    // add special in-house block preconditioning methods
-    Teuchos::RCP<Teko::Cloneable> clone = Teuchos::make_rcp<Teko::AutoClone<LU2x2SpaiStrategy>>();
-    Teko::LU2x2PreconditionerFactory::addStrategy("Spai Strategy", clone);
-
-    // get preconditioner parameter list
-    Teuchos::RCP<Teuchos::ParameterList> stratimikos_params =
-        Teuchos::make_rcp<Teuchos::ParameterList>(*builder.getValidParameters());
-    Teuchos::ParameterList& tekoList =
-        stratimikos_params->sublist("Preconditioner Types").sublist("Teko");
-    tekoList.setParameters(tekoParams);
-    builder.setParameterList(stratimikos_params);
-
-    // construct preconditioning operator
-    Teuchos::RCP<Thyra::PreconditionerFactoryBase<double>> precFactory =
-        builder.createPreconditioningStrategy("Teko");
-    Teuchos::RCP<Thyra::PreconditionerBase<double>> prec =
-        Thyra::prec<double>(*precFactory, pmatrix_);
-    Teko::LinearOp inverseOp = prec->getUnspecifiedPrecOp();
-
-    p_ = std::make_shared<Teko::Epetra::EpetraInverseOpWrapper>(inverseOp);
   }
+
+  // wrap linear operators
+  if (!A)
+  {
+    auto A_crs = Teuchos::rcp_dynamic_cast<Epetra_CrsMatrix>(Teuchos::rcpFromRef(*matrix));
+    pmatrix_ = Thyra::epetraLinearOp(A_crs);
+  }
+  else
+  {
+    pmatrix_ = Thyra::defaultBlockedLinearOp<double>();
+
+    Teko::toBlockedLinearOp(pmatrix_)->beginBlockFill(A->rows(), A->cols());
+    for (int row = 0; row < A->rows(); row++)
+    {
+      for (int col = 0; col < A->cols(); col++)
+      {
+        auto A_crs = Teuchos::make_rcp<Epetra_CrsMatrix>(*A->matrix(row, col).epetra_matrix());
+        Teko::toBlockedLinearOp(pmatrix_)->setBlock(row, col, Thyra::epetraLinearOp(A_crs));
+      }
+    }
+    Teko::toBlockedLinearOp(pmatrix_)->endBlockFill();
+
+    // check if multigrid is used as preconditioner for single field inverse approximation and
+    // attach nullspace and coordinate information to the respective inverse parameter list.
+    for (int block = 0; block < A->rows(); block++)
+    {
+      std::string inverse = "Inverse" + std::to_string(block + 1);
+
+      if (tekolist_.isSublist(inverse))
+      {
+        // get the single field preconditioner sub-list of a matrix block hardwired under
+        // "Inverse<1...n>".
+        Teuchos::ParameterList& inverseList = tekolist_.sublist(inverse);
+
+        if (tekoParams.sublist("Inverse Factory Library")
+                .sublist(inverse)
+                .get<std::string>("Type") == "MueLu")
+        {
+          const int number_of_equations = inverseList.get<int>("PDE equations");
+
+          Teuchos::RCP<XpetraMultiVector> nullspace =
+              Teuchos::make_rcp<EpetraMultiVector>(Teuchos::rcpFromRef(
+                  *inverseList.get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace")
+                      ->get_ptr_of_Epetra_MultiVector()));
+
+          Teuchos::RCP<XpetraMultiVector> coordinates =
+              Teuchos::make_rcp<EpetraMultiVector>(Teuchos::rcpFromRef(*inverseList
+                      .get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("Coordinates")
+                      ->get_ptr_of_Epetra_MultiVector()));
+
+          tekoParams.sublist("Inverse Factory Library")
+              .sublist(inverse)
+              .set("number of equations", number_of_equations);
+          Teuchos::ParameterList& userParamList =
+              tekoParams.sublist("Inverse Factory Library").sublist(inverse).sublist("user data");
+          userParamList.set("Nullspace", nullspace);
+          userParamList.set("Coordinates", coordinates);
+        }
+      }
+    }
+  }
+
+  // setup preconditioner builder and enable relevant packages
+  Stratimikos::LinearSolverBuilder<double> builder;
+
+  // enable block preconditioning and multigrid
+  Stratimikos::enableMueLu<Scalar, LocalOrdinal, GlobalOrdinal, Node>(builder);
+  Teko::addTekoToStratimikosBuilder(builder);
+
+  // add special in-house block preconditioning methods
+  Teuchos::RCP<Teko::Cloneable> clone = Teuchos::make_rcp<Teko::AutoClone<LU2x2SpaiStrategy>>();
+  Teko::LU2x2PreconditionerFactory::addStrategy("Spai Strategy", clone);
+
+  // get preconditioner parameter list
+  Teuchos::RCP<Teuchos::ParameterList> stratimikos_params =
+      Teuchos::make_rcp<Teuchos::ParameterList>(*builder.getValidParameters());
+  Teuchos::ParameterList& tekoList =
+      stratimikos_params->sublist("Preconditioner Types").sublist("Teko");
+  tekoList.setParameters(tekoParams);
+  builder.setParameterList(stratimikos_params);
+
+  // construct preconditioning operator
+  Teuchos::RCP<Thyra::PreconditionerFactoryBase<double>> precFactory =
+      builder.createPreconditioningStrategy("Teko");
+  Teuchos::RCP<Thyra::PreconditionerBase<double>> prec =
+      Thyra::prec<double>(*precFactory, pmatrix_);
+  Teko::LinearOp inverseOp = prec->getUnspecifiedPrecOp();
+
+  p_ = std::make_shared<Teko::Epetra::EpetraInverseOpWrapper>(inverseOp);
 }
 
 //----------------------------------------------------------------------------------

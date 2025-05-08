@@ -62,7 +62,7 @@ void Core::LinearSolver::IterativeSolver<MatrixType, VectorType>::setup(
   x_ = x;
   b_ = b;
 
-  preconditioner_->setup(create, a_.get(), x_.get(), b_.get());
+  if (create) preconditioner_->setup(a_.get(), x_.get(), b_.get());
 }
 
 //----------------------------------------------------------------------------------
