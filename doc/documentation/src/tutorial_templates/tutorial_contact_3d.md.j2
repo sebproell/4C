@@ -1,11 +1,12 @@
+{% set tutorial_file = "tutorial_contact_3d.4C.yaml" %}
+{% set input_file_content = load_input_file(tutorial_file) %}
+
 # 3D Contact Tutorial
 
 This tutorial gives a short introduction to the setup of a simple 3D contact problem. The goal of this tutorial is to
-give an overview of the general workflow in 4C and to show how to create a working `.dat` input file. It is neither
+give an overview of the general workflow in 4C and to show how to create a working input file. It is neither
 intended to be an introduction to the theory of contact mechanics, nor demonstrate all possible optional settings for a
-given (contact) problem. It is assumed that 4C has been built on your machine according to the instructions and has
-passed the tests without error messages. For further information on how to build 4C and to test the build, please refer
-to the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md).
+given (contact) problem.
 
 ## Overview
 
@@ -14,12 +15,11 @@ to the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md).
     1. [Define Geometry](#define-geometry)
     1. [Define Boundary Conditions](#define-boundary-conditions)
     1. [Specify Simulation Settings](#specify-simulation-settings)
-1. [Create .dat input file](#create-input-file)
 1. [Run Simulation in 4C, Post-processing and visualization in Paraview](#run-simulation)
 
 ## Problem description
 
-In this tutorial we create two cubes sizes 1x1x1 and 0.5x0.5x0.5, with a time dependent Dirichlet boundary condition (
+In this tutorial we create two cubes with sizes 1x1x1 and 0.5x0.5x0.5, with a time dependent Dirichlet boundary condition (
 DBC) imposed on the right outer surface of the smaller cube. As a result, the smaller cube is pressed horizontally
 against the larger counterpart, which is clamped on the left outer surface. Mortar methodology is applied for the
 discretization of the contact constraints and the subdomains are coupled with dual Lagrange multipliers. The cubes are
@@ -28,11 +28,10 @@ of the Young's modulus and density for each cube.
 
 ## Create files
 
-To create a `.dat` input file for 4C we need three files:
+To create valid input for 4C we need two files:
 
 - `.exo`/`.e` file containing the geometry and mesh
-- `.bc` file containing information on the boundary conditions
-- `.head` file containing all relevant parameter settings for the simulation
+- `.4C.yaml` file containing all relevant parameters for the simulation
 
 ### Define Geometry
 
@@ -59,93 +58,59 @@ The journal file can be called in Cubit from the Terminal with the command
 /path/to/cubit/executable -nographics /path/to/tutorial_contact_3d.jou
 ```
 
-This saves the `.exo` file in the current work directory.
+This saves an Exodus file in the current work directory. We refer to this file in our main input
+file in the section ``STRUCTURE GEOMETRY`` as follows:
+
+{{ section_dump(input_file_content, ["STRUCTURE GEOMETRY"], filetype="md") }}
+
+We assign two different materials to the two cubes, which are defined in the ``MATERIALS`` section
+of the input file as follows:
+
+{{ section_dump(input_file_content, ["MATERIALS"], filetype="md") }}
 
 ### Define Boundary Conditions
 
-For the definition of the boundary conditions, it is convenient to use the prototype of the `.bc` file, as it provides
-syntax examples and a basic structure that automatically inserts the information on number of nodes in each block
-element/nodeset/etc. It also gives a list of all possible conditions that can be defined, as well as the element type
-names and the corresponding shapes. Depending on the type of the problem, undefined/empty/unnecessary lines can be
-deleted when using it as a template. Information on how to obtain prototypes for both the `.bc` file and the `.head`
-file is given in the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md) under the heading "Prepare and Run
-Simulations". The terminal command to obtain both prototype files is:
+For the boundary conditions, we defined nodesets for the clamped surface of the large cube and
+the displacement controlled surface of the small cube in the mesh file. The Dirichlet boundary
+conditions are defined as follows:
 
-```bash
-<buildDir>/pre_exodus --exo=tutorial_contact_3d.e
-```
+{{ section_dump(input_file_content, ["DESIGN SURF DIRICH CONDITIONS"], filetype="md") }}
 
-In `tutorial_contact_3d.bc` it can be seen, that the first two blocks of text define the structure elements, which will
-later fill the system matrices. The other text blocks define conditions on parts of the system. The first line of each
-block assigns an (optional) name to the element block/nodeset and the shape of the element type is specified. The next
-part has already been filled in by `pre_exodus`. For our simple geometry and discretization it can easily be checked
-that the number of elements/nodes in the corresponding element blocks and nodesets is correct. Next, the Section of
-the `.dat` file under which this information will be listed is given. the structure element properties are listed
-under `STRUCTURE`, whereas the boundary/contact conditions will be listed under their corresponding section names. The
-parameters for assigning a material model to an element block with `SOLID` elements of shape `HEX8` are:
+Node set 3 contains the nodes on the clamped surface of the large cube, and is fixed in all three directions.
+Node set 4 contains the nodes on the displacement controlled surface of the small cube, and is subject
+to a time-dependent Dirichlet boundary condition. The time-dependent behavior is controlled by
 
-```bash
-description="MAT 1 KINEM nonlinear"
-```
-
-where we choose material model 1, set the kinematics to nonlinear and assume no enhanced assumed strain. Last, the
-element type/condition specific set of parameters is given and the name of the element type is specified. Hint: A list
-of possible options can be found in the `.bc` default file.
-
-Remark: Apart from the separate listing of problem specific conditions, Dirichlet and Neumann BCs (as well as many other
-types of conditions) are also listed separately, depending on the geometric entity that they are imposed on, e.g.
-points, lines, surfaces or volumes.
-
-The parameters for the definition of a DBC are:
-
-```description="NUMDOF 3 ONOFF 1 0 0 VAL -1.0 0.0 0.0 FUNCT 1 0 0"```
-
-where: NUMDOF = number of degrees of freedom per node, ONOFF = on which of the DOF is the condition imposed (Binary
-1/0), VAL = scaling parameter, FUNCT = Assign a numbered function to a dof (here Function1, defined in .head file).
+{{ section_dump(input_file_content, ["FUNCT1"], filetype="md") }}
 
 The master and slave surfaces for the definition of the contact mortar problem can be specified as:
 
-```description="1 Master"```
+{{ section_dump(input_file_content, ["DESIGN SURF MORTAR CONTACT CONDITIONS 3D"], filetype="md") }}
+
+Here, one of the interface sides is defined as ``master`` and the other as ``slave`` surface.
 
 > Remark: It is common practice to choose the side with the finer discretization as the slave side.
 
 ### Specify Simulation Settings
 
-The prototype of the `.head` file contains an extensive list of possible parameter settings for running a simulation in
-4C. It also gives information on the numerous abbreviations used in the input files. Hint: Use the search function of
-your editor to navigate the 13000 lines of text.
+Since we solve a structural dynamics problem, we need to choose the correct problem type,
 
-As we are setting up a structural contact problem, not all sections and parameters are required (e.g. sections
-concerning the simulation of fluids, etc. can be left out). If they are not specified explicitly in our input file, the
-parameters take on default values. Some sections that are required by all problem types
-include `PROBLEM SIZE`, `PROBLEM TYPE`, `DISCRETIZATION`, `IO` (Input/Output), at least one `SOLVER` section (for
-contact problems we need to specify two solvers: one for the state, where not contact is active, and one for the state
-with active contact) and a `MATERIALS` section. The time integration method `DYNAMICTYPE` (Generalized alpha method),
-time step size `TIMESTEP` and final time `MAXTIME` are also specified for structural dynamics. An important parameter
-is `RESULTSEVERY`, which specifies how often output is written and thus directly controls the size of the output file.
+{{ section_dump(input_file_content, ["PROBLEM TYPE"], filetype="md") }}
 
-The contact specific parameters are given under `--MORTAR COUPLING`. Dual Lagrange multipliers are chosen for the
-coupling of the interface. Either the `BruteForceEleBased` algorithm, or the more efficient `BinaryTree` can be chosen
-as the contact search algorithm. In `tutorial_contact_3d.head` you will also find the definition of the `FUNCTION` that
-is used for the time dependent DBC.
+and set parameters in the corresponding section:
 
-## Create input file
+{{ section_dump(input_file_content, ["STRUCTURAL DYNAMIC"], filetype="md") }}
 
-The final `.dat` input file for 4C can be created with the `pre_exodus` executable as described in
-the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md). To manually create the `.dat` file the full
-command states:
+The time integration method `DYNAMICTYPE` (Generalized alpha method), time step size `TIMESTEP` and final time `MAXTIME` are specified for structural dynamics.
+An important parameter is `RESULTSEVERY`, which specifies how often output is written and thus directly controls the size of the output file.
 
-```bash
-<buildDir>/pre_exodus --exo=tutorial_contact_3d.e --head=tutorial_contact_3d.head --bc=tutorial_contact_3d.bc --dat=tutorial_contact_3d.dat
-```
+The contact specific parameters are here
 
-This saves the `.dat` file in the current work directory. The `.dat` file now contains all the information from the
-created files, plus a list of all nodes and structure elements.
+{{ section_dump(input_file_content, ["MORTAR COUPLING"], filetype="md") }}
 
-> Remark: The framework testing with ctest executes the command above automatically.
+Dual Lagrange multipliers are chosen for the coupling of the interface. Either the `BruteForceEleBased` algorithm,
+or the more efficient `BinaryTree` can be chosen as the contact search algorithm.
 
 ## Run Simulation
 
 Again, following the instructions from the [README.md](https://github.com/4C-multiphysics/4C/blob/main/README.md), the 4C
-executable can be invoked with the `tutorial_contact_3d.dat` input file. Since we chose the binary output option in
-our `.head` file (section `IO`), we also have to run a post processing tool before visualizing the results in Paraview.
+executable can be invoked with the `tutorial_contact_3d.4C.yaml` input file
