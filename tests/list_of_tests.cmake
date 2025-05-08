@@ -308,7 +308,6 @@ four_c_test(TEST_FILE contact3D_cpp_normal_new_struc.dat NP 2)
 four_c_test(TEST_FILE contact3D_dual_lts.dat NP 2)
 four_c_test(TEST_FILE contact3D_dual_lts_new_struct.dat NP 2)
 four_c_test(TEST_FILE contact3D_ele_based_new_struc.dat NP 2)
-four_c_test(TEST_FILE contact3D_exodus_in.4C.yaml NP 2)
 four_c_test(TEST_FILE contact3D_lin_duallagr.dat NP 2)
 four_c_test(TEST_FILE contact3D_lin_GPTSpenalty.dat NP 2)
 four_c_test(TEST_FILE contact3D_lin_GPTSpenalty_new_struct.dat NP 2)
@@ -1966,7 +1965,7 @@ four_c_test_nested_parallelism(tsi_heatconvection_monolithic.dat tsi_heatconvect
 
 # testing the whole framework: from pre_exodus and 4C to the post-filter:
 four_c_test_framework(PREFIX tutorial_battery NP 2 USE_PRE_EXODUS)
-four_c_test_framework(PREFIX tutorial_contact_3d NP 2 USE_PRE_EXODUS)
+four_c_test_framework(PREFIX tutorial_contact_3d NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_contact_3d.e)
 four_c_test_framework(PREFIX tutorial_fluid NP 2 USE_PRE_EXODUS)
 four_c_test_framework(PREFIX tutorial_fsi NP 2 USE_PRE_EXODUS)
 four_c_test_framework(PREFIX tutorial_fsi_3d NP 2 USE_PRE_EXODUS COPY_FILES ${PROJECT_SOURCE_DIR}/tests/input_files/fsi_part_struct_solver.xml)
