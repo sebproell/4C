@@ -231,7 +231,7 @@ namespace Core::Conditions
                       Do not mess with their std::shared_ptr!
 
     */
-    void add_geometry(std::shared_ptr<std::map<int, std::shared_ptr<Core::Elements::Element>>> geom)
+    void set_geometry(std::shared_ptr<std::map<int, std::shared_ptr<Core::Elements::Element>>> geom)
     {
       geometry_ = geom;
     }

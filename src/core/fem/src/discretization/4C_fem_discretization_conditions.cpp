@@ -9,7 +9,6 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
-#include "4C_legacy_enum_definitions_problem_type.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -17,10 +16,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-
-/*----------------------------------------------------------------------*
- |  Build boundary condition geometries (public)             mwgee 01/07|
- *----------------------------------------------------------------------*/
 void Core::FE::Discretization::boundary_conditions_geometry()
 {
   // As a first step we delete ALL references to any conditions
@@ -73,16 +68,16 @@ void Core::FE::Discretization::boundary_conditions_geometry()
     //  - surface conditions in 2D
     //  - volume conditions in 3D
     else if (Core::Conditions::geometry_type_to_dim.at(condition->g_type()) == n_dim_)
-      havenewelements = build_volumesin_condition(name, condition);
+      havenewelements = build_volumes_in_condition(name, condition);
     // dimension of condition must not larger than the one of the problem itself
     else if (Core::Conditions::geometry_type_to_dim.at(condition->g_type()) > n_dim_)
       FOUR_C_THROW("Dimension of condition is larger than the problem dimension.");
     // build a line element geometry description
     else if (condition->g_type() == Core::Conditions::geometry_type_line)
-      havenewelements = build_linesin_condition(name, condition);
+      havenewelements = build_lines_in_condition(name, condition);
     // build a surface element geometry description
     else if (condition->g_type() == Core::Conditions::geometry_type_surface)
-      havenewelements = build_surfacesin_condition(name, condition);
+      havenewelements = build_surfaces_in_condition(name, condition);
     // this should be it. if not: FOUR_C_THROW.
     else
       FOUR_C_THROW("Somehow the condition geometry does not fit to the problem dimension.");
@@ -122,8 +117,7 @@ void Core::FE::Discretization::boundary_conditions_geometry()
   }
 }
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
+
 void Core::FE::Discretization::assign_global_ids(MPI_Comm comm,
     const std::map<std::vector<int>, std::shared_ptr<Core::Elements::Element>>& elementmap,
     std::map<int, std::shared_ptr<Core::Elements::Element>>& finalgeometry)
@@ -223,11 +217,7 @@ void Core::FE::Discretization::assign_global_ids(MPI_Comm comm,
 }  // assign_global_ids
 
 
-/*----------------------------------------------------------------------*
- |  Build line geometry in a condition (public)              mwgee 01/07|
- *----------------------------------------------------------------------*/
-/* Hopefully improved by Heiner (h.kue 09/07) */
-bool Core::FE::Discretization::build_linesin_condition(
+bool Core::FE::Discretization::build_lines_in_condition(
     const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond)
 {
   /* First: Create the line objects that belong to the condition. */
@@ -255,13 +245,13 @@ bool Core::FE::Discretization::build_linesin_condition(
   for (const auto& [node_id, actnode] : colnodes)
   {
     // loop all elements attached to actnode
-    Core::Elements::Element** elements = actnode->elements();
-    for (int i = 0; i < actnode->num_element(); ++i)
+    std::span<Core::Elements::Element*> elements(actnode->elements(), actnode->num_element());
+    for (const auto& element : elements)
     {
       // loop all lines of all elements attached to actnode
-      const int numlines = elements[i]->num_line();
+      const int numlines = element->num_line();
       if (!numlines) continue;
-      std::vector<std::shared_ptr<Core::Elements::Element>> lines = elements[i]->lines();
+      std::vector<std::shared_ptr<Core::Elements::Element>> lines = element->lines();
       if (lines.size() == 0) FOUR_C_THROW("Element returned no lines");
       for (int j = 0; j < numlines; ++j)
       {
@@ -289,24 +279,23 @@ bool Core::FE::Discretization::build_linesin_condition(
             if (allin)
             {
               std::vector<int> nodes(actline->num_node());
-              transform(actline->nodes(), actline->nodes() + actline->num_node(), nodes.begin(),
-                  std::mem_fn(&Core::Nodes::Node::id));
-              sort(nodes.begin(), nodes.end());
+              std::transform(actline->nodes(), actline->nodes() + actline->num_node(),
+                  nodes.begin(), std::mem_fn(&Core::Nodes::Node::id));
+              std::ranges::sort(nodes);
 
-              if (linemap.find(nodes) == linemap.end())
+              if (!linemap.contains(nodes))
               {
                 auto line = std::shared_ptr<Core::Elements::Element>(actline->clone());
-                // Set owning process of line to node with smallest gid.
-                line->set_owner(elements[i]->owner());
+                line->set_owner(element->owner());
                 linemap[nodes] = line;
               }
             }
             break;
-          }  // if (nodesperline[k] == actnode)
+          }
         }
-      }  // for (int j=0; j<numlines; ++j)
-    }  // for (int i=0; i<actnode->NumElement(); ++i)
-  }  // for (fool=nodes.begin(); fool != nodes.end(); ++fool)
+      }
+    }
+  }
 
 
   // Lines be added to the condition: (line_id) -> (line).
@@ -314,41 +303,16 @@ bool Core::FE::Discretization::build_linesin_condition(
 
   assign_global_ids(get_comm(), linemap, *finallines);
 
-  cond->add_geometry(finallines);
+  cond->set_geometry(finallines);
 
-  // elements where created that need new unique ids
-  bool havenewelements = true;
-  // note: this seems useless since this build_linesin_condition always creates
-  //       elements. However, this function is overloaded in
-  //       MeshfreeDiscretization where it does not necessarily build elements.
-  return havenewelements;
-
-}  // Core::FE::Discretization::build_linesin_condition
+  // elements were created that need new unique ids
+  return true;
+}
 
 
-/*----------------------------------------------------------------------*
- |  Build surface geometry in a condition (public)          rauch 10/16 |
- *----------------------------------------------------------------------*/
-bool Core::FE::Discretization::build_surfacesin_condition(
+bool Core::FE::Discretization::build_surfaces_in_condition(
     const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond)
 {
-  // these conditions are special since associated volume conditions also need
-  // to be considered.
-  // we want to allow building surfaces where two volume elements which belong to
-  // the same discretization share a common surface. the condition surface element however,
-  // is associated to only one of the two volume elements.
-  // these volume elements are inserted into VolEleIDs via the method find_associated_ele_ids.
-  std::set<int> VolEleIDs;
-  if (cond->type() == Core::Conditions::StructFluidSurfCoupling)
-  {
-    if ((cond->parameters().get<std::string>("field")) == "structure")
-    {
-      find_associated_ele_ids(*cond, VolEleIDs, "StructFluidVolCoupling");
-    }
-  }
-  else if (cond->type() == Core::Conditions::RedAirwayTissue)
-    find_associated_ele_ids(*cond, VolEleIDs, "StructFluidVolCoupling");
-
   /* First: Create the surface objects that belong to the condition. */
 
   // get ptrs to all node ids that have this condition
@@ -394,10 +358,6 @@ bool Core::FE::Discretization::build_surfacesin_condition(
     // loop all elements attached to actnode
     for (int i = 0; i < actnode->num_element(); ++i)
     {
-      // special treatment of RedAirwayTissue and StructFluidVolCoupling
-      if (VolEleIDs.size())
-        if (VolEleIDs.find(elements[i]->id()) == VolEleIDs.end()) continue;
-
       // loop all surfaces of all elements attached to actnode
       const int numsurfs = elements[i]->num_surface();
       if (!numsurfs) continue;
@@ -431,107 +391,20 @@ bool Core::FE::Discretization::build_surfacesin_condition(
             // if all nodes are in our cloud, add surface
             if (is_conditioned_surface)
             {
-              // remove internal surfaces that are connected to two volume elements
-              Core::Nodes::Node** actsurfnodes = actsurf->nodes();
-
               // get sorted vector of node ids
               std::vector<int> nodes(actsurf->num_node());
               transform(actsurf->nodes(), actsurf->nodes() + actsurf->num_node(), nodes.begin(),
                   std::mem_fn(&Core::Nodes::Node::id));
               sort(nodes.begin(), nodes.end());
 
-              // special treatment of RedAirwayTissue and StructFluidSurfCoupling
-              if ((cond->type() == Core::Conditions::StructFluidSurfCoupling) or
-                  (cond->type() == Core::Conditions::RedAirwayTissue))
+              // now we can add the surface
+              if (surfmap.find(nodes) == surfmap.end())
               {
-                // fill map with 'surfmap' std::vector<int> ->
-                // std::shared_ptr<Core::Elements::Element>
-                {
-                  // indicator for volume element underlying the surface element
-                  int identical = 0;
-                  // owner of underlying volume element
-                  int voleleowner = -1;
-                  // number of considered nodes
-                  const int numnode = (int)nodes.size();
-
-                  // set of adjacent elements
-                  std::set<Core::Elements::Element*> adjacentvoleles;
-
-                  // get all volume elements connected to the nodes of this surface element
-                  for (int n = 0; n < numnode; ++n)
-                  {
-                    Core::Nodes::Node* actsurfnode = actsurfnodes[n];
-                    Core::Elements::Element** eles = actsurfnode->elements();
-                    int numeles = actsurfnode->num_element();
-                    for (int e = 0; e < numeles; ++e)
-                    {
-                      // do not consider volume elements that do not belong to VolEleIDs
-                      if (VolEleIDs.size())
-                        if (VolEleIDs.find(eles[e]->id()) == VolEleIDs.end()) continue;
-                      adjacentvoleles.insert(eles[e]);
-                    }
-                  }
-
-                  // get surfaces of all adjacent vol eles and check how often actsurf is included
-                  // via comparison of node ids
-                  for (const auto& adjacent_ele : adjacentvoleles)
-                  {
-                    std::vector<std::shared_ptr<Core::Elements::Element>> adjacentvolelesurfs =
-                        adjacent_ele->surfaces();
-                    const int adjacentvolelenumsurfs = adjacent_ele->num_surface();
-                    for (int n = 0; n < adjacentvolelenumsurfs; ++n)
-                    {
-                      // current surf of adjacent vol ele
-                      std::vector<int> nodesadj(adjacentvolelesurfs[n]->num_node());
-                      transform(adjacentvolelesurfs[n]->nodes(),
-                          adjacentvolelesurfs[n]->nodes() + adjacentvolelesurfs[n]->num_node(),
-                          nodesadj.begin(), std::mem_fn(&Core::Nodes::Node::id));
-                      sort(nodesadj.begin(), nodesadj.end());
-
-                      if (nodes.size() == nodesadj.size())
-                      {
-                        if (std::equal(nodes.begin(), nodes.end(), nodesadj.begin()))
-                        {
-                          identical++;
-                          voleleowner = adjacent_ele->owner();
-                        }  // if node ids are identical
-                      }  // if number of nodes matches
-                    }  // loop over all element surfaces
-                  }  // loop over all adjacent volume elements
-
-                  if (identical == 0)
-                    FOUR_C_THROW("surface found with missing underlying volume element");
-                  else if (identical > 1)
-                  {
-                    // do nothing
-                  }
-                  else
-                  {
-                    // now we can add the surface
-                    if (surfmap.find(nodes) == surfmap.end())
-                    {
-                      auto surf = std::shared_ptr<Core::Elements::Element>(actsurf->clone());
-                      // Set owning processor of surface owner of underlying volume element.
-                      surf->set_owner(voleleowner);
-                      surfmap[nodes] = surf;
-                    }  // if surface not yet in map
-                  }  // end if unique underlying vol ele was found
-                }  // map 'surfmap' is now filled
-
-                // continue with next element surface
-                break;
-              }  // if special treatment of RedAirwayTissue and StructFluidSurfCoupling
-              else
-              {
-                // now we can add the surface
-                if (surfmap.find(nodes) == surfmap.end())
-                {
-                  auto surf = std::shared_ptr<Core::Elements::Element>(actsurf->clone());
-                  // Set owning processor of surface owner of underlying volume element.
-                  surf->set_owner(elements[i]->owner());
-                  surfmap[nodes] = surf;
-                }  // if surface not yet in map
-              }  // else if standard case
+                auto surf = std::shared_ptr<Core::Elements::Element>(actsurf->clone());
+                // Set owning processor of surface owner of underlying volume element.
+                surf->set_owner(elements[i]->owner());
+                surfmap[nodes] = surf;
+              }  // if surface not yet in map
             }  // if all nodes of surface belong to condition (is_conditioned_surface == true)
           }  // if surface contains conditioned row node
         }  // loop over all nodes of element surface
@@ -544,22 +417,14 @@ bool Core::FE::Discretization::build_surfacesin_condition(
       std::make_shared<std::map<int, std::shared_ptr<Core::Elements::Element>>>();
 
   assign_global_ids(get_comm(), surfmap, *final_geometry);
-  cond->add_geometry(final_geometry);
+  cond->set_geometry(final_geometry);
 
   // elements were created that need new unique ids
-  bool havenewelements = true;
-  // note: this seems useless since this build_surfacesin_condition always
-  //       creates elements. However, this function is overloaded in
-  //       MeshfreeDiscretization where it does not necessarily build elements.
-  return havenewelements;
-
-}  // Core::FE::Discretization::build_surfacesin_condition
+  return true;
+}
 
 
-/*----------------------------------------------------------------------*
- |  Build volume geometry in a condition (public)            mwgee 01/07|
- *----------------------------------------------------------------------*/
-bool Core::FE::Discretization::build_volumesin_condition(
+bool Core::FE::Discretization::build_volumes_in_condition(
     const std::string& name, std::shared_ptr<Core::Conditions::Condition> cond)
 {
   // get ptrs to all node ids that have this condition
@@ -570,7 +435,7 @@ bool Core::FE::Discretization::build_volumesin_condition(
   const Core::LinAlg::Map* colmap = node_col_map();
   std::set<int> mynodes;
 
-  std::remove_copy_if(nodeids->begin(), nodeids->end(), std::inserter(mynodes, mynodes.begin()),
+  std::ranges::remove_copy_if(*nodeids, std::inserter(mynodes, mynodes.begin()),
       std::not_fn(Core::Conditions::MyGID(colmap)));
 
   // this is the map we want to construct
@@ -578,7 +443,7 @@ bool Core::FE::Discretization::build_volumesin_condition(
 
   for (const auto& [ele_id, actele] : element_)
   {
-    std::vector<int> myelenodes(actele->node_ids(), actele->node_ids() + actele->num_node());
+    std::span<const int> myelenodes(actele->node_ids(), actele->node_ids() + actele->num_node());
 
     // check whether all node ids of the element are nodes belonging
     // to the condition and stored on this proc
@@ -599,64 +464,11 @@ bool Core::FE::Discretization::build_volumesin_condition(
     }
   }
 
-  cond->add_geometry(geom);
+  cond->set_geometry(geom);
 
   // no elements where created to assign new unique ids to
   return false;
-}  // Core::FE::Discretization::build_volumesin_condition
+}
 
-
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Core::FE::Discretization::find_associated_ele_ids(
-    Core::Conditions::Condition& cond, std::set<int>& VolEleIDs, const std::string& name)
-{
-  // determine constraint number
-  int condID = cond.parameters().get<int>("coupling_id");
-
-  std::vector<Core::Conditions::Condition*> volconds;
-  get_condition(name, volconds);
-
-  for (auto& actvolcond : volconds)
-  {
-    if (actvolcond->parameters().get<int>("coupling_id") == condID)
-    {
-      // get ptrs to all node ids that have this condition
-      const std::vector<int>* nodeids = actvolcond->get_nodes();
-      if (!nodeids) FOUR_C_THROW("Cannot find array 'Node Ids' in condition");
-
-      // extract colnodes on this proc from condition
-      const Core::LinAlg::Map* colmap = node_col_map();
-      std::set<int> mynodes;
-
-      std::remove_copy_if(nodeids->begin(), nodeids->end(), std::inserter(mynodes, mynodes.begin()),
-          std::not_fn(Core::Conditions::MyGID(colmap)));
-
-      for (const auto& [ele_id, actele] : element_)
-      {
-        std::vector<int> myelenodes(actele->node_ids(), actele->node_ids() + actele->num_node());
-
-        // check whether all node ids of the element are nodes belonging
-        // to the condition and stored on this proc
-        bool allin = true;
-        for (const auto& myid : myelenodes)
-        {
-          if (mynodes.find(myid) == mynodes.end())
-          {
-            // myid is not in the condition
-            allin = false;
-            break;
-          }
-        }
-
-        if (allin)
-        {
-          VolEleIDs.insert(actele->id());
-        }
-      }
-    }
-  }
-}  // Core::FE::Discretization::find_associated_ele_ids
 
 FOUR_C_NAMESPACE_CLOSE
