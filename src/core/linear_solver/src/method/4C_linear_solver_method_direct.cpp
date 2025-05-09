@@ -41,7 +41,7 @@ void Core::LinearSolver::DirectSolver<MatrixType, VectorType>::setup(
     std::shared_ptr<VectorType> b, const bool refactor, const bool reset,
     std::shared_ptr<Core::LinAlg::KrylovProjector> projector)
 {
-  std::shared_ptr<Epetra_CrsMatrix> crsA = std::dynamic_pointer_cast<Epetra_CrsMatrix>(matrix);
+  auto crsA = std::dynamic_pointer_cast<Epetra_CrsMatrix>(matrix);
 
   // 1. merge the block system matrix into a standard sparse matrix if necessary
   if (!crsA)

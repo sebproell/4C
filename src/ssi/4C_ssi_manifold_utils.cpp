@@ -1037,17 +1037,15 @@ void SSI::ManifoldMeshTyingStrategySparse::apply_meshtying_to_manifold_matrix(
         {
           const int rowlid_slave = ssi_manifold_sparse->row_map().LID(dofgid_slave);
           if (rowlid_slave < 0) FOUR_C_THROW("Global ID not found!");
-          if (ssi_manifold_sparse->epetra_matrix()->ReplaceMyValues(
-                  rowlid_slave, 1, &one, &rowlid_slave))
-            FOUR_C_THROW("ReplaceMyValues failed!");
+          if (ssi_manifold_sparse->replace_my_values(rowlid_slave, 1, &one, &rowlid_slave))
+            FOUR_C_THROW("replace_my_values() failed!");
         }
 
         // apply pseudo Dirichlet conditions to unfilled matrix, i.e., to global row and column
         // indices
-        else if (ssi_manifold_sparse->epetra_matrix()->InsertGlobalValues(
-                     dofgid_slave, 1, &one, &dofgid_slave))
+        else if (ssi_manifold_sparse->insert_global_values(dofgid_slave, 1, &one, &dofgid_slave))
         {
-          FOUR_C_THROW("InsertGlobalValues failed!");
+          FOUR_C_THROW("insert_global_values() failed!");
         }
       }
     }
@@ -1119,14 +1117,14 @@ void SSI::ManifoldMeshTyingStrategyBlock::apply_meshtying_to_manifold_matrix(
                 const int rowlid_slave =
                     ssi_manifold_block->matrix(row, row).row_map().LID(dofgid_slave);
                 if (rowlid_slave < 0) FOUR_C_THROW("Global ID not found!");
-                if (ssi_manifold_block->matrix(row, row).epetra_matrix()->ReplaceMyValues(
+                if (ssi_manifold_block->matrix(row, row).replace_my_values(
                         rowlid_slave, 1, &one, &rowlid_slave))
                   FOUR_C_THROW("ReplaceMyValues failed!");
               }
 
               // apply pseudo Dirichlet conditions to unfilled matrix, i.e., to global row and
               // column indices
-              else if (ssi_manifold_block->matrix(row, row).epetra_matrix()->InsertGlobalValues(
+              else if (ssi_manifold_block->matrix(row, row).insert_global_values(
                            dofgid_slave, 1, &one, &dofgid_slave))
               {
                 FOUR_C_THROW("InsertGlobalValues failed!");

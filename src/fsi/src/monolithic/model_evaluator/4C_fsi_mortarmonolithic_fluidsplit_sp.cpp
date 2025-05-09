@@ -816,11 +816,11 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::setup_system_matrix(
   TEUCHOS_FUNC_TIME_MONITOR("FSI::MortarMonolithicFluidSplitSaddlePoint::setup_system_matrix");
 
   // get the mortar structure to fluid coupling matrix M
-  const std::shared_ptr<const Core::LinAlg::SparseMatrix> mortar_m =
+  std::shared_ptr<Core::LinAlg::SparseMatrix> mortar_m =
       coupling_solid_fluid_mortar_->get_mortar_matrix_m();
 
   // get the mortar fluid to structure coupling matrix D
-  const std::shared_ptr<const Core::LinAlg::SparseMatrix> mortar_d =
+  std::shared_ptr<Core::LinAlg::SparseMatrix> mortar_d =
       coupling_solid_fluid_mortar_->get_mortar_matrix_d();
 
   // get time integration parameters of structure and fluid time integrators
@@ -978,33 +978,27 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::scale_system(
   if (scaling_infnorm)
   {
     // do scaling of structure rows
-    std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
-    srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*srowsum_->get_ptr_of_epetra_vector());
-    A->InvColSums(*scolsum_->get_ptr_of_epetra_vector());
-    if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
-        mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
-        mat.matrix(0, 2).epetra_matrix()->LeftScale(*srowsum_) or
-        mat.matrix(0, 3).epetra_matrix()->LeftScale(*srowsum_) or
-        mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_) or
-        mat.matrix(2, 0).epetra_matrix()->RightScale(*scolsum_) or
-        mat.matrix(3, 0).epetra_matrix()->RightScale(*scolsum_))
+    Core::LinAlg::SparseMatrix& A_00 = mat.matrix(0, 0);
+    srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A_00.row_map(), false);
+    scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A_00.row_map(), false);
+    A_00.inv_row_sums(*srowsum_);
+    A_00.inv_col_sums(*scolsum_);
+    if (A_00.left_scale(*srowsum_) or A_00.right_scale(*scolsum_) or
+        mat.matrix(0, 1).left_scale(*srowsum_) or mat.matrix(0, 2).left_scale(*srowsum_) or
+        mat.matrix(0, 3).left_scale(*srowsum_) or mat.matrix(1, 0).right_scale(*scolsum_) or
+        mat.matrix(2, 0).right_scale(*scolsum_) or mat.matrix(3, 0).right_scale(*scolsum_))
       FOUR_C_THROW("structure scaling failed");
 
     // do scaling of ale rows
-    A = mat.matrix(2, 2).epetra_matrix();
-    arowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    acolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*arowsum_->get_ptr_of_epetra_vector());
-    A->InvColSums(*acolsum_->get_ptr_of_epetra_vector());
-    if (A->LeftScale(*arowsum_) or A->RightScale(*acolsum_) or
-        mat.matrix(2, 0).epetra_matrix()->LeftScale(*arowsum_) or
-        mat.matrix(2, 1).epetra_matrix()->LeftScale(*arowsum_) or
-        mat.matrix(2, 3).epetra_matrix()->LeftScale(*arowsum_) or
-        mat.matrix(0, 2).epetra_matrix()->RightScale(*acolsum_) or
-        mat.matrix(1, 2).epetra_matrix()->RightScale(*acolsum_) or
-        mat.matrix(3, 2).epetra_matrix()->RightScale(*acolsum_))
+    Core::LinAlg::SparseMatrix& A_22 = mat.matrix(2, 2);
+    arowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A_22.row_map(), false);
+    acolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A_22.row_map(), false);
+    A_22.inv_row_sums(*arowsum_);
+    A_22.inv_col_sums(*acolsum_);
+    if (A_22.left_scale(*arowsum_) or A_22.right_scale(*acolsum_) or
+        mat.matrix(2, 0).left_scale(*arowsum_) or mat.matrix(2, 1).left_scale(*arowsum_) or
+        mat.matrix(2, 3).left_scale(*arowsum_) or mat.matrix(0, 2).right_scale(*acolsum_) or
+        mat.matrix(1, 2).right_scale(*acolsum_) or mat.matrix(3, 2).right_scale(*acolsum_))
       FOUR_C_THROW("ale scaling failed");
 
     // do scaling of structure and ale rhs vectors
@@ -1050,28 +1044,22 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::unscale_solution(
     extractor().insert_vector(*sx, 0, b);
     extractor().insert_vector(*ax, 2, b);
 
-    std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
+    Core::LinAlg::SparseMatrix& A_00 = mat.matrix(0, 0);
     srowsum_->reciprocal(*srowsum_);
     scolsum_->reciprocal(*scolsum_);
-    if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
-        mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
-        mat.matrix(0, 2).epetra_matrix()->LeftScale(*srowsum_) or
-        mat.matrix(0, 3).epetra_matrix()->LeftScale(*srowsum_) or
-        mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_) or
-        mat.matrix(2, 0).epetra_matrix()->RightScale(*scolsum_) or
-        mat.matrix(3, 0).epetra_matrix()->RightScale(*scolsum_))
+    if (A_00.left_scale(*srowsum_) or A_00.right_scale(*scolsum_) or
+        mat.matrix(0, 1).left_scale(*srowsum_) or mat.matrix(0, 2).left_scale(*srowsum_) or
+        mat.matrix(0, 3).left_scale(*srowsum_) or mat.matrix(1, 0).right_scale(*scolsum_) or
+        mat.matrix(2, 0).right_scale(*scolsum_) or mat.matrix(3, 0).right_scale(*scolsum_))
       FOUR_C_THROW("structure scaling failed");
 
-    A = mat.matrix(2, 2).epetra_matrix();
+    Core::LinAlg::SparseMatrix& A_22 = mat.matrix(2, 2);
     arowsum_->reciprocal(*arowsum_);
     acolsum_->reciprocal(*acolsum_);
-    if (A->LeftScale(*arowsum_) or A->RightScale(*acolsum_) or
-        mat.matrix(2, 0).epetra_matrix()->LeftScale(*arowsum_) or
-        mat.matrix(2, 1).epetra_matrix()->LeftScale(*arowsum_) or
-        mat.matrix(2, 3).epetra_matrix()->LeftScale(*arowsum_) or
-        mat.matrix(0, 2).epetra_matrix()->RightScale(*acolsum_) or
-        mat.matrix(1, 2).epetra_matrix()->RightScale(*acolsum_) or
-        mat.matrix(3, 2).epetra_matrix()->RightScale(*acolsum_))
+    if (A_22.left_scale(*arowsum_) or A_22.right_scale(*acolsum_) or
+        mat.matrix(2, 0).left_scale(*arowsum_) or mat.matrix(2, 1).left_scale(*arowsum_) or
+        mat.matrix(2, 3).left_scale(*arowsum_) or mat.matrix(0, 2).right_scale(*acolsum_) or
+        mat.matrix(1, 2).right_scale(*acolsum_) or mat.matrix(3, 2).right_scale(*acolsum_))
       FOUR_C_THROW("ale scaling failed");
   }
 

@@ -106,9 +106,8 @@ Mortar::MatrixRowColTransformer::redistributed_to_unredistributed(
 {
   throw_if_not_init_and_setup();
 
-  std::shared_ptr<Core::LinAlg::SparseMatrix> dst_mat =
-      std::make_shared<Core::LinAlg::SparseMatrix>(
-          **master_row_[bt], src_mat.epetra_matrix()->MaxNumEntries(), false, true);
+  auto dst_mat = std::make_shared<Core::LinAlg::SparseMatrix>(
+      **master_row_[bt], src_mat.max_num_entries(), false, true);
 
   redistributed_to_unredistributed(bt, src_mat, *dst_mat);
 
@@ -124,8 +123,7 @@ void Mortar::MatrixRowColTransformer::redistributed_to_unredistributed(
 {
   throw_if_not_init_and_setup();
 
-  const int err =
-      dst_mat.epetra_matrix()->Import(*src_mat.epetra_matrix(), *slave_to_master_[bt], Insert);
+  const int err = dst_mat.import(src_mat, *slave_to_master_[bt], Insert);
 
   // reset the distributor of the exporter after use
   reset_exporter(slave_to_master_[bt]);
@@ -141,9 +139,8 @@ Mortar::MatrixRowColTransformer::unredistributed_to_redistributed(
 {
   throw_if_not_init_and_setup();
 
-  std::shared_ptr<Core::LinAlg::SparseMatrix> dst_mat =
-      std::make_shared<Core::LinAlg::SparseMatrix>(
-          **slave_row_[bt], src_mat.epetra_matrix()->MaxNumEntries(), false, true);
+  auto dst_mat = std::make_shared<Core::LinAlg::SparseMatrix>(
+      **slave_row_[bt], src_mat.max_num_entries(), false, true);
 
   redistributed_to_unredistributed(bt, src_mat, *dst_mat);
 
@@ -159,8 +156,7 @@ void Mortar::MatrixRowColTransformer::unredistributed_to_redistributed(
 {
   throw_if_not_init_and_setup();
 
-  const int err =
-      dst_mat.epetra_matrix()->Import(*src_mat.epetra_matrix(), *master_to_slave_[bt], Insert);
+  const int err = dst_mat.import(src_mat, *master_to_slave_[bt], Insert);
 
   // reset the distributor of the exporter after use
   reset_exporter(master_to_slave_[bt]);

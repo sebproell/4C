@@ -488,8 +488,7 @@ namespace ReducedLung
     // Right hand side vector with residuals of the system equations.
     auto rhs = Core::LinAlg::Vector<double>(row_map, true);
     // Jacobian of the system equations.
-    auto sysmat = Epetra_CrsMatrix(
-        Copy, row_map.get_epetra_map(), locally_relevant_dof_map.get_epetra_map(), 3);
+    auto sysmat = Core::LinAlg::SparseMatrix(row_map, locally_relevant_dof_map, 3);
 
     const int results_every = rawdyn.get<int>("RESULTSEVERY");
     // Time integration parameters.
@@ -531,14 +530,14 @@ namespace ReducedLung
         evaluate_aw_rhs(res, locally_relevant_dofs[airway.local_dof_ids[p_in]],
             locally_relevant_dofs[airway.local_dof_ids[p_out]],
             locally_relevant_dofs[airway.local_dof_ids[q_in]], airway.local_airway_id);
-        if (!sysmat.Filled())
+        if (!sysmat.filled())
         {
-          err = sysmat.InsertMyValues(
+          err = sysmat.insert_my_values(
               airway.local_element_id, vals.size(), vals.data(), airway.local_dof_ids.data());
         }
         else
         {
-          err = sysmat.ReplaceMyValues(
+          err = sysmat.replace_my_values(
               airway.local_element_id, vals.size(), vals.data(), airway.local_dof_ids.data());
         }
         FOUR_C_ASSERT(err == 0, "Internal error: Airway equation assembly did not work.");
@@ -560,14 +559,14 @@ namespace ReducedLung
             locally_relevant_dofs[terminal_unit.local_dof_ids[p_out]] +
             (E * dt + eta) / V0_tu * locally_relevant_dofs[terminal_unit.local_dof_ids[q_in]] +
             E * (V_tu - V0_tu) / V0_tu;
-        if (!sysmat.Filled())
+        if (!sysmat.filled())
         {
-          err = sysmat.InsertMyValues(terminal_unit.local_element_id, vals.size(), vals.data(),
+          err = sysmat.insert_my_values(terminal_unit.local_element_id, vals.size(), vals.data(),
               terminal_unit.local_dof_ids.data());
         }
         else
         {
-          err = sysmat.ReplaceMyValues(terminal_unit.local_element_id, vals.size(), vals.data(),
+          err = sysmat.replace_my_values(terminal_unit.local_element_id, vals.size(), vals.data(),
               terminal_unit.local_dof_ids.data());
         }
         FOUR_C_ASSERT(err == 0, "Internal error: Terminal Unit equation assembly did not work.");
@@ -584,14 +583,14 @@ namespace ReducedLung
         vals = {1.0, -1.0};
         std::array<int, 2> local_dof_ids{conn.local_dof_ids[Connection::p_out_parent],
             conn.local_dof_ids[Connection::p_in_child]};
-        if (!sysmat.Filled())
+        if (!sysmat.filled())
         {
-          err = sysmat.InsertMyValues(
+          err = sysmat.insert_my_values(
               conn.first_local_equation_id, vals.size(), vals.data(), local_dof_ids.data());
         }
         else
         {
-          err = sysmat.ReplaceMyValues(
+          err = sysmat.replace_my_values(
               conn.first_local_equation_id, vals.size(), vals.data(), local_dof_ids.data());
         }
         FOUR_C_ASSERT(
@@ -605,14 +604,14 @@ namespace ReducedLung
         vals = {1.0, -1.0};
         local_dof_ids = {conn.local_dof_ids[Connection::q_out_parent],
             conn.local_dof_ids[Connection::q_in_child]};
-        if (!sysmat.Filled())
+        if (!sysmat.filled())
         {
-          err = sysmat.InsertMyValues(
+          err = sysmat.insert_my_values(
               conn.first_local_equation_id + 1, vals.size(), vals.data(), local_dof_ids.data());
         }
         else
         {
-          err = sysmat.ReplaceMyValues(
+          err = sysmat.replace_my_values(
               conn.first_local_equation_id + 1, vals.size(), vals.data(), local_dof_ids.data());
         }
         FOUR_C_ASSERT(err == 0, "Internal error: Connection mass balance assembly did not work.");
@@ -632,14 +631,14 @@ namespace ReducedLung
         vals_mom_balance = {1.0, -1.0};
         std::array<int, 2> local_dof_ids_mom_balance{bif.local_dof_ids[Bifurcation::p_out_parent],
             bif.local_dof_ids[Bifurcation::p_in_child_1]};
-        if (!sysmat.Filled())
+        if (!sysmat.filled())
         {
-          err = sysmat.InsertMyValues(bif.first_local_equation_id, vals_mom_balance.size(),
+          err = sysmat.insert_my_values(bif.first_local_equation_id, vals_mom_balance.size(),
               vals_mom_balance.data(), local_dof_ids_mom_balance.data());
         }
         else
         {
-          err = sysmat.ReplaceMyValues(bif.first_local_equation_id, vals_mom_balance.size(),
+          err = sysmat.replace_my_values(bif.first_local_equation_id, vals_mom_balance.size(),
               vals_mom_balance.data(), local_dof_ids_mom_balance.data());
         }
         FOUR_C_ASSERT(
@@ -654,14 +653,14 @@ namespace ReducedLung
         vals_mom_balance = {1.0, -1.0};
         local_dof_ids_mom_balance = {bif.local_dof_ids[Bifurcation::p_out_parent],
             bif.local_dof_ids[Bifurcation::p_in_child_2]};
-        if (!sysmat.Filled())
+        if (!sysmat.filled())
         {
-          err = sysmat.InsertMyValues(bif.first_local_equation_id + 1, vals_mom_balance.size(),
+          err = sysmat.insert_my_values(bif.first_local_equation_id + 1, vals_mom_balance.size(),
               vals_mom_balance.data(), local_dof_ids_mom_balance.data());
         }
         else
         {
-          err = sysmat.ReplaceMyValues(bif.first_local_equation_id + 1, vals_mom_balance.size(),
+          err = sysmat.replace_my_values(bif.first_local_equation_id + 1, vals_mom_balance.size(),
               vals_mom_balance.data(), local_dof_ids_mom_balance.data());
         }
         FOUR_C_ASSERT(
@@ -678,14 +677,14 @@ namespace ReducedLung
             bif.local_dof_ids[Bifurcation::q_out_parent],
             bif.local_dof_ids[Bifurcation::q_in_child_1],
             bif.local_dof_ids[Bifurcation::q_in_child_2]};
-        if (!sysmat.Filled())
+        if (!sysmat.filled())
         {
-          err = sysmat.InsertMyValues(bif.first_local_equation_id + 2, vals_mass_balance.size(),
+          err = sysmat.insert_my_values(bif.first_local_equation_id + 2, vals_mass_balance.size(),
               vals_mass_balance.data(), local_dof_ids_mass_balance.data());
         }
         else
         {
-          err = sysmat.ReplaceMyValues(bif.first_local_equation_id + 2, vals_mass_balance.size(),
+          err = sysmat.replace_my_values(bif.first_local_equation_id + 2, vals_mass_balance.size(),
               vals_mass_balance.data(), local_dof_ids_mass_balance.data());
         }
         FOUR_C_ASSERT(err == 0, "Internal error: Bifurcation mass balance assembly did not work.");
@@ -706,13 +705,13 @@ namespace ReducedLung
                             ->function_by_id<Core::Utils::FunctionOfTime>(bc.funct_num)
                             .evaluate(n * dt);
         int local_dof_id = bc.local_dof_id;
-        if (!sysmat.Filled())
+        if (!sysmat.filled())
         {
-          err = sysmat.InsertMyValues(bc.local_equation_id, 1, &val, &local_dof_id);
+          err = sysmat.insert_my_values(bc.local_equation_id, 1, &val, &local_dof_id);
         }
         else
         {
-          err = sysmat.ReplaceMyValues(bc.local_equation_id, 1, &val, &local_dof_id);
+          err = sysmat.replace_my_values(bc.local_equation_id, 1, &val, &local_dof_id);
         }
         FOUR_C_ASSERT(err == 0, "Internal error: Boundary condition assembly did not work.");
         res = -locally_relevant_dofs[local_dof_id] + bc_value;
@@ -721,13 +720,13 @@ namespace ReducedLung
       }
 
       // Fix sparsity pattern after the first assembly process.
-      if (!sysmat.Filled())
+      if (!sysmat.filled())
       {
-        sysmat.FillComplete();
+        sysmat.complete();
       }
 
       // Solve.
-      solver->solve(Core::Utils::shared_ptr_from_ref(sysmat), Core::Utils::shared_ptr_from_ref(x),
+      solver->solve(sysmat.epetra_operator(), Core::Utils::shared_ptr_from_ref(x),
           Core::Utils::shared_ptr_from_ref(rhs), {});
 
       // Update dofs with solution vector.

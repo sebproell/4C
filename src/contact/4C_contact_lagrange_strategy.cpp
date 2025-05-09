@@ -1706,12 +1706,12 @@ void CONTACT::LagrangeStrategy::add_master_contributions(Core::LinAlg::SparseOpe
     Core::LinAlg::Vector<double>& feff, bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff.get_block_map());
+  auto fc = std::make_shared<Epetra_FEVector>(feff.get_block_map());
 
   // create new contact stiffness matric for LTL contact
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      Core::LinAlg::Map((dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap()),
-      100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
+  auto kc = std::make_shared<Core::LinAlg::SparseMatrix>(
+      dynamic_cast<Core::LinAlg::SparseMatrix*>(&kteff)->row_map(), 100, true, false,
+      Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // loop over interface and assemble force and stiffness
   for (int i = 0; i < (int)interface_.size(); ++i)
@@ -1743,7 +1743,7 @@ void CONTACT::LagrangeStrategy::add_master_contributions(Core::LinAlg::SparseOpe
   if (feff.update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
 
   // stiffness
-  dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix()).GlobalAssemble(true, Add);
+  kc->complete();
   kteff.un_complete();
   kteff.add(*kc, false, fac, 1.);
   kteff.complete();
@@ -1760,14 +1760,14 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions(Core::LinAlg::Spar
     std::shared_ptr<Core::LinAlg::Vector<double>>& feff, bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff->get_block_map());
+  auto fc = std::make_shared<Epetra_FEVector>(feff->get_block_map());
 
   fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_block_map());
 
   // create new contact stiffness matric for LTL contact
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      Core::LinAlg::Map((dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap()),
-      100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
+  auto kc = std::make_shared<Core::LinAlg::SparseMatrix>(
+      dynamic_cast<Core::LinAlg::SparseMatrix*>(&kteff)->row_map(), 100, true, false,
+      Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // loop over interface and assemble force and stiffness
   for (int i = 0; i < (int)interface_.size(); ++i)
@@ -1798,7 +1798,7 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions(Core::LinAlg::Spar
   if (feff->update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
 
   // stiffness
-  dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix()).GlobalAssemble(true, Add);
+  kc->complete();
   kteff.un_complete();
   kteff.add(*kc, false, fac, 1.);
   kteff.complete();
@@ -1815,13 +1815,13 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions_friction(
     bool add_time_integration)
 {
   // create new contact force vector for LTL contact
-  std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(feff->get_block_map());
+  auto fc = std::make_shared<Epetra_FEVector>(feff->get_block_map());
 
   fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_block_map());
 
   // create new contact stiffness matric for LTL contact
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      (dynamic_cast<Epetra_CrsMatrix*>(&(*kteff.epetra_operator())))->RowMap(), 100, true, false,
+  auto kc = std::make_shared<Core::LinAlg::SparseMatrix>(
+      dynamic_cast<Core::LinAlg::SparseMatrix*>(&kteff)->row_map(), 100, true, false,
       Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // loop over interface and assemble force and stiffness
@@ -1869,7 +1869,7 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions_friction(
   if (feff->update(fac, *fc, 1.)) FOUR_C_THROW("Update went wrong");
 
   // stiffness
-  dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix()).GlobalAssemble(true, Add);
+  kc->complete();
   kteff.un_complete();
   kteff.add(*kc, false, fac, 1.);
   kteff.complete();

@@ -351,7 +351,7 @@ Core::LinearSolver::AMGNxN::Hierarchies::build_mue_lu_hierarchy(
     if (numdf == 1) offsetFineLevel = 0;
 
     // Prepare operator for MueLu
-    Teuchos::RCP<Epetra_CrsMatrix> A_crs = Teuchos::rcp_dynamic_cast<Epetra_CrsMatrix>(A_eop);
+    auto A_crs = Teuchos::rcp_dynamic_cast<Epetra_CrsMatrix>(A_eop);
     if (A_crs == Teuchos::null)
       FOUR_C_THROW("Make sure that the input matrix is a Epetra_CrsMatrix (or derived)");
     Teuchos::RCP<Xpetra::CrsMatrix<Scalar, LocalOrdinal, GlobalOrdinal, Node>> mueluA =

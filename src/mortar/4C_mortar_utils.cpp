@@ -150,20 +150,20 @@ void Mortar::sort(double* dlist, int N, int* list2)
  | transform the row map of a matrix (GIDs)                   popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
-    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap)
+    Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap)
 {
   // initialize output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
       std::make_shared<Core::LinAlg::SparseMatrix>(newrowmap, 100, false, true);
 
   // transform input matrix to newrowmap
-  for (int i = 0; i < (inmat.epetra_matrix())->NumMyRows(); ++i)
+  for (int i = 0; i < inmat.num_my_rows(); ++i)
   {
     int NumEntries = 0;
     double* Values;
     int* Indices;
-    int err = (inmat.epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
+    int err = inmat.extract_my_row_view(i, NumEntries, Values, Indices);
+    if (err != 0) FOUR_C_THROW("extract_my_row_view error: {}", err);
 
     // pull indices back to global
     std::vector<int> idx(NumEntries);
@@ -172,10 +172,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
       idx[j] = (inmat.col_map()).GID(Indices[j]);
     }
 
-    err = (outmat->epetra_matrix())
-              ->InsertGlobalValues(
-                  newrowmap.GID(i), NumEntries, const_cast<double*>(Values), idx.data());
-    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
+    err = outmat->insert_global_values(newrowmap.GID(i), NumEntries, Values, idx.data());
+    if (err < 0) FOUR_C_THROW("insert_global_values error: {}", err);
   }
 
   // complete output matrix
@@ -188,7 +186,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
  | transform the column map of a matrix (GIDs)                popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
-    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap)
+    Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap)
 {
   // initialize output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
@@ -203,13 +201,13 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
   ex.do_export(gidmap);
 
   // transform input matrix to newdomainmap
-  for (int i = 0; i < (inmat.epetra_matrix())->NumMyRows(); ++i)
+  for (int i = 0; i < inmat.num_my_rows(); ++i)
   {
     int NumEntries = 0;
     double* Values;
     int* Indices;
-    int err = (inmat.epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
+    int err = inmat.extract_my_row_view(i, NumEntries, Values, Indices);
+    if (err != 0) FOUR_C_THROW("extract_my_row_view error: {}", err);
     std::vector<int> idx;
     std::vector<double> vals;
     idx.reserve(NumEntries);
@@ -230,10 +228,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
 
     Values = vals.data();
     NumEntries = vals.size();
-    err = (outmat->epetra_matrix())
-              ->InsertGlobalValues(
-                  inmat.row_map().GID(i), NumEntries, const_cast<double*>(Values), idx.data());
-    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
+    err = outmat->insert_global_values(inmat.row_map().GID(i), NumEntries, Values, idx.data());
+    if (err < 0) FOUR_C_THROW("insert_global_values error: {}", err);
   }
 
   // complete output matrix
@@ -314,7 +310,7 @@ void Mortar::replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
  | transform the row and column maps of a matrix (GIDs)       popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gids(
-    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
+    Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
     const Core::LinAlg::Map& newdomainmap)
 {
   // initialize output matrix
@@ -330,13 +326,13 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
   ex.do_export(gidmap);
 
   // transform input matrix to newrowmap and newdomainmap
-  for (int i = 0; i < (inmat.epetra_matrix())->NumMyRows(); ++i)
+  for (int i = 0; i < inmat.num_my_rows(); ++i)
   {
     int NumEntries = 0;
     double* Values;
     int* Indices;
-    int err = (inmat.epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
-    if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
+    int err = inmat.extract_my_row_view(i, NumEntries, Values, Indices);
+    if (err != 0) FOUR_C_THROW("extract_my_row_view error: {}", err);
     std::vector<int> idx;
     std::vector<double> vals;
     idx.reserve(NumEntries);
@@ -357,10 +353,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
 
     Values = vals.data();
     NumEntries = vals.size();
-    err = (outmat->epetra_matrix())
-              ->InsertGlobalValues(
-                  newrowmap.GID(i), NumEntries, const_cast<double*>(Values), idx.data());
-    if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
+    err = outmat->insert_global_values(newrowmap.GID(i), NumEntries, Values, idx.data());
+    if (err < 0) FOUR_C_THROW("insert_global_values error: {}", err);
   }
 
   // complete output matrix
@@ -375,14 +369,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform(
     const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap)
 {
-  // redistribute input matrix
-  std::shared_ptr<Epetra_CrsMatrix> permmat = redistribute(inmat, newrowmap, inmat.domain_map());
-
-  // output matrix
-  std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
-      std::make_shared<Core::LinAlg::SparseMatrix>(permmat, Core::LinAlg::DataAccess::Copy, true);
-
-  return outmat;
+  return redistribute(inmat, newrowmap, inmat.domain_map());
 }
 
 /*----------------------------------------------------------------------*
@@ -410,28 +397,22 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform(
     const Core::LinAlg::Map& newdomainmap)
 {
   // redistribute input matrix
-  std::shared_ptr<Epetra_CrsMatrix> permmat = redistribute(inmat, newrowmap, newdomainmap);
-
-  // output matrix
-  std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
-      std::make_shared<Core::LinAlg::SparseMatrix>(permmat, Core::LinAlg::DataAccess::Copy, false);
-
-  return outmat;
+  return redistribute(inmat, newrowmap, newdomainmap);
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_CrsMatrix> Mortar::redistribute(const Core::LinAlg::SparseMatrix& src,
-    const Core::LinAlg::Map& permrowmap, const Core::LinAlg::Map& permdomainmap)
+std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::redistribute(
+    const Core::LinAlg::SparseMatrix& src, const Core::LinAlg::Map& permrowmap,
+    const Core::LinAlg::Map& permdomainmap)
 {
   Epetra_Export exporter(permrowmap.get_epetra_map(), src.row_map().get_epetra_map());
 
-  std::shared_ptr<Epetra_CrsMatrix> permsrc =
-      std::make_shared<Epetra_CrsMatrix>(Copy, permrowmap.get_epetra_map(), src.max_num_entries());
-  int err = permsrc->Import(*src.epetra_matrix(), exporter, Insert);
+  auto permsrc = std::make_shared<Core::LinAlg::SparseMatrix>(permrowmap, src.max_num_entries());
+  int err = permsrc->import(src, exporter, Insert);
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-  permsrc->FillComplete(permdomainmap.get_epetra_map(), permrowmap.get_epetra_map());
+  permsrc->complete(permdomainmap, permrowmap);
   return permsrc;
 }
 

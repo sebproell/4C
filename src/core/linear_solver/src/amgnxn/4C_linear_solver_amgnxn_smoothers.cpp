@@ -439,7 +439,7 @@ Core::LinearSolver::AMGNxN::MueluAMGWrapper::MueluAMGWrapper(
 void Core::LinearSolver::AMGNxN::MueluAMGWrapper::build_hierarchy()
 {
   // Prepare operator for MueLu
-  Teuchos::RCP<Epetra_CrsMatrix> A_crs =
+  auto A_crs =
       Teuchos::rcp_dynamic_cast<Epetra_CrsMatrix>(Teuchos::rcpFromRef(*A_->epetra_operator()));
   if (A_crs == Teuchos::null)
     FOUR_C_THROW("Make sure that the input matrix is a Epetra_CrsMatrix (or derived)");

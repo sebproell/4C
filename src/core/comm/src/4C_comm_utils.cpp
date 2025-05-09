@@ -13,7 +13,6 @@
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 
-#include <Epetra_CrsMatrix.h>
 #include <Epetra_Import.h>
 #include <Epetra_Map.h>
 
@@ -476,7 +475,7 @@ namespace Core::Communication
   /*----------------------------------------------------------------------*
    *----------------------------------------------------------------------*/
   bool are_distributed_sparse_matrices_identical(const Communicators& communicators,
-      Epetra_CrsMatrix& matrix, const char* name, double tol /*= 1.0e-14*/
+      const Core::LinAlg::SparseMatrix& matrix, const char* name, double tol /*= 1.0e-14*/
   )
   {
     MPI_Comm lcomm = communicators.local_comm();
@@ -492,8 +491,8 @@ namespace Core::Communication
       return false;
     }
 
-    const Core::LinAlg::Map& rowmap = Core::LinAlg::Map(matrix.RowMap());
-    const Core::LinAlg::Map& domainmap = Core::LinAlg::Map(matrix.DomainMap());
+    const Core::LinAlg::Map& rowmap = Core::LinAlg::Map(matrix.row_map());
+    const Core::LinAlg::Map& domainmap = Core::LinAlg::Map(matrix.domain_map());
 
     // gather data of vector to compare on gcomm proc 0 and last gcomm proc
     std::shared_ptr<Core::LinAlg::Map> serialrowmap;
@@ -512,15 +511,15 @@ namespace Core::Communication
 
     // export full matrices to the two desired processors
     Epetra_Import serialimporter(serialrowmap->get_epetra_map(), rowmap.get_epetra_map());
-    Epetra_CrsMatrix serialCrsMatrix(Copy, serialrowmap->get_epetra_map(), 0);
-    serialCrsMatrix.Import(matrix, serialimporter, Insert);
-    serialCrsMatrix.FillComplete(serialdomainmap->get_epetra_map(), serialrowmap->get_epetra_map());
+    Core::LinAlg::SparseMatrix serialCrsMatrix(*serialrowmap, 0);
+    serialCrsMatrix.import(matrix, serialimporter, Insert);
+    serialCrsMatrix.complete(*serialdomainmap, *serialrowmap);
 
     // fill data of matrices to container which can be easily communicated via MPI
     std::vector<int> data_indices;
-    data_indices.reserve(serialCrsMatrix.NumMyNonzeros() * 2);
+    data_indices.reserve(serialCrsMatrix.num_my_nonzeros() * 2);
     std::vector<double> data_values;
-    data_values.reserve(serialCrsMatrix.NumMyNonzeros());
+    data_values.reserve(serialCrsMatrix.num_my_nonzeros());
     if (myglobalrank == 0 || myglobalrank == Core::Communication::num_mpi_ranks(gcomm) - 1)
     {
       for (int i = 0; i < serialrowmap->NumMyElements(); ++i)
@@ -529,8 +528,8 @@ namespace Core::Communication
         int NumEntries;
         double* Values;
         int* Indices;
-        int err = serialCrsMatrix.ExtractMyRowView(i, NumEntries, Values, Indices);
-        if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
+        int err = serialCrsMatrix.extract_my_row_view(i, NumEntries, Values, Indices);
+        if (err != 0) FOUR_C_THROW("extract_my_row_view error: {}", err);
 
         for (int j = 0; j < NumEntries; ++j)
         {

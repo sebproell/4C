@@ -74,9 +74,6 @@ namespace Core::Communication
    * \note You need to add the AreDistributedSparseMatricesIdentical method in both executables at
    * the same position in the code.
    *
-   * \note From Core::LinAlg::SparseOperator to CrsMatrix, just do:
-   * std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(yoursparseoperator)->EpetraMatrix()
-   *
    * \param communicators (in): communicators containing local and global comm
    * \param matrix        (in): matrix to compare
    * \param name          (in): user given name for the matrix (needs to match within gcomm)
@@ -84,7 +81,7 @@ namespace Core::Communication
    * \return boolean to indicate if compared vectors are identical
    */
   bool are_distributed_sparse_matrices_identical(const Communicators& communicators,
-      Epetra_CrsMatrix& matrix, const char* name, double tol = 1.0e-14);
+      const Core::LinAlg::SparseMatrix& matrix, const char* name, double tol = 1.0e-14);
 
   //! transform MPI_Comm to Teuchos::Comm, std::shared_ptr version
   template <class Datatype>

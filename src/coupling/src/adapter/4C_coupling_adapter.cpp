@@ -763,21 +763,19 @@ std::shared_ptr<Core::LinAlg::Map> Coupling::Adapter::Coupling::master_to_slave_
 std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::master_to_perm_master(
     const Core::LinAlg::SparseMatrix& sm) const
 {
-  std::shared_ptr<Epetra_CrsMatrix> permsm = std::make_shared<Epetra_CrsMatrix>(
-      Copy, permmasterdofmap_->get_epetra_map(), sm.max_num_entries());
+  auto permsm =
+      std::make_shared<Core::LinAlg::SparseMatrix>(*permmasterdofmap_, sm.max_num_entries());
 
   // OK. You cannot use the same exporter for different matrices. So we
   // recreate one all the time... This has to be optimized later on.
   Epetra_Export exporter(permmasterdofmap_->get_epetra_map(), masterdofmap_->get_epetra_map());
-  int err = permsm->Import(*sm.epetra_matrix(), exporter, Insert);
+  int err = permsm->import(sm, exporter, Insert);
 
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-  permsm->FillComplete(sm.domain_map().get_epetra_map(), permmasterdofmap_->get_epetra_map());
+  permsm->complete(sm.domain_map(), *permmasterdofmap_);
 
-  // create a SparseMatrix that wraps the new CrsMatrix.
-  return std::make_shared<Core::LinAlg::SparseMatrix>(
-      permsm, Core::LinAlg::DataAccess::View, sm.explicit_dirichlet(), sm.save_graph());
+  return permsm;
 }
 
 
@@ -791,22 +789,19 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::slave_t
   if (not sm.filled()) FOUR_C_THROW("matrix must be filled");
 #endif
 
-  std::shared_ptr<Epetra_CrsMatrix> permsm = std::make_shared<Epetra_CrsMatrix>(
-      Copy, permslavedofmap_->get_epetra_map(), sm.max_num_entries());
+  auto permsm =
+      std::make_shared<Core::LinAlg::SparseMatrix>(*permslavedofmap_, sm.max_num_entries());
 
   // OK. You cannot use the same exporter for different matrices. So we
   // recreate one all the time... This has to be optimized later on.
-
   Epetra_Export exporter(permslavedofmap_->get_epetra_map(), slavedofmap_->get_epetra_map());
-  int err = permsm->Import(*sm.epetra_matrix(), exporter, Insert);
+  int err = permsm->import(sm, exporter, Insert);
 
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-  permsm->FillComplete(sm.domain_map().get_epetra_map(), permslavedofmap_->get_epetra_map());
+  permsm->complete(sm.domain_map(), *permslavedofmap_);
 
-  // create a SparseMatrix that wraps the new CrsMatrix.
-  return std::make_shared<Core::LinAlg::SparseMatrix>(
-      permsm, Core::LinAlg::DataAccess::View, sm.explicit_dirichlet(), sm.save_graph());
+  return permsm;
 }
 
 
@@ -816,13 +811,10 @@ void Coupling::Adapter::Coupling::setup_coupling_matrices(const Core::LinAlg::Ma
     const Core::LinAlg::Map& masterdomainmap, const Core::LinAlg::Map& slavedomainmap)
 {
   // we always use the masterdofmap for the domain
-  matmm_ = std::make_shared<Epetra_CrsMatrix>(Copy, shiftedmastermap.get_epetra_map(), 1, true);
-  matsm_ = std::make_shared<Epetra_CrsMatrix>(Copy, shiftedmastermap.get_epetra_map(), 1, true);
-
-  matmm_trans_ =
-      std::make_shared<Epetra_CrsMatrix>(Copy, masterdomainmap.get_epetra_map(), 1, true);
-  matsm_trans_ =
-      std::make_shared<Epetra_CrsMatrix>(Copy, perm_slave_dof_map()->get_epetra_map(), 1, true);
+  matmm_ = std::make_shared<Core::LinAlg::SparseMatrix>(shiftedmastermap, 1);
+  matsm_ = std::make_shared<Core::LinAlg::SparseMatrix>(shiftedmastermap, 1);
+  matmm_trans_ = std::make_shared<Core::LinAlg::SparseMatrix>(masterdomainmap, 1);
+  matsm_trans_ = std::make_shared<Core::LinAlg::SparseMatrix>(*perm_slave_dof_map(), 1);
 
   int length = shiftedmastermap.NumMyElements();
   double one = 1.;
@@ -832,44 +824,40 @@ void Coupling::Adapter::Coupling::setup_coupling_matrices(const Core::LinAlg::Ma
     int mgid = master_dof_map()->GID(i);
     int shiftedmgid = shiftedmastermap.GID(i);
 
-    int err = matmm_->InsertGlobalValues(shiftedmgid, 1, &one, &mgid);
+    int err = matmm_->insert_global_values(shiftedmgid, 1, &one, &mgid);
     if (err != 0)
       FOUR_C_THROW(
-          "InsertGlobalValues for entry ({},{}) failed with err={}", shiftedmgid, mgid, err);
+          "insert_global_values() for entry ({},{}) failed with err={}", shiftedmgid, mgid, err);
 
-    err = matsm_->InsertGlobalValues(shiftedmgid, 1, &one, &sgid);
+    err = matsm_->insert_global_values(shiftedmgid, 1, &one, &sgid);
     if (err != 0)
       FOUR_C_THROW(
-          "InsertGlobalValues for entry ({},{}) failed with err={}", shiftedmgid, sgid, err);
+          "insert_global_values() for entry ({},{}) failed with err={}", shiftedmgid, sgid, err);
 
-    err = matmm_trans_->InsertGlobalValues(mgid, 1, &one, &shiftedmgid);
+    err = matmm_trans_->insert_global_values(mgid, 1, &one, &shiftedmgid);
     if (err != 0)
       FOUR_C_THROW(
-          "InsertGlobalValues for entry ({},{}) failed with err={}", mgid, shiftedmgid, err);
+          "insert_global_values() for entry ({},{}) failed with err={}", mgid, shiftedmgid, err);
 
-    err = matsm_trans_->InsertGlobalValues(sgid, 1, &one, &shiftedmgid);
+    err = matsm_trans_->insert_global_values(sgid, 1, &one, &shiftedmgid);
     if (err != 0)
       FOUR_C_THROW(
-          "InsertGlobalValues for entry ({},{}) failed with err={}", sgid, shiftedmgid, err);
+          "insert_global_values() for entry ({},{}) failed with err={}", sgid, shiftedmgid, err);
   }
 
-  matmm_->FillComplete(masterdomainmap.get_epetra_map(), shiftedmastermap.get_epetra_map());
-  matsm_->FillComplete(slavedomainmap.get_epetra_map(), shiftedmastermap.get_epetra_map());
-
-  matmm_trans_->FillComplete(shiftedmastermap.get_epetra_map(), masterdomainmap.get_epetra_map());
-  matsm_trans_->FillComplete(
-      shiftedmastermap.get_epetra_map(), perm_slave_dof_map()->get_epetra_map());
+  matmm_->complete(masterdomainmap, shiftedmastermap);
+  matsm_->complete(slavedomainmap, shiftedmastermap);
+  matmm_trans_->complete(shiftedmastermap, masterdomainmap);
+  matsm_trans_->complete(shiftedmastermap, *perm_slave_dof_map());
 
   // communicate slave to master matrix
-
-  std::shared_ptr<Epetra_CrsMatrix> tmp =
-      std::make_shared<Epetra_CrsMatrix>(Copy, slavedomainmap.get_epetra_map(), 1);
+  auto tmp = std::make_shared<Core::LinAlg::SparseMatrix>(slavedomainmap, 1);
 
   Epetra_Import exporter(slavedomainmap.get_epetra_map(), perm_slave_dof_map()->get_epetra_map());
-  int err = tmp->Import(*matsm_trans_, exporter, Insert);
+  int err = tmp->import(*matsm_trans_, exporter, Insert);
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
-  tmp->FillComplete(shiftedmastermap.get_epetra_map(), slavedomainmap.get_epetra_map());
+  tmp->complete(shiftedmastermap, slavedomainmap);
   matsm_trans_ = tmp;
 }
 

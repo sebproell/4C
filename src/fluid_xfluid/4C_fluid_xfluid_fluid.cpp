@@ -505,19 +505,10 @@ void FLD::XFluidFluid::add_eos_pres_stab_to_emb_layer()
       Core::LinAlg::create_vector(*xdiscret->dof_col_map(), true);
 
   //------------------------------------------------------------
-
-  // TODO: do not create a new matrix all the time, why not creating an epetraFE matrix in
-  // fluidimplicit directly?
-  std::shared_ptr<Epetra_FECrsMatrix> sysmat_FE;
-
   auto rmap = Core::LinAlg::Map(embedded_fluid_->system_matrix()->OperatorRangeMap());
-  sysmat_FE = std::make_shared<Epetra_FECrsMatrix>(::Copy, rmap.get_epetra_map(), 256, false);
 
-  // TODO: think about the dirichlet and savegraph flags when ApplyDirichlet or Zero is called
-  std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_linalg =
-      std::make_shared<Core::LinAlg::SparseMatrix>(
-          std::static_pointer_cast<Epetra_CrsMatrix>(sysmat_FE), Core::LinAlg::DataAccess::View,
-          true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
+  auto sysmat_linalg = std::make_shared<Core::LinAlg::SparseMatrix>(
+      rmap, 256, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   //------------------------------------------------------------
   // loop over row faces

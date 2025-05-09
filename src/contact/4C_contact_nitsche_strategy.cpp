@@ -15,7 +15,6 @@
 #include "4C_global_data.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 
-#include <Epetra_CrsMatrix.h>
 #include <Epetra_FEVector.h>
 #include <Teuchos_Time.hpp>
 
@@ -36,8 +35,8 @@ void CONTACT::NitscheStrategy::apply_force_stiff_cmt(
   // just a Nitsche-version
   std::shared_ptr<Epetra_FEVector> fc = std::make_shared<Epetra_FEVector>(f->get_block_map());
   std::shared_ptr<Core::LinAlg::SparseMatrix> kc = std::make_shared<Core::LinAlg::SparseMatrix>(
-      Core::LinAlg::Map(dynamic_cast<Epetra_CrsMatrix*>(&(*kt->epetra_operator()))->RowMap()), 100,
-      true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
+      Core::LinAlg::Map(dynamic_cast<Core::LinAlg::SparseMatrix*>(&(*kt))->row_map()), 100, true,
+      false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   // Evaluation for all interfaces
   for (const auto& interface : interface_)
@@ -59,7 +58,7 @@ void CONTACT::NitscheStrategy::apply_force_stiff_cmt(
   if (fc->GlobalAssemble(Add, false) != 0) FOUR_C_THROW("GlobalAssemble failed");
   // add negative contact force here since the time integrator handed me a rhs!
   if (f->update(-1., *fc, 1.)) FOUR_C_THROW("update went wrong");
-  dynamic_cast<Epetra_FECrsMatrix&>(*kc->epetra_matrix()).GlobalAssemble(true, Add);
+  kc->complete();
   kt->un_complete();
   kt->add(*kc, false, 1., 1.);
   kt->complete();

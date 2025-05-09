@@ -121,6 +121,19 @@ int Core::LinAlg::SparseMatrixBase::right_scale(const Core::LinAlg::Vector<doubl
   return sysmat_->RightScale(x);
 }
 
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::inv_row_sums(Core::LinAlg::Vector<double>& x)
+{
+  return sysmat_->InvRowSums(x);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::inv_col_sums(Core::LinAlg::Vector<double>& x)
+{
+  return sysmat_->InvColSums(x);
+}
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -154,6 +167,77 @@ int Core::LinAlg::SparseMatrixBase::extract_diagonal_copy(
   return sysmat_->ExtractDiagonalCopy(Diagonal.get_ref_of_epetra_vector());
 }
 
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::extract_my_row_copy(
+    int my_row, int length, int& num_entries, double* values, int* indices) const
+{
+  return sysmat_->ExtractMyRowCopy(my_row, length, num_entries, values, indices);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::extract_global_row_copy(
+    int global_row, int length, int& num_entries, double* values, int* indices) const
+{
+  return sysmat_->ExtractGlobalRowCopy(global_row, length, num_entries, values, indices);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::extract_my_row_view(
+    int my_row, int& num_entries, double*& values, int*& indices) const
+{
+  return sysmat_->ExtractMyRowView(my_row, num_entries, values, indices);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::extract_global_row_view(
+    int global_row, int& num_entries, double*& values, int*& indices) const
+{
+  return sysmat_->ExtractGlobalRowView(global_row, num_entries, values, indices);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::insert_my_values(
+    int my_row, int num_entries, const double* values, const int* indices) const
+{
+  return sysmat_->InsertMyValues(my_row, num_entries, values, indices);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::sum_into_my_values(
+    int my_row, int num_entries, const double* values, const int* indices) const
+{
+  return sysmat_->SumIntoMyValues(my_row, num_entries, values, indices);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::replace_my_values(
+    int my_row, int num_entries, const double* values, const int* indices) const
+{
+  return sysmat_->ReplaceMyValues(my_row, num_entries, values, indices);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::insert_global_values(
+    int global_row, int num_entries, const double* values, const int* indices) const
+{
+  return sysmat_->InsertGlobalValues(global_row, num_entries, values, indices);
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+int Core::LinAlg::SparseMatrixBase::sum_into_global_values(
+    int global_row, int num_entries, const double* values, const int* indices) const
+{
+  return sysmat_->SumIntoGlobalValues(global_row, num_entries, values, indices);
+}
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -169,7 +253,7 @@ void Core::LinAlg::SparseMatrixBase::add(const Core::LinAlg::SparseOperator& A,
 void Core::LinAlg::SparseMatrixBase::add_other(Core::LinAlg::SparseMatrixBase& B,
     const bool transposeA, const double scalarA, const double scalarB) const
 {
-  // B.Add(*this, transposeA, scalarA, scalarB);
+  // B.add(*this, transposeA, scalarA, scalarB);
   Core::LinAlg::add(*sysmat_, transposeA, scalarA, B, scalarB);
 }
 

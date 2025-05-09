@@ -815,7 +815,7 @@ void SSTI::AssembleStrategyBlockBlock::assemble_thermo_scatra_interface(
   {
     for (int j = 0; j < static_cast<int>(block_position_scatra().size()); ++j)
     {
-      const auto thermoscatrainterface_subblock = thermoscatrainterface_block->matrix(i, j);
+      auto thermoscatrainterface_subblock = thermoscatrainterface_block->matrix(i, j);
 
       // assemble linearizations of slave side scatra fluxes w.r.t. slave and master side elch
       // into system matrix
@@ -1166,15 +1166,13 @@ void SSTI::AssembleStrategyBase::apply_meshtying_sys_mat(
     {
       const int rowlid_slave = systemmatrix_structure.row_map().LID(dofgid_slave);
       if (rowlid_slave < 0) FOUR_C_THROW("Global ID not found!");
-      if (systemmatrix_structure.epetra_matrix()->ReplaceMyValues(
-              rowlid_slave, 1, &one, &rowlid_slave))
+      if (systemmatrix_structure.replace_my_values(rowlid_slave, 1, &one, &rowlid_slave))
         FOUR_C_THROW("ReplaceMyValues failed!");
     }
 
     // apply pseudo Dirichlet conditions to unfilled matrix, i.e., to global row and
     // column indices
-    else if (systemmatrix_structure.epetra_matrix()->InsertGlobalValues(
-                 dofgid_slave, 1, &one, &dofgid_slave))
+    else if (systemmatrix_structure.insert_global_values(dofgid_slave, 1, &one, &dofgid_slave))
       FOUR_C_THROW("InsertGlobalValues failed!");
   }
 }

@@ -509,8 +509,7 @@ void Solid::TimeInt::Implicit::print_jacobian_in_matlab_format(
     {
       Teuchos::RCP<const Core::LinAlg::SparseMatrix> sparse_matrix =
           Teuchos::rcp_dynamic_cast<const Core::LinAlg::SparseMatrix>(jac_ptr, true);
-      Core::LinAlg::print_matrix_in_matlab_format(
-          filename.str().c_str(), *sparse_matrix->epetra_matrix());
+      Core::LinAlg::print_matrix_in_matlab_format(filename.str().c_str(), *sparse_matrix);
 
       break;
     }

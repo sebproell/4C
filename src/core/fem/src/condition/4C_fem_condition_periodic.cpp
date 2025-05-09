@@ -1513,7 +1513,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
 
       // set standard value of edge weight to 1.0
       auto edge_weights =
-          std::make_shared<Epetra_CrsMatrix>(Copy, graph_rowmap.get_epetra_map(), 15);
+          std::make_shared<Core::LinAlg::SparseMatrix>(graph_rowmap.get_epetra_map(), 15);
       for (int i = 0; i < nodegraph->num_local_rows(); ++i)
       {
         const int grow = nodegraph->row_map().GID(i);
@@ -1524,8 +1524,8 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
         nodegraph->extract_global_row_copy(grow, glob_length, numentries, indices.data());
 
         std::vector<double> values(numentries, 1.0);
-        edge_weights->InsertGlobalValues(grow, numentries, values.data(), indices.data());
-        if (err < 0) FOUR_C_THROW("edge_weights->InsertGlobalValues returned err={}", err);
+        edge_weights->insert_global_values(grow, numentries, values.data(), indices.data());
+        if (err < 0) FOUR_C_THROW("edge_weights->insert_global_values returned err={}", err);
       }
 
       // loop all master nodes on this proc
@@ -1551,10 +1551,10 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
           // add 99 to the initial value of 1.0 to set costs to 100
           std::vector<double> value(1, 99.0);
 
-          err = edge_weights->InsertGlobalValues(master->id(), 1, value.data(), slave_gid.data());
-          if (err < 0) FOUR_C_THROW("InsertGlobalIndices returned err={}", err);
-          err = edge_weights->InsertGlobalValues(slave->id(), 1, value.data(), master_gid.data());
-          if (err < 0) FOUR_C_THROW("InsertGlobalIndices returned err={}", err);
+          err = edge_weights->insert_global_values(master->id(), 1, value.data(), slave_gid.data());
+          if (err < 0) FOUR_C_THROW("insert_global_values returned err={}", err);
+          err = edge_weights->insert_global_values(slave->id(), 1, value.data(), master_gid.data());
+          if (err < 0) FOUR_C_THROW("insert_global_values returned err={}", err);
         }
       }
 

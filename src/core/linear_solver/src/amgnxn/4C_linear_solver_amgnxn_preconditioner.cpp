@@ -230,7 +230,7 @@ Core::LinearSolver::AmGnxnInterface::AmGnxnInterface(Teuchos::ParameterList& par
     std::shared_ptr<std::vector<double>> ns =
         std::make_shared<std::vector<double>>(nullspace->MyLength() * nullspace->NumVectors());
 
-    Core::LinAlg::epetra_multi_vector_to_std_vector(*nullspace, *ns, null_spaces_dim_[block]);
+    Core::LinAlg::multi_vector_to_std_vector(*nullspace, *ns, null_spaces_dim_[block]);
     null_spaces_data_[block] = ns;
 
     // Some checks

@@ -8,14 +8,11 @@
 #ifndef FOUR_C_COUPLING_ADAPTER_HPP
 #define FOUR_C_COUPLING_ADAPTER_HPP
 
-/*----------------------------------------------------------------------------*/
-/* headers */
 #include "4C_config.hpp"
 
 #include "4C_coupling_adapter_base.hpp"
 #include "4C_linalg_map.hpp"
 
-#include <Epetra_CrsMatrix.h>
 #include <Epetra_FEVector.h>
 
 #include <map>
@@ -23,8 +20,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-/*----------------------------------------------------------------------------*/
-/* forward declarations */
 namespace Core::LinAlg
 {
   class SparseMatrix;
@@ -35,8 +30,6 @@ namespace Core::FE
   class Discretization;
 }  // namespace Core::FE
 
-/*----------------------------------------------------------------------------*/
-/* definition of classes */
 namespace Coupling::Adapter
 {
   /*! \class Coupling
@@ -395,10 +388,16 @@ namespace Coupling::Adapter
     void setup_coupling_matrices(const Core::LinAlg::Map& shiftedmastermap,
         const Core::LinAlg::Map& masterdomainmap, const Core::LinAlg::Map& slavedomainmap);
 
-    std::shared_ptr<Epetra_CrsMatrix> master_to_master_mat() const { return matmm_; }
-    std::shared_ptr<Epetra_CrsMatrix> slave_to_master_mat() const { return matsm_; }
-    std::shared_ptr<Epetra_CrsMatrix> master_to_master_mat_trans() const { return matmm_trans_; }
-    std::shared_ptr<Epetra_CrsMatrix> slave_to_master_mat_trans() const { return matsm_trans_; }
+    std::shared_ptr<Core::LinAlg::SparseMatrix> master_to_master_mat() const { return matmm_; }
+    std::shared_ptr<Core::LinAlg::SparseMatrix> slave_to_master_mat() const { return matsm_; }
+    std::shared_ptr<Core::LinAlg::SparseMatrix> master_to_master_mat_trans() const
+    {
+      return matmm_trans_;
+    }
+    std::shared_ptr<Core::LinAlg::SparseMatrix> slave_to_master_mat_trans() const
+    {
+      return matsm_trans_;
+    }
 
     //@}
 
@@ -525,10 +524,10 @@ namespace Coupling::Adapter
     //! @name coupling matrices for Lagrangian multiplier coupling
     //@{
 
-    std::shared_ptr<Epetra_CrsMatrix> matmm_;
-    std::shared_ptr<Epetra_CrsMatrix> matsm_;
-    std::shared_ptr<Epetra_CrsMatrix> matmm_trans_;
-    std::shared_ptr<Epetra_CrsMatrix> matsm_trans_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> matmm_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> matsm_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> matmm_trans_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> matsm_trans_;
 
     //@}
   };

@@ -14,9 +14,8 @@
 #include "4C_linalg_graph.hpp"
 #include "4C_linalg_map.hpp"
 #include "4C_linalg_multi_vector.hpp"
+#include "4C_linalg_sparsematrix.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
-
-#include <Teuchos_RCPDecl.hpp>
 
 #include <memory>
 
@@ -57,7 +56,7 @@ namespace Core::Rebalance
   rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
       const Teuchos::ParameterList& rebalanceParams,
       const std::shared_ptr<Core::LinAlg::Vector<double>>& initialNodeWeights = nullptr,
-      const std::shared_ptr<Epetra_CrsMatrix>& initialEdgeWeights = nullptr,
+      const std::shared_ptr<Core::LinAlg::SparseMatrix>& initialEdgeWeights = nullptr,
       const std::shared_ptr<Core::LinAlg::MultiVector<double>>& initialNodeCoordinates = nullptr);
 
   /*!
@@ -81,7 +80,7 @@ namespace Core::Rebalance
   std::shared_ptr<Core::LinAlg::Graph> rebalance_graph(const Core::LinAlg::Graph& initialGraph,
       const Teuchos::ParameterList& rebalanceParams,
       const std::shared_ptr<Core::LinAlg::Vector<double>>& initialNodeWeights = nullptr,
-      const std::shared_ptr<Epetra_CrsMatrix>& initialEdgeWeights = nullptr,
+      const std::shared_ptr<Core::LinAlg::SparseMatrix>& initialEdgeWeights = nullptr,
       const std::shared_ptr<Core::LinAlg::MultiVector<double>>& initialNodeCoordinates = nullptr);
 
   /*!
@@ -109,7 +108,8 @@ namespace Core::Rebalance
 
   @return Node and edge weights to be used for repartitioning
   */
-  std::pair<std::shared_ptr<Core::LinAlg::Vector<double>>, std::shared_ptr<Epetra_CrsMatrix>>
+  std::pair<std::shared_ptr<Core::LinAlg::Vector<double>>,
+      std::shared_ptr<Core::LinAlg::SparseMatrix>>
   build_weights(const Core::FE::Discretization& dis);
 
   /*!

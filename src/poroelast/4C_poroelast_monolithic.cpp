@@ -1177,15 +1177,13 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
 
   abs_iterinc->update(1.0, *iterinc_, 0.0);
 
-  std::shared_ptr<Epetra_CrsMatrix> stiff_approx = nullptr;
-  stiff_approx = Core::LinAlg::create_matrix(*dof_row_map(), 81);
+  auto stiff_approx = std::make_shared<Core::LinAlg::SparseMatrix>(*dof_row_map(), 81);
 
   Core::LinAlg::Vector<double> rhs_old(*dof_row_map(), true);
   rhs_old.update(1.0, *rhs_, 0.0);
   Core::LinAlg::Vector<double> rhs_copy(*dof_row_map(), true);
 
-  std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
-  Core::LinAlg::SparseMatrix sparse_copy(sparse->epetra_matrix(), Core::LinAlg::DataAccess::Copy);
+  Core::LinAlg::SparseMatrix sparse(*systemmatrix_->merge());
 
   bool output = false;
   if (output)
@@ -1226,7 +1224,7 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
 
     iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
     Core::LinAlg::apply_dirichlet_to_system(
-        sparse_copy, *iterinc_, rhs_copy, *zeros_, *combined_dbc_map());
+        sparse, *iterinc_, rhs_copy, *zeros_, *combined_dbc_map());
 
 
     if (i == column_number)
@@ -1242,7 +1240,7 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
     for (int j = 0; j < dofs; ++j)
     {
       double value = (rhs_copy)[j];
-      stiff_approx->InsertGlobalValues(j, 1, &value, index);
+      stiff_approx->insert_global_values(j, 1, &value, index);
 
       if ((j == row_number) and (i == column_number))
       {
@@ -1285,20 +1283,13 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
 
   evaluate(iterinc, iter_ == 1);
 
-  stiff_approx->FillComplete();
+  stiff_approx->complete();
 
-  std::shared_ptr<Core::LinAlg::SparseMatrix> stiff_approx_sparse = nullptr;
-  stiff_approx_sparse =
-      std::make_shared<Core::LinAlg::SparseMatrix>(stiff_approx, Core::LinAlg::DataAccess::Copy);
+  auto stiff_approx_sparse = std::make_shared<Core::LinAlg::SparseMatrix>(*stiff_approx);
+  stiff_approx_sparse->add(sparse, false, -1.0, 1.0);
 
-  stiff_approx_sparse->add(sparse_copy, false, -1.0, 1.0);
-
-  std::shared_ptr<Epetra_CrsMatrix> sparse_crs = sparse_copy.epetra_matrix();
-
-  std::shared_ptr<Epetra_CrsMatrix> error_crs = stiff_approx_sparse->epetra_matrix();
-
-  error_crs->FillComplete();
-  sparse_crs->FillComplete();
+  stiff_approx_sparse->complete();
+  sparse.complete();
 
   bool success = true;
   double error_max = 0.0;
@@ -1318,11 +1309,11 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
           {
             // get error_crs entry ij
             int errornumentries;
-            int errorlength = error_crs->NumGlobalEntries(i);
+            int errorlength = stiff_approx_sparse->num_global_entries(i);
             std::vector<double> errorvalues(errorlength);
             std::vector<int> errorindices(errorlength);
             // int errorextractionstatus =
-            error_crs->ExtractGlobalRowCopy(
+            stiff_approx_sparse->extract_global_row_copy(
                 i, errorlength, errornumentries, errorvalues.data(), errorindices.data());
             for (int k = 0; k < errorlength; ++k)
             {
@@ -1339,11 +1330,11 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
           // get sparse_ij entry ij
           {
             int sparsenumentries;
-            int sparselength = sparse_crs->NumGlobalEntries(i);
+            int sparselength = sparse.num_global_entries(i);
             std::vector<double> sparsevalues(sparselength);
             std::vector<int> sparseindices(sparselength);
             // int sparseextractionstatus =
-            sparse_crs->ExtractGlobalRowCopy(
+            sparse.extract_global_row_copy(
                 i, sparselength, sparsenumentries, sparsevalues.data(), sparseindices.data());
             for (int k = 0; k < sparselength; ++k)
             {
@@ -1360,11 +1351,11 @@ void PoroElast::Monolithic::apply_fluid_coupl_matrix(
           // get stiff_approx entry ij
           {
             int approxnumentries;
-            int approxlength = stiff_approx->NumGlobalEntries(i);
+            int approxlength = stiff_approx->num_global_entries(i);
             std::vector<double> approxvalues(approxlength);
             std::vector<int> approxindices(approxlength);
             // int approxextractionstatus =
-            stiff_approx->ExtractGlobalRowCopy(
+            stiff_approx->extract_global_row_copy(
                 i, approxlength, approxnumentries, approxvalues.data(), approxindices.data());
             for (int k = 0; k < approxlength; ++k)
             {

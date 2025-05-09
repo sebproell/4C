@@ -7,6 +7,7 @@
 
 #include "4C_sti_monolithic.hpp"
 
+#include "4C_constraint_framework_embeddedmesh_solid_to_solid_mortar_manager.hpp"
 #include "4C_coupling_adapter.hpp"
 #include "4C_coupling_adapter_converter.hpp"
 #include "4C_fem_general_assemblestrategy.hpp"
@@ -340,19 +341,15 @@ void STI::Monolithic::fd_check()
   // make a copy of global state vector to undo perturbations later
   auto statenp_original = std::make_shared<Core::LinAlg::Vector<double>>(*statenp);
 
-  // make a copy of system matrix as Epetra_CrsMatrix
-  std::shared_ptr<Epetra_CrsMatrix> sysmat_original = nullptr;
+  std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_original = nullptr;
   if (std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(systemmatrix_) != nullptr)
   {
-    sysmat_original =
-        (new Core::LinAlg::SparseMatrix(
-             *(std::static_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(systemmatrix_)
-                     ->merge())))
-            ->epetra_matrix();
+    sysmat_original = std::make_shared<Core::LinAlg::SparseMatrix>(
+        *(std::static_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(systemmatrix_)->merge()));
   }
   else
     FOUR_C_THROW("Global system matrix must be a block sparse matrix!");
-  sysmat_original->FillComplete();
+  sysmat_original->complete();
 
   // make a copy of system right-hand side vector
   Core::LinAlg::Vector<double> rhs_original(*residual_);
@@ -364,10 +361,10 @@ void STI::Monolithic::fd_check()
   double maxabserr(0.);
   double maxrelerr(0.);
 
-  for (int colgid = 0; colgid <= sysmat_original->ColMap().MaxAllGID(); ++colgid)
+  for (int colgid = 0; colgid <= sysmat_original->col_map().MaxAllGID(); ++colgid)
   {
     // check whether current column index is a valid global column index and continue loop if not
-    int collid(sysmat_original->ColMap().LID(colgid));
+    int collid(sysmat_original->col_map().LID(colgid));
     int maxcollid(-1);
     Core::Communication::max_all(&collid, &maxcollid, 1, get_comm());
     if (maxcollid < 0) continue;
@@ -405,19 +402,20 @@ void STI::Monolithic::fd_check()
     for (int rowlid = 0; rowlid < dof_row_map()->NumMyElements(); ++rowlid)
     {
       // get global index of current matrix row
-      const int rowgid = sysmat_original->RowMap().GID(rowlid);
+      const int rowgid = sysmat_original->row_map().GID(rowlid);
       if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
       // get relevant entry in current row of original system matrix
       double entry(0.);
-      int length = sysmat_original->NumMyEntries(rowlid);
+      int length = sysmat_original->num_my_entries(rowlid);
       int numentries;
       std::vector<double> values(length);
       std::vector<int> indices(length);
-      sysmat_original->ExtractMyRowCopy(rowlid, length, numentries, values.data(), indices.data());
+      sysmat_original->extract_my_row_copy(
+          rowlid, length, numentries, values.data(), indices.data());
       for (int ientry = 0; ientry < length; ++ientry)
       {
-        if (sysmat_original->ColMap().GID(indices[ientry]) == colgid)
+        if (sysmat_original->col_map().GID(indices[ientry]) == colgid)
         {
           entry = values[ientry];
           break;
@@ -570,10 +568,10 @@ void STI::Monolithic::output_matrix_to_file(
       rowgids.size() ? rowgids.data() : nullptr, 0, Core::Communication::as_epetra_comm(comm));
 
   // import matrix to processor with ID 0
-  Epetra_CrsMatrix crsmatrix(Copy, fullrowmap.get_epetra_map(), 0);
+  Core::LinAlg::SparseMatrix crsmatrix(fullrowmap, 0);
   if (sparsematrix != nullptr)
   {
-    if (crsmatrix.Import(*sparsematrix->epetra_matrix(),
+    if (crsmatrix.import(*sparsematrix,
             Epetra_Import(fullrowmap.get_epetra_map(), rowmap.get_epetra_map()), Insert))
       FOUR_C_THROW("Matrix import failed!");
   }
@@ -583,7 +581,7 @@ void STI::Monolithic::output_matrix_to_file(
     {
       for (int j = 0; j < blocksparsematrix->cols(); ++j)
       {
-        if (crsmatrix.Import(*blocksparsematrix->matrix(i, j).epetra_matrix(),
+        if (crsmatrix.import(blocksparsematrix->matrix(i, j),
                 Epetra_Import(
                     fullrowmap.get_epetra_map(), blocksparsematrix->range_map(i).get_epetra_map()),
                 Insert))
@@ -608,7 +606,7 @@ void STI::Monolithic::output_matrix_to_file(
          << std::endl;
 
     // write matrix to file
-    for (int rowlid = 0; rowlid < crsmatrix.NumMyRows(); ++rowlid)
+    for (int rowlid = 0; rowlid < crsmatrix.num_my_rows(); ++rowlid)
     {
       // extract global ID of current matrix row
       const int rowgid = fullrowmap.GID(rowlid);
@@ -617,7 +615,7 @@ void STI::Monolithic::output_matrix_to_file(
       int numentries;
       double* values;
       int* indices;
-      if (crsmatrix.ExtractGlobalRowView(rowgid, numentries, values, indices))
+      if (crsmatrix.extract_global_row_view(rowgid, numentries, values, indices))
         FOUR_C_THROW("Cannot extract matrix row with global ID {}!", rowgid);
 
       // sort entries in current matrix row in ascending order of column global ID via map
@@ -1283,7 +1281,7 @@ void STI::Monolithic::compute_null_space_if_necessary(Teuchos::ParameterList& so
 
     std::shared_ptr<Core::LinAlg::MultiVector<double>> nullspace =
         std::make_shared<Core::LinAlg::MultiVector<double>>(dof_row_map().operator*(), dimns, true);
-    Core::LinAlg::std_vector_to_epetra_multi_vector(ns, *nullspace, dimns);
+    Core::LinAlg::std_vector_to_multi_vector(ns, *nullspace, dimns);
 
     mllist.set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace", nullspace);
     mllist.set("null space: vectors", nullspace->Values());

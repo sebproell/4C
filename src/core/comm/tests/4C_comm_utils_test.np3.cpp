@@ -14,8 +14,6 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Epetra_CrsMatrix.h>
-
 #include <memory>
 #include <stdexcept>
 
@@ -52,7 +50,7 @@ namespace
       std::shared_ptr<Core::LinAlg::Map> map =
           std::make_shared<Core::LinAlg::Map>(numberOfElementsToDistribute_, 0,
               Core::Communication::as_epetra_comm(communicators_->local_comm()));
-      epetraVector_ = std::make_shared<Core::LinAlg::Vector<double>>(*map, false);
+      vector_ = std::make_shared<Core::LinAlg::Vector<double>>(*map, false);
 
       // fill test Core::LinAlg::Vector<double> with entry equals gid
       int numMyEles = map->NumMyElements();
@@ -63,7 +61,7 @@ namespace
         indices[lid] = lid;
         values[lid] = map->GID(lid);
       }
-      epetraVector_->replace_local_values(numMyEles, values, indices);
+      vector_->replace_local_values(numMyEles, values, indices);
     }
 
     void TearDown() override { Core::IO::cout.close(); }
@@ -71,7 +69,7 @@ namespace
    public:
     std::shared_ptr<Core::Communication::Communicators> communicators_;
     const int numberOfElementsToDistribute_ = 791;
-    std::shared_ptr<Core::LinAlg::Vector<double>> epetraVector_;
+    std::shared_ptr<Core::LinAlg::Vector<double>> vector_;
   };
 
   /**
@@ -95,10 +93,10 @@ namespace
           std::make_shared<Core::LinAlg::Map>(numberOfElementsToDistribute_, 0,
               Core::Communication::as_epetra_comm(communicators_->local_comm()));
       int approximateNumberOfNonZeroesPerRow = 3;
-      epetraCrsMatrix_ = std::make_shared<Epetra_CrsMatrix>(
-          ::Copy, rowmap->get_epetra_map(), approximateNumberOfNonZeroesPerRow, false);
+      matrix_ =
+          std::make_shared<Core::LinAlg::SparseMatrix>(*rowmap, approximateNumberOfNonZeroesPerRow);
 
-      // fill tri-diagonal Epetra_CrsMatrix
+      // fill tri-diagonal matrix
       double* values = new double[3];
       int* columnIndices = new int[3];
       int numMyEles = rowmap->NumMyElements();
@@ -110,7 +108,7 @@ namespace
           int colIndicesFirstRow[2] = {0, 1};
           double valuesFirstRow[2] = {static_cast<double>(rowgid) + colIndicesFirstRow[0],
               static_cast<double>(rowgid) + colIndicesFirstRow[1]};
-          epetraCrsMatrix_->InsertGlobalValues(rowgid, 2, valuesFirstRow, colIndicesFirstRow);
+          matrix_->insert_global_values(rowgid, 2, valuesFirstRow, colIndicesFirstRow);
         }
         else if (rowgid == numberOfElementsToDistribute_ - 1)  // last global row
         {
@@ -118,7 +116,7 @@ namespace
           int colIndicesLastRow[2] = {rowgid - 1, rowgid};
           double valuesLastRow[2] = {static_cast<double>(rowgid) + colIndicesLastRow[0],
               static_cast<double>(rowgid) + colIndicesLastRow[1]};
-          epetraCrsMatrix_->InsertGlobalValues(rowgid, 2, valuesLastRow, colIndicesLastRow);
+          matrix_->insert_global_values(rowgid, 2, valuesLastRow, colIndicesLastRow);
         }
         else  // all rows in between
         {
@@ -128,11 +126,13 @@ namespace
           values[0] = static_cast<double>(rowgid) + columnIndices[0];
           values[1] = static_cast<double>(rowgid) + columnIndices[1];
           values[2] = static_cast<double>(rowgid) + columnIndices[2];
-          epetraCrsMatrix_->InsertGlobalValues(rowgid, 3, values, columnIndices);
+          matrix_->insert_global_values(rowgid, 3, values, columnIndices);
         }
       }
 
-      epetraCrsMatrix_->FillComplete(false);
+      // TODO: we are not allowed to optimize data storage here, otherwise results in the second
+      //       run won't fit
+      matrix_->epetra_matrix()->FillComplete(false);
     }
 
     void TearDown() override { Core::IO::cout.close(); }
@@ -140,7 +140,7 @@ namespace
    public:
     std::shared_ptr<Core::Communication::Communicators> communicators_;
     const int numberOfElementsToDistribute_ = 673;
-    std::shared_ptr<Epetra_CrsMatrix> epetraCrsMatrix_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_;
   };
 
   /**
@@ -160,22 +160,21 @@ namespace
           false, false, false, Core::IO::standard, communicators_->local_comm(), 0, 0, "dummy");
 
       // create arbitrary distributed map within each group
-      std::shared_ptr<Core::LinAlg::Map> rowmap =
-          std::make_shared<Core::LinAlg::Map>(numberOfElementsToDistribute_, 0,
-              Core::Communication::as_epetra_comm(communicators_->local_comm()));
+      Core::LinAlg::Map rowmap(numberOfElementsToDistribute_, 0,
+          Core::Communication::as_epetra_comm(communicators_->local_comm()));
       Core::LinAlg::Map colmap(2 * numberOfElementsToDistribute_, 0,
           Core::Communication::as_epetra_comm(communicators_->local_comm()));
       int approximateNumberOfNonZeroesPerRow = 6;
-      epetraCrsMatrix_ = std::make_shared<Epetra_CrsMatrix>(
-          ::Copy, rowmap->get_epetra_map(), approximateNumberOfNonZeroesPerRow, false);
+      matrix_ =
+          std::make_shared<Core::LinAlg::SparseMatrix>(rowmap, approximateNumberOfNonZeroesPerRow);
 
-      // fill rectangular Epetra_CrsMatrix
+      // fill rectangular matrix
       double* values = new double[6];
       int* columnIndices = new int[6];
-      int numMyEles = rowmap->NumMyElements();
+      int numMyEles = rowmap.NumMyElements();
       for (int lid = 0; lid < numMyEles; ++lid)
       {
-        int rowgid = rowmap->GID(lid);
+        int rowgid = rowmap.GID(lid);
         if (rowgid == 0)  // first global row
         {
           int colIndicesFirstRow[4] = {
@@ -184,18 +183,18 @@ namespace
               static_cast<double>(rowgid) + colIndicesFirstRow[1],
               static_cast<double>(rowgid) + colIndicesFirstRow[0],
               static_cast<double>(rowgid) + colIndicesFirstRow[1]};
-          epetraCrsMatrix_->InsertGlobalValues(rowgid, 4, valuesFirstRow, colIndicesFirstRow);
+          matrix_->insert_global_values(rowgid, 4, valuesFirstRow, colIndicesFirstRow);
         }
         else if (rowgid == numberOfElementsToDistribute_ - 1)  // last global row
         {
-          rowgid = rowmap->GID(numMyEles - 1);
+          rowgid = rowmap.GID(numMyEles - 1);
           int colIndicesLastRow[4] = {rowgid - 1, rowgid,
               rowgid - 1 + numberOfElementsToDistribute_, rowgid + numberOfElementsToDistribute_};
           double valuesLastRow[4] = {static_cast<double>(rowgid) + colIndicesLastRow[0],
               static_cast<double>(rowgid) + colIndicesLastRow[1],
               static_cast<double>(rowgid) + colIndicesLastRow[0],
               static_cast<double>(rowgid) + colIndicesLastRow[1]};
-          epetraCrsMatrix_->InsertGlobalValues(rowgid, 4, valuesLastRow, colIndicesLastRow);
+          matrix_->insert_global_values(rowgid, 4, valuesLastRow, colIndicesLastRow);
         }
         else  // all rows in between
         {
@@ -211,10 +210,10 @@ namespace
           values[3] = values[0];
           values[4] = values[1];
           values[5] = values[2];
-          epetraCrsMatrix_->InsertGlobalValues(rowgid, 6, values, columnIndices);
+          matrix_->insert_global_values(rowgid, 6, values, columnIndices);
         }
       }
-      epetraCrsMatrix_->FillComplete(colmap.get_epetra_map(), rowmap->get_epetra_map());
+      matrix_->complete(colmap, rowmap);
     }
 
     void TearDown() override { Core::IO::cout.close(); }
@@ -222,54 +221,56 @@ namespace
    public:
     std::shared_ptr<Core::Communication::Communicators> communicators_;
     const int numberOfElementsToDistribute_ = 673;
-    std::shared_ptr<Epetra_CrsMatrix> epetraCrsMatrix_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_;
   };
 
   TEST_F(SetupCompareParallelVectorsTest, PositiveTestCompareVectors)
   {
-    bool success = Core::Communication::are_distributed_vectors_identical(*communicators_,
-        *epetraVector_,  //
-        "epetraVector");
+    bool success =
+        Core::Communication::are_distributed_vectors_identical(*communicators_, *vector_, "vector");
     EXPECT_EQ(success, true);
   }
 
   TEST_F(SetupCompareParallelVectorsTest, NegativeTestCompareVectors)
   {
     // disturb one value on each proc which leads to a failure of the comparison
-    const int lastLocalIndex = epetraVector_->local_length() - 1;
+    const int lastLocalIndex = vector_->local_length() - 1;
     double disturbedValue = static_cast<double>(lastLocalIndex);
-    epetraVector_->replace_local_values(1, &disturbedValue, &lastLocalIndex);
+    vector_->replace_local_values(1, &disturbedValue, &lastLocalIndex);
 
-    EXPECT_THROW(Core::Communication::are_distributed_vectors_identical(
-                     *communicators_, *epetraVector_, "epetraVector"),
+    EXPECT_THROW(
+        Core::Communication::are_distributed_vectors_identical(*communicators_, *vector_, "vector"),
         Core::Exception);
   }
 
   TEST_F(SetupCompareParallelMatricesTest, PositiveTestCompareMatrices)
   {
     bool success = Core::Communication::are_distributed_sparse_matrices_identical(
-        *communicators_, *epetraCrsMatrix_, "epetraCrsMatrix");
+        *communicators_, *matrix_, "matrix");
     EXPECT_EQ(success, true);
   }
 
   TEST_F(SetupCompareParallelMatricesTest, NegativeTestCompareMatrices)
   {
     // disturb one value on each proc which leads to a failure of the comparison
-    const int myLastLid[1] = {epetraCrsMatrix_->RowMap().NumMyElements() - 1};
+    const int myLastLid[1] = {matrix_->row_map().NumMyElements() - 1};
     const double value[1] = {static_cast<double>(myLastLid[0])};
 
-    epetraCrsMatrix_->InsertMyValues(myLastLid[0], 1, &value[0], &myLastLid[0]);
-    epetraCrsMatrix_->FillComplete(false);
+    matrix_->insert_my_values(myLastLid[0], 1, &value[0], &myLastLid[0]);
+
+    // TODO: we are not allowed to optimize data storage here, otherwise results from the first
+    //       run won't fit
+    matrix_->epetra_matrix()->FillComplete(false);
 
     EXPECT_THROW(Core::Communication::are_distributed_sparse_matrices_identical(
-                     *communicators_, *epetraCrsMatrix_, "epetraCrsMatrix"),
+                     *communicators_, *matrix_, "matrix"),
         Core::Exception);
   }
 
   TEST_F(SetupCompareParallelRectangularMatricesTest, PositiveTestCompareRectangularMatrices)
   {
     bool success = Core::Communication::are_distributed_sparse_matrices_identical(
-        *communicators_, *epetraCrsMatrix_, "rectangularEpetraCrsMatrix");
+        *communicators_, *matrix_, "rectangular_matrix");
     EXPECT_EQ(success, true);
   }
 

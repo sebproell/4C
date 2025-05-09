@@ -100,7 +100,9 @@ namespace Core::LinAlg
     SparseMatrix(const Core::LinAlg::Map& rowmap, const int npr, bool explicitdirichlet = true,
         bool savegraph = false, MatrixType matrixtype = CRS_MATRIX);
 
-
+    /// construction of sparse matrix
+    SparseMatrix(const Core::LinAlg::Map& rowmap, const Core::LinAlg::Map& colmap, const int npr,
+        bool explicitdirichlet = true, bool savegraph = false, MatrixType matrixtype = CRS_MATRIX);
 
     /// construction of sparse matrix using an individual estimate for number of non-zeros per row
     SparseMatrix(const Core::LinAlg::Map& rowmap, std::vector<int>& numentries,

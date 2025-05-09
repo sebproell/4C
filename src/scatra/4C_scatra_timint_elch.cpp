@@ -3243,7 +3243,7 @@ void ScaTra::ScaTraTimIntElch::reduce_dimension_null_space_blocks(
 
     const int dimns = mueluparams.get<int>("null space: dimension");
     std::vector<double> nullspace(nspVector->MyLength() * nspVector->NumVectors());
-    Core::LinAlg::epetra_multi_vector_to_std_vector(*nspVector, nullspace, dimns);
+    Core::LinAlg::multi_vector_to_std_vector(*nspVector, nullspace, dimns);
 
     // null space associated with concentration dofs
     if (iblock % 2 == 0)
@@ -3272,7 +3272,7 @@ void ScaTra::ScaTraTimIntElch::reduce_dimension_null_space_blocks(
     std::shared_ptr<Core::LinAlg::MultiVector<double>> nspVectornew =
         std::make_shared<Core::LinAlg::MultiVector<double>>(
             *(block_maps()->map(iblock)), dimnsnew, true);
-    Core::LinAlg::std_vector_to_epetra_multi_vector(nullspace, *nspVectornew, dimnsnew);
+    Core::LinAlg::std_vector_to_multi_vector(nullspace, *nspVectornew, dimnsnew);
 
     mueluparams.set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace", nspVectornew);
   }

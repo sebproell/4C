@@ -10,6 +10,7 @@
 #include "4C_adapter_fld_poro.hpp"
 #include "4C_adapter_str_fpsiwrapper.hpp"
 #include "4C_comm_mpi_utils.hpp"
+#include "4C_constraint_framework_embeddedmesh_solid_to_solid_mortar_manager.hpp"
 #include "4C_coupling_adapter.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fpsi_utils.hpp"
@@ -706,8 +707,8 @@ void FPSI::Monolithic::create_linear_solver()
     std::string inv = "Inverse1";
     const Core::LinAlg::Map& oldmap =
         *(Global::Problem::instance()->get_dis("structure")->dof_row_map());
-    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
-        systemmatrix_->matrix(structure_block_, structure_block_).epetra_matrix()->RowMap());
+    const Core::LinAlg::Map& newmap =
+        Core::LinAlg::Map(systemmatrix_->matrix(structure_block_, structure_block_).row_map());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse1"));
   }
@@ -715,8 +716,8 @@ void FPSI::Monolithic::create_linear_solver()
   {
     std::string inv = "Inverse2";
     const Core::LinAlg::Map& oldmap = *(poro_field()->fluid_field()->dof_row_map());
-    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
-        systemmatrix_->matrix(porofluid_block_, porofluid_block_).epetra_matrix()->RowMap());
+    const Core::LinAlg::Map& newmap =
+        Core::LinAlg::Map(systemmatrix_->matrix(porofluid_block_, porofluid_block_).row_map());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse2"));
   }
@@ -724,8 +725,8 @@ void FPSI::Monolithic::create_linear_solver()
   {
     std::string inv = "Inverse3";
     const Core::LinAlg::Map& oldmap = *(fluid_field()->dof_row_map());
-    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
-        systemmatrix_->matrix(fluid_block_, fluid_block_).epetra_matrix()->RowMap());
+    const Core::LinAlg::Map& newmap =
+        Core::LinAlg::Map(systemmatrix_->matrix(fluid_block_, fluid_block_).row_map());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse3"));
   }
@@ -733,8 +734,8 @@ void FPSI::Monolithic::create_linear_solver()
   {
     std::string inv = "Inverse4";
     const Core::LinAlg::Map& oldmap = *(ale_field()->dof_row_map());
-    const Core::LinAlg::Map& newmap = Core::LinAlg::Map(
-        systemmatrix_->matrix(ale_i_block_, ale_i_block_).epetra_matrix()->RowMap());
+    const Core::LinAlg::Map& newmap =
+        Core::LinAlg::Map(systemmatrix_->matrix(ale_i_block_, ale_i_block_).row_map());
     Core::LinearSolver::Parameters::fix_null_space(
         inv.data(), oldmap, newmap, solver_->params().sublist("Inverse4"));
   }
@@ -1555,7 +1556,7 @@ void FPSI::Monolithic::fpsifd_check()
   iterinc->replace_global_value(0, 0, delta);
 
   // build approximated FD stiffness matrix
-  std::shared_ptr<Epetra_CrsMatrix> stiff_approx = Core::LinAlg::create_matrix(*dof_row_map(), 81);
+  auto stiff_approx = std::make_shared<Core::LinAlg::SparseMatrix>(*dof_row_map(), 81);
 
   // store old rhs
   Core::LinAlg::Vector<double> rhs_old(*dof_row_map(), true);
@@ -1565,7 +1566,7 @@ void FPSI::Monolithic::fpsifd_check()
 
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse = systemmatrix_->merge();
 
-  Core::LinAlg::SparseMatrix sparse_copy(*sparse, Core::LinAlg::DataAccess::Copy);
+  Core::LinAlg::SparseMatrix sparse_crs(*sparse, Core::LinAlg::DataAccess::Copy);
 
 
   std::cout << "\n****************** FPSI finite difference check ******************" << std::endl;
@@ -1600,9 +1601,9 @@ void FPSI::Monolithic::fpsifd_check()
     iterinc_->put_scalar(0.0);  // Useful? depends on solver and more
     poro_field()->clear_poro_iterinc();
     Core::LinAlg::apply_dirichlet_to_system(
-        sparse_copy, *iterinc_, rhs_copy, *zeros_, *fluid_field()->interface()->fsi_cond_map());
+        sparse_crs, *iterinc_, rhs_copy, *zeros_, *fluid_field()->interface()->fsi_cond_map());
     Core::LinAlg::apply_dirichlet_to_system(
-        sparse_copy, *iterinc_, rhs_copy, *zeros_, *combined_dbc_map());
+        sparse_crs, *iterinc_, rhs_copy, *zeros_, *combined_dbc_map());
 
     rhs_copy.update(-1.0, rhs_old, 1.0);  // finite difference approximation of partial derivative
     rhs_copy.scale(-1.0 / delta);
@@ -1623,10 +1624,7 @@ void FPSI::Monolithic::fpsifd_check()
     {
       int j = dof_row_map()->GID(j_loc);
       double value = (rhs_copy)[j_loc];
-      stiff_approx->InsertGlobalValues(
-          j, 1, &value, index);  // int InsertGlobalValues(int GlobalRow, int NumEntries, double*
-                                 // Values, int* Indices);
-
+      stiff_approx->insert_global_values(j, 1, &value, index);
     }  // j-loop (rows)
 
     if (not combined_dbc_map()->MyGID(i) and
@@ -1641,34 +1639,29 @@ void FPSI::Monolithic::fpsifd_check()
   evaluate(iterinc);
   setup_system_matrix();
 
-  int err = stiff_approx->FillComplete();
-  if (err) FOUR_C_THROW("FD_Check: FillComplete failed with err-code: {}", err);
+  stiff_approx->complete();
 
-  Core::LinAlg::SparseMatrix temp(stiff_approx, Core::LinAlg::DataAccess::Copy);
-
-  std::shared_ptr<Epetra_CrsMatrix> stiff_approx_sparse = temp.epetra_matrix();
-
-  std::shared_ptr<Epetra_CrsMatrix> sparse_crs = sparse_copy.epetra_matrix();
+  auto stiff_approx_sparse = std::make_shared<Core::LinAlg::SparseMatrix>(*stiff_approx);
 
   // calc error (subtraction of sparse_crs and stiff_approx_sparse)
   for (int i_loc = 0; i_loc < dofs; i_loc++)
   {
     int i = dof_row_map()->GID(i_loc);
     int length;
-    int numentries = sparse_crs->NumGlobalEntries(i);
+    int numentries = sparse_crs.num_global_entries(i);
     std::vector<double> values(numentries);
     std::vector<int> indices(numentries);
-    sparse_crs->ExtractGlobalRowCopy(i, numentries, length, values.data(), indices.data());
+    sparse_crs.extract_global_row_copy(i, numentries, length, values.data(), indices.data());
 
     for (int k = 0; k < numentries; k++)
     {
       values[k] = -values[k];
     }
 
-    stiff_approx_sparse->SumIntoGlobalValues(i, numentries, values.data(), indices.data());
+    stiff_approx_sparse->sum_into_global_values(i, numentries, values.data(), indices.data());
   }
-  stiff_approx_sparse->FillComplete();
-  sparse_crs->FillComplete();
+  stiff_approx_sparse->complete();
+  sparse_crs.complete();
 
   bool success = true;
   double error_max = 0.0;
@@ -1691,10 +1684,10 @@ void FPSI::Monolithic::fpsifd_check()
 
           // get error_crs entry ij
           int errornumentries;
-          int errorlength = stiff_approx_sparse->NumGlobalEntries(i);
+          int errorlength = stiff_approx_sparse->num_global_entries(i);
           std::vector<double> errorvalues(errorlength);
           std::vector<int> errorindices(errorlength);
-          stiff_approx_sparse->ExtractGlobalRowCopy(
+          stiff_approx_sparse->extract_global_row_copy(
               i, errorlength, errornumentries, errorvalues.data(), errorindices.data());
           for (int k = 0; k < errorlength; ++k)
           {
@@ -1709,10 +1702,10 @@ void FPSI::Monolithic::fpsifd_check()
 
           // get sparse_ij entry ij
           int sparsenumentries;
-          int sparselength = sparse_crs->NumGlobalEntries(i);
+          int sparselength = sparse_crs.num_global_entries(i);
           std::vector<double> sparsevalues(sparselength);
           std::vector<int> sparseindices(sparselength);
-          sparse_crs->ExtractGlobalRowCopy(
+          sparse_crs.extract_global_row_copy(
               i, sparselength, sparsenumentries, sparsevalues.data(), sparseindices.data());
           for (int k = 0; k < sparselength; ++k)
           {
@@ -1726,10 +1719,10 @@ void FPSI::Monolithic::fpsifd_check()
           }
           // get stiff_approx entry ijs
           int approxnumentries;
-          int approxlength = stiff_approx->NumGlobalEntries(i);
+          int approxlength = stiff_approx->num_global_entries(i);
           std::vector<double> approxvalues(approxlength);
           std::vector<int> approxindices(approxlength);
-          stiff_approx->ExtractGlobalRowCopy(
+          stiff_approx->extract_global_row_copy(
               i, approxlength, approxnumentries, approxvalues.data(), approxindices.data());
           for (int k = 0; k < approxlength; ++k)
           {
@@ -1792,29 +1785,27 @@ void FPSI::Monolithic::fpsifd_check()
 }
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void FPSI::Monolithic::extract_columnsfrom_sparse(
-    Epetra_CrsMatrix& src, const Core::LinAlg::Map& colmap, Epetra_CrsMatrix& dst)
+void FPSI::Monolithic::extract_columnsfrom_sparse(Core::LinAlg::SparseMatrix& src,
+    const Core::LinAlg::Map& colmap, Core::LinAlg::SparseMatrix& dst)
 {
-  dst.PutScalar(0.0);  // clear matrix
-  int rows = src.NumGlobalRows();
+  dst.put_scalar(0.0);
+  int rows = src.num_global_rows();
   for (int row = 0; row < rows; ++row)
   {
-    int g_row = src.RangeMap().GID(row);
+    int g_row = src.range_map().GID(row);
     int numentries;
-    int length = src.NumGlobalEntries(g_row);
+    int length = src.num_global_entries(g_row);
     std::vector<double> values(length);
     std::vector<int> indices(length);
-    src.ExtractGlobalRowCopy(g_row, length, numentries, values.data(), indices.data());
-    for (int col = 0; col < length; ++col)  // loop over non-zero columns in active row
+    src.extract_global_row_copy(g_row, length, numentries, values.data(), indices.data());
+    for (int col = 0; col < length; ++col)
     {
       if (colmap.LID(indices[col]) != -1)
       {
-        dst.InsertGlobalValues(
-            g_row, 1, &values[col], &indices[col]);  // add column value of active row!
+        dst.insert_global_values(g_row, 1, &values[col], &indices[col]);
       }
     }
   }
-  return;
 }
 
 /*----------------------------------------------------------------------*/

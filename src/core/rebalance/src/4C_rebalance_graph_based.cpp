@@ -35,7 +35,7 @@ std::pair<std::shared_ptr<Core::LinAlg::Map>, std::shared_ptr<Core::LinAlg::Map>
 Core::Rebalance::rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
     const Teuchos::ParameterList& rebalanceParams,
     const std::shared_ptr<Core::LinAlg::Vector<double>>& initialNodeWeights,
-    const std::shared_ptr<Epetra_CrsMatrix>& initialEdgeWeights,
+    const std::shared_ptr<Core::LinAlg::SparseMatrix>& initialEdgeWeights,
     const std::shared_ptr<Core::LinAlg::MultiVector<double>>& initialNodeCoordinates)
 {
   TEUCHOS_FUNC_TIME_MONITOR("Rebalance::rebalance_node_maps");
@@ -60,7 +60,7 @@ Core::Rebalance::rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
 std::shared_ptr<Core::LinAlg::Graph> Core::Rebalance::rebalance_graph(
     const Core::LinAlg::Graph& initialGraph, const Teuchos::ParameterList& rebalanceParams,
     const std::shared_ptr<Core::LinAlg::Vector<double>>& initialNodeWeights,
-    const std::shared_ptr<Epetra_CrsMatrix>& initialEdgeWeights,
+    const std::shared_ptr<Core::LinAlg::SparseMatrix>& initialEdgeWeights,
     const std::shared_ptr<Core::LinAlg::MultiVector<double>>& initialNodeCoordinates)
 {
   TEUCHOS_FUNC_TIME_MONITOR("Rebalance::RebalanceGraph");
@@ -69,7 +69,7 @@ std::shared_ptr<Core::LinAlg::Graph> Core::Rebalance::rebalance_graph(
   if (initialNodeWeights != nullptr)
     costs.setVertexWeights(Teuchos::rcpFromRef(*initialNodeWeights->get_ptr_of_epetra_vector()));
   if (initialEdgeWeights != nullptr)
-    costs.setGraphEdgeWeights(Teuchos::rcpFromRef(*initialEdgeWeights));
+    costs.setGraphEdgeWeights(Teuchos::rcpFromRef(*initialEdgeWeights->epetra_matrix()));
 
   Teuchos::RCP<Isorropia::Epetra::Partitioner> partitioner;
   if (initialNodeCoordinates)
@@ -117,13 +117,14 @@ Core::Rebalance::rebalance_coordinates(const Core::LinAlg::MultiVector<double>& 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::pair<std::shared_ptr<Core::LinAlg::Vector<double>>, std::shared_ptr<Epetra_CrsMatrix>>
+std::pair<std::shared_ptr<Core::LinAlg::Vector<double>>,
+    std::shared_ptr<Core::LinAlg::SparseMatrix>>
 Core::Rebalance::build_weights(const Core::FE::Discretization& dis)
 {
   const Core::LinAlg::Map* noderowmap = dis.node_row_map();
 
-  std::shared_ptr<Epetra_CrsMatrix> crs_ge_weights =
-      std::make_shared<Epetra_CrsMatrix>(Copy, noderowmap->get_epetra_map(), 15);
+  auto crs_ge_weights =
+      std::make_shared<Core::LinAlg::SparseMatrix>(noderowmap->get_epetra_map(), 15);
   std::shared_ptr<Core::LinAlg::Vector<double>> vweights =
       Core::LinAlg::create_vector(*noderowmap, true);
 
@@ -148,7 +149,7 @@ Core::Rebalance::build_weights(const Core::FE::Discretization& dis)
     // evaluate elements to get their evaluation cost
     ele->nodal_connectivity(edgeweigths_ele, nodeweights_ele);
 
-    Core::LinAlg::assemble(*crs_ge_weights, edgeweigths_ele, lm, lmrowowner, lm);
+    Core::LinAlg::assemble(*crs_ge_weights->epetra_matrix(), edgeweigths_ele, lm, lmrowowner, lm);
     Core::LinAlg::assemble(*vweights, nodeweights_ele, lm, lmrowowner);
   }
 

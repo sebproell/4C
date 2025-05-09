@@ -136,9 +136,9 @@ namespace ScaTra
     void explicit_predictor() const override;
 
     //! extract selected rows from a sparse matrix
-    static void extract_matrix_rows(const Core::LinAlg::SparseMatrix& matrix,  //!< source matrix
-        Core::LinAlg::SparseMatrix& rows,  //!< destination matrix
-        const Core::LinAlg::Map& rowmap    //!< map of matrix rows to be extracted
+    static void extract_matrix_rows(Core::LinAlg::SparseMatrix& matrix,  //!< source matrix
+        Core::LinAlg::SparseMatrix& rows,                                //!< destination matrix
+        const Core::LinAlg::Map& rowmap  //!< map of matrix rows to be extracted
     );
 
     /*!

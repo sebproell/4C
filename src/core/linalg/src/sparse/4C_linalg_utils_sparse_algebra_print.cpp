@@ -9,8 +9,6 @@
 
 #include "4C_linalg_blocksparsematrix.hpp"
 
-#include <Epetra_CrsMatrix.h>
-
 #include <fstream>
 
 FOUR_C_NAMESPACE_OPEN
@@ -18,7 +16,7 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Core::LinAlg::print_matrix_in_matlab_format(
-    const std::string& filename, const Epetra_CrsMatrix& sparsematrix, const bool newfile)
+    const std::string& filename, const Core::LinAlg::SparseMatrix& sparsematrix, const bool newfile)
 {
   const auto& comm = Core::Communication::unpack_epetra_comm(sparsematrix.Comm());
 
@@ -28,13 +26,13 @@ void Core::LinAlg::print_matrix_in_matlab_format(
   // loop over all procs and send row data to proc 0
   for (int iproc = 0; iproc < num_proc; iproc++)
   {
-    int num_rows_iproc = sparsematrix.NumMyRows();
+    int num_rows_iproc = sparsematrix.num_my_rows();
     Core::Communication::broadcast(&num_rows_iproc, 1, iproc, comm);
 
     for (int row_lid_iproc = 0; row_lid_iproc < num_rows_iproc; ++row_lid_iproc)
     {
       // get gid of this row and communicate to all procs
-      int row_gid_iproc = iproc == my_PID ? sparsematrix.GRID(row_lid_iproc) : 0;
+      int row_gid_iproc = iproc == my_PID ? sparsematrix.epetra_matrix()->GRID(row_lid_iproc) : 0;
       Core::Communication::broadcast(&row_gid_iproc, 1, iproc, comm);
 
       // get indices and values of this row and communicate to all procs
@@ -43,11 +41,11 @@ void Core::LinAlg::print_matrix_in_matlab_format(
       std::vector<double> values_iproc;
       if (iproc == my_PID)
       {
-        const int max_num_inidces = sparsematrix.MaxNumEntries();
+        const int max_num_inidces = sparsematrix.max_num_entries();
         indices_iproc.resize(max_num_inidces);
         values_iproc.resize(max_num_inidces);
 
-        sparsematrix.ExtractGlobalRowCopy(row_gid_iproc, max_num_inidces, num_indices_iproc,
+        sparsematrix.extract_global_row_copy(row_gid_iproc, max_num_inidces, num_indices_iproc,
             values_iproc.data(), indices_iproc.data());
       }
       Core::Communication::broadcast(&num_indices_iproc, 1, iproc, comm);
@@ -91,8 +89,7 @@ void Core::LinAlg::print_block_matrix_in_matlab_format(
     for (int col = 0; col < blockmatrix.cols(); col++)
     {
       const auto& sparsematrix = blockmatrix.matrix(row, col);
-      Core::LinAlg::print_matrix_in_matlab_format(
-          filename, *(sparsematrix.epetra_matrix()), ((row == 0) && (col == 0)));
+      print_matrix_in_matlab_format(filename, sparsematrix, ((row == 0) && (col == 0)));
     }
   }
 }
