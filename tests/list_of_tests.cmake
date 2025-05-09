@@ -1963,7 +1963,7 @@ four_c_test_nested_parallelism(sohex8_multiscale_macro_2micro.dat sohex8_multisc
 four_c_test_nested_parallelism(tsi_heatconvection_monolithic.dat tsi_heatconvection_monolithic.dat "")
 
 # testing the whole framework: from pre_exodus and 4C to the post-filter:
-four_c_test_framework(PREFIX tutorial_battery NP 2 USE_PRE_EXODUS)
+four_c_test_framework(PREFIX tutorial_battery NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_battery.e)
 four_c_test_framework(PREFIX tutorial_contact_3d NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_contact_3d.e)
 four_c_test_framework(PREFIX tutorial_fluid NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_fluid.e)
 four_c_test_framework(PREFIX tutorial_fsi NP 2 USE_PRE_EXODUS)
