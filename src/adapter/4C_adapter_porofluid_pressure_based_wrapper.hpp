@@ -24,7 +24,7 @@ namespace Core::FE
 
 namespace PoroPressureBased
 {
-  class TimIntImpl;
+  class PorofluidAlgorithm;
 }
 
 namespace Adapter

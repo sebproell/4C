@@ -28,7 +28,7 @@ namespace Core::FE
 
 namespace PoroPressureBased
 {
-  class TimIntImpl;
+  class PorofluidAlgorithm;
 }
 
 namespace Adapter
@@ -175,9 +175,7 @@ namespace Adapter
 
     // return arterial network time integrator
     virtual std::shared_ptr<Adapter::ArtNet> art_net_tim_int() = 0;
-
-
-  };  // class PoroFluidMultiphase
+  };
 
 }  // namespace Adapter
 

@@ -11,7 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linear_solver_method_linalg.hpp"
-#include "4C_porofluid_pressure_based_timint_implicit.hpp"
+#include "4C_porofluid_pressure_based_algorithm.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -27,7 +27,7 @@ namespace PoroPressureBased
   {
    public:
     //! constructor
-    explicit MeshtyingArtery(TimIntImpl* porofluidmultitimint,
+    explicit MeshtyingArtery(PorofluidAlgorithm* porofluid_algorithm,
         const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams);
 
 
@@ -103,8 +103,8 @@ namespace PoroPressureBased
     std::shared_ptr<const Core::LinAlg::Vector<double>> blood_vessel_volume_fraction();
 
    private:
-    //! porofluid multi time integrator
-    TimIntImpl* porofluidmultitimint_;
+    //! porofluid algorithm
+    PorofluidAlgorithm* porofluid_algorithm_;
 
     //! parameter list of global control problem
     const Teuchos::ParameterList& params_;

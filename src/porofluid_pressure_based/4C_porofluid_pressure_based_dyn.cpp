@@ -13,8 +13,7 @@
 #include "4C_inpar_bio.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
-#include "4C_porofluid_pressure_based_timint_implicit.hpp"
-#include "4C_porofluid_pressure_based_timint_ost.hpp"
+#include "4C_porofluid_pressure_based_algorithm.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
@@ -25,7 +24,7 @@ FOUR_C_NAMESPACE_OPEN
 /*-------------------------------------------------------------------------------*
  | Main control routine for poro fluid multiphase problems           vuong 08/16 |
  *-------------------------------------------------------------------------------*/
-void porofluidmultiphase_dyn(int restart)
+void porofluid_pressure_based_dyn(int restart)
 {
   // define the discretization names
   const std::string fluid_disname = "porofluid";

@@ -12,8 +12,8 @@
 #include "4C_fem_general_node.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io_input_parameter_container.hpp"
+#include "4C_porofluid_pressure_based_algorithm.hpp"
 #include "4C_porofluid_pressure_based_meshtying_strategy_artery.hpp"
-#include "4C_porofluid_pressure_based_timint_implicit.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -21,8 +21,8 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | ctor                                                     vuong 08/16 |
  *----------------------------------------------------------------------*/
-PoroPressureBased::ResultTest::ResultTest(TimIntImpl& porotimint)
-    : Core::Utils::ResultTest("POROFLUIDMULTIPHASE"), porotimint_(porotimint)
+PoroPressureBased::ResultTest::ResultTest(PorofluidAlgorithm& porofluid_algorithm)
+    : Core::Utils::ResultTest("POROFLUIDMULTIPHASE"), porofluid_algorithm_(porofluid_algorithm)
 {
   return;
 }
@@ -36,30 +36,30 @@ void PoroPressureBased::ResultTest::test_node(
 {
   // care for the case of multiple discretizations of the same field type
   std::string dis = container.get<std::string>("DIS");
-  if (dis != porotimint_.discretization()->name()) return;
+  if (dis != porofluid_algorithm_.discretization()->name()) return;
 
   int node = container.get<int>("NODE");
   node -= 1;
 
-  int havenode(porotimint_.discretization()->have_global_node(node));
+  int havenode(porofluid_algorithm_.discretization()->have_global_node(node));
   int isnodeofanybody(0);
   Core::Communication::sum_all(
-      &havenode, &isnodeofanybody, 1, porotimint_.discretization()->get_comm());
+      &havenode, &isnodeofanybody, 1, porofluid_algorithm_.discretization()->get_comm());
 
   if (isnodeofanybody == 0)
   {
     FOUR_C_THROW("Node {} does not belong to discretization {}", node + 1,
-        porotimint_.discretization()->name());
+        porofluid_algorithm_.discretization()->name());
   }
   else
   {
-    if (porotimint_.discretization()->have_global_node(node))
+    if (porofluid_algorithm_.discretization()->have_global_node(node))
     {
-      Core::Nodes::Node* actnode = porotimint_.discretization()->g_node(node);
+      Core::Nodes::Node* actnode = porofluid_algorithm_.discretization()->g_node(node);
 
       // Here we are just interested in the nodes that we own (i.e. a row node)!
       if (actnode->owner() !=
-          Core::Communication::my_mpi_rank(porotimint_.discretization()->get_comm()))
+          Core::Communication::my_mpi_rank(porofluid_algorithm_.discretization()->get_comm()))
         return;
 
       // extract name of quantity to be tested
@@ -85,30 +85,31 @@ void PoroPressureBased::ResultTest::test_element(
   // care for the case of multiple discretizations of the same field type
   std::string dis = container.get<std::string>("DIS");
 
-  if (dis != porotimint_.discretization()->name()) return;
+  if (dis != porofluid_algorithm_.discretization()->name()) return;
 
   int element = container.get<int>("ELEMENT");
   element -= 1;
 
-  int haveelement(porotimint_.discretization()->have_global_element(element));
+  int haveelement(porofluid_algorithm_.discretization()->have_global_element(element));
   int iselementofanybody(0);
   Core::Communication::sum_all(
-      &haveelement, &iselementofanybody, 1, porotimint_.discretization()->get_comm());
+      &haveelement, &iselementofanybody, 1, porofluid_algorithm_.discretization()->get_comm());
 
   if (iselementofanybody == 0)
   {
     FOUR_C_THROW("Element {} does not belong to discretization {}", element + 1,
-        porotimint_.discretization()->name());
+        porofluid_algorithm_.discretization()->name());
   }
   else
   {
-    if (porotimint_.discretization()->have_global_element(element))
+    if (porofluid_algorithm_.discretization()->have_global_element(element))
     {
-      const Core::Elements::Element* actelement = porotimint_.discretization()->g_element(element);
+      const Core::Elements::Element* actelement =
+          porofluid_algorithm_.discretization()->g_element(element);
 
       // Here we are just interested in the elements that we own (i.e. a row element)!
       if (actelement->owner() !=
-          Core::Communication::my_mpi_rank(porotimint_.discretization()->get_comm()))
+          Core::Communication::my_mpi_rank(porofluid_algorithm_.discretization()->get_comm()))
         return;
 
       // extract name of quantity to be tested
@@ -134,11 +135,12 @@ double PoroPressureBased::ResultTest::result_node(
   double result(0.);
 
   // extract row map from solution vector
-  const Epetra_BlockMap& phinpmap = porotimint_.phinp()->get_block_map();
+  const Epetra_BlockMap& phinpmap = porofluid_algorithm_.phinp()->get_block_map();
 
   // test result value of phi field
   if (quantity == "phi")
-    result = (*porotimint_.phinp())[phinpmap.LID(porotimint_.discretization()->dof(0, node, 0))];
+    result = (*porofluid_algorithm_
+            .phinp())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, 0))];
 
   // test result value for a system of scalars
   else if (!quantity.compare(0, 3, "phi"))
@@ -149,16 +151,18 @@ double PoroPressureBased::ResultTest::result_node(
     int k = strtol(k_string.c_str(), &locator, 10) - 1;
     if (locator == k_string.c_str()) FOUR_C_THROW("Couldn't read species ID!");
 
-    if (porotimint_.discretization()->num_dof(0, node) <= k)
+    if (porofluid_algorithm_.discretization()->num_dof(0, node) <= k)
       FOUR_C_THROW("Species ID is larger than number of DOFs of node!");
 
     // extract result
-    result = (*porotimint_.phinp())[phinpmap.LID(porotimint_.discretization()->dof(0, node, k))];
+    result = (*porofluid_algorithm_
+            .phinp())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, k))];
   }
 
   // test result value of phi field
   else if (quantity == "pressure")
-    result = (*porotimint_.pressure())[phinpmap.LID(porotimint_.discretization()->dof(0, node, 0))];
+    result = (*porofluid_algorithm_
+            .pressure())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, 0))];
 
   // test result value for a system of scalars
   else if (!quantity.compare(0, 8, "pressure"))
@@ -169,17 +173,18 @@ double PoroPressureBased::ResultTest::result_node(
     int k = strtol(k_string.c_str(), &locator, 10) - 1;
     if (locator == k_string.c_str()) FOUR_C_THROW("Couldn't read pressure ID!");
 
-    if (porotimint_.discretization()->num_dof(0, node) <= k)
+    if (porofluid_algorithm_.discretization()->num_dof(0, node) <= k)
       FOUR_C_THROW("Pressure ID is larger than number of DOFs of node!");
 
     // extract result
-    result = (*porotimint_.pressure())[phinpmap.LID(porotimint_.discretization()->dof(0, node, k))];
+    result = (*porofluid_algorithm_
+            .pressure())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, k))];
   }
 
   // test result value of phi field
   else if (quantity == "saturation")
-    result =
-        (*porotimint_.saturation())[phinpmap.LID(porotimint_.discretization()->dof(0, node, 0))];
+    result = (*porofluid_algorithm_
+            .saturation())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, 0))];
 
   // test result value for a system of scalars
   else if (!quantity.compare(0, 10, "saturation"))
@@ -190,12 +195,12 @@ double PoroPressureBased::ResultTest::result_node(
     int k = strtol(k_string.c_str(), &locator, 10) - 1;
     if (locator == k_string.c_str()) FOUR_C_THROW("Couldn't read saturation ID!");
 
-    if (porotimint_.discretization()->num_dof(0, node) <= k)
+    if (porofluid_algorithm_.discretization()->num_dof(0, node) <= k)
       FOUR_C_THROW("Saturation ID is larger than number of DOFs of node!");
 
     // extract result
-    result =
-        (*porotimint_.saturation())[phinpmap.LID(porotimint_.discretization()->dof(0, node, k))];
+    result = (*porofluid_algorithm_
+            .saturation())[phinpmap.LID(porofluid_algorithm_.discretization()->dof(0, node, k))];
   }
 
   // catch unknown quantity strings
@@ -216,9 +221,8 @@ double PoroPressureBased::ResultTest::result_element(
 
   if (quantity == "bloodvesselvolfrac")
   {
-    result = (*porotimint_.mesh_tying_strategy()
-            ->blood_vessel_volume_fraction())[porotimint_.discretization()->element_row_map()->LID(
-        element->id())];
+    result = (*porofluid_algorithm_.mesh_tying_strategy()->blood_vessel_volume_fraction())
+        [porofluid_algorithm_.discretization()->element_row_map()->LID(element->id())];
   }
   else if (!quantity.compare(0, 13, "phasevelocity"))
   {
@@ -239,9 +243,9 @@ double PoroPressureBased::ResultTest::result_element(
     else if (!quantity.compare(14, 15, "z"))
       idx_dim = 2;
 
-    result = ((*porotimint_.phase_velocity())(
+    result = ((*porofluid_algorithm_.phase_velocity())(
         idx_poro_dof * num_dim +
-        idx_dim))[porotimint_.discretization()->element_row_map()->LID(element->id())];
+        idx_dim))[porofluid_algorithm_.discretization()->element_row_map()->LID(element->id())];
   }
   // catch unknown quantity strings
   else
@@ -257,7 +261,7 @@ void PoroPressureBased::ResultTest::test_special(
     const Core::IO::InputParameterContainer& container, int& nerr, int& test_count)
 {
   // make sure that quantity is tested only once
-  if (Core::Communication::my_mpi_rank(porotimint_.discretization()->get_comm()) == 0)
+  if (Core::Communication::my_mpi_rank(porofluid_algorithm_.discretization()->get_comm()) == 0)
   {
     // extract name of quantity to be tested
     std::string quantity = container.get<std::string>("QUANTITY");
@@ -283,7 +287,7 @@ double PoroPressureBased::ResultTest::result_special(
   // initialize variable for result
   double result(0.);
 
-  if (quantity == "numiterlastnewton") result = (double)porotimint_.iter_num();
+  if (quantity == "numiterlastnewton") result = (double)porofluid_algorithm_.iter_num();
   // result test of domain integrals
   else if (!quantity.compare(0, 22, "domain_integral_value_"))
   {
@@ -303,12 +307,12 @@ double PoroPressureBased::ResultTest::result_special(
     }
 
     // index should be in range [0, number_functions - 1]
-    if (idx < 0 || idx >= porotimint_.num_domain_int_functions())
+    if (idx < 0 || idx >= porofluid_algorithm_.num_domain_int_functions())
       FOUR_C_THROW("detected wrong index {}, index should be in range [0,{}]", idx,
-          porotimint_.num_domain_int_functions() - 1);
+          porofluid_algorithm_.num_domain_int_functions() - 1);
 
     // return the result
-    result = (*porotimint_.domain_int_values())[idx];
+    result = (*porofluid_algorithm_.domain_int_values())[idx];
   }
   // catch unknown quantity strings
   else

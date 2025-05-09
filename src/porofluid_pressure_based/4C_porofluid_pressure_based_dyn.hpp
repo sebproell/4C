@@ -14,7 +14,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 /*! entry point for the solution of Lubrication problems */
-void porofluidmultiphase_dyn(int restart /* do we have to perform a restart?  */
+void porofluid_pressure_based_dyn(int restart /* do we have to perform a restart?  */
 );
 
 

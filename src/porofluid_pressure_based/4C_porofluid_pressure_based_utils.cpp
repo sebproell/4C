@@ -20,7 +20,7 @@
 #include "4C_mat_cnst_1d_art.hpp"
 #include "4C_mat_material_factory.hpp"
 #include "4C_material_base.hpp"
-#include "4C_porofluid_pressure_based_timint_ost.hpp"
+#include "4C_porofluid_pressure_based_algorithm.hpp"
 #include "4C_rebalance_binning_based.hpp"
 #include "4C_rebalance_print.hpp"
 
@@ -177,7 +177,7 @@ std::shared_ptr<Adapter::PoroFluidMultiphase> PoroPressureBased::create_algorith
     case TimeIntegrationScheme::one_step_theta:
     {
       // create algorithm
-      algo = std::make_shared<TimIntOneStepTheta>(
+      algo = std::make_shared<PorofluidAlgorithm>(
           dis, linsolvernumber, probparams, poroparams, output);
       break;
     }
