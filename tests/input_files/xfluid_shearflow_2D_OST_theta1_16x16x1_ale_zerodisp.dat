@@ -94,7 +94,6 @@ SOLVER                          Belos
 AZOUTPUT                        100
 AZSOLVE                         GMRES
 AZPREC                          ILU
-IFPACK_XML_FILE                 xml/preconditioner/ifpack.xml
 --------------------------------------------------------------------SOLVER 2
 NAME                            ALE_Solver
 SOLVER                          Belos

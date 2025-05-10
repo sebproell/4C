@@ -62,7 +62,6 @@ CONVTOL                         1e-8
 --------------------------------------------------------------------SOLVER 1
 NAME                            solver
 SOLVER                          UMFPACK
-IFPACK_XML_FILE                 xml/preconditioner/ifpack.xml
 --------------------------------------------------------------------SOLVER 2
 NAME                            L2-projection solver for fluxes/pressure gradient
 SOLVER                          Belos

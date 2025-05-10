@@ -61,7 +61,6 @@ SOLVER                          UMFPACK
 AZCONV                          AZ_r0
 AZITER                          1000
 AZOUTPUT                        0
-IFPACK_XML_FILE                 xml/preconditioner/ifpack.xml
 AZPREC                          ILU
 AZREUSE                         4
 AZSOLVE                         GMRES
