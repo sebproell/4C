@@ -35,7 +35,6 @@ void PARTICLEENGINE::read_particles(Core::IO::InputFile& input, const std::strin
     if (!any_particles_read) Core::IO::cout << "Read and create particles\n" << Core::IO::flush;
     any_particles_read = true;
 
-    double t1 = time.totalElapsedTime(true);
     {
       PARTICLEENGINE::TypeEnum particletype;
       PARTICLEENGINE::ParticleStates particlestates;
@@ -112,13 +111,6 @@ void PARTICLEENGINE::read_particles(Core::IO::InputFile& input, const std::strin
       // construct and store read in particle object
       particles.emplace_back(
           std::make_shared<PARTICLEENGINE::ParticleObject>(particletype, -1, particlestates));
-    }
-
-    double t2 = time.totalElapsedTime(true);
-    if (!myrank)
-    {
-      printf("reading %10.5e secs\n", t2 - t1);
-      fflush(stdout);
     }
   }
 
