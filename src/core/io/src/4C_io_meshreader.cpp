@@ -51,7 +51,7 @@ namespace Core::IO::Internal
     /**
      * The actual exodus mesh object. This is only created on rank 0.
      */
-    std::unique_ptr<Exodus::Mesh> mesh_on_rank_zero{};
+    std::shared_ptr<Exodus::Mesh> mesh_on_rank_zero{};
   };
 }  // namespace Core::IO::Internal
 
@@ -802,7 +802,7 @@ namespace
 
   void read_mesh_from_exodus(const Core::IO::InputFile& input,
       Core::IO::Internal::ExodusReader& exodus_reader,
-      const Core::IO::MeshReader::MeshReaderParameters& parameters, MPI_Comm comm)
+      const Core::IO::MeshReader::MeshReaderParameters& parameters, int& ele_count, MPI_Comm comm)
   {
     TEUCHOS_FUNC_TIME_MONITOR("Core::IO::MeshReader::read_mesh_from_exodus");
     auto my_rank = Core::Communication::my_mpi_rank(comm);
@@ -815,38 +815,31 @@ namespace
     // All the work is done on rank 0. The other ranks will receive the data.
     if (my_rank == 0)
     {
-      if (!input.has_section(exodus_reader.section_name)) return;
+      // Initial implementation:
+      // - read all information on rank 0, construct discretization, rebalance afterwards
+
+      FOUR_C_ASSERT(exodus_reader.mesh_on_rank_zero != nullptr, "Internal error.");
+      const auto& mesh = *exodus_reader.mesh_on_rank_zero;
 
       Core::IO::InputParameterContainer data;
       input.match_section(exodus_reader.section_name, data);
 
       const auto& geometry_data = data.group(exodus_reader.section_name);
-      const auto& exodus_file = geometry_data.get<std::filesystem::path>("FILE");
-      exodus_reader.mesh_on_rank_zero = std::make_unique<Core::IO::Exodus::Mesh>(
-          exodus_file.string(), Core::IO::Exodus::MeshParameters{
-                                    // We internally depend on node numbers starting at 0.
-                                    .node_start_id = 0,
-                                });
-      const auto& mesh = *exodus_reader.mesh_on_rank_zero;
-
-      // Initial implementation:
-      // - read all information on rank 0, construct discretization, rebalance afterwards
-
       const auto& element_block_data = geometry_data.get_list("ELEMENT_BLOCKS");
 
-      // Exodus does not number elements internally. We number the elements in the order we
-      // encounter them in the blocks.
-      int ele_count = 0;
+      std::vector<int> skipped_blocks;
+      int ele_count_before = ele_count;
       for (const auto& [eb_id, eb] : mesh.get_element_blocks())
       {
         // Look into the input file to find out which elements we need to assign to this block.
         const int eb_id_copy = eb_id;  // work around compiler warning in clang18
         auto current_block_data = std::ranges::find_if(element_block_data,
             [eb_id_copy](const auto& e) { return e.template get<int>("ID") == eb_id_copy; });
-        FOUR_C_ASSERT_ALWAYS(current_block_data != element_block_data.end(),
-            "The exodus file contains element block {} but you did not specify information for "
-            "this block in the input file.",
-            eb_id);
+        if (current_block_data == element_block_data.end())
+        {
+          skipped_blocks.emplace_back(eb_id);
+          continue;
+        }
 
         const auto& element_name = current_block_data->get<std::string>("ELEMENT_NAME");
         const auto cell_type = eb.get_shape();
@@ -884,13 +877,19 @@ namespace
         }
       }
 
-      int num_ele = mesh.get_num_ele();
-      Core::Communication::broadcast(num_ele, 0, comm);
-      linear_element_map = std::make_unique<Core::LinAlg::Map>(
-          num_ele, 0, Core::Communication::as_epetra_comm(comm));
+      int num_read_ele = ele_count - ele_count_before;
+      FOUR_C_ASSERT_ALWAYS(num_read_ele > 0,
+          "No element block of the mesh was used. This does not make any sense. "
+          "If you supply an Exodus mesh file, you need to use at least one of its blocks.");
 
-      std::vector<int> gid_list(mesh.get_num_ele());
-      std::iota(gid_list.begin(), gid_list.end(), 0);
+      int first_ele_id = ele_count_before;
+      Core::Communication::broadcast(num_read_ele, 0, comm);
+      Core::Communication::broadcast(first_ele_id, 0, comm);
+      linear_element_map = std::make_unique<Core::LinAlg::Map>(
+          num_read_ele, ele_count_before, Core::Communication::as_epetra_comm(comm));
+
+      std::vector<int> gid_list(num_read_ele);
+      std::iota(gid_list.begin(), gid_list.end(), ele_count_before);
       exodus_reader.target_discretization.proc_zero_distribute_elements_to_all(
           *linear_element_map, gid_list);
 
@@ -905,10 +904,12 @@ namespace
     // Other ranks
     else
     {
-      int num_ele;
-      Core::Communication::broadcast(num_ele, 0, comm);
+      int num_read_ele;
+      int first_ele_id;
+      Core::Communication::broadcast(num_read_ele, 0, comm);
+      Core::Communication::broadcast(first_ele_id, 0, comm);
       linear_element_map = std::make_unique<Core::LinAlg::Map>(
-          num_ele, 0, Core::Communication::as_epetra_comm(comm));
+          num_read_ele, first_ele_id, Core::Communication::as_epetra_comm(comm));
 
       std::vector<int> gid_list;
       exodus_reader.target_discretization.proc_zero_distribute_elements_to_all(
@@ -1023,9 +1024,46 @@ void Core::IO::MeshReader::read_and_partition()
     max_node_id = domain_reader.my_dis()->node_row_map()->MaxAllGID() + 1;
   }
 
+  // First, we look at all the mesh files we are going to read and determine if they are
+  // duplicated. For now, we only support the case where all files are the same.
+  if (Core::Communication::my_mpi_rank(comm_) == 0)
+  {
+    // We only support one mesh file at the moment. We check if all the files are the same.
+    std::shared_ptr<Exodus::Mesh> mesh;
+    std::filesystem::path mesh_file;
+    for (auto& exodus_reader : exodus_readers_)
+    {
+      FOUR_C_ASSERT(input_.has_section(exodus_reader->section_name), "Internal error.");
+
+      Core::IO::InputParameterContainer data;
+      input_.match_section(exodus_reader->section_name, data);
+
+      const auto& geometry_data = data.group(exodus_reader->section_name);
+      const auto& exodus_file = geometry_data.get<std::filesystem::path>("FILE");
+      if (mesh)
+      {
+        FOUR_C_ASSERT_ALWAYS(mesh_file == exodus_file,
+            "All Exodus mesh input must come from the same file. Found different files '{}' and "
+            "'{}'.",
+            exodus_file.string(), mesh_file.string());
+      }
+      else
+      {
+        mesh_file = exodus_file;
+        mesh = std::make_unique<Core::IO::Exodus::Mesh>(
+            exodus_file.string(), Core::IO::Exodus::MeshParameters{
+                                      // We internally depend on node numbers starting at 0.
+                                      .node_start_id = 0,
+                                  });
+      }
+      exodus_reader->mesh_on_rank_zero = mesh;
+    }
+  }
+
+  int ele_count = 0;
   for (auto& exodus_reader : exodus_readers_)
   {
-    read_mesh_from_exodus(input_, *exodus_reader, parameters_, comm_);
+    read_mesh_from_exodus(input_, *exodus_reader, parameters_, ele_count, comm_);
   }
 }
 
@@ -1037,11 +1075,17 @@ MPI_Comm Core::IO::MeshReader::get_comm() const { return comm_; }
 
 const Core::IO::Exodus::Mesh* Core::IO::MeshReader::get_exodus_mesh_on_rank_zero() const
 {
-  if (exodus_readers_.size() == 1)
-  {
-    return exodus_readers_.front()->mesh_on_rank_zero.get();
-  }
-  return nullptr;
+  if (exodus_readers_.empty()) return nullptr;
+
+  FOUR_C_ASSERT(std::ranges::all_of(exodus_readers_,
+                    [&](const auto& exodus_reader)
+                    {
+                      return exodus_reader->mesh_on_rank_zero ==
+                             exodus_readers_.front()->mesh_on_rank_zero;
+                    }),
+      "Internal error: all meshes are supposed to be the same.");
+
+  return exodus_readers_.front()->mesh_on_rank_zero.get();
 }
 
 FOUR_C_NAMESPACE_CLOSE

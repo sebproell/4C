@@ -71,7 +71,7 @@ namespace Core::IO::Exodus
     const std::map<int, ElementBlock>& get_element_blocks() const { return element_blocks_; }
 
     //! Get Number of ElementBlocks
-    int get_num_element_blocks() const { return element_blocks_.size(); }
+    std::size_t get_num_element_blocks() const { return element_blocks_.size(); }
 
     //! Get one ElementBlock
     const ElementBlock& get_element_block(const int id) const;
