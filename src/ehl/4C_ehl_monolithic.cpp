@@ -1290,26 +1290,24 @@ void EHL::Monolithic::scale_system(
 
   if (scaling_infnorm)
   {
-    // The matrices are modified here. Do we have to change them back later on?
+    // TODO: The matrices are modified here. Do we have to change them back later on?
 
-    std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
-    srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*srowsum_->get_ptr_of_epetra_vector());
-    A->InvColSums(*scolsum_->get_ptr_of_epetra_vector());
-    if ((A->LeftScale(*srowsum_)) or (A->RightScale(*scolsum_)) or
-        (mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_)) or
-        (mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_)))
+    Core::LinAlg::SparseMatrix& A_00 = mat.matrix(0, 0);
+    srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A_00.row_map(), false);
+    scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A_00.row_map(), false);
+    A_00.inv_row_sums(*srowsum_);
+    A_00.inv_col_sums(*scolsum_);
+    if (A_00.left_scale(*srowsum_) or A_00.right_scale(*scolsum_) or
+        mat.matrix(0, 1).left_scale(*srowsum_) or mat.matrix(1, 0).right_scale(*scolsum_))
       FOUR_C_THROW("structure scaling failed");
 
-    A = mat.matrix(1, 1).epetra_matrix();
-    lrowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    lcolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*lrowsum_->get_ptr_of_epetra_vector());
-    A->InvColSums(*lcolsum_->get_ptr_of_epetra_vector());
-    if ((A->LeftScale(*lrowsum_)) or (A->RightScale(*lcolsum_)) or
-        (mat.matrix(1, 0).epetra_matrix()->LeftScale(*lrowsum_)) or
-        (mat.matrix(0, 1).epetra_matrix()->RightScale(*lcolsum_)))
+    Core::LinAlg::SparseMatrix& A_11 = mat.matrix(1, 1);
+    lrowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A_11.row_map(), false);
+    lcolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A_11.row_map(), false);
+    A_11.inv_row_sums(*lrowsum_);
+    A_11.inv_col_sums(*lcolsum_);
+    if (A_11.left_scale(*lrowsum_) or A_11.right_scale(*lcolsum_) or
+        mat.matrix(1, 0).left_scale(*lrowsum_) or mat.matrix(0, 1).right_scale(*lcolsum_))
       FOUR_C_THROW("lubrication scaling failed");
 
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor()->extract_vector(b, 0);
@@ -1321,7 +1319,7 @@ void EHL::Monolithic::scale_system(
     extractor()->insert_vector(*sx, 0, b);
     extractor()->insert_vector(*lx, 1, b);
   }
-}  // scale_system
+}
 
 
 /*----------------------------------------------------------------------*
@@ -1353,25 +1351,21 @@ void EHL::Monolithic::unscale_solution(Core::LinAlg::BlockSparseMatrixBase& mat,
     extractor()->insert_vector(*sx, 0, b);
     extractor()->insert_vector(*lx, 1, b);
 
-    std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
+    Core::LinAlg::SparseMatrix& A_00 = mat.matrix(0, 0);
     srowsum_->reciprocal(*srowsum_);
     scolsum_->reciprocal(*scolsum_);
-    if ((A->LeftScale(*srowsum_)) or (A->RightScale(*scolsum_)) or
-        (mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_)) or
-        (mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_)))
+    if (A_00.left_scale(*srowsum_) or A_00.right_scale(*scolsum_) or
+        mat.matrix(0, 1).left_scale(*srowsum_) or mat.matrix(1, 0).right_scale(*scolsum_))
       FOUR_C_THROW("structure scaling failed");
 
-    A = mat.matrix(1, 1).epetra_matrix();
+    Core::LinAlg::SparseMatrix& A_11 = mat.matrix(1, 1);
     lrowsum_->reciprocal(*lrowsum_);
     lcolsum_->reciprocal(*lcolsum_);
-    if ((A->LeftScale(*lrowsum_)) or (A->RightScale(*lcolsum_)) or
-        (mat.matrix(1, 0).epetra_matrix()->LeftScale(*lrowsum_)) or
-        (mat.matrix(0, 1).epetra_matrix()->RightScale(*lcolsum_)))
+    if (A_11.left_scale(*lrowsum_) or A_11.right_scale(*lcolsum_) or
+        mat.matrix(1, 0).left_scale(*lrowsum_) or mat.matrix(0, 1).right_scale(*lcolsum_))
       FOUR_C_THROW("lubrication scaling failed");
-
-  }  // if (scaling_infnorm)
-
-}  // unscale_solution()
+  }
+}
 
 
 /*----------------------------------------------------------------------*
@@ -1885,15 +1879,11 @@ void EHL::Monolithic::lin_couette_force_pres(
  *----------------------------------------------------------------------*/
 void EHL::Monolithic::apply_dbc()
 {
-  std::shared_ptr<Core::LinAlg::SparseMatrix> k_ss =
-      std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(0, 0).epetra_matrix(),
-          Core::LinAlg::DataAccess::Copy, true, false, Core::LinAlg::SparseMatrix::CRS_MATRIX);
-  std::shared_ptr<Core::LinAlg::SparseMatrix> k_sl =
-      std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(0, 1));
-  std::shared_ptr<Core::LinAlg::SparseMatrix> k_ls =
-      std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(1, 0));
-  std::shared_ptr<Core::LinAlg::SparseMatrix> k_ll =
-      std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(1, 1));
+  auto k_ss = std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(0, 0));
+  auto k_sl = std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(0, 1));
+  auto k_ls = std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(1, 0));
+  auto k_ll = std::make_shared<Core::LinAlg::SparseMatrix>(systemmatrix_->matrix(1, 1));
+
   k_ss->apply_dirichlet(*structure_field()->get_dbc_map_extractor()->cond_map(), true);
   k_sl->apply_dirichlet(*structure_field()->get_dbc_map_extractor()->cond_map(), false);
   k_ls->apply_dirichlet(

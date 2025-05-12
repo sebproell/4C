@@ -415,15 +415,13 @@ void SSI::MeshtyingStrategyBase::finalize_meshtying_structure_matrix(
     {
       const int rowlid_slave = ssi_structure_matrix.row_map().LID(dofgid_slave);
       if (rowlid_slave < 0) FOUR_C_THROW("Global ID not found!");
-      if (ssi_structure_matrix.epetra_matrix()->ReplaceMyValues(
-              rowlid_slave, 1, &one, &rowlid_slave))
+      if (ssi_structure_matrix.replace_my_values(rowlid_slave, 1, &one, &rowlid_slave))
         FOUR_C_THROW("ReplaceMyValues failed!");
     }
 
     // apply pseudo Dirichlet conditions to unfilled matrix, i.e., to global row and column indices
     else
-      ssi_structure_matrix.epetra_matrix()->InsertGlobalValues(
-          dofgid_slave, 1, &one, &dofgid_slave);
+      ssi_structure_matrix.insert_global_values(dofgid_slave, 1, &one, &dofgid_slave);
   }
 }
 

@@ -202,8 +202,7 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
           {
             std::string inv = "Inverse1";
             const Core::LinAlg::Map& oldmap = *(dofrowmap_);
-            const Core::LinAlg::Map& newmap =
-                Core::LinAlg::Map(matsolve->matrix(0, 0).epetra_matrix()->RowMap());
+            const Core::LinAlg::Map& newmap = Core::LinAlg::Map(matsolve->matrix(0, 0).row_map());
             Core::LinearSolver::Parameters::fix_null_space(
                 inv.data(), oldmap, newmap, solver_.params().sublist("Inverse1"));
             std::cout << std::endl;
@@ -212,8 +211,7 @@ void FLD::Meshtying::setup_meshtying(const std::vector<int>& coupleddof, const b
           {
             std::string inv = "Inverse2";
             const Core::LinAlg::Map& oldmap = *(dofrowmap_);
-            const Core::LinAlg::Map& newmap =
-                Core::LinAlg::Map(matsolve->matrix(1, 1).epetra_matrix()->RowMap());
+            const Core::LinAlg::Map& newmap = Core::LinAlg::Map(matsolve->matrix(1, 1).row_map());
             Core::LinearSolver::Parameters::fix_null_space(
                 inv.data(), oldmap, newmap, solver_.params().sublist("Inverse2"));
             std::cout << std::endl;
@@ -1455,7 +1453,6 @@ void FLD::Meshtying::analyze_matrix(Core::LinAlg::SparseMatrix& sparsematrix)
 {
   double localmatrixentries = 0.0;
   double parmatrixentries = 0.0;
-  std::shared_ptr<Epetra_CrsMatrix> matrix = sparsematrix.epetra_matrix();
   {
     // number of row elements
     const int numdofrows = sparsematrix.row_map().NumMyElements();
@@ -1463,14 +1460,14 @@ void FLD::Meshtying::analyze_matrix(Core::LinAlg::SparseMatrix& sparsematrix)
     for (int i = 0; i < numdofrows; ++i)
     {
       // max. number of non-zero values
-      int maxnumentries = matrix->MaxNumEntries();
+      int maxnumentries = sparsematrix.max_num_entries();
       int numOfNonZeros = 0;
       std::vector<int> indices(maxnumentries, 0);
       std::vector<double> values(maxnumentries, 0.0);
 
-      int error =
-          matrix->ExtractMyRowCopy(i, maxnumentries, numOfNonZeros, values.data(), indices.data());
-      if (error != 0) FOUR_C_THROW("Epetra_CrsMatrix::ExtractMyRowCopy returned err={}", error);
+      int error = sparsematrix.extract_my_row_copy(
+          i, maxnumentries, numOfNonZeros, values.data(), indices.data());
+      if (error != 0) FOUR_C_THROW("extract_my_row_copy() returned err={}", error);
 
       for (int ii = 0; ii < numOfNonZeros; ii++)
       {
@@ -1480,11 +1477,11 @@ void FLD::Meshtying::analyze_matrix(Core::LinAlg::SparseMatrix& sparsematrix)
 
     Core::Communication::sum_all(&localmatrixentries, &parmatrixentries, 1, discret_->get_comm());
   }
-  double normfrob = matrix->NormFrobenius();
-  double norminf = matrix->NormInf();
-  double normone = matrix->NormOne();
-  double matrixsize = matrix->NumGlobalRows() * matrix->NumGlobalCols();
-  double nonzero = matrix->NumGlobalNonzeros();
+  double normfrob = sparsematrix.norm_frobenius();
+  double norminf = sparsematrix.NormInf();
+  double normone = sparsematrix.norm_one();
+  double matrixsize = sparsematrix.num_global_rows() * sparsematrix.num_global_cols();
+  double nonzero = sparsematrix.num_global_nonzeros();
 
   if (myrank_ == 0)
   {

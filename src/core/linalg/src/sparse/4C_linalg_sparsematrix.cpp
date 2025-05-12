@@ -7,6 +7,7 @@
 
 #include "4C_linalg_sparsematrix.hpp"
 
+#include "4C_linalg_sparsematrixbase.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 
@@ -67,6 +68,30 @@ Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap, const 
   else
     FOUR_C_THROW("matrix type is not correct");
 }
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap,
+    const Core::LinAlg::Map& colmap, const int npr, bool explicitdirichlet, bool savegraph,
+    MatrixType matrixtype)
+    : graph_(nullptr),
+      dbcmaps_(nullptr),
+      explicitdirichlet_(explicitdirichlet),
+      savegraph_(savegraph),
+      matrixtype_(matrixtype)
+{
+  if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map is not unique");
+
+  if (matrixtype_ == CRS_MATRIX)
+    sysmat_ = std::make_shared<Epetra_CrsMatrix>(
+        ::Copy, rowmap.get_epetra_map(), colmap.get_epetra_map(), npr, false);
+  else if (matrixtype_ == FE_MATRIX)
+    sysmat_ = std::make_shared<Epetra_FECrsMatrix>(
+        ::Copy, rowmap.get_epetra_map(), colmap.get_epetra_map(), npr, false);
+  else
+    FOUR_C_THROW("matrix type is not correct");
+}
+
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 Core::LinAlg::SparseMatrix::SparseMatrix(const Core::LinAlg::Map& rowmap,

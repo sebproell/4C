@@ -1894,20 +1894,14 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
   std::shared_ptr<Core::LinAlg::Vector<double>> residual_col =
       Core::LinAlg::create_vector(*(facediscret_->dof_col_map()), true);
 
-
-  std::shared_ptr<Epetra_FECrsMatrix> sysmat_FE;
+  std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_linalg;
   if (systemmatrix1 != nullptr)
   {
-    sysmat_FE =
-        std::make_shared<Epetra_FECrsMatrix>(::Copy, systemmatrix1->OperatorRangeMap(), 256, false);
+    sysmat_linalg = std::make_shared<Core::LinAlg::SparseMatrix>(
+        systemmatrix1->OperatorRangeMap(), 256, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
   }
   else
     FOUR_C_THROW("sysmat is nullptr!");
-
-  std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_linalg =
-      std::make_shared<Core::LinAlg::SparseMatrix>(
-          std::static_pointer_cast<Epetra_CrsMatrix>(sysmat_FE), Core::LinAlg::DataAccess::View,
-          true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
   const int numrowintfaces = facediscret_->num_my_row_faces();
 

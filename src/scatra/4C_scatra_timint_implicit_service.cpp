@@ -1448,9 +1448,9 @@ void ScaTra::ScaTraTimIntImpl::avm3_scaling(Teuchos::ParameterList& eleparams)
 
   // left and right scaling of normalized fine-scale subgrid-viscosity matrix
   ierr = sysmat_sd_->left_scale(*subgrdiff_);
-  if (ierr) FOUR_C_THROW("Epetra_CrsMatrix::LeftScale returned err={}", ierr);
+  if (ierr) FOUR_C_THROW("left_scale() returned err={}", ierr);
   ierr = sysmat_sd_->right_scale(*subgrdiff_);
-  if (ierr) FOUR_C_THROW("Epetra_CrsMatrix::RightScale returned err={}", ierr);
+  if (ierr) FOUR_C_THROW("right_scale() returned err={}", ierr);
 
   // add the subgrid-viscosity-scaled fine-scale matrix to obtain complete matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat = system_matrix();
@@ -1890,24 +1890,20 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
   // make a copy of state variables to undo perturbations later
   Core::LinAlg::Vector<double> phinp_original(*phinp_);
 
-  // make a copy of system matrix as Epetra_CrsMatrix
-  std::shared_ptr<Epetra_CrsMatrix> sysmat_original = nullptr;
+  std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_original = nullptr;
   if (std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(sysmat_) != nullptr)
   {
-    sysmat_original = (new Core::LinAlg::SparseMatrix(
-                           *(std::static_pointer_cast<Core::LinAlg::SparseMatrix>(sysmat_))))
-                          ->epetra_matrix();
+    sysmat_original = std::make_shared<Core::LinAlg::SparseMatrix>(
+        *(std::static_pointer_cast<Core::LinAlg::SparseMatrix>(sysmat_)));
   }
   else if (std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(sysmat_) != nullptr)
   {
-    sysmat_original =
-        (new Core::LinAlg::SparseMatrix(
-             *(std::static_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(sysmat_)->merge())))
-            ->epetra_matrix();
+    sysmat_original = std::make_shared<Core::LinAlg::SparseMatrix>(
+        *(std::static_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(sysmat_)->merge()));
   }
   else
     FOUR_C_THROW("Type of system matrix unknown!");
-  sysmat_original->FillComplete();
+  sysmat_original->complete();
 
   // make a copy of system right-hand side vector
   Core::LinAlg::Vector<double> rhs_original(*residual_);
@@ -1919,10 +1915,10 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
   double maxabserr(0.);
   double maxrelerr(0.);
 
-  for (int colgid = 0; colgid <= sysmat_original->ColMap().MaxAllGID(); ++colgid)
+  for (int colgid = 0; colgid <= sysmat_original->col_map().MaxAllGID(); ++colgid)
   {
     // check whether current column index is a valid global column index and continue loop if not
-    int collid(sysmat_original->ColMap().LID(colgid));
+    int collid(sysmat_original->col_map().LID(colgid));
     int maxcollid(-1);
     Core::Communication::max_all(&collid, &maxcollid, 1, discret_->get_comm());
     if (maxcollid < 0) continue;
@@ -1957,19 +1953,20 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
     for (int rowlid = 0; rowlid < discret_->dof_row_map()->NumMyElements(); ++rowlid)
     {
       // get global index of current matrix row
-      const int rowgid = sysmat_original->RowMap().GID(rowlid);
+      const int rowgid = sysmat_original->col_map().GID(rowlid);
       if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
       // get relevant entry in current row of original system matrix
       double entry(0.);
-      int length = sysmat_original->NumMyEntries(rowlid);
+      int length = sysmat_original->num_my_entries(rowlid);
       int numentries;
       std::vector<double> values(length);
       std::vector<int> indices(length);
-      sysmat_original->ExtractMyRowCopy(rowlid, length, numentries, values.data(), indices.data());
+      sysmat_original->extract_my_row_copy(
+          rowlid, length, numentries, values.data(), indices.data());
       for (int ientry = 0; ientry < length; ++ientry)
       {
-        if (sysmat_original->ColMap().GID(indices[ientry]) == colgid)
+        if (sysmat_original->col_map().GID(indices[ientry]) == colgid)
         {
           entry = values[ientry];
           break;

@@ -14,8 +14,6 @@
 #include "4C_linalg_vector.hpp"
 #include "4C_mortar_coupling3d_classes.hpp"
 
-#include <Epetra_CrsMatrix.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -169,7 +167,7 @@ namespace Mortar
   Helper method for the MatrixTransform() methods above.
 
   */
-  std::shared_ptr<Epetra_CrsMatrix> redistribute(const Core::LinAlg::SparseMatrix& src,
+  std::shared_ptr<Core::LinAlg::SparseMatrix> redistribute(const Core::LinAlg::SparseMatrix& src,
       const Core::LinAlg::Map& permrowmap, const Core::LinAlg::Map& permdomainmap);
 
   /*!

@@ -408,8 +408,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
               // system matrix this effectively forces the slave-side degree of freedom to assume
               // the same value as the master-side degree of freedom
               const double value(-1.);
-              if (systemmatrix->epetra_matrix()->InsertGlobalValues(
-                      slavedofgid, 1, &value, &masterdofgid) < 0)
+              if (systemmatrix->insert_global_values(slavedofgid, 1, &value, &masterdofgid) < 0)
               {
                 FOUR_C_THROW(
                     "Cannot insert value -1. into matrix row with global ID {} and matrix column "
@@ -421,8 +420,8 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
               // matrix this prevents the system matrix from changing its graph when calling this
               // function again during the next Newton iteration
               const double zero(0.);
-              if (systemmatrixrowsslave.epetra_matrix()->InsertGlobalValues(
-                      slavedofgid, 1, &zero, &masterdofgid) < 0)
+              if (systemmatrixrowsslave.insert_global_values(slavedofgid, 1, &zero, &masterdofgid) <
+                  0)
               {
                 FOUR_C_THROW(
                     "Cannot insert zero into matrix row with global ID {} and matrix column with "
@@ -3418,17 +3417,15 @@ void ScaTra::MeshtyingStrategyS2I::extract_matrix_rows(
     if (dofgid < 0) FOUR_C_THROW("Couldn't find local ID {} in map!", doflid);
 
     // extract current matrix row from source matrix
-    const int length = matrix.epetra_matrix()->NumGlobalEntries(dofgid);
+    const int length = matrix.num_global_entries(dofgid);
     int numentries(0);
     std::vector<double> values(length, 0.);
     std::vector<int> indices(length, 0);
-    if (matrix.epetra_matrix()->ExtractGlobalRowCopy(
-            dofgid, length, numentries, values.data(), indices.data()))
+    if (matrix.extract_global_row_copy(dofgid, length, numentries, values.data(), indices.data()))
       FOUR_C_THROW("Cannot extract matrix row with global ID {} from source matrix!", dofgid);
 
     // copy current source matrix row into destination matrix
-    if (rows.epetra_matrix()->InsertGlobalValues(
-            dofgid, numentries, values.data(), indices.data()) < 0)
+    if (rows.insert_global_values(dofgid, numentries, values.data(), indices.data()) < 0)
       FOUR_C_THROW("Cannot insert matrix row with global ID {} into destination matrix!", dofgid);
   }
 }
@@ -3975,10 +3972,9 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
   // make a copy of global state vector to undo perturbations later
   Core::LinAlg::Vector<double> statenp_original(statenp);
 
-  // make a copy of system matrix as Epetra_CrsMatrix
-  Epetra_CrsMatrix sysmat_original =
-      *Core::LinAlg::SparseMatrix(*extendedsystemmatrix.merge()).epetra_matrix();
-  sysmat_original.FillComplete();
+  Core::LinAlg::SparseMatrix sysmat_original =
+      Core::LinAlg::SparseMatrix(*extendedsystemmatrix.merge());
+  sysmat_original.complete();
 
   // make a copy of system right-hand side vector
   Core::LinAlg::Vector<double> rhs_original(extendedresidual);
@@ -3991,10 +3987,10 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
   double maxrelerr(0.);
 
   // loop over all columns of system matrix
-  for (int colgid = 0; colgid <= sysmat_original.ColMap().MaxAllGID(); ++colgid)
+  for (int colgid = 0; colgid <= sysmat_original.col_map().MaxAllGID(); ++colgid)
   {
     // check whether current column index is a valid global column index and continue loop if not
-    int collid(sysmat_original.ColMap().LID(colgid));
+    int collid(sysmat_original.col_map().LID(colgid));
     int maxcollid(-1);
     Core::Communication::max_all(
         &collid, &maxcollid, 1, scatratimint_->discretization()->get_comm());
@@ -4033,19 +4029,20 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
     for (int rowlid = 0; rowlid < extendedmaps_->full_map()->NumMyElements(); ++rowlid)
     {
       // get global index of current matrix row
-      const int rowgid = sysmat_original.RowMap().GID(rowlid);
+      const int rowgid = sysmat_original.row_map().GID(rowlid);
       if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
       // get relevant entry in current row of original system matrix
       double entry(0.);
-      int length = sysmat_original.NumMyEntries(rowlid);
+      int length = sysmat_original.num_my_entries(rowlid);
       int numentries;
       std::vector<double> values(length);
       std::vector<int> indices(length);
-      sysmat_original.ExtractMyRowCopy(rowlid, length, numentries, values.data(), indices.data());
+      sysmat_original.extract_my_row_copy(
+          rowlid, length, numentries, values.data(), indices.data());
       for (int ientry = 0; ientry < length; ++ientry)
       {
-        if (sysmat_original.ColMap().GID(indices[ientry]) == colgid)
+        if (sysmat_original.col_map().GID(indices[ientry]) == colgid)
         {
           entry = values[ientry];
           break;

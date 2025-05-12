@@ -302,12 +302,12 @@ namespace Core::LinAlg
    * Core::LinAlg::MultiVector<double> consists of several single vectors put together after each
    * other.
    *
-   *  \param(in) stdVector:         A std::vector<double> to read data from.
-   *  \param(in) epetraMultiVector: A Core::LinAlg::MultiVector<double> to write data to.
-   *  \param(in) blockSize:         Block size of the Core::LinAlg::MultiVector<double>.
+   *  \param(in) std_vector:   A std::vector<double> to read data from.
+   *  \param(in) multi_vector: A Core::LinAlg::MultiVector<double> to write data to.
+   *  \param(in) block_size:   Block size of the Core::LinAlg::MultiVector<double>.
    */
-  void std_vector_to_epetra_multi_vector(const std::vector<double>& stdVector,
-      Core::LinAlg::MultiVector<double>& epetraMultiVector, const int blockSize);
+  void std_vector_to_multi_vector(const std::vector<double>& std_vector,
+      Core::LinAlg::MultiVector<double>& multi_vector, const int block_size);
 
   /*! \brief Write values from a std::vector to a Core::LinAlg::MultiVector<double>
    *
@@ -315,12 +315,12 @@ namespace Core::LinAlg
    * Core::LinAlg::MultiVector<double> consists of several single vectors put together after each
    * other.
    *
-   *  \param(in) epetraMultiVector: A Core::LinAlg::MultiVector<double> to read data from.
-   *  \param(in) stdVector:         A std::vector<double> to read data to.
-   *  \param(in) blockSize:         Block size of the Core::LinAlg::MultiVector<double>.
+   *  \param(in) multi_vector: A Core::LinAlg::MultiVector<double> to read data from.
+   *  \param(in) std_vector:   A std::vector<double> to read data to.
+   *  \param(in) block_size:   Block size of the Core::LinAlg::MultiVector<double>.
    */
-  void epetra_multi_vector_to_std_vector(const Core::LinAlg::MultiVector<double>& epetraMultiVector,
-      std::vector<double>& stdVector, const int blockSize);
+  void multi_vector_to_std_vector(const Core::LinAlg::MultiVector<double>& multi_vector,
+      std::vector<double>& std_vector, const int block_size);
 
 
 }  // namespace Core::LinAlg

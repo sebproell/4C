@@ -1613,7 +1613,7 @@ void SSI::SsiMono::print_system_matrix_rhs_to_mat_lab_format() const
                    << "_block_system_matrix_" << row << "_" << col << ".csv";
 
           Core::LinAlg::print_matrix_in_matlab_format(
-              filename.str(), *block_matrix->matrix(row, col).epetra_matrix(), true);
+              filename.str(), block_matrix->matrix(row, col), true);
         }
       }
       break;
@@ -1627,7 +1627,7 @@ void SSI::SsiMono::print_system_matrix_rhs_to_mat_lab_format() const
       const std::string filename = Global::Problem::instance()->output_control_file()->file_name() +
                                    "_sparse_system_matrix.csv";
 
-      Core::LinAlg::print_matrix_in_matlab_format(filename, *sparse_matrix->epetra_matrix(), true);
+      Core::LinAlg::print_matrix_in_matlab_format(filename, *sparse_matrix, true);
       break;
     }
 

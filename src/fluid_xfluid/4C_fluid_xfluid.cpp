@@ -1570,9 +1570,9 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
 
   bool diagonalblock = true;
 
-  for (int i = 0; i < sysmat_gp->epetra_matrix()->NumMyRows(); ++i)
+  for (int i = 0; i < sysmat_gp->num_my_rows(); ++i)
   {
-    int row = sysmat_gp->epetra_matrix()->GRID(i);
+    int row = sysmat_gp->global_row_index(i);
 
     // check if there is already a value set, otherwise set at least a diagonal entry
     if (dbctoggle.MyGID(row))
@@ -1581,10 +1581,10 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
       {
         double v = 1.0;
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-        int err = sysmat_gp->epetra_matrix()->InsertGlobalValues(row, 1, &v, &row);
-        if (err < 0) FOUR_C_THROW("Epetra_CrsMatrix::InsertGlobalValues returned err={}", err);
+        int err = sysmat_gp->insert_global_values(row, 1, &v, &row);
+        if (err < 0) FOUR_C_THROW("insert_global_values returned err={}", err);
 #else
-        sysmat_gp->epetra_matrix()->InsertGlobalValues(row, 1, &v, &row);
+        sysmat_gp->insert_global_values(row, 1, &v, &row);
 #endif
       }
     }
@@ -2559,8 +2559,7 @@ void FLD::XFluid::solve()
       gen_alpha_intermediate_values();
     }
 
-    std::cout << "MAXNUMENTRIES: " << state_->sysmat_->epetra_matrix()->MaxNumEntries()
-              << std::endl;
+    std::cout << "MAXNUMENTRIES: " << state_->sysmat_->max_num_entries() << std::endl;
   }
 
   // Reset the solver and so release the system matrix' pointer (enables to delete the

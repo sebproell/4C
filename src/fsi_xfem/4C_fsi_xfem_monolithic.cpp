@@ -1035,11 +1035,11 @@ bool FSI::MonolithicXFEM::newton()
           systemmatrix_.use_count());
     }
 
-    // reduce counter in the rcp-pointers pointing to underlying epetra matrix objects which
+    // reduce counter in the rcp-pointers pointing to underlying matrix objects which
     // actually hold large chunks of memory this ensures that the single field matrices can be
     // really deleted (memory can be freed) before we can create a new state class in fluid's
     // Evaluate NOTE: the blocksparsematrix' sparse matrices hold strong RCP's to the single-fields
-    // EpetraMatrix objects NOTE: fluid's Evaluate will create a new Core::LinAlg::SparseMatrix and
+    // matrix objects NOTE: fluid's Evaluate will create a new Core::LinAlg::SparseMatrix and
     // coupling matrices anyway
     systemmatrix_ = nullptr;
     // TODO: can we delete the solver here? this is done in solver_->Reset after solving the last
@@ -2329,7 +2329,7 @@ void FSI::MonolithicXFEM::linear_solve()
   apply_newton_damping();
 
   // TODO: can we do this?!
-  // reset the solver (frees the pointer to the Core::LinAlg:: matrix' EpetraOperator and vectors
+  // reset the solver (frees the pointer to the Core::LinAlg:: matrix and vectors
   // also!) std::cout << "reset the solver" << std::endl;
   solver_->reset();
 
@@ -2369,17 +2369,15 @@ void FSI::MonolithicXFEM::scale_system(
     if (num_fields_ > 2) FOUR_C_THROW("InfNorm Scaling just implemented for 2x2 Block!");
     // The matrices are modified here. Do we have to change them back later on?
 
-    std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
-    srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A->RowMap(), false);
-    A->InvRowSums(*srowsum_->get_ptr_of_epetra_vector());
-    A->InvColSums(*scolsum_->get_ptr_of_epetra_vector());
+    Core::LinAlg::SparseMatrix& A = mat.matrix(0, 0);
+    srowsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A.row_map(), false);
+    scolsum_ = std::make_shared<Core::LinAlg::Vector<double>>(A.row_map(), false);
+    A.inv_row_sums(*srowsum_);
+    A.inv_col_sums(*scolsum_);
 
-    if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
-        mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
-        mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_))
+    if (A.left_scale(*srowsum_) or A.right_scale(*scolsum_) or
+        mat.matrix(0, 1).left_scale(*srowsum_) or mat.matrix(1, 0).right_scale(*scolsum_))
       FOUR_C_THROW("structure scaling failed");
-
 
     std::shared_ptr<Core::LinAlg::Vector<double>> sx = extractor().extract_vector(b, 0);
 
@@ -2411,12 +2409,11 @@ void FSI::MonolithicXFEM::unscale_solution(Core::LinAlg::BlockSparseMatrixBase& 
 
     extractor().insert_vector(*sx, 0, b);
 
-    std::shared_ptr<Epetra_CrsMatrix> A = mat.matrix(0, 0).epetra_matrix();
+    Core::LinAlg::SparseMatrix& A = mat.matrix(0, 0);
     srowsum_->reciprocal(*srowsum_);
     scolsum_->reciprocal(*scolsum_);
-    if (A->LeftScale(*srowsum_) or A->RightScale(*scolsum_) or
-        mat.matrix(0, 1).epetra_matrix()->LeftScale(*srowsum_) or
-        mat.matrix(1, 0).epetra_matrix()->RightScale(*scolsum_))
+    if (A.left_scale(*srowsum_) or A.right_scale(*scolsum_) or
+        mat.matrix(0, 1).left_scale(*srowsum_) or mat.matrix(1, 0).right_scale(*scolsum_))
       FOUR_C_THROW("structure scaling failed");
   }
 }

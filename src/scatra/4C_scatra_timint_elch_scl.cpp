@@ -1020,7 +1020,7 @@ void ScaTra::ScaTraTimIntElchSCL::assemble_and_apply_mesh_tying()
     {
       const int rowlid_slave = micromatrix.row_map().LID(dofgid_slave);
       if (rowlid_slave < 0) FOUR_C_THROW("Global ID not found!");
-      if (micromatrix.epetra_matrix()->ReplaceMyValues(rowlid_slave, 1, &one, &rowlid_slave))
+      if (micromatrix.replace_my_values(rowlid_slave, 1, &one, &rowlid_slave))
         FOUR_C_THROW("ReplaceMyValues failed!");
     }
 
@@ -1028,7 +1028,7 @@ void ScaTra::ScaTraTimIntElchSCL::assemble_and_apply_mesh_tying()
     // indices
     else
     {
-      micromatrix.epetra_matrix()->InsertGlobalValues(dofgid_slave, 1, &one, &dofgid_slave);
+      micromatrix.insert_global_values(dofgid_slave, 1, &one, &dofgid_slave);
     }
   }
 }

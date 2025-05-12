@@ -746,12 +746,9 @@ void ScaTra::TimIntHDG::fd_check()
   }
   strategy.complete();
 
-  // make a copy of system matrix as Epetra_CrsMatrix
-  std::shared_ptr<Epetra_CrsMatrix> sysmatcopy = nullptr;
-  sysmatcopy = (new Core::LinAlg::SparseMatrix(
-                    *(std::static_pointer_cast<Core::LinAlg::SparseMatrix>(systemmatrix1))))
-                   ->epetra_matrix();
-  sysmatcopy->FillComplete();
+  auto sysmatcopy = std::make_shared<Core::LinAlg::SparseMatrix>(
+      *(std::static_pointer_cast<Core::LinAlg::SparseMatrix>(systemmatrix1)));
+  sysmatcopy->complete();
 
   // make a copy of system right-hand side vector
   Core::LinAlg::Vector<double> residualVec(*systemvector1);
@@ -768,10 +765,10 @@ void ScaTra::TimIntHDG::fd_check()
     double maxrelerr(0.);
 
     // calculate fd matrix
-    for (int colgid = 0; colgid <= sysmatcopy->ColMap().MaxAllGID(); ++colgid)
+    for (int colgid = 0; colgid <= sysmatcopy->col_map().MaxAllGID(); ++colgid)
     {
       // check whether current column index is a valid global column index and continue loop if not
-      int collid(sysmatcopy->ColMap().LID(colgid));
+      int collid(sysmatcopy->col_map().LID(colgid));
       int maxcollid(-1);
       Core::Communication::max_all(&collid, &maxcollid, 1, discret_->get_comm());
       if (maxcollid < 0) continue;
@@ -826,20 +823,20 @@ void ScaTra::TimIntHDG::fd_check()
       for (int rowlid = 0; rowlid < discret_->dof_row_map()->NumMyElements(); ++rowlid)
       {
         // get global index of current matrix row
-        const int rowgid = sysmatcopy->RowMap().GID(rowlid);
+        const int rowgid = sysmatcopy->row_map().GID(rowlid);
         if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
         // get current entry in original system matrix
         double entry(0.);
-        int length = sysmatcopy->NumMyEntries(rowlid);
+        int length = sysmatcopy->num_my_entries(rowlid);
         int numentries;
         std::vector<double> values(length);
         std::vector<int> indices(length);
-        sysmatcopy->ExtractMyRowCopy(rowlid, length, numentries, values.data(), indices.data());
+        sysmatcopy->extract_my_row_copy(rowlid, length, numentries, values.data(), indices.data());
 
         for (int ientry = 0; ientry < length; ++ientry)
         {
-          if (sysmatcopy->ColMap().GID(indices[ientry]) == colgid)
+          if (sysmatcopy->col_map().GID(indices[ientry]) == colgid)
           {
             entry = values[ientry];
             break;
@@ -1055,7 +1052,7 @@ void ScaTra::TimIntHDG::calc_mat_initial()
   // Output of non-zeros in system matrix
   if (step_ == 0 and Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
   {
-    int numglobalnonzeros = system_matrix()->epetra_matrix()->NumGlobalNonzeros();
+    int numglobalnonzeros = system_matrix()->num_global_nonzeros();
     std::cout << "Number of non-zeros in system matrix: " << numglobalnonzeros << std::endl;
   }
 

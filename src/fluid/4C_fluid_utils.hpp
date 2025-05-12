@@ -177,25 +177,21 @@ namespace FLD
             // now assemble
             if (rowblock == 0)
             {  // rowblock 0
-              errone = matrix00_.epetra_matrix()->SumIntoMyValues(
+              errone = matrix00_.sum_into_my_values(
                   rlid0, nnode * numdim_, values0.data(), localcol00.data());
-              if (errone)
-                FOUR_C_THROW("Epetra_CrsMatrix::SumIntoMyValues returned error code {}", errone);
-              errone = matrix01_.epetra_matrix()->SumIntoMyValues(
-                  rlid1, nnode, values1.data(), localcol01.data());
-              if (errone)
-                FOUR_C_THROW("Epetra_CrsMatrix::SumIntoMyValues returned error code {}", errone);
+              if (errone) FOUR_C_THROW("sum_into_my_values() returned error code {}", errone);
+              errone =
+                  matrix01_.sum_into_my_values(rlid1, nnode, values1.data(), localcol01.data());
+              if (errone) FOUR_C_THROW("sum_into_my_values() returned error code {}", errone);
             }
             else
             {  // rowblock 1
-              errone = matrix10_.epetra_matrix()->SumIntoMyValues(
+              errone = matrix10_.sum_into_my_values(
                   rlid0, nnode * numdim_, values0.data(), localcol10.data());
-              if (errone)
-                FOUR_C_THROW("Epetra_CrsMatrix::SumIntoMyValues returned error code {}", errone);
-              errone = matrix11_.epetra_matrix()->SumIntoMyValues(
-                  rlid1, nnode, values1.data(), localcol11.data());
-              if (errone)
-                FOUR_C_THROW("Epetra_CrsMatrix::SumIntoMyValues returned error code {}", errone);
+              if (errone) FOUR_C_THROW("sum_into_my_values() returned error code {}", errone);
+              errone =
+                  matrix11_.sum_into_my_values(rlid1, nnode, values1.data(), localcol11.data());
+              if (errone) FOUR_C_THROW("sum_into_my_values() returned error code {}", errone);
             }
           }  // for (int lrow=0; lrow<ldim; ++lrow)
         }
