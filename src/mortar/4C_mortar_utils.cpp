@@ -150,7 +150,7 @@ void Mortar::sort(double* dlist, int N, int* list2)
  | transform the row map of a matrix (GIDs)                   popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
-    Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap)
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap)
 {
   // initialize output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
@@ -186,7 +186,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
  | transform the column map of a matrix (GIDs)                popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
-    Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap)
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap)
 {
   // initialize output matrix
   std::shared_ptr<Core::LinAlg::SparseMatrix> outmat =
@@ -310,7 +310,7 @@ void Mortar::replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
  | transform the row and column maps of a matrix (GIDs)       popp 08/10|
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gids(
-    Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
+    const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
     const Core::LinAlg::Map& newdomainmap)
 {
   // initialize output matrix

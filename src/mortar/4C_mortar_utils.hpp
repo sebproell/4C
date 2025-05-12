@@ -54,7 +54,7 @@ namespace Mortar
   \post Output matrix will be fill_complete()
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_row_transform_gids(
-      Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap);
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap);
 
   /*!
   \brief Transform the column map of a matrix (only GIDs)
@@ -72,7 +72,7 @@ namespace Mortar
   \post Output matrix will be fill_complete()
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_col_transform_gids(
-      Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap);
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newdomainmap);
 
   /*! \brief Replace the column and domain map of a filled matrix
    *
@@ -125,7 +125,7 @@ namespace Mortar
   \post Output matrix will be fill_complete()
   */
   std::shared_ptr<Core::LinAlg::SparseMatrix> matrix_row_col_transform_gids(
-      Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
+      const Core::LinAlg::SparseMatrix& inmat, const Core::LinAlg::Map& newrowmap,
       const Core::LinAlg::Map& newdomainmap);
 
   /*!

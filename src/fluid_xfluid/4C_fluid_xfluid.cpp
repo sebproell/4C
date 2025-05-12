@@ -1572,7 +1572,7 @@ void FLD::XFluid::assemble_mat_and_rhs_gradient_penalty(
 
   for (int i = 0; i < sysmat_gp->num_my_rows(); ++i)
   {
-    int row = sysmat_gp->epetra_matrix()->GRID(i);
+    int row = sysmat_gp->global_row_index(i);
 
     // check if there is already a value set, otherwise set at least a diagonal entry
     if (dbctoggle.MyGID(row))

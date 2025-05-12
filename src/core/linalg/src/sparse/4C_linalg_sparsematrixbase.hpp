@@ -129,6 +129,10 @@ namespace Core::LinAlg
       return sysmat_->NumAllocatedGlobalEntries(global_row);
     }
 
+    /// Returns the global row index for give local row index, returns IndexBase-1 if we don't have
+    /// this local row.
+    int global_row_index(int local_row_index) const { return sysmat_->GRID(local_row_index); }
+
     /// Returns the Epetra_Map object associated with the rows of this matrix.
     const Core::LinAlg::Map& row_map() const
     {

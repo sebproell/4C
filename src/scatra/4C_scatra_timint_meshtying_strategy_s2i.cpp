@@ -3400,9 +3400,9 @@ void ScaTra::MeshtyingStrategyS2I::explicit_predictor() const
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void ScaTra::MeshtyingStrategyS2I::extract_matrix_rows(
-    Core::LinAlg::SparseMatrix& matrix,  //!< source matrix
-    Core::LinAlg::SparseMatrix& rows,    //!< destination matrix
-    const Core::LinAlg::Map& rowmap      //!< map of matrix rows to be extracted
+    const Core::LinAlg::SparseMatrix& matrix,  //!< source matrix
+    Core::LinAlg::SparseMatrix& rows,          //!< destination matrix
+    const Core::LinAlg::Map& rowmap            //!< map of matrix rows to be extracted
 )
 {
   // safety check

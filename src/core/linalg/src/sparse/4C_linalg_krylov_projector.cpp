@@ -376,7 +376,7 @@ void Core::LinAlg::KrylovProjector::create_projector(std::shared_ptr<Core::LinAl
   for (int rr = 0; rr < nummyrows; ++rr)
   {
     // get global row id of current local row id
-    const int grid = P->epetra_matrix()->GRID(rr);
+    const int grid = P->global_row_index(rr);
 
     // add identity matrix by adding 1 on diagonal entries
     int err = P->epetra_matrix()->InsertGlobalValues(grid, 1, &one, &grid);
@@ -546,7 +546,7 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
   for (int rr = 0; rr < nummyrows; ++rr)
   {
     // get global row id of current local row id
-    const int grid = mat->epetra_matrix()->GRID(rr);
+    const int grid = mat->global_row_index(rr);
 
     // vector of all row values - prevented from growing in following loops
     std::vector<double> rowvals;

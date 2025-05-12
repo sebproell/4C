@@ -32,7 +32,7 @@ void Core::LinAlg::print_matrix_in_matlab_format(
     for (int row_lid_iproc = 0; row_lid_iproc < num_rows_iproc; ++row_lid_iproc)
     {
       // get gid of this row and communicate to all procs
-      int row_gid_iproc = iproc == my_PID ? sparsematrix.epetra_matrix()->GRID(row_lid_iproc) : 0;
+      int row_gid_iproc = iproc == my_PID ? sparsematrix.global_row_index(row_lid_iproc) : 0;
       Core::Communication::broadcast(&row_gid_iproc, 1, iproc, comm);
 
       // get indices and values of this row and communicate to all procs
