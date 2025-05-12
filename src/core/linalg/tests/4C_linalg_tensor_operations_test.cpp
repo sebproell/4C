@@ -124,6 +124,21 @@ namespace
     EXPECT_EQ(t_t.at(1, 2), 6.0);
   }
 
+  TYPED_TEST(TensorOperationsTest, Vec_dot_Vec)
+  {
+    TensorHolder<TestFixture::STORAGE_TYPE, double, 2> a = math::Tensor<double, 2>{{2.0, 3.0}};
+    TensorHolder<TestFixture::STORAGE_TYPE, double, 2> b = math::Tensor<double, 2>{{1.0, 2.0}};
+
+    double axb = math::dot(a.get_tensor(), b.get_tensor());
+
+    EXPECT_EQ(axb, 8.0);
+
+
+    double axb2 = a.get_tensor() * b.get_tensor();
+
+    EXPECT_EQ(axb2, 8.0);
+  }
+
   TYPED_TEST(TensorOperationsTest, Mat_dot_Vec)
   {
     TensorHolder<TestFixture::STORAGE_TYPE, double, 3, 2> A = math::Tensor<double, 3, 2>{{
