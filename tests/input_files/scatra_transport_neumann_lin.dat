@@ -72,14 +72,6 @@ STABTYPE                        SUPG
 SUGRVEL                         no
 --------------------------------------------------------------------SOLVER 1
 NAME                            Structure_Solver
-AZCONV                          AZ_r0
-AZITER                          1000
-AZOUTPUT                        0
-AZPREC                          ILU
-AZREUSE                         0
-AZSOLVE                         GMRES
-AZSUB                           300
-AZTOL                           1e-08
 SOLVER                          UMFPACK
 -------------------------------------------------------------------MATERIALS
 // MAT 1 MAT_matlist LOCAL No NUMMAT 2 MATIDS 21 22

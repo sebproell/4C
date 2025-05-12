@@ -56,14 +56,6 @@ CROSS-STRESS                    no_cross
 REYNOLDS-STRESS                 no_reynolds
 --------------------------------------------------------------------SOLVER 1
 SOLVER                          UMFPACK
-AZCONV                          AZ_r0
-AZITER                          1000
-AZOUTPUT                        0
-AZPREC                          ILU
-AZREUSE                         4
-AZSOLVE                         GMRES
-AZSUB                           40
-AZTOL                           1e-04
 ----------------------------------------------------------------XFEM GENERAL
 VOLUME_GAUSS_POINTS_BY          DirectDivergence
 BOUNDARY_GAUSS_POINTS_BY        Tessellation

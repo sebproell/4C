@@ -65,14 +65,6 @@ EOS_DEFINITION_TAU              Burman_Fernandez
 EOS_H_DEFINITION                EOS_he_max_dist_to_opp_surf
 --------------------------------------------------------------------SOLVER 1
 SOLVER                          UMFPACK
-AZCONV                          AZ_r0
-AZITER                          1000
-AZOUTPUT                        0
-AZPREC                          ILU
-AZREUSE                         4
-AZSOLVE                         GMRES
-AZSUB                           40
-AZTOL                           1e-04
 ----------------------------------------------------------------XFEM GENERAL
 GMSH_DEBUG_OUT                  No
 ------------------------------------------------------XFLUID DYNAMIC/GENERAL
