@@ -49,16 +49,6 @@ TOL_PRES_INC	  1e-07
 DEFINITION_TAU                  Taylor_Hughes_Zarins_Whiting_Jansen_wo_dt
 --------------------------------------------------------------------SOLVER 1
 SOLVER                          UMFPACK
-AZCONV                          AZ_r0
-IFPACKGFILL                     0
-AZITER                          1000
-AZOUTPUT                        0
-IFPACKOVERLAP                   0
-AZPREC                          ILU
-AZREUSE                         4
-AZSOLVE                         GMRES
-AZSUB                           40
-AZTOL                           1e-04
 ----------------------------------------------------------------XFEM GENERAL
 GMSH_DEBUG_OUT                  No
 ------------------------------------------------------XFLUID DYNAMIC/GENERAL
