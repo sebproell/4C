@@ -37,7 +37,6 @@ int Discret::Elements::FluidBoundary::evaluate(Teuchos::ParameterList& params,
     case FLD::Outletimpedance:
     case FLD::dQdu:
     case FLD::boundary_calc_node_normal:
-    case FLD::calc_node_curvature:
     case FLD::calc_Neumann_inflow:
     case FLD::calc_pressure_bou_int:
     case FLD::center_of_mass_calc:
