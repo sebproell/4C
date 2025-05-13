@@ -1,5 +1,4 @@
 ---------------------------------------------------------------------------TITLE
-created by pre_exodus
 Cut an structure element of a bar subjected to tension:
 In this problem, the displacement and stress afield are checked for the case
 of cutting the element on the tip of a discretized bar subjected to tension.

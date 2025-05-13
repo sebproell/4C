@@ -512,8 +512,8 @@ Core::IO::DiscretizationWriter::DiscretizationWriter(std::shared_ptr<Core::FE::D
       output_(output_control),
       spatial_approx_(shape_function_type)
 {
-  if (output_ != nullptr) binio_ = output_->write_binary_output();
-  // not nice, but needed in order to let pre_exodus read fields without output control file
+  if (output_ != nullptr)
+    binio_ = output_->write_binary_output();
   else
     binio_ = false;
 }
