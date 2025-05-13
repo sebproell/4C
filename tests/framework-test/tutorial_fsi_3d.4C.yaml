@@ -1,0 +1,467 @@
+PROBLEM TYPE:
+  PROBLEMTYPE: Fluid_Structure_Interaction
+PROBLEM SIZE:
+  DIM: 3
+STRUCTURAL DYNAMIC:
+  INT_STRATEGY: "Standard"
+  LINEAR_SOLVER: 3
+STRUCTURAL DYNAMIC/GENALPHA:
+  BETA: 0.25
+  GAMMA: 0.5
+  ALPHA_M: 0.5
+  ALPHA_F: 0.5
+  RHO_INF: -1
+STRUCT NOX/Status Test:
+  XML File: "fsi_part_struct_solver.xml"
+FLUID DYNAMIC:
+  LINEAR_SOLVER: 2
+  ADAPTCONV: true
+ALE DYNAMIC:
+  LINEAR_SOLVER: 1
+FSI DYNAMIC:
+  NUMSTEP: 3
+SOLVER 1:
+  SOLVER: "UMFPACK"
+SOLVER 2:
+  SOLVER: "Belos"
+  NAME: "Fluid solver"
+SOLVER 3:
+  SOLVER: "UMFPACK"
+MATERIALS:
+  - MAT: 1
+    MAT_Struct_StVenantKirchhoff:
+      YOUNG: 1000
+      NUE: 0.3
+      DENS: 500
+  - MAT: 2
+    MAT_fluid:
+      DYNVISCOSITY: 0.01
+      DENSITY: 1
+  - MAT: 3
+    MAT_Struct_StVenantKirchhoff:
+      YOUNG: 500
+      NUE: 0.3
+      DENS: 500
+
+CLONING MATERIAL MAP:
+  - SRC_FIELD: "fluid"
+    SRC_MAT: 2
+    TAR_FIELD: "ale"
+    TAR_MAT: 3
+FUNCT1:
+  - SYMBOLIC_FUNCTION_OF_SPACE_TIME: "(1-cos(2*t*pi/5))"
+FUNCT2:
+  - SYMBOLIC_FUNCTION_OF_SPACE_TIME: "10*(y-1)*(1-cos(2*t*pi/5))"
+RESULT DESCRIPTION:
+  - STRUCTURE:
+      DIS: "structure"
+      NODE: 80
+      QUANTITY: "dispx"
+      VALUE: 5.467837e-07
+      TOLERANCE: 1e-12
+  - STRUCTURE:
+      DIS: "structure"
+      NODE: 80
+      QUANTITY: "dispy"
+      VALUE: -0.000117721077
+      TOLERANCE: 1e-12
+  - FLUID:
+      DIS: "fluid"
+      NODE: 2000
+      QUANTITY: "pressure"
+      VALUE: 0.007730907906
+      TOLERANCE: 3e-11
+  - FLUID:
+      DIS: "fluid"
+      NODE: 2000
+      QUANTITY: "velx"
+      VALUE: 0.0017064593492
+      TOLERANCE: 1e-12
+  - FLUID:
+      DIS: "fluid"
+      NODE: 2000
+      QUANTITY: "vely"
+      VALUE: -0.0013349101929
+      TOLERANCE: 1e-12
+
+STRUCTURE GEOMETRY:
+  FILE: tutorial_fsi_3d.e
+  ELEMENT_BLOCKS:
+    - ID: 1
+      ELEMENT_NAME: SOLID
+      ELEMENT_DATA: "MAT 1 KINEM nonlinear TECH eas_full"
+
+FLUID GEOMETRY:
+  FILE: tutorial_fsi_3d.e
+  ELEMENT_BLOCKS:
+    - ID: 2
+      ELEMENT_NAME: FLUID
+      ELEMENT_DATA: "MAT 2 NA ALE"
+
+DESIGN POINT DIRICH CONDITIONS:
+  - E: 32
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 33
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 34
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 35
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 36
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 36
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 38
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [1, null, null, null]
+  - E: 39
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [1, null, null, null]
+DESIGN LINE DIRICH CONDITIONS:
+  - E: 6
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 7
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 8
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 9
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 18
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 19
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 20
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 21
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 22
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [0, 0, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 23
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [0, 0, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 24
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 25
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 26
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 27
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [2, null, null, null]
+  - E: 28
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [2, null, null, null]
+  - E: 29
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [1, null, null, null]
+  - E: 30
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [1, null, null, null]
+  - E: 31
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [1, null, null, null]
+DESIGN SURF DIRICH CONDITIONS:
+  - E: 1
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 2
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 3
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [0, 0, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 4
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [0, 0, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 10
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 11
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 12
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [0, 0, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 13
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [0, 0, 1, 0]
+    VAL: [0, 0, 0, 0]
+    FUNCT: [null, null, null, null]
+  - E: 15
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [1, null, null, null]
+  - E: 16
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 4
+    ONOFF: [1, 1, 1, 0]
+    VAL: [1, 0, 0, 0]
+    FUNCT: [2, null, null, null]
+DESIGN POINT ALE DIRICH CONDITIONS:
+  - E: 36
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 37
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 38
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 39
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+DESIGN LINE ALE DIRICH CONDITIONS:
+  - E: 18
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 19
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 20
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 21
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 24
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 25
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 26
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 27
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 28
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 29
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 30
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 31
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+DESIGN SURF ALE DIRICH CONDITIONS:
+  - E: 10
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 11
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 12
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [0, 0, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 13
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [0, 0, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 15
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 16
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+  - E: 17
+    ENTITY_TYPE: node_set_id
+    NUMDOF: 3
+    ONOFF: [1, 1, 1]
+    VAL: [0, 0, 0]
+    FUNCT: [null, null, null]
+DESIGN FSI COUPLING SURF CONDITIONS:
+  - E: 5
+    ENTITY_TYPE: node_set_id
+    coupling_id: 1
+  - E: 14
+    ENTITY_TYPE: node_set_id
+    coupling_id: 1

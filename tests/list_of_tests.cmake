@@ -1967,7 +1967,7 @@ four_c_test_framework(PREFIX tutorial_battery NP 2 COPY_FILES ${PROJECT_SOURCE_D
 four_c_test_framework(PREFIX tutorial_contact_3d NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_contact_3d.e)
 four_c_test_framework(PREFIX tutorial_fluid NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_fluid.e)
 four_c_test_framework(PREFIX tutorial_fsi_2d NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_fsi_2d.e)
-four_c_test_framework(PREFIX tutorial_fsi_3d NP 2 USE_PRE_EXODUS COPY_FILES ${PROJECT_SOURCE_DIR}/tests/input_files/fsi_part_struct_solver.xml)
+four_c_test_framework(PREFIX tutorial_fsi_3d NP 2 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/input_files/fsi_part_struct_solver.xml ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_fsi_3d.e)
 four_c_test_framework(PREFIX tutorial_solid NP 3 COPY_FILES ${PROJECT_SOURCE_DIR}/tests/input_files/xml/multigrid/elasticity_template.xml ${PROJECT_SOURCE_DIR}/tests/framework-test/tutorial_solid_geo.e)
 
 # four_c_test_post_processing
