@@ -160,7 +160,6 @@ set(FOUR_C_EXECUTABLE_NAME 4C)
 set(FULL_TARGETS
     post_processor
     post_monitor
-    pre_exodus
     pre_locsys
     create_rtd
     cut_test
