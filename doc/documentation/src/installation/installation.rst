@@ -474,7 +474,6 @@ Executables:
 
 - ``4C`` generate the main |FOURC| executable only
 - ``post_processor`` build the post-filters only
-- ``pre_exodus`` build the pre processor (exodus to 4C converter) only
 - ``post_monitor`` build a nodal data extraction application
 - ``full`` generate all executable targets of |FOURC|
 
