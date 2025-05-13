@@ -460,6 +460,22 @@ namespace Core::LinAlg
   constexpr auto transpose(const Rank2TensorConcept auto& A);
 
   /*!
+   * @brief Computes the dot product of two rank-1 tensors
+   *
+   * This function performs the inner product between two vectors a * b. Both sizes need to match.
+   *
+   * @tparam TensorLeft The type of the rank-1 tensor (vector).
+   * @tparam TensorRight The type of the rank-1 tensor (vector).
+   * @param a The rank-1 tensor (vector).
+   * @param b The rank-1 tensor (vector).
+   * @return scalar resulting from the dot product.
+   */
+  template <typename TensorLeft, typename TensorRight>
+    requires(Rank1TensorConcept<TensorLeft> && Rank1TensorConcept<TensorRight> &&
+             TensorLeft::template extent<0>() == TensorRight::template extent<0>())
+  constexpr auto dot(const TensorLeft& a, const TensorRight& b);
+
+  /*!
    * @brief Computes the dot product of a rank-2 tensor and a rank-1 tensor.
    *
    * This function performs the matrix-vector multiplication A * b, where A is a rank-2 tensor
@@ -742,6 +758,18 @@ namespace Core::LinAlg
   }
 
   constexpr auto transpose(const Rank2TensorConcept auto& A) { return reorder_axis<1, 0>(A); }
+
+  template <typename TensorLeft, typename TensorRight>
+    requires(Rank1TensorConcept<TensorLeft> && Rank1TensorConcept<TensorRight> &&
+             TensorLeft::template extent<0>() == TensorRight::template extent<0>())
+  constexpr auto dot(const TensorLeft& a, const TensorRight& b)
+  {
+    using value_type = decltype(std::declval<typename TensorLeft::value_type>() *
+                                std::declval<typename TensorRight::value_type>());
+    constexpr std::size_t m = TensorLeft::template extent<0>();
+
+    return DenseFunctions::dot<value_type, m, 1>(a.data(), b.data());
+  }
 
   template <typename TensorLeft, typename TensorRight>
     requires(Rank2TensorConcept<TensorLeft> && Rank1TensorConcept<TensorRight> &&
