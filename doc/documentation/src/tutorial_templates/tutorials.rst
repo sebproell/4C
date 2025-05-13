@@ -7,7 +7,7 @@ Tutorials
 
 .. note::
 
-    All corresponding files for the tutorials are located in the |FOURC| subfolder `<4C-sourcedir>/tests/framework-tests/*`.
+    All corresponding files for the tutorials are located in the |FOURC| subfolder `<4C-sourcedir>/tests/tutorials/*`.
 
 Most of the tutorials use Cubit to generate the finite element geometry,
 so we will introduce one possible pre-processing method here for the general case.

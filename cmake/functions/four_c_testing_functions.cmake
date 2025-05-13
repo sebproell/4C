@@ -507,19 +507,17 @@ function(four_c_test_nested_parallelism name_of_input_file_1 name_of_input_file_
   endif()
 endfunction()
 
-###------------------------------------------------------------------ Framework Tests
-# Testing the whole framework: pre_exodus (optional), 4C, and post-filter
+###------------------------------------------------------------------ Tutorial Tests
+# Testing a tutorial example
 #
 # Usage in tests/lists_of_tests.cmake:
 #
-#  four_c_test_framework(PREFIX <prefix> NP <NP> [USE_PRE_EXODUS] [COPY_FILES <file1> <file2> ...])"
+#  four_c_test_tutorial(PREFIX <prefix> NP <NP> [COPY_FILES <file1> <file2> ...])"
 #
-#  USE_PRE_EXODUS:  option (the framework can be run with or without pre_exodus)
-#  PREFIX: must equal the name of a .e/.bc/.head file in directory tests/framework-test
+#  PREFIX: must equal the name of a .4C.yaml and a .e file in directory tests/tutorials
 #  NP: number of MPI ranks for this test
 #  COPY_FILES: copy any additional files to the test directory
-function(four_c_test_framework)
-  set(options USE_PRE_EXODUS)
+function(four_c_test_tutorial)
   set(oneValueArgs PREFIX NP)
   set(multiValueArgs COPY_FILES)
   cmake_parse_arguments(
@@ -538,19 +536,13 @@ function(four_c_test_framework)
   set(name_of_input_file ${_parsed_PREFIX})
   set(num_proc ${_parsed_NP})
   set(name_of_test ${name_of_input_file}-p${num_proc}-fw)
-  set(test_directory framework_test_output/${name_of_input_file})
+  set(test_directory tutorials/${name_of_input_file})
 
-  if(${_parsed_USE_PRE_EXODUS})
-    set(_optional_pre_exodus
-        " && ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS} ./pre_exodus --exo=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.e --bc=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.bc --head=${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.head --out=${test_directory}/xxx.4C.yaml"
-        ) # pre_exodus is run to generate an input file
-  else()
-    list(
-      APPEND
-      _run_copy_files
-      "cp ${PROJECT_SOURCE_DIR}/tests/framework-test/${name_of_input_file}.4C.yaml ${test_directory}/xxx.4C.yaml"
-      )
-  endif()
+  list(
+    APPEND
+    _run_copy_files
+    "cp ${PROJECT_SOURCE_DIR}/tests/tutorials/${name_of_input_file}.4C.yaml ${test_directory}/xxx.4C.yaml"
+    )
 
   # copy additional files to the test directory
   if(_parsed_COPY_FILES)
@@ -574,7 +566,7 @@ function(four_c_test_framework)
     NAME ${name_of_test}
     COMMAND
       bash -c
-      "mkdir -p ${PROJECT_BINARY_DIR}/${test_directory} && ${_run_copy_files} ${_optional_pre_exodus} && ${_run_4C}"
+      "mkdir -p ${PROJECT_BINARY_DIR}/${test_directory} && ${_run_copy_files} && ${_run_4C}"
     )
 
   require_fixture(${name_of_test} test_cleanup)
