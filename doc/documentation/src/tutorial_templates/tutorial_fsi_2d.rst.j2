@@ -22,7 +22,7 @@ You can find the complete journal in `tests/framework-test/tutorial_fsi.jou`.
 Within Cubit, open the Journal-Editor (*Tools*\ :math:`\to`\ *Journal
 Editor*), paste the text from the journal file and press *play*.
 
-Export the created geometry and mesh to an Exodus file via
+Export the created geometry and mesh to an EXODUS file via
 *File*\ :math:`\to`\ *Export...*. During export, set the dimension
 explicitly to 2D.
 
@@ -37,7 +37,7 @@ For a monolithic scheme, see :ref:`the section below<tut_fsi_preexo_2d:monolithi
 Geometry description
 ~~~~~~~~~~~~~~~~~~~~
 
-The geometry is described in the file `tutorial_fsi.e` we created before. It contains two element
+The geometry is described in the file `tutorial_fsi_2d.e` we created before. It contains two element
 blocks for the fluid and the structure domain, respectively. We reference this file in the input
 file and assign the correct element types and material properties to the blocks:
 
