@@ -15,6 +15,7 @@
 #include "4C_cut_input.hpp"
 #include "4C_ehl_input.hpp"
 #include "4C_fbi_input.hpp"
+#include "4C_geometric_search_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_binningstrategy.hpp"
 #include "4C_inpar_bio.hpp"
@@ -26,7 +27,6 @@
 #include "4C_inpar_fpsi.hpp"
 #include "4C_inpar_fs3i.hpp"
 #include "4C_inpar_fsi.hpp"
-#include "4C_inpar_geometric_search.hpp"
 #include "4C_inpar_io.hpp"
 #include "4C_inpar_IO_monitor_structure_dbc.hpp"
 #include "4C_inpar_IO_runtime_output.hpp"
@@ -236,7 +236,7 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
 
   Inpar::Geo::set_valid_parameters(specs);
   Inpar::BINSTRATEGY::set_valid_parameters(specs);
-  Inpar::GeometricSearch::set_valid_parameters(specs);
+  Core::GeometricSearch::set_valid_parameters(specs);
   Inpar::PaSI::set_valid_parameters(specs);
 
   Inpar::Rebalance::set_valid_parameters(specs);

@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_INPAR_GEOMETRIC_SEARCH_HPP
-#define FOUR_C_INPAR_GEOMETRIC_SEARCH_HPP
+#ifndef FOUR_C_GEOMETRIC_SEARCH_INPUT_HPP
+#define FOUR_C_GEOMETRIC_SEARCH_INPUT_HPP
 
 #include "4C_config.hpp"
 
@@ -16,12 +16,12 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Inpar::GeometricSearch
+namespace Core::GeometricSearch
 {
   //! set the parameters for the geometric search strategy
   void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
-}  // namespace Inpar::GeometricSearch
+}  // namespace Core::GeometricSearch
 
 FOUR_C_NAMESPACE_CLOSE
 

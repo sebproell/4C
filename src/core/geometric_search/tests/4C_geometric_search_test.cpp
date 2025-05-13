@@ -9,16 +9,13 @@
 
 #include "4C_config.hpp"
 
-#include "4C_fem_geometric_search_bounding_volume.hpp"
-#include "4C_fem_geometric_search_utils.hpp"
-
+#include "4C_geometric_search_bounding_volume.hpp"
+#include "4C_geometric_search_utils.hpp"
 
 #ifdef FOUR_C_WITH_ARBORX
 
-#include "4C_fem_geometric_search_bvh.hpp"
-#include "4C_fem_geometric_search_create_bounding_volumes_test.hpp"
-#include "4C_fem_geometric_search_utils.hpp"
-
+#include "4C_geometric_search_bvh.hpp"
+#include "4C_geometric_search_create_bounding_volumes_test.hpp"
 
 namespace
 {

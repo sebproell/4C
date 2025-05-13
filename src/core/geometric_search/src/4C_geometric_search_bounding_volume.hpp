@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_FEM_GEOMETRIC_SEARCH_BOUNDING_VOLUME_HPP
-#define FOUR_C_FEM_GEOMETRIC_SEARCH_BOUNDING_VOLUME_HPP
+#ifndef FOUR_C_GEOMETRIC_SEARCH_BOUNDING_VOLUME_HPP
+#define FOUR_C_GEOMETRIC_SEARCH_BOUNDING_VOLUME_HPP
 
 #include "4C_config.hpp"
 
@@ -18,7 +18,9 @@
 #endif
 
 #ifdef FOUR_C_WITH_ARBORX
+
 FOUR_C_NAMESPACE_OPEN
+
 namespace Core::GeometricSearch
 {
   //! kdop_directions is the number of directions defining the possible faces of the k-DOP. In this

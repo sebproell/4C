@@ -5,16 +5,15 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_FEM_GEOMETRIC_SEARCH_DISTRIBUTED_TREE_HPP
-#define FOUR_C_FEM_GEOMETRIC_SEARCH_DISTRIBUTED_TREE_HPP
+#ifndef FOUR_C_GEOMETRIC_SEARCH_DISTRIBUTED_TREE_HPP
+#define FOUR_C_GEOMETRIC_SEARCH_DISTRIBUTED_TREE_HPP
 
 #include "4C_config.hpp"
 
-#include "4C_fem_geometric_search_bounding_volume.hpp"
+#include "4C_geometric_search_bounding_volume.hpp"
 #include "4C_io_pstream.hpp"
 
 #include <vector>
-
 
 FOUR_C_NAMESPACE_OPEN
 
