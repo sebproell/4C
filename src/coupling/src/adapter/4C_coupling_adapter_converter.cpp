@@ -130,8 +130,7 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
       }
 
     int gsubset = 0;
-    Core::Communication::min_all(
-        &subset, &gsubset, 1, Core::Communication::unpack_epetra_comm(logical_range_map.Comm()));
+    Core::Communication::min_all(&subset, &gsubset, 1, logical_range_map.Comm());
 
     // need communication -> call import on permuted map
     if (!gsubset)

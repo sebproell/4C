@@ -289,7 +289,7 @@ void FLD::TimIntGenAlpha::gen_alpha_intermediate_values(
   // do stupid conversion into map
   Core::LinAlg::Map vecmap(vecnp->get_block_map().NumGlobalElements(),
       vecnp->get_block_map().NumMyElements(), vecnp->get_block_map().MyGlobalElements(), 0,
-      vecnp->get_block_map().Comm());
+      Core::Communication::unpack_epetra_comm(vecnp->get_block_map().Comm()));
 
   std::shared_ptr<Core::LinAlg::Vector<double>> vecam = Core::LinAlg::create_vector(vecmap, true);
   vecam->update((alphaM_), *vecnp, (1.0 - alphaM_), *vecn, 0.0);

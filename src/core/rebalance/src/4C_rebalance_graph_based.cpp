@@ -43,12 +43,12 @@ Core::Rebalance::rebalance_node_maps(const Core::LinAlg::Graph& initialGraph,
       initialNodeWeights, initialEdgeWeights, initialNodeCoordinates);
 
   // extract repartitioned maps
-  std::shared_ptr<Core::LinAlg::Map> rownodes =
-      std::make_shared<Core::LinAlg::Map>(-1, balanced_graph->row_map().NumMyElements(),
-          balanced_graph->row_map().MyGlobalElements(), 0, initialGraph.get_comm());
-  std::shared_ptr<Core::LinAlg::Map> colnodes =
-      std::make_shared<Core::LinAlg::Map>(-1, balanced_graph->col_map().NumMyElements(),
-          balanced_graph->col_map().MyGlobalElements(), 0, initialGraph.get_comm());
+  std::shared_ptr<Core::LinAlg::Map> rownodes = std::make_shared<Core::LinAlg::Map>(-1,
+      balanced_graph->row_map().NumMyElements(), balanced_graph->row_map().MyGlobalElements(), 0,
+      Core::Communication::unpack_epetra_comm(initialGraph.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> colnodes = std::make_shared<Core::LinAlg::Map>(-1,
+      balanced_graph->col_map().NumMyElements(), balanced_graph->col_map().MyGlobalElements(), 0,
+      Core::Communication::unpack_epetra_comm(initialGraph.get_comm()));
 
   return {rownodes, colnodes};
 }
@@ -209,8 +209,8 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
     for (fool = mynodes.begin(); fool != mynodes.end(); ++fool) nodes.push_back(*fool);
     mynodes.clear();
     // create a non-overlapping row map
-    rownodes = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)nodes.size(), &nodes[0], 0, Core::Communication::as_epetra_comm(dis.get_comm()));
+    rownodes =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)nodes.size(), &nodes[0], 0, dis.get_comm());
   }
 
   // start building the graph object
@@ -382,7 +382,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
   std::vector<int> my_colliding_primitives_vec(
       my_colliding_primitives.begin(), my_colliding_primitives.end());
   Core::LinAlg::Map my_colliding_primitives_map(-1, my_colliding_primitives_vec.size(),
-      my_colliding_primitives_vec.data(), 0, Core::Communication::as_epetra_comm(dis.get_comm()));
+      my_colliding_primitives_vec.data(), 0, dis.get_comm());
   Epetra_Import importer(
       my_colliding_primitives_map.get_epetra_map(), dis.element_row_map()->get_epetra_map());
   Core::LinAlg::Graph my_colliding_primitives_connectivity(

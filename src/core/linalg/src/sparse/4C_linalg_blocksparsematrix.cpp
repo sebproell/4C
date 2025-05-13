@@ -150,8 +150,8 @@ void Core::LinAlg::BlockSparseMatrixBase::complete(bool enforce_complete)
     std::sort(colmapentries.begin(), colmapentries.end());
     colmapentries.erase(
         std::unique(colmapentries.begin(), colmapentries.end()), colmapentries.end());
-    fullcolmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, colmapentries.size(), colmapentries.data(), 0, Comm());
+    fullcolmap_ = std::make_shared<Core::LinAlg::Map>(-1, colmapentries.size(),
+        colmapentries.data(), 0, Core::Communication::unpack_epetra_comm(Comm()));
   }
 }
 
@@ -407,7 +407,7 @@ bool Core::LinAlg::BlockSparseMatrixBase::HasNormInf() const { return false; }
  *----------------------------------------------------------------------*/
 const Epetra_Comm& Core::LinAlg::BlockSparseMatrixBase::Comm() const
 {
-  return full_domain_map().Comm();
+  return full_domain_map().EpetraComm();
 }
 
 
@@ -552,7 +552,7 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
       cgidlist.size(), cgidlist.data(), cpidlist.data(), nullptr);
   if (err != 0) FOUR_C_THROW("RemoteIDList failed");
 
-  MPI_Comm comm = Core::Communication::unpack_epetra_comm(mat_.full_range_map().Comm());
+  MPI_Comm comm = mat_.full_range_map().Comm();
   const int numproc = Core::Communication::num_mpi_ranks(comm);
 
   // Send the ghost gids to their respective processor to ask for the domain

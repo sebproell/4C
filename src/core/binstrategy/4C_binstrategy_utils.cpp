@@ -45,8 +45,7 @@ namespace Core::Binstrategy::Utils
     }
 
     std::vector<int> colnodes(nodes.begin(), nodes.end());
-    Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
-        Core::Communication::as_epetra_comm(discret.get_comm()));
+    Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0, discret.get_comm());
 
     // now ghost the nodes
     discret.export_column_nodes(nodecolmap);

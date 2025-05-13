@@ -116,15 +116,15 @@ Airway::RedAirwayImplicitTimeInt::RedAirwayImplicitTimeInt(
 
     // extended ghosting for elements (also revert fully overlapping here)
     std::vector<int> coleles(elecolset.begin(), elecolset.end());
-    const Core::LinAlg::Map extendedelecolmap(-1, coleles.size(), coleles.data(), 0,
-        Core::Communication::as_epetra_comm(discret_->get_comm()));
+    const Core::LinAlg::Map extendedelecolmap(
+        -1, coleles.size(), coleles.data(), 0, discret_->get_comm());
 
     discret_->export_column_elements(extendedelecolmap);
 
     // extended ghosting for nodes
     std::vector<int> colnodes(nodecolset.begin(), nodecolset.end());
-    const Core::LinAlg::Map extendednodecolmap(-1, colnodes.size(), colnodes.data(), 0,
-        Core::Communication::as_epetra_comm(discret_->get_comm()));
+    const Core::LinAlg::Map extendednodecolmap(
+        -1, colnodes.size(), colnodes.data(), 0, discret_->get_comm());
 
     discret_->export_column_nodes(extendednodecolmap);
 

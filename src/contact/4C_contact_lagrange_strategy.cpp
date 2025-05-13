@@ -4967,11 +4967,8 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
   }
   else
   {
-    gOldActiveSlaveNodes_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
-    if (friction_)
-      gOldslipnodes_ = std::make_shared<Core::LinAlg::Map>(
-          0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    gOldActiveSlaveNodes_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
+    if (friction_) gOldslipnodes_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
   }
 
   // also update special flag for semi-smooth Newton convergence

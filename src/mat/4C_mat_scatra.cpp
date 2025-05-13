@@ -27,7 +27,7 @@ Mat::PAR::ScatraMat::ScatraMat(const Core::Mat::PAR::Parameter::Data& matdata) :
                       ? Global::Problem::instance()->get_communicators()->local_comm()
                       : Global::Problem::instance()->get_communicators()->sub_comm();
 
-  Core::LinAlg::Map dummy_map(1, 1, 0, Core::Communication::as_epetra_comm(comm));
+  Core::LinAlg::Map dummy_map(1, 1, 0, comm);
   for (int i = first; i <= last; i++)
   {
     matparams_.push_back(std::make_shared<Core::LinAlg::Vector<double>>(dummy_map, true));

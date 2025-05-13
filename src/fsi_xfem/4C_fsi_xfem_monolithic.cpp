@@ -669,7 +669,7 @@ void FSI::MonolithicXFEM::create_combined_dof_row_map()
   {
     vecSpaces.push_back(structure_poro()->fluid_field()->dof_row_map());
     std::shared_ptr<const Core::LinAlg::Map> empty_map =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+        std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     vecSpaces_mergedporo.push_back(empty_map);
     // porofluid maps empty??
     if (vecSpaces[fluidp_block_]->NumGlobalElements() == 0)

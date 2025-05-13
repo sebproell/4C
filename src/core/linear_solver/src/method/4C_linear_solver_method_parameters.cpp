@@ -107,7 +107,7 @@ void Core::LinearSolver::Parameters::fix_null_space(std::string field,
     const Core::LinAlg::Map& oldmap, const Core::LinAlg::Map& newmap,
     Teuchos::ParameterList& solveparams)
 {
-  if (!Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(oldmap.Comm())))
+  if (!Core::Communication::my_mpi_rank(oldmap.Comm()))
     printf("Fixing %s Nullspace\n", field.c_str());
 
   // find the ML or MueLu list

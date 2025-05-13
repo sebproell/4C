@@ -158,8 +158,8 @@ namespace TESTING
     { return i * (subdivisions + 1) * (subdivisions + 1) + j * (subdivisions + 1) + k; };
 
     // Create a map for all elements with some initial distribution
-    auto row_elements = std::make_shared<Core::LinAlg::Map>(
-        total_elements, 0, Core::Communication::as_epetra_comm(discretization.get_comm()));
+    auto row_elements =
+        std::make_shared<Core::LinAlg::Map>(total_elements, 0, discretization.get_comm());
 
     // Connect the nodes into elements on the owning ranks
     for (int i = 0; i < subdivisions; ++i)
@@ -250,8 +250,8 @@ namespace TESTING
     const int n_total_elements = std::pow(2, levels) - 1;
 
     // Create a map for all elements with some initial distribution
-    auto row_elements = std::make_shared<Core::LinAlg::Map>(
-        n_total_elements, 0, Core::Communication::as_epetra_comm(discretization.get_comm()));
+    auto row_elements =
+        std::make_shared<Core::LinAlg::Map>(n_total_elements, 0, discretization.get_comm());
 
     const auto leaf_on_level = [&](unsigned level, unsigned ele_on_level) -> int
     { return std::pow(2, level) + ele_on_level; };

@@ -208,8 +208,8 @@ void Solid::MonitorDbc::create_reaction_maps(const Core::FE::Discretization& dis
   }
 
   for (unsigned i = 0; i < DIM; ++i)
-    react_maps[i] = std::make_shared<Core::LinAlg::Map>(
-        -1, my_dofs[i].size(), my_dofs[i].data(), 0, Core::Communication::as_epetra_comm(comm));
+    react_maps[i] =
+        std::make_shared<Core::LinAlg::Map>(-1, my_dofs[i].size(), my_dofs[i].data(), 0, comm);
 }
 
 /*----------------------------------------------------------------------------*

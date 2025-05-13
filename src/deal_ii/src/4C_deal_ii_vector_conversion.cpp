@@ -99,7 +99,7 @@ Core::LinAlg::Map DealiiWrappers::create_dealii_to_four_c_map(
   }
 
   Core::LinAlg::Map dealii_to_four_c_map(dof_handler.n_dofs(), locally_owned_dofs.n_elements(),
-      my_gids.data(), 0, Core::Communication::as_epetra_comm(discretization.get_comm()));
+      my_gids.data(), 0, discretization.get_comm());
 
   return dealii_to_four_c_map;
 }

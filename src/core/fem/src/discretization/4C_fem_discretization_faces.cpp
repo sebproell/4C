@@ -956,8 +956,7 @@ void Core::FE::DiscretizationFaces::build_face_row_map()
       ++count;
     }
   if (count != nummyeles) FOUR_C_THROW("Mismatch in no. of internal faces");
-  facerowmap_ = std::make_shared<Core::LinAlg::Map>(
-      -1, nummyeles, eleids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  facerowmap_ = std::make_shared<Core::LinAlg::Map>(-1, nummyeles, eleids.data(), 0, get_comm());
   return;
 }
 
@@ -980,8 +979,7 @@ void Core::FE::DiscretizationFaces::build_face_col_map()
     ++count;
   }
   if (count != nummyeles) FOUR_C_THROW("Mismatch in no. of elements");
-  facecolmap_ = std::make_shared<Core::LinAlg::Map>(
-      -1, nummyeles, eleids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  facecolmap_ = std::make_shared<Core::LinAlg::Map>(-1, nummyeles, eleids.data(), 0, get_comm());
   return;
 }
 

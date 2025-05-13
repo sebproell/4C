@@ -263,8 +263,8 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
     std::vector<int> gids(vecmap.NumMyElements());
     for (int i = 0; i < vecmap.NumMyElements(); ++i)
       gids[i] = vecmap.MyGlobalElements()[i] - offset;
-    Core::LinAlg::Map rowmap(
-        vecmap.NumGlobalElements(), vecmap.NumMyElements(), gids.data(), 0, vecmap.Comm());
+    Core::LinAlg::Map rowmap(vecmap.NumGlobalElements(), vecmap.NumMyElements(), gids.data(), 0,
+        Core::Communication::unpack_epetra_comm(vecmap.Comm()));
     std::shared_ptr<Core::LinAlg::Vector<double>> dofvec =
         Core::LinAlg::create_vector(rowmap, false);
     for (int i = 0; i < vecmap.NumMyElements(); ++i) (*dofvec)[i] = (*data)[i];

@@ -3116,10 +3116,8 @@ bool Wear::WearInterface::build_active_set_master()
 
     if (frinode->fri_data().slip()) sl.push_back(frinode->id());
   }
-  Core::LinAlg::Map auxa(
-      -1, (int)a.size(), a.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  Core::LinAlg::Map auxsl(
-      -1, (int)sl.size(), sl.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  Core::LinAlg::Map auxa(-1, (int)a.size(), a.data(), 0, get_comm());
+  Core::LinAlg::Map auxsl(-1, (int)sl.size(), sl.data(), 0, get_comm());
 
   const std::shared_ptr<Core::LinAlg::Map> ara = Core::LinAlg::allreduce_e_map((auxa));
   const std::shared_ptr<Core::LinAlg::Map> arsl = Core::LinAlg::allreduce_e_map((auxsl));
@@ -3170,8 +3168,7 @@ bool Wear::WearInterface::build_active_set_master()
       eleatt.push_back(moele->id());
   }
 
-  Core::LinAlg::Map auxe(
-      -1, (int)eleatt.size(), eleatt.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  Core::LinAlg::Map auxe(-1, (int)eleatt.size(), eleatt.data(), 0, get_comm());
   const std::shared_ptr<Core::LinAlg::Map> att = Core::LinAlg::allreduce_e_map((auxe));
 
   for (int j = 0; j < att->NumMyElements(); ++j)
@@ -3272,12 +3269,9 @@ bool Wear::WearInterface::build_active_set_master()
     mele->set_attached() = false;
   }
 
-  Core::LinAlg::Map actmn(
-      -1, (int)wa.size(), wa.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  Core::LinAlg::Map slimn(
-      -1, (int)wsl.size(), wsl.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  Core::LinAlg::Map slimd(
-      -1, (int)wsln.size(), wsln.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  Core::LinAlg::Map actmn(-1, (int)wa.size(), wa.data(), 0, get_comm());
+  Core::LinAlg::Map slimn(-1, (int)wsl.size(), wsl.data(), 0, get_comm());
+  Core::LinAlg::Map slimd(-1, (int)wsln.size(), wsln.data(), 0, get_comm());
 
   const std::shared_ptr<Core::LinAlg::Map> ARactmn =
       Core::LinAlg::allreduce_overlapping_e_map((actmn));
@@ -3329,12 +3323,11 @@ bool Wear::WearInterface::build_active_set_master()
     }
   }
 
-  activmasternodes_ = std::make_shared<Core::LinAlg::Map>(
-      -1, (int)ga.size(), ga.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  slipmasternodes_ = std::make_shared<Core::LinAlg::Map>(
-      -1, (int)gs.size(), gs.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  slipmn_ = std::make_shared<Core::LinAlg::Map>(
-      -1, (int)gsd.size(), gsd.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  activmasternodes_ =
+      std::make_shared<Core::LinAlg::Map>(-1, (int)ga.size(), ga.data(), 0, get_comm());
+  slipmasternodes_ =
+      std::make_shared<Core::LinAlg::Map>(-1, (int)gs.size(), gs.data(), 0, get_comm());
+  slipmn_ = std::make_shared<Core::LinAlg::Map>(-1, (int)gsd.size(), gsd.data(), 0, get_comm());
 
   for (int j = 0; j < slave_col_nodes()->NumMyElements(); ++j)
   {
@@ -3426,10 +3419,10 @@ bool Wear::WearInterface::build_active_set(bool init)
     }
 
     // create map for all involved master nodes -- both-sided wear specific
-    involvednodes_ = std::make_shared<Core::LinAlg::Map>(-1, (int)mymnodegids.size(),
-        mymnodegids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-    involveddofs_ = std::make_shared<Core::LinAlg::Map>(-1, (int)mymdofgids.size(),
-        mymdofgids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+    involvednodes_ = std::make_shared<Core::LinAlg::Map>(
+        -1, (int)mymnodegids.size(), mymnodegids.data(), 0, get_comm());
+    involveddofs_ = std::make_shared<Core::LinAlg::Map>(
+        -1, (int)mymdofgids.size(), mymdofgids.data(), 0, get_comm());
   }
 
   return true;
@@ -4044,15 +4037,13 @@ void Wear::WearInterface::split_slave_dofs()
   // get out of here if active set is empty
   if (snoderowmap_ == nullptr)
   {
-    sndofmap_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    sndofmap_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     return;
   }
 
   else if (snoderowmap_->NumGlobalElements() == 0)
   {
-    sndofmap_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    sndofmap_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     return;
   }
 
@@ -4089,8 +4080,7 @@ void Wear::WearInterface::split_slave_dofs()
     FOUR_C_THROW("SplitSlaveDofs: Splitting went wrong!");
 
   // create Nmap and Tmap objects
-  sndofmap_ = std::make_shared<Core::LinAlg::Map>(
-      gcountN, countN, myNgids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  sndofmap_ = std::make_shared<Core::LinAlg::Map>(gcountN, countN, myNgids.data(), 0, get_comm());
 
   return;
 }
@@ -4104,15 +4094,13 @@ void Wear::WearInterface::split_master_dofs()
   // get out of here if active set is empty
   if (mnoderowmap_ == nullptr)
   {
-    mndofmap_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    mndofmap_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     return;
   }
 
   else if (mnoderowmap_->NumGlobalElements() == 0)
   {
-    mndofmap_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    mndofmap_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     return;
   }
 
@@ -4149,8 +4137,7 @@ void Wear::WearInterface::split_master_dofs()
     FOUR_C_THROW("SplitSlaveDofs: Splitting went wrong!");
 
   // create Nmap and Tmap objects
-  mndofmap_ = std::make_shared<Core::LinAlg::Map>(
-      gcountN, countN, myNgids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  mndofmap_ = std::make_shared<Core::LinAlg::Map>(gcountN, countN, myNgids.data(), 0, get_comm());
 
   return;
 }
@@ -4223,8 +4210,8 @@ void Wear::WearInterface::update_w_sets(int offset_if, int maxdofwear, bool both
   // create interface w map
   // (if maxdofglobal_ == 0, we do not want / need this)
   if (maxdofwear > 0)
-    wdofmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)wdof.size(), wdof.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+    wdofmap_ =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)wdof.size(), wdof.data(), 0, get_comm());
 
   //********************************************************************
   // For discrete both-sided wear
@@ -4256,8 +4243,8 @@ void Wear::WearInterface::update_w_sets(int offset_if, int maxdofwear, bool both
     // create interface w map
     // (if maxdofglobal_ == 0, we do not want / need this)
     if (maxdofwear > 0)
-      wmdofmap_ = std::make_shared<Core::LinAlg::Map>(
-          -1, (int)wmdof.size(), wmdof.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+      wmdofmap_ =
+          std::make_shared<Core::LinAlg::Map>(-1, (int)wmdof.size(), wmdof.data(), 0, get_comm());
   }
 
   return;

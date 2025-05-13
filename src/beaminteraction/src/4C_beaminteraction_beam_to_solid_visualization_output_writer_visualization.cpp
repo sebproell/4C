@@ -82,8 +82,8 @@ void BeamInteraction::BeamToSolidOutputWriterVisualization::
       point_coordinates.push_back(current_node->x()[dim]);
     }
   }
-  node_gid_map_ = std::make_shared<Core::LinAlg::Map>(-1, my_global_dof_ids.size(),
-      my_global_dof_ids.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
+  node_gid_map_ = std::make_shared<Core::LinAlg::Map>(
+      -1, my_global_dof_ids.size(), my_global_dof_ids.data(), 0, discret_->get_comm());
 }
 
 /**

@@ -36,8 +36,7 @@ namespace
       comm_ = MPI_COMM_WORLD;
 
       // set up a map
-      map_ = std::make_shared<Core::LinAlg::Map>(
-          NumGlobalElements, 0, Core::Communication::as_epetra_comm(comm_));
+      map_ = std::make_shared<Core::LinAlg::Map>(NumGlobalElements, 0, comm_);
     }
   };
 
@@ -290,8 +289,7 @@ namespace
       my_elements = {0, 2, 4, 6, 8};
     else
       my_elements = {1, 3, 5, 7, 9};
-    Core::LinAlg::Map new_map(
-        10, my_elements.size(), my_elements.data(), 0, Core::Communication::as_epetra_comm(comm_));
+    Core::LinAlg::Map new_map(10, my_elements.size(), my_elements.data(), 0, comm_);
 
     const Core::LinAlg::MultiVector<double>& b = a;
     const Core::LinAlg::Vector<double>& c = b(0);

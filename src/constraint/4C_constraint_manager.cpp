@@ -188,8 +188,8 @@ void Constraints::ConstrManager::setup(
       nummyele = num_monitor_id_;
     }
     // initialize maps and importer
-    monitormap_ = std::make_shared<Core::LinAlg::Map>(
-        num_monitor_id_, nummyele, 0, Core::Communication::as_epetra_comm(actdisc_->get_comm()));
+    monitormap_ =
+        std::make_shared<Core::LinAlg::Map>(num_monitor_id_, nummyele, 0, actdisc_->get_comm());
     redmonmap_ = Core::LinAlg::allreduce_e_map(*monitormap_);
     monimpo_ = std::make_shared<Epetra_Export>(
         redmonmap_->get_epetra_map(), monitormap_->get_epetra_map());

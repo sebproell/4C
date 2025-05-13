@@ -600,16 +600,16 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
   // allreduced nummyele must match the total no. of elements in this
   // discretization, otherwise we lost some
   // build the rowmap of elements
-  std::shared_ptr<Core::LinAlg::Map> elerowmap = std::make_shared<Core::LinAlg::Map>(
-      -1, nummyele, myele.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> elerowmap =
+      std::make_shared<Core::LinAlg::Map>(-1, nummyele, myele.data(), 0, get_comm());
   if (!elerowmap->UniqueGIDs()) FOUR_C_THROW("Element row map is not unique");
 
   // build elecolmap
   std::vector<int> elecol(nummyele + nummyghostele);
   for (int i = 0; i < nummyele; ++i) elecol[i] = myele[i];
   for (int i = 0; i < nummyghostele; ++i) elecol[nummyele + i] = myghostele[i];
-  std::shared_ptr<Core::LinAlg::Map> elecolmap = std::make_shared<Core::LinAlg::Map>(-1,
-      nummyghostele + nummyele, elecol.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> elecolmap = std::make_shared<Core::LinAlg::Map>(
+      -1, nummyghostele + nummyele, elecol.data(), 0, get_comm());
 
   return {elerowmap, elecolmap};
 }
@@ -790,8 +790,7 @@ void Core::FE::Discretization::extended_ghosting(const Core::LinAlg::Map& elecol
   if (have_pbc) pbcdofset->set_coupled_nodes(pbcmapvec);
 
   std::vector<int> colnodes(nodes.begin(), nodes.end());
-  Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
-      Core::Communication::as_epetra_comm(get_comm()));
+  Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0, get_comm());
 
   // now ghost the nodes
   export_column_nodes(nodecolmap);
@@ -841,8 +840,7 @@ void Core::FE::Discretization::setup_ghosting(
     entriesperrow.push_back(localgraph[i->first].size());
   }
 
-  Core::LinAlg::Map rownodes(
-      -1, gids.size(), gids.data(), 0, Core::Communication::as_epetra_comm(comm_));
+  Core::LinAlg::Map rownodes(-1, gids.size(), gids.data(), 0, comm_);
 
   // Construct FE graph. This graph allows processor off-rows to be inserted
   // as well. The communication issue is solved.
@@ -879,10 +877,10 @@ void Core::FE::Discretization::setup_ghosting(
   // do stupid conversion from Epetra_BlockMap to Core::LinAlg::Map
   const Epetra_BlockMap& brow = graph->row_map();
   const Epetra_BlockMap& bcol = graph->col_map();
-  Core::LinAlg::Map noderowmap(brow.NumGlobalElements(), brow.NumMyElements(),
-      brow.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm_));
-  Core::LinAlg::Map nodecolmap(bcol.NumGlobalElements(), bcol.NumMyElements(),
-      bcol.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm_));
+  Core::LinAlg::Map noderowmap(
+      brow.NumGlobalElements(), brow.NumMyElements(), brow.MyGlobalElements(), 0, comm_);
+  Core::LinAlg::Map nodecolmap(
+      bcol.NumGlobalElements(), bcol.NumMyElements(), bcol.MyGlobalElements(), 0, comm_);
 
   graph = nullptr;
 

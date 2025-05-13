@@ -281,8 +281,8 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::create_lagrange_multiplier_dof_
   const int num_loc_elem_fluid_interface =
       fluid_field()->interface()->fsi_cond_map()->NumMyElements();
   const int max_gid_ale = ale_field()->dof_row_map()->MaxAllGID();
-  lag_mult_dof_map_ = std::make_shared<Core::LinAlg::Map>(num_glob_elem_fluid_interface,
-      num_loc_elem_fluid_interface, max_gid_ale + 1, Core::Communication::as_epetra_comm(comm_));
+  lag_mult_dof_map_ = std::make_shared<Core::LinAlg::Map>(
+      num_glob_elem_fluid_interface, num_loc_elem_fluid_interface, max_gid_ale + 1, comm_);
 }
 
 /*----------------------------------------------------------------------------*/

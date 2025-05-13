@@ -953,13 +953,12 @@ SSI::ManifoldMeshTyingStrategyBlock::intersect_coupling_maps_block_map(
     }
   }
 
-  auto intersected_map =
-      std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(intersecting_map_vec.size()),
-          intersecting_map_vec.data(), 0, Core::Communication::as_epetra_comm(comm));
+  auto intersected_map = std::make_shared<Core::LinAlg::Map>(
+      -1, static_cast<int>(intersecting_map_vec.size()), intersecting_map_vec.data(), 0, comm);
 
   auto permuted_intersected_map = std::make_shared<Core::LinAlg::Map>(-1,
       static_cast<int>(permuted_intersecting_map_vec.size()), permuted_intersecting_map_vec.data(),
-      0, Core::Communication::as_epetra_comm(comm));
+      0, comm);
 
   return {intersected_map, permuted_intersected_map};
 }

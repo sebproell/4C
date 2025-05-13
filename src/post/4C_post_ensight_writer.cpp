@@ -1509,8 +1509,8 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
 
   // do stupid conversion into map
   std::shared_ptr<Core::LinAlg::Map> datamap;
-  datamap = std::make_shared<Core::LinAlg::Map>(
-      map.NumGlobalElements(), map.NumMyElements(), map.MyGlobalElements(), 0, map.Comm());
+  datamap = std::make_shared<Core::LinAlg::Map>(map.NumGlobalElements(), map.NumMyElements(),
+      map.MyGlobalElements(), 0, Core::Communication::unpack_epetra_comm(map.Comm()));
 
   // determine offset of dofs in case of multiple discretizations in
   // separate files (e.g. multi-scale problems). during calculation,
@@ -1818,8 +1818,8 @@ void EnsightWriter::write_element_dof_result_step(std::ofstream& file, PostResul
 
   // do stupid conversion into map
   std::shared_ptr<Core::LinAlg::Map> datamap;
-  datamap = std::make_shared<Core::LinAlg::Map>(
-      map.NumGlobalElements(), map.NumMyElements(), map.MyGlobalElements(), 0, map.Comm());
+  datamap = std::make_shared<Core::LinAlg::Map>(map.NumGlobalElements(), map.NumMyElements(),
+      map.MyGlobalElements(), 0, Core::Communication::unpack_epetra_comm(map.Comm()));
 
   //------------------------------------------------------
   // each processor provides its result values for proc 0
@@ -1984,8 +1984,8 @@ void EnsightWriter::write_element_result_step(std::ofstream& file,
 
   // do stupid conversion into map
   std::shared_ptr<Core::LinAlg::Map> datamap;
-  datamap = std::make_shared<Core::LinAlg::Map>(
-      map.NumGlobalElements(), map.NumMyElements(), map.MyGlobalElements(), 0, map.Comm());
+  datamap = std::make_shared<Core::LinAlg::Map>(map.NumGlobalElements(), map.NumMyElements(),
+      map.MyGlobalElements(), 0, Core::Communication::unpack_epetra_comm(map.Comm()));
 
   //------------------------------------------------------
   // each processor provides its result values for proc 0

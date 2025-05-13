@@ -164,8 +164,7 @@ void Coupling::VolMortar::VolMortarCoupl::build_maps(std::shared_ptr<Core::FE::D
     }
   }
   // dof map is the original, unpermuted distribution of dofs
-  dofmap = std::make_shared<Core::LinAlg::Map>(
-      -1, dofmapvec.size(), dofmapvec.data(), 0, Core::Communication::as_epetra_comm(comm_));
+  dofmap = std::make_shared<Core::LinAlg::Map>(-1, dofmapvec.size(), dofmapvec.data(), 0, comm_);
 
   return;
 }

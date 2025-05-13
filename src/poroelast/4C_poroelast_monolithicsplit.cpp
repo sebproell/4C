@@ -167,9 +167,8 @@ std::shared_ptr<Core::LinAlg::Map> PoroElast::MonolithicSplit::fsidbc_map()
     if (val == 1.0) structfsidbcvector.push_back(fluidmap[i]);
   }
 
-  std::shared_ptr<Core::LinAlg::Map> structfsidbcmap =
-      std::make_shared<Core::LinAlg::Map>(-1, structfsidbcvector.size(), structfsidbcvector.data(),
-          0, Core::Communication::as_epetra_comm(get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> structfsidbcmap = std::make_shared<Core::LinAlg::Map>(
+      -1, structfsidbcvector.size(), structfsidbcvector.data(), 0, get_comm());
   // FOUR_C_ASSERT(fluidfsidbcmap->UniqueGIDs(),"fsidbcmap is not unique!");
 
   return structfsidbcmap;

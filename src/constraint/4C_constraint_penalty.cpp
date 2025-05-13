@@ -44,8 +44,7 @@ Constraints::ConstraintPenalty::ConstraintPenalty(
       nummyele = numele;
     }
     // initialize maps and importer
-    errormap_ = std::make_shared<Core::LinAlg::Map>(
-        numele, nummyele, 0, Core::Communication::as_epetra_comm(actdisc_->get_comm()));
+    errormap_ = std::make_shared<Core::LinAlg::Map>(numele, nummyele, 0, actdisc_->get_comm());
     rederrormap_ = Core::LinAlg::allreduce_e_map(*errormap_);
     errorexport_ = std::make_shared<Epetra_Export>(
         rederrormap_->get_epetra_map(), errormap_->get_epetra_map());
