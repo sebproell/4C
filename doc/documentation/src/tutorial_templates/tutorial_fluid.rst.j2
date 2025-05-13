@@ -32,7 +32,7 @@ We will use Cubit for creating the geometry and the mesh.
 Within Cubit, open the Journal-Editor (*Tools* :math:`\to` *Journal
 Editor*), paste the text below and press *play*.
 After successful geometry and mesh creation, export everything to an
-Exodus file of your choice via *File* :math:`\to`\ *Export...* and
+EXODUS file of your choice via *File* :math:`\to`\ *Export...* and
 set the dimension explicitly to 2D.
 
 .. literalinclude::  /tutorial_fluid.jou
@@ -59,7 +59,7 @@ The execution of |FOURC| is controlled by an input file. Let us create a file
 
 {{ section_dump(input_file_content, ["PROBLEM TYPE", "FLUID DYNAMIC", "SOLVER 1", "MATERIALS", "FUNCT1"]) }}
 
-The mesh is read from the Exodus file created in the previous step. We can read the mesh as
+The mesh is read from the EXODUS file created in the previous step. We can read the mesh as
 follows:
 
 {{ section_dump(input_file_content, ["FLUID GEOMETRY"]) }}
