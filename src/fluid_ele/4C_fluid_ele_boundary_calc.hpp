@@ -113,19 +113,6 @@ namespace Discret
           const std::vector<double>& edispnp);
 
       /*!
-        \brief Calculate mean curvature H. Interpolate the results to achieve better
-        results in the surface tension algorithm (c0 field -> c1 field).
-
-        \param elevec1  (out)     : Nodal values of mean curvature
-        \param edispnp  (in)      : Displacement-vector
-        \param enormals (in)      : Node normals
-      */
-      void element_mean_curvature(Discret::Elements::FluidBoundary* ele,
-          Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
-          const std::vector<double>& edispnp, std::vector<double>& enormals);
-
-      /*!
       brief integrate elemental areas over a surface
 
       \param params (in/out)    : ParameterList for communication between control routine

@@ -70,7 +70,6 @@ namespace FLD
     calc_Neumann_inflow,
     calc_area,
     calc_flowrate,
-    calc_node_curvature,
     calc_pressure_bou_int,
     calc_surface_tension,
     center_of_mass_calc,
