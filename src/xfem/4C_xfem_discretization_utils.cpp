@@ -221,7 +221,7 @@ void XFEM::Utils::XFEMDiscretizationBuilder::setup_xfem_discretization(
   if (!xdis->filled()) xdis->fill_complete();
 
   // get fluid mesh conditions: hereby we specify standalone embedded discretizations
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   xdis->get_condition(embedded_cond_name, conditions);
 
   std::vector<std::string> conditions_to_copy;
@@ -242,7 +242,7 @@ void XFEM::Utils::XFEMDiscretizationBuilder::setup_xfem_discretization(
  *----------------------------------------------------------------------------*/
 void XFEM::Utils::XFEMDiscretizationBuilder::split_discretization_by_condition(
     Core::FE::Discretization& sourcedis, Core::FE::Discretization& targetdis,
-    std::vector<Core::Conditions::Condition*>& conditions,
+    std::vector<const Core::Conditions::Condition*>& conditions,
     const std::vector<std::string>& conditions_to_copy) const
 {
   // row node map (id -> pointer)
@@ -322,7 +322,7 @@ void XFEM::Utils::XFEMDiscretizationBuilder::split_discretization(
   for (std::vector<std::string>::const_iterator conditername = conditions_to_copy.begin();
       conditername != conditions_to_copy.end(); ++conditername)
   {
-    std::vector<Core::Conditions::Condition*> conds;
+    std::vector<const Core::Conditions::Condition*> conds;
     sourcedis.get_condition(*conditername, conds);
     for (unsigned i = 0; i < conds.size(); ++i)
     {
@@ -395,7 +395,7 @@ void XFEM::Utils::XFEMDiscretizationBuilder::split_discretization(
   for (std::vector<std::string>::const_iterator conditername = src_conditions.begin();
       conditername != src_conditions.end(); ++conditername)
   {
-    std::vector<Core::Conditions::Condition*> conds;
+    std::vector<const Core::Conditions::Condition*> conds;
     sourcedis.get_condition(*conditername, conds);
     std::vector<std::shared_ptr<Core::Conditions::Condition>> src_conds(conds.size(), nullptr);
     for (unsigned i = 0; i < conds.size(); ++i)

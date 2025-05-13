@@ -71,11 +71,11 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
     std::cout << "Building contact interface(s)..............." << std::endl;
 
   // Vector that contains solid-to-solid and beam-to-solid contact pairs
-  std::vector<Core::Conditions::Condition*> beamandsolidcontactconditions(0);
+  std::vector<const Core::Conditions::Condition*> beamandsolidcontactconditions;
   discret.get_condition("Contact", beamandsolidcontactconditions);
 
   // Vector that solely contains solid-to-solid contact pairs
-  std::vector<Core::Conditions::Condition*> contactconditions(0);
+  std::vector<const Core::Conditions::Condition*> contactconditions;
 
   // Sort out beam-to-solid contact pairs, since these are treated in the beam3contact framework
   for (const auto& beamSolidCondition : beamandsolidcontactconditions)
@@ -131,8 +131,8 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
   for (unsigned i = 0; i < contactconditions.size(); ++i)
   {
     // initialize vector for current group of conditions and temp condition
-    std::vector<Core::Conditions::Condition*> currentgroup(0);
-    Core::Conditions::Condition* tempcond = nullptr;
+    std::vector<const Core::Conditions::Condition*> currentgroup;
+    const Core::Conditions::Condition* tempcond = nullptr;
 
     // try to build contact group around this condition
     currentgroup.push_back(contactconditions[i]);
@@ -343,7 +343,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
           if (nurbs) Mortar::Utils::prepare_nurbs_node(node, *cnode);
 
           // get edge and corner information:
-          std::vector<Core::Conditions::Condition*> contactcornercond(0);
+          std::vector<const Core::Conditions::Condition*> contactcornercond;
           discret.get_condition("mrtrcorner", contactcornercond);
           for (unsigned j = 0; j < contactcornercond.size(); j++)
           {
@@ -352,7 +352,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
               cnode->set_on_corner() = true;
             }
           }
-          std::vector<Core::Conditions::Condition*> contactedgecond(0);
+          std::vector<const Core::Conditions::Condition*> contactedgecond;
           discret.get_condition("mrtredge", contactedgecond);
           for (unsigned j = 0; j < contactedgecond.size(); j++)
           {
@@ -363,7 +363,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
           }
 
           // Check, if this node (and, in case, which dofs) are in the contact symmetry condition
-          std::vector<Core::Conditions::Condition*> contactSymconditions(0);
+          std::vector<const Core::Conditions::Condition*> contactSymconditions;
           discret.get_condition("mrtrsym", contactSymconditions);
 
           for (unsigned l = 0; l < contactSymconditions.size(); l++)
@@ -401,7 +401,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
           }
 
           // get edge and corner information:
-          std::vector<Core::Conditions::Condition*> contactcornercond(0);
+          std::vector<const Core::Conditions::Condition*> contactcornercond;
           discret.get_condition("mrtrcorner", contactcornercond);
           for (unsigned j = 0; j < contactcornercond.size(); j++)
           {
@@ -410,7 +410,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
               cnode->set_on_corner() = true;
             }
           }
-          std::vector<Core::Conditions::Condition*> contactedgecond(0);
+          std::vector<const Core::Conditions::Condition*> contactedgecond;
           discret.get_condition("mrtredge", contactedgecond);
           for (unsigned j = 0; j < contactedgecond.size(); j++)
           {
@@ -422,7 +422,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
 
 
           // Check, if this node (and, in case, which dofs) are in the contact symmetry condition
-          std::vector<Core::Conditions::Condition*> contactSymconditions(0);
+          std::vector<const Core::Conditions::Condition*> contactSymconditions;
           discret.get_condition("mrtrsym", contactSymconditions);
 
           for (unsigned l = 0; l < contactSymconditions.size(); l++)
@@ -455,7 +455,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
     for (unsigned j = 0; j < currentgroup.size(); ++j)
     {
       // get elements from condition j of current group
-      std::map<int, std::shared_ptr<Core::Elements::Element>>& currele =
+      const std::map<int, std::shared_ptr<Core::Elements::Element>>& currele =
           currentgroup[j]->geometry();
 
       // elements in a boundary condition have a unique id
@@ -470,10 +470,8 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
       int gsize = 0;
       Core::Communication::sum_all(&lsize, &gsize, 1, get_comm());
 
-      std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator fool;
-      for (fool = currele.begin(); fool != currele.end(); ++fool)
+      for (const auto& ele : currele | std::views::values)
       {
-        std::shared_ptr<Core::Elements::Element> ele = fool->second;
         std::shared_ptr<CONTACT::Element> cele =
             std::make_shared<CONTACT::Element>(ele->id() + ggsize, ele->owner(), ele->shape(),
                 ele->num_node(), ele->node_ids(), isslave[j], nurbs);
@@ -866,7 +864,7 @@ bool CONTACT::Manager::read_and_check_input(Teuchos::ParameterList& cparams) con
     // check for self contact
     bool self = false;
     {
-      std::vector<Core::Conditions::Condition*> contactCondition(0);
+      std::vector<const Core::Conditions::Condition*> contactCondition;
       discret().get_condition("Mortar", contactCondition);
 
       for (const auto& condition : contactCondition)
@@ -1428,7 +1426,7 @@ void CONTACT::Manager::reconnect_parent_elements()
  |  Set Parent Elements for Poro Face Elements                ager 11/15|
  *----------------------------------------------------------------------*/
 void CONTACT::Manager::set_poro_parent_element(int& slavetype, int& mastertype,
-    CONTACT::Element& cele, std::shared_ptr<Core::Elements::Element>& ele)
+    CONTACT::Element& cele, std::shared_ptr<Core::Elements::Element> ele)
 {
   // ints to communicate decision over poro bools between processors on every interface
   // safety check - because there may not be mixed interfaces and structural slave elements
@@ -1438,7 +1436,7 @@ void CONTACT::Manager::set_poro_parent_element(int& slavetype, int& mastertype,
       std::dynamic_pointer_cast<Core::Elements::FaceElement>(ele);
   if (faceele == nullptr) FOUR_C_THROW("Cast to FaceElement failed!");
   cele.phys_type() = Mortar::Element::other;
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> porocondvec;
+  std::vector<const Core::Conditions::Condition*> porocondvec;
   discret_.get_condition("PoroCoupling", porocondvec);
   if (!cele.is_slave())  // treat an element as a master element if it is no slave element
   {

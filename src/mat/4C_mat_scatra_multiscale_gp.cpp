@@ -165,7 +165,7 @@ void Mat::ScatraMultiScaleGP::init()
     }
 
     // extract multi-scale coupling conditions from micro-scale discretization
-    std::vector<std::shared_ptr<Core::Conditions::Condition>> conditions;
+    std::vector<const Core::Conditions::Condition*> conditions;
     microdis->get_condition("ScatraMultiScaleCoupling", conditions);
 
     // safety check

@@ -108,8 +108,8 @@ void Core::FE::Utils::DbcNurbs::evaluate(const Teuchos::ParameterList& params,
   dbc_cond_names[0] = "Dirichlet";
   dbc_cond_names[1] = "NurbsLSDirichlet";
 
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> conds(0);
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> curr_conds(0);
+  std::vector<const Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> curr_conds;
   for (std::vector<std::string>::const_iterator cit_name = dbc_cond_names.begin();
       cit_name != dbc_cond_names.end(); ++cit_name)
   {

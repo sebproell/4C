@@ -68,8 +68,7 @@ namespace BeamInteraction
      *
      * @param condition_line (in) The line condition containing the beam elements.
      */
-    BeamInteractionConditionBase(
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_line);
+    BeamInteractionConditionBase(const Core::Conditions::Condition& condition_line);
 
     /**
      * \brief Destructor.
@@ -134,7 +133,7 @@ namespace BeamInteraction
 
    protected:
     //! Pointer to the beam condition.
-    std::shared_ptr<const Core::Conditions::Condition> condition_line_;
+    const Core::Conditions::Condition* condition_line_;
 
     //! Set containing the beam element IDs.
     std::set<int> line_ids_;

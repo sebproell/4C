@@ -77,7 +77,7 @@ int Discret::Elements::Bele3Line::evaluate(Teuchos::ParameterList& params,
  |  Integrate a Line Neumann boundary condition (public)     gammi 04/07|
  *----------------------------------------------------------------------*/
 int Discret::Elements::Bele3Line::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

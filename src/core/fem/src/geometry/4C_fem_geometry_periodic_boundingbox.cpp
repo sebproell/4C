@@ -145,7 +145,7 @@ void Core::Geo::MeshFree::BoundingBox::setup(const Teuchos::ParameterList& io_pa
   // initialize bounding box discretization
   setup_bounding_box_discretization(boundingbox_dis, comm, n_dim);
 
-  if (boxdiscret_->get_condition("Dirichlet") != nullptr) havedirichletbc_ = true;
+  if (boxdiscret_->has_condition("Dirichlet")) havedirichletbc_ = true;
 
   // displacement vector in row and col format
   disn_row_ = Core::LinAlg::create_vector(*boxdiscret_->dof_row_map(), true);

@@ -140,9 +140,7 @@ TSI::Algorithm::Algorithm(MPI_Comm comm)
   // setup mortar coupling
   if (Global::Problem::instance()->get_problem_type() == Core::ProblemType::tsi)
   {
-    Core::Conditions::Condition* mrtrcond =
-        structure_field()->discretization()->get_condition("MortarMulti");
-    if (mrtrcond != nullptr)
+    if (structure_field()->discretization()->has_condition("MortarMulti"))
     {
       mortar_coupling_ = std::make_shared<Mortar::MultiFieldCoupling>();
       mortar_coupling_->push_back_coupling(structure_field()->discretization(), 0,
@@ -465,7 +463,7 @@ void TSI::Algorithm::prepare_contact_strategy()
           "structure should not have a Lagrange strategy ... as long as condensed"
           "contact formulations are not moved to the new structural time integration");
 
-    std::vector<Core::Conditions::Condition*> ccond(0);
+    std::vector<const Core::Conditions::Condition*> ccond;
     structure_field()->discretization()->get_condition("Contact", ccond);
     if (ccond.size() == 0) return;
 

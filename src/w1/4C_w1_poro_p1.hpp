@@ -158,10 +158,10 @@ namespace Discret
           Teuchos::ParameterList& params,  //!< (in/out) ParameterList for communication between
                                            //!< control routine and elements
           Core::FE::Discretization&
-              discretization,                      //!< A reference to the underlying discretization
-          Core::Conditions::Condition& condition,  //!<  The condition to be evaluated
-          std::vector<int>& lm,                    //!< location vector of this element
-          Core::LinAlg::SerialDenseVector& elevec1,  //!< vector to be filled by element.
+              discretization,  //!< A reference to the underlying discretization
+          const Core::Conditions::Condition& condition,  //!<  The condition to be evaluated
+          std::vector<int>& lm,                          //!< location vector of this element
+          Core::LinAlg::SerialDenseVector& elevec1,      //!< vector to be filled by element.
           Core::LinAlg::SerialDenseMatrix* elemat1 = nullptr) override;
 
       //!@}

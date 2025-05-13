@@ -223,10 +223,10 @@ namespace
 /*----------------------------------------------------------------------*
  |                                                         pfaller Apr15|
  *----------------------------------------------------------------------*/
-Constraints::SpringDashpot::SpringDashpot(std::shared_ptr<Core::FE::Discretization> dis,
-    std::shared_ptr<Core::Conditions::Condition> cond)
+Constraints::SpringDashpot::SpringDashpot(
+    std::shared_ptr<Core::FE::Discretization> dis, const Core::Conditions::Condition& cond)
     : actdisc_(std::move(dis)),
-      spring_(std::move(cond)),
+      spring_(&cond),
       stiff_tens_((spring_->parameters().get<std::vector<double>>("STIFF"))[0]),
       stiff_comp_((spring_->parameters().get<std::vector<double>>("STIFF"))[0]),
       offset_((spring_->parameters().get<std::vector<double>>("DISPLOFFSET"))[0]),
@@ -276,7 +276,7 @@ Constraints::SpringDashpot::SpringDashpot(std::shared_ptr<Core::FE::Discretizati
   if (springtype_ == RobinSpringDashpotType::cursurfnormal)
   {
     // get geometry
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = spring_->geometry();
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = spring_->geometry();
     // calculate nodal area
     if (!Core::Communication::my_mpi_rank(actdisc_->get_comm()))
       Core::IO::cout << "Computing area for spring dashpot condition...\n";
@@ -339,7 +339,7 @@ void Constraints::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
   {
     case Core::Conditions::geometry_type_surface:
     {
-      std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = spring_->geometry();
+      const std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = spring_->geometry();
 
       // no check for empty geometry here since in parallel computations
       // can exist processors which do not own a portion of the elements belonging
@@ -1082,7 +1082,7 @@ void Constraints::SpringDashpot::initialize_cur_surf_normal()
       Global::Problem::instance()->spatial_approximation_type());
 
   // create CONTACT elements at interface for normal and gap calculation
-  mortar_->setup_spring_dashpot(actdisc_, actdisc_, spring_, coupling_, actdisc_->get_comm());
+  mortar_->setup_spring_dashpot(actdisc_, actdisc_, *spring_, coupling_, actdisc_->get_comm());
 
   // create temp vectors for gap initialization
   std::map<int, std::map<int, double>> tmpdgap_;

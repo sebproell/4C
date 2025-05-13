@@ -137,8 +137,8 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
     Core::LinAlg::Matrix<nen_, 1> efext(elevec1.values(), true);     // view only!
 
     // get current condition
-    std::shared_ptr<Core::Conditions::Condition> cond =
-        params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+    const Core::Conditions::Condition* cond =
+        params.get<const Core::Conditions::Condition*>("condition");
     if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ThermoConvections'");
 
     // access parameters of the condition
@@ -344,8 +344,8 @@ int Thermo::TemperBoundaryImpl<distype>::evaluate(const FaceElement* ele,
             elemat1.values(), true);  // view only!
 
         // get current condition
-        std::shared_ptr<Core::Conditions::Condition> cond =
-            params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+        const Core::Conditions::Condition* cond =
+            params.get<const Core::Conditions::Condition*>("condition");
         if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ThermoConvections'");
 
         // access parameters of the condition

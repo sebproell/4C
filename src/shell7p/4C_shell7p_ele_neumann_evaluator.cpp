@@ -18,7 +18,7 @@
 FOUR_C_NAMESPACE_OPEN
 
 void Discret::Elements::Shell::evaluate_neumann_by_element(Core::Elements::Element& ele,
-    const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    const Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     const std::vector<int>& dof_index_array, Core::LinAlg::SerialDenseVector& element_force_vector,
     Core::LinAlg::SerialDenseMatrix* element_stiffness_matrix, double total_time)
 {
@@ -48,7 +48,7 @@ void Discret::Elements::Shell::evaluate_neumann_by_element(Core::Elements::Eleme
 
 template <Core::FE::CellType distype>
 void Discret::Elements::Shell::evaluate_neumann(Core::Elements::Element& ele,
-    const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    const Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     const std::vector<int>& dof_index_array, Core::LinAlg::SerialDenseVector& element_force_vector,
     Core::LinAlg::SerialDenseMatrix* element_stiffness_matrix, double total_time)
 {

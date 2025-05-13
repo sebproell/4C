@@ -44,7 +44,7 @@ namespace PoroPressureBased
 
     //! Recompute the CouplingDOFs for each CouplingNode if ntp-coupling active
     void recompute_coupled_do_fs_for_ntp(
-        std::vector<Core::Conditions::Condition*> coupcond, unsigned int couplingnode);
+        std::vector<const Core::Conditions::Condition*> coupcond, unsigned int couplingnode);
 
     //! get global extractor
     const std::shared_ptr<Core::LinAlg::MultiMapExtractor>& global_extractor() const;

@@ -114,7 +114,7 @@ namespace Core::FE
 
     */
     void do_initial_field(const Core::Utils::FunctionManager& function_manager,
-        const Core::FE::Discretization& discret, Core::Conditions::Condition& cond,
+        const Core::FE::Discretization& discret, const Core::Conditions::Condition& cond,
         Core::LinAlg::Vector<double>& fieldvector, const std::vector<int>& locids);
 
     /** \brief Build a Dbc object
@@ -282,15 +282,13 @@ namespace Core::FE
        *  definition of a lower entity.
        */
       void read_dirichlet_condition(const Teuchos::ParameterList& params,
-          const Core::FE::Discretization& discret,
-          const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds, double time,
-          DbcInfo& info, const std::shared_ptr<std::set<int>>* dbcgids) const;
+          const Core::FE::Discretization& discret, std::span<const Conditions::Condition*> conds,
+          double time, DbcInfo& info, const std::shared_ptr<std::set<int>>* dbcgids) const;
 
       /// loop over the conditions and read the given type
       void read_dirichlet_condition(const Teuchos::ParameterList& params,
-          const Core::FE::Discretization& discret,
-          const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds, double time,
-          DbcInfo& info, const std::shared_ptr<std::set<int>>* dbcgids,
+          const Core::FE::Discretization& discret, std::span<const Conditions::Condition*> conds,
+          double time, DbcInfo& info, const std::shared_ptr<std::set<int>>* dbcgids,
           const enum Core::Conditions::ConditionType& type) const;
 
       /** \brief Determine dofs subject to Dirichlet condition from input file
@@ -333,7 +331,7 @@ namespace Core::FE
        */
       void do_dirichlet_condition(const Teuchos::ParameterList& params,
           const Core::FE::Discretization& discret,
-          const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds, double time,
+          std::span<const Core::Conditions::Condition*> conds, double time,
           const std::shared_ptr<Core::LinAlg::Vector<double>>* systemvectors,
           const Core::LinAlg::Vector<int>& toggle,
           const std::shared_ptr<std::set<int>>* dbcgids) const;
@@ -341,7 +339,7 @@ namespace Core::FE
       /// loop over the conditions and assign the given type
       void do_dirichlet_condition(const Teuchos::ParameterList& params,
           const Core::FE::Discretization& discret,
-          const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds, double time,
+          std::span<const Core::Conditions::Condition*> conds, double time,
           const std::shared_ptr<Core::LinAlg::Vector<double>>* systemvectors,
           const Core::LinAlg::Vector<int>& toggle, const std::shared_ptr<std::set<int>>* dbcgids,
           const enum Core::Conditions::ConditionType& type) const;

@@ -109,7 +109,7 @@ namespace TESTING
 
     Core::FE::CellType shape() const override { return data_.cell_type; }
     int evaluate_neumann(Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-        Core::Conditions::Condition& condition, std::vector<int>& lm,
+        const Core::Conditions::Condition& condition, std::vector<int>& lm,
         Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseMatrix* elemat1) override
     {
       FOUR_C_THROW("Not implemented.");

@@ -140,7 +140,7 @@ PoroElast::PoroBase::PoroBase(MPI_Comm comm, const Teuchos::ParameterList& timep
     // access the problem-specific parameter lists
     const Teuchos::ParameterList& fdyn = Global::Problem::instance()->fluid_dynamic_params();
 
-    std::vector<Core::Conditions::Condition*> porocoupl;
+    std::vector<const Core::Conditions::Condition*> porocoupl;
     fluid_field()->discretization()->get_condition("PoroCoupling", porocoupl);
     if (porocoupl.size() == 0)
       FOUR_C_THROW(
@@ -548,17 +548,17 @@ void PoroElast::PoroBase::replace_dof_sets()
 
 void PoroElast::PoroBase::check_for_poro_conditions()
 {
-  std::vector<Core::Conditions::Condition*> nopencond;
+  std::vector<const Core::Conditions::Condition*> nopencond;
   fluid_field()->discretization()->get_condition("no_penetration", nopencond);
   nopen_handle_ = std::make_shared<PoroElast::NoPenetrationConditionHandle>(nopencond);
 
   part_int_cond_ = false;
-  std::vector<Core::Conditions::Condition*> poroPartInt;
+  std::vector<const Core::Conditions::Condition*> poroPartInt;
   fluid_field()->discretization()->get_condition("PoroPartInt", poroPartInt);
   if (poroPartInt.size()) part_int_cond_ = true;
 
   pres_int_cond_ = false;
-  std::vector<Core::Conditions::Condition*> poroPresInt;
+  std::vector<const Core::Conditions::Condition*> poroPresInt;
   fluid_field()->discretization()->get_condition("PoroPresInt", poroPresInt);
   if (poroPresInt.size()) pres_int_cond_ = true;
 }

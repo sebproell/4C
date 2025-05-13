@@ -294,7 +294,7 @@ void ScaTra::LevelSetAlgorithm::evaluate_error_compared_to_analytical_sol()
 void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
 {
   // get condition
-  std::vector<Core::Conditions::Condition*> lscontactpoint;
+  std::vector<const Core::Conditions::Condition*> lscontactpoint;
   discret_->get_condition("LsContact", lscontactpoint);
 
   // map to store node gid and corrected values
@@ -311,7 +311,7 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
   // loop all conditions
   for (std::size_t icond = 0; icond < lscontactpoint.size(); icond++)
   {
-    Core::Conditions::Condition* mycondition = lscontactpoint[icond];
+    const Core::Conditions::Condition* mycondition = lscontactpoint[icond];
 
     // loop all nodes belonging to this condition
     // for these nodes, new values have to be set
@@ -477,7 +477,7 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
   // - maximum in planenormaldirection
   // std::vector<Core::Conditions::Condition*>* surfacepbcs = pbc_->ReturnSurfacePBCs();
   // get periodic surface boundary conditions
-  std::vector<Core::Conditions::Condition*> surfacepbcs;
+  std::vector<const Core::Conditions::Condition*> surfacepbcs;
   discret_->get_condition("SurfacePeriodic", surfacepbcs);
   if (surfacepbcs.empty()) discret_->get_condition("LinePeriodic", surfacepbcs);
   std::vector<int> planenormal(0);

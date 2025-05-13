@@ -77,7 +77,7 @@ void Adapter::CouplingEhlMortar::setup(std::shared_ptr<Core::FE::Discretization>
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(
       Global::Problem::instance()->contact_dynamic_params(), "FRICTION");
 
-  std::vector<Core::Conditions::Condition*> ehl_conditions(0);
+  std::vector<const Core::Conditions::Condition*> ehl_conditions(0);
   masterdis->get_condition(couplingcond, ehl_conditions);
   std::vector<const std::string*> sides((int)ehl_conditions.size());
   double fr_coeff = -1.;

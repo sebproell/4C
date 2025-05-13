@@ -527,13 +527,13 @@ namespace XFEM
 
     void set_interface_velocity() override;
 
-    void get_condition_by_robin_id(const std::vector<Core::Conditions::Condition*>& mycond,
-        const int coupling_id, std::vector<Core::Conditions::Condition*>& mynewcond);
+    void get_condition_by_robin_id(const std::vector<const Core::Conditions::Condition*>& mycond,
+        const int coupling_id, std::vector<const Core::Conditions::Condition*>& mynewcond);
 
-    void create_robin_id_map(const std::vector<Core::Conditions::Condition*>& conditions_NS,
-        const std::vector<Core::Conditions::Condition*>& conditions_robin,
+    void create_robin_id_map(const std::vector<const Core::Conditions::Condition*>& conditions_NS,
+        const std::vector<const Core::Conditions::Condition*>& conditions_robin,
         const std::string& robin_id_name,
-        std::map<int, Core::Conditions::Condition*>& conditionsmap_robin);
+        std::map<int, const Core::Conditions::Condition*>& conditionsmap_robin);
 
     //! Initializes configurationmap
     void setup_configuration_map() override;
@@ -561,8 +561,8 @@ namespace XFEM
     // Condition map. Corelating robin_id from Navier Slip condition and
     //                 Robin Dirichlet/Neumann input sections
     //        robin_id    Robin_cond
-    std::map<int, Core::Conditions::Condition*> conditionsmap_robin_dirch_;
-    std::map<int, Core::Conditions::Condition*> conditionsmap_robin_neumann_;
+    std::map<int, const Core::Conditions::Condition*> conditionsmap_robin_dirch_;
+    std::map<int, const Core::Conditions::Condition*> conditionsmap_robin_neumann_;
 
     //       Coupling Surface (E 1)          slip length    is slip length constant?
     std::map<int, std::pair<double, bool>> sliplength_map_;

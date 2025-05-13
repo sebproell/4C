@@ -84,7 +84,7 @@ namespace Constraints
 
    protected:
     std::shared_ptr<Core::FE::Discretization> actdisc_;  ///< standard discretization
-    std::vector<Core::Conditions::Condition*>
+    std::vector<const Core::Conditions::Condition*>
         moncond_;       ///< conditions, that define the monitor (all of the same kind)
     MoniType montype_;  ///< monitor type
     std::map<int, double>

@@ -24,7 +24,7 @@ void Core::FE::Utils::evaluate_initial_field(const Core::Utils::FunctionManager&
     Core::LinAlg::Vector<double>& fieldvector, const std::vector<int>& locids)
 {
   // get initial field conditions
-  std::vector<Core::Conditions::Condition*> initfieldconditions;
+  std::vector<const Core::Conditions::Condition*> initfieldconditions;
   discret.get_condition("Initfield", initfieldconditions);
 
   //--------------------------------------------------------
@@ -58,7 +58,7 @@ void Core::FE::Utils::evaluate_initial_field(const Core::Utils::FunctionManager&
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Core::FE::Utils::do_initial_field(const Core::Utils::FunctionManager& function_manager,
-    const Core::FE::Discretization& discret, Core::Conditions::Condition& cond,
+    const Core::FE::Discretization& discret, const Core::Conditions::Condition& cond,
     Core::LinAlg::Vector<double>& fieldvector, const std::vector<int>& locids)
 {
   const std::vector<int> cond_nodeids = *cond.get_nodes();

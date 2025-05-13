@@ -28,7 +28,7 @@ namespace
   void fill_conditioned_node_set(const Core::FE::Discretization& discretization,
       const Range& node_range, const std::string& condname, std::set<int>& condnodeset)
   {
-    std::vector<Core::Conditions::Condition*> conditions;
+    std::vector<const Core::Conditions::Condition*> conditions;
     discretization.get_condition(condname, conditions);
 
     for (const Core::Nodes::Node* node : node_range)
@@ -60,7 +60,7 @@ namespace
 void Core::Conditions::find_conditioned_nodes(
     const Core::FE::Discretization& dis, const std::string& condname, std::vector<int>& nodes)
 {
-  std::vector<Condition*> conds;
+  std::vector<const Condition*> conds;
   dis.get_condition(condname, conds);
   find_conditioned_nodes(dis, conds, nodes);
 }
@@ -69,8 +69,8 @@ void Core::Conditions::find_conditioned_nodes(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& dis,
-    const std::vector<Condition*>& conds, std::vector<int>& nodes)
+void Core::Conditions::find_conditioned_nodes(
+    const Core::FE::Discretization& dis, std::span<const Condition*> conds, std::vector<int>& nodes)
 {
   std::set<int> nodeset;
   const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
@@ -93,7 +93,7 @@ void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& di
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& dis,
-    const std::vector<Condition*>& conds, std::map<int, Core::Nodes::Node*>& nodes)
+    std::span<const Condition*> conds, std::map<int, Core::Nodes::Node*>& nodes)
 {
   const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
   for (auto cond : conds)
@@ -111,7 +111,7 @@ void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& di
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& dis,
-    const std::vector<Condition*>& conds, std::map<int, std::shared_ptr<std::vector<int>>>& nodes,
+    std::span<const Condition*> conds, std::map<int, std::shared_ptr<std::vector<int>>>& nodes,
     bool use_coupling_id)
 {
   std::map<int, std::set<int>> nodeset;
@@ -139,7 +139,7 @@ void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& di
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& dis,
-    const std::vector<Condition*>& conds, std::map<int, std::map<int, Core::Nodes::Node*>>& nodes)
+    std::span<const Condition*> conds, std::map<int, std::map<int, Core::Nodes::Node*>>& nodes)
 {
   const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
   for (auto* cond : conds)
@@ -161,15 +161,15 @@ void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& di
 void Core::Conditions::find_condition_objects(const Core::FE::Discretization& dis,
     std::map<int, Core::Nodes::Node*>& nodes, std::map<int, Core::Nodes::Node*>& gnodes,
     std::map<int, std::shared_ptr<Core::Elements::Element>>& elements,
-    const std::vector<Condition*>& conds)
+    std::span<const Condition*> conds)
 {
   find_conditioned_nodes(dis, conds, nodes);
 
   for (const auto& cond : conds)
   {
     // get this condition's elements
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator iter, pos;
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
+    std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator iter, pos;
     pos = elements.begin();
     for (iter = geo.begin(); iter != geo.end(); ++iter)
     {
@@ -196,7 +196,7 @@ void Core::Conditions::find_condition_objects(const Core::FE::Discretization& di
     std::map<int, Core::Nodes::Node*>& nodes, std::map<int, Core::Nodes::Node*>& gnodes,
     std::map<int, std::shared_ptr<Core::Elements::Element>>& elements, const std::string& condname)
 {
-  std::vector<Condition*> conds;
+  std::vector<const Condition*> conds;
   dis.get_condition(condname, conds);
 
   find_conditioned_nodes(dis, conds, nodes);
@@ -204,8 +204,8 @@ void Core::Conditions::find_condition_objects(const Core::FE::Discretization& di
   for (const auto& cond : conds)
   {
     // get this condition's elements
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator iter, pos;
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
+    std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator iter, pos;
     pos = elements.begin();
     for (iter = geo.begin(); iter != geo.end(); ++iter)
     {
@@ -234,7 +234,7 @@ void Core::Conditions::find_condition_objects(const Core::FE::Discretization& di
     std::map<int, std::map<int, std::shared_ptr<Core::Elements::Element>>>& elements,
     const std::string& condname)
 {
-  std::vector<Condition*> conds;
+  std::vector<const Condition*> conds;
   dis.get_condition(condname, conds);
 
   find_conditioned_nodes(dis, conds, nodes);
@@ -243,8 +243,8 @@ void Core::Conditions::find_condition_objects(const Core::FE::Discretization& di
   {
     int id = cond->parameters().get<int>("coupling_id");
     // get this condition's elements
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator iter, pos;
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
+    std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator iter, pos;
     pos = elements[id].begin();
     for (iter = geo.begin(); iter != geo.end(); ++iter)
     {
@@ -271,7 +271,7 @@ void Core::Conditions::find_condition_objects(const Core::FE::Discretization& di
     std::map<int, std::shared_ptr<Core::Elements::Element>>& elements, const std::string& condname,
     const int label)
 {
-  std::vector<Condition*> conds;
+  std::vector<const Condition*> conds;
   dis.get_condition(condname, conds);
 
   bool checklabel = (label >= 0);
@@ -286,8 +286,8 @@ void Core::Conditions::find_condition_objects(const Core::FE::Discretization& di
     }
 
     // get this condition's elements
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator iter, pos;
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& geo = cond->geometry();
+    std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator iter, pos;
     pos = elements.begin();
     for (iter = geo.begin(); iter != geo.end(); ++iter)
     {
@@ -374,7 +374,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::Conditions::condition_node_col_map(
 std::shared_ptr<std::set<int>> Core::Conditions::conditioned_element_map(
     const Core::FE::Discretization& dis, const std::string& condname)
 {
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   dis.get_condition(condname, conditions);
 
   std::shared_ptr<std::set<int>> condelementmap = std::make_shared<std::set<int>>();

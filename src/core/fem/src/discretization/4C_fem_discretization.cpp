@@ -589,7 +589,7 @@ void Core::FE::Discretization::replace_conditions(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Core::FE::Discretization::get_condition(
-    const std::string& name, std::vector<Core::Conditions::Condition*>& out) const
+    const std::string& name, std::vector<const Core::Conditions::Condition*>& out) const
 {
   const unsigned num = condition_.count(name);
   out.resize(num);
@@ -603,32 +603,12 @@ void Core::FE::Discretization::get_condition(
   FOUR_C_ASSERT_ALWAYS(
       count == num, "Mismatch in number of conditions found in discretization {}!", name_);
 }
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Core::FE::Discretization::get_condition(
-    const std::string& name, std::vector<std::shared_ptr<Core::Conditions::Condition>>& out) const
-{
-  const unsigned num = condition_.count(name);
-  out.resize(num);
-  unsigned count = 0;
-
-  auto range = condition_.equal_range(name);
-  for (auto cond = range.first; cond != range.second; ++cond)
-  {
-    out[count++] = cond->second;
-  }
-  FOUR_C_ASSERT_ALWAYS(
-      count == num, "Mismatch in number of conditions found in discretization {}!", name_);
-}
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-Core::Conditions::Condition* Core::FE::Discretization::get_condition(const std::string& name) const
+bool Core::FE::Discretization::has_condition(const std::string& name) const
 {
-  auto it_cond = condition_.find(name);
-  if (it_cond == condition_.end()) return nullptr;
-  it_cond = condition_.lower_bound(name);
-  return it_cond->second.get();
+  return condition_.contains(name);
 }
 
 

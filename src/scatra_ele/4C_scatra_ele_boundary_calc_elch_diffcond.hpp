@@ -54,7 +54,7 @@ namespace Discret
           Core::LinAlg::SerialDenseVector& elevec3) override;
 
       int evaluate_neumann(Core::Elements::FaceElement* ele, Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+          Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
           Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseVector& elevec1,
           const double scalar) override;
 
@@ -63,9 +63,8 @@ namespace Discret
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephinp,
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ehist, double timefac,
           std::shared_ptr<const Core::Mat::Material> material,
-          std::shared_ptr<Core::Conditions::Condition> cond, const int nume,
-          const std::vector<int> stoich, const int kinetics, const double pot0, const double frt,
-          const double scalar) override;
+          const Core::Conditions::Condition& cond, const int nume, const std::vector<int> stoich,
+          const int kinetics, const double pot0, const double frt, const double scalar) override;
 
       void evaluate_s2_i_coupling(const Core::Elements::FaceElement* ele,
           Teuchos::ParameterList& params, Core::FE::Discretization& discretization,

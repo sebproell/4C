@@ -68,13 +68,12 @@ namespace Discret
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ehist,  ///< nodal history vector
           double timefac,                                           ///< time factor
           std::shared_ptr<const Core::Mat::Material> material,      ///< material
-          std::shared_ptr<Core::Conditions::Condition>
-              cond,                       ///< electrode kinetics boundary condition
-          const int nume,                 ///< number of transferred electrons
-          const std::vector<int> stoich,  ///< stoichiometry of the reaction
-          const int kinetics,             ///< desired electrode kinetics model
-          const double pot0,              ///< electrode potential on metal side
-          const double frt,               ///< factor F/RT
+          const Core::Conditions::Condition& cond,  ///< electrode kinetics boundary condition
+          const int nume,                           ///< number of transferred electrons
+          const std::vector<int> stoich,            ///< stoichiometry of the reaction
+          const int kinetics,                       ///< desired electrode kinetics model
+          const double pot0,                        ///< electrode potential on metal side
+          const double frt,                         ///< factor F/RT
           const double
               scalar  ///< scaling factor for element matrix and right-hand side contributions
       );
@@ -94,7 +93,7 @@ namespace Discret
       void evaluate_electrode_status(const Core::Elements::Element* ele,  ///< current element
           Core::LinAlg::SerialDenseVector& scalars,  ///< scalars to be integrated
           Teuchos::ParameterList& params,            ///< parameter list
-          Core::Conditions::Condition& cond,         ///< condition
+          const Core::Conditions::Condition& cond,   ///< condition
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>&
               ephinp,  ///< nodal values of concentration and electric potential
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>&

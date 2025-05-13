@@ -316,7 +316,7 @@ void FLD::XWall::init_x_wall_maps()
   }
 
   // get Dirichlet conditions
-  std::vector<Core::Conditions::Condition*> dircond;
+  std::vector<const Core::Conditions::Condition*> dircond;
   discret_->get_condition("FluidStressCalc", dircond);
 
   if (not dircond.empty())
@@ -611,7 +611,7 @@ void FLD::XWall::setup_x_wall_dis()
     for (unsigned numcond = 0; numcond < allcond.size(); ++numcond)
     {
       // get condition
-      std::vector<Core::Conditions::Condition*> actcond;
+      std::vector<const Core::Conditions::Condition*> actcond;
       discret_->get_condition(allcond[numcond], actcond);
       // loop all condition of the current type
       for (unsigned numactcond = 0; numactcond < actcond.size(); ++numactcond)

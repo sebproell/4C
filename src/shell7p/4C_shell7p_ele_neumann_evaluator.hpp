@@ -42,7 +42,7 @@ namespace Discret::Elements::Shell
    * @param total_time (in) : The total time for time dependent Neumann conditions
    */
   void evaluate_neumann_by_element(Core::Elements::Element& element,
-      const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+      const Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
       const std::vector<int>& dof_index_array,
       Core::LinAlg::SerialDenseVector& element_force_vector,
       Core::LinAlg::SerialDenseMatrix* element_stiffness_matrix, double total_time);
@@ -66,7 +66,7 @@ namespace Discret::Elements::Shell
    */
   template <Core::FE::CellType distype>
   void evaluate_neumann(Core::Elements::Element& element,
-      const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+      const Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
       const std::vector<int>& dof_index_array,
       Core::LinAlg::SerialDenseVector& element_force_vector,
       Core::LinAlg::SerialDenseMatrix* element_stiffness_matrix, double total_time);

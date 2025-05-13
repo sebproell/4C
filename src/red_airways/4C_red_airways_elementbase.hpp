@@ -313,7 +313,7 @@ namespace Discret
       \return 0 if successful, negative otherwise
       */
       int evaluate_neumann(Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::Conditions::Condition& condition, std::vector<int>& lm,
+          const Core::Conditions::Condition& condition, std::vector<int>& lm,
           Core::LinAlg::SerialDenseVector& elevec1,
           Core::LinAlg::SerialDenseMatrix* elemat1 = nullptr) override;
 
@@ -325,7 +325,7 @@ namespace Discret
       \return 0 if successful, negative otherwise
       */
       virtual int evaluate_dirichlet(Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+          Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
           std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1);
 
 
@@ -659,7 +659,7 @@ namespace Discret
       \return 0 if successful, negative otherwise
       */
       int evaluate_neumann(Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::Conditions::Condition& condition, std::vector<int>& lm,
+          const Core::Conditions::Condition& condition, std::vector<int>& lm,
           Core::LinAlg::SerialDenseVector& elevec1,
           Core::LinAlg::SerialDenseMatrix* elemat1 = nullptr) override;
 
@@ -671,7 +671,7 @@ namespace Discret
       \return 0 if successful, negative otherwise
       */
       virtual int evaluate_dirichlet(Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+          Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
           std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1);
 
       //! @name Other
@@ -1006,7 +1006,7 @@ namespace Discret
       \return 0 if successful, negative otherwise
       */
       int evaluate_neumann(Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-          Core::Conditions::Condition& condition, std::vector<int>& lm,
+          const Core::Conditions::Condition& condition, std::vector<int>& lm,
           Core::LinAlg::SerialDenseVector& elevec1,
           Core::LinAlg::SerialDenseMatrix* elemat1 = nullptr) override;
 
@@ -1018,7 +1018,7 @@ namespace Discret
       \return 0 if successful, negative otherwise
       */
       virtual int evaluate_dirichlet(Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+          Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
           std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1);
 
 

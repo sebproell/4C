@@ -93,7 +93,7 @@ namespace Discret
 
       //! Evaluate a Neumann boundary condition
       int evaluate_neumann(Discret::Elements::FluidBoundary* ele, Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+          Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
           std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
           Core::LinAlg::SerialDenseMatrix* elemat1) override;
 

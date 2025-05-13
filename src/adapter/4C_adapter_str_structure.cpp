@@ -87,8 +87,8 @@ void Adapter::StructureBaseAlgorithm::create_tim_int(const Teuchos::ParameterLis
   Core::ProblemType probtype = problem->get_problem_type();
 
   // get mortar information
-  std::vector<Core::Conditions::Condition*> mtcond(0);
-  std::vector<Core::Conditions::Condition*> ccond(0);
+  std::vector<const Core::Conditions::Condition*> mtcond;
+  std::vector<const Core::Conditions::Condition*> ccond;
   actdis->get_condition("Mortar", mtcond);
   actdis->get_condition("Contact", ccond);
   bool onlymeshtying = false;
@@ -383,8 +383,8 @@ Adapter::StructureBaseAlgorithm::create_contact_meshtying_solver(
   bool onlycontact = false;
   bool meshtyingandcontact = false;
   {
-    std::vector<Core::Conditions::Condition*> mtcond(0);
-    std::vector<Core::Conditions::Condition*> ccond(0);
+    std::vector<const Core::Conditions::Condition*> mtcond;
+    std::vector<const Core::Conditions::Condition*> ccond;
     actdis.get_condition("Mortar", mtcond);
     actdis.get_condition("Contact", ccond);
     if (mtcond.size() != 0 and ccond.size() != 0) meshtyingandcontact = true;

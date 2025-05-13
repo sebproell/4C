@@ -246,8 +246,8 @@ void Core::Conditions::PeriodicBoundaryConditions::put_all_slaves_to_masters_pro
     std::map<int, std::vector<int>> midtosid;
 
     // pointers to master and slave condition
-    Core::Conditions::Condition* mastercond = nullptr;
-    Core::Conditions::Condition* slavecond = nullptr;
+    const Core::Conditions::Condition* mastercond = nullptr;
+    const Core::Conditions::Condition* slavecond = nullptr;
 
     // global master node Ids and global slave node Ids
     std::vector<int> masternodeids;
@@ -954,23 +954,16 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     // remove all node gids of slave nodes on this proc
 
     // get all periodic boundary conditions on this node
-    std::vector<Core::Conditions::Condition*> thiscond;
+    std::vector<const Core::Conditions::Condition*> thiscond;
 
-    std::vector<Core::Conditions::Condition*> linecond;
+    std::vector<const Core::Conditions::Condition*> linecond;
     discret_->get_condition("LinePeriodic", linecond);
 
-    for (std::vector<Core::Conditions::Condition*>::iterator cond = linecond.begin();
-        cond != linecond.end(); ++cond)
-    {
-      thiscond.push_back(*cond);
-    }
-    std::vector<Core::Conditions::Condition*> surfcond;
+    thiscond.insert(thiscond.end(), linecond.begin(), linecond.end());
+
+    std::vector<const Core::Conditions::Condition*> surfcond;
     discret_->get_condition("SurfacePeriodic", surfcond);
-    for (std::vector<Core::Conditions::Condition*>::iterator cond = surfcond.begin();
-        cond != surfcond.end(); ++cond)
-    {
-      thiscond.push_back(*cond);
-    }
+    thiscond.insert(thiscond.end(), surfcond.begin(), surfcond.end());
 
     int myerase = 0;
     int numerase = 0;

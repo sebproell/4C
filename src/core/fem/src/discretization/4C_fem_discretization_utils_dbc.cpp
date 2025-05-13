@@ -149,7 +149,7 @@ void Core::FE::Utils::Dbc::evaluate(const Teuchos::ParameterList& params,
   // --------------------------------------------------------------------------
   // loop through Dirichlet conditions and evaluate them
   // --------------------------------------------------------------------------
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> conds(0);
+  std::vector<const Conditions::Condition*> conds;
   discret.get_condition("Dirichlet", conds);
   read_dirichlet_condition(params, discret, conds, time, info, dbcgids);
   // --------------------------------------------------------------------------
@@ -162,9 +162,8 @@ void Core::FE::Utils::Dbc::evaluate(const Teuchos::ParameterList& params,
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList& params,
-    const Core::FE::Discretization& discret,
-    const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds, double time,
-    DbcInfo& info, const std::shared_ptr<std::set<int>>* dbcgids) const
+    const Core::FE::Discretization& discret, std::span<const Conditions::Condition*> conds,
+    double time, DbcInfo& info, const std::shared_ptr<std::set<int>>* dbcgids) const
 {
   // read the DBC in descending order of the geometrical hierarchy.
   // Since lower geometry DBC can override the higher one, the order is important for inconsistency
@@ -184,9 +183,8 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList& params,
-    const Core::FE::Discretization& discret,
-    const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds, double time,
-    DbcInfo& info, const std::shared_ptr<std::set<int>>* dbcgids,
+    const Core::FE::Discretization& discret, std::span<const Conditions::Condition*> conds,
+    double time, DbcInfo& info, const std::shared_ptr<std::set<int>>* dbcgids,
     const enum Core::Conditions::ConditionType& type) const
 {
   int hierarchical_order;
@@ -420,9 +418,8 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& params,
-    const Core::FE::Discretization& discret,
-    const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds, double time,
-    const std::shared_ptr<Core::LinAlg::Vector<double>>* systemvectors,
+    const Core::FE::Discretization& discret, std::span<const Conditions::Condition*> conds,
+    double time, const std::shared_ptr<Core::LinAlg::Vector<double>>* systemvectors,
     const Core::LinAlg::Vector<int>& toggle, const std::shared_ptr<std::set<int>>* dbcgids) const
 {
   do_dirichlet_condition(params, discret, conds, time, systemvectors, toggle, dbcgids,
@@ -438,9 +435,8 @@ void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& params,
-    const Core::FE::Discretization& discret,
-    const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds, double time,
-    const std::shared_ptr<Core::LinAlg::Vector<double>>* systemvectors,
+    const Core::FE::Discretization& discret, std::span<const Core::Conditions::Condition*> conds,
+    double time, const std::shared_ptr<Core::LinAlg::Vector<double>>* systemvectors,
     const Core::LinAlg::Vector<int>& toggle, const std::shared_ptr<std::set<int>>* dbcgids,
     const enum Core::Conditions::ConditionType& type) const
 {

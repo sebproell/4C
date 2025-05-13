@@ -704,7 +704,7 @@ namespace ScaTra
      * @param[out] blockmaps               empty vector for maps to be built
      */
     virtual void build_block_maps(
-        const std::vector<std::shared_ptr<Core::Conditions::Condition>>& partitioningconditions,
+        const std::vector<const Core::Conditions::Condition*>& partitioningconditions,
         std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const;
 
     //! build null spaces associated with blocks of global system matrix. Hand in solver to access
@@ -983,7 +983,7 @@ namespace ScaTra
     virtual void set_old_part_of_righthandside();
 
     //! create Krylov space projector
-    void setup_krylov_space_projection(Core::Conditions::Condition* kspcond);
+    void setup_krylov_space_projection(const Core::Conditions::Condition* kspcond);
     //! update Krylov space projector
     void update_krylov_space_projection();
 
@@ -1882,7 +1882,7 @@ namespace ScaTra
 
    private:
     //! vector of 'TotalAndMeanScalar'-conditions
-    std::vector<Core::Conditions::Condition*> conditions_;
+    std::vector<const Core::Conditions::Condition*> conditions_;
 
     //! number of degrees of freedom per node per 'TotalAndMeanScalar'-conditions
     std::map<int, int> numdofpernodepercondition_;
@@ -1943,9 +1943,9 @@ namespace ScaTra
 
    private:
     //! vector of 'DomainIntegral'-conditions
-    std::vector<Core::Conditions::Condition*> conditionsdomain_;
+    std::vector<const Core::Conditions::Condition*> conditionsdomain_;
     //! vector of 'BoundaryIntegral'-conditions
-    std::vector<Core::Conditions::Condition*> conditionsboundary_;
+    std::vector<const Core::Conditions::Condition*> conditionsboundary_;
     //! vector of 'DomainIntegral'-values
     std::vector<double> domainintegralvalues_;
     //! vector of 'BoundaryIntegral'-values

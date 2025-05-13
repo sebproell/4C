@@ -217,7 +217,7 @@ void ScaTra::LevelSetAlgorithm::setup()
 
   // set flag for modification of convective velocity at contact points
   // check whether there are level-set contact point conditions
-  std::vector<Core::Conditions::Condition*> lscontactpoint;
+  std::vector<const Core::Conditions::Condition*> lscontactpoint;
   discret_->get_condition("LsContact", lscontactpoint);
 
   if (not lscontactpoint.empty()) cpbc_ = true;

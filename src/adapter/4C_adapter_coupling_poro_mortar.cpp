@@ -121,7 +121,7 @@ void Adapter::CouplingPoroMortar::add_mortar_elements(
     if (faceele == nullptr) FOUR_C_THROW("Cast to FaceElement failed!");
     cele->phys_type() = Mortar::Element::other;
 
-    std::vector<std::shared_ptr<Core::Conditions::Condition>> porocondvec;
+    std::vector<const Core::Conditions::Condition*> porocondvec;
     masterdis->get_condition("PoroCoupling", porocondvec);
     for (unsigned int i = 0; i < porocondvec.size(); ++i)
     {
@@ -189,7 +189,7 @@ void Adapter::CouplingPoroMortar::add_mortar_elements(
     if (faceele == nullptr) FOUR_C_THROW("Cast to FaceElement failed!");
     cele->phys_type() = Mortar::Element::other;
 
-    std::vector<std::shared_ptr<Core::Conditions::Condition>> porocondvec;
+    std::vector<const Core::Conditions::Condition*> porocondvec;
     masterdis->get_condition("PoroCoupling", porocondvec);
 
     for (unsigned int i = 0; i < porocondvec.size(); ++i)

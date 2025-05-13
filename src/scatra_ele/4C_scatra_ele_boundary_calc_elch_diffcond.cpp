@@ -127,7 +127,7 @@ int Discret::Elements::ScaTraEleBoundaryCalcElchDiffCond<distype, probdim>::eval
 template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleBoundaryCalcElchDiffCond<distype, probdim>::evaluate_neumann(
     Core::Elements::FaceElement* ele, Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseVector& elevec1,
     const double scalar)
 {
@@ -206,12 +206,12 @@ void Discret::Elements::ScaTraEleBoundaryCalcElchDiffCond<distype,
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ehist,  ///< nodal history vector
     double timefac,                                           ///< time factor
     std::shared_ptr<const Core::Mat::Material> material,      ///< material
-    std::shared_ptr<Core::Conditions::Condition> cond,  ///< electrode kinetics boundary condition
-    const int nume,                                     ///< number of transferred electrons
-    const std::vector<int> stoich,                      ///< stoichiometry of the reaction
-    const int kinetics,                                 ///< desired electrode kinetics model
-    const double pot0,                                  ///< electrode potential on metal side
-    const double frt,                                   ///< factor F/RT
+    const Core::Conditions::Condition& cond,  ///< electrode kinetics boundary condition
+    const int nume,                           ///< number of transferred electrons
+    const std::vector<int> stoich,            ///< stoichiometry of the reaction
+    const int kinetics,                       ///< desired electrode kinetics model
+    const double pot0,                        ///< electrode potential on metal side
+    const double frt,                         ///< factor F/RT
     const double scalar  ///< scaling factor for element matrix and right-hand side contributions
 )
 {

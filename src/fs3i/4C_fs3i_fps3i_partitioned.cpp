@@ -322,7 +322,7 @@ void FS3I::PartFPS3I::setup()
 
   // in case of FPS3I we have to handle the conductivity, too
   std::shared_ptr<Core::FE::Discretization> dis = scatravec_[0]->scatra_field()->discretization();
-  std::vector<Core::Conditions::Condition*> coupcond;
+  std::vector<const Core::Conditions::Condition*> coupcond;
   dis->get_condition("ScaTraCoupling", coupcond);
   double myconduct = coupcond[0]->parameters().get<double>(
       "CONDUCT");  // here we assume the conductivity to be the same in every BC

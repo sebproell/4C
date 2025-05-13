@@ -986,7 +986,7 @@ might become invalid after a redistribution of the discretization.
     \return 0 if successful, negative otherwise
     */
     virtual int evaluate_neumann(Teuchos::ParameterList& params,
-        Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+        Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
         std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
         Core::LinAlg::SerialDenseMatrix* elemat1 = nullptr) = 0;
 

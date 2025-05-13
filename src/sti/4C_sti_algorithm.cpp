@@ -113,7 +113,7 @@ STI::Algorithm::Algorithm(MPI_Comm comm, const Teuchos::ParameterList& stidyn,
           FOUR_C_THROW("Invalid type of scatra-scatra interface coupling for thermo field!");
 
         // extract scatra-scatra interface mesh tying conditions
-        std::vector<Core::Conditions::Condition*> conditions;
+        std::vector<const Core::Conditions::Condition*> conditions;
         scatra_->scatra_field()->discretization()->get_condition("S2IMeshtying", conditions);
 
         // loop over all conditions
@@ -325,7 +325,7 @@ void STI::Algorithm::transfer_scatra_to_thermo(
       case Inpar::S2I::coupling_mortar_condensed_bubnov:
       {
         // extract scatra-scatra interface mesh tying conditions
-        std::vector<Core::Conditions::Condition*> conditions;
+        std::vector<const Core::Conditions::Condition*> conditions;
         thermo_->scatra_field()->discretization()->get_condition("S2IMeshtying", conditions);
 
         // loop over all conditions
@@ -374,7 +374,7 @@ void STI::Algorithm::transfer_thermo_to_scatra(
       strategyscatra_->coupling_type() == Inpar::S2I::coupling_mortar_standard)
   {
     // extract scatra-scatra interface mesh tying conditions
-    std::vector<Core::Conditions::Condition*> conditions;
+    std::vector<const Core::Conditions::Condition*> conditions;
     scatra_->scatra_field()->discretization()->get_condition("S2IMeshtying", conditions);
 
     // loop over all conditions

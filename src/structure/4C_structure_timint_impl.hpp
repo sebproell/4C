@@ -189,7 +189,7 @@ namespace Solid
     void predict_tang_dis_consist_vel_acc();
 
     //!
-    void setup_krylov_space_projection(Core::Conditions::Condition* kspcond);
+    void setup_krylov_space_projection(const Core::Conditions::Condition* kspcond);
     //!
     void update_krylov_space_projection();
 

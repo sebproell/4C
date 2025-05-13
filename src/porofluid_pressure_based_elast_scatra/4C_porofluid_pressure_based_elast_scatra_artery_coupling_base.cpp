@@ -83,7 +83,7 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase::PoroMultiPhaseScaTraArtCoup
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void PoroPressureBased::PoroMultiPhaseScaTraArtCouplBase::recompute_coupled_do_fs_for_ntp(
-    std::vector<Core::Conditions::Condition*> coupcond, unsigned int couplingnode)
+    std::vector<const Core::Conditions::Condition*> coupcond, unsigned int couplingnode)
 {
   coupleddofs_art_ =
       (coupcond[couplingnode]->parameters().get<std::vector<int>>("COUPLEDDOF_REDUCED"));

@@ -131,7 +131,7 @@ namespace CONTACT
 
     */
     void set_poro_parent_element(int& slavetype, int& mastertype, CONTACT::Element& cele,
-        std::shared_ptr<Core::Elements::Element>& ele);
+        std::shared_ptr<Core::Elements::Element> ele);
 
     /*!
     \brief Find Physical Type (Poro or Structure) of Poro Interface

@@ -132,8 +132,8 @@ void FS3I::BiofilmFSI::init()
   if (volume_fieldcouplings_[0] == Inpar::FS3I::coupling_nonmatch or
       volume_fieldcouplings_[1] == Inpar::FS3I::coupling_nonmatch)
     FOUR_C_THROW("Mortar volume coupling is yet not implemented for biofilm-fs3i.");
-  if (!problem->get_dis("scatra1")->get_condition("ScaTraFluxCalc") or
-      !problem->get_dis("scatra2")->get_condition("ScaTraFluxCalc"))
+  if (!problem->get_dis("scatra1")->has_condition("ScaTraFluxCalc") or
+      !problem->get_dis("scatra2")->has_condition("ScaTraFluxCalc"))
     FOUR_C_THROW(
         "Fluid-scatra and solid-scatra discretizations must have boundary conditions for flux "
         "calculation at FSI interface!");

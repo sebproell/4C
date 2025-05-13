@@ -36,11 +36,10 @@ void XFEM::evaluate_neumann(Teuchos::ParameterList& params,
   // get the current time
   const double time = params.get("total time", -1.0);
 
-  std::multimap<std::string, Core::Conditions::Condition*>::iterator fool;
-  std::multimap<std::string, Core::Conditions::Condition*> condition;
+  std::multimap<std::string, const Core::Conditions::Condition*> condition;
 
   // vector for conditions of one special type
-  std::vector<Core::Conditions::Condition*> condition_vec;
+  std::vector<const Core::Conditions::Condition*> condition_vec;
 
   //================================================
   // Load Neumann conditions from discretization
@@ -49,13 +48,11 @@ void XFEM::evaluate_neumann(Teuchos::ParameterList& params,
   //================================================
 
   // get standard Point Neumann conditions
-  condition_vec.clear();
   discret->get_condition("PointNeumann", condition_vec);
   // copy conditions to a condition multimap
   for (size_t i = 0; i < condition_vec.size(); i++)
   {
-    condition.insert(std::pair<std::string, Core::Conditions::Condition*>(
-        std::string("PointNeumann"), condition_vec[i]));
+    condition.emplace(std::string("PointNeumann"), condition_vec[i]);
   }
 
   // get standard Surface Neumann conditions
@@ -63,8 +60,7 @@ void XFEM::evaluate_neumann(Teuchos::ParameterList& params,
   discret->get_condition("LineNeumann", condition_vec);
   for (size_t i = 0; i < condition_vec.size(); i++)
   {
-    condition.insert(std::pair<std::string, Core::Conditions::Condition*>(
-        std::string("LineNeumann"), condition_vec[i]));
+    condition.emplace(std::string("LineNeumann"), condition_vec[i]);
   }
 
   // get standard Surface Neumann conditions
@@ -72,8 +68,7 @@ void XFEM::evaluate_neumann(Teuchos::ParameterList& params,
   discret->get_condition("SurfaceNeumann", condition_vec);
   for (size_t i = 0; i < condition_vec.size(); i++)
   {
-    condition.insert(std::pair<std::string, Core::Conditions::Condition*>(
-        std::string("SurfaceNeumann"), condition_vec[i]));
+    condition.emplace(std::string("SurfaceNeumann"), condition_vec[i]);
   }
 
   // NOTE: WE SKIP VolumeNeumann conditions -> there are evaluated at the fluid element level
@@ -95,13 +90,13 @@ void XFEM::evaluate_neumann(Teuchos::ParameterList& params,
  |  evaluate Neumann for standard conditions (public)       schott 08/11|
  *----------------------------------------------------------------------*/
 void XFEM::evaluate_neumann_standard(
-    std::multimap<std::string, Core::Conditions::Condition*>& condition, const double time,
+    std::multimap<std::string, const Core::Conditions::Condition*>& condition, const double time,
     bool assemblemat, Teuchos::ParameterList& params, Core::FE::Discretization& discret,
     Core::LinAlg::Vector<double>& systemvector, Core::LinAlg::SparseOperator* systemmatrix)
 {
   // TEUCHOS_FUNC_TIME_MONITOR( "FLD::XFluid::XFluidState::EvaluateNeumannStandard" );
 
-  std::multimap<std::string, Core::Conditions::Condition*>::iterator fool;
+  std::multimap<std::string, const Core::Conditions::Condition*>::iterator fool;
 
   //--------------------------------------------------------
   // loop through Point Neumann conditions and evaluate them
@@ -111,7 +106,7 @@ void XFEM::evaluate_neumann_standard(
     if (fool->first != (std::string) "PointNeumann") continue;
     if (assemblemat && !Core::Communication::my_mpi_rank(systemvector.get_comm()))
       std::cout << "WARNING: No linearization of PointNeumann conditions" << std::endl;
-    Core::Conditions::Condition& cond = *(fool->second);
+    const Core::Conditions::Condition& cond = *(fool->second);
     const std::vector<int>* nodeids = cond.get_nodes();
     if (!nodeids) FOUR_C_THROW("PointNeumann condition does not have nodal cloud");
     const int nnode = (*nodeids).size();
@@ -156,9 +151,9 @@ void XFEM::evaluate_neumann_standard(
   for (fool = condition.begin(); fool != condition.end(); ++fool)
     if (fool->first == (std::string) "LineNeumann" || fool->first == (std::string) "SurfaceNeumann")
     {
-      Core::Conditions::Condition& cond = *(fool->second);
-      std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond.geometry();
-      std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
+      const Core::Conditions::Condition& cond = *(fool->second);
+      const std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond.geometry();
+      std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator curr;
       Core::LinAlg::SerialDenseVector elevector;
       Core::LinAlg::SerialDenseMatrix elematrix;
       for (curr = geom.begin(); curr != geom.end(); ++curr)

@@ -888,7 +888,7 @@ void Discret::Elements::Wall1PoroP1<distype>::gauss_point_loop_p1_od(Teuchos::Pa
 
 template <Core::FE::CellType distype>
 int Discret::Elements::Wall1PoroP1<distype>::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

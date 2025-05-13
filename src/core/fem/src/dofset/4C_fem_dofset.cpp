@@ -210,7 +210,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
 
   {
     // get DoF coupling conditions
-    std::vector<Core::Conditions::Condition*> couplingconditions(0);
+    std::vector<const Core::Conditions::Condition*> couplingconditions;
     dis.get_condition("PointCoupling", couplingconditions);
     if (!couplingconditions.empty()) pccdofhandling_ = true;
 

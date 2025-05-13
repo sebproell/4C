@@ -532,7 +532,7 @@ void Cut::CutWizard::add_mesh_cutting_side(std::shared_ptr<Core::FE::Discretizat
     // Determine the cutting side id. For embedded mesh cases, we use the id of the parent element
     // of the cutter discretization. Otherwise, we use directly the id of the cutter discretization
     int sid;
-    std::vector<Core::Conditions::Condition*> embeddedmesh_cond;
+    std::vector<const Core::Conditions::Condition*> embeddedmesh_cond;
     cutterdis->get_condition("EmbeddedMeshSolidSurfCoupling", embeddedmesh_cond);
 
     if (embeddedmesh_cond.size() == 0)
@@ -591,7 +591,7 @@ void Cut::CutWizard::add_mesh_cutting_side(int mi, Core::Elements::Element* ele,
 void Cut::CutWizard::add_background_elements()
 {
   // Check if the background mesh has an embedded mesh coupling condition
-  std::vector<Core::Conditions::Condition*> embeddedmesh_cond;
+  std::vector<const Core::Conditions::Condition*> embeddedmesh_cond;
   back_mesh_->get().get_condition("EmbeddedMeshSolidVolBackground", embeddedmesh_cond);
 
   if (!embeddedmesh_cond.size())
@@ -635,7 +635,7 @@ void Cut::CutWizard::add_background_elements_general()
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Cut::CutWizard::add_background_elements_embeddedmesh(
-    std::vector<Core::Conditions::Condition*>& embeddedmesh_cond)
+    std::vector<const Core::Conditions::Condition*>& embeddedmesh_cond)
 {
   // Loop over all Elements to find background elements for embedded mesh condition
   int numelements = back_mesh_->num_my_col_elements();

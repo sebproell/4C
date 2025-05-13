@@ -68,7 +68,7 @@ namespace Adapter
     /// fluid field
     const std::shared_ptr<Adapter::Fluid>& fluid_field() { return fluid_; }
 
-    std::vector<Core::Conditions::Condition*>
+    std::vector<const Core::Conditions::Condition*>
         nopencond_;  ///< vector containing no penetration conditions
   };
 }  // namespace Adapter

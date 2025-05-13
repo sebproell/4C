@@ -190,14 +190,14 @@ namespace ScaTra
 
     //! return the slave-side scatra-scatra interface kinetics conditions applied to a mesh tying
     //! interface
-    const std::map<const int, Core::Conditions::Condition* const>&
+    const std::map<const int, const Core::Conditions::Condition* const>&
     kinetics_conditions_meshtying_slave_side() const
     {
       return kinetics_conditions_meshtying_slaveside_;
     }
 
     //! corresponding master conditions to kinetics condiditions
-    std::map<const int, Core::Conditions::Condition* const>& master_conditions()
+    std::map<const int, const Core::Conditions::Condition* const>& master_conditions()
     {
       return master_conditions_;
     }
@@ -252,7 +252,8 @@ namespace ScaTra
      * @param[in] s2icondition Scatra-scatra interface condition of which parameters are read and
      * stored to the parameter class
      */
-    void set_condition_specific_scatra_parameters(Core::Conditions::Condition& s2icondition) const;
+    void set_condition_specific_scatra_parameters(
+        const Core::Conditions::Condition& s2icondition) const;
 
     /*!
      * \brief Writes S2IKinetics condition specific parameters to parameter list that is stored to
@@ -263,7 +264,7 @@ namespace ScaTra
      * @param[out] s2icouplingparameters  parameter list filled with condition specific parameters
      */
     static void write_s2_i_kinetics_specific_scatra_parameters_to_parameter_list(
-        Core::Conditions::Condition& s2ikinetics_cond,
+        const Core::Conditions::Condition& s2ikinetics_cond,
         Teuchos::ParameterList& s2icouplingparameters);
 
     //! compute history vector, i.e., the history part of the right-hand side vector with all
@@ -716,11 +717,11 @@ namespace ScaTra
     bool has_capacitive_contributions_;
 
     //! slave-side scatra-scatra interface kinetics conditions applied to a mesh tying interface
-    std::map<const int, Core::Conditions::Condition* const>
+    std::map<const int, const Core::Conditions::Condition* const>
         kinetics_conditions_meshtying_slaveside_;
 
     //! corresponding master conditions to kinetics condiditions
-    std::map<const int, Core::Conditions::Condition* const> master_conditions_;
+    std::map<const int, const Core::Conditions::Condition* const> master_conditions_;
 
     //! flag for evaluation of interface linearizations and residuals on slave side only
     bool slaveonly_;
@@ -927,8 +928,9 @@ namespace ScaTra
 
     //! evaluate and assemble interface linearizations and residuals for node-to-segment coupling
     virtual void evaluate_condition_nts(
-        Core::Conditions::Condition& condition,  //!< scatra-scatra interface coupling condition
-        const Mortar::Node& slavenode,           //!< slave-side node
+        const Core::Conditions::Condition&
+            condition,                  //!< scatra-scatra interface coupling condition
+        const Mortar::Node& slavenode,  //!< slave-side node
         const double&
             lumpedarea,  //!< lumped interface area fraction associated with slave-side node
         Mortar::Element& slaveelement,   //!< slave-side mortar element

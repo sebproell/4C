@@ -1990,7 +1990,7 @@ namespace FLD
     if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
       std::cout << "\nforcing for periodic hill such that a mass flow of " << idealmassflow_
                 << " is achieved" << std::endl;
-    std::vector<Core::Conditions::Condition*> bodycond;
+    std::vector<const Core::Conditions::Condition*> bodycond;
     discret_->get_condition("VolumeNeumann", bodycond);
     const auto& val = bodycond[0]->parameters().get<std::vector<double>>("VAL");
     oldforce_ = val.at(0);

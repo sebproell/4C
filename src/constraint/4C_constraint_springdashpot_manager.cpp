@@ -23,7 +23,7 @@ Constraints::SpringDashpotManager::SpringDashpotManager(
     : actdisc_(dis), havespringdashpot_(false)
 {
   // get all spring dashpot conditions
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> springdashpots;
+  std::vector<const Core::Conditions::Condition*> springdashpots;
   actdisc_->get_condition("RobinSpringDashpot", springdashpots);
 
   // number of spring dashpot conditions
@@ -37,7 +37,7 @@ Constraints::SpringDashpotManager::SpringDashpotManager(
 
     // new instance of spring dashpot BC with current condition for every spring dashpot condition
     for (int i = 0; i < n_conds_; ++i)
-      springs_.push_back(std::make_shared<SpringDashpot>(actdisc_, springdashpots[i]));
+      springs_.push_back(std::make_shared<SpringDashpot>(actdisc_, *springdashpots[i]));
   }
 
   return;

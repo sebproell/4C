@@ -27,7 +27,7 @@ FOUR_C_NAMESPACE_OPEN
  |  Integrate a Line Neumann boundary condition (public)      popp 06/13|
  *----------------------------------------------------------------------*/
 int Discret::Elements::Wall1Line::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

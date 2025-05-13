@@ -255,8 +255,8 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
   Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*hist, ehist, lm);
 
   // get current condition
-  std::shared_ptr<Core::Conditions::Condition> cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const Core::Conditions::Condition* cond =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ElchDomainKinetics'");
 
   // access parameters of the condition
@@ -377,9 +377,8 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype,
     Core::LinAlg::SerialDenseMatrix& emat, Core::LinAlg::SerialDenseVector& erhs,
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephinp,
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ehist, double timefac,
-    std::shared_ptr<Core::Conditions::Condition> cond, const int nume,
-    const std::vector<int> stoich, const int kinetics, const double pot0, const double frt,
-    const double scalar)
+    const Core::Conditions::Condition& cond, const int nume, const std::vector<int> stoich,
+    const int kinetics, const double pot0, const double frt, const double scalar)
 {
   // call base class routine
   myelch::evaluate_elch_boundary_kinetics_point(
@@ -430,7 +429,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::evaluate_el
     const Core::Elements::Element* ele, Core::LinAlg::SerialDenseMatrix& emat,
     Core::LinAlg::SerialDenseVector& erhs, const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephinp,
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ehist, double timefac,
-    Core::Conditions::Condition& cond, const int nume, const std::vector<int> stoich,
+    const Core::Conditions::Condition& cond, const int nume, const std::vector<int> stoich,
     const int kinetics, const double pot0)
 {
   // for pre-multiplication of i0 with 1/(F z_k)
@@ -522,7 +521,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::evaluate_el
 template <Core::FE::CellType distype, int probdim>
 void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::evaluate_electrode_status(
     const Core::Elements::Element* ele, Core::LinAlg::SerialDenseVector& scalars,
-    Teuchos::ParameterList& params, Core::Conditions::Condition& cond,
+    Teuchos::ParameterList& params, const Core::Conditions::Condition& cond,
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephinp,
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephidtnp, const int kinetics,
     const std::vector<int> stoich, const int nume, const double pot0, const double timefac)

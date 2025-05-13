@@ -266,8 +266,7 @@ void Constraints::Constraint::evaluate_constraint(Teuchos::ParameterList& params
       const double lagraval = (*lagramul)[lindex];
 
       // elements might need condition
-      params.set<std::shared_ptr<Core::Conditions::Condition>>(
-          "condition", Core::Utils::shared_ptr_from_ref(*cond));
+      params.set<const Core::Conditions::Condition*>("condition", cond);
 
       // define element matrices and vectors
       Core::LinAlg::SerialDenseMatrix elematrix1;
@@ -276,19 +275,18 @@ void Constraints::Constraint::evaluate_constraint(Teuchos::ParameterList& params
       Core::LinAlg::SerialDenseVector elevector2;
       Core::LinAlg::SerialDenseVector elevector3;
 
-      std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond->geometry();
+      const std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond->geometry();
       // if (geom.empty()) FOUR_C_THROW("evaluation of condition with empty geometry");
       // no check for empty geometry here since in parallel computations
       // can exist processors which do not own a portion of the elements belonging
       // to the condition geometry
-      std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
-      for (curr = geom.begin(); curr != geom.end(); ++curr)
+      for (const auto& [id, ele] : geom)
       {
         // get element location vector and ownerships
         std::vector<int> lm;
         std::vector<int> lmowner;
         std::vector<int> lmstride;
-        curr->second->location_vector(*actdisc_, lm, lmowner, lmstride);
+        ele->location_vector(*actdisc_, lm, lmowner, lmstride);
 
         // get dimension of element matrices and vectors
         // Reshape element matrices and vectors and init to zero
@@ -300,12 +298,12 @@ void Constraints::Constraint::evaluate_constraint(Teuchos::ParameterList& params
         elevector3.size(1);
 
         // call the element specific evaluate method
-        int err = curr->second->evaluate(
+        int err = ele->evaluate(
             params, *actdisc_, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);
         if (err) FOUR_C_THROW("error while evaluating elements");
 
         // assembly
-        int eid = curr->second->id();
+        int eid = ele->id();
         if (assemblemat1)
         {
           // scale with time integrator dependent value
@@ -331,7 +329,7 @@ void Constraints::Constraint::evaluate_constraint(Teuchos::ParameterList& params
           std::vector<int> constrlm;
           std::vector<int> constrowner;
           constrlm.push_back(gindex);
-          constrowner.push_back(curr->second->owner());
+          constrowner.push_back(ele->owner());
           Core::LinAlg::assemble(*systemvector3, elevector3, constrlm, constrowner);
         }
       }
@@ -363,8 +361,7 @@ void Constraints::Constraint::initialize_constraint(
     // if current time is larger than initialization time of the condition, start computing
     if ((inittimes_.find(condID)->second <= time) && (!(activecons_.find(condID)->second)))
     {
-      params.set<std::shared_ptr<Core::Conditions::Condition>>(
-          "condition", Core::Utils::shared_ptr_from_ref(*cond));
+      params.set<const Core::Conditions::Condition*>("condition", cond);
 
       // define element matrices and vectors
       Core::LinAlg::SerialDenseMatrix elematrix1;
@@ -373,25 +370,24 @@ void Constraints::Constraint::initialize_constraint(
       Core::LinAlg::SerialDenseVector elevector2;
       Core::LinAlg::SerialDenseVector elevector3;
 
-      std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond->geometry();
+      const auto& geom = cond->geometry();
       // no check for empty geometry here since in parallel computations
       // can exist processors which do not own a portion of the elements belonging
       // to the condition geometry
-      std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
-      for (curr = geom.begin(); curr != geom.end(); ++curr)
+      for (const auto& [id, ele] : geom)
       {
         // get element location vector and ownerships
         std::vector<int> lm;
         std::vector<int> lmowner;
         std::vector<int> lmstride;
-        curr->second->location_vector(*actdisc_, lm, lmowner, lmstride);
+        ele->location_vector(*actdisc_, lm, lmowner, lmstride);
 
         // get dimension of element matrices and vectors
         // Reshape element matrices and vectors and init to zero
         elevector3.size(1);
 
         // call the element specific evaluate method
-        int err = curr->second->evaluate(
+        int err = ele->evaluate(
             params, *actdisc_, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);
         if (err) FOUR_C_THROW("error while evaluating elements");
 
@@ -401,7 +397,7 @@ void Constraints::Constraint::initialize_constraint(
         std::vector<int> constrowner;
         int offsetID = params.get<int>("OffsetID");
         constrlm.push_back(condID - offsetID);
-        constrowner.push_back(curr->second->owner());
+        constrowner.push_back(ele->owner());
         Core::LinAlg::assemble(systemvector, elevector3, constrlm, constrowner);
       }
       // remember next time, that this condition is already initialized, i.e. active

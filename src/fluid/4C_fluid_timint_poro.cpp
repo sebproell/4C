@@ -207,7 +207,7 @@ void FLD::TimIntPoro::poro_int_update()
   sysmat_->un_complete();
 
   std::string condname = "PoroPartInt";
-  std::vector<Core::Conditions::Condition*> poroPartInt;
+  std::vector<const Core::Conditions::Condition*> poroPartInt;
   discret_->get_condition(condname, poroPartInt);
   if (poroPartInt.size())
   {
@@ -231,7 +231,7 @@ void FLD::TimIntPoro::poro_int_update()
   }
 
   condname = "PoroPresInt";
-  std::vector<Core::Conditions::Condition*> poroPresInt;
+  std::vector<const Core::Conditions::Condition*> poroPresInt;
   discret_->get_condition(condname, poroPresInt);
   if (poroPresInt.size())
   {

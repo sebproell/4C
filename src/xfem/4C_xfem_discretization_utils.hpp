@@ -69,7 +69,7 @@ namespace XFEM
       void split_discretization_by_condition(
           Core::FE::Discretization& sourcedis,  //< initially contains all
           Core::FE::Discretization& targetdis,  //< initially empty
-          std::vector<Core::Conditions::Condition*>&
+          std::vector<const Core::Conditions::Condition*>&
               conditions,  //< conditioned nodes to be shifted to target
           const std::vector<std::string>& conditions_to_copy  //< conditions to copy to target
       ) const;

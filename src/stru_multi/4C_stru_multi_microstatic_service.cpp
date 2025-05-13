@@ -23,7 +23,7 @@ void MultiScale::MicroStatic::determine_toggle()
                // creation of vectors and matrices for homogenization
                // procedure
 
-  std::vector<Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> conds;
   discret_->get_condition("MicroBoundary", conds);
   for (auto& cond : conds)
   {
@@ -103,7 +103,7 @@ void MultiScale::MicroStatic::set_up_homogenization()
   // create vector containing material coordinates of prescribed nodes
   Core::LinAlg::Vector<double> Xp_temp(*pdof_);
 
-  std::vector<Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> conds;
   discret_->get_condition("MicroBoundary", conds);
   for (auto& cond : conds)
   {

@@ -142,7 +142,7 @@ void Adapter::StructureBaseAlgorithmNew::setup_tim_int()
   // Here we read the discretization at the current
   // time step from restart files
   // ---------------------------------------------------------------------------
-  if (actdis_->get_condition("PointCoupling") != nullptr)
+  if (actdis_->has_condition("PointCoupling"))
   {
     std::vector<std::shared_ptr<Core::FE::Discretization>> actdis_vec(1, actdis_);
     Teuchos::ParameterList binning_params = Global::Problem::instance()->binning_strategy_params();
@@ -329,7 +329,7 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
   // check for meshtying and contact conditions
   // ---------------------------------------------------------------------------
   // --- contact conditions
-  std::vector<Core::Conditions::Condition*> ccond(0);
+  std::vector<const Core::Conditions::Condition*> ccond;
   actdis_->get_condition("Contact", ccond);
   if (ccond.size())
   {
@@ -350,16 +350,16 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
       modeltypes.insert(Inpar::Solid::model_contact);
   }
   // --- meshtying conditions
-  std::vector<Core::Conditions::Condition*> mtcond(0);
+  std::vector<const Core::Conditions::Condition*> mtcond;
   actdis_->get_condition("Mortar", mtcond);
   if (mtcond.size()) modeltypes.insert(Inpar::Solid::model_meshtying);
 
   // check for 0D cardiovascular conditions
   // ---------------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> cardiovasc0dcond_4elementwindkessel(0);
-  std::vector<Core::Conditions::Condition*> cardiovasc0dcond_arterialproxdist(0);
-  std::vector<Core::Conditions::Condition*> cardiovasc0dcond_syspulcirculation(0);
-  std::vector<Core::Conditions::Condition*> cardiovascrespir0dcond_syspulperiphcirculation(0);
+  std::vector<const Core::Conditions::Condition*> cardiovasc0dcond_4elementwindkessel;
+  std::vector<const Core::Conditions::Condition*> cardiovasc0dcond_arterialproxdist;
+  std::vector<const Core::Conditions::Condition*> cardiovasc0dcond_syspulcirculation;
+  std::vector<const Core::Conditions::Condition*> cardiovascrespir0dcond_syspulperiphcirculation;
   actdis_->get_condition(
       "Cardiovascular0D4ElementWindkesselStructureCond", cardiovasc0dcond_4elementwindkessel);
   actdis_->get_condition(
@@ -379,12 +379,12 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
   bool have_lag_constraint = false;
   bool have_pen_constraint = false;
   // --- enforcement by Lagrange multiplier
-  std::vector<Core::Conditions::Condition*> lagcond_volconstr3d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_areaconstr3d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_areaconstr2d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_mpconline2d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_mpconplane3d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_mpcnormcomp3d(0);
+  std::vector<const Core::Conditions::Condition*> lagcond_volconstr3d;
+  std::vector<const Core::Conditions::Condition*> lagcond_areaconstr3d;
+  std::vector<const Core::Conditions::Condition*> lagcond_areaconstr2d;
+  std::vector<const Core::Conditions::Condition*> lagcond_mpconline2d;
+  std::vector<const Core::Conditions::Condition*> lagcond_mpconplane3d;
+  std::vector<const Core::Conditions::Condition*> lagcond_mpcnormcomp3d;
   actdis_->get_condition("VolumeConstraint_3D", lagcond_volconstr3d);
   actdis_->get_condition("AreaConstraint_3D", lagcond_areaconstr3d);
   actdis_->get_condition("AreaConstraint_2D", lagcond_areaconstr2d);
@@ -395,9 +395,9 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
       lagcond_mpconline2d.size() or lagcond_mpconplane3d.size() or lagcond_mpcnormcomp3d.size())
     have_lag_constraint = true;
   // --- enforcement by penalty law
-  std::vector<Core::Conditions::Condition*> pencond_volconstr3d(0);
-  std::vector<Core::Conditions::Condition*> pencond_areaconstr3d(0);
-  std::vector<Core::Conditions::Condition*> pencond_mpcnormcomp3d(0);
+  std::vector<const Core::Conditions::Condition*> pencond_volconstr3d;
+  std::vector<const Core::Conditions::Condition*> pencond_areaconstr3d;
+  std::vector<const Core::Conditions::Condition*> pencond_mpcnormcomp3d;
   actdis_->get_condition("VolumeConstraint_3D_Pen", pencond_volconstr3d);
   actdis_->get_condition("AreaConstraint_3D_Pen", pencond_areaconstr3d);
   actdis_->get_condition("MPC_NormalComponent_3D_Pen", pencond_mpcnormcomp3d);
@@ -409,7 +409,7 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
   // ---------------------------------------------------------------------------
   // check for spring dashpot conditions
   // ---------------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> sdp_cond(0);
+  std::vector<const Core::Conditions::Condition*> sdp_cond;
   actdis_->get_condition("RobinSpringDashpot", sdp_cond);
   if (sdp_cond.size()) modeltypes.insert(Inpar::Solid::model_springdashpot);
   // ---------------------------------------------------------------------------
@@ -496,11 +496,11 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
       Teuchos::getIntegralValue<BeamContact::Modelevaluator>(beamcontact, "MODELEVALUATOR");
 
   // conditions for potential-based beam interaction
-  std::vector<Core::Conditions::Condition*> beampotconditions(0);
+  std::vector<const Core::Conditions::Condition*> beampotconditions;
   actdis_->get_condition("BeamPotentialLineCharge", beampotconditions);
 
   // conditions for beam penalty point coupling
-  std::vector<Core::Conditions::Condition*> beampenaltycouplingconditions(0);
+  std::vector<const Core::Conditions::Condition*> beampenaltycouplingconditions;
   actdis_->get_condition("PenaltyPointCouplingCondition", beampenaltycouplingconditions);
 
 
@@ -550,7 +550,7 @@ void Adapter::StructureBaseAlgorithmNew::set_model_types(
   // ---------------------------------------------------------------------------
   // check for constraints
   // ---------------------------------------------------------------------------
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> linePeriodicRve, surfPeriodicRve,
+  std::vector<const Core::Conditions::Condition*> linePeriodicRve, surfPeriodicRve,
       pointLinearCoupledEquation, embeddedMeshConditions;
   actdis_->get_condition("LinePeriodicRve", linePeriodicRve);
   actdis_->get_condition("SurfacePeriodicRve", surfPeriodicRve);

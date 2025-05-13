@@ -400,7 +400,7 @@ void Core::FE::Discretization::evaluate_condition(Teuchos::ParameterList& params
         {
           params.set("ConditionID", *condID);
         }
-        params.set<std::shared_ptr<Core::Conditions::Condition>>("condition", cond);
+        params.set<const Core::Conditions::Condition*>("condition", cond.get());
 
         for (const auto& [_, ele] : geom)
         {
@@ -557,7 +557,7 @@ void Core::FE::Discretization::evaluate_scalars(
         std::map<int, std::shared_ptr<Core::Elements::Element>>& geometry = condition->geometry();
 
         // add condition to parameter list for elements
-        params.set<std::shared_ptr<Core::Conditions::Condition>>("condition", condition);
+        params.set<const Core::Conditions::Condition*>("condition", condition.get());
 
         // loop over all elements associated with current condition
         for (auto& [_, element] : geometry)

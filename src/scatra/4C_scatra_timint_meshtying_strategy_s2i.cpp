@@ -378,7 +378,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
           // In case the interface linearizations and residuals are evaluated on slave side only,
           // we now apply a standard meshtying algorithm to condense out the slave-side degrees of
           // freedom.
-          else if (!scatratimint_->discretization()->get_condition("PointCoupling"))
+          else if (!scatratimint_->discretization()->has_condition("PointCoupling"))
           {
             // initialize temporary matrix for slave-side rows of system matrix
             Core::LinAlg::SparseMatrix systemmatrixrowsslave(*icoup_->slave_dof_map(), 81);
@@ -531,7 +531,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
       // In case the interface linearizations and residuals are evaluated on slave side only,
       // we now apply a standard meshtying algorithm to condense out the slave-side degrees of
       // freedom.
-      else if (!scatratimint_->discretization()->get_condition("PointCoupling"))
+      else if (!scatratimint_->discretization()->has_condition("PointCoupling"))
       {
         // initialize temporary vector for slave-side entries of residual vector
         Core::LinAlg::Vector<double> residualslave(*icoup_->slave_dof_map());
@@ -608,7 +608,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
         Teuchos::ParameterList params;
 
         // add current condition to parameter list
-        params.set<Core::Conditions::Condition*>("condition", kinetics_slave_cond.second);
+        params.set<const Core::Conditions::Condition*>("condition", kinetics_slave_cond.second);
 
         // collect condition specific data and store to scatra boundary parameter class
         set_condition_specific_scatra_parameters(*(kinetics_slave_cond.second));
@@ -874,7 +874,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
     }
   }
   // extract boundary conditions for scatra-scatra interface layer growth
-  std::vector<Core::Conditions::Condition*> s2icoupling_growth_conditions;
+  std::vector<const Core::Conditions::Condition*> s2icoupling_growth_conditions;
   scatratimint_->discretization()->get_condition(
       "S2IKineticsGrowth", s2icoupling_growth_conditions);
 
@@ -1011,10 +1011,9 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
           // extract ID of boundary condition for scatra-scatra interface layer growth
           // the corresponding boundary condition for scatra-scatra interface coupling is expected
           // to have the same ID
-          const int condid = scatratimint_->discretization()
-                                 ->get_condition("S2IKineticsGrowth")
-                                 ->parameters()
-                                 .get<int>("ConditionID");
+          std::vector<const Core::Conditions::Condition*> growth_conditions;
+          scatratimint_->discretization()->get_condition("S2IKineticsGrowth", growth_conditions);
+          const int condid = growth_conditions.front()->parameters().get<int>("ConditionID");
 
           // set global state vectors according to time-integration scheme
           scatratimint_->add_time_integration_specific_vectors();
@@ -1087,8 +1086,11 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
 
                 // evaluate off-diagonal linearizations arising from scatra-scatra interface layer
                 // growth
-                auto* s2i_coupling_growth_cond =
-                    scatratimint_->discretization()->get_condition("S2IKineticsGrowth");
+                std::vector<const Core::Conditions::Condition*> conds;
+                scatratimint_->discretization()->get_condition("S2IKineticsGrowth", conds);
+                FOUR_C_ASSERT_ALWAYS(conds.size() == 1,
+                    "There should be only one condition for interface layer growth!");
+                const Core::Conditions::Condition* s2i_coupling_growth_cond = conds[0];
 
                 // collect condition specific data and store to scatra boundary parameter class
                 set_condition_specific_scatra_parameters(*s2i_coupling_growth_cond);
@@ -1600,7 +1602,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_mortar_cells(const Core::FE::Discret
 {
   // extract scatra-scatra interface coupling condition from parameter list
   const Core::Conditions::Condition* const condition =
-      params.get<Core::Conditions::Condition*>("condition");
+      params.get<const Core::Conditions::Condition*>("condition");
   if (condition == nullptr)
     FOUR_C_THROW("Cannot access scatra-scatra interface coupling condition!");
 
@@ -1924,9 +1926,9 @@ void ScaTra::MeshtyingStrategyS2I::init_conv_check_strategy()
 void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
 {
   // extract scatra-scatra coupling conditions from discretization
-  std::vector<Core::Conditions::Condition*> s2imeshtying_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> s2imeshtying_conditions;
   scatratimint_->discretization()->get_condition("S2IMeshtying", s2imeshtying_conditions);
-  std::vector<Core::Conditions::Condition*> s2ikinetics_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions;
   scatratimint_->discretization()->get_condition("S2IKinetics", s2ikinetics_conditions);
   kinetics_conditions_meshtying_slaveside_.clear();
   master_conditions_.clear();
@@ -2032,7 +2034,9 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
       // TODO: this is somewhat unclean, because changing the conditions, makes calling
       // setup_meshtying() twice invalid (which should not be necessary, but conceptually possible)
       for (auto& mastercondition : master_conditions_)
-        mastercondition.second->parameters().add("ConditionID", -1);
+        const_cast<Core::Conditions::Condition*>(mastercondition.second)
+            ->parameters()
+            .add("ConditionID", -1);
 
       if (scatratimint_->num_scal() < 1)
         FOUR_C_THROW("Number of transported scalars not correctly set!");
@@ -2225,8 +2229,10 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
 
         // extract current slave-side and associated master-side scatra-scatra interface coupling
         // conditions
-        std::vector<Core::Conditions::Condition*> mastercondition(1, master_conditions_[condid]);
-        std::vector<Core::Conditions::Condition*> slavecondition(1, kinetics_slave_cond.second);
+        std::vector<const Core::Conditions::Condition*> mastercondition(
+            1, master_conditions_[condid]);
+        std::vector<const Core::Conditions::Condition*> slavecondition(
+            1, kinetics_slave_cond.second);
 
         // fill maps
         Core::Conditions::find_condition_objects(*scatratimint_->discretization(), masternodes,
@@ -2266,7 +2272,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
             // add material
             idiscret.g_element(elegid)->set_material(
                 0, Mat::factory(std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-                       kinetics_slave_cond.second->geometry()[elegid])
+                       kinetics_slave_cond.second->geometry().at(elegid))
                            ->parent_element()
                            ->material()
                            ->parameter()
@@ -2280,8 +2286,8 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           {
             impltypes_row[iele] = dynamic_cast<const Discret::Elements::Transport*>(
                 std::dynamic_pointer_cast<const Core::Elements::FaceElement>(
-                    kinetics_slave_cond.second
-                        ->geometry()[interface.slave_row_elements()->GID(iele)])
+                    kinetics_slave_cond.second->geometry().at(
+                        interface.slave_row_elements()->GID(iele)))
                     ->parent_element())
                                       ->impl_type();
           }
@@ -2428,7 +2434,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
             // element
             (*islavenodesimpltypes)[inode] = dynamic_cast<Discret::Elements::Transport*>(
                 std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-                    kinetics_slave_cond.second->geometry()[slavenode->elements()[0]->id()])
+                    kinetics_slave_cond.second->geometry().at(slavenode->elements()[0]->id()))
                     ->parent_element())
                                                  ->impl_type();
           }
@@ -2446,7 +2452,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
             // determine physical implementation type of current slave-side element
             islaveelementsimpltypes[ielement] = dynamic_cast<Discret::Elements::Transport*>(
                 std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-                    kinetics_slave_cond.second->geometry()[elecolmap_slave.GID(ielement)])
+                    kinetics_slave_cond.second->geometry().at(elecolmap_slave.GID(ielement)))
                     ->parent_element())
                                                     ->impl_type();
           }
@@ -2565,7 +2571,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
             Teuchos::ParameterList params;
 
             // add current condition to parameter list
-            params.set<Core::Conditions::Condition*>("condition", kinetics_slave_cond.second);
+            params.set<const Core::Conditions::Condition*>("condition", kinetics_slave_cond.second);
 
             // set action
             params.set<Inpar::S2I::EvaluationActions>(
@@ -2765,13 +2771,13 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
     }
   }
 
-  // extract boundary condition for scatra-scatra interface layer growth
-  const Core::Conditions::Condition* const condition =
-      scatratimint_->discretization()->get_condition("S2IKineticsGrowth");
-
   // setup evaluation of scatra-scatra interface layer growth if applicable
-  if (condition)
+  if (scatratimint_->discretization()->has_condition("S2IKineticsGrowth"))
   {
+    std::vector<const Core::Conditions::Condition*> growth_conditions;
+    scatratimint_->discretization()->get_condition("S2IKineticsGrowth", growth_conditions);
+    FOUR_C_ASSERT_ALWAYS(growth_conditions.size() == 1, "Expected only one growth condition!");
+    const auto* condition = growth_conditions[0];
     // perform setup depending on evaluation method
     switch (intlayergrowth_evaluation_)
     {
@@ -2883,7 +2889,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           if (icond->parameters().get<int>("ConditionID") ==
               condition->parameters().get<int>("ConditionID"))
             // copy conductivity parameter
-            icond->parameters().add(
+            const_cast<Core::Conditions::Condition*>(icond)->parameters().add(
                 "CONDUCTIVITY", condition->parameters().get<double>("CONDUCTIVITY"));
         }
 
@@ -2998,7 +3004,7 @@ void ScaTra::MeshtyingStrategyS2I::set_element_general_parameters(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void ScaTra::MeshtyingStrategyS2I::set_condition_specific_scatra_parameters(
-    Core::Conditions::Condition& s2icondition) const
+    const Core::Conditions::Condition& s2icondition) const
 {
   Teuchos::ParameterList conditionparams;
 
@@ -3012,7 +3018,8 @@ void ScaTra::MeshtyingStrategyS2I::set_condition_specific_scatra_parameters(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void ScaTra::MeshtyingStrategyS2I::write_s2_i_kinetics_specific_scatra_parameters_to_parameter_list(
-    Core::Conditions::Condition& s2ikinetics_cond, Teuchos::ParameterList& s2icouplingparameters)
+    const Core::Conditions::Condition& s2ikinetics_cond,
+    Teuchos::ParameterList& s2icouplingparameters)
 {
   // get kinetic model and condition type
   const Core::Conditions::ConditionType conditiontype = s2ikinetics_cond.type();
@@ -3276,11 +3283,12 @@ void ScaTra::MeshtyingStrategyS2I::collect_output_data() const
         Core::LinAlg::Vector<double>(*scatratimint_->discretization()->node_row_map(), true);
 
     // extract boundary condition for scatra-scatra interface layer growth
-    const Core::Conditions::Condition* const condition =
-        scatratimint_->discretization()->get_condition("S2IKineticsGrowth");
+    std::vector<const Core::Conditions::Condition*> conds;
+    scatratimint_->discretization()->get_condition("S2IKineticsGrowth", conds);
+    FOUR_C_ASSERT_ALWAYS(conds.size() == 1, "Required exactly one S2IKineticsGrowth condition!");
 
     // extract nodal cloud from condition
-    const std::vector<int>* nodegids = condition->get_nodes();
+    const std::vector<int>* nodegids = conds.front()->get_nodes();
 
     // loop over all nodes
     for (int nodegid : *nodegids)
@@ -3333,7 +3341,7 @@ void ScaTra::MeshtyingStrategyS2I::output() const
 void ScaTra::MeshtyingStrategyS2I::output_interface_flux() const
 {
   add_time_integration_specific_vectors();
-  std::vector<Core::Conditions::Condition*> s2ikinetics_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions;
   scatratimint_->discretization()->get_condition("S2IKinetics", s2ikinetics_conditions);
 
   std::map<std::string, std::vector<double>> output_data;
@@ -3491,7 +3499,7 @@ void ScaTra::MeshtyingStrategyS2I::init_meshtying()
   init_conv_check_strategy();
 
   // extract boundary conditions for scatra-scatra interface layer growth
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   scatratimint_->discretization()->get_condition("S2IKineticsGrowth", conditions);
 
   // initialize scatra-scatra interface layer growth
@@ -3593,7 +3601,7 @@ void ScaTra::MeshtyingStrategyS2I::init_meshtying()
           "Adaptive time stepping for scatra-scatra interface layer growth requires "
           "ADAPTIVE_TIMESTEPPING flag to be set!");
     }
-    if (not scatratimint_->discretization()->get_condition("S2IKineticsGrowth"))
+    if (!scatratimint_->discretization()->has_condition("S2IKineticsGrowth"))
     {
       FOUR_C_THROW(
           "Adaptive time stepping for scatra-scatra interface layer growth requires corresponding "
@@ -4239,8 +4247,8 @@ void ScaTra::MortarCellCalc<distype_s, distype_m>::evaluate_nts(
     case Inpar::S2I::evaluate_condition_nts:
     {
       // extract condition from parameter list
-      Core::Conditions::Condition* condition =
-          params.get<Core::Conditions::Condition*>("condition");
+      const Core::Conditions::Condition* condition =
+          params.get<const Core::Conditions::Condition*>("condition");
       if (condition == nullptr)
         FOUR_C_THROW("Cannot access scatra-scatra interface coupling condition!");
 
@@ -4719,8 +4727,8 @@ void ScaTra::MortarCellCalc<distype_s, distype_m>::evaluate_condition(
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype_s, Core::FE::CellType distype_m>
 void ScaTra::MortarCellCalc<distype_s, distype_m>::evaluate_condition_nts(
-    Core::Conditions::Condition& condition, const Mortar::Node& slavenode, const double& lumpedarea,
-    Mortar::Element& slaveelement, Mortar::Element& masterelement,
+    const Core::Conditions::Condition& condition, const Mortar::Node& slavenode,
+    const double& lumpedarea, Mortar::Element& slaveelement, Mortar::Element& masterelement,
     const std::vector<Core::LinAlg::Matrix<nen_slave_, 1>>& ephinp_slave,
     const std::vector<Core::LinAlg::Matrix<nen_master_, 1>>& ephinp_master,
     Core::LinAlg::SerialDenseMatrix& k_ss, Core::LinAlg::SerialDenseMatrix& k_sm,

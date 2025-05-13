@@ -121,13 +121,13 @@ void XFEM::ConditionManager::get_coupling_ids(const Core::FE::Discretization& co
 {
   // get all conditions of this type, if several conditions with different coupling ids
   // create an own coupling object for each coupling id
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   cond_dis.get_condition(condition_name, conditions);
 
   // CompositeByCouplingId
   for (size_t s = 0; s < conditions.size(); ++s)
   {
-    Core::Conditions::Condition* cond = conditions[s];
+    const Core::Conditions::Condition* cond = conditions[s];
     const int couplingID = cond->parameters().get<int>("COUPLINGID");
 
     coupling_ids.insert(couplingID);

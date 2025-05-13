@@ -1259,7 +1259,8 @@ void Discret::Elements::ScaTraEleCalcHDG<distype, probdim>::LocalSolver::compute
 {
   TEUCHOS_FUNC_TIME_MONITOR("Discret::Elements::ScaTraHDGEleCalc::ComputeNeumannBC");
 
-  Core::Conditions::Condition* condition = params.get<Core::Conditions::Condition*>("condition");
+  const Core::Conditions::Condition* condition =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (condition == nullptr) FOUR_C_THROW("Cannot access Neumann boundary condition!");
 
   // get actual time

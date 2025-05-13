@@ -146,7 +146,7 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system()
   // structure_field: check whether we have locsys BCs, i.e. inclined structural
   //  Dirichlet BC
 
-  std::vector<Core::Conditions::Condition*> locsysconditions(0);
+  std::vector<const Core::Conditions::Condition*> locsysconditions;
   (structure_field()->discretization())->get_condition("Locsys", locsysconditions);
 
   // if there are inclined structural Dirichlet BC, get the structural LocSysManager

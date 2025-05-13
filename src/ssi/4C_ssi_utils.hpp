@@ -56,7 +56,7 @@ namespace SSI
 
     //! check for a consistent input file definition of the SSIInterfaceContact condition
     void check_consistency_of_ssi_interface_contact_condition(
-        const std::vector<Core::Conditions::Condition*>& conditionsToBeTested,
+        const std::vector<const Core::Conditions::Condition*>& conditionsToBeTested,
         const Core::FE::Discretization& structdis);
 
     /// Function for checking that the different time steps are a

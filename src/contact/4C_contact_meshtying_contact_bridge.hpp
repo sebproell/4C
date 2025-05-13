@@ -63,8 +63,8 @@ namespace CONTACT
     @param timeIntegrationMidPoint Generalized mid-point of time integration scheme
     */
     MeshtyingContactBridge(Core::FE::Discretization& dis,
-        std::vector<Core::Conditions::Condition*>& meshtyingConditions,
-        std::vector<Core::Conditions::Condition*>& contactConditions,
+        std::vector<const Core::Conditions::Condition*>& meshtyingConditions,
+        std::vector<const Core::Conditions::Condition*>& contactConditions,
         double timeIntegrationMidPoint);
 
     /*!

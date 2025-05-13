@@ -165,13 +165,16 @@ Utils::Cardiovascular0D::Cardiovascular0D(std::shared_ptr<Core::FE::Discretizati
     {
       coupcondID[i] = cardiovascular0dstructcoupcond_[i]->parameters().get<int>("coupling_id");
 
+      // TODO: This hacks the condition parameters.
+      auto& parameters = const_cast<Core::IO::InputParameterContainer&>(
+          cardiovascular0dstructcoupcond_[i]->parameters());
       std::string type = "orthopressure";
-      cardiovascular0dstructcoupcond_[i]->parameters().add("TYPE", type);
+      parameters.add("TYPE", type);
       std::vector<int> onoff(6, 0);
       onoff[0] = 1;
-      cardiovascular0dstructcoupcond_[i]->parameters().add("ONOFF", onoff);
+      parameters.add("ONOFF", onoff);
       std::vector<double> val(6, 0.0);
-      cardiovascular0dstructcoupcond_[i]->parameters().add("VAL", val);
+      parameters.add("VAL", val);
     }
 
     if (cardiovascular0dcond_.size() != cardiovascular0dstructcoupcond_.size())
@@ -312,19 +315,18 @@ void Utils::Cardiovascular0D::evaluate_d_struct_dp(
     gindex[0] = numdof_per_cond * coupcondID + offsetID;
     for (int j = 1; j < numdof_per_cond; j++) gindex[j] = gindex[0] + j;
 
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = coupcond->geometry();
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = coupcond->geometry();
     // if (geom.empty()) FOUR_C_THROW("evaluation of condition with empty geometry");
     // no check for empty geometry here since in parallel computations
     // can exist processors which do not own a portion of the elements belonging
     // to the condition geometry
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
-    for (curr = geom.begin(); curr != geom.end(); ++curr)
+    for (const auto& [id, ele] : geom)
     {
       // get element location vector and ownerships
       std::vector<int> lm;
       std::vector<int> lmowner;
       std::vector<int> lmstride;
-      curr->second->location_vector(*actdisc_, lm, lmowner, lmstride);
+      ele->location_vector(*actdisc_, lm, lmowner, lmstride);
 
       // get dimension of element matrices and vectors
       // Reshape element matrices and vectors and init to zero
@@ -333,7 +335,7 @@ void Utils::Cardiovascular0D::evaluate_d_struct_dp(
       Core::LinAlg::SerialDenseVector elevector;
       elevector.size(eledim);
 
-      Core::Elements::Element* element = curr->second.get();
+      Core::Elements::Element* element = ele.get();
       int numnode = element->num_node();
 
       // allocate vector for shape functions and matrix for derivatives
@@ -419,7 +421,7 @@ void Utils::Cardiovascular0D::evaluate_d_struct_dp(
             elevector[node * 3 + dim] += funct[node] * normal[dim] * fac;
       }
 
-      int eid = curr->second->id();
+      int eid = ele->id();
 
       // assemble the offdiagonal stiffness block (0,1 block) arising from dR_struct/dcvdof
       // assemble to rectangular matrix. The col corresponds to the Cardiovascular0D ID.
@@ -438,7 +440,7 @@ void Utils::Cardiovascular0D::evaluate_d_struct_dp(
         {
           for (unsigned int j = 0; j < cardiovascular0dcond_.size(); ++j)
           {
-            Core::Conditions::Condition& cond = *(cardiovascular0dcond_[j]);
+            const Core::Conditions::Condition& cond = *(cardiovascular0dcond_[j]);
             int id_cardvasc0d = cond.parameters().get<int>("id");
             if (coupcondID == id_cardvasc0d)
             {
@@ -458,7 +460,7 @@ void Utils::Cardiovascular0D::evaluate_d_struct_dp(
         {
           for (unsigned int j = 0; j < cardiovascular0dcond_.size(); ++j)
           {
-            Core::Conditions::Condition& cond = *(cardiovascular0dcond_[j]);
+            const Core::Conditions::Condition& cond = *(cardiovascular0dcond_[j]);
             int id_cardvasc0d = cond.parameters().get<int>("id");
             if (coupcondID == id_cardvasc0d)
             {

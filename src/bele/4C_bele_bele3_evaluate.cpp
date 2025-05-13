@@ -117,8 +117,7 @@ int Discret::Elements::Bele3::evaluate(Teuchos::ParameterList& params,
           std::make_shared<Core::LinAlg::SerialDenseMatrix>();
 
       // get projection method
-      std::shared_ptr<Core::Conditions::Condition> condition =
-          params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+      const auto* condition = params.get<const Core::Conditions::Condition*>("condition");
       const std::string* projtype = condition->parameters().get_if<std::string>("projection");
 
       if (projtype != nullptr)
@@ -166,7 +165,7 @@ int Discret::Elements::Bele3::evaluate(Teuchos::ParameterList& params,
  |  The function is just a dummy.                                       |
  *----------------------------------------------------------------------*/
 int Discret::Elements::Bele3::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

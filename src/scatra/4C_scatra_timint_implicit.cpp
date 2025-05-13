@@ -75,12 +75,12 @@ ScaTra::ScaTraTimIntImpl::ScaTraTimIntImpl(std::shared_ptr<Core::FE::Discretizat
       incremental_(true),
       fssgd_(Teuchos::getIntegralValue<Inpar::ScaTra::FSSUGRDIFF>(*params, "FSSUGRDIFF")),
       turbmodel_(Inpar::FLUID::no_model),
-      s2ikinetics_(actdis->get_condition("S2IKinetics") != nullptr),
-      s2imeshtying_(actdis->get_condition("S2IMeshtying") != nullptr),
+      s2ikinetics_(actdis->has_condition("S2IKinetics")),
+      s2imeshtying_(actdis->has_condition("S2IMeshtying")),
       arterycoupling_(
           problem_->poro_multi_phase_scatra_dynamic_params().get<bool>("ARTERY_COUPLING") &&
           actdis->name() == "scatra"),
-      heteroreaccoupling_(actdis->get_condition("ScatraHeteroReactionSlave") != nullptr),
+      heteroreaccoupling_(actdis->has_condition("ScatraHeteroReactionSlave")),
       macro_scale_(
           problem_->materials()->first_id_by_type(Core::Materials::m_scatra_multiscale) != -1 or
           problem_->materials()->first_id_by_type(Core::Materials::m_newman_multiscale) != -1),
@@ -494,14 +494,14 @@ void ScaTra::ScaTraTimIntImpl::setup()
     // initialize map extractor associated with boundary segments for flux calculation
     if (calcflux_boundary_ != Inpar::ScaTra::flux_none)
     {
-      std::vector<Core::Conditions::Condition*> conditions;
+      std::vector<const Core::Conditions::Condition*> conditions;
       discret_->get_condition("ScaTraFluxCalc", conditions);
       // set up map extractor
       flux_boundary_maps_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
       std::vector<Core::Conditions::Selector> selectors;
       for (const auto& c : conditions)
         selectors.emplace_back(
-            Core::Conditions::Selector(std::vector<Core::Conditions::Condition*>{c}));
+            Core::Conditions::Selector(std::vector<const Core::Conditions::Condition*>{c}));
       Core::Conditions::setup_extractor(*discret_, *flux_boundary_maps_, selectors, true);
     }
   }
@@ -537,7 +537,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
     // input check
     if (outputscalars_ == Inpar::ScaTra::outputscalars_entiredomain)
     {
-      std::vector<Core::Conditions::Condition*> conditions;
+      std::vector<const Core::Conditions::Condition*> conditions;
       // extract conditions for calculation of total and mean values of transported scalars
       discret_->get_condition("TotalAndMeanScalar", conditions);
       // input check
@@ -577,7 +577,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
   {
     // input check
 
-    std::vector<Core::Conditions::Condition*> conditions;
+    std::vector<const Core::Conditions::Condition*> conditions;
     // extract conditions for calculation of total and mean values of transported scalars
     discret_->get_condition("TotalAndMeanScalar", conditions);
     // input check
@@ -604,10 +604,10 @@ void ScaTra::ScaTraTimIntImpl::setup()
   else
   {
     // input check
-    std::vector<Core::Conditions::Condition*> conditions_boundary;
+    std::vector<const Core::Conditions::Condition*> conditions_boundary;
     // extract conditions for calculation of total and mean values of transported scalars
     discret_->get_condition("BoundaryIntegral", conditions_boundary);
-    std::vector<Core::Conditions::Condition*> conditions_domain;
+    std::vector<const Core::Conditions::Condition*> conditions_domain;
     // extract conditions for calculation of total and mean values of transported scalars
     discret_->get_condition("DomainIntegral", conditions_domain);
     // input check
@@ -629,7 +629,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
   {
     if (calcerror_ == Inpar::ScaTra::calcerror_bycondition)
     {
-      std::vector<Core::Conditions::Condition*> relerrorconditions;
+      std::vector<const Core::Conditions::Condition*> relerrorconditions;
       discret_->get_condition("ScatraRelError", relerrorconditions);
       const unsigned ncond = relerrorconditions.size();
       if (!ncond)
@@ -905,12 +905,12 @@ void ScaTra::ScaTraTimIntImpl::prepare_krylov_projection()
   // in this case, we need basis vectors for the nullspace/kernel
 
   // get condition "KrylovSpaceProjection" from discretization
-  std::vector<Core::Conditions::Condition*> KSPCond;
+  std::vector<const Core::Conditions::Condition*> KSPCond;
   discret_->get_condition("KrylovSpaceProjection", KSPCond);
   std::size_t numcond = KSPCond.size();
   int numscatra = 0;
 
-  Core::Conditions::Condition* kspcond = nullptr;
+  const Core::Conditions::Condition* kspcond = nullptr;
   // check if for scatra Krylov projection is required
   for (std::size_t icond = 0; icond < numcond; icond++)
   {
@@ -2015,7 +2015,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
       const std::string field = "ScaTra";
 
       // get initial field conditions
-      std::vector<Core::Conditions::Condition*> initfieldconditions(0);
+      std::vector<const Core::Conditions::Condition*> initfieldconditions;
       discret_->get_condition("Initfield", initfieldconditions);
 
       if (not initfieldconditions.size())
@@ -2357,7 +2357,8 @@ void ScaTra::ScaTraTimIntImpl::update_iter(const Core::LinAlg::Vector<double>& i
 
 /*--------------------------------------------------------------------------*
  *--------------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::setup_krylov_space_projection(Core::Conditions::Condition* kspcond)
+void ScaTra::ScaTraTimIntImpl::setup_krylov_space_projection(
+    const Core::Conditions::Condition* kspcond)
 {
   // previously, scatra was able to define actual modes that formed a
   // nullspace. factors when assigned to scalars in the input file. it could
@@ -3369,7 +3370,7 @@ const std::vector<double>& ScaTra::ScaTraTimIntImpl::boundary_integrals() const
 void ScaTra::ScaTraTimIntImpl::evaluate_macro_micro_coupling()
 {
   // extract multi-scale coupling conditions
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition("ScatraMultiScaleCoupling", conditions);
 
   // loop over conditions
@@ -3608,7 +3609,7 @@ void ScaTra::ScaTraTimIntImpl::setup_matrix_block_maps()
       matrixtype_ == Core::LinAlg::MatrixType::block_condition_dof)
   {
     // extract domain partitioning conditions from discretization
-    std::vector<std::shared_ptr<Core::Conditions::Condition>> partitioningconditions;
+    std::vector<const Core::Conditions::Condition*> partitioningconditions;
     discret_->get_condition("ScatraPartitioning", partitioningconditions);
 
     // safety check
@@ -3634,7 +3635,7 @@ void ScaTra::ScaTraTimIntImpl::setup_matrix_block_maps()
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::build_block_maps(
-    const std::vector<std::shared_ptr<Core::Conditions::Condition>>& partitioningconditions,
+    const std::vector<const Core::Conditions::Condition*>& partitioningconditions,
     std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const
 {
   if (matrixtype_ == Core::LinAlg::MatrixType::block_condition)

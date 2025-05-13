@@ -228,7 +228,7 @@ namespace Core::FE
       // copy selected conditions to the new discretization
       for (const auto& cond_name : conditions_to_copy)
       {
-        std::vector<Core::Conditions::Condition*> conds;
+        std::vector<const Core::Conditions::Condition*> conds;
         sourcedis.get_condition(cond_name, conds);
         for (const auto& cond : conds)
         {

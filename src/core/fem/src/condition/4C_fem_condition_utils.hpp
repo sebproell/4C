@@ -68,24 +68,22 @@ namespace Core::Conditions
    * vector is unique and ordered on output.
    */
   void find_conditioned_nodes(const Core::FE::Discretization& dis,
-      const std::vector<Core::Conditions::Condition*>& conds, std::vector<int>& nodes);
+      std::span<const Condition*> conds, std::vector<int>& nodes);
 
   /// find all local nodes from discretization marked with condition
   void find_conditioned_nodes(const Core::FE::Discretization& dis,
-      const std::vector<Core::Conditions::Condition*>& conds,
-      std::map<int, Core::Nodes::Node*>& nodes);
+      std::span<const Condition*> conds, std::map<int, Core::Nodes::Node*>& nodes);
 
   /// find all local nodes from discretization marked with condition and
   /// put them into a map indexed by Id of the condition
   void find_conditioned_nodes(const Core::FE::Discretization& dis,
-      const std::vector<Core::Conditions::Condition*>& conds,
-      std::map<int, std::map<int, Core::Nodes::Node*>>& nodes);
+      std::span<const Condition*> conds, std::map<int, std::map<int, Core::Nodes::Node*>>& nodes);
 
   /// find all local nodes from discretization marked with condition and
   /// put them into a vector indexed by Id of the condition
   void find_conditioned_nodes(const Core::FE::Discretization& dis,
-      const std::vector<Core::Conditions::Condition*>& conds,
-      std::map<int, std::shared_ptr<std::vector<int>>>& nodes, bool use_coupling_id = true);
+      std::span<const Condition*> conds, std::map<int, std::shared_ptr<std::vector<int>>>& nodes,
+      bool use_coupling_id = true);
 
 
   /// collect all nodes (in- and excluding 'ghosts') and
@@ -100,7 +98,7 @@ namespace Core::Conditions
   void find_condition_objects(const Core::FE::Discretization& dis,
       std::map<int, Core::Nodes::Node*>& nodes, std::map<int, Core::Nodes::Node*>& gnodes,
       std::map<int, std::shared_ptr<Core::Elements::Element>>& elements,
-      const std::vector<Core::Conditions::Condition*>& conds);
+      std::span<const Condition*> conds);
 
   /// collect all nodes (in- and excluding 'ghosts') and
   /// elements (including ghosts) in a condition

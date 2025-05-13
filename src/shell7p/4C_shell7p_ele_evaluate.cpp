@@ -188,7 +188,7 @@ int Discret::Elements::Shell7p::evaluate(Teuchos::ParameterList& params,
 
 // Integrate a Surface Neumann boundary condition
 int Discret::Elements::Shell7p::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& dof_index_array, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

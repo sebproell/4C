@@ -22,7 +22,7 @@ FOUR_C_NAMESPACE_OPEN
 
 template <int dim>
 void Discret::Elements::evaluate_neumann_by_element(Core::Elements::Element& element,
-    const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    const Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     Core::LinAlg::SerialDenseVector& element_force_vector, double total_time)
 {
   using supported_celltypes = Core::FE::CelltypeSequence<Core::FE::CellType::hex8,
@@ -41,7 +41,7 @@ void Discret::Elements::evaluate_neumann_by_element(Core::Elements::Element& ele
 
 template <Core::FE::CellType celltype, int dim>
 void Discret::Elements::evaluate_neumann(Core::Elements::Element& element,
-    const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    const Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     Core::LinAlg::SerialDenseVector& element_force_vector, double total_time)
 {
   constexpr auto numnod = Core::FE::num_nodes(celltype);
@@ -115,11 +115,11 @@ void Discret::Elements::evaluate_neumann(Core::Elements::Element& element,
 
 
 template void Discret::Elements::evaluate_neumann_by_element<3>(Core::Elements::Element&,
-    const Core::FE::Discretization&, Core::Conditions::Condition&, Core::LinAlg::SerialDenseVector&,
-    double);
+    const Core::FE::Discretization&, const Core::Conditions::Condition&,
+    Core::LinAlg::SerialDenseVector&, double);
 template void Discret::Elements::evaluate_neumann_by_element<2>(Core::Elements::Element&,
-    const Core::FE::Discretization&, Core::Conditions::Condition&, Core::LinAlg::SerialDenseVector&,
-    double);
+    const Core::FE::Discretization&, const Core::Conditions::Condition&,
+    Core::LinAlg::SerialDenseVector&, double);
 
 
 FOUR_C_NAMESPACE_CLOSE

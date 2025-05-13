@@ -270,7 +270,7 @@ void Solid::TimInt::setup()
   // check whether we have locsys BCs and create LocSysManager if so
   // after checking
   {
-    std::vector<Core::Conditions::Condition*> locsysconditions(0);
+    std::vector<const Core::Conditions::Condition*> locsysconditions;
     discret_->get_condition("Locsys", locsysconditions);
     if (locsysconditions.size())
     {
@@ -417,7 +417,7 @@ void Solid::TimInt::prepare_beam_contact(const Teuchos::ParameterList& sdynparam
   auto strategy = Teuchos::getIntegralValue<BeamContact::Strategy>(beamcontact, "BEAMS_STRATEGY");
 
   // conditions for potential-based beam interaction
-  std::vector<Core::Conditions::Condition*> beampotconditions(0);
+  std::vector<const Core::Conditions::Condition*> beampotconditions;
   discret_->get_condition("BeamPotentialLineCharge", beampotconditions);
 
   // only continue if beam contact unmistakably chosen in input file or beam potential conditions
@@ -451,8 +451,8 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
   auto algorithm = Teuchos::getIntegralValue<Inpar::Mortar::AlgorithmType>(smortar, "ALGORITHM");
 
   // check mortar contact or meshtying conditions
-  std::vector<Core::Conditions::Condition*> mortarconditions(0);
-  std::vector<Core::Conditions::Condition*> contactconditions(0);
+  std::vector<const Core::Conditions::Condition*> mortarconditions;
+  std::vector<const Core::Conditions::Condition*> contactconditions;
 
   discret_->get_condition("Mortar", mortarconditions);
   discret_->get_condition("Contact", contactconditions);

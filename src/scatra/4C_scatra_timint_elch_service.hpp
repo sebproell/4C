@@ -101,7 +101,7 @@ namespace ScaTra
    public:
     //! constructor
     CCCVCondition(const Core::Conditions::Condition& cccvcyclingcondition,
-        const std::vector<Core::Conditions::Condition*>& cccvhalfcycleconditions,
+        const std::vector<const Core::Conditions::Condition*>& cccvhalfcycleconditions,
         bool adaptivetimestepping, int num_dofs);
 
     //! true, when all half cycles are completed

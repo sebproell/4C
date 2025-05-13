@@ -125,7 +125,7 @@ namespace Constraints
     //! creating a new discretization based on conditions containing constraint elements
     virtual std::map<int, std::shared_ptr<Core::FE::Discretization>>
     create_discretization_from_condition(std::shared_ptr<Core::FE::Discretization> actdisc,
-        std::vector<Core::Conditions::Condition*>
+        std::span<const Core::Conditions::Condition*>
             constrcond,                   ///< conditions as discretization basis
         const std::string& discret_name,  ///< name of new discretization
         const std::string& element_name,  ///< name of element type to create

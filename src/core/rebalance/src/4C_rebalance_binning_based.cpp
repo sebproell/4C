@@ -427,7 +427,7 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     }
 
     // fill vec with processor local node gids of dis to be rebalanced
-    std::vector<Core::Conditions::Condition*> rebalance_conds;
+    std::vector<const Core::Conditions::Condition*> rebalance_conds;
     dis_to_rebalance.get_condition(condname_rebalance, rebalance_conds);
 
     for (auto* const rebalance_cond : rebalance_conds)

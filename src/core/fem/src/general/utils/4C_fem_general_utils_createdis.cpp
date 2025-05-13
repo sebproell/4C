@@ -105,7 +105,7 @@ void Core::FE::DiscretizationCreatorBase::copy_conditions(const Core::FE::Discre
   // copy selected conditions to the new discretization (and rename them if desired)
   for (const auto& condition_pair : conditions_to_copy)
   {
-    std::vector<Core::Conditions::Condition*> conds;
+    std::vector<const Core::Conditions::Condition*> conds;
     sourcedis.get_condition(condition_pair.first, conds);
     for (const auto& cond : conds)
     {
@@ -154,7 +154,7 @@ Core::FE::DiscretizationCreatorBase::create_matching_discretization(
   for (unsigned numcond = 0; numcond < allcond.size(); ++numcond)
   {
     // get condition
-    std::vector<Core::Conditions::Condition*> actcond;
+    std::vector<const Core::Conditions::Condition*> actcond;
     sourcedis.get_condition(allcond[numcond], actcond);
 
     // loop all condition of the current type

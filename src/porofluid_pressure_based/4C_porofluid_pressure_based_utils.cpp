@@ -36,7 +36,7 @@ namespace
     std::vector<int> artEleGIDs_help;
 
     // get 1D coupling IDs from Input
-    std::vector<Core::Conditions::Condition*> artCoupcond;
+    std::vector<const Core::Conditions::Condition*> artCoupcond;
 
     artdis->get_condition("ArtPorofluidCouplConNodeToPoint", artCoupcond);
 

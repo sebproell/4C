@@ -41,7 +41,7 @@ namespace
 }  // namespace
 
 int Discret::Elements::SolidSurface::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {
@@ -870,8 +870,7 @@ int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
           std::make_shared<Core::LinAlg::SerialDenseMatrix>();
 
       // get projection method
-      std::shared_ptr<Core::Conditions::Condition> condition =
-          params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+      const auto* condition = params.get<const Core::Conditions::Condition*>("condition");
       const auto* projtype = condition->parameters().get_if<std::string>("projection");
 
       if (projtype != nullptr)
@@ -923,8 +922,7 @@ int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
         Core::LinAlg::SerialDenseMatrix xscurr(num_node(), numdim);  // material coord. of element
         spatial_configuration(xscurr, mydisp);
 
-        std::shared_ptr<Core::Conditions::Condition> condition =
-            params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+        const auto* condition = params.get<const Core::Conditions::Condition*>("condition");
         const auto* projtype = condition->parameters().get_if<std::string>("projection");
 
         // To compute monitored area consider required projection method

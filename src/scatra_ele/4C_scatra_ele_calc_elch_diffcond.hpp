@@ -305,15 +305,14 @@ namespace Discret
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>&
               ephinp,  ///< state variables at element nodes
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>&
-              ehist,       ///< history variables at element nodes
-          double timefac,  ///< time factor
-          std::shared_ptr<Core::Conditions::Condition>
-              cond,                       ///< electrode kinetics boundary condition
-          const int nume,                 ///< number of transferred electrons
-          const std::vector<int> stoich,  ///< stoichiometry of the reaction
-          const int kinetics,             ///< desired electrode kinetics model
-          const double pot0,              ///< electrode potential on metal side
-          const double frt,               ///< factor F/RT
+              ehist,                                ///< history variables at element nodes
+          double timefac,                           ///< time factor
+          const Core::Conditions::Condition& cond,  ///< electrode kinetics boundary condition
+          const int nume,                           ///< number of transferred electrons
+          const std::vector<int> stoich,            ///< stoichiometry of the reaction
+          const int kinetics,                       ///< desired electrode kinetics model
+          const double pot0,                        ///< electrode potential on metal side
+          const double frt,                         ///< factor F/RT
           const double
               scalar  ///< scaling factor for element matrix and right-hand side contributions
           ) override;
@@ -327,7 +326,7 @@ namespace Discret
               ephinp,  ///< nodal values of concentration and electric potential
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ehist,  ///< nodal history vector
           double timefac,                                           ///< time factor
-          Core::Conditions::Condition& cond,                        ///< the condition
+          const Core::Conditions::Condition& cond,                  ///< the condition
           const int nume,                 ///< number of transferred electrons
           const std::vector<int> stoich,  ///< stoichiometry of the reaction
           const int kinetics,             ///< desired electrode kinetics model
@@ -385,7 +384,7 @@ namespace Discret
           const Core::Elements::Element* ele,        ///< the actual boundary element
           Core::LinAlg::SerialDenseVector& scalars,  ///< scalars to be computed
           Teuchos::ParameterList& params,            ///< the parameter list
-          Core::Conditions::Condition& cond,         ///< the condition
+          const Core::Conditions::Condition& cond,   ///< the condition
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>&
               ephinp,  ///< nodal values of concentration and electric potential
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>&

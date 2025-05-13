@@ -210,7 +210,7 @@ void Core::DOFSets::TransparentDofSet::parallel_transfer_degrees_of_freedom(
   }
 
   std::set<int> slaveset;
-  std::vector<Core::Conditions::Condition*> mypbcs;
+  std::vector<const Core::Conditions::Condition*> mypbcs;
 
   // get periodic surface boundary conditions
   sourcedis_->get_condition("SurfacePeriodic", mypbcs);
@@ -222,7 +222,7 @@ void Core::DOFSets::TransparentDofSet::parallel_transfer_degrees_of_freedom(
 
   for (unsigned numcond = 0; numcond < mypbcs.size(); ++numcond)
   {
-    Core::Conditions::Condition* thiscond = mypbcs[numcond];
+    const Core::Conditions::Condition* thiscond = mypbcs[numcond];
 
     // see whether we have a slave condition
     const std::string& mymasterslavetoggle =

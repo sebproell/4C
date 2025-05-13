@@ -46,7 +46,7 @@ void ElCh::MovingBoundaryAlgorithm::init()
   Adapter::ScaTraFluidAleCouplingAlgorithm::init();
 
   // safety check
-  if (!scatra_field()->discretization()->get_condition("ScaTraFluxCalc"))
+  if (!scatra_field()->discretization()->has_condition("ScaTraFluxCalc"))
   {
     FOUR_C_THROW(
         "Scalar transport discretization must have boundary condition for flux calculation at FSI "

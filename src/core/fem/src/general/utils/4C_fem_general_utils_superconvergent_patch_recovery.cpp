@@ -155,7 +155,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   // solution vector based on reduced node row map
   Epetra_FEVector nodevec(noderowmap.get_epetra_map(), numvec);
 
-  std::vector<Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> conds;
   dis.get_condition("SPRboundary", conds);
 
   // SPR boundary condition must be set for all boundaries except pbc

@@ -26,7 +26,7 @@ FOUR_C_NAMESPACE_OPEN
 FLD::Utils::FluidImpedanceWrapper::FluidImpedanceWrapper(
     const std::shared_ptr<Core::FE::Discretization> actdis)
 {
-  std::vector<Core::Conditions::Condition*> impedancecond;
+  std::vector<const Core::Conditions::Condition*> impedancecond;
   actdis->get_condition("ImpedanceCond", impedancecond);
 
   // the number of lines of impedance boundary conditions found in the input
@@ -180,7 +180,7 @@ std::vector<double> FLD::Utils::FluidImpedanceWrapper::get_w_krelerrors()
  *----------------------------------------------------------------------*/
 FLD::Utils::FluidImpedanceBc::FluidImpedanceBc(
     const std::shared_ptr<Core::FE::Discretization> actdis, const int condid,
-    Core::Conditions::Condition* impedancecond)
+    const Core::Conditions::Condition* impedancecond)
     : discret_(actdis),
       myrank_(Core::Communication::my_mpi_rank(discret_->get_comm())),
       theta_(0.5),

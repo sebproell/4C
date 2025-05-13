@@ -87,7 +87,7 @@ void FLD::get_relevant_slave_nodes_of_rot_sym_pbc(
     std::map<int, double>& pbcslavenodemap, std::shared_ptr<Core::FE::Discretization> dis)
 {
   // get all periodic boundary conditions
-  std::vector<Core::Conditions::Condition*> mypbccond;
+  std::vector<const Core::Conditions::Condition*> mypbccond;
   dis->get_condition("SurfacePeriodic", mypbccond);
   if (mypbccond.empty())
   {

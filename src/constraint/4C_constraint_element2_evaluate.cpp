@@ -33,8 +33,7 @@ int Discret::Elements::ConstraintElement2::evaluate(Teuchos::ParameterList& para
     return 0;
   else if (action == "calc_MPC_stiff")
   {
-    std::shared_ptr<Core::Conditions::Condition> condition =
-        params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+    const auto* condition = params.get<const Core::Conditions::Condition*>("condition");
     const std::string& type = condition->parameters().get<std::string>("control");
 
     if (type == "dist")
@@ -108,7 +107,7 @@ int Discret::Elements::ConstraintElement2::evaluate(Teuchos::ParameterList& para
 /*----------------------------------------------------------------------*
  * Evaluate Neumann (->FOUR_C_THROW) */
 int Discret::Elements::ConstraintElement2::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

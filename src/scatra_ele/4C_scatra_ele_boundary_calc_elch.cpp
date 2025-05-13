@@ -102,8 +102,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
   my::extract_node_values(ehist, discretization, la, "hist");
 
   // get current condition
-  std::shared_ptr<Core::Conditions::Condition> cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const auto* cond = params.get<const Core::Conditions::Condition*>("condition");
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ElchBoundaryKinetics'");
 
   // access parameters of the condition
@@ -179,7 +178,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
     if (zerocur == 0)
     {
       evaluate_elch_boundary_kinetics(ele, elemat1, elevec1, my::ephinp_, ehist, timefac,
-          ele->parent_element()->material(), cond, nume, *stoich, kinetics, pot0, frt, scalar);
+          ele->parent_element()->material(), *cond, nume, *stoich, kinetics, pot0, frt, scalar);
     }
 
     // realize correct scaling of rhs contribution for gen.alpha case
@@ -221,8 +220,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
     Core::FE::Discretization& discretization, Core::Elements::LocationArray& la,
     Core::LinAlg::SerialDenseMatrix& elemat1, Core::LinAlg::SerialDenseVector& elevec1)
 {
-  std::shared_ptr<Core::Conditions::Condition> cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const auto* cond = params.get<const Core::Conditions::Condition*>("condition");
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ElchBoundaryKinetics'");
 
   const auto kinetics = cond->parameters().get<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL");
@@ -380,12 +378,12 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype,
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ehist,  ///< nodal history vector
     double timefac,                                           ///< time factor
     std::shared_ptr<const Core::Mat::Material> material,      ///< material
-    std::shared_ptr<Core::Conditions::Condition> cond,  ///< electrode kinetics boundary condition
-    const int nume,                                     ///< number of transferred electrons
-    const std::vector<int> stoich,                      ///< stoichiometry of the reaction
-    const int kinetics,                                 ///< desired electrode kinetics model
-    const double pot0,                                  ///< electrode potential on metal side
-    const double frt,                                   ///< factor F/RT
+    const Core::Conditions::Condition& cond,  ///< electrode kinetics boundary condition
+    const int nume,                           ///< number of transferred electrons
+    const std::vector<int> stoich,            ///< stoichiometry of the reaction
+    const int kinetics,                       ///< desired electrode kinetics model
+    const double pot0,                        ///< electrode potential on metal side
+    const double frt,                         ///< factor F/RT
     const double scalar  ///< scaling factor for element matrix and right-hand side contributions
 )
 {
@@ -422,7 +420,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype,
 
       // get boundary porosity from condition if available, or set equal to volume porosity
       // otherwise
-      auto epsilon = cond->parameters().get<double>("EPSILON");
+      auto epsilon = cond.parameters().get<double>("EPSILON");
       if (epsilon == -1)
         epsilon = scalar;
       else if (epsilon <= 0 or epsilon > 1)
@@ -430,7 +428,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype,
 
       // call utility class for element evaluation
       utils_->evaluate_elch_kinetics_at_integration_point(ele, emat, erhs, ephinp, ehist, timefac,
-          fac, my::funct_, *cond, nume, stoich, valence_k, kinetics, pot0, frt, fns, epsilon, k);
+          fac, my::funct_, cond, nume, stoich, valence_k, kinetics, pot0, frt, fns, epsilon, k);
     }  // loop over integration points
   }  // loop over all scalars
 
@@ -447,7 +445,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::evaluate_el
     const Core::Elements::Element* ele,        ///< current element
     Core::LinAlg::SerialDenseVector& scalars,  ///< scalars to be integrated
     Teuchos::ParameterList& params,            ///< parameter list
-    Core::Conditions::Condition& cond,         ///< condition
+    const Core::Conditions::Condition& cond,   ///< condition
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>&
         ephinp,  ///< nodal values of concentration and electric potential
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephidtnp,  ///< nodal time derivative vector

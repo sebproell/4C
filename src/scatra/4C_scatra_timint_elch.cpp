@@ -92,7 +92,7 @@ void ScaTra::ScaTraTimIntElch::init()
   // additional safety checks associated with adaptive time stepping for CCCV cell cycling
   if (cycling_timestep_ > 0.0)
   {
-    if (not discret_->get_condition("CCCVCycling"))
+    if (!discret_->has_condition("CCCVCycling"))
     {
       FOUR_C_THROW(
           "Adaptive time stepping for CCCV cell cycling requires corresponding boundary "
@@ -158,7 +158,7 @@ void ScaTra::ScaTraTimIntElch::setup()
 
   // initialize vectors for states of charge and C rates of resolved electrodes
   {
-    std::vector<Core::Conditions::Condition*> electrode_soc_conditions;
+    std::vector<const Core::Conditions::Condition*> electrode_soc_conditions;
     discret_->get_condition("ElectrodeSOC", electrode_soc_conditions);
     for (const auto& electrodeSocCondition : electrode_soc_conditions)
     {
@@ -185,9 +185,9 @@ void ScaTra::ScaTraTimIntElch::setup()
 
   // init map for electrode voltage
   {
-    std::vector<Core::Conditions::Condition*> conditions;
+    std::vector<const Core::Conditions::Condition*> conditions;
     discret_->get_condition("CellVoltage", conditions);
-    std::vector<Core::Conditions::Condition*> conditionspoint;
+    std::vector<const Core::Conditions::Condition*> conditionspoint;
     discret_->get_condition("CellVoltagePoint", conditionspoint);
     if (!conditions.empty() and !conditionspoint.empty())
     {
@@ -221,11 +221,11 @@ void ScaTra::ScaTraTimIntElch::setup()
 
   // initialize vectors for mean reactant concentrations, mean electric overpotentials, and total
   // electric currents at electrode boundaries
-  std::vector<Core::Conditions::Condition*> electrodedomainconditions;
+  std::vector<const Core::Conditions::Condition*> electrodedomainconditions;
   discret_->get_condition("ElchDomainKinetics", electrodedomainconditions);
-  std::vector<Core::Conditions::Condition*> electrodeboundaryconditions;
+  std::vector<const Core::Conditions::Condition*> electrodeboundaryconditions;
   discret_->get_condition("ElchBoundaryKinetics", electrodeboundaryconditions);
-  std::vector<Core::Conditions::Condition*> electrodeboundarypointconditions;
+  std::vector<const Core::Conditions::Condition*> electrodeboundarypointconditions;
   discret_->get_condition("ElchBoundaryKineticsPoint", electrodeboundarypointconditions);
   if (!electrodedomainconditions.empty() and
       (!electrodeboundaryconditions.empty() or !electrodeboundarypointconditions.empty()))
@@ -244,7 +244,7 @@ void ScaTra::ScaTraTimIntElch::setup()
            !electrodeboundarypointconditions.empty())
   {
     // group electrode conditions from all entities into one vector and loop
-    std::vector<std::vector<Core::Conditions::Condition*>> electrodeconditions = {
+    std::vector<std::vector<const Core::Conditions::Condition*>> electrodeconditions = {
         electrodedomainconditions, electrodeboundaryconditions, electrodeboundarypointconditions};
     for (const auto& electrodeentityconditions : electrodeconditions)
     {
@@ -261,9 +261,9 @@ void ScaTra::ScaTraTimIntElch::setup()
 
   // extract constant-current constant-voltage (CCCV) cell cycling and half-cycle boundary
   // conditions
-  std::vector<Core::Conditions::Condition*> cccvcyclingconditions;
+  std::vector<const Core::Conditions::Condition*> cccvcyclingconditions;
   discret_->get_condition("CCCVCycling", cccvcyclingconditions);
-  std::vector<Core::Conditions::Condition*> cccvhalfcycleconditions;
+  std::vector<const Core::Conditions::Condition*> cccvhalfcycleconditions;
   discret_->get_condition("CCCVHalfCycle", cccvhalfcycleconditions);
 
   switch (cccvcyclingconditions.size())
@@ -286,7 +286,7 @@ void ScaTra::ScaTraTimIntElch::setup()
     case 1:
     {
       // check if cell voltage condition is given
-      std::vector<Core::Conditions::Condition*> cell_voltage_conditions,
+      std::vector<const Core::Conditions::Condition*> cell_voltage_conditions,
           cell_voltage_point_conditions;
       discret_->get_condition("CellVoltage", cell_voltage_conditions);
       discret_->get_condition("CellVoltagePoint", cell_voltage_point_conditions);
@@ -850,7 +850,7 @@ void ScaTra::ScaTraTimIntElch::read_restart_problem_specific(
 
   // read restart data associated with electrode state of charge conditions if applicable, needed
   // for correct evaluation of cell C rate at the beginning of the first time step after restart
-  if (discret_->get_condition("ElectrodeSOC"))
+  if (discret_->has_condition("ElectrodeSOC"))
   {
     if (isale_)
     {
@@ -870,13 +870,10 @@ void ScaTra::ScaTraTimIntElch::read_restart_problem_specific(
     }
   }
 
-  // extract constant-current constant-voltage (CCCV) cell cycling boundary condition if available
-  const Core::Conditions::Condition* const cccvcyclingcondition =
-      discret_->get_condition("CCCVCycling");
 
   // read restart data associated with constant-current constant-voltage (CCCV) cell cycling if
   // applicable
-  if (cccvcyclingcondition)
+  if (discret_->has_condition("CCCVCycling"))
   {
     cellvoltage_ = reader.read_double("cellvoltage");
     cellcrate_ = reader.read_double("cellcrate");
@@ -888,7 +885,7 @@ void ScaTra::ScaTraTimIntElch::read_restart_problem_specific(
     cccv_condition_->read_restart(reader);
   }
 
-  std::vector<Core::Conditions::Condition*> s2ikinetics_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions;
   discretization()->get_condition("S2IKinetics", s2ikinetics_conditions);
   for (auto* s2ikinetics_cond : s2ikinetics_conditions)
   {
@@ -909,9 +906,9 @@ void ScaTra::ScaTraTimIntElch::read_restart_problem_specific(
 void ScaTra::ScaTraTimIntElch::output_electrode_info_boundary()
 {
   // extract electrode boundary kinetics conditions from discretization
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> cond;
+  std::vector<const Core::Conditions::Condition*> cond;
   discret_->get_condition("ElchBoundaryKinetics", cond);
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> pointcond;
+  std::vector<const Core::Conditions::Condition*> pointcond;
   discret_->get_condition("ElchBoundaryKineticsPoint", pointcond);
 
   // safety check
@@ -1040,7 +1037,7 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info(
  *--------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SerialDenseVector>
 ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info_point(
-    std::shared_ptr<Core::Conditions::Condition> condition)
+    const Core::Conditions::Condition* condition)
 {
   // add state vectors to discretization
   discret_->set_state("phinp", *phinp_);
@@ -1091,7 +1088,7 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info_point(
     condparams.set<bool>("calc_status", true);
 
     // equip element parameter list with current condition
-    condparams.set<std::shared_ptr<Core::Conditions::Condition>>("condition", condition);
+    condparams.set<const Core::Conditions::Condition*>("condition", condition);
 
     // get node
     Core::Nodes::Node* node = discret_->g_node(nodeid);
@@ -1235,7 +1232,7 @@ void ScaTra::ScaTraTimIntElch::output_electrode_info_domain()
 {
   // extract electrode domain kinetics conditions from discretization
   std::string condstring("ElchDomainKinetics");
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition(condstring, conditions);
 
   // output electrode domain status information to screen if applicable
@@ -1290,7 +1287,7 @@ void ScaTra::ScaTraTimIntElch::output_electrode_info_domain()
  *-------------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntElch::output_electrode_info_interior()
 {
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition("ElectrodeSOC", conditions);
 
   if (!conditions.empty())
@@ -1346,7 +1343,7 @@ void ScaTra::ScaTraTimIntElch::output_electrode_info_interior()
 void ScaTra::ScaTraTimIntElch::evaluate_electrode_info_interior()
 {
   // extract conditions for electrode state of charge
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition("ElectrodeSOC", conditions);
 
   // perform all following operations only if there is at least one condition for electrode state
@@ -1424,9 +1421,9 @@ void ScaTra::ScaTraTimIntElch::evaluate_electrode_info_interior()
 void ScaTra::ScaTraTimIntElch::output_cell_voltage()
 {
   // extract conditions for cell voltage
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition("CellVoltage", conditions);
-  std::vector<Core::Conditions::Condition*> conditionspoint;
+  std::vector<const Core::Conditions::Condition*> conditionspoint;
   discret_->get_condition("CellVoltagePoint", conditionspoint);
   if (!conditionspoint.empty()) conditions = conditionspoint;
 
@@ -1464,9 +1461,9 @@ void ScaTra::ScaTraTimIntElch::output_cell_voltage()
 void ScaTra::ScaTraTimIntElch::evaluate_cell_voltage()
 {
   // extract conditions for cell voltage
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition("CellVoltage", conditions);
-  std::vector<Core::Conditions::Condition*> conditionspoint;
+  std::vector<const Core::Conditions::Condition*> conditionspoint;
   discret_->get_condition("CellVoltagePoint", conditionspoint);
   if (!conditionspoint.empty()) conditions = conditionspoint;
 
@@ -1567,7 +1564,7 @@ void ScaTra::ScaTraTimIntElch::write_restart() const
   // output restart data associated with electrode state of charge conditions if applicable,
   // needed for correct evaluation of cell C rate at the beginning of the first time step after
   // restart
-  if (discret_->get_condition("ElectrodeSOC"))
+  if (discret_->has_condition("ElectrodeSOC"))
   {
     // output volumes of resolved electrodes
     if (isale_)
@@ -1587,7 +1584,7 @@ void ScaTra::ScaTraTimIntElch::write_restart() const
 
   // output restart data associated with constant-current constant-voltage (CCCV) cell cycling if
   // applicable
-  if (discret_->get_condition("CCCVCycling"))
+  if (discret_->has_condition("CCCVCycling"))
   {
     // output number of current charge or discharge half-cycle
     output_->write_int("ihalfcycle", cccv_condition_->get_num_current_half_cycle());
@@ -1624,7 +1621,7 @@ void ScaTra::ScaTraTimIntElch::write_restart() const
     output_->write_int("adapted_timestep_active", adapted_timestep_active_);
   }
 
-  std::vector<Core::Conditions::Condition*> s2ikinetics_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions;
   discretization()->get_condition("S2IKinetics", s2ikinetics_conditions);
   for (auto* s2ikinetics_cond : s2ikinetics_conditions)
   {
@@ -1821,7 +1818,7 @@ void ScaTra::ScaTraTimIntElch::valid_parameter_diff_cond()
 void ScaTra::ScaTraTimIntElch::init_nernst_bc()
 {
   // access electrode kinetics condition
-  std::vector<Core::Conditions::Condition*> Elchcond;
+  std::vector<const Core::Conditions::Condition*> Elchcond;
   discret_->get_condition("ElchBoundaryKinetics", Elchcond);
   if (Elchcond.empty()) discret_->get_condition("ElchBoundaryKineticsPoint", Elchcond);
 
@@ -2162,11 +2159,11 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
     if (dlcapexists_) compute_time_deriv_pot0(false);
 
     // extract electrode domain and boundary kinetics conditions from discretization
-    std::vector<std::shared_ptr<Core::Conditions::Condition>> electrodedomainconditions;
+    std::vector<const Core::Conditions::Condition*> electrodedomainconditions;
     discret_->get_condition("ElchDomainKinetics", electrodedomainconditions);
-    std::vector<std::shared_ptr<Core::Conditions::Condition>> electrodeboundaryconditions;
+    std::vector<const Core::Conditions::Condition*> electrodeboundaryconditions;
     discret_->get_condition("ElchBoundaryKinetics", electrodeboundaryconditions);
-    std::vector<std::shared_ptr<Core::Conditions::Condition>> electrodeboundarypointconditions;
+    std::vector<const Core::Conditions::Condition*> electrodeboundarypointconditions;
     discret_->get_condition("ElchBoundaryKineticsPoint", electrodeboundarypointconditions);
 
     // safety checks
@@ -2185,7 +2182,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
     }
 
     // determine type of electrode kinetics conditions to be evaluated
-    std::vector<std::shared_ptr<Core::Conditions::Condition>> conditions;
+    std::vector<const Core::Conditions::Condition*> conditions;
     std::string condstring;
     if (!electrodedomainconditions.empty())
     {
@@ -2312,7 +2309,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
       }
 
       // get the applied electrode potential of the cathode
-      std::shared_ptr<Core::Conditions::Condition> cathode_condition;
+      const Core::Conditions::Condition* cathode_condition;
       for (const auto& condition : conditions)
       {
         if (condition->parameters().get<int>("ConditionID") == condid_cathode)
@@ -2610,7 +2607,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
       //      }
 
       // replace potential value of the boundary condition (on all processors)
-      cathode_condition->parameters().add("POT", potnew);
+      const_cast<Core::Conditions::Condition*>(cathode_condition)->parameters().add("POT", potnew);
       gstatnumite_++;
       return false;  // not yet converged -> continue Newton iteration with updated potential
     }
@@ -2670,7 +2667,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_electrode_boundary_kinetics_point_condit
   add_time_integration_specific_vectors();
 
   // extract electrode kinetics point boundary conditions from discretization
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition("ElchBoundaryKineticsPoint", conditions);
 
   // loop over all electrode kinetics point boundary conditions
@@ -2693,7 +2690,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_electrode_boundary_kinetics_point_condit
     if (discret_->node_row_map()->MyGID(nodeid))
     {
       // equip element parameter list with current condition
-      condparams.set<std::shared_ptr<Core::Conditions::Condition>>("condition", condition);
+      condparams.set<const Core::Conditions::Condition*>("condition", condition);
 
       // get node
       Core::Nodes::Node* node = discret_->g_node(nodeid);
@@ -2786,15 +2783,15 @@ void ScaTra::ScaTraTimIntElch::evaluate_solution_depending_conditions(
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
   // evaluate domain conditions for electrode kinetics
-  if (discret_->get_condition("ElchDomainKinetics") != nullptr)
+  if (discret_->has_condition("ElchDomainKinetics"))
     evaluate_electrode_kinetics_conditions(systemmatrix, rhs, "ElchDomainKinetics");
 
   // evaluate boundary conditions for electrode kinetics
-  if (discret_->get_condition("ElchBoundaryKinetics") != nullptr)
+  if (discret_->has_condition("ElchBoundaryKinetics"))
     evaluate_electrode_kinetics_conditions(systemmatrix, rhs, "ElchBoundaryKinetics");
 
   // evaluate point boundary conditions for electrode kinetics
-  if (discret_->get_condition("ElchBoundaryKineticsPoint") != nullptr)
+  if (discret_->has_condition("ElchBoundaryKineticsPoint"))
     evaluate_electrode_boundary_kinetics_point_conditions(*systemmatrix, *rhs);
 
   // call base class routine
@@ -2871,7 +2868,7 @@ void ScaTra::ScaTraTimIntElch::apply_dirichlet_bc(const double time,
       std::set<int> dbcgids;
 
       // extract constant-current constant-voltage (CCCV) half-cycle boundary conditions
-      std::vector<Core::Conditions::Condition*> cccvhalfcycleconditions;
+      std::vector<const Core::Conditions::Condition*> cccvhalfcycleconditions;
       discret_->get_condition("CCCVHalfCycle", cccvhalfcycleconditions);
 
       // loop over all conditions
@@ -2961,7 +2958,7 @@ void ScaTra::ScaTraTimIntElch::apply_neumann_bc(
         Inpar::ElCh::CCCVHalfCyclePhase::constant_current)
     {
       // extract constant-current constant-voltage (CCCV) half-cycle boundary conditions
-      std::vector<Core::Conditions::Condition*> cccvhalfcycleconditions;
+      std::vector<const Core::Conditions::Condition*> cccvhalfcycleconditions;
       discret_->get_condition("CCCVHalfCycle", cccvhalfcycleconditions);
 
       // loop over all conditions
@@ -2980,10 +2977,10 @@ void ScaTra::ScaTraTimIntElch::apply_neumann_bc(
             const std::vector<int> onoff = {0, 1};
             const std::vector<double> val = {0.0, condition->parameters().get<double>("CURRENT")};
             const std::vector<std::optional<int>> funct = {0, 0};
-            condition->parameters().add("NUMDOF", 2);
-            condition->parameters().add("FUNCT", funct);
-            condition->parameters().add("ONOFF", onoff);
-            condition->parameters().add("VAL", val);
+            const_cast<Core::Conditions::Condition*>(condition)->parameters().add("NUMDOF", 2);
+            const_cast<Core::Conditions::Condition*>(condition)->parameters().add("FUNCT", funct);
+            const_cast<Core::Conditions::Condition*>(condition)->parameters().add("ONOFF", onoff);
+            const_cast<Core::Conditions::Condition*>(condition)->parameters().add("VAL", val);
 
             // create parameter list for elements
             Teuchos::ParameterList params;
@@ -3162,7 +3159,7 @@ int ScaTra::ScalarHandlerElch::num_scal_in_condition(const Core::Conditions::Con
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntElch::build_block_maps(
-    const std::vector<std::shared_ptr<Core::Conditions::Condition>>& partitioningconditions,
+    const std::vector<const Core::Conditions::Condition*>& partitioningconditions,
     std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const
 {
   if (matrix_type() == Core::LinAlg::MatrixType::block_condition_dof)

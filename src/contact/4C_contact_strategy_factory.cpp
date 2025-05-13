@@ -267,7 +267,7 @@ void CONTACT::STRATEGY::Factory::read_and_check_input(Teuchos::ParameterList& pa
       FOUR_C_THROW("Crosspoints and linear LM interpolation for quadratic FE not yet compatible");
 
     // check for self contact
-    std::vector<Core::Conditions::Condition*> contactConditions(0);
+    std::vector<const Core::Conditions::Condition*> contactConditions;
     discret().get_condition("Mortar", contactConditions);
     bool self = false;
 
@@ -634,7 +634,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
   }
 
   // Vector that solely contains solid-to-solid contact pairs
-  std::vector<std::vector<Core::Conditions::Condition*>> ccond_grps(0);
+  std::vector<std::vector<const Core::Conditions::Condition*>> ccond_grps;
   CONTACT::Utils::get_contact_condition_groups(ccond_grps, discret());
 
   std::set<const Core::Nodes::Node*> dbc_slave_nodes;
@@ -902,7 +902,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
           }
 
           // get edge and corner information:
-          std::vector<Core::Conditions::Condition*> contactCornerConditions(0);
+          std::vector<const Core::Conditions::Condition*> contactCornerConditions;
           discret().get_condition("mrtrcorner", contactCornerConditions);
           for (auto& condition : contactCornerConditions)
           {
@@ -911,7 +911,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
               cnode->set_on_corner() = true;
             }
           }
-          std::vector<Core::Conditions::Condition*> contactEdgeConditions(0);
+          std::vector<const Core::Conditions::Condition*> contactEdgeConditions;
           discret().get_condition("mrtredge", contactEdgeConditions);
           for (auto& condition : contactEdgeConditions)
           {
@@ -922,7 +922,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
           }
 
           // Check, if this node (and, in case, which dofs) are in the contact symmetry condition
-          std::vector<Core::Conditions::Condition*> contactSymConditions(0);
+          std::vector<const Core::Conditions::Condition*> contactSymConditions;
           discret().get_condition("mrtrsym", contactSymConditions);
 
           for (auto& condition : contactSymConditions)
@@ -974,7 +974,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
           }
 
           // get edge and corner information:
-          std::vector<Core::Conditions::Condition*> contactCornerConditions(0);
+          std::vector<const Core::Conditions::Condition*> contactCornerConditions;
           discret().get_condition("mrtrcorner", contactCornerConditions);
           for (auto& condition : contactCornerConditions)
           {
@@ -983,7 +983,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
               cnode->set_on_corner() = true;
             }
           }
-          std::vector<Core::Conditions::Condition*> contactEdgeConditions(0);
+          std::vector<const Core::Conditions::Condition*> contactEdgeConditions;
           discret().get_condition("mrtredge", contactEdgeConditions);
           for (auto& condition : contactEdgeConditions)
           {
@@ -994,7 +994,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
           }
 
           // Check, if this node (and, in case, which dofs) are in the contact symmetry condition
-          std::vector<Core::Conditions::Condition*> contactSymConditions(0);
+          std::vector<const Core::Conditions::Condition*> contactSymConditions;
           discret().get_condition("mrtrsym", contactSymConditions);
 
           for (auto& condition : contactSymConditions)
@@ -1035,7 +1035,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
     for (std::size_t j = 0; j < currentgroup.size(); ++j)
     {
       // get elements from condition j of current group
-      std::map<int, std::shared_ptr<Core::Elements::Element>>& currele =
+      const std::map<int, std::shared_ptr<Core::Elements::Element>>& currele =
           currentgroup[j]->geometry();
 
       /* elements in a boundary condition have a unique id
@@ -1051,7 +1051,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
        * the element ids stay the same for more than one processor in use.
        * hiermeier 02/2016 */
       int lsize = 0;
-      std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator fool;
+      std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator fool;
       for (fool = currele.begin(); fool != currele.end(); ++fool)
         if (fool->second->owner() == Core::Communication::my_mpi_rank(get_comm())) ++lsize;
 
@@ -1324,7 +1324,7 @@ void CONTACT::STRATEGY::Factory::set_poro_parent_element(
       std::dynamic_pointer_cast<Core::Elements::FaceElement>(ele);
   if (faceele == nullptr) FOUR_C_THROW("Cast to FaceElement failed!");
   cele.phys_type() = Mortar::Element::other;
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> poroCondVec;
+  std::vector<const Core::Conditions::Condition*> poroCondVec;
   discret.get_condition("PoroCoupling", poroCondVec);
   if (!cele.is_slave())  // treat an element as a master element if it is no slave element
   {
@@ -1906,10 +1906,10 @@ void CONTACT::STRATEGY::Factory::set_parameters_for_contact_condition(
     const int conditiongroupid, Teuchos::ParameterList& contactinterfaceparameters) const
 {
   // add parameters if we have SSI contact
-  if (discret().get_condition("SSIInterfaceContact") != nullptr)
+  if (discret().has_condition("SSIInterfaceContact"))
   {
     // get the scatra-scatra interface coupling condition
-    std::vector<Core::Conditions::Condition*> s2ikinetics_conditions;
+    std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions;
     discret().get_condition("S2IKinetics", s2ikinetics_conditions);
 
     // create a sublist which is filled and added to the contact interface parameters

@@ -265,7 +265,7 @@ void Core::FE::DiscretizationFaces::build_faces(const bool verbose)
         // number of pairs of periodic boundary conditions
         int numpbcpairs;
         // vector of periodic surface boundary conditions
-        std::vector<Core::Conditions::Condition*> mypbcs;
+        std::vector<const Core::Conditions::Condition*> mypbcs;
         get_condition("SurfacePeriodic", mypbcs);
         if (mypbcs.empty())
         {

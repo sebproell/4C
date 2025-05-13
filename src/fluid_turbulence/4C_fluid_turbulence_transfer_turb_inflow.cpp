@@ -37,7 +37,7 @@ FLD::TransferTurbulentInflowCondition::TransferTurbulentInflowCondition(
   active_ = false;
 
   // vector of pointers to all node clouds i.e. conditions to couple
-  std::vector<Core::Conditions::Condition*> nodecloudstocouple;
+  std::vector<const Core::Conditions::Condition*> nodecloudstocouple;
 
   // get surfaces to couple
   dis_->get_condition("TransferTurbulentInflow", nodecloudstocouple);
@@ -60,7 +60,8 @@ FLD::TransferTurbulentInflowCondition::TransferTurbulentInflowCondition(
 
     // loop all conditions and check whether they are of master or slave
     // type
-    for (std::vector<Core::Conditions::Condition*>::iterator cond = nodecloudstocouple.begin();
+    for (std::vector<const Core::Conditions::Condition*>::iterator cond =
+             nodecloudstocouple.begin();
         cond != nodecloudstocouple.end(); ++cond)
     {
       // get id, direction info and toggle

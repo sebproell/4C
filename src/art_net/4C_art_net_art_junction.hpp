@@ -132,8 +132,9 @@ namespace Arteries
       \brief Standard Constructor
      */
       ArtJunctionBc(std::shared_ptr<Core::FE::Discretization> actdis,
-          Core::IO::DiscretizationWriter& output, std::vector<Core::Conditions::Condition*> conds,
-          std::vector<int> IOart_flag, double dta, int condid, int numcond);
+          Core::IO::DiscretizationWriter& output,
+          std::vector<const Core::Conditions::Condition*> conds, std::vector<int> IOart_flag,
+          double dta, int condid, int numcond);
 
       /*!
       \brief Empty Constructor

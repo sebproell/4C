@@ -26,7 +26,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
     : parentdiscret_(actdis)
 {
   // get condition, i.e., do we have nodes that belong to a separate section of the domain
-  std::vector<Core::Conditions::Condition*> sepcond;
+  std::vector<const Core::Conditions::Condition*> sepcond;
   parentdiscret_->get_condition(condition, sepcond);
 
   std::vector<int> allcnd_sepcondnodeids;
@@ -279,7 +279,7 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
       for (unsigned numcond = 0; numcond < allcond.size(); ++numcond)
       {
         // get condition
-        std::vector<Core::Conditions::Condition*> actcond;
+        std::vector<const Core::Conditions::Condition*> actcond;
         parentdiscret_->get_condition(allcond[numcond], actcond);
         // loop all condition of the current type
         for (unsigned numactcond = 0; numactcond < actcond.size(); ++numactcond)
@@ -317,8 +317,9 @@ FLD::FluidDiscretExtractor::FluidDiscretExtractor(std::shared_ptr<Core::FE::Disc
             }
           }
 
+          // TODO this hacks the condition
           // replace the nodes of the parent discretization by the nodes of the child discretization
-          (*actcond[numactcond]).set_nodes(reduced_ids);
+          const_cast<Core::Conditions::Condition&>(*actcond[numactcond]).set_nodes(reduced_ids);
 
           // finally set condition
           childdiscret_->set_condition(

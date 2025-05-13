@@ -41,8 +41,8 @@ SSTI::SSTIAlgorithm::SSTIAlgorithm(MPI_Comm comm, const Teuchos::ParameterList& 
       meshtying_strategy_thermo_(nullptr),
       ssti_structure_meshtying_(nullptr),
       interfacemeshtying_(Global::Problem::instance()
-                              ->get_dis("structure")
-                              ->get_condition("SSTIInterfaceMeshtying") != nullptr),
+              ->get_dis("structure")
+              ->has_condition("SSTIInterfaceMeshtying")),
       isinit_(false),
       issetup_(false)
 {
