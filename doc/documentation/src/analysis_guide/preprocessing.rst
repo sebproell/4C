@@ -3,8 +3,13 @@
 Preprocessing
 ---------------
 
-|FOURC| reads the mesh, boundary conditions, materials and simulation parameters from an ASCII file in a proprietary format,
-which usually has the suffix ``.dat``, but this suffix is not necessary, it can be anything.
+|FOURC| reads the mesh, boundary conditions, materials and simulation parameters from a central
+input file.
+
+.. admonition:: Under development
+
+    A large refactoring effort is currently in progress to improve |FOURC|'s input files.
+    The information in this section is not fully updated to reflect these changes.
 
 There are not so many means to create a valid input file. At this point, we know of the following
 different ways to create an input file. In general, you'll have two options:
@@ -12,59 +17,7 @@ different ways to create an input file. In general, you'll have two options:
 #. Either you create the input file in |FOURC|'s native format directly,
 #. or you create an input file in a general binary format for finite element information, called ``Exodus II``, develeloped by `Sandia National Laboratories
    <https://www.sandia.gov/files/cubit/15.8/help_manual/WebHelp/finite_element_model/exodus/exodus2_file_specification.htm>`_.
-   This can be converted into |FOURC| s native format by an internal converter, :ref:`pre_exodus <pre_exodus>`.
-
-Since the conversion from the ``Exodus II`` format is the most versatile way to generate a |FOURC| input file, this method is explained first.
-
-.. _pre_exodus:
-
-Exodus II to |FOURC| file conversion
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The main procedure to generate a valid |FOURC| input file is from a binary mesh file in ``Exodus II`` format, see above,
-which includes nodes, elements, node sets, element sets, and side sets, as can be created by Cubit.
-Since this file does not contain boundary conditions, element type information, materials and solver details,
-additional information is needed, which is given by two additional files:
-
-#. for the global system parameters (solver, material, step information, etc.), called the *headerfile*, and
-
-#. a file for the correlation between element sets and type declarations, as well as boundary conditions definitions.
-   This is the so-called the *bcfile*.
-
-These three files are merged into an input file for |FOURC| by the program ``pre_exodus``.
-The created |FOURC| input file is then *automatically* validated using all available |FOURC| validation and is therefore likely to run.
-
-The program is created together with |FOURC| executable, if ``make full`` has been invoked,
-but it can also be compiled solely by ``make pre_exodus``.
-
-::
-
-   $> pre_exodus --exo=<exodusfile> --bc=<bcfile> --head=<headerfile> --dat=<4Cinput> \
-               [ --d2 | --d3  ]           \
-               [ --quadtri  ]             \
-               [ --gmesh=<startelement> ]
-
-
-In general one might not have already a proper *header-file* and matching *bc-file*. By typing
-
-``./pre_exodus --exo=<yourmesh>.e``
-
-two preliminary files ``default.head`` and ``default.bc`` are created.
-The first contains the currently valid header parameters with default values and commented options
-which you can edit to adapt it to your means.
-Similarly, ``default.bc`` consists of all your mesh entities and a list of all currently valid conditions.
-See next section for details how to work with it and how to get valid input files.
-
-.. note::
-   When you have an already existing input file, you can always validate it by simply executing ``./pre_exodus --dat=inputfile.dat``,
-   before(!) you start a parallel |FOURC| computation on a cluster, for example.
-
-*Optional parameters*
-
-The optional parameter ``--quadtri`` reads the exodus file and converts all quad elements in two triangular elements.
-It does not write a dat file, but writes a new exodus file instead named ``tri_<problemname>.e``.
-NOTE: This feature is only for 2D elements, it does **not** modify 3D elements.
-
+   This can be read into |FOURC| via its input file.
 
 Generating ``Exodus II`` files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,15 +34,8 @@ CUBIT `<http://cubit.sandia.gov/>`_ is a powerful pre- postprocessing
 tool. (The commercial version of the software was called *Trelis*,
 but has been renamed into CUBIT now as well, so we may stick to the name CUBIT).
 
-CUBIT can create ``Exodus II`` files which can be converted into a
-valid |FOURC| inpufile using the pre_exodus filter, so the preprocessing is a two step process:
-
-#. Cubit
-   - create geometry, mesh, and necessary node sets
-   - export to exodus file format (\*.e)
-#. :ref:`pre_exodus <pre_exodus>`
-   - define appropriate boundary conditions and element types
-   - convert into a |FOURC| \*.dat file.
+Cubit allows you to create the geometry, mesh, and necessary node sets and export them to
+the EXODUS file format.
 
 Note that
 
@@ -115,15 +61,13 @@ So the steps are
 
 #. Create finite element model and sets in your favorite preprocessor
 
-#. Export to some format, like ``Exodus II`` or the Gmesh format ``.msh`` file.
+#. Export to some format, like ``Exodus II`` or the Gmsh format ``.msh`` file.
 
 #. **Optional:** Read in the model to Cubit for further editing
 
 #. **Optional:** If you are not able to write in ``Exodus II`` format,
    use the python module meshio (packed in pip) to convert the mesh to an exodus (.e) file
    (<https://pypi.org/project/meshio/>)
-
-#. Run ``pre_exodus`` from your |FOURC| build to convert the data (see above).
 
 
 .. _create4Cinput:

@@ -388,63 +388,13 @@ are optional. You'll find more information about contact in the
 :ref:`contact and meshtying <contactandmeshtying>` section.
 
 
-.. _`sec:bcdefinitionForPre_exodus`:
+Defining boundary conditions for geometries from EXODUS files
+-------------------------------------------------------------
 
-Definition in a .bc file (for use with ``pre_exodus``)
-------------------------------------------------------
+Conditions can be applied on `node sets` or `element blocks` defined in the EXODUS file.
+Every condition takes an ``E`` parameter referring to the entity number that is
+subject to the condition. The ``ENTITY_TYPE`` parameter is used to distinguish
+between ``node_set_id`` and ``element_block_id``.
 
-In general, boundary conditions are defined in the .bc file. This is
-done per previously defined node and side set or element block by the
-following general syntax (cf. the default.bc file):
-
-::
-
-   Node Set, named:
-   Property Name: INFLOW
-   has 45107 Nodes
-   '*ns0="CONDITION"'
-   sectionname=""
-   description=""
-
-for boundary conditions acting on nodes, like displacements or
-temperatures, and
-
-::
-
-   Side Set, named: innerSurface
-   has 45107 Nodes
-   '*ss0="CONDITION"'
-   sectionname=""
-   description=""
-
-for boundary conditions acting on element surfaces, like surface
-pressure or thermal convection, and
-
-::
-
-   Element Block, named:
-   of Shape: HEX8
-   has 9417816 Elements
-   *eb0="ELEMENT"
-   sectionname="STRUCTURE"
-   description="MAT 1 KINEM nonlinear "
-
-for element types, respectively (the values of the sectionname and description are just examples).
-
-Note that you can specify a condition also on an ElementBlock, just replace 'ELEMENT' with 'CONDITION'
-The 'E num' in the dat-file depends on the order of the specification below
-
-These syntax blocks are automatically
-created for a given mesh when running the pre_exodus script on the
-corresponding .e file and are then collected at the top of the
-default.bc file. The node set IDs \*ns and element set IDs \*eb are
-automatically matched the IDs in the .e file in this case.
-
-To apply boundary conditions, a string has to be given for
-*sectionname=* and *description=*. A collection of all currently
-implemented boundary conditions is given in the
+A collection of all currently implemented boundary conditions is given in the
 :ref:`Prescribed condition reference <prescribedconditionreference>`.
-In this, the *sectionname* of a
-boundary condition is given first (e.g. DESIGN POINT DIRICH CONDITIONS)
-followed by the *E num* entry which (without the E num) has to be put as
-the *description* (see above).
