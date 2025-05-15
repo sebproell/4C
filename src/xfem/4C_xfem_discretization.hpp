@@ -231,7 +231,7 @@ namespace XFEM
      *  */
     int num_standard_dof(const unsigned& nds, const Core::Nodes::Node* node) const override
     {
-      std::vector<int> dofs(0);
+      std::vector<int> dofs;
       // get the first dofs of the node (not enriched)
       dof(dofs, node, nds, 0, nullptr);
       return static_cast<int>(dofs.size());

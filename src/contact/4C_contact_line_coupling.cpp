@@ -2017,7 +2017,7 @@ void CONTACT::LineToSurfaceCoupling3d::slave_vertex_linearization(
   }
 
   // linearization of the SlaveIntEle spatial coords
-  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> snodelin(0);
+  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> snodelin;
 
   // resize the linearizations
   snodelin.resize(nrow, std::vector<Core::Gen::Pairedvector<int, double>>(3, 1));
@@ -2042,7 +2042,7 @@ void CONTACT::LineToSurfaceCoupling3d::slave_vertex_linearization(
   std::vector<Core::Gen::Pairedvector<int, double>>& linauxn = get_deriv_auxn();
 
   // linearization of the MasterIntEle spatial coords
-  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> mnodelin(0);
+  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> mnodelin;
 
   // resize the linearizations
   mnodelin.resize(
@@ -2213,7 +2213,7 @@ void CONTACT::LineToSurfaceCoupling3d::master_vertex_linearization(
   }
 
   // linearization of the IntEle spatial coords
-  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> nodelin(0);
+  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> nodelin;
 
   // resize the linearizations
   nodelin.resize(nrow, std::vector<Core::Gen::Pairedvector<int, double>>(3, 1));

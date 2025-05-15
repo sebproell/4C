@@ -62,7 +62,7 @@ void Solid::Nln::SOLVER::Nox::setup()
       Teuchos::rcpFromRef(*nox_interface_ptr());
 
   // vector of currently present solution types
-  std::vector<enum NOX::Nln::SolutionType> soltypes(0);
+  std::vector<enum NOX::Nln::SolutionType> soltypes;
   // map of linear solvers, the key is the solution type
   NOX::Nln::LinearSystem::SolverMap linsolvers;
   /* convert the Inpar::Solid::ModelType to a NOX::Nln::SolType

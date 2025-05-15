@@ -194,8 +194,8 @@ void Core::Rebalance::match_element_distribution_of_matching_discretizations(
     ////////////////////////////////////////
     // MATCH ELEMENTS
     ////////////////////////////////////////
-    std::vector<int> rebalance_rowelegid_vec(0);
-    std::vector<int> rebalance_colelegid_vec(0);
+    std::vector<int> rebalance_rowelegid_vec;
+    std::vector<int> rebalance_colelegid_vec;
 
     // match elements to be rebalanced to template elements and fill vectors
     // with desired row and col gids for redistribution.
@@ -213,8 +213,8 @@ void Core::Rebalance::match_element_distribution_of_matching_discretizations(
     ////////////////////////////////////////
     // MATCH NODES
     ////////////////////////////////////////
-    std::vector<int> rebalance_nodegid_vec(0);
-    std::vector<int> rebalance_colnodegid_vec(0);
+    std::vector<int> rebalance_nodegid_vec;
+    std::vector<int> rebalance_colnodegid_vec;
 
     // match nodes to be rebalanced to template nodes and fill vectors
     // with desired row and col gids for redistribution.
@@ -285,13 +285,13 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     }
 
     // create vectors for element matching
-    std::vector<int> my_template_colelegid_vec(0);
-    std::vector<int> rebalance_rowelegid_vec(0);
+    std::vector<int> my_template_colelegid_vec;
+    std::vector<int> rebalance_rowelegid_vec;
 
     // create vectors for node matching
-    std::vector<int> my_template_nodegid_vec(0);
-    std::vector<int> rebalance_rownodegid_vec(0);
-    std::vector<int> rebalance_colnodegid_vec(0);
+    std::vector<int> my_template_nodegid_vec;
+    std::vector<int> rebalance_rownodegid_vec;
+    std::vector<int> rebalance_colnodegid_vec;
 
     // geometry iterator
     std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator geom_it;
@@ -300,7 +300,7 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     std::shared_ptr<Core::FE::Discretization> dis_from_template_condition;
 
     Core::FE::DiscretizationCreatorBase discreator;
-    std::vector<std::string> conditions_to_copy(0);
+    std::vector<std::string> conditions_to_copy;
     dis_from_template_condition = discreator.create_matching_discretization_from_condition(
         dis_template,        ///< discretization with condition
         condname_template,   ///< name of the condition, by which the derived discretization is
@@ -608,7 +608,7 @@ void Core::Rebalance::match_element_row_col_distribution(
   const Core::LinAlg::Map* rebalance_elerowmap = dis_to_rebalance.element_row_map();
   const Core::LinAlg::Map* template_elecolmap = dis_template.element_col_map();
   std::vector<int> my_template_elegid_vec(template_elecolmap->NumMyElements());
-  std::vector<int> my_rebalance_elegid_vec(0);
+  std::vector<int> my_rebalance_elegid_vec;
 
   // fill vector with processor local ele gids for template dis
   for (int lid = 0; lid < template_elecolmap->NumMyElements(); ++lid)
@@ -665,7 +665,7 @@ void Core::Rebalance::match_nodal_row_col_distribution(const Core::FE::Discretiz
   const Core::LinAlg::Map* rebalance_noderowmap = dis_to_rebalance.node_row_map();
   const Core::LinAlg::Map* template_nodecolmap = dis_template.node_col_map();
   std::vector<int> my_template_nodegid_vec(template_nodecolmap->NumMyElements());
-  std::vector<int> my_rebalance_nodegid_vec(0);
+  std::vector<int> my_rebalance_nodegid_vec;
 
   // fill vector with processor local node gids for template dis
   for (int lid = 0; lid < template_nodecolmap->NumMyElements(); ++lid)

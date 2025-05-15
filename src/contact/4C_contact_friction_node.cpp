@@ -20,7 +20,7 @@ Core::Communication::ParObject* CONTACT::FriNodeType::create(
     Core::Communication::UnpackBuffer& buffer)
 {
   std::vector<double> x(3, 0.0);
-  std::vector<int> dofs(0);
+  std::vector<int> dofs;
 
   // TODO: friplus = true for all nodes!!! change this with pack/unpack
   CONTACT::FriNode* node = new CONTACT::FriNode(0, x, 0, dofs, false, false, true);

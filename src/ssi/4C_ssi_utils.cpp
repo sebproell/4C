@@ -977,7 +977,7 @@ void SSI::Utils::SSIMeshTying::setup_mesh_tying_handlers(const Core::FE::Discret
     auto master_map = coupling_adapter->master_dof_map();
     auto interior_map = split_map(*dis.dof_row_map(), *merge_map(slave_map, master_map));
 
-    std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(0, nullptr);
+    std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
     maps.emplace_back(interior_map);
     maps.emplace_back(slave_map);
     maps.emplace_back(master_map);
@@ -1062,7 +1062,7 @@ void SSI::Utils::SSIMeshTying::find_matching_node_pairs(const Core::FE::Discreti
   std::vector<std::pair<int, int>> my_coupling_pairs;
 
   // get all mesh tying conditions
-  std::vector<const Core::Conditions::Condition*> meshtying_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> meshtying_conditions;
   dis.get_condition(name_meshtying_condition, meshtying_conditions);
 
   // match nodes between all mesh tying conditions (named with "a" and "b")
@@ -1299,7 +1299,7 @@ void SSI::Utils::SSIMeshTying::find_slave_slave_transformation_nodes(
     std::vector<int>& all_coupled_original_slave_gids) const
 {
   // store nodes that are slave nodes from the input
-  std::vector<const Core::Conditions::Condition*> meshtying_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> meshtying_conditions;
   dis.get_condition(name_meshtying_condition, meshtying_conditions);
 
   std::vector<int> original_slave_gids;

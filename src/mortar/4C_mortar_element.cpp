@@ -727,7 +727,7 @@ void Mortar::Element::deriv_unit_normal_at_xi(
   for (int i = 0; i < 3; ++i) n[i] /= length;
 
   // check if this mortar ele is an IntEle
-  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> nodelin(0);
+  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> nodelin;
   node_linearization(nodelin);
 
   int nderiv = nnodes * 3;

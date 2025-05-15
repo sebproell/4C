@@ -3375,12 +3375,12 @@ bool Wear::WearInterface::build_active_set(bool init)
   CONTACT::Interface::build_active_set(init);
 
   // define local variables
-  std::vector<int> mynodegids(0);
-  std::vector<int> mydofgids(0);
-  std::vector<int> myslipnodegids(0);
-  std::vector<int> myslipdofgids(0);
-  std::vector<int> mymnodegids(0);
-  std::vector<int> mymdofgids(0);
+  std::vector<int> mynodegids;
+  std::vector<int> mydofgids;
+  std::vector<int> myslipnodegids;
+  std::vector<int> myslipdofgids;
+  std::vector<int> mymnodegids;
+  std::vector<int> mymdofgids;
 
   // *******************************************************
   // loop over all master nodes - both-sided wear specific

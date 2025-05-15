@@ -267,7 +267,7 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_graph(
     for (; fool != locals.end(); ++fool)
     {
       const int grid = fool->first;
-      std::vector<int> cols(0, 0);
+      std::vector<int> cols;
       std::set<int>::iterator setfool = fool->second.begin();
       for (; setfool != fool->second.end(); ++setfool) cols.push_back(*setfool);
       int err = graph->insert_global_indices(grid, (int)cols.size(), &cols[0]);

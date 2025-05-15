@@ -641,8 +641,8 @@ void PARTICLEWALL::WallHandlerBoundingBox::init_wall_discretization()
   create_wall_discretization();
 
   // init vector of node and element ids
-  std::vector<int> nodeids(0);
-  std::vector<int> eleids(0);
+  std::vector<int> nodeids;
+  std::vector<int> eleids;
 
   // generate wall discretization from bounding box on first processor
   if (myrank_ == 0)

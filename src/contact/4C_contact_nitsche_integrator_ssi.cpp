@@ -93,8 +93,8 @@ void CONTACT::IntegratorNitscheSsi::gpts_forces(Mortar::Element& slave_ele,
   // calculate normals and derivatives
   const Core::LinAlg::Matrix<dim, 1> normal(gp_normal, true);
   Core::LinAlg::Matrix<dim, 1> slave_normal, master_normal;
-  std::vector<Core::Gen::Pairedvector<int, double>> d_slave_normal_dd(0, 0);
-  std::vector<Core::Gen::Pairedvector<int, double>> d_master_normal_dd(0, 0);
+  std::vector<Core::Gen::Pairedvector<int, double>> d_slave_normal_dd;
+  std::vector<Core::Gen::Pairedvector<int, double>> d_master_normal_dd;
   slave_ele.compute_unit_normal_at_xi(slave_xi, slave_normal.data());
   master_ele.compute_unit_normal_at_xi(master_xi, master_normal.data());
   slave_ele.deriv_unit_normal_at_xi(slave_xi, d_slave_normal_dd);

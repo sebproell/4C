@@ -6188,7 +6188,7 @@ bool CONTACT::Interface::integrate_kappa_penalty(CONTACT::Element& sele)
         Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(interface_params(), "LM_QUAD");
 
     // build linear integration elements from quadratic CElements
-    std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements(0);
+    std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements;
     split_int_elements(sele, sauxelements);
 
     // different options for mortar integration
@@ -7231,14 +7231,14 @@ void CONTACT::Interface::update_active_set_initial_status() const
 bool CONTACT::Interface::build_active_set(bool init)
 {
   // define local variables
-  std::vector<int> mynodegids(0);
-  std::vector<int> mynodegidsInactive(0);
-  std::vector<int> mydofgids(0);
-  std::vector<int> mydofgidsInactive(0);
-  std::vector<int> myslipnodegids(0);
-  std::vector<int> myslipdofgids(0);
-  std::vector<int> mymnodegids(0);
-  std::vector<int> mymdofgids(0);
+  std::vector<int> mynodegids;
+  std::vector<int> mynodegidsInactive;
+  std::vector<int> mydofgids;
+  std::vector<int> mydofgidsInactive;
+  std::vector<int> myslipnodegids;
+  std::vector<int> myslipdofgids;
+  std::vector<int> mymnodegids;
+  std::vector<int> mymdofgids;
 
   // loop over all slave nodes
   for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)

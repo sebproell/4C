@@ -334,7 +334,7 @@ PARTICLEALGORITHM::ParticleAlgorithm::create_result_tests()
   particleengine_->build_global_id_to_local_index_map();
 
   // particle field specific result test objects
-  std::vector<std::shared_ptr<Core::Utils::ResultTest>> allresulttests(0);
+  std::vector<std::shared_ptr<Core::Utils::ResultTest>> allresulttests;
 
   // particle result test
   {

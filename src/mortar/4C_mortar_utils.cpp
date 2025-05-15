@@ -463,10 +463,10 @@ int Mortar::sort_convex_hull_points(bool out, Core::LinAlg::SerialDenseMatrix& t
 
   // (2) Sort remaining points ascending w.r.t their angle with the y-axis
   // (if more than 1 point with identical angle exists, sort ascending w.r.t. their y-value)
-  std::vector<double> cotangle(0);
-  std::vector<double> yvalues(0);
-  std::vector<int> sorted(0);
-  std::vector<int> onxline(0);
+  std::vector<double> cotangle;
+  std::vector<double> yvalues;
+  std::vector<int> sorted;
+  std::vector<int> onxline;
 
   for (int i = 0; i < np; ++i)
   {

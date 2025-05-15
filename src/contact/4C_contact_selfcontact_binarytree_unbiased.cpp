@@ -458,7 +458,7 @@ void CONTACT::UnbiasedSelfBinaryTree::search_contact()
   // STEP 2: distribute roots among all processors
   //**********************************************************************
   // therefore find out which processor owns which root node
-  std::vector<unsigned> myroots(0);
+  std::vector<unsigned> myroots;
   for (unsigned i = 0; i < roots().size(); ++i)
     if (roots()[i]->owner() == Core::Communication::my_mpi_rank(get_comm())) myroots.push_back(i);
 

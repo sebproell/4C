@@ -21,7 +21,7 @@ CONTACT::NodeType CONTACT::NodeType::instance_;
 Core::Communication::ParObject* CONTACT::NodeType::create(Core::Communication::UnpackBuffer& buffer)
 {
   std::vector<double> x(3, 0.0);
-  std::vector<int> dofs(0);
+  std::vector<int> dofs;
   auto* node = new CONTACT::Node(0, x, 0, dofs, false, false);
   node->unpack(buffer);
   return node;

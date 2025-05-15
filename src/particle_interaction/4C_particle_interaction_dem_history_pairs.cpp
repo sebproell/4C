@@ -171,7 +171,7 @@ void ParticleInteraction::DEMHistoryPairs::read_restart(
 void ParticleInteraction::DEMHistoryPairs::distribute_history_pairs()
 {
   // relate all particles to all processors
-  std::vector<int> particlestoproc(0);
+  std::vector<int> particlestoproc;
   particleengineinterface_->relate_all_particles_to_all_procs(particlestoproc);
 
   // allocate memory

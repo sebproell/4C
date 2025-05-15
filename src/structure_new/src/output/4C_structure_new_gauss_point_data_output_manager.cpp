@@ -216,7 +216,7 @@ void Solid::ModelEvaluator::GaussPointDataOutputManager::send_my_quantities_to_p
     const Core::Communication::Exporter& exporter, int to_proc) const
 {
   // Pack quantities
-  std::vector<char> sdata(0);
+  std::vector<char> sdata;
   pack_my_quantities(sdata);
 
   MPI_Request request;
@@ -229,7 +229,7 @@ std::unique_ptr<std::unordered_map<std::string, int>>
 Solid::ModelEvaluator::GaussPointDataOutputManager::receive_quantities_from_proc(
     const Core::Communication::Exporter& exporter, int from_proc) const
 {
-  std::vector<char> rdata(0);
+  std::vector<char> rdata;
   int size;
   exporter.receive(from_proc, MPI_TAG, rdata, size);
 
@@ -245,7 +245,7 @@ Solid::ModelEvaluator::GaussPointDataOutputManager::receive_quantities_from_proc
 void Solid::ModelEvaluator::GaussPointDataOutputManager::broadcast_my_quantities(
     const Core::Communication::Exporter& exporter)
 {
-  std::vector<char> data(0);
+  std::vector<char> data;
   if (Core::Communication::my_mpi_rank(exporter.get_comm()) == 0)
   {
     pack_my_quantities(data);

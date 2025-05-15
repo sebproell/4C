@@ -1064,15 +1064,15 @@ void BeamInteraction::SubmodelEvaluator::BeamPotential::write_output_runtime_bea
    *       - in case of the single length specific approach (SBIP) the uid for the GP refers
    *         to the slave beam element */
   // get and prepare storage for uid_0_beam_1_gid values
-  std::vector<int> uid_0_beam_1_gid(0);
+  std::vector<int> uid_0_beam_1_gid;
   uid_0_beam_1_gid.reserve(num_row_points);
 
   // get and prepare storage for uid_1_beam_2_gid values
-  std::vector<int> uid_1_beam_2_gid(0);
+  std::vector<int> uid_1_beam_2_gid;
   uid_1_beam_2_gid.reserve(num_row_points);
 
   // get and prepare storage for uid_2_gp_id values
-  std::vector<int> uid_2_gp_id(0);
+  std::vector<int> uid_2_gp_id;
   uid_2_gp_id.reserve(num_row_points);
 
   // get and prepare storage for point coordinate values
@@ -1082,11 +1082,11 @@ void BeamInteraction::SubmodelEvaluator::BeamPotential::write_output_runtime_bea
   point_coordinates.reserve(num_spatial_dimensions * num_row_points);
 
   // force values: collect data and append to visualization results if desired
-  std::vector<double> potential_force_vector(0);
+  std::vector<double> potential_force_vector;
   potential_force_vector.reserve(num_spatial_dimensions * num_row_points);
 
   // moment values: collect data and append to visualization results if desired
-  std::vector<double> potential_moment_vector(0);
+  std::vector<double> potential_moment_vector;
   potential_moment_vector.reserve(num_spatial_dimensions * num_row_points);
 
 

@@ -480,9 +480,9 @@ void ScaTra::LevelSetAlgorithm::manipulate_fluid_field_for_gfunc()
   std::vector<const Core::Conditions::Condition*> surfacepbcs;
   discret_->get_condition("SurfacePeriodic", surfacepbcs);
   if (surfacepbcs.empty()) discret_->get_condition("LinePeriodic", surfacepbcs);
-  std::vector<int> planenormal(0);
-  std::vector<double> globalmins(0);
-  std::vector<double> globalmaxs(0);
+  std::vector<int> planenormal;
+  std::vector<double> globalmins;
+  std::vector<double> globalmaxs;
   for (size_t i = 0; i < surfacepbcs.size(); ++i)
   {
     const auto ismaster = surfacepbcs[i]->parameters().get<std::string>("MASTER_OR_SLAVE");

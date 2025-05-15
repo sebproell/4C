@@ -146,8 +146,8 @@ void Mortar::BinaryTreeNode::update_slabs_bottom_up(double& enlarge)
 void Mortar::BinaryTreeNode::divide_tree_node()
 {
   // map of elements belonging to left / right child treenode
-  std::vector<int> leftelements(0);
-  std::vector<int> rightelements(0);
+  std::vector<int> leftelements;
+  std::vector<int> rightelements;
 
   // if only 2 elements in Treenode, create new treenodes out of them
   if (elelist().size() == 2)

@@ -95,7 +95,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
 
   // find all pairs of matching contact conditions
   // there is a maximum of (conditions / 2) groups
-  std::vector<int> foundgroups(0);
+  std::vector<int> foundgroups;
   int numgroupsfound = 0;
 
   // maximum dof number in discretization
@@ -181,8 +181,8 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
     ++numgroupsfound;
 
     // find out which sides are Master and Slave
-    std::vector<bool> isslave(0);
-    std::vector<bool> isself(0);
+    std::vector<bool> isslave;
+    std::vector<bool> isself;
     CONTACT::Utils::get_master_slave_side_info(isslave, isself, currentgroup);
     for (const bool is : isself)
     {

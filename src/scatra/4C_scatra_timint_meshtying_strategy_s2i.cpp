@@ -2312,7 +2312,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
           }
 
           // generate mortar integration cells
-          std::vector<std::shared_ptr<Mortar::IntCell>> imortarcells(0, nullptr);
+          std::vector<std::shared_ptr<Mortar::IntCell>> imortarcells;
           icoupmortar.evaluate_geometry(imortarcells);
 
           // assign physical implementation type to each mortar integration cell by copying the
@@ -2385,7 +2385,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               FOUR_C_THROW("Couldn't extract slave-side mortar node from mortar discretization!");
 
             // find associated master-side elements
-            std::vector<Mortar::Element*> master_mortar_elements(0, nullptr);
+            std::vector<Mortar::Element*> master_mortar_elements;
             interface.find_master_elements(*slavenode, master_mortar_elements);
 
             // loop over all master-side elements

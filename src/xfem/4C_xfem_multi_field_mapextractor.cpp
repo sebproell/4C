@@ -416,8 +416,8 @@ void XFEM::MultiFieldMapExtractor::build_slave_node_map_extractors()
   unsigned dis_count = 0;
   for (cit_dis = sl_dis_vec().begin(); cit_dis != sl_dis_vec().end(); ++cit_dis)
   {
-    std::vector<int> my_interface_row_node_gids(0);
-    std::vector<int> my_non_interface_row_node_gids(0);
+    std::vector<int> my_interface_row_node_gids;
+    std::vector<int> my_non_interface_row_node_gids;
 
     const int num_my_rnodes = (*cit_dis)->num_my_row_nodes();
     int* my_row_node_gids = (*cit_dis)->node_row_map()->MyGlobalElements();
@@ -455,8 +455,8 @@ void XFEM::MultiFieldMapExtractor::build_slave_node_map_extractors()
  *----------------------------------------------------------------------------*/
 void XFEM::MultiFieldMapExtractor::build_slave_dof_map_extractors()
 {
-  std::vector<int> my_sl_interface_dofs(0);
-  std::vector<int> my_sl_non_interface_dofs(0);
+  std::vector<int> my_sl_interface_dofs;
+  std::vector<int> my_sl_non_interface_dofs;
 
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_maps(2, nullptr);
 
@@ -629,7 +629,7 @@ void XFEM::MultiFieldMapExtractor::build_master_node_map_extractor()
  *----------------------------------------------------------------------------*/
 void XFEM::MultiFieldMapExtractor::build_master_dof_map_extractor()
 {
-  std::vector<int> my_ma_interface_dofs(0);
+  std::vector<int> my_ma_interface_dofs;
 
   /* the 1-st num_dis partial maps are the master interface dof maps,
    * the 2-nd num_dis partial maps are the master non-interface dof maps
@@ -972,10 +972,10 @@ void XFEM::MultiFieldMapExtractor::build_global_interface_node_gid_set()
       ++p)
   {
     int num_my_unique_row_nodes = 0;
-    std::vector<int> my_unique_row_node_gid_vec(0);
+    std::vector<int> my_unique_row_node_gid_vec;
 
     int num_my_interface_row_nodes = 0;
-    std::vector<int> my_interface_row_node_gid_vec(0);
+    std::vector<int> my_interface_row_node_gid_vec;
 
     if (p == static_cast<unsigned>(Core::Communication::my_mpi_rank(get_comm())))
     {

@@ -43,7 +43,7 @@ namespace Core::Communication
     NestedParallelismType npType = NestedParallelismType::no_nested_parallelism;
 
     // parse command line and separate configuration arguments
-    std::vector<std::string> conf(0);
+    std::vector<std::string> conf;
     for (std::size_t i = 1; i < argv.size(); i++)
     {
       std::string temp = argv[i];

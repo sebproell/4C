@@ -70,7 +70,7 @@ namespace Core::LinAlg
         iamtarget = true;
         break;
       }
-    std::vector<int> targetvec(0);
+    std::vector<int> targetvec;
     if (iamtarget)
     {
       targetvec.resize(numproc);
@@ -146,7 +146,7 @@ namespace Core::LinAlg
         iamtarget = true;
         break;
       }
-    std::vector<int> targetvec(0);
+    std::vector<int> targetvec;
     if (iamtarget)
     {
       targetvec.resize(numproc);
@@ -222,7 +222,7 @@ namespace Core::LinAlg
         iamtarget = true;
         break;
       }
-    std::vector<int> targetvec(0);
+    std::vector<int> targetvec;
     if (iamtarget)
     {
       targetvec.resize(numproc);
@@ -298,7 +298,7 @@ namespace Core::LinAlg
         iamtarget = true;
         break;
       }
-    std::vector<int> targetvec(0);
+    std::vector<int> targetvec;
     if (iamtarget)
     {
       targetvec.resize(numproc);
@@ -377,7 +377,7 @@ namespace Core::LinAlg
         iamtarget = true;
         break;
       }
-    std::vector<int> targetvec(0);
+    std::vector<int> targetvec;
     if (iamtarget)
     {
       targetvec.resize(numproc);

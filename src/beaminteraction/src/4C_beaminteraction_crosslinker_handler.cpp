@@ -550,7 +550,7 @@ std::shared_ptr<std::list<int>> BeamInteraction::BeamCrosslinkerHandler::transfe
       examinedbins[rlid] = 1;
 
     Core::Nodes::Node** linker = currbin->nodes();
-    std::vector<int> tobemoved(0);
+    std::vector<int> tobemoved;
     for (int ilinker = 0; ilinker < currbin->num_node(); ++ilinker)
     {
       // get current node

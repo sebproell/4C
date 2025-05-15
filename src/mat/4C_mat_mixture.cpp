@@ -175,7 +175,7 @@ void Mat::Mixture::unpack(Core::Communication::UnpackBuffer& buffer)
 
 
     // Extract is isPreEvaluated
-    std::vector<int> isPreEvaluatedInt(0);
+    std::vector<int> isPreEvaluatedInt;
     extract_from_pack(buffer, isPreEvaluatedInt);
     is_pre_evaluated_.resize(isPreEvaluatedInt.size());
     for (unsigned i = 0; i < isPreEvaluatedInt.size(); ++i)

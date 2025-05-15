@@ -714,8 +714,8 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
     }
 
     // find out which sides are Master and Slave
-    std::vector<bool> isslave(0);
-    std::vector<bool> isself(0);
+    std::vector<bool> isslave;
+    std::vector<bool> isself;
     CONTACT::Utils::get_master_slave_side_info(isslave, isself, currentgroup);
     for (const bool is : isself)
     {

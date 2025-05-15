@@ -931,7 +931,7 @@ void PoroPressureBased::PorofluidAlgorithm::evaluate_valid_volume_frac_press_and
 void PoroPressureBased::PorofluidAlgorithm::apply_additional_dbc_for_vol_frac_press()
 {
   const Core::LinAlg::Map* elecolmap = discret_->element_col_map();
-  std::vector<int> mydirichdofs(0);
+  std::vector<int> mydirichdofs;
 
   // we identify the volume fraction pressure dofs which do not have a physical meaning and set
   // a DBC on them
@@ -1003,7 +1003,7 @@ void PoroPressureBased::PorofluidAlgorithm::apply_additional_dbc_for_vol_frac_pr
 void PoroPressureBased::PorofluidAlgorithm::apply_starting_dbc()
 {
   const auto& elecolmap = *discret_->element_col_map();
-  std::vector<int> dirichlet_dofs(0);
+  std::vector<int> dirichlet_dofs;
   const int num_poro_dofs = discret_->num_dof(0, discret_->l_row_node(0));
 
   for (int ele_idx = 0; ele_idx < elecolmap.NumMyElements(); ++ele_idx)

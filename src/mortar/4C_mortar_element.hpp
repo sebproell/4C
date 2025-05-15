@@ -475,7 +475,7 @@ namespace Mortar
     */
     std::vector<std::shared_ptr<Core::Elements::Element>> lines() override
     {
-      std::vector<std::shared_ptr<Core::Elements::Element>> lines(0);
+      std::vector<std::shared_ptr<Core::Elements::Element>> lines;
       return lines;
     }
 
@@ -485,7 +485,7 @@ namespace Mortar
     */
     std::vector<std::shared_ptr<Core::Elements::Element>> surfaces() override
     {
-      std::vector<std::shared_ptr<Core::Elements::Element>> surfaces(0);
+      std::vector<std::shared_ptr<Core::Elements::Element>> surfaces;
       return surfaces;
     }
 

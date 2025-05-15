@@ -305,7 +305,7 @@ double BeamInteraction::determine_searchbox_inc(Teuchos::ParameterList& beamcont
 {
   double searchboxinc = 0.0;
 
-  std::vector<double> extval(0);
+  std::vector<double> extval;
   std::string extrusion_value_in(
       Teuchos::getNumericStringParameter(beamcontactparams, "BEAMS_EXTVAL"));
 

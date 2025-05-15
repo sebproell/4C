@@ -124,8 +124,8 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_structure_li
     case Core::LinearSolver::PreconditionerType::block_teko:
     {
       // Create the beam and solid maps
-      std::vector<int> solidDofs(0);
-      std::vector<int> beamDofs(0);
+      std::vector<int> solidDofs;
+      std::vector<int> beamDofs;
 
       for (int i = 0; i < actdis.num_my_row_nodes(); i++)
       {

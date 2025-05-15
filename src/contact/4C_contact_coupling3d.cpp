@@ -368,7 +368,7 @@ bool CONTACT::Coupling3d::slave_vertex_linearization(
   }
 
   // linearization of the IntEle spatial coords
-  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> nodelin(0);
+  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> nodelin;
   Mortar::IntElement* sIntEle = dynamic_cast<Mortar::IntElement*>(&slave_int_element());
 
   if (sIntEle == nullptr)
@@ -507,7 +507,7 @@ bool CONTACT::Coupling3d::master_vertex_linearization(
   }
 
   // linearization of the SlaveIntEle spatial coords
-  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> snodelin(0);
+  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> snodelin;
   Mortar::IntElement* sIntEle = dynamic_cast<Mortar::IntElement*>(&slave_int_element());
 
   if (sIntEle == nullptr)
@@ -537,7 +537,7 @@ bool CONTACT::Coupling3d::master_vertex_linearization(
   const std::vector<Core::Gen::Pairedvector<int, double>>& linauxn = get_deriv_auxn();
 
   // linearization of the MasterIntEle spatial coords
-  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> mnodelin(0);
+  std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> mnodelin;
   Mortar::IntElement* mIntEle = dynamic_cast<Mortar::IntElement*>(&master_int_element());
 
   if (mIntEle == nullptr)
@@ -1287,7 +1287,7 @@ void CONTACT::Coupling3dQuadManager::integrate_coupling(
     coupling().resize(0);
 
     // build linear integration elements from quadratic Mortar::Elements
-    std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements(0);
+    std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements;
     std::vector<std::vector<std::shared_ptr<Mortar::IntElement>>> mauxelements(
         master_elements().size());
     split_int_elements(slave_element(), sauxelements);
@@ -1368,7 +1368,7 @@ void CONTACT::Coupling3dQuadManager::integrate_coupling(
         coupling().resize(0);
 
         // build linear integration elements from quadratic Mortar::Elements
-        std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements(0);
+        std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements;
         std::vector<std::vector<std::shared_ptr<Mortar::IntElement>>> mauxelements(
             master_elements().size());
         split_int_elements(slave_element(), sauxelements);
