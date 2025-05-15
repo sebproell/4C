@@ -151,7 +151,7 @@ namespace FLD
 
     /// create vectors for KrylovSpaceProjection
     void init_krylov_space_projection() override;
-    void setup_krylov_space_projection(Core::Conditions::Condition* kspcond) override;
+    void setup_krylov_space_projection(const Core::Conditions::Condition* kspcond) override;
     void update_krylov_space_projection() override;
     void check_matrix_nullspace() override;
 

@@ -632,7 +632,7 @@ void XFEM::MeshCouplingFPI::output(const int step, const double time, const bool
 
 void XFEM::MeshCouplingFPI::set_condition_specific_parameters()
 {
-  std::vector<Core::Conditions::Condition*> conditions_XFPI;
+  std::vector<const Core::Conditions::Condition*> conditions_XFPI;
   cutter_dis_->get_condition(cond_name_, conditions_XFPI);
 
   // Create maps for easy extraction at gausspoint level

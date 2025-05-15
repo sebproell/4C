@@ -253,12 +253,12 @@ void Solid::TimIntImpl::setup()
   // in this case, we need a basis vector for the nullspace/kernel
 
   // get condition "KrylovSpaceProjection" from discretization
-  std::vector<Core::Conditions::Condition*> KSPcond;
+  std::vector<const Core::Conditions::Condition*> KSPcond;
   discret_->get_condition("KrylovSpaceProjection", KSPcond);
   int numcond = KSPcond.size();
   int numsolid = 0;
 
-  Core::Conditions::Condition* kspcond = nullptr;
+  const Core::Conditions::Condition* kspcond = nullptr;
   // check if for solid Krylov projection is required
   for (int icond = 0; icond < numcond; icond++)
   {
@@ -742,7 +742,7 @@ void Solid::TimIntImpl::predict_tang_dis_consist_vel_acc()
 /*--------------------------------------------------------------------------*
  | setup Krylov projector including first fill                    nis Feb13 |
  *--------------------------------------------------------------------------*/
-void Solid::TimIntImpl::setup_krylov_space_projection(Core::Conditions::Condition* kspcond)
+void Solid::TimIntImpl::setup_krylov_space_projection(const Core::Conditions::Condition* kspcond)
 {
   // get number of mode flags in input file
   const int nummodes = kspcond->parameters().get<int>("NUMMODES");

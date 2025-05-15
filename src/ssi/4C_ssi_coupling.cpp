@@ -451,11 +451,11 @@ void SSI::SSICouplingMatchingVolumeAndBoundary::init(const int ndim,
   {
     {
       // get condition which defines the coupling on target discretization
-      std::vector<Core::Conditions::Condition*> conds_struct;
+      std::vector<const Core::Conditions::Condition*> conds_struct;
       structdis->get_condition("SSICouplingSolidToScatra", conds_struct);
 
       // get condition which defines the coupling on source discretization
-      std::vector<Core::Conditions::Condition*> conds_scatra;
+      std::vector<const Core::Conditions::Condition*> conds_scatra;
       scatradis->get_condition("SSICouplingSolidToScatra", conds_scatra);
 
       // at least one condition needs to be defined on each discretization
@@ -484,11 +484,11 @@ void SSI::SSICouplingMatchingVolumeAndBoundary::init(const int ndim,
 
     {
       // get condition which defines the coupling on target discretization
-      std::vector<Core::Conditions::Condition*> conds_struct;
+      std::vector<const Core::Conditions::Condition*> conds_struct;
       structdis->get_condition("SSICouplingScatraToSolid", conds_struct);
 
       // get condition which defines the coupling on source discretization
-      std::vector<Core::Conditions::Condition*> conds_scatra;
+      std::vector<const Core::Conditions::Condition*> conds_scatra;
       scatradis->get_condition("SSICouplingScatraToSolid", conds_scatra);
 
       // at least one condition needs to be defined on each discretization

@@ -75,7 +75,7 @@ void Solid::Dbc::setup()
   // ---------------------------------------------------------------------------
   // Create local coordinate system manager
   // ---------------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> locsysconditions(0);
+  std::vector<const Core::Conditions::Condition*> locsysconditions;
   discret_ptr_->get_condition("Locsys", locsysconditions);
   if (locsysconditions.size())
   {

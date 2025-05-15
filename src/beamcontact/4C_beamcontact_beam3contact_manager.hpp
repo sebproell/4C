@@ -418,10 +418,10 @@ namespace CONTACT
     std::shared_ptr<std::vector<double>> mi_;
 
     //! line charge conditions
-    std::vector<Core::Conditions::Condition*> linechargeconds_;
+    std::vector<const Core::Conditions::Condition*> linechargeconds_;
 
     //! point charge conditions (rigid sphere)
-    std::vector<Core::Conditions::Condition*> pointchargeconds_;
+    std::vector<const Core::Conditions::Condition*> pointchargeconds_;
 
     // bool indicating if we are in the first time step of a simulation
     bool firststep_;

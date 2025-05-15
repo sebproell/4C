@@ -61,8 +61,8 @@ namespace Constraints
     /*!
     \brief constructor
      */
-    SpringDashpot(std::shared_ptr<Core::FE::Discretization> dis,
-        std::shared_ptr<Core::Conditions::Condition> cond);
+    SpringDashpot(
+        std::shared_ptr<Core::FE::Discretization> dis, const Core::Conditions::Condition& cond);
 
     //! add contribution of spring dashpot BC to residual vector
     // old version, NOT consistently integrated over element surface!!
@@ -149,8 +149,8 @@ namespace Constraints
     //! initialize prestr offset
     void initialize_prestr_offset();
 
-    std::shared_ptr<Core::FE::Discretization> actdisc_;    ///< standard discretization
-    std::shared_ptr<Core::Conditions::Condition> spring_;  ///< spring dashpot condition
+    std::shared_ptr<Core::FE::Discretization> actdisc_;  ///< standard discretization
+    const Core::Conditions::Condition* spring_;          ///< spring dashpot condition
 
     /// Mortar interface in case of curnormal springs
     std::shared_ptr<Adapter::CouplingNonLinMortar> mortar_;

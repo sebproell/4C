@@ -36,9 +36,8 @@ namespace BeamInteraction
      * @param condition_line_1 (in) The first line condition containing the beam elements.
      * @param condition_line_2 (in) The other line condition containing the beam elements.
      */
-    BeamToBeamContactCondition(
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_line_1,
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_line_2);
+    BeamToBeamContactCondition(const Core::Conditions::Condition& condition_line_1,
+        const Core::Conditions::Condition& condition_line_2);
 
     /**
      * \brief Build the ID sets for this condition.
@@ -75,7 +74,7 @@ namespace BeamInteraction
 
    private:
     //! Pointer to the other line condition.
-    std::shared_ptr<const Core::Conditions::Condition> condition_other_;
+    const Core::Conditions::Condition* condition_other_;
 
     //! Vector containing all beam contact pairs created by this condition.
     std::vector<std::shared_ptr<BeamContactPair>> condition_contact_pairs_;

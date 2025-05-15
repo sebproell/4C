@@ -47,8 +47,8 @@ std::string CONTACT::vec_block_type_to_str(const CONTACT::VecBlockType bt)
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 int CONTACT::Utils::get_contact_conditions(
-    std::vector<Core::Conditions::Condition*>& contact_conditions,
-    const std::vector<Core::Conditions::Condition*>& beamandsolidcontactconditions,
+    std::vector<const Core::Conditions::Condition*>& contact_conditions,
+    const std::vector<const Core::Conditions::Condition*>& beamandsolidcontactconditions,
     const bool& throw_error)
 {
   /* Sort out beam-to-solid contact pairs, since these are treated in the
@@ -85,14 +85,14 @@ int CONTACT::Utils::get_contact_conditions(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 int CONTACT::Utils::get_contact_condition_groups(
-    std::vector<std::vector<Core::Conditions::Condition*>>& ccond_grps,
+    std::vector<std::vector<const Core::Conditions::Condition*>>& ccond_grps,
     const Core::FE::Discretization& discret, const bool& throw_error)
 {
   // vector that contains solid-to-solid and beam-to-solid contact pairs
-  std::vector<Core::Conditions::Condition*> beamandsolidcontactconditions(0);
+  std::vector<const Core::Conditions::Condition*> beamandsolidcontactconditions;
   discret.get_condition("Contact", beamandsolidcontactconditions);
 
-  std::vector<Core::Conditions::Condition*> cconds(0);
+  std::vector<const Core::Conditions::Condition*> cconds;
   int err =
       CONTACT::Utils::get_contact_conditions(cconds, beamandsolidcontactconditions, throw_error);
   // direct return, if an error occurred
@@ -104,8 +104,8 @@ int CONTACT::Utils::get_contact_condition_groups(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void CONTACT::Utils::get_contact_condition_groups(
-    std::vector<std::vector<Core::Conditions::Condition*>>& ccond_grps,
-    const std::vector<Core::Conditions::Condition*>& cconds)
+    std::vector<std::vector<const Core::Conditions::Condition*>>& ccond_grps,
+    const std::vector<const Core::Conditions::Condition*>& cconds)
 {
   ccond_grps.clear();
   /* find all pairs of matching contact conditions
@@ -114,8 +114,8 @@ void CONTACT::Utils::get_contact_condition_groups(
 
   for (std::size_t i = 0; i < cconds.size(); ++i)
   {
-    std::vector<Core::Conditions::Condition*> current_grp(0);
-    Core::Conditions::Condition* tempcond = nullptr;
+    std::vector<const Core::Conditions::Condition*> current_grp;
+    const Core::Conditions::Condition* tempcond = nullptr;
 
     // try to build contact group around this condition
     current_grp.push_back(cconds[i]);
@@ -167,7 +167,7 @@ void CONTACT::Utils::get_contact_condition_groups(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void CONTACT::Utils::get_master_slave_side_info(std::vector<bool>& isslave,
-    std::vector<bool>& isself, const std::vector<Core::Conditions::Condition*>& cond_grp)
+    std::vector<bool>& isself, const std::vector<const Core::Conditions::Condition*>& cond_grp)
 {
   bool hasslave = false;
   bool hasmaster = false;
@@ -233,7 +233,7 @@ void CONTACT::Utils::get_master_slave_side_info(std::vector<bool>& isslave,
 void CONTACT::Utils::get_initialization_info(bool& Two_half_pass,
     bool& Check_nonsmooth_selfcontactsurface, bool& Searchele_AllProc, std::vector<bool>& isactive,
     std::vector<bool>& isslave, std::vector<bool>& isself,
-    const std::vector<Core::Conditions::Condition*>& cond_grp)
+    const std::vector<const Core::Conditions::Condition*>& cond_grp)
 {
   std::vector<const std::string*> active(cond_grp.size());
   std::vector<int> two_half_pass(cond_grp.size());
@@ -434,7 +434,7 @@ void CONTACT::Utils::write_conservation_data_to_file(const int mypid, const int 
  *----------------------------------------------------------------------------*/
 void CONTACT::Utils::DbcHandler::detect_dbc_slave_nodes_and_elements(
     const Core::FE::Discretization& str_discret,
-    const std::vector<std::vector<Core::Conditions::Condition*>>& ccond_grps,
+    const std::vector<std::vector<const Core::Conditions::Condition*>>& ccond_grps,
     std::set<const Core::Nodes::Node*>& dbc_slave_nodes,
     std::set<const Core::Elements::Element*>& dbc_slave_eles)
 {
@@ -491,7 +491,7 @@ void CONTACT::Utils::DbcHandler::detect_dbc_slave_nodes(
     const Core::FE::Discretization& str_discret,
     const std::vector<const Core::Conditions::Condition*>& sl_conds)
 {
-  std::vector<Core::Conditions::Condition*> dconds;
+  std::vector<const Core::Conditions::Condition*> dconds;
   str_discret.get_condition("Dirichlet", dconds);
 
   // collect all slave node ids
@@ -509,7 +509,7 @@ void CONTACT::Utils::DbcHandler::detect_dbc_slave_nodes(
 
     bool found = false;
 
-    for (Core::Conditions::Condition* dcond : dconds)
+    for (const Core::Conditions::Condition* dcond : dconds)
     {
       const auto* dnids = dcond->get_nodes();
       for (int dnid : *dnids)

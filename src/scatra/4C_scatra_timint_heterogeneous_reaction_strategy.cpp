@@ -226,8 +226,10 @@ void ScaTra::HeterogeneousReactionStrategy::heterogeneous_reaction_sanity_check(
   if (Core::Communication::my_mpi_rank(com) == 0)
     std::cout << " Sanity check for HeterogeneousReactionStrategy ...";
 
-  Core::Conditions::Condition* slave_cond =
-      scatratimint_->discretization()->get_condition("ScatraHeteroReactionSlave");
+  std::vector<const Core::Conditions::Condition*> slave_conds;
+  scatratimint_->discretization()->get_condition("ScatraHeteroReactionSlave", slave_conds);
+  FOUR_C_ASSERT_ALWAYS(slave_conds.size() == 1, "Expected exactly one slave condition!");
+  const auto* slave_cond = slave_conds[0];
 
   const Core::LinAlg::Map* element_row_map = scatratimint_->discretization()->element_row_map();
 

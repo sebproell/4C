@@ -300,7 +300,7 @@ void Solid::ModelEvaluator::BeamInteraction::set_sub_model_types()
   // ---------------------------------------------------------------------------
 
   // conditions for beam penalty point coupling
-  std::vector<Core::Conditions::Condition*> beampenaltycouplingconditions(0);
+  std::vector<const Core::Conditions::Condition*> beampenaltycouplingconditions;
   discret_ptr_->get_condition("PenaltyPointCouplingCondition", beampenaltycouplingconditions);
   if (beampenaltycouplingconditions.size() > 0)
     submodeltypes_->insert(Inpar::BeamInteraction::submodel_beamcontact);
@@ -331,7 +331,7 @@ void Solid::ModelEvaluator::BeamInteraction::set_sub_model_types()
   // ---------------------------------------------------------------------------
   // check for beam potential-based interactions
   // ---------------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> beampotconditions(0);
+  std::vector<const Core::Conditions::Condition*> beampotconditions;
   discret().get_condition("BeamPotentialLineCharge", beampotconditions);
   if (beampotconditions.size() > 0)
     submodeltypes_->insert(Inpar::BeamInteraction::submodel_potential);

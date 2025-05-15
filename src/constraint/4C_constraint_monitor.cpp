@@ -111,8 +111,7 @@ void Constraints::Monitor::evaluate_monitor(
     // Get ConditionID of current condition if defined and write value in parameterlist
     const int condID = cond->parameters().get<int>("ConditionID");
     const int offsetID = params.get("OffsetID", 0);
-    params.set<std::shared_ptr<Core::Conditions::Condition>>(
-        "condition", Core::Utils::shared_ptr_from_ref(*cond));
+    params.set<const Core::Conditions::Condition*>("condition", cond);
 
     // define element matrices and vectors
     Core::LinAlg::SerialDenseMatrix elematrix1;
@@ -121,25 +120,24 @@ void Constraints::Monitor::evaluate_monitor(
     Core::LinAlg::SerialDenseVector elevector2;
     Core::LinAlg::SerialDenseVector elevector3;
 
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond->geometry();
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond->geometry();
     // no check for empty geometry here since in parallel computations
     // can exist processors which do not own a portion of the elements belonging
     // to the condition geometry
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
-    for (curr = geom.begin(); curr != geom.end(); ++curr)
+    for (const auto& ele : geom | std::views::values)
     {
       // get element location vector and ownerships
       std::vector<int> lm;
       std::vector<int> lmowner;
       std::vector<int> lmstride;
-      curr->second->location_vector(*actdisc_, lm, lmowner, lmstride);
+      ele->location_vector(*actdisc_, lm, lmowner, lmstride);
 
       // get dimension of element matrices and vectors
       // Reshape element matrices and vectors and init to zero
       elevector3.size(1);
 
       // call the element specific evaluate method
-      int err = curr->second->evaluate(
+      int err = ele->evaluate(
           params, *actdisc_, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);
       if (err) FOUR_C_THROW("error while evaluating elements");
 
@@ -147,7 +145,7 @@ void Constraints::Monitor::evaluate_monitor(
       std::vector<int> constrlm;
       std::vector<int> constrowner;
       constrlm.push_back(condID - offsetID);
-      constrowner.push_back(curr->second->owner());
+      constrowner.push_back(ele->owner());
       Core::LinAlg::assemble(systemvector, elevector3, constrlm, constrowner);
     }
   }

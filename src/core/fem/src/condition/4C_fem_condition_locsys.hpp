@@ -129,29 +129,6 @@ namespace Core::Conditions
     inline const int& n_dim() { return dim_; };
 
     /*!
-     * \brief Get local system conditions
-     *
-     */
-    inline std::vector<Core::Conditions::Condition*> conditions() const { return locsysconds_; };
-
-    /*!
-     * \brief Get a specific local system condition
-     *
-     */
-    inline Core::Conditions::Condition* conditions(int k) const
-    {
-      if (k >= numlocsys_)
-      {
-        FOUR_C_THROW("Invalid vector index");
-        return nullptr;
-      }
-      else
-      {
-        return locsysconds_[k];
-      }
-    };
-
-    /*!
      * \brief Get number of local system conditions
      *
      */
@@ -257,7 +234,7 @@ namespace Core::Conditions
     int dim_;
 
     /// local system conditions
-    std::vector<Core::Conditions::Condition*> locsysconds_;
+    std::vector<const Core::Conditions::Condition*> locsysconds_;
 
     /// number of local systems
     int numlocsys_;

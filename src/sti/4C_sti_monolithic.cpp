@@ -1640,7 +1640,7 @@ void STI::Monolithic::apply_dirichlet_off_diag(
     {
       case Inpar::S2I::coupling_matching_nodes:
       {
-        if (!thermo_field()->discretization()->get_condition("PointCoupling"))
+        if (!thermo_field()->discretization()->has_condition("PointCoupling"))
           thermoscatra_domain_interface->apply_dirichlet(*icoupthermo_->slave_dof_map(), false);
         break;
       }
@@ -1706,7 +1706,7 @@ void STI::Monolithic::assemble_domain_interface_off_diag(
 
   if (strategythermo_->coupling_type() == Inpar::S2I::coupling_matching_nodes)
   {  // standard meshtying algorithm with Lagrange multipliers condensed out
-    if (!thermo_field()->discretization()->get_condition("PointCoupling"))
+    if (!thermo_field()->discretization()->has_condition("PointCoupling"))
     {
       // during the very first run of the following code, Complete() has not yet been called
       // on the thermo-scatra block of the global system matrix experiments have shown that

@@ -53,7 +53,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::init()
 
   // check if conditions are defined on both discretizations --------------------------
   // 1) 1D artery discretization
-  std::vector<Core::Conditions::Condition*> artCoupcond;
+  std::vector<const Core::Conditions::Condition*> artCoupcond;
   arterydis_->get_condition(condname_, artCoupcond);
 
   for (auto& iter : artCoupcond)
@@ -63,7 +63,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::init()
   }
 
   // 2) 2D, 3D continuous field discretization
-  std::vector<Core::Conditions::Condition*> contfieldCoupcond;
+  std::vector<const Core::Conditions::Condition*> contfieldCoupcond;
   contdis_->get_condition(condname_, contfieldCoupcond);
 
   for (auto& iter : contfieldCoupcond)

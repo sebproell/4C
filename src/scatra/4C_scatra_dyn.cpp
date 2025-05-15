@@ -144,7 +144,7 @@ void scatra_dyn(int restart)
 
       // redistribution between init(...) and setup()
       // redistribute scatra elements in case of heterogeneous reactions
-      if (scatradis->get_condition("ScatraHeteroReactionSlave") != nullptr)
+      if (scatradis->has_condition("ScatraHeteroReactionSlave"))
       {
         // create vector of discr.
         std::vector<std::shared_ptr<Core::FE::Discretization>> dis;

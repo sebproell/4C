@@ -75,7 +75,7 @@ void Discret::Elements::SolidLine<dim>::print(std::ostream& os) const
 
 template <unsigned dim>
 int Discret::Elements::SolidLine<dim>::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

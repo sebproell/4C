@@ -118,11 +118,13 @@ namespace Utils
     /// Return type of Cardiovascular0D function
     Cardiovascular0DType type() { return cardiovascular0dtype_; }
 
-    std::vector<Core::Conditions::Condition*> get_cardiovascular0_d_condition()
+    std::vector<const Core::Conditions::Condition*> get_cardiovascular0_d_condition()
     {
       return cardiovascular0dcond_;
     }
-    std::vector<Core::Conditions::Condition*> get_cardiovascular0_d_structure_coupling_condition()
+
+    std::vector<const Core::Conditions::Condition*>
+    get_cardiovascular0_d_structure_coupling_condition()
     {
       return cardiovascular0dstructcoupcond_;
     }
@@ -141,9 +143,9 @@ namespace Utils
 
    protected:
     std::shared_ptr<Core::FE::Discretization> actdisc_;  ///< standard discretization
-    std::vector<Core::Conditions::Condition*>
+    std::vector<const Core::Conditions::Condition*>
         cardiovascular0dcond_;  ///< 0D cardiovascular conditions
-    std::vector<Core::Conditions::Condition*>
+    std::vector<const Core::Conditions::Condition*>
         cardiovascular0dstructcoupcond_;  ///< 0D cardiovascular structure coupling conditions
     Cardiovascular0DType cardiovascular0dtype_;  ///< Cardiovascular0D type
     const Inpar::Cardiovascular0D::Cardvasc0DAtriumModel atrium_model_;

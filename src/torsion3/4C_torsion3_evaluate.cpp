@@ -254,7 +254,7 @@ int Discret::Elements::Torsion3::evaluate(Teuchos::ParameterList& params,
  *----------------------------------------------------------------------------------------------------------*/
 
 int Discret::Elements::Torsion3::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

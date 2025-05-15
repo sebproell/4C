@@ -177,8 +177,7 @@ void FPSI::InterfaceUtils::setup_local_interface_facing_element_map(
 
   bool condition_exists = true;
 
-  Core::Conditions::Condition* slavecond = slavedis.get_condition(condname);
-  if (slavecond == nullptr)
+  if (!slavedis.has_condition(condname))
   {
     condition_exists = false;
     std::cout << "WARNING: Condition <" << condname << "> does not exist on discretisation <"
@@ -186,8 +185,7 @@ void FPSI::InterfaceUtils::setup_local_interface_facing_element_map(
               << std::endl;
   }
 
-  Core::Conditions::Condition* mastercond = masterdis.get_condition(condname);
-  if (mastercond == nullptr)
+  if (!masterdis.has_condition(condname))
   {
     condition_exists = false;
     std::cout << "WARNING: Condition <" << condname << "> does not exist on discretisation <"
@@ -197,10 +195,18 @@ void FPSI::InterfaceUtils::setup_local_interface_facing_element_map(
 
   if (!condition_exists) return;
 
-  std::map<int, std::shared_ptr<Core::Elements::Element>>& slavegeom = slavecond->geometry();
-  std::map<int, std::shared_ptr<Core::Elements::Element>>& mastergeom = mastercond->geometry();
+  std::vector<const Core::Conditions::Condition*> conds;
+  slavedis.get_condition(condname, conds);
+  FOUR_C_ASSERT_ALWAYS(conds.size() == 1, "Expected exactly one condition of type '{}'", condname);
+  const std::map<int, std::shared_ptr<Core::Elements::Element>>& slavegeom =
+      conds.front()->geometry();
 
-  std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
+  masterdis.get_condition(condname, conds);
+  FOUR_C_ASSERT_ALWAYS(conds.size() == 1, "Expected exactly one condition of type '{}'", condname);
+  const std::map<int, std::shared_ptr<Core::Elements::Element>>& mastergeom =
+      conds.front()->geometry();
+
+  std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator curr;
   std::multimap<int, double> slaveinterfaceelementidentificationmap;
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +367,7 @@ void FPSI::InterfaceUtils::setup_local_interface_facing_element_map(
       // masterloc of current master element of processor[proc]
       std::shared_ptr<Core::Elements::Element> matchcurr = nullptr;
 
-      for (std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator scurr =
+      for (std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator scurr =
                slavegeom.begin();
           scurr != slavegeom.end(); ++scurr)
       {

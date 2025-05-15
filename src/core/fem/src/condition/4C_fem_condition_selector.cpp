@@ -28,7 +28,8 @@ Core::Conditions::Selector::Selector(std::string condition_name, int start_pos, 
 
 
 
-Core::Conditions::Selector::Selector(const std::vector<Core::Conditions::Condition*>& conditions)
+Core::Conditions::Selector::Selector(
+    const std::vector<const Core::Conditions::Condition*>& conditions)
     : conditions_(conditions)
 {
   FOUR_C_ASSERT_ALWAYS(conditions_.size() > 0, "Empty condition list");
@@ -51,7 +52,7 @@ void Core::Conditions::setup_extractor(const Core::FE::Discretization& dis,
 {
   std::vector<std::set<int>> conditioned_dof_sets(selectors.size());
 
-  std::vector<std::vector<Core::Conditions::Condition*>> conditions_for_selector;
+  std::vector<std::vector<const Core::Conditions::Condition*>> conditions_for_selector;
   for (const auto& selector : selectors)
   {
     if (selector.condition_name_ != "")
@@ -65,7 +66,7 @@ void Core::Conditions::setup_extractor(const Core::FE::Discretization& dis,
   }
 
   const auto select_dofs = [&](const Selector& selector,
-                               const std::vector<Core::Conditions::Condition*> conditions,
+                               std::span<const Core::Conditions::Condition*> conditions,
                                Core::Nodes::Node* node, std::set<int>& conddofset) -> bool
   {
     const bool contains_node = std::ranges::any_of(

@@ -1276,7 +1276,7 @@ void XFEM::LevelSetCouplingNavierSlip::set_element_conditions()
 /*--------------------------------------------------------------------------*
  *--------------------------------------------------------------------------*/
 void XFEM::LevelSetCouplingNavierSlip::set_element_specific_conditions(
-    std::vector<Core::Conditions::Condition*>& cutterele_cond, const std::string& cond_name,
+    std::vector<const Core::Conditions::Condition*>& cutterele_cond, const std::string& cond_name,
     const int& robin_id)
 {
   // TODO: can we combine this function with set_element_conditions in the coupling base routine!
@@ -1301,10 +1301,10 @@ void XFEM::LevelSetCouplingNavierSlip::set_element_specific_conditions(
     std::vector<Core::Conditions::Condition*> mycond;
     Core::Conditions::find_element_conditions(cutele, cond_name, mycond);
 
-    std::vector<Core::Conditions::Condition*> mynewcond;
+    std::vector<const Core::Conditions::Condition*> mynewcond;
     get_condition_by_robin_id(mycond, robin_id, mynewcond);
 
-    Core::Conditions::Condition* cond_unique = nullptr;
+    const Core::Conditions::Condition* cond_unique = nullptr;
 
     // safety checks
     if (mynewcond.size() != 1)
@@ -1414,7 +1414,7 @@ void XFEM::LevelSetCouplingNavierSlip::set_condition_specific_parameters()
  *--------------------------------------------------------------------------*/
 void XFEM::LevelSetCouplingNavierSlip::get_condition_by_robin_id(
     const std::vector<Core::Conditions::Condition*>& mycond, const int coupling_id,
-    std::vector<Core::Conditions::Condition*>& mynewcond)
+    std::vector<const Core::Conditions::Condition*>& mynewcond)
 {
   mynewcond.clear();
 

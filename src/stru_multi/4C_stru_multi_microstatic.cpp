@@ -783,7 +783,7 @@ double MultiScale::MicroStatic::get_time_to_step(int step, std::string name)
 void MultiScale::MicroStatic::evaluate_micro_bc(
     Core::LinAlg::Matrix<3, 3>* defgrd, Core::LinAlg::Vector<double>& disp)
 {
-  std::vector<Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> conds;
   discret_->get_condition("MicroBoundary", conds);
   for (auto& cond : conds)
   {

@@ -65,7 +65,7 @@ namespace ScaTra
     //! additional, to standard partitioning in scatra, the global system matrix in elch can be
     //! partitioned into concentration and potential dofs
     void build_block_maps(
-        const std::vector<std::shared_ptr<Core::Conditions::Condition>>& partitioningconditions,
+        const std::vector<const Core::Conditions::Condition*>& partitioningconditions,
         std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const override;
 
     void build_block_null_spaces(
@@ -129,7 +129,7 @@ namespace ScaTra
     //! \param condition   condition to be evaluated
     //! \return            evaluated scalars
     std::shared_ptr<Core::LinAlg::SerialDenseVector> evaluate_single_electrode_info_point(
-        std::shared_ptr<Core::Conditions::Condition> condition);
+        const Core::Conditions::Condition* condition);
 
     //! \brief post-process status information on single electrode
     //!

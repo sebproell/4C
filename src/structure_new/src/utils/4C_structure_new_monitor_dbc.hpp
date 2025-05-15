@@ -103,12 +103,11 @@ namespace Solid
         const Core::Conditions::Condition* rcond) const;
 
     std::vector<std::string> create_file_paths(
-        const std::vector<std::shared_ptr<Core::Conditions::Condition>>& rconds,
+        const std::vector<const Core::Conditions::Condition*>& rconds,
         const std::string& full_dirpath, const std::string& filename_only_prefix,
         const std::string& file_type) const;
 
-    void clear_files_and_write_header(
-        const std::vector<std::shared_ptr<Core::Conditions::Condition>>& rconds,
+    void clear_files_and_write_header(const std::vector<const Core::Conditions::Condition*>& rconds,
         std::vector<std::string>& full_filepaths, bool do_write_condition_header);
 
     void write_condition_header(std::ostream& os, const int col_width,
@@ -120,7 +119,7 @@ namespace Solid
         const Core::LinAlg::Matrix<DIM, 1>& rforce, const Core::LinAlg::Matrix<DIM, 1>& rmoment,
         const double& area_ref, const double& area_curr) const;
 
-    void write_results_to_screen(const std::shared_ptr<Core::Conditions::Condition>& rcond_ptr,
+    void write_results_to_screen(const Core::Conditions::Condition& rcond_ptr,
         const Core::LinAlg::Matrix<DIM, 1>& rforce, const Core::LinAlg::Matrix<DIM, 1>& rmoment,
         const double& area_ref, const double& area_curr) const;
 

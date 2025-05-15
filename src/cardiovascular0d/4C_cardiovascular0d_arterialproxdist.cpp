@@ -191,8 +191,7 @@ void Utils::Cardiovascular0DArterialProxDist::evaluate(Teuchos::ParameterList& p
     for (int j = 1; j < numdof_per_cond; j++) gindex[j] = gindex[0] + j;
 
     // elements might need condition
-    params.set<std::shared_ptr<Core::Conditions::Condition>>(
-        "condition", Core::Utils::shared_ptr_from_ref(*cond));
+    params.set<const Core::Conditions::Condition*>("condition", cond);
 
     // assemble of Cardiovascular0D stiffness matrix, scale with time-integrator dependent value
     if (assmat1)
@@ -262,19 +261,18 @@ void Utils::Cardiovascular0DArterialProxDist::evaluate(Teuchos::ParameterList& p
     Core::LinAlg::SerialDenseVector elevector2;
     Core::LinAlg::SerialDenseVector elevector3;
 
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond->geometry();
+    const auto& geom = cond->geometry();
     // if (geom.empty()) FOUR_C_THROW("evaluation of condition with empty geometry");
     // no check for empty geometry here since in parallel computations
     // can exist processors which do not own a portion of the elements belonging
     // to the condition geometry
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
-    for (curr = geom.begin(); curr != geom.end(); ++curr)
+    for (const auto& [id, ele] : geom)
     {
       // get element location vector and ownerships
       std::vector<int> lm;
       std::vector<int> lmowner;
       std::vector<int> lmstride;
-      curr->second->location_vector(*actdisc_, lm, lmowner, lmstride);
+      ele->location_vector(*actdisc_, lm, lmowner, lmstride);
 
       // get dimension of element matrices and vectors
       // Reshape element matrices and vectors and init to zero
@@ -285,13 +283,13 @@ void Utils::Cardiovascular0DArterialProxDist::evaluate(Teuchos::ParameterList& p
       elevector3.size(numdof_per_cond);
 
       // call the element specific evaluate method
-      int err = curr->second->evaluate(
+      int err = ele->evaluate(
           params, *actdisc_, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);
       if (err) FOUR_C_THROW("error while evaluating elements");
 
 
       // assembly
-      int eid = curr->second->id();
+      int eid = ele->id();
 
       if (assmat2)
       {
@@ -313,7 +311,7 @@ void Utils::Cardiovascular0DArterialProxDist::evaluate(Teuchos::ParameterList& p
         for (int j = 0; j < numdof_per_cond; j++)
         {
           cardiovascular0dlm.push_back(gindex[j]);
-          cardiovascular0downer.push_back(curr->second->owner());
+          cardiovascular0downer.push_back(ele->owner());
         }
         Core::LinAlg::assemble(*sysvec3, elevector3, cardiovascular0dlm, cardiovascular0downer);
       }
@@ -372,8 +370,7 @@ void Utils::Cardiovascular0DArterialProxDist::initialize(Teuchos::ParameterList&
     int err4 = sysvec2->sum_into_global_values(1, &p_ard_0, &gindex[3]);
     if (err1 or err2 or err3 or err4) FOUR_C_THROW("SumIntoGlobalValues failed!");
 
-    params.set<std::shared_ptr<Core::Conditions::Condition>>(
-        "condition", Core::Utils::shared_ptr_from_ref(*cond));
+    params.set<const Core::Conditions::Condition*>("condition", cond);
 
     // define element matrices and vectors
     Core::LinAlg::SerialDenseMatrix elematrix1;
@@ -382,25 +379,24 @@ void Utils::Cardiovascular0DArterialProxDist::initialize(Teuchos::ParameterList&
     Core::LinAlg::SerialDenseVector elevector2;
     Core::LinAlg::SerialDenseVector elevector3;
 
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = cond->geometry();
+    const auto& geom = cond->geometry();
     // no check for empty geometry here since in parallel computations
     // can exist processors which do not own a portion of the elements belonging
     // to the condition geometry
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
-    for (curr = geom.begin(); curr != geom.end(); ++curr)
+    for (const auto& [id, ele] : geom)
     {
       // get element location vector and ownerships
       std::vector<int> lm;
       std::vector<int> lmowner;
       std::vector<int> lmstride;
-      curr->second->location_vector(*actdisc_, lm, lmowner, lmstride);
+      ele->location_vector(*actdisc_, lm, lmowner, lmstride);
 
       // get dimension of element matrices and vectors
       // Reshape element matrices and vectors and init to zero
       elevector3.size(numdof_per_cond);
 
       // call the element specific evaluate method
-      int err = curr->second->evaluate(
+      int err = ele->evaluate(
           params, *actdisc_, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);
       if (err) FOUR_C_THROW("error while evaluating elements");
 
@@ -413,7 +409,7 @@ void Utils::Cardiovascular0DArterialProxDist::initialize(Teuchos::ParameterList&
       for (int j = 0; j < numdof_per_cond; j++)
       {
         cardiovascular0dlm.push_back(gindex[j]);
-        cardiovascular0downer.push_back(curr->second->owner());
+        cardiovascular0downer.push_back(ele->owner());
       }
       Core::LinAlg::assemble(*sysvec1, elevector3, cardiovascular0dlm, cardiovascular0downer);
     }

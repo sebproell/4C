@@ -113,7 +113,7 @@ namespace FLD
       \brief Standard Constructor
       */
       FluidImpedanceBc(const std::shared_ptr<Core::FE::Discretization> actdis, const int condid,
-          Core::Conditions::Condition* impedancecond);
+          const Core::Conditions::Condition* impedancecond);
 
       /*!
       \brief Empty Constructor

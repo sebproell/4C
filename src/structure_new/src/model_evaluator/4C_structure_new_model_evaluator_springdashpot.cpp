@@ -39,13 +39,13 @@ void Solid::ModelEvaluator::SpringDashpot::setup()
   FOUR_C_ASSERT(is_init(), "init() has not been called, yet!");
 
   // get all spring dashpot conditions
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> springdashpots;
+  std::vector<const Core::Conditions::Condition*> springdashpots;
   discret().get_condition("RobinSpringDashpot", springdashpots);
 
   // new instance of spring dashpot BC for each condition
   for (auto& springdashpot : springdashpots)
     springs_.emplace_back(
-        std::make_shared<Constraints::SpringDashpot>(discret_ptr(), springdashpot));
+        std::make_shared<Constraints::SpringDashpot>(discret_ptr(), *springdashpot));
 
   // setup the displacement pointer
   disnp_ptr_ = global_state().get_dis_np();

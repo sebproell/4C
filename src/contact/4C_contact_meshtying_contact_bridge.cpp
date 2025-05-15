@@ -21,8 +21,9 @@ FOUR_C_NAMESPACE_OPEN
  |  ctor (public)                                            farah 06/14|
  *----------------------------------------------------------------------*/
 CONTACT::MeshtyingContactBridge::MeshtyingContactBridge(Core::FE::Discretization& dis,
-    std::vector<Core::Conditions::Condition*>& meshtyingConditions,
-    std::vector<Core::Conditions::Condition*>& contactConditions, double timeIntegrationMidPoint)
+    std::vector<const Core::Conditions::Condition*>& meshtyingConditions,
+    std::vector<const Core::Conditions::Condition*>& contactConditions,
+    double timeIntegrationMidPoint)
     : cman_(nullptr), mtman_(nullptr)
 {
   bool onlymeshtying = false;

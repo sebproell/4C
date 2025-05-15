@@ -193,7 +193,7 @@ namespace Discret
       */
       int evaluate_neumann(Teuchos::ParameterList& params,  ///< ParameterList for communication
           Core::FE::Discretization& discretization,         ///< discretization
-          Core::Conditions::Condition& condition,           ///< Neumann condition to evaluate
+          const Core::Conditions::Condition& condition,     ///< Neumann condition to evaluate
           std::vector<int>& lm,                             ///< location vector
           Core::LinAlg::SerialDenseVector& elevec1,         ///< vector to be filled by element
           Core::LinAlg::SerialDenseMatrix* elemat1 = nullptr) override;

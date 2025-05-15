@@ -57,7 +57,7 @@ namespace Discret
           const double timefac,                        ///< time factor
           const double fac,                            ///< Gauss integration factor
           const Core::LinAlg::Matrix<nen_, 1>& funct,  ///< shape functions at int. point
-          Core::Conditions::Condition& cond,           ///< condition
+          const Core::Conditions::Condition& cond,     ///< condition
           const int nume,                              ///< number of transferred electrons
           const std::vector<int>& stoich,              ///< stoichiometry of the reaction
           const double valence_k,                      ///< valence of the single reactant
@@ -76,7 +76,7 @@ namespace Discret
           const Core::Elements::Element* ele,        ///< current element
           Core::LinAlg::SerialDenseVector& scalars,  ///< scalars to be computed
           const Teuchos::ParameterList& params,      ///< parameter list
-          Core::Conditions::Condition& cond,         ///< condition
+          const Core::Conditions::Condition& cond,   ///< condition
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>&
               ephinp,  ///< nodal values of concentration and electric potential
           const std::vector<Core::LinAlg::Matrix<nen_, 1>>&

@@ -70,8 +70,8 @@ namespace SSI
    public:
     ManifoldScaTraCoupling(std::shared_ptr<Core::FE::Discretization> manifolddis,
         std::shared_ptr<Core::FE::Discretization> scatradis,
-        Core::Conditions::Condition* condition_manifold,
-        Core::Conditions::Condition* condition_kinetics, int ndof_per_node);
+        const Core::Conditions::Condition* condition_manifold,
+        const Core::Conditions::Condition* condition_kinetics, int ndof_per_node);
 
     //! Check if graph of matrix has changed compared to last evaluation. Afterwards, store new size
     //! of graph
@@ -81,10 +81,10 @@ namespace SSI
     bool check_and_set_size_of_matrix_graph(BlockMatrixType block, int size);
 
     //! Kinetics condition on scatra dis
-    Core::Conditions::Condition* condition_kinetics() const { return condition_kinetics_; }
+    const Core::Conditions::Condition* condition_kinetics() const { return condition_kinetics_; }
 
     //! manifold condition
-    Core::Conditions::Condition* condition_manifold() const { return condition_manifold_; }
+    const Core::Conditions::Condition* condition_manifold() const { return condition_manifold_; }
 
     //! coupling adapter between manifold (slave) and scatra (master)
     std::shared_ptr<Coupling::Adapter::Coupling> coupling_adapter() const
@@ -121,10 +121,10 @@ namespace SSI
 
    private:
     //! Kinetics condition on scatra dis
-    Core::Conditions::Condition* condition_kinetics_;
+    const Core::Conditions::Condition* condition_kinetics_;
 
     //! manifold condition
-    Core::Conditions::Condition* condition_manifold_;
+    const Core::Conditions::Condition* condition_manifold_;
 
     //! coupling adapter between manifold (slave) and scatra (master)
     std::shared_ptr<Coupling::Adapter::Coupling> coupling_adapter_;

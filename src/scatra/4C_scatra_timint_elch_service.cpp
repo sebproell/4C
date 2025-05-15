@@ -15,7 +15,7 @@ FOUR_C_NAMESPACE_OPEN
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
 ScaTra::CCCVCondition::CCCVCondition(const Core::Conditions::Condition& cccvcyclingcondition,
-    const std::vector<Core::Conditions::Condition*>& cccvhalfcycleconditions,
+    const std::vector<const Core::Conditions::Condition*>& cccvhalfcycleconditions,
     const bool adaptivetimestepping, const int num_dofs)
     : adaptivetimesteppingonoff_(static_cast<bool>(
           cccvcyclingcondition.parameters().get<int>("ADAPTIVE_TIME_STEPPING_INIT_RELAX"))),

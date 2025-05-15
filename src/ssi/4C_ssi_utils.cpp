@@ -778,20 +778,20 @@ std::shared_ptr<const Core::LinAlg::Map> SSI::Utils::SSIMaps::structure_dof_row_
 /*---------------------------------------------------------------------------------*
  *---------------------------------------------------------------------------------*/
 void SSI::Utils::check_consistency_of_ssi_interface_contact_condition(
-    const std::vector<Core::Conditions::Condition*>& conditionsToBeTested,
+    const std::vector<const Core::Conditions::Condition*>& conditionsToBeTested,
     const Core::FE::Discretization& structdis)
 {
   // get conditions to check against
-  std::vector<Core::Conditions::Condition*> s2ikinetics_conditions;
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions;
   structdis.get_condition("S2IKinetics", s2ikinetics_conditions);
-  std::vector<Core::Conditions::Condition*> contactconditions;
+  std::vector<const Core::Conditions::Condition*> contactconditions;
   structdis.get_condition("Contact", contactconditions);
 
   // loop over all ssi conditions and check them
   for (const auto* conditionToBeTested : conditionsToBeTested)
   {
-    std::vector<Core::Conditions::Condition*> InterfaceS2IConditions;
-    std::vector<Core::Conditions::Condition*> InterfaceContactConditions;
+    std::vector<const Core::Conditions::Condition*> InterfaceS2IConditions;
+    std::vector<const Core::Conditions::Condition*> InterfaceContactConditions;
 
     const int S2IKineticsID = conditionToBeTested->parameters().get<int>("S2I_KINETICS_ID");
     const int contactconditionID =
@@ -1062,7 +1062,7 @@ void SSI::Utils::SSIMeshTying::find_matching_node_pairs(const Core::FE::Discreti
   std::vector<std::pair<int, int>> my_coupling_pairs;
 
   // get all mesh tying conditions
-  std::vector<Core::Conditions::Condition*> meshtying_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> meshtying_conditions(0, nullptr);
   dis.get_condition(name_meshtying_condition, meshtying_conditions);
 
   // match nodes between all mesh tying conditions (named with "a" and "b")
@@ -1225,7 +1225,7 @@ void SSI::Utils::SSIMeshTying::define_master_slave_pairing(const Core::FE::Discr
     std::map<int, int>& slave_master_pair, const bool check_over_constrained) const
 {
   // get Dirichlet nodes -> they define the master side
-  std::vector<Core::Conditions::Condition*> dbc_conds;
+  std::vector<const Core::Conditions::Condition*> dbc_conds;
   dis.get_condition("Dirichlet", dbc_conds);
   std::set<int> dbc_nodes;
   for (auto* dbc_cond : dbc_conds)
@@ -1299,7 +1299,7 @@ void SSI::Utils::SSIMeshTying::find_slave_slave_transformation_nodes(
     std::vector<int>& all_coupled_original_slave_gids) const
 {
   // store nodes that are slave nodes from the input
-  std::vector<Core::Conditions::Condition*> meshtying_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> meshtying_conditions(0, nullptr);
   dis.get_condition(name_meshtying_condition, meshtying_conditions);
 
   std::vector<int> original_slave_gids;

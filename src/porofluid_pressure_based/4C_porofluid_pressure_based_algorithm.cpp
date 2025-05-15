@@ -1943,7 +1943,7 @@ void PoroPressureBased::PorofluidAlgorithm::set_initial_field(
       const int numdof = discret_->num_dof(0, discret_->l_row_node(0));
 
       // get initial field conditions
-      std::vector<Core::Conditions::Condition*> initfieldconditions(0);
+      std::vector<const Core::Conditions::Condition*> initfieldconditions;
       discret_->get_condition("Initfield", initfieldconditions);
 
       if (not initfieldconditions.size())

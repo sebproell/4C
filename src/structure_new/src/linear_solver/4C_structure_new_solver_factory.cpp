@@ -193,8 +193,8 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_meshtying_co
   std::shared_ptr<Core::LinAlg::Solver> linsolver = nullptr;
 
   // get mortar information
-  std::vector<Core::Conditions::Condition*> mtcond(0);
-  std::vector<Core::Conditions::Condition*> ccond(0);
+  std::vector<const Core::Conditions::Condition*> mtcond;
+  std::vector<const Core::Conditions::Condition*> ccond;
   actdis.get_condition("Mortar", mtcond);
   actdis.get_condition("Contact", ccond);
   bool onlymeshtying = false;

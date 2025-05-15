@@ -76,7 +76,7 @@ namespace Adapter
 
     virtual void setup_spring_dashpot(std::shared_ptr<Core::FE::Discretization> masterdis,
         std::shared_ptr<Core::FE::Discretization> slavedis,
-        std::shared_ptr<Core::Conditions::Condition> spring, const int coupling_id, MPI_Comm comm);
+        const Core::Conditions::Condition& spring, const int coupling_id, MPI_Comm comm);
 
     virtual void integrate_lin_d(const std::string& statename,
         const std::shared_ptr<Core::LinAlg::Vector<double>> vec,

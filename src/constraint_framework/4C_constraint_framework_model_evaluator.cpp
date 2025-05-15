@@ -56,7 +56,7 @@ void Solid::ModelEvaluator::Constraint::set_sub_model_types()
   // ---------------------------------------------------------------------------
   // check for multi point constraints
   // ---------------------------------------------------------------------------
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> linePeriodicRve, surfPeriodicRve,
+  std::vector<const Core::Conditions::Condition*> linePeriodicRve, surfPeriodicRve,
       pointLinearCoupledEquation, embeddedMeshConditions;
 
   discret_ptr()->get_condition("LinePeriodicRve", linePeriodicRve);

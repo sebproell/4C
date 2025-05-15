@@ -281,7 +281,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
     std::endl;
     }*/
 
-    std::vector<Core::Conditions::Condition*> cond;
+    std::vector<const Core::Conditions::Condition*> cond;
     discret_->get_condition("ScaTraFluxCalc", cond);
 
     Teuchos::ParameterList params;
@@ -300,7 +300,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
   // for OUTPUT standard -> last entry is not used
   std::vector<double> normfluxsum(num_dof_per_node());
 
-  std::vector<Core::Conditions::Condition*> cond;
+  std::vector<const Core::Conditions::Condition*> cond;
   discret_->get_condition("ScaTraFluxCalc", cond);
 
   // safety check
@@ -333,7 +333,9 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
     else
     {
       // let's add a ConditionID
-      cond[condid]->parameters().add("ConditionID", condid);
+      const_cast<Core::Conditions::Condition*>(cond[condid])
+          ->parameters()
+          .add("ConditionID", condid);
     }
   }
 
@@ -2150,7 +2152,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
     case Inpar::ScaTra::calcerror_bycondition:
     {
       // extract conditions from discretization
-      std::vector<Core::Conditions::Condition*> relerrorconditions;
+      std::vector<const Core::Conditions::Condition*> relerrorconditions;
       discret_->get_condition("ScatraRelError", relerrorconditions);
       const unsigned ncond = relerrorconditions.size();
 
@@ -2789,7 +2791,7 @@ void ScaTra::OutputDomainIntegralStrategy::evaluate_integrals_and_print_results(
     FOUR_C_THROW("Invalid condition name!");
 
   // extract conditions for computation of domain or boundary integrals
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   std::shared_ptr<Core::FE::Discretization> discret = scatratimint->discretization();
   const int myrank = Core::Communication::my_mpi_rank(discret->get_comm());
   discret->get_condition(condstring, conditions);

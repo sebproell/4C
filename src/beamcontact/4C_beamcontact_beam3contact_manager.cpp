@@ -675,14 +675,14 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
   // begin: determine surface elements and their nodes
 
   // vector that contains solid-to-solid and beam-to-solid contact pairs
-  std::vector<Core::Conditions::Condition*> beamandsolidcontactconditions(0);
+  std::vector<const Core::Conditions::Condition*> beamandsolidcontactconditions;
   problem_discret().get_condition("Contact", beamandsolidcontactconditions);
 
   // vector that solely contains beam-to-solid contact pairs
-  std::vector<Core::Conditions::Condition*> btscontactconditions(0);
+  std::vector<const Core::Conditions::Condition*> btscontactconditions;
 
   // vector that solely contains beam-to-solid meshtying pairs
-  std::vector<Core::Conditions::Condition*> btsmeshtyingconditions(0);
+  std::vector<const Core::Conditions::Condition*> btsmeshtyingconditions;
 
   // sort out solid-to-solid contact pairs, since these are treated in the contact framework
   for (int i = 0; i < (int)beamandsolidcontactconditions.size(); ++i)
@@ -735,7 +735,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
   for (int j = 0; j < (int)btscontactconditions.size(); ++j)
   {
     // get elements from condition j of current group
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& currele =
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& currele =
         btscontactconditions[j]->geometry();
 
     // elements in a boundary condition have a unique id
@@ -750,8 +750,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
     int gsize = 0;
     Core::Communication::sum_all(&lsize, &gsize, 1, get_comm());
 
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator fool;
-    for (fool = currele.begin(); fool != currele.end(); ++fool)
+    for (const auto& ele : currele | std::views::values)
     {
       // The IDs of the surface elements of each conditions begin with zero. Therefore we have to
       // add ggsize in order to get unique element IDs in the end. Furthermore, only the solid
@@ -761,7 +760,6 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
       // element IDs being identical to these beam element IDs within the contact discretization we
       // have to add the additional offset maxproblemid, which is identical to the maximal element
       // ID in the problem discretization.
-      std::shared_ptr<Core::Elements::Element> ele = fool->second;
       std::shared_ptr<CONTACT::Element> cele =
           std::make_shared<CONTACT::Element>(ele->id() + ggsize + maxproblemid + 1, ele->owner(),
               ele->shape(), ele->num_node(), ele->node_ids(),
@@ -813,7 +811,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
   for (int j = 0; j < (int)btsmeshtyingconditions.size(); ++j)
   {
     // get elements from condition j of current group
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& currele =
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& currele =
         btsmeshtyingconditions[j]->geometry();
 
     // elements in a boundary condition have a unique id
@@ -828,8 +826,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
     int gsize = 0;
     Core::Communication::sum_all(&lsize, &gsize, 1, get_comm());
 
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator fool;
-    for (fool = currele.begin(); fool != currele.end(); ++fool)
+    for (const auto& ele : currele | std::views::values)
     {
       // The IDs of the surface elements of each conditions begin with zero. Therefore we have to
       // add ggsize in order to get unique element IDs in the end. Furthermore, only the solid
@@ -839,7 +836,6 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
       // element IDs being identical to these beam element IDs within the contact discretization we
       // have to add the additional offset maxproblemid, which is identical to the maximal element
       // ID in the problem discretization.
-      std::shared_ptr<Core::Elements::Element> ele = fool->second;
       std::shared_ptr<Mortar::Element> mtele =
           std::make_shared<Mortar::Element>(ele->id() + ggsize + maxproblemid + 1, ele->owner(),
               ele->shape(), ele->num_node(), ele->node_ids(),

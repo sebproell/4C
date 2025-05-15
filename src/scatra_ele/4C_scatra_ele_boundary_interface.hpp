@@ -54,7 +54,7 @@ namespace Discret
           Core::LinAlg::SerialDenseVector& elevec3) = 0;
 
       virtual int evaluate_neumann(Core::Elements::FaceElement* ele, Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+          Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
           Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseVector& elevec1,
           const double scalar) = 0;
     };

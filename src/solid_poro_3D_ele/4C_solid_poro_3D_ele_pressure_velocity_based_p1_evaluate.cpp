@@ -378,7 +378,7 @@ int Discret::Elements::SolidPoroPressureVelocityBasedP1::evaluate(Teuchos::Param
 
 int Discret::Elements::SolidPoroPressureVelocityBasedP1::evaluate_neumann(
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-    Core::Conditions::Condition& condition, std::vector<int>& lm,
+    const Core::Conditions::Condition& condition, std::vector<int>& lm,
     Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseMatrix* elemat1)
 {
   FOUR_C_THROW(

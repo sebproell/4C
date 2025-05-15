@@ -54,10 +54,10 @@ FLD::Utils::FluidCouplingWrapperBase::FluidCouplingWrapperBase(
   // ---------------------------------------------------------------------
   // Read in all conditions
   // ---------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> couplingcond;
+  std::vector<const Core::Conditions::Condition*> couplingcond;
   discret_3d_->get_condition("Art_3D_redD_CouplingCond", couplingcond);
 
-  std::vector<Core::Conditions::Condition*> couplingcond2;
+  std::vector<const Core::Conditions::Condition*> couplingcond2;
   discret_red_d_->get_condition("Art_redD_3D_CouplingCond", couplingcond2);
 
   // the number of lines of coupling boundary conditions found in the input
@@ -283,11 +283,11 @@ void FLD::Utils::FluidCouplingWrapperBase::apply_boundary_conditions(
   // ---------------------------------------------------------------------
 
   // Read in the 3D coupling conditions
-  std::vector<Core::Conditions::Condition*> conds3D;
+  std::vector<const Core::Conditions::Condition*> conds3D;
   discret_3d_->get_condition("Art_3D_redD_CouplingCond", conds3D);
 
   // Read in the reduced-D coupling conditions
-  std::vector<Core::Conditions::Condition*> conds_redD;
+  std::vector<const Core::Conditions::Condition*> conds_redD;
   discret_red_d_->get_condition("Art_redD_3D_CouplingCond", conds_redD);
 
   int condID;
@@ -706,7 +706,7 @@ FLD::Utils::FluidCouplingBc::FluidCouplingBc(std::shared_ptr<Core::FE::Discretiz
   // ---------------------------------------------------------------------
   // read in all 3D to reducedD boundary conditions
   // ---------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> couplingcond;
+  std::vector<const Core::Conditions::Condition*> couplingcond;
   dis_redD->get_condition("Art_redD_3D_CouplingCond", couplingcond);
 
 
@@ -1093,7 +1093,7 @@ void FLD::Utils::FluidCouplingBc::inflow_boundary(
     printf("3D/reduced-D coupling condition Id: %d flowrate = %f\n", condid, flowrate);
 
 
-  std::vector<Core::Conditions::Condition*> cond3D;
+  std::vector<const Core::Conditions::Condition*> cond3D;
   discret_3d_->get_condition("Art_3D_redD_CouplingCond", cond3D);
 
   double density = 0.0;
@@ -1139,10 +1139,10 @@ void FLD::Utils::FluidCouplingBc::evaluate_dirichlet(
   // FOUR_C_THROW("Dirichlet coupling is not fixed yet, if you see the message then something is
   // wrong!");
   //  std::cout<<"3D discretization:"<<std::endl<<*discret_3D_<<std::endl;
-  std::vector<Core::Conditions::Condition*> conds_red;
+  std::vector<const Core::Conditions::Condition*> conds_red;
   discret_red_d_->get_condition("Art_redD_3D_CouplingCond", conds_red);
 
-  Core::Conditions::Condition* cond_red = nullptr;
+  const Core::Conditions::Condition* cond_red = nullptr;
   for (unsigned int i = 0; i != conds_red.size(); i++)
   {
     if (conds_red[i]->parameters().get<int>("ConditionID") == condid_)
@@ -1158,10 +1158,10 @@ void FLD::Utils::FluidCouplingBc::evaluate_dirichlet(
   }
 
   //  residual->Update(1.0,*couplingbc_,1.0);
-  std::vector<Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> conds;
   discret_3d_->get_condition("Art_3D_redD_CouplingCond", conds);
 
-  Core::Conditions::Condition* cond;
+  const Core::Conditions::Condition* cond;
   for (unsigned int i = 0; i != conds.size(); i++)
   {
     if (conds[i]->parameters().get<int>("ConditionID") == condid_)

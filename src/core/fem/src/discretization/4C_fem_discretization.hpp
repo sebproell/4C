@@ -1147,46 +1147,28 @@ namespace Core::FE
     void replace_conditions(const std::string& name,
         const std::vector<std::shared_ptr<Core::Conditions::Condition>>& conds);
 
-    /*!
-    \brief Get all conditions with a certain name
-
-    Get all conditions with a certain name. A vector of ptrs to all conditions
-    with name name is returned in out. The number of conditions found with name
-    name is out.size(). out.size() is 0 if no condition with that name is found.
-
-    \note Conditions attached to the discretization have to be
-          completely redundant meaning that nodal cloud in the
-          condition is the same on each processor and spans all
-          nodes that hold this condition
-
-    \param name (in): Name of condition
-    \param out  (out): vector of pointers to all conditions with that name
-
-    \return Returns out.size()=0 if condition with that name does not exist
-    */
+    /**
+     * \brief Get all conditions with a certain name
+     *
+     * Get all conditions with a certain name. A vector of ptrs to all conditions
+     * with given @p name is returned in @p out.
+     *
+     * \note Conditions attached to the discretization have to be
+     *       completely redundant meaning that the nodal cloud in the
+     *       condition is the same on each processor and contains all
+     *       nodes that hold this condition.
+     *
+     * \param name Name of condition to retrieve
+     * \param out Vector of pointers to all conditions with that name. This vector will be empty
+     *   if no condition with that name exists.
+     */
     void get_condition(
-        const std::string& name, std::vector<Core::Conditions::Condition*>& out) const;
+        const std::string& name, std::vector<const Core::Conditions::Condition*>& out) const;
 
-    void get_condition(const std::string& name,
-        std::vector<std::shared_ptr<Core::Conditions::Condition>>& out) const;
-
-    /*! \brief Get a condition with a certain name
-
-    Returns the first condition with name name found in the multimap.
-    If multiple conditions with the same name exist, the first condition is
-    returned and behaviour is therefore non-deterministic. This method should
-    therefore only be used in cases where the user is sure that name is unique.
-
-    \note Conditions attached to the discretization have to be
-          completely redundant meaning that nodal cloud in the
-          condition is the same on each processor and spans all
-          nodes that hold this condition
-
-    \param name (in): Name of condition
-
-    \return Returns nullptr if condition with that name does not exist
-    */
-    [[nodiscard]] Core::Conditions::Condition* get_condition(const std::string& name) const;
+    /**
+     * Return true if a Condition with the given @p name exists.
+     */
+    [[nodiscard]] bool has_condition(const std::string& name) const;
 
     /// return all condition names defined in this discretization
     void get_condition_names(std::vector<std::string>& names) const;

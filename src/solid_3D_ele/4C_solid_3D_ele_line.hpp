@@ -99,7 +99,7 @@ namespace Discret::Elements
     }
 
     int evaluate_neumann(Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-        Core::Conditions::Condition& condition, std::vector<int>& lm,
+        const Core::Conditions::Condition& condition, std::vector<int>& lm,
         Core::LinAlg::SerialDenseVector& elevec1,
         Core::LinAlg::SerialDenseMatrix* elemat1 = nullptr) override;
   };

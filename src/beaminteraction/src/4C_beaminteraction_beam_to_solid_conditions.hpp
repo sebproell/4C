@@ -56,8 +56,8 @@ namespace BeamInteraction
      * interacting with the beam.
      * @param beam_to_solid_params (in) Pointer to the beam-to-solid parameters.
      */
-    BeamToSolidCondition(const std::shared_ptr<const Core::Conditions::Condition>& condition_line,
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_other,
+    BeamToSolidCondition(const Core::Conditions::Condition& condition_line,
+        const Core::Conditions::Condition& condition_other,
         const std::shared_ptr<const BeamToSolidParamsBase>& beam_to_solid_params);
 
 
@@ -78,13 +78,9 @@ namespace BeamInteraction
         const std::vector<Core::Elements::Element const*>& ele_ptrs) override;
 
     /**
-     * \brief Return a pointer to the condition of the other geometry (volume or surface).
-     * @return
+     * \brief Return the condition of the other geometry (volume or surface).
      */
-    std::shared_ptr<const Core::Conditions::Condition> get_other_condition() const
-    {
-      return condition_other_;
-    }
+    const Core::Conditions::Condition& get_other_condition() const { return *condition_other_; }
 
     /**
      * \brief Create the indirect assembly manager for this condition.
@@ -125,7 +121,7 @@ namespace BeamInteraction
     std::shared_ptr<GeometryPair::GeometryEvaluationDataBase> geometry_evaluation_data_;
 
     //! Pointer to the solid condition.
-    std::shared_ptr<const Core::Conditions::Condition> condition_other_;
+    const Core::Conditions::Condition* condition_other_;
 
     //! Vector containing all beam contact pairs created by this condition.
     std::vector<std::shared_ptr<BeamContactPair>> condition_contact_pairs_;
@@ -144,9 +140,8 @@ namespace BeamInteraction
     /**
      * \brief Constructor (derived).
      */
-    BeamToSolidConditionVolumeMeshtying(
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_line,
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_other,
+    BeamToSolidConditionVolumeMeshtying(const Core::Conditions::Condition& condition_line,
+        const Core::Conditions::Condition& condition_other,
         const std::shared_ptr<const BeamToSolidParamsBase>& beam_to_solid_params);
 
 
@@ -189,9 +184,8 @@ namespace BeamInteraction
     /**
      * \brief Constructor (derived).
      */
-    BeamToSolidConditionSurface(
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_line,
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_other,
+    BeamToSolidConditionSurface(const Core::Conditions::Condition& condition_line,
+        const Core::Conditions::Condition& condition_other,
         const std::shared_ptr<const BeamToSolidParamsBase>& beam_to_solid_params,
         const bool is_mesh_tying_in);
 

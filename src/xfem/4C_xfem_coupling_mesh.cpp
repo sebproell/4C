@@ -504,7 +504,7 @@ void XFEM::MeshVolCoupling::create_auxiliary_discretization()
   // make the condition known to the auxiliary discretization
   // we use the same nodal ids and therefore we can just copy the conditions
   // get the set of ids of all xfem nodes
-  std::vector<Core::Conditions::Condition*> xfemcnd;
+  std::vector<const Core::Conditions::Condition*> xfemcnd;
   cond_dis_->get_condition(cond_name_, xfemcnd);
 
   std::set<int> xfemnodeset;
@@ -1383,10 +1383,10 @@ void XFEM::MeshCouplingNavierSlip::get_slip_coefficient(
 }
 
 void XFEM::MeshCouplingNavierSlip::create_robin_id_map(
-    const std::vector<Core::Conditions::Condition*>& conditions_NS,
-    const std::vector<Core::Conditions::Condition*>& conditions_robin,
+    const std::vector<const Core::Conditions::Condition*>& conditions_NS,
+    const std::vector<const Core::Conditions::Condition*>& conditions_robin,
     const std::string& robin_id_name,
-    std::map<int, Core::Conditions::Condition*>& conditionsmap_robin)
+    std::map<int, const Core::Conditions::Condition*>& conditionsmap_robin)
 {
   // Loop over all Navier Slip conditions
   for (unsigned i = 0; i < conditions_NS.size(); ++i)
@@ -1399,14 +1399,14 @@ void XFEM::MeshCouplingNavierSlip::create_robin_id_map(
     // Is this robin id active? I.e. is it not 0 or negative?
     if (tmp_robin_id >= 0)
     {
-      std::vector<Core::Conditions::Condition*> mynewcond;
+      std::vector<const Core::Conditions::Condition*> mynewcond;
       get_condition_by_robin_id(conditions_robin, tmp_robin_id, mynewcond);
 
       // The robin id should be unique. I.e. For one Coupling ID only a robin id can only exist
       // once.
       if (mynewcond.size() == 1)
       {
-        if (!conditionsmap_robin.insert(std::make_pair(tmp_robin_id, mynewcond[0])).second)
+        if (!conditionsmap_robin.emplace(tmp_robin_id, mynewcond[0]).second)
           FOUR_C_THROW("ID already existing! For conditionsmap_robin.");
       }
       else
@@ -1432,10 +1432,10 @@ void XFEM::MeshCouplingNavierSlip::set_condition_specific_parameters()
   // Build necessary maps to limit getting integers and strings on Gausspoint level.
 
   // Get conditions based on cutter discretization.
-  std::vector<Core::Conditions::Condition*> conditions_dirich;
+  std::vector<const Core::Conditions::Condition*> conditions_dirich;
   cutter_dis_->get_condition("XFEMRobinDirichletSurf", conditions_dirich);
 
-  std::vector<Core::Conditions::Condition*> conditions_neumann;
+  std::vector<const Core::Conditions::Condition*> conditions_neumann;
   cutter_dis_->get_condition("XFEMRobinNeumannSurf", conditions_neumann);
 
   if (conditions_neumann.size())
@@ -1455,7 +1455,7 @@ void XFEM::MeshCouplingNavierSlip::set_condition_specific_parameters()
               << std::endl;
   }
 
-  std::vector<Core::Conditions::Condition*> conditions_NS;
+  std::vector<const Core::Conditions::Condition*> conditions_NS;
   cutter_dis_->get_condition(cond_name_, conditions_NS);
 
   // Establishes unique connection between Navier Slip section and Robin Dirichlet Neumann sections
@@ -1505,8 +1505,8 @@ void XFEM::MeshCouplingNavierSlip::set_condition_specific_parameters()
 }
 
 void XFEM::MeshCouplingNavierSlip::get_condition_by_robin_id(
-    const std::vector<Core::Conditions::Condition*>& mycond, const int coupling_id,
-    std::vector<Core::Conditions::Condition*>& mynewcond)
+    const std::vector<const Core::Conditions::Condition*>& mycond, const int coupling_id,
+    std::vector<const Core::Conditions::Condition*>& mynewcond)
 {
   mynewcond.clear();
 
@@ -1803,7 +1803,7 @@ void XFEM::MeshCouplingFSI::output(const int step, const double time, const bool
 
 void XFEM::MeshCouplingFSI::set_condition_specific_parameters()
 {
-  std::vector<Core::Conditions::Condition*> conditions_XFSI;
+  std::vector<const Core::Conditions::Condition*> conditions_XFSI;
   cutter_dis_->get_condition(cond_name_, conditions_XFSI);
 
   // Create maps for easy extraction at gausspoint level

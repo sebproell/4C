@@ -109,7 +109,7 @@ int Discret::Elements::RedInterAcinarDep::evaluate(Teuchos::ParameterList& param
 
 
 int Discret::Elements::RedInterAcinarDep::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {
@@ -122,7 +122,7 @@ int Discret::Elements::RedInterAcinarDep::evaluate_neumann(Teuchos::ParameterLis
  |  The function is just a dummy.                                       |
  *----------------------------------------------------------------------*/
 int Discret::Elements::RedInterAcinarDep::evaluate_dirichlet(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1)
 {
   return 0;

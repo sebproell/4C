@@ -88,7 +88,7 @@ void Constraints::MPConstraint2::initialize(
   // read data of the input files
   for (unsigned int i = 0; i < constrcond_.size(); i++)
   {
-    Core::Conditions::Condition& cond = *(constrcond_[i]);
+    const Core::Conditions::Condition& cond = *(constrcond_[i]);
     int condID = cond.parameters().get<int>("ConditionID");
     if (inittimes_.find(condID)->second <= time)
     {
@@ -145,7 +145,7 @@ void Constraints::MPConstraint2::evaluate(Teuchos::ParameterList& params,
 std::map<int, std::shared_ptr<Core::FE::Discretization>>
 Constraints::MPConstraint2::create_discretization_from_condition(
     std::shared_ptr<Core::FE::Discretization> actdisc,
-    std::vector<Core::Conditions::Condition*> constrcondvec, const std::string& discret_name,
+    std::span<const Core::Conditions::Condition*> constrcondvec, const std::string& discret_name,
     const std::string& element_name, int& startID)
 {
   MPI_Comm com(actdisc->get_comm());
@@ -291,7 +291,7 @@ void Constraints::MPConstraint2::evaluate_constraint(std::shared_ptr<Core::FE::D
   for (int i = 0; i < numcolele; ++i)
   {
     Core::Elements::Element* actele = disc->l_col_element(i);
-    Core::Conditions::Condition& cond = *(constrcond_[actele->id()]);
+    const Core::Conditions::Condition& cond = *(constrcond_[actele->id()]);
     int condID = cond.parameters().get<int>("ConditionID");
 
     // computation only if time is larger or equal than initialization time for constraint
@@ -330,8 +330,7 @@ void Constraints::MPConstraint2::evaluate_constraint(std::shared_ptr<Core::FE::D
       if (assemblevec3) elevector3.size(1);  // elevector3 always contains a scalar
 
       params.set("ConditionID", condID);
-      params.set<std::shared_ptr<Core::Conditions::Condition>>(
-          "condition", Core::Utils::shared_ptr_from_ref(cond));
+      params.set<const Core::Conditions::Condition*>("condition", &cond);
       // call the element evaluate method
       int err = actele->evaluate(
           params, *disc, lm, elematrix1, elematrix2, elevector1, elevector2, elevector3);

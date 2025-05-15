@@ -45,12 +45,12 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 BeamInteraction::BeamToSolidCondition::BeamToSolidCondition(
-    const std::shared_ptr<const Core::Conditions::Condition>& condition_line,
-    const std::shared_ptr<const Core::Conditions::Condition>& condition_other,
+    const Core::Conditions::Condition& condition_line,
+    const Core::Conditions::Condition& condition_other,
     const std::shared_ptr<const BeamToSolidParamsBase>& beam_to_solid_params)
     : BeamInteractionConditionBase(condition_line),
       geometry_evaluation_data_(nullptr),
-      condition_other_(condition_other),
+      condition_other_(&condition_other),
       condition_contact_pairs_(),
       beam_to_solid_params_(beam_to_solid_params)
 {
@@ -151,8 +151,8 @@ BeamInteraction::BeamToSolidCondition::create_indirect_assembly_manager(
  *
  */
 BeamInteraction::BeamToSolidConditionVolumeMeshtying::BeamToSolidConditionVolumeMeshtying(
-    const std::shared_ptr<const Core::Conditions::Condition>& condition_line,
-    const std::shared_ptr<const Core::Conditions::Condition>& condition_other,
+    const Core::Conditions::Condition& condition_line,
+    const Core::Conditions::Condition& condition_other,
     const std::shared_ptr<const BeamToSolidParamsBase>& beam_to_solid_params)
     : BeamToSolidCondition(condition_line, condition_other, beam_to_solid_params)
 {
@@ -356,8 +356,8 @@ BeamInteraction::BeamToSolidConditionVolumeMeshtying::create_contact_pair_intern
  *
  */
 BeamInteraction::BeamToSolidConditionSurface::BeamToSolidConditionSurface(
-    const std::shared_ptr<const Core::Conditions::Condition>& condition_line,
-    const std::shared_ptr<const Core::Conditions::Condition>& condition_other,
+    const Core::Conditions::Condition& condition_line,
+    const Core::Conditions::Condition& condition_other,
     const std::shared_ptr<const BeamToSolidParamsBase>& beam_to_solid_params,
     const bool is_mesh_tying_in)
     : BeamToSolidCondition(condition_line, condition_other, beam_to_solid_params),

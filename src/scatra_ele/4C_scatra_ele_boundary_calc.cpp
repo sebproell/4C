@@ -270,8 +270,8 @@ int Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_action(
 
     case ScaTra::BoundaryAction::calc_Neumann:
     {
-      Core::Conditions::Condition* condition =
-          params.get<Core::Conditions::Condition*>("condition");
+      const Core::Conditions::Condition* condition =
+          params.get<const Core::Conditions::Condition*>("condition");
       if (condition == nullptr) FOUR_C_THROW("Cannot access Neumann boundary condition!");
 
       evaluate_neumann(ele, params, discretization, *condition, la, elevec1, 1.);
@@ -302,8 +302,8 @@ int Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_action(
       Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*phinp, ephinp, lm);
 
       // get condition
-      std::shared_ptr<Core::Conditions::Condition> cond =
-          params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+      const Core::Conditions::Condition* cond =
+          params.get<const Core::Conditions::Condition*>("condition");
       if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'TransportThermoConvections'!");
 
       // get heat transfer coefficient and surrounding temperature
@@ -486,7 +486,7 @@ int Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_action(
 template <Core::FE::CellType distype, int probdim>
 int Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_neumann(
     Core::Elements::FaceElement* ele, Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseVector& elevec1,
     const double scalar)
 {
@@ -1406,8 +1406,8 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_s2_i_c
         scatraparams_->nds_two_tensor_quantity());
 
   // get current scatra-scatra interface coupling condition
-  std::shared_ptr<Core::Conditions::Condition> s2icondition =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const Core::Conditions::Condition* s2icondition =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (s2icondition == nullptr)
     FOUR_C_THROW("Cannot access scatra-scatra interface coupling condition!");
 
@@ -1632,8 +1632,8 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::calc_robin_boun
   //////////////////////////////////////////////////////////////////////
 
   // get current condition
-  std::shared_ptr<Core::Conditions::Condition> cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const Core::Conditions::Condition* cond =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'TransportRobin'");
 
   // get on/off flags
@@ -1797,8 +1797,8 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_surfac
   //                  get current condition
   //////////////////////////////////////////////////////////////////////
 
-  std::shared_ptr<Core::Conditions::Condition> cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const Core::Conditions::Condition* cond =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'SurfacePermeability'");
 
   const auto onoff = cond->parameters().get<std::vector<int>>("ONOFF");
@@ -1952,8 +1952,8 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::evaluate_kedem_
   Core::FE::extract_my_values<Core::LinAlg::Matrix<nsd_, nen_>>(*wss, ewss, lmwss);
 
   // ------------get current condition----------------------------------
-  std::shared_ptr<Core::Conditions::Condition> cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const Core::Conditions::Condition* cond =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (cond == nullptr)
     FOUR_C_THROW("Cannot access condition 'DESIGN SCATRA COUPLING SURF CONDITIONS'");
 
@@ -2120,8 +2120,8 @@ void Discret::Elements::ScaTraEleBoundaryCalc<distype, probdim>::weak_dirichlet(
   //------------------------------------------------------------------------
   // Dirichlet boundary condition
   //------------------------------------------------------------------------
-  std::shared_ptr<Core::Conditions::Condition> dbc =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const Core::Conditions::Condition* dbc =
+      params.get<const Core::Conditions::Condition*>("condition");
 
   // check of total time
   const double time = scatraparamstimint_->time();

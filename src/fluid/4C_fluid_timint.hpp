@@ -283,7 +283,7 @@ namespace FLD
     }
 
     /// preparations for Krylov space projection
-    virtual void setup_krylov_space_projection(Core::Conditions::Condition* kspcond)
+    virtual void setup_krylov_space_projection(const Core::Conditions::Condition* kspcond)
     {
       FOUR_C_THROW("Not implemented in the base class, may be overridden by a subclass.");
     }

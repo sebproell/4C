@@ -55,7 +55,7 @@ namespace Discret::Elements
    */
   template <int dim>
   void evaluate_neumann_by_element(Core::Elements::Element& element,
-      const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+      const Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
       Core::LinAlg::SerialDenseVector& element_force_vector, double total_time);
 
   /*!
@@ -89,7 +89,7 @@ namespace Discret::Elements
    */
   template <Core::FE::CellType celltype, int dim>
   void evaluate_neumann(Core::Elements::Element& element,
-      const Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+      const Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
       Core::LinAlg::SerialDenseVector& element_force_vector, double total_time);
 
 }  // namespace Discret::Elements

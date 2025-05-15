@@ -31,12 +31,12 @@ FLD::Utils::FluidVolumetricSurfaceFlowWrapper::FluidVolumetricSurfaceFlowWrapper
   //--------------------------------------------------------------------
 
   // Get the surfaces to whom the Womersley flow profile must be applied
-  std::vector<Core::Conditions::Condition*> womersleycond;
+  std::vector<const Core::Conditions::Condition*> womersleycond;
   discret_->get_condition("VolumetricSurfaceFlowCond", womersleycond);
   int num_of_wom_conds = womersleycond.size();
 
   // Get the lines which define the surrounding nodes of the womersley surface
-  std::vector<Core::Conditions::Condition*> womersley_border_nodes_cond;
+  std::vector<const Core::Conditions::Condition*> womersley_border_nodes_cond;
   discret_->get_condition("VolumetricFlowBorderNodesCond", womersley_border_nodes_cond);
   int num_of_borders = womersley_border_nodes_cond.size();
 
@@ -176,7 +176,7 @@ FLD::Utils::FluidVolumetricSurfaceFlowBc::FluidVolumetricSurfaceFlowBc(
   // -------------------------------------------------------------------
   // get condition
   // -------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition(ds_condname, conditions);
   // -------------------------------------------------------------------
   // some standard initialized variables
@@ -427,10 +427,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::eval_local_normalized_radii(
   //--------------------------------------------------------------------
   // get all of the border nodes
   //--------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition(dl_condname, conditions);
 
-  Core::Conditions::Condition* cond = conditions[condnum_l_];
+  const Core::Conditions::Condition* cond = conditions[condnum_l_];
 
   //--------------------------------------------------------------------
   // get the nodes of the condition
@@ -685,10 +685,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::build_condition_node_row_map(
   //--------------------------------------------------------------------
   // read in the condition
   //--------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition(condname, conditions);
 
-  Core::Conditions::Condition* cond = conditions[condnum];
+  const Core::Conditions::Condition* cond = conditions[condnum];
 
   //--------------------------------------------------------------------
   // get the nodes of the condition
@@ -735,10 +735,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::build_condition_dof_row_map(
   //--------------------------------------------------------------------
   // read in the condition
   //--------------------------------------------------------------------
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition(condname, conditions);
 
-  Core::Conditions::Condition* cond = conditions[condnum];
+  const Core::Conditions::Condition* cond = conditions[condnum];
 
   //--------------------------------------------------------------------
   // get the nodes of the condition
@@ -950,9 +950,9 @@ double FLD::Utils::FluidVolumetricSurfaceFlowBc::evaluate_flowrate(
   // -------------------------------------------------------------------
 
   // get condition
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   discret_->get_condition(ds_condname, conditions);
-  Core::Conditions::Condition* condition = conditions[condnum_s_];
+  const Core::Conditions::Condition* condition = conditions[condnum_s_];
 
   // get curve and curve_factor
   const int functnum = condition->parameters().get<int>("Funct");
@@ -1777,12 +1777,12 @@ FLD::Utils::TotalTractionCorrector::TotalTractionCorrector(
   //--------------------------------------------------------------------
 
   // Get the surfaces to whom the traction flow profile must be applied
-  std::vector<Core::Conditions::Condition*> tractioncond;
+  std::vector<const Core::Conditions::Condition*> tractioncond;
   discret_->get_condition("TotalTractionCorrectionCond", tractioncond);
   int num_of_tr_conds = tractioncond.size();
 
   // Get the lines which define the surrounding nodes of the traction surface
-  std::vector<Core::Conditions::Condition*> traction_border_nodes_cond;
+  std::vector<const Core::Conditions::Condition*> traction_border_nodes_cond;
   discret_->get_condition("TotalTractionCorrectionBorderNodesCond", traction_border_nodes_cond);
   int num_of_borders = traction_border_nodes_cond.size();
 

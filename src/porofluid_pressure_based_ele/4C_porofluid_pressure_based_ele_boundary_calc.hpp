@@ -72,7 +72,7 @@ namespace Discret
 
       //! evaluate Neumann boundary condition
       virtual int evaluate_neumann(Core::Elements::Element* ele, Teuchos::ParameterList& params,
-          Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+          Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
           Core::Elements::LocationArray& la, Core::LinAlg::SerialDenseVector& elevec1);
 
       //! evaluate shape functions and derivatives at int. point

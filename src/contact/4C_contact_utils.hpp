@@ -77,23 +77,23 @@ namespace CONTACT
   namespace Utils
   {
     /// Get the solid to solid contact conditions
-    int get_contact_conditions(std::vector<Core::Conditions::Condition*>& contact_conditions,
-        const std::vector<Core::Conditions::Condition*>& beamandsolidcontactconditions,
+    int get_contact_conditions(std::vector<const Core::Conditions::Condition*>& contact_conditions,
+        const std::vector<const Core::Conditions::Condition*>& beamandsolidcontactconditions,
         const bool& throw_error = true);
 
     /// Find the solid to solid contact conditions and combine them to contact condition groups
     int get_contact_condition_groups(
-        std::vector<std::vector<Core::Conditions::Condition*>>& ccond_grps,
+        std::vector<std::vector<const Core::Conditions::Condition*>>& ccond_grps,
         const Core::FE::Discretization& discret_wrapper, const bool& throw_error = true);
 
     /// Combine the solid to solid contact conditions to contact condition groups
     void get_contact_condition_groups(
-        std::vector<std::vector<Core::Conditions::Condition*>>& ccond_grps,
-        const std::vector<Core::Conditions::Condition*>& cconds);
+        std::vector<std::vector<const Core::Conditions::Condition*>>& ccond_grps,
+        const std::vector<const Core::Conditions::Condition*>& cconds);
 
     /// Gather information which side is master and which side is slave
     void get_master_slave_side_info(std::vector<bool>& isslave, std::vector<bool>& isself,
-        const std::vector<Core::Conditions::Condition*>& cond_grp);
+        const std::vector<const Core::Conditions::Condition*>& cond_grp);
 
     /**
      * \brief Gather information on initialization (Active/Inactive)
@@ -110,7 +110,7 @@ namespace CONTACT
      * */
     void get_initialization_info(bool& Two_half_pass, bool& Check_nonsmooth_selfcontactsurface,
         bool& Searchele_AllProc, std::vector<bool>& isactive, std::vector<bool>& isslave,
-        std::vector<bool>& isself, const std::vector<Core::Conditions::Condition*>& cond_grp);
+        std::vector<bool>& isself, const std::vector<const Core::Conditions::Condition*>& cond_grp);
 
     /// write conservation data to an output file
     void write_conservation_data_to_file(const int mypid, const int interface_id,
@@ -147,7 +147,7 @@ namespace CONTACT
        *
        *  */
       static void detect_dbc_slave_nodes_and_elements(const Core::FE::Discretization& str_discret,
-          const std::vector<std::vector<Core::Conditions::Condition*>>& ccond_grps,
+          const std::vector<std::vector<const Core::Conditions::Condition*>>& ccond_grps,
           std::set<const Core::Nodes::Node*>& dbc_slave_nodes,
           std::set<const Core::Elements::Element*>& dbc_slave_eles);
 

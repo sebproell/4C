@@ -611,7 +611,7 @@ int Discret::Elements::FluidIntFace::evaluate(Teuchos::ParameterList& params,
  |  Integrate a surface/line Neumann boundary condition    schott 03/12 |
  *----------------------------------------------------------------------*/
 int Discret::Elements::FluidIntFace::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

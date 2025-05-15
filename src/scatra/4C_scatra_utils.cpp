@@ -71,7 +71,7 @@ void ScaTra::ScaTraUtils::check_consistency_of_s2_i_conditions(
     std::shared_ptr<Core::FE::Discretization> discretization)
 {
   // check if the number of s2i condition definition is correct
-  std::vector<Core::Conditions::Condition*> s2ikinetics_conditions, s2isclcoupling_condition,
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions, s2isclcoupling_condition,
       s2imeshtying_conditions, s2inoevaluation_conditions;
   discretization->get_condition("S2IKinetics", s2ikinetics_conditions);
   discretization->get_condition("S2ISCLCoupling", s2isclcoupling_condition);
@@ -87,10 +87,10 @@ void ScaTra::ScaTraUtils::check_consistency_of_s2_i_conditions(
   }
 
   // combine conditions that define the physics and the evaluation type
-  std::vector<Core::Conditions::Condition*> s2ievaluation_conditions(s2imeshtying_conditions);
+  std::vector<const Core::Conditions::Condition*> s2ievaluation_conditions(s2imeshtying_conditions);
   s2ievaluation_conditions.insert(s2ievaluation_conditions.end(),
       s2inoevaluation_conditions.begin(), s2inoevaluation_conditions.end());
-  std::vector<Core::Conditions::Condition*> s2iphysics_conditions(s2ikinetics_conditions);
+  std::vector<const Core::Conditions::Condition*> s2iphysics_conditions(s2ikinetics_conditions);
   s2iphysics_conditions.insert(s2iphysics_conditions.end(), s2isclcoupling_condition.begin(),
       s2isclcoupling_condition.end());
 
@@ -118,9 +118,9 @@ void ScaTra::ScaTraUtils::check_consistency_with_s2_i_kinetics_condition(
     const std::string& condition_to_be_tested,
     std::shared_ptr<Core::FE::Discretization> discretization)
 {
-  std::vector<Core::Conditions::Condition*> allConditionsToBeTested;
+  std::vector<const Core::Conditions::Condition*> allConditionsToBeTested;
   discretization->get_condition(condition_to_be_tested, allConditionsToBeTested);
-  std::vector<Core::Conditions::Condition*> s2ikinetics_conditions;
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions;
   discretization->get_condition("S2IKinetics", s2ikinetics_conditions);
 
   // loop over all conditions to be tested and check for a consistent initialization of the s2i

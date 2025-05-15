@@ -34,7 +34,7 @@ int Thermo::FaceElement::evaluate(Teuchos::ParameterList& params,
  | integrate a Surface/Line Neumann boundary condition       dano 09/09 |
  *----------------------------------------------------------------------*/
 int Thermo::FaceElement::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

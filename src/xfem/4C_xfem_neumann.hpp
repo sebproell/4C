@@ -47,7 +47,7 @@ namespace XFEM
 
   /// evaluate standard Neumann boundary conditions
   void evaluate_neumann_standard(
-      std::multimap<std::string, Core::Conditions::Condition*>& condition, const double time,
+      std::multimap<std::string, const Core::Conditions::Condition*>& condition, const double time,
       bool assemblemat, Teuchos::ParameterList& params, Core::FE::Discretization& discret,
       Core::LinAlg::Vector<double>& systemvector, Core::LinAlg::SparseOperator* systemmatrix);
 

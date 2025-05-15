@@ -259,7 +259,7 @@ void fsi_immersed_drt()
       return Core::Binstrategy::DefaultRelevantPoints{}(discret, ele, disnp);
   };
 
-  if (structdis->get_condition("PointCoupling") != nullptr)
+  if (structdis->has_condition("PointCoupling"))
   {
     structdis->fill_complete(false, false, false);
     Teuchos::ParameterList binning_params = Global::Problem::instance()->binning_strategy_params();
@@ -398,7 +398,7 @@ void fsi_ale_drt()
       return Core::Binstrategy::DefaultRelevantPoints{}(discret, ele, disnp);
   };
 
-  if (structdis->get_condition("PointCoupling") != nullptr)
+  if (structdis->has_condition("PointCoupling"))
   {
     structdis->fill_complete(false, false, false);
     Teuchos::ParameterList binning_params = Global::Problem::instance()->binning_strategy_params();

@@ -44,8 +44,10 @@ Core::Conditions::LocsysManager::LocsysManager(Core::FE::Discretization& discret
     // Assign internal locsys id (is this still being used?)
     id_[i] = locsysconds_[i]->id();
 
+    // TODO: this hacks the condition parameters!
+    auto& parameters = const_cast<IO::InputParameterContainer&>(locsysconds_[i]->parameters());
     // ConditionID not supplied via the input line, thus adding it here
-    locsysconds_[i]->parameters().add("ConditionID", i);
+    parameters.add("ConditionID", i);
   }
 
   // Set boolean that indicates, if a locsys warning has already been thrown, to false
@@ -105,7 +107,7 @@ void Core::Conditions::LocsysManager::update(const double time,
   {
     for (int i = 0; i < num_locsys(); ++i)
     {
-      Core::Conditions::Condition* currlocsys = locsysconds_[i];
+      const Core::Conditions::Condition* currlocsys = locsysconds_[i];
 
       // safety check
       if (currlocsys->type() != Core::Conditions::VolumeLocsys and
@@ -585,7 +587,7 @@ void Core::Conditions::LocsysManager::calc_rotation_vector_for_normal_system(
   // Loop through all nodes in the condition
   // *******************************************************************
   // Obtain desired locsys condition and its corresponding nodes
-  Core::Conditions::Condition* currLocsysCond = locsysconds_[numLocsysCond];
+  const Core::Conditions::Condition* currLocsysCond = locsysconds_[numLocsysCond];
   const std::vector<int>* nodes = currLocsysCond->get_nodes();
 
   // Obtain rank of calling processor

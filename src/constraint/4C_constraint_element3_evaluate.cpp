@@ -73,8 +73,7 @@ int Discret::Elements::ConstraintElement3::evaluate(Teuchos::ParameterList& para
       }
       else if (numnod == 2)
       {
-        std::shared_ptr<Core::Conditions::Condition> condition =
-            params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+        const auto* condition = params.get<const Core::Conditions::Condition*>("condition");
         const auto& direct = condition->parameters().get<std::vector<double>>("direction");
         const auto& value = condition->parameters().get<std::string>("value");
         if (value == "disp")
@@ -123,8 +122,7 @@ int Discret::Elements::ConstraintElement3::evaluate(Teuchos::ParameterList& para
       }
       else if (numnod == 2)
       {
-        std::shared_ptr<Core::Conditions::Condition> condition =
-            params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+        const auto* condition = params.get<const Core::Conditions::Condition*>("condition");
         const std::vector<double>& direct =
             condition->parameters().get<std::vector<double>>("direction");
 
@@ -157,7 +155,7 @@ int Discret::Elements::ConstraintElement3::evaluate(Teuchos::ParameterList& para
 /*----------------------------------------------------------------------*
  * Evaluate Neumann (->FOUR_C_THROW) */
 int Discret::Elements::ConstraintElement3::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

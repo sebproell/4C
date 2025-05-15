@@ -70,9 +70,9 @@ void Coupling::Adapter::CouplingMortar::setup(
   // separated beforehand.
   if (couplingcond == "Mortar" || couplingcond == "MortarMulti")
   {
-    std::vector<Core::Conditions::Condition*> conds;
-    std::vector<Core::Conditions::Condition*> conds_master(0);
-    std::vector<Core::Conditions::Condition*> conds_slave(0);
+    std::vector<const Core::Conditions::Condition*> conds;
+    std::vector<const Core::Conditions::Condition*> conds_master;
+    std::vector<const Core::Conditions::Condition*> conds_slave;
     masterdis->get_condition(couplingcond, conds);
 
     for (unsigned i = 0; i < conds.size(); i++)

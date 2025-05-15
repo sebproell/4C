@@ -207,12 +207,12 @@ bool LAGPENCONSTRAINT::NoxInterfacePrec::is_saddle_point_system() const
   // check type of constraint conditions (Lagrange multiplier vs. penalty)
   // ---------------------------------------------------------------------------
   bool have_lag_constraint = false;
-  std::vector<Core::Conditions::Condition*> lagcond_volconstr3d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_areaconstr3d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_areaconstr2d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_mpconline2d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_mpconplane3d(0);
-  std::vector<Core::Conditions::Condition*> lagcond_mpcnormcomp3d(0);
+  std::vector<const Core::Conditions::Condition*> lagcond_volconstr3d;
+  std::vector<const Core::Conditions::Condition*> lagcond_areaconstr3d;
+  std::vector<const Core::Conditions::Condition*> lagcond_areaconstr2d;
+  std::vector<const Core::Conditions::Condition*> lagcond_mpconline2d;
+  std::vector<const Core::Conditions::Condition*> lagcond_mpconplane3d;
+  std::vector<const Core::Conditions::Condition*> lagcond_mpcnormcomp3d;
   dis->get_condition("VolumeConstraint_3D", lagcond_volconstr3d);
   dis->get_condition("AreaConstraint_3D", lagcond_areaconstr3d);
   dis->get_condition("AreaConstraint_2D", lagcond_areaconstr2d);

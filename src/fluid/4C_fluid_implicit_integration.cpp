@@ -5,8 +5,6 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#undef WRITEOUTSTATISTICS
-
 #include "4C_fluid_implicit_integration.hpp"
 
 #include "4C_ale_ale3.hpp"
@@ -201,7 +199,7 @@ void FLD::FluidImplicitTimeInt::init()
   // Create LocSysManager, if needed (used for LocSys-Dirichlet BCs)
   // ---------------------------------------------------------------------
   {
-    std::vector<Core::Conditions::Condition*> locsysconditions(0);
+    std::vector<const Core::Conditions::Condition*> locsysconditions;
     discret_->get_condition("Locsys", locsysconditions);
     if (locsysconditions.size())
     {
@@ -395,11 +393,11 @@ void FLD::FluidImplicitTimeInt::init_nonlinear_bc()
   // initialize flow-rate and flow-volume vectors (fixed to length of four,
   // for the time being) in case of flow-dependent pressure boundary conditions,
   // including check of respective conditions.
-  std::vector<Core::Conditions::Condition*> flowdeppressureline;
+  std::vector<const Core::Conditions::Condition*> flowdeppressureline;
   discret_->get_condition("LineFlowDepPressure", flowdeppressureline);
-  std::vector<Core::Conditions::Condition*> flowdeppressuresurf;
+  std::vector<const Core::Conditions::Condition*> flowdeppressuresurf;
   discret_->get_condition("SurfaceFlowDepPressure", flowdeppressuresurf);
-  std::vector<Core::Conditions::Condition*> impedancecond;
+  std::vector<const Core::Conditions::Condition*> impedancecond;
   discret_->get_condition("ImpedanceCond", impedancecond);
 
   // check number of flow-rate and flow-volume boundary conditions
@@ -419,7 +417,7 @@ void FLD::FluidImplicitTimeInt::init_nonlinear_bc()
     }
 
     // get condition vector
-    std::vector<Core::Conditions::Condition*> fdpcond;
+    std::vector<const Core::Conditions::Condition*> fdpcond;
     discret_->get_condition(fdpcondname, fdpcond);
 
     // initialize vectors for flow rate and volume
@@ -622,7 +620,7 @@ void FLD::FluidImplicitTimeInt::time_loop()
 void FLD::FluidImplicitTimeInt::setup_locsys_dirichlet_bc(double time)
 {
   // Check how many locsys conditions exist
-  std::vector<Core::Conditions::Condition*> locsysconds_;
+  std::vector<const Core::Conditions::Condition*> locsysconds_;
   discret_->get_condition("Locsys", locsysconds_);
   int numlocsys = (int)locsysconds_.size();
 
@@ -1286,7 +1284,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
   // 2) Neumann inflow boundary conditions
   //----------------------------------------------------------------------
   // check whether there are Neumann inflow boundary conditions
-  std::vector<Core::Conditions::Condition*> neumanninflow;
+  std::vector<const Core::Conditions::Condition*> neumanninflow;
   discret_->get_condition("FluidNeumannInflow", neumanninflow);
 
   if (neumanninflow.size() != 0)
@@ -1322,9 +1320,9 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
   //     for air cushion outside of boundary))
   //----------------------------------------------------------------------
   // check whether there are flow-dependent pressure boundary conditions
-  std::vector<Core::Conditions::Condition*> flowdeppressureline;
+  std::vector<const Core::Conditions::Condition*> flowdeppressureline;
   discret_->get_condition("LineFlowDepPressure", flowdeppressureline);
-  std::vector<Core::Conditions::Condition*> flowdeppressuresurf;
+  std::vector<const Core::Conditions::Condition*> flowdeppressuresurf;
   discret_->get_condition("SurfaceFlowDepPressure", flowdeppressuresurf);
 
   if (flowdeppressureline.size() != 0 or flowdeppressuresurf.size() != 0)
@@ -1348,7 +1346,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
     }
 
     // get condition vector
-    std::vector<Core::Conditions::Condition*> fdpcond;
+    std::vector<const Core::Conditions::Condition*> fdpcond;
     discret_->get_condition(fdpcondname, fdpcond);
 
     // define vectors for flow rate and volume for actual evaluation of boundary
@@ -1374,7 +1372,12 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
           FOUR_C_THROW("Flow-dependent pressure condition {} has non-matching ID", fdpcondname);
       }
       else
-        fdpcond[fdpcondid]->parameters().add("ConditionID", fdpcondid);
+      {
+        // TODO this hacks the condition parameters
+        const_cast<Core::Conditions::Condition*>(fdpcond[fdpcondid])
+            ->parameters()
+            .add("ConditionID", fdpcondid);
+      }
     }
 
     // create or append to output file
@@ -1613,9 +1616,9 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
   // 4) weak Dirichlet boundary conditions
   //----------------------------------------------------------------------
   // check whether there are weak Dirichlet boundary conditions
-  std::vector<Core::Conditions::Condition*> weakdbcline;
+  std::vector<const Core::Conditions::Condition*> weakdbcline;
   discret_->get_condition("LineWeakDirichlet", weakdbcline);
-  std::vector<Core::Conditions::Condition*> weakdbcsurf;
+  std::vector<const Core::Conditions::Condition*> weakdbcsurf;
   discret_->get_condition("SurfaceWeakDirichlet", weakdbcsurf);
 
   if (weakdbcline.size() != 0 or weakdbcsurf.size() != 0)
@@ -1646,9 +1649,9 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
   // 5) mixed/hybrid Dirichlet boundary conditions
   //----------------------------------------------------------------------
   // check whether there are mixed/hybrid Dirichlet boundary conditions
-  std::vector<Core::Conditions::Condition*> mhdbcline;
+  std::vector<const Core::Conditions::Condition*> mhdbcline;
   discret_->get_condition("LineMixHybDirichlet", mhdbcline);
-  std::vector<Core::Conditions::Condition*> mhdbcsurf;
+  std::vector<const Core::Conditions::Condition*> mhdbcsurf;
   discret_->get_condition("SurfaceMixHybDirichlet", mhdbcsurf);
 
   if (mhdbcline.size() != 0 or mhdbcsurf.size() != 0)
@@ -1686,9 +1689,9 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
   //------------------------------------------------------------------------
 
   // check whether there are Slip Supplemental Curved Boundary conditions
-  std::vector<Core::Conditions::Condition*> slipsuppline;
+  std::vector<const Core::Conditions::Condition*> slipsuppline;
   discret_->get_condition("LineSlipSupp", slipsuppline);
-  std::vector<Core::Conditions::Condition*> slipsuppsurf;
+  std::vector<const Core::Conditions::Condition*> slipsuppsurf;
   discret_->get_condition("SurfaceSlipSupp", slipsuppsurf);
 
   if (slipsuppline.size() != 0 or slipsuppsurf.size() != 0)
@@ -1716,7 +1719,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       sscbcondname = "SurfaceSlipSupp";
 
     // get condition vector
-    std::vector<Core::Conditions::Condition*> sscbcond;
+    std::vector<const Core::Conditions::Condition*> sscbcond;
     discret_->get_condition(sscbcondname, sscbcond);
 
     // assign ID to all conditions
@@ -1732,7 +1735,12 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
               "Slip Supplemental Curved Boundary condition {} has non-matching ID", sscbcondname);
       }
       else
-        sscbcond[sscbcondid]->parameters().add("ConditionID", sscbcondid);
+      {
+        // TODO this hacks the condition parameters
+        const_cast<Core::Conditions::Condition*>(sscbcond[sscbcondid])
+            ->parameters()
+            .add("ConditionID", sscbcondid);
+      }
     }
 
     //----------------------------------------------------------------------
@@ -1785,9 +1793,9 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
   //------------------------------------------------------------------------
 
   // check whether there are navier-slip boundary conditions
-  std::vector<Core::Conditions::Condition*> navierslipline;
+  std::vector<const Core::Conditions::Condition*> navierslipline;
   discret_->get_condition("LineNavierSlip", navierslipline);
-  std::vector<Core::Conditions::Condition*> navierslipsurf;
+  std::vector<const Core::Conditions::Condition*> navierslipsurf;
   discret_->get_condition("SurfNavierSlip", navierslipsurf);
 
   if (navierslipline.size() != 0 or navierslipsurf.size() != 0)
@@ -1804,7 +1812,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       nscondname = "SurfNavierSlip";
 
     // get condition vector
-    std::vector<Core::Conditions::Condition*> nscond;
+    std::vector<const Core::Conditions::Condition*> nscond;
     discret_->get_condition(nscondname, nscond);
 
     // assign ID to all conditions
@@ -1818,7 +1826,12 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
           FOUR_C_THROW("Navier slip boundary condition {} has non-matching ID", nscondname);
       }
       else
-        nscond[nscondid]->parameters().add("ConditionID", nscondid);
+      {
+        // TODO this hacks the condition parameters
+        const_cast<Core::Conditions::Condition*>(nscond[nscondid])
+            ->parameters()
+            .add("ConditionID", nscondid);
+      }
     }
 
     //----------------------------------------------------------------------
@@ -1838,7 +1851,7 @@ void FLD::FluidImplicitTimeInt::apply_nonlinear_boundary_conditions()
       if (alefluid_) discret_->set_state(ndsale_, "dispnp", *dispnp_);
 
       // set slip coefficient
-      Core::Conditions::Condition* currnavierslip = nscond[nscondid];
+      const Core::Conditions::Condition* currnavierslip = nscond[nscondid];
       const double beta = currnavierslip->parameters().get<double>("SLIPCOEFFICIENT");
       navierslipparams.set<double>("beta", beta);
 
@@ -2041,12 +2054,12 @@ void FLD::FluidImplicitTimeInt::apply_dirichlet_to_system()
 void FLD::FluidImplicitTimeInt::init_krylov_space_projection()
 {
   // get condition "KrylovSpaceProjection" from discretization
-  std::vector<Core::Conditions::Condition*> KSPcond;
+  std::vector<const Core::Conditions::Condition*> KSPcond;
   discret_->get_condition("KrylovSpaceProjection", KSPcond);
   int numcond = KSPcond.size();
   int numfluid = 0;
 
-  Core::Conditions::Condition* kspcond = nullptr;
+  const Core::Conditions::Condition* kspcond = nullptr;
   // check if for fluid Krylov projection is required
   for (int icond = 0; icond < numcond; icond++)
   {
@@ -2076,7 +2089,8 @@ void FLD::FluidImplicitTimeInt::init_krylov_space_projection()
 /*--------------------------------------------------------------------------*
  | setup Krylov projector including first fill                    nis Feb13 |
  *--------------------------------------------------------------------------*/
-void FLD::FluidImplicitTimeInt::setup_krylov_space_projection(Core::Conditions::Condition* kspcond)
+void FLD::FluidImplicitTimeInt::setup_krylov_space_projection(
+    const Core::Conditions::Condition* kspcond)
 {
   // confirm that mode flags are number of nodal dofs
   const int nummodes = kspcond->parameters().get<int>("NUMMODES");
@@ -2451,11 +2465,11 @@ void FLD::FluidImplicitTimeInt::ale_update(std::string condName)
   // conditions overwrite volume conditions
   // **************************************************************************
   // Get (unsorted) Ale update conditions
-  std::vector<Core::Conditions::Condition*> unsortedConds;
+  std::vector<const Core::Conditions::Condition*> unsortedConds;
   discret_->get_condition(condName, unsortedConds);
 
   // Sort Ale update conditions
-  std::vector<Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> conds;
   conds.clear();
 
   // - first volume conditions
@@ -2485,7 +2499,7 @@ void FLD::FluidImplicitTimeInt::ale_update(std::string condName)
   {
     // Initialize some variables:
     // Select the i-th condition in the vector
-    std::vector<Core::Conditions::Condition*> selectedCond;
+    std::vector<const Core::Conditions::Condition*> selectedCond;
     selectedCond.clear();
     selectedCond.push_back(cond);
 
@@ -3156,9 +3170,9 @@ void FLD::FluidImplicitTimeInt::time_update_stresses()
  *----------------------------------------------------------------------*/
 void FLD::FluidImplicitTimeInt::time_update_nonlinear_bc()
 {
-  std::vector<Core::Conditions::Condition*> flowdeppressureline;
+  std::vector<const Core::Conditions::Condition*> flowdeppressureline;
   discret_->get_condition("LineFlowDepPressure", flowdeppressureline);
-  std::vector<Core::Conditions::Condition*> flowdeppressuresurf;
+  std::vector<const Core::Conditions::Condition*> flowdeppressuresurf;
   discret_->get_condition("SurfaceFlowDepPressure", flowdeppressuresurf);
 
   if (flowdeppressureline.size() != 0 or flowdeppressuresurf.size() != 0)
@@ -3621,9 +3635,9 @@ void FLD::FluidImplicitTimeInt::output()
 // *---------------------------------------------------------------------*/
 void FLD::FluidImplicitTimeInt::output_nonlinear_bc()
 {
-  std::vector<Core::Conditions::Condition*> flowdeppressureline;
+  std::vector<const Core::Conditions::Condition*> flowdeppressureline;
   discret_->get_condition("LineFlowDepPressure", flowdeppressureline);
-  std::vector<Core::Conditions::Condition*> flowdeppressuresurf;
+  std::vector<const Core::Conditions::Condition*> flowdeppressuresurf;
   discret_->get_condition("SurfaceFlowDepPressure", flowdeppressuresurf);
 
   if (flowdeppressureline.size() != 0 or flowdeppressuresurf.size() != 0)
@@ -3776,9 +3790,9 @@ void FLD::FluidImplicitTimeInt::read_restart(int step)
   // flow rate and flow volume in case of flow-dependent pressure bc
   if (nonlinearbc_)
   {
-    std::vector<Core::Conditions::Condition*> flowdeppressureline;
+    std::vector<const Core::Conditions::Condition*> flowdeppressureline;
     discret_->get_condition("LineFlowDepPressure", flowdeppressureline);
-    std::vector<Core::Conditions::Condition*> flowdeppressuresurf;
+    std::vector<const Core::Conditions::Condition*> flowdeppressuresurf;
     discret_->get_condition("SurfaceFlowDepPressure", flowdeppressuresurf);
 
     if (flowdeppressureline.size() != 0 or flowdeppressuresurf.size() != 0)
@@ -5038,9 +5052,9 @@ void FLD::FluidImplicitTimeInt::lift_drag() const
     std::shared_ptr<std::map<int, std::vector<double>>> liftdragvals;
 
     // check whether there are slip supplemental curved boundary conditions
-    std::vector<Core::Conditions::Condition*> slipsuppline;
+    std::vector<const Core::Conditions::Condition*> slipsuppline;
     discret_->get_condition("LineSlipSupp", slipsuppline);
-    std::vector<Core::Conditions::Condition*> slipsuppsurf;
+    std::vector<const Core::Conditions::Condition*> slipsuppsurf;
     discret_->get_condition("SurfaceSlipSupp", slipsuppsurf);
 
     if (slipsuppline.size() != 0 or slipsuppsurf.size() != 0)
@@ -5071,7 +5085,7 @@ void FLD::FluidImplicitTimeInt::lift_drag() const
  *----------------------------------------------------------------------*/
 void FLD::FluidImplicitTimeInt::compute_flow_rates() const
 {
-  std::vector<Core::Conditions::Condition*> flowratecond;
+  std::vector<const Core::Conditions::Condition*> flowratecond;
   std::string condstring;
 
   if (numdim_ == 2)

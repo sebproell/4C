@@ -151,9 +151,9 @@ namespace ScaTra
         ) override;
 
     //! evaluate and assemble interface linearizations and residuals for node-to-segment coupling
-    void evaluate_condition_nts(
-        Core::Conditions::Condition& condition,  //!< scatra-scatra interface coupling condition
-        const Mortar::Node& slavenode,           //!< slave-side node
+    void evaluate_condition_nts(const Core::Conditions::Condition&
+                                    condition,  //!< scatra-scatra interface coupling condition
+        const Mortar::Node& slavenode,          //!< slave-side node
         const double&
             lumpedarea,  //!< lumped interface area fraction associated with slave-side node
         Mortar::Element& slaveelement,   //!< slave-side mortar element

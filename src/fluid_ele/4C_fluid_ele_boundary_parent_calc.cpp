@@ -513,8 +513,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::flow_dep_pressure_bc(
   //---------------------------------------------------------------------
   // get condition information
   //---------------------------------------------------------------------
-  std::shared_ptr<Core::Conditions::Condition> fdp_cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const auto* fdp_cond = params.get<const Core::Conditions::Condition*>("condition");
 
   // find out whether there is a time curve and get factor:
   // usable as a time-curve factor for fixed pressure as well as
@@ -1836,8 +1835,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::evaluate_weak_dbc(
   //---------------------------------------------------------------------
   // get condition information
   //---------------------------------------------------------------------
-  std::shared_ptr<Core::Conditions::Condition> wdbc_cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const auto* wdbc_cond = params.get<const Core::Conditions::Condition*>("condition");
 
   // type of consistency (default: adjoint-consistent)
   const std::string& consistency = (*wdbc_cond).parameters().get<std::string>("GAMMATYPE");
@@ -4307,8 +4305,7 @@ void Discret::Elements::FluidBoundaryParent<distype>::mix_hyb_dirichlet(
 
   //--------------------------------------------------
   // get the condition information
-  std::shared_ptr<Core::Conditions::Condition> hixhybdbc_cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const auto* hixhybdbc_cond = params.get<const Core::Conditions::Condition*>("condition");
 
   // get value for boundary condition
   const auto& val = (*hixhybdbc_cond).parameters().get<std::vector<double>>("val");

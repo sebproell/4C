@@ -156,9 +156,9 @@ void Adapter::CouplingNonLinMortar::read_mortar_condition(
   // separated beforehand.
   if (couplingcond == "Mortar" || couplingcond == "Contact" || couplingcond == "EHLCoupling")
   {
-    std::vector<Core::Conditions::Condition*> conds;
-    std::vector<Core::Conditions::Condition*> conds_master(0);
-    std::vector<Core::Conditions::Condition*> conds_slave(0);
+    std::vector<const Core::Conditions::Condition*> conds;
+    std::vector<const Core::Conditions::Condition*> conds_master(0);
+    std::vector<const Core::Conditions::Condition*> conds_slave(0);
     masterdis->get_condition(couplingcond, conds);
 
     for (unsigned i = 0; i < conds.size(); i++)
@@ -579,8 +579,8 @@ void Adapter::CouplingNonLinMortar::complete_interface(
  *----------------------------------------------------------------------*/
 void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
     std::shared_ptr<Core::FE::Discretization> masterdis,
-    std::shared_ptr<Core::FE::Discretization> slavedis,
-    std::shared_ptr<Core::Conditions::Condition> spring, const int coupling_id, MPI_Comm comm)
+    std::shared_ptr<Core::FE::Discretization> slavedis, const Core::Conditions::Condition& spring,
+    const int coupling_id, MPI_Comm comm)
 {
   if (Core::Communication::my_mpi_rank(comm) == 0)
     std::cout << "Generating CONTACT interface for spring dashpot condition...\n" << std::endl;
@@ -599,11 +599,11 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
 
   // get the conditions for the current evaluation we use the SpringDashpot condition as a
   // substitute for the mortar slave surface
-  std::vector<Core::Conditions::Condition*> conds_master(0);
-  std::vector<Core::Conditions::Condition*> conds_slave(0);
+  std::vector<const Core::Conditions::Condition*> conds_master(0);
+  std::vector<const Core::Conditions::Condition*> conds_slave(0);
 
   // Coupling condition is defined by "DESIGN SURF SPRING DASHPOT COUPLING CONDITIONS"
-  std::vector<Core::Conditions::Condition*> coup_conds;
+  std::vector<const Core::Conditions::Condition*> coup_conds;
   slavedis->get_condition("RobinSpringDashpotCoupling", coup_conds);
 
   // number of coupling conditions
@@ -612,7 +612,7 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
     FOUR_C_THROW("No section DESIGN SURF ROBIN SPRING DASHPOT COUPLING CONDITIONS found.");
 
   // slave surface = spring dashpot condition
-  conds_slave.push_back(&(*spring));
+  conds_slave.push_back(&(spring));
 
   // find master surface: loop all coupling conditions
   for (int i = 0; i < n_coup_conds; i++)

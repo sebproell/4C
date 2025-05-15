@@ -387,7 +387,7 @@ double Discret::Elements::SolidPoroPressureVelocityBased::get_normal_cauchy_stre
 
 int Discret::Elements::SolidPoroPressureVelocityBased::evaluate_neumann(
     Teuchos::ParameterList& params, Core::FE::Discretization& discretization,
-    Core::Conditions::Condition& condition, std::vector<int>& lm,
+    const Core::Conditions::Condition& condition, std::vector<int>& lm,
     Core::LinAlg::SerialDenseVector& elevec1, Core::LinAlg::SerialDenseMatrix* elemat1)
 {
   FOUR_C_THROW(

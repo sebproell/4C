@@ -52,11 +52,11 @@ int Core::DOFSets::DofSetDefinedMappingWrapper::assign_degrees_of_freedom(
   if (sourcedis_ == nullptr) FOUR_C_THROW("No source discretization assigned to mapping dof set!");
 
   // get condition which defines the coupling on target discretization
-  std::vector<Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> conds;
   dis.get_condition(couplingcond_, conds);
 
   // get condition which defines the coupling on source discretization
-  std::vector<Core::Conditions::Condition*> conds_source;
+  std::vector<const Core::Conditions::Condition*> conds_source;
   sourcedis_->get_condition(couplingcond_, conds_source);
 
   // get the respective nodes which are in the condition

@@ -645,13 +645,13 @@ int Discret::Elements::ScaTraHDGBoundary::evaluate(Teuchos::ParameterList& param
  |  Integrate a surface/line Neumann boundary condition  hoermann 09/15 |
  *----------------------------------------------------------------------*/
 int Discret::Elements::ScaTraHDGBoundary::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 
 {
   // add Neumann boundary condition to parameter list
-  params.set<Core::Conditions::Condition*>("condition", &condition);
+  params.set<const Core::Conditions::Condition*>("condition", &condition);
 
   // build location array from location vector
   //(this a little ugly. one could fix this by introducing a evaluate_neumann() method
@@ -1032,7 +1032,7 @@ int Discret::Elements::ScaTraHDGIntFace::evaluate(Teuchos::ParameterList& params
  |  Integrate a surface/line Neumann boundary condition  hoermann 09/15 |
  *----------------------------------------------------------------------*/
 int Discret::Elements::ScaTraHDGIntFace::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

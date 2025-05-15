@@ -121,7 +121,7 @@ namespace Constraints
 
    protected:
     std::shared_ptr<Core::FE::Discretization> actdisc_;  ///< standard discretization
-    std::vector<Core::Conditions::Condition*>
+    std::vector<const Core::Conditions::Condition*>
         constrcond_;         ///< conditions, that define the constraint (all of the same kind)
     ConstrType constrtype_;  ///< constraint type
     std::map<int, double>

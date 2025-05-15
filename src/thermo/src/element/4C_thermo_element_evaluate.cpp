@@ -38,7 +38,7 @@ int Thermo::Element::evaluate(Teuchos::ParameterList& params,
  | in the element. We need it there for the stabilisation terms!        |
  *----------------------------------------------------------------------*/
 int Thermo::Element::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

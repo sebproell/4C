@@ -75,14 +75,14 @@ void Solid::MonitorDbc::get_tagged_condition(
   tagged_conds.clear();
 
   std::vector<std::string> cond_names;
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> cond_vec;
+  std::vector<const Core::Conditions::Condition*> cond_vec;
   discret.get_condition(cond_name, cond_vec);
 
   for (auto& cond_ptr : cond_vec)
   {
     const std::string& cptr = cond_ptr->parameters().get<std::string>("TAG");
 
-    if (cptr == tag_name) tagged_conds.push_back(cond_ptr.get());
+    if (cptr == tag_name) tagged_conds.push_back(cond_ptr);
   }
 }
 
@@ -137,11 +137,11 @@ void Solid::MonitorDbc::setup()
     return;
   }
 
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> rconds;
+  std::vector<const Core::Conditions::Condition*> rconds;
   discret_ptr_->get_condition("ReactionForce", rconds);
-  for (const std::shared_ptr<Core::Conditions::Condition>& rcond_ptr : rconds)
+  for (const auto& rcond_ptr : rconds)
   {
-    Core::Conditions::Condition& rcond = *rcond_ptr;
+    const Core::Conditions::Condition& rcond = *rcond_ptr;
     auto ipair = react_maps_.insert(
         std::make_pair(rcond.id(), std::vector<std::shared_ptr<Core::LinAlg::Map>>(3, nullptr)));
 
@@ -275,7 +275,7 @@ void Solid::MonitorDbc::execute(Core::IO::DiscretizationWriter& writer)
 
   if (isempty_) return;
 
-  std::vector<std::shared_ptr<Core::Conditions::Condition>> rconds;
+  std::vector<const Core::Conditions::Condition*> rconds;
   discret_ptr_->get_condition("ReactionForce", rconds);
 
   std::array<double, 2> area = {0.0, 0.0};
@@ -285,20 +285,20 @@ void Solid::MonitorDbc::execute(Core::IO::DiscretizationWriter& writer)
   Core::LinAlg::Matrix<DIM, 1> rmoment_xyz(Core::LinAlg::Initialization::uninitialized);
 
   auto filepath = full_filepaths_.cbegin();
-  for (const std::shared_ptr<Core::Conditions::Condition>& rcond_ptr : rconds)
+  for (const auto& rcond_ptr : rconds)
   {
     std::fill(area.data(), area.data() + 2, 0.0);
     std::fill(rforce_xyz.data(), rforce_xyz.data() + DIM, 0.0);
     std::fill(rmoment_xyz.data(), rmoment_xyz.data() + DIM, 0.0);
 
     const int rid = rcond_ptr->id();
-    get_area(area.data(), rcond_ptr.get());
+    get_area(area.data(), rcond_ptr);
 
     get_reaction_force(rforce_xyz, react_maps_[rid].data());
-    get_reaction_moment(rmoment_xyz, react_maps_[rid].data(), rcond_ptr.get());
+    get_reaction_moment(rmoment_xyz, react_maps_[rid].data(), rcond_ptr);
 
     write_results_to_file(*(filepath++), rforce_xyz, rmoment_xyz, area_ref, area_curr);
-    write_results_to_screen(rcond_ptr, rforce_xyz, rmoment_xyz, area_ref, area_curr);
+    write_results_to_screen(*rcond_ptr, rforce_xyz, rmoment_xyz, area_ref, area_curr);
   }
 }
 
@@ -320,14 +320,13 @@ void Solid::MonitorDbc::write_results_to_file(const std::string& full_filepath,
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void Solid::MonitorDbc::write_results_to_screen(
-    const std::shared_ptr<Core::Conditions::Condition>& rcond_ptr,
+void Solid::MonitorDbc::write_results_to_screen(const Core::Conditions::Condition& rcond,
     const Core::LinAlg::Matrix<DIM, 1>& rforce, const Core::LinAlg::Matrix<DIM, 1>& rmoment,
     const double& area_ref, const double& area_curr) const
 {
   if (Core::Communication::my_mpi_rank(get_comm()) != 0) return;
 
-  Core::IO::cout << "\n\n--- Monitor Dirichlet boundary condition " << rcond_ptr->id() + 1 << " \n";
+  Core::IO::cout << "\n\n--- Monitor Dirichlet boundary condition " << rcond.id() + 1 << " \n";
   write_condition_header(Core::IO::cout.os(), OS_WIDTH);
   write_column_header(Core::IO::cout.os(), OS_WIDTH);
   write_results(Core::IO::cout.os(), OS_WIDTH, os_precision_, gstate_ptr_->get_step_n(),
@@ -337,16 +336,15 @@ void Solid::MonitorDbc::write_results_to_screen(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 std::vector<std::string> Solid::MonitorDbc::create_file_paths(
-    const std::vector<std::shared_ptr<Core::Conditions::Condition>>& rconds,
-    const std::string& full_dirpath, const std::string& filename_only_prefix,
-    const std::string& file_type) const
+    const std::vector<const Core::Conditions::Condition*>& rconds, const std::string& full_dirpath,
+    const std::string& filename_only_prefix, const std::string& file_type) const
 {
   std::vector<std::string> full_filepaths(rconds.size());
 
   if (Core::Communication::my_mpi_rank(get_comm()) != 0) return full_filepaths;
 
   size_t i = 0;
-  for (const std::shared_ptr<Core::Conditions::Condition>& rcond : rconds)
+  for (const auto& rcond : rconds)
     full_filepaths[i++] = full_dirpath + "/" + filename_only_prefix + "_" +
                           std::to_string(rcond->id() + 1) + "_monitor_dbc." + file_type;
 
@@ -356,17 +354,17 @@ std::vector<std::string> Solid::MonitorDbc::create_file_paths(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Solid::MonitorDbc::clear_files_and_write_header(
-    const std::vector<std::shared_ptr<Core::Conditions::Condition>>& rconds,
+    const std::vector<const Core::Conditions::Condition*>& rconds,
     std::vector<std::string>& full_filepaths, bool do_write_condition_header)
 {
   if (Core::Communication::my_mpi_rank(get_comm()) != 0) return;
 
   size_t i = 0;
-  for (const std::shared_ptr<Core::Conditions::Condition>& rcond : rconds)
+  for (const auto& rcond : rconds)
   {
     // clear old content
     std::ofstream of(full_filepaths[i], std::ios_base::out);
-    if (do_write_condition_header) write_condition_header(of, OF_WIDTH, rcond.get());
+    if (do_write_condition_header) write_condition_header(of, OF_WIDTH, rcond);
     write_column_header(of, OF_WIDTH);
     of.close();
     ++i;

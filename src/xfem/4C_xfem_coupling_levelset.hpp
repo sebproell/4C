@@ -492,13 +492,14 @@ namespace XFEM
    protected:
     void set_element_conditions() override;
 
-    void set_element_specific_conditions(std::vector<Core::Conditions::Condition*>& cutterele_cond,
+    void set_element_specific_conditions(
+        std::vector<const Core::Conditions::Condition*>& cutterele_cond,
         const std::string& cond_name, const int& robin_id);
 
     void set_condition_specific_parameters() override;
 
     void get_condition_by_robin_id(const std::vector<Core::Conditions::Condition*>& mycond,
-        const int coupling_id, std::vector<Core::Conditions::Condition*>& mynewcond);
+        const int coupling_id, std::vector<const Core::Conditions::Condition*>& mynewcond);
 
     //! Initializes configurationmap
     void setup_configuration_map() override;
@@ -533,8 +534,8 @@ namespace XFEM
     int robin_neumann_id_;
 
     // Get the condition for the dirichlet and neumann condition associated with the Robin-condition
-    std::vector<Core::Conditions::Condition*> cutterele_cond_robin_dirichlet_;
-    std::vector<Core::Conditions::Condition*> cutterele_cond_robin_neumann_;
+    std::vector<const Core::Conditions::Condition*> cutterele_cond_robin_dirichlet_;
+    std::vector<const Core::Conditions::Condition*> cutterele_cond_robin_neumann_;
 
 
   };  // End LevelSetCouplingNavierSlip

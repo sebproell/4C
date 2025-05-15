@@ -64,8 +64,7 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
   // setup mortar coupling
   if (Global::Problem::instance()->get_problem_type() == Core::ProblemType::thermo)
   {
-    Core::Conditions::Condition* mrtrcond = actdis->get_condition("Mortar");
-    if (mrtrcond != nullptr)
+    if (actdis->has_condition("Mortar"))
     {
       adaptermeshtying_ =
           std::make_shared<Coupling::Adapter::CouplingMortar>(Global::Problem::instance()->n_dim(),

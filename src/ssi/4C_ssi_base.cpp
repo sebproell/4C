@@ -56,11 +56,10 @@ SSI::SSIBase::SSIBase(MPI_Comm comm, const Teuchos::ParameterList& globaltimepar
                    Global::Problem::instance()->materials()->first_id_by_type(
                        Core::Materials::m_newman_multiscale) != -1),
       ssi_interface_contact_(
-          Global::Problem::instance()->get_dis("structure")->get_condition("SSIInterfaceContact") !=
-          nullptr),
+          Global::Problem::instance()->get_dis("structure")->has_condition("SSIInterfaceContact")),
       ssi_interface_meshtying_(Global::Problem::instance()
-                                   ->get_dis("structure")
-                                   ->get_condition("ssi_interface_meshtying") != nullptr),
+              ->get_dis("structure")
+              ->has_condition("ssi_interface_meshtying")),
       temperature_funct_num_(
           Global::Problem::instance()->elch_control_params().get<int>("TEMPERATURE_FROM_FUNCT")),
       use_old_structure_(Global::Problem::instance()
@@ -412,7 +411,7 @@ SSI::RedistributionType SSI::SSIBase::init_field_coupling(const std::string& str
   {
     auto scatra_integrator = scatra_base_algorithm()->scatra_field();
     // check for ssi coupling condition
-    std::vector<Core::Conditions::Condition*> ssicoupling;
+    std::vector<const Core::Conditions::Condition*> ssicoupling;
     scatra_integrator->discretization()->get_condition("SSICoupling", ssicoupling);
     const bool havessicoupling = (ssicoupling.size() > 0);
 
@@ -876,10 +875,10 @@ bool SSI::SSIBase::check_s2i_kinetics_condition_for_pseudo_contact(
 
   auto structdis = Global::Problem::instance()->get_dis(struct_disname);
   // get all s2i kinetics conditions
-  std::vector<Core::Conditions::Condition*> s2ikinetics_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions(0, nullptr);
   structdis->get_condition("S2IKinetics", s2ikinetics_conditions);
   // get all ssi contact conditions
-  std::vector<Core::Conditions::Condition*> ssi_contact_conditions;
+  std::vector<const Core::Conditions::Condition*> ssi_contact_conditions;
   structdis->get_condition("SSIInterfaceContact", ssi_contact_conditions);
   for (auto* s2ikinetics_cond : s2ikinetics_conditions)
   {
@@ -935,7 +934,7 @@ void SSI::SSIBase::check_ssi_interface_conditions(const std::string& struct_disn
   if (ssi_interface_contact())
   {
     // get ssi condition to be tested
-    std::vector<Core::Conditions::Condition*> ssiconditions;
+    std::vector<const Core::Conditions::Condition*> ssiconditions;
     structdis->get_condition("SSIInterfaceContact", ssiconditions);
     SSI::Utils::check_consistency_of_ssi_interface_contact_condition(ssiconditions, *structdis);
   }

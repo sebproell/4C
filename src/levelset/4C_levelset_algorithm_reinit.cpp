@@ -545,7 +545,7 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
   //========================================================================
   // std::vector<Core::Conditions::Condition*>* surfacepbcs = pbc_->ReturnSurfacePBCs();
   // get periodic surface boundary conditions
-  std::vector<Core::Conditions::Condition*> surfacepbcs;
+  std::vector<const Core::Conditions::Condition*> surfacepbcs;
   discret_->get_condition("SurfacePeriodic", surfacepbcs);
   if (surfacepbcs.empty()) discret_->get_condition("LinePeriodic", surfacepbcs);
 

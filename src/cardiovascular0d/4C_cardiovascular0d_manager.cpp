@@ -577,7 +577,7 @@ void Utils::Cardiovascular0DManager::evaluate_neumann_cardiovascular0_d_coupling
   const bool assmat = systemmatrix != nullptr;
 
   std::vector<Core::Conditions::Condition*> surfneumcond;
-  std::vector<Core::Conditions::Condition*> cardvasc0dstructcoupcond;
+  std::vector<const Core::Conditions::Condition*> cardvasc0dstructcoupcond;
   std::vector<int> tmp;
   std::shared_ptr<Core::FE::Discretization> structdis =
       Global::Problem::instance()->get_dis("structure");
@@ -594,7 +594,7 @@ void Utils::Cardiovascular0DManager::evaluate_neumann_cardiovascular0_d_coupling
   {
     int id_strcoupcond = cardvasc0dstructcoupcond[i]->parameters().get<int>("coupling_id");
 
-    Core::Conditions::Condition* coupcond = cardvasc0dstructcoupcond[i];
+    const Core::Conditions::Condition* coupcond = cardvasc0dstructcoupcond[i];
     std::vector<double> newval(6, 0.0);
     if (cardvasc0d_4elementwindkessel_->have_cardiovascular0_d())
       newval[0] = -(actpres)[3 * id_strcoupcond];
@@ -606,7 +606,7 @@ void Utils::Cardiovascular0DManager::evaluate_neumann_cardiovascular0_d_coupling
       for (unsigned int j = 0;
           j < cardvasc0d_syspulcirculation_->get_cardiovascular0_d_condition().size(); ++j)
       {
-        Core::Conditions::Condition& cond =
+        const Core::Conditions::Condition& cond =
             *(cardvasc0d_syspulcirculation_->get_cardiovascular0_d_condition()[j]);
         int id_cardvasc0d = cond.parameters().get<int>("id");
 
@@ -631,7 +631,7 @@ void Utils::Cardiovascular0DManager::evaluate_neumann_cardiovascular0_d_coupling
           j < cardvascrespir0d_syspulperiphcirculation_->get_cardiovascular0_d_condition().size();
           ++j)
       {
-        Core::Conditions::Condition& cond =
+        const Core::Conditions::Condition& cond =
             *(cardvascrespir0d_syspulperiphcirculation_->get_cardiovascular0_d_condition()[j]);
         int id_cardvasc0d = cond.parameters().get<int>("id");
 
@@ -649,7 +649,11 @@ void Utils::Cardiovascular0DManager::evaluate_neumann_cardiovascular0_d_coupling
         }
       }
     }
-    if (assvec) coupcond->parameters().add("VAL", newval);
+    if (assvec)
+    {
+      // TODO this hacks the parameters of the condition
+      const_cast<Core::IO::InputParameterContainer&>(coupcond->parameters()).add("VAL", newval);
+    }
 
 
     std::shared_ptr<const Core::LinAlg::Vector<double>> disp =
@@ -658,16 +662,15 @@ void Utils::Cardiovascular0DManager::evaluate_neumann_cardiovascular0_d_coupling
 
     Core::LinAlg::SerialDenseVector elevector;
     Core::LinAlg::SerialDenseMatrix elematrix;
-    std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = coupcond->geometry();
+    const std::map<int, std::shared_ptr<Core::Elements::Element>>& geom = coupcond->geometry();
 
-    std::map<int, std::shared_ptr<Core::Elements::Element>>::iterator curr;
-    for (curr = geom.begin(); curr != geom.end(); ++curr)
+    for (const auto& [_, ele] : geom)
     {
       // get element location vector, dirichlet flags and ownerships
       std::vector<int> lm;
       std::vector<int> lmowner;
       std::vector<int> lmstride;
-      curr->second->location_vector(*actdisc_, lm, lmowner, lmstride);
+      ele->location_vector(*actdisc_, lm, lmowner, lmstride);
       elevector.size((int)lm.size());
 
       const int size = (int)lm.size();
@@ -675,14 +678,14 @@ void Utils::Cardiovascular0DManager::evaluate_neumann_cardiovascular0_d_coupling
         elematrix.shape(size, size);
       else
         elematrix.putScalar(0.0);
-      curr->second->evaluate_neumann(params, *actdisc_, *coupcond, lm, elevector, &elematrix);
+      ele->evaluate_neumann(params, *actdisc_, *coupcond, lm, elevector, &elematrix);
       // minus sign here since we sum into fint_ !!
       elevector.scale(-1.0);
       if (assvec) Core::LinAlg::assemble(*systemvector, elevector, lm, lmowner);
       // plus sign here since evaluate_neumann already assumes that an fext vector enters, and thus
       // puts a minus infront of the load linearization matrix !!
       // elematrix.Scale(1.0);
-      if (assmat) systemmatrix->assemble(curr->second->id(), lmstride, elematrix, lm, lmowner);
+      if (assmat) systemmatrix->assemble(ele->id(), lmstride, elematrix, lm, lmowner);
     }
   }
 

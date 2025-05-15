@@ -24,8 +24,7 @@ namespace BeamInteraction
   class BeamToBeamPointCouplingCondition : public BeamInteractionConditionBase
   {
    public:
-    BeamToBeamPointCouplingCondition(
-        const std::shared_ptr<const Core::Conditions::Condition>& condition_line,
+    BeamToBeamPointCouplingCondition(const Core::Conditions::Condition& condition_line,
         double positional_penalty_parameter, double rotational_penalty_parameter)
         : BeamInteractionConditionBase(condition_line),
           positional_penalty_parameter_(positional_penalty_parameter),

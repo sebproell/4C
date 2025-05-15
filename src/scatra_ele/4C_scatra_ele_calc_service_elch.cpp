@@ -346,8 +346,7 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::calc_elch_boundary_
   Core::FE::extract_my_values<Core::LinAlg::Matrix<nen_, 1>>(*hist, ehist, lm);
 
   // get current condition
-  std::shared_ptr<Core::Conditions::Condition> cond =
-      params.get<std::shared_ptr<Core::Conditions::Condition>>("condition");
+  const auto* cond = params.get<const Core::Conditions::Condition*>("condition");
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ElchBoundaryKineticsPoint'!");
 
   // access parameters of the condition
@@ -429,7 +428,7 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::calc_elch_boundary_
 
     if (zerocur == 0)
     {
-      evaluate_elch_boundary_kinetics_point(ele, elemat1, elevec1, ephinp, ehist, timefac, cond,
+      evaluate_elch_boundary_kinetics_point(ele, elemat1, elevec1, ephinp, ehist, timefac, *cond,
           nume, *stoich, kinetics, pot0, frt, scalar);
     }
 
@@ -475,26 +474,26 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::evaluate_elch_bound
     Core::LinAlg::SerialDenseVector& erhs,                     ///< element right-hand side vector
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephinp,  ///< state variables at element nodes
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>&
-        ehist,                                          ///< history variables at element nodes
-    double timefac,                                     ///< time factor
-    std::shared_ptr<Core::Conditions::Condition> cond,  ///< electrode kinetics boundary condition
-    const int nume,                                     ///< number of transferred electrons
-    const std::vector<int> stoich,                      ///< stoichiometry of the reaction
-    const int kinetics,                                 ///< desired electrode kinetics model
-    const double pot0,                                  ///< electrode potential on metal side
-    const double frt,                                   ///< factor F/RT
+        ehist,                                ///< history variables at element nodes
+    double timefac,                           ///< time factor
+    const Core::Conditions::Condition& cond,  ///< electrode kinetics boundary condition
+    const int nume,                           ///< number of transferred electrons
+    const std::vector<int> stoich,            ///< stoichiometry of the reaction
+    const int kinetics,                       ///< desired electrode kinetics model
+    const double pot0,                        ///< electrode potential on metal side
+    const double frt,                         ///< factor F/RT
     const double scalar  ///< scaling factor for element matrix and right-hand side contributions
 )
 {
   // get boundary porosity from condition if available, or set equal to volume porosity otherwise
-  double epsilon = cond->parameters().get<double>("EPSILON");
+  double epsilon = cond.parameters().get<double>("EPSILON");
   if (epsilon == -1)
     epsilon = scalar;
   else if (epsilon <= 0 or epsilon > 1)
     FOUR_C_THROW("Boundary porosity has to be between 0 and 1, or -1 by default!");
 
   // extract nodal cloud of current condition
-  const std::vector<int>* nodeids = cond->get_nodes();
+  const std::vector<int>* nodeids = cond.get_nodes();
 
   // safety checks
   if (!nodeids)
@@ -549,7 +548,7 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::evaluate_elch_bound
 
     // call utility class for evaluation of electrode boundary kinetics point condition
     utils_->evaluate_elch_kinetics_at_integration_point(ele, emat, erhs, ephinp, ehist, timefac, 1.,
-        my::funct_, *cond, nume, stoich, valence_k, kinetics, pot0, frt, fns, epsilon, k);
+        my::funct_, cond, nume, stoich, valence_k, kinetics, pot0, frt, fns, epsilon, k);
   }  // loop over all scalars
 }  // Discret::Elements::ScaTraEleCalcElch<distype>::evaluate_elch_boundary_kinetics_point
 
@@ -562,7 +561,7 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::evaluate_electrode_
     const Core::Elements::Element* ele,                        ///< current element
     Core::LinAlg::SerialDenseVector& scalars,                  ///< scalars to be integrated
     Teuchos::ParameterList& params,                            ///< parameter list
-    Core::Conditions::Condition& cond,                         ///< condition
+    const Core::Conditions::Condition& cond,                   ///< condition
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephinp,  ///< state variables at element nodes
     const std::vector<Core::LinAlg::Matrix<nen_, 1>>& ephidtnp,  ///< nodal time derivative vector
     const int kinetics,             ///< desired electrode kinetics model

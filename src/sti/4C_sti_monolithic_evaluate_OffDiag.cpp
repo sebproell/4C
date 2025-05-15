@@ -657,7 +657,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
       nullptr, Inpar::S2I::side_undefined, 0, 1);
 
   // extract scatra-scatra interface kinetics conditions
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   scatra_field()->discretization()->get_condition("S2IKinetics", conditions);
 
   // loop over all conditions
@@ -668,7 +668,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
         Inpar::S2I::side_slave)
     {
       // add condition to parameter list
-      condparams.set<Core::Conditions::Condition*>("condition", condition);
+      condparams.set<const Core::Conditions::Condition*>("condition", condition);
 
       // collect condition specific data and store to scatra boundary parameter class
       meshtying_strategy_scatra()->set_condition_specific_scatra_parameters(*condition);
@@ -805,7 +805,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
       Inpar::S2I::side_undefined, 0, 1);
 
   // extract scatra-scatra interface kinetics conditions
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   thermo_field()->discretization()->get_condition("S2IKinetics", conditions);
 
   // loop over all conditions
@@ -816,7 +816,7 @@ void STI::ScatraThermoOffDiagCouplingMortarStandard::
         Inpar::S2I::side_slave)
     {
       // add condition to parameter list
-      condparams.set<Core::Conditions::Condition*>("condition", condition);
+      condparams.set<const Core::Conditions::Condition*>("condition", condition);
 
       // collect condition specific data and store to scatra boundary parameter class
       meshtying_strategy_thermo()->set_condition_specific_scatra_parameters(*condition);

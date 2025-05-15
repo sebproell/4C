@@ -33,15 +33,19 @@ XFEM::XfaCouplingManager::XfaCouplingManager(std::shared_ptr<FLD::XFluid> xfluid
 
   if (structure_ != nullptr)
   {
-    if (ale_->discretization()->get_condition("StructAleCoupling") != nullptr &&
-        structure_->discretization()->get_condition("StructAleCoupling") != nullptr)
+    if (ale_->discretization()->has_condition("StructAleCoupling") &&
+        structure_->discretization()->has_condition("StructAleCoupling"))
     {
-      if (ale_->discretization()->get_condition("StructAleCoupling")->get_nodes()->size() !=
-          structure_->discretization()->get_condition("StructAleCoupling")->get_nodes()->size())
+      std::vector<const Core::Conditions::Condition*> conds;
+      ale_->discretization()->get_condition("StructAleCoupling", conds);
+      const int num_nodes_ale = conds.front()->get_nodes()->size();
+      structure_->discretization()->get_condition("StructAleCoupling", conds);
+      const int num_nodes_struct = conds.front()->get_nodes()->size();
+
+      if (num_nodes_ale != num_nodes_struct)
       {
         FOUR_C_THROW("XFACoupling_Manager: For StructAleCoupling NumNodes not equal! ({} != {})",
-            ale_->discretization()->get_condition("StructAleCoupling")->get_nodes()->size(),
-            structure_->discretization()->get_condition("StructAleCoupling")->get_nodes()->size());
+            num_nodes_ale, num_nodes_struct);
       }
 
       std::cout << "|== XFACoupling_Manager: Setup of Ale Structure Coupling! ==|" << std::endl;

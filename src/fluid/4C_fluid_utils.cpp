@@ -550,7 +550,7 @@ void FLD::Utils::lift_drag(const std::shared_ptr<const Core::FE::Discretization>
   bool axis_for_moment = false;
 
   // allocate and initialise lift_drag conditions
-  std::vector<Core::Conditions::Condition*> ldconds;
+  std::vector<const Core::Conditions::Condition*> ldconds;
   dis->get_condition("LIFTDRAG", ldconds);
 
   // there is an L&D condition if it has a size
@@ -825,11 +825,11 @@ std::map<int, double> FLD::Utils::compute_flow_rates(Core::FE::Discretization& d
   std::map<int, double> volumeflowrateperline;
 
   // get condition
-  std::vector<Core::Conditions::Condition*> conds;
+  std::vector<const Core::Conditions::Condition*> conds;
   dis.get_condition(condstring, conds);
 
   // each condition is on every proc , but might not have condition elements there
-  for (std::vector<Core::Conditions::Condition*>::const_iterator conditer = conds.begin();
+  for (std::vector<const Core::Conditions::Condition*>::const_iterator conditer = conds.begin();
       conditer != conds.end(); ++conditer)
   {
     const Core::Conditions::Condition* cond = *conditer;

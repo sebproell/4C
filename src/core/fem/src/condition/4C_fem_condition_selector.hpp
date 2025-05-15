@@ -95,14 +95,14 @@ namespace Core::Conditions
     /**
      * Selects the given @p conditions.
      */
-    Selector(const std::vector<Condition*>& conditions);
+    Selector(const std::vector<const Condition*>& conditions);
 
    private:
     /// The name of the condition to extract.
     std::string condition_name_;
 
     /// The conditions to extract.
-    std::vector<Condition*> conditions_;
+    std::vector<const Condition*> conditions_;
 
     /// The first dof position of the node to select.
     int start_pos_{0};

@@ -2687,12 +2687,12 @@ void FLD::XFluid::linear_solve() { FOUR_C_THROW("linear_solve not implemented fo
 void FLD::XFluid::init_krylov_space_projection()
 {
   // get condition "KrylovSpaceProjection" from discretization
-  std::vector<Core::Conditions::Condition*> KSPcond;
+  std::vector<const Core::Conditions::Condition*> KSPcond;
   discret_->get_condition("KrylovSpaceProjection", KSPcond);
   int numcond = KSPcond.size();
   int numfluid = 0;
 
-  Core::Conditions::Condition* kspcond = nullptr;
+  const Core::Conditions::Condition* kspcond = nullptr;
   // check if for fluid Krylov projection is required
   for (int icond = 0; icond < numcond; icond++)
   {
@@ -2730,7 +2730,7 @@ void FLD::XFluid::init_krylov_space_projection()
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//
-void FLD::XFluid::setup_krylov_space_projection(Core::Conditions::Condition* kspcond)
+void FLD::XFluid::setup_krylov_space_projection(const Core::Conditions::Condition* kspcond)
 {
   /*
    * Krylov space projection in the XFEM

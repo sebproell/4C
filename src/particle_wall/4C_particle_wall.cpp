@@ -546,14 +546,14 @@ void PARTICLEWALL::WallHandlerDiscretCondition::init_wall_discretization()
   if (not structurediscretization->filled()) structurediscretization->fill_complete();
 
   // get all particle wall conditions
-  std::vector<Core::Conditions::Condition*> conditions;
+  std::vector<const Core::Conditions::Condition*> conditions;
   structurediscretization->get_condition("ParticleWall", conditions);
 
   // iterate over particle wall conditions
   for (int i = 0; i < static_cast<int>(conditions.size()); ++i)
   {
     // set current particle wall condition
-    std::vector<Core::Conditions::Condition*> currcondition(0);
+    std::vector<const Core::Conditions::Condition*> currcondition;
     currcondition.push_back(conditions[i]);
 
     // get material id for current particle wall condition

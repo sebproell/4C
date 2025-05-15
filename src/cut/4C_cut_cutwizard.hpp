@@ -321,7 +321,7 @@ namespace Cut
 
     //! add elements from the background discretization for embedded mesh applications,
     void add_background_elements_embeddedmesh(
-        std::vector<Core::Conditions::Condition*>& embeddedmesh_cond);
+        std::vector<const Core::Conditions::Condition*>& embeddedmesh_cond);
 
     //! Add all cutting side elements of given cutter discretization with given displacement field
     //! to the intersection class

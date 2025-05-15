@@ -591,7 +591,7 @@ void ScaTra::ScaTraTimIntElchSCL::setup_coupling()
   const auto& comm = microdis->get_comm();
 
   // get coupling conditions
-  std::vector<Core::Conditions::Condition*> macro_coupling_conditions;
+  std::vector<const Core::Conditions::Condition*> macro_coupling_conditions;
   discretization()->get_condition("S2ISCLCoupling", macro_coupling_conditions);
 
   // get all slave and master nodes on this proc from macro coupling condition
@@ -671,7 +671,7 @@ void ScaTra::ScaTraTimIntElchSCL::setup_coupling()
       Core::Communication::all_reduce(my_macro_slave_node_master_node_gids, comm);
 
   // we use Dirchlet conditions on micro side to achieve coupling by adapting the DBC value
-  std::vector<Core::Conditions::Condition*> micro_coupling_conditions;
+  std::vector<const Core::Conditions::Condition*> micro_coupling_conditions;
   microdis->get_condition("Dirichlet", micro_coupling_conditions);
 
   if (micro_coupling_conditions.size() != 2) FOUR_C_THROW("only 2 DBCs allowed on micro dis");

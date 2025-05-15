@@ -116,9 +116,6 @@ namespace Core::Conditions
       }
     }
 
-
-    //! @name method that returns a pointer to the vector of the conditions
-    std::vector<Core::Conditions::Condition*>* return_surface_pb_cs() { return &mysurfpbcs_; }
     //@}
 
 
@@ -317,7 +314,7 @@ namespace Core::Conditions
     int numpbcpairs_;
 
     //!\brief vector of periodic surface boundary conditions
-    std::vector<Core::Conditions::Condition*> mysurfpbcs_;
+    std::vector<const Core::Conditions::Condition*> mysurfpbcs_;
 
     //!\brief map connecting master to slave nodes owned by this proc
     //       master node -> list of his slave node(s)

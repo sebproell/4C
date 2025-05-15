@@ -21,10 +21,10 @@ FOUR_C_NAMESPACE_OPEN
  *
  */
 BeamInteraction::BeamToBeamContactCondition::BeamToBeamContactCondition(
-    const std::shared_ptr<const Core::Conditions::Condition>& condition_line_1,
-    const std::shared_ptr<const Core::Conditions::Condition>& condition_line_2)
+    const Core::Conditions::Condition& condition_line_1,
+    const Core::Conditions::Condition& condition_line_2)
     : BeamInteractionConditionBase(condition_line_1),
-      condition_other_(condition_line_2),
+      condition_other_(&condition_line_2),
       condition_contact_pairs_(),
       other_line_ids_()
 {

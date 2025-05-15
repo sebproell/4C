@@ -199,7 +199,7 @@ void Constraints::MPConstraint3Penalty::evaluate(Teuchos::ParameterList& params,
 std::map<int, std::shared_ptr<Core::FE::Discretization>>
 Constraints::MPConstraint3Penalty::create_discretization_from_condition(
     std::shared_ptr<Core::FE::Discretization> actdisc,
-    std::vector<Core::Conditions::Condition*> constrcondvec, const std::string& discret_name,
+    std::span<const Core::Conditions::Condition*> constrcondvec, const std::string& discret_name,
     const std::string& element_name, int& startID)
 {
   // start with empty map
@@ -218,7 +218,7 @@ Constraints::MPConstraint3Penalty::create_discretization_from_condition(
   // Loop all conditions in constrcondvec and build discretization for any condition ID
 
   int index = 0;  // counter for the index of condition in vector
-  std::vector<Core::Conditions::Condition*>::iterator conditer;
+  std::span<const Core::Conditions::Condition*>::iterator conditer;
   for (conditer = constrcondvec.begin(); conditer != constrcondvec.end(); conditer++)
   {
     // initialize a new discretization
@@ -369,9 +369,8 @@ void Constraints::MPConstraint3Penalty::evaluate_constraint(
     Core::Elements::Element* actele = disc->l_col_element(i);
     int eid = actele->id();
     int condID = eletocond_id_.find(eid)->second;
-    Core::Conditions::Condition* cond = constrcond_[eletocondvecindex_.find(eid)->second];
-    params.set<std::shared_ptr<Core::Conditions::Condition>>(
-        "condition", Core::Utils::shared_ptr_from_ref(*cond));
+    const Core::Conditions::Condition* cond = constrcond_[eletocondvecindex_.find(eid)->second];
+    params.set<const Core::Conditions::Condition*>("condition", cond);
 
     // computation only if time is larger or equal than initialization time for constraint
     if (inittimes_.find(condID)->second <= time)
@@ -459,9 +458,8 @@ void Constraints::MPConstraint3Penalty::evaluate_error(Core::FE::Discretization&
     Core::Elements::Element* actele = disc.l_col_element(i);
     int eid = actele->id();
     int condID = eletocond_id_.find(eid)->second;
-    Core::Conditions::Condition* cond = constrcond_[eletocondvecindex_.find(eid)->second];
-    params.set<std::shared_ptr<Core::Conditions::Condition>>(
-        "condition", Core::Utils::shared_ptr_from_ref(*cond));
+    const Core::Conditions::Condition* cond = constrcond_[eletocondvecindex_.find(eid)->second];
+    params.set<const Core::Conditions::Condition*>("condition", cond);
 
     // get element location vector, dirichlet flags and ownerships
     std::vector<int> lm;

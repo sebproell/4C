@@ -304,7 +304,7 @@ namespace PoroElast
   class NoPenetrationConditionHandle
   {
    public:
-    explicit NoPenetrationConditionHandle(std::vector<Core::Conditions::Condition*> nopencond)
+    explicit NoPenetrationConditionHandle(std::vector<const Core::Conditions::Condition*> nopencond)
         : cond_ids_(nullptr),
           cond_dofs_(nullptr),
           cond_rhs_(nullptr),
@@ -368,7 +368,7 @@ namespace PoroElast
     std::shared_ptr<Core::LinAlg::Vector<double>> cond_rhs_;
 
     //! vector containing no penetration - conditions
-    std::vector<Core::Conditions::Condition*> nopencond_;
+    std::vector<const Core::Conditions::Condition*> nopencond_;
 
     //! Extractor used for no penetration condition
     std::shared_ptr<Core::LinAlg::MapExtractor> nopenetration_;

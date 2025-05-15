@@ -255,7 +255,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
   {
     std::shared_ptr<Core::FE::Discretization> disscatra =
         (scatravec_[i])->scatra_field()->discretization();
-    std::vector<Core::Conditions::Condition*> coupcond;
+    std::vector<const Core::Conditions::Condition*> coupcond;
     disscatra->get_condition("ScaTraCoupling", coupcond);
 
     for (auto& iter : coupcond)
@@ -289,7 +289,7 @@ void FS3I::FS3IBase::check_f_s3_i_inputs()
 
         if ((bool)params->at(3))  // if we have WSS depended interface permeabiliy
         {
-          std::vector<Core::Conditions::Condition*> FSCCond;
+          std::vector<const Core::Conditions::Condition*> FSCCond;
           problem->get_dis("fluid")->get_condition("FluidStressCalc", FSCCond);
 
           if (FSCCond.size() == 0)

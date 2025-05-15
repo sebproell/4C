@@ -90,10 +90,8 @@ ALE::Ale::Ale(std::shared_ptr<Core::FE::Discretization> actdis,
   setup_dbc_map_ex();
 
   // ensure that the ALE string was removed from conditions
-  {
-    Core::Conditions::Condition* cond = discret_->get_condition("ALEDirichlet");
-    if (cond) FOUR_C_THROW("Found a ALE Dirichlet condition. Remove ALE string!");
-  }
+  FOUR_C_ASSERT_ALWAYS(!discret_->has_condition("ALEDirichlet"),
+      "Found a ALE Dirichlet condition. Remove ALE string!");
 
   if (msht_ == ALE::meshsliding)
   {
@@ -110,7 +108,7 @@ ALE::Ale::Ale(std::shared_ptr<Core::FE::Discretization> actdis,
   // Create LocSysManager, if needed (used for LocSys-Dirichlet BCs)
   // ---------------------------------------------------------------------
   {
-    std::vector<Core::Conditions::Condition*> locsysconditions(0);
+    std::vector<const Core::Conditions::Condition*> locsysconditions;
     discret_->get_condition("Locsys", locsysconditions);
     if (locsysconditions.size())
     {

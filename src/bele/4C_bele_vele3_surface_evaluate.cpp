@@ -32,7 +32,7 @@ int Discret::Elements::Vele3Surface::evaluate(Teuchos::ParameterList& params,
  |  The function is just a dummy.                                       |
  *----------------------------------------------------------------------*/
 int Discret::Elements::Vele3Surface::evaluate_neumann(Teuchos::ParameterList& params,
-    Core::FE::Discretization& discretization, Core::Conditions::Condition& condition,
+    Core::FE::Discretization& discretization, const Core::Conditions::Condition& condition,
     std::vector<int>& lm, Core::LinAlg::SerialDenseVector& elevec1,
     Core::LinAlg::SerialDenseMatrix* elemat1)
 {

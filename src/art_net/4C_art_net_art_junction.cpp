@@ -88,7 +88,7 @@ Arteries::Utils::ArtJunctionWrapper::ArtJunctionWrapper(
     // (1) Get the junction boundary conditions
     //----------------------------------------------------------------------
 
-    std::vector<Core::Conditions::Condition*> myConditions;
+    std::vector<const Core::Conditions::Condition*> myConditions;
     discret_->get_condition("ArtJunctionCond", myConditions);
     int numofcond = myConditions.size();
 
@@ -133,7 +133,7 @@ Arteries::Utils::ArtJunctionWrapper::ArtJunctionWrapper(
       // (3) Group all of the conditions that belong to the same junction
       //----------------------------------------------------------------------
 
-      Core::Conditions::Condition* cond_i;
+      const Core::Conditions::Condition* cond_i;
 
       // first, sort the condition list according to there IDs
       // In this case the bubble sort algorithm is used
@@ -157,8 +157,8 @@ Arteries::Utils::ArtJunctionWrapper::ArtJunctionWrapper(
       }
 
       // second, group all the similar conditions in one vector
-      std::vector<std::vector<Core::Conditions::Condition*>> SortedConds;
-      std::vector<Core::Conditions::Condition*> grouped_cond;
+      std::vector<std::vector<const Core::Conditions::Condition*>> SortedConds;
+      std::vector<const Core::Conditions::Condition*> grouped_cond;
 
       std::vector<std::vector<int>> SortedIOarts;
       std::vector<int> grouped_IO;
@@ -268,7 +268,7 @@ int Arteries::Utils::ArtJunctionWrapper::solve(Teuchos::ParameterList& params)
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//
 //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>//
 Arteries::Utils::ArtJunctionBc::ArtJunctionBc(std::shared_ptr<Core::FE::Discretization> actdis,
-    Core::IO::DiscretizationWriter& output, std::vector<Core::Conditions::Condition*> conds,
+    Core::IO::DiscretizationWriter& output, std::vector<const Core::Conditions::Condition*> conds,
     std::vector<int> IOart_flag, double dta, int condid, int numcond)
     : condid_(condid), discret_(actdis), output_(output), io_art_flag_(IOart_flag)
 {

@@ -233,7 +233,7 @@ namespace BeamInteraction
       extend_ghosting_for_filament_bspot_setup(relevantfilaments, *discret);
 
       // get pointers to all filament number conditions set
-      std::vector<Core::Conditions::Condition*> filamentconditions(0);
+      std::vector<const Core::Conditions::Condition*> filamentconditions;
       discret->get_condition("BeamLineFilamentCondition", filamentconditions);
 
       // compute number of linker types

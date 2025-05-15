@@ -67,7 +67,7 @@ void ScaTra::MeshtyingStrategyS2IElch::compute_time_step_size(double& dt)
     condparams.set<double>("etagrowthmax", -std::numeric_limits<double>::infinity());
 
     // extract boundary conditions for scatra-scatra interface layer growth
-    std::vector<Core::Conditions::Condition*> conditions;
+    std::vector<const Core::Conditions::Condition*> conditions;
     scatratimint_->discretization()->get_condition("S2IKineticsGrowth", conditions);
 
     // collect condition specific data and store to scatra boundary parameter class
@@ -379,7 +379,7 @@ void ScaTra::MeshtyingStrategyS2IElch::update() const
   if (intlayergrowth_evaluation_ == Inpar::S2I::growth_evaluation_semi_implicit)
   {
     // extract boundary conditions for scatra-scatra interface layer growth
-    std::vector<Core::Conditions::Condition*> conditions;
+    std::vector<const Core::Conditions::Condition*> conditions;
     scatratimint_->discretization()->get_condition("S2IKineticsGrowth", conditions);
 
     // loop over all conditions
@@ -592,7 +592,8 @@ void ScaTra::MortarCellCalcElch<distype_s, distype_m>::evaluate_condition(
     FOUR_C_THROW("Invalid closing equation for electric potential!");
 
   // extract condition from parameter list
-  Core::Conditions::Condition* condition = params.get<Core::Conditions::Condition*>("condition");
+  const Core::Conditions::Condition* condition =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (condition == nullptr)
     FOUR_C_THROW("Cannot access scatra-scatra interface coupling condition!");
 
@@ -643,8 +644,8 @@ void ScaTra::MortarCellCalcElch<distype_s, distype_m>::evaluate_condition(
  *---------------------------------------------------------------------------*/
 template <Core::FE::CellType distype_s, Core::FE::CellType distype_m>
 void ScaTra::MortarCellCalcElch<distype_s, distype_m>::evaluate_condition_nts(
-    Core::Conditions::Condition& condition, const Mortar::Node& slavenode, const double& lumpedarea,
-    Mortar::Element& slaveelement, Mortar::Element& masterelement,
+    const Core::Conditions::Condition& condition, const Mortar::Node& slavenode,
+    const double& lumpedarea, Mortar::Element& slaveelement, Mortar::Element& masterelement,
     const std::vector<Core::LinAlg::Matrix<nen_slave_, 1>>& ephinp_slave,
     const std::vector<Core::LinAlg::Matrix<nen_master_, 1>>& ephinp_master,
     Core::LinAlg::SerialDenseMatrix& k_ss, Core::LinAlg::SerialDenseMatrix& k_sm,
@@ -662,7 +663,7 @@ void ScaTra::MortarCellCalcElch<distype_s, distype_m>::evaluate_condition_nts(
   std::shared_ptr<const Mat::Electrode> matelectrode =
       std::dynamic_pointer_cast<const Mat::Electrode>(
           std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-              condition.geometry()[slaveelement.id()])
+              condition.geometry().at(slaveelement.id()))
               ->parent_element()
               ->material());
   if (matelectrode == nullptr)
@@ -827,7 +828,8 @@ void ScaTra::MortarCellCalcElchSTIThermo<distype_s, distype_m>::evaluate_conditi
     FOUR_C_THROW("Invalid closing equation for electric potential!");
 
   // extract condition from parameter list
-  Core::Conditions::Condition* s2icondition = params.get<Core::Conditions::Condition*>("condition");
+  const Core::Conditions::Condition* s2icondition =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (s2icondition == nullptr)
     FOUR_C_THROW("Cannot access scatra-scatra interface coupling condition!");
 
@@ -835,7 +837,7 @@ void ScaTra::MortarCellCalcElchSTIThermo<distype_s, distype_m>::evaluate_conditi
   std::shared_ptr<const Mat::Electrode> matelectrode =
       std::dynamic_pointer_cast<const Mat::Electrode>(
           std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-              s2icondition->geometry()[slaveelement.id()])
+              s2icondition->geometry().at(slaveelement.id()))
               ->parent_element()
               ->material());
   if (matelectrode == nullptr)
@@ -1047,20 +1049,21 @@ void ScaTra::MortarCellCalcSTIElch<distype_s, distype_m>::evaluate_condition(
     FOUR_C_THROW("Invalid number of degrees of freedom per node!");
 
   // extract condition from parameter list
-  Core::Conditions::Condition* s2icondition = params.get<Core::Conditions::Condition*>("condition");
+  const Core::Conditions::Condition* s2icondition =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (s2icondition == nullptr)
     FOUR_C_THROW("Cannot access scatra-scatra interface coupling condition!");
 
   // access primary and secondary materials of slave element
   const std::shared_ptr<const Mat::Soret> matsoret = std::dynamic_pointer_cast<const Mat::Soret>(
       std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-          s2icondition->geometry()[slaveelement.id()])
+          s2icondition->geometry().at(slaveelement.id()))
           ->parent_element()
           ->material());
   const std::shared_ptr<const Mat::Electrode> matelectrode =
       std::dynamic_pointer_cast<const Mat::Electrode>(
           std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-              s2icondition->geometry()[slaveelement.id()])
+              s2icondition->geometry().at(slaveelement.id()))
               ->parent_element()
               ->material(1));
   if (matsoret == nullptr or matelectrode == nullptr)
@@ -1126,20 +1129,21 @@ void ScaTra::MortarCellCalcSTIElch<distype_s, distype_m>::evaluate_condition_od(
     FOUR_C_THROW("Invalid number of degrees of freedom per node!");
 
   // extract condition from parameter list
-  Core::Conditions::Condition* s2icondition = params.get<Core::Conditions::Condition*>("condition");
+  const Core::Conditions::Condition* s2icondition =
+      params.get<const Core::Conditions::Condition*>("condition");
   if (s2icondition == nullptr)
     FOUR_C_THROW("Cannot access scatra-scatra interface coupling condition!");
 
   // access primary and secondary materials of parent element
   std::shared_ptr<const Mat::Soret> matsoret = std::dynamic_pointer_cast<const Mat::Soret>(
       std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-          s2icondition->geometry()[slaveelement.id()])
+          s2icondition->geometry().at(slaveelement.id()))
           ->parent_element()
           ->material());
   std::shared_ptr<const Mat::Electrode> matelectrode =
       std::dynamic_pointer_cast<const Mat::Electrode>(
           std::dynamic_pointer_cast<Core::Elements::FaceElement>(
-              s2icondition->geometry()[slaveelement.id()])
+              s2icondition->geometry().at(slaveelement.id()))
               ->parent_element()
               ->material(1));
   if (matsoret == nullptr or matelectrode == nullptr)
@@ -1213,7 +1217,7 @@ ScaTra::MeshtyingStrategyS2IElchSCL::MeshtyingStrategyS2IElchSCL(
 void ScaTra::MeshtyingStrategyS2IElchSCL::setup_meshtying()
 {
   // extract scatra-scatra coupling conditions from discretization
-  std::vector<Core::Conditions::Condition*> s2imeshtying_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> s2imeshtying_conditions;
   scatratimint_->discretization()->get_condition("S2IMeshtying", s2imeshtying_conditions);
 
   std::set<int> islavenodegidset;
