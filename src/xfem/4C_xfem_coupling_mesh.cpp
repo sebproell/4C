@@ -640,12 +640,10 @@ bool XFEM::MeshCouplingBC::has_moving_interface()
   // get the first local col(!) node
   if (cutter_dis_->num_my_col_nodes() == 0) FOUR_C_THROW("no col node on proc {}", myrank_);
 
-  Core::Nodes::Node* lnode = cutter_dis_->l_col_node(0);
+  std::vector<const Core::Conditions::Condition*> mycond;
+  cutter_dis_->get_condition("XFEMSurfDisplacement", mycond);
 
-  std::vector<Core::Conditions::Condition*> mycond;
-  lnode->get_condition("XFEMSurfDisplacement", mycond);
-
-  Core::Conditions::Condition* cond = mycond[0];
+  const Core::Conditions::Condition* cond = mycond[0];
 
   const std::string& evaltype = cond->parameters().get<std::string>("EVALTYPE");
 
