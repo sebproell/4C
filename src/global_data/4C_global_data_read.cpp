@@ -1449,7 +1449,7 @@ namespace
         const auto& node_sets_from_mesh = exodus_mesh->get_node_sets();
         for (const auto& [id, node_set] : node_sets_from_mesh)
         {
-          const auto& set = node_set.get_node_set();
+          const auto& set = node_set.node_ids;
           node_sets[id] = std::vector<int>(set.begin(), set.end());
         }
       }
@@ -1477,7 +1477,7 @@ namespace
         for (const auto& [id, eb] : element_blocks)
         {
           std::set<int> nodes;
-          for (const auto& connectivity : eb.get_ele_conn() | std::views::values)
+          for (const auto& connectivity : eb.elements | std::views::values)
           {
             nodes.insert(connectivity.begin(), connectivity.end());
           }
