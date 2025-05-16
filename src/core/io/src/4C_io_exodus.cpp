@@ -16,11 +16,14 @@
 
 #include <fstream>
 #include <ranges>
+#include <set>
 
 FOUR_C_NAMESPACE_OPEN
 
 namespace
 {
+  [[maybe_unused]] constexpr std::size_t exodus_max_str_length = MAX_STR_LENGTH;
+  [[maybe_unused]] constexpr std::size_t exodus_max_line_length = MAX_LINE_LENGTH;
 
   Core::FE::CellType cell_type_from_exodus_string(const std::string& shape_exodus)
   {
@@ -104,11 +107,9 @@ namespace
   }
 }  // namespace
 
-/*----------------------------------------------------------------------*
- |  ctor (public)                                              maf 12/07|
- *----------------------------------------------------------------------*/
-Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters mesh_data)
-    : mesh_data_(mesh_data)
+
+Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters mesh_parameters)
+    : mesh_parameters_(mesh_parameters)
 {
   int error;
   int CPU_word_size, IO_word_size;
@@ -125,11 +126,9 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
   // read database parameters
   int num_elem_blk, num_node_sets, num_side_sets, num_nodes;
   char title[MAX_LINE_LENGTH + 1];
-  error = ex_get_init(exo_handle, title, &four_c_dim_, &num_nodes, &num_elem_, &num_elem_blk,
+  error = ex_get_init(exo_handle, title, &spatial_dimension_, &num_nodes, &num_elem_, &num_elem_blk,
       &num_node_sets, &num_side_sets);
   title_ = std::string(title);
-
-  num_dim_ = 3;
 
   // get nodal coordinates
   {
@@ -140,11 +139,11 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
     if (error != 0) FOUR_C_THROW("exo error returned");
 
     FOUR_C_ASSERT_ALWAYS(
-        mesh_data_.node_start_id >= 0, "Node start id must be greater than or equal to 0");
+        mesh_parameters_.node_start_id >= 0, "Node start id must be greater than or equal to 0");
 
     for (int i = 0; i < num_nodes; ++i)
     {
-      nodes_[i + mesh_data_.node_start_id] = {x[i], y[i], z[i]};
+      nodes_[i + mesh_parameters_.node_start_id] = {x[i], y[i], z[i]};
     }
   }
 
@@ -159,7 +158,7 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
     for (int i = 0; i < num_elem_blk; ++i)
     {
       // Read Element Blocks into Map
-      char mychar[MAX_STR_LENGTH + 1];
+      char mychar[exodus_max_str_length + 1];
       int num_el_in_blk, num_nod_per_elem, num_attr;
       error = ex_get_block(exo_handle, EX_ELEM_BLOCK, ebids[i], mychar, &num_el_in_blk,
           &num_nod_per_elem, nullptr, nullptr, &num_attr);
@@ -173,14 +172,14 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
       // prefer std::string to store name
       std::string blockname(mychar);
 
-      // get element connectivity
+      // get element elements
       std::vector<int> allconn(num_nod_per_elem * num_el_in_blk);
       error = ex_get_conn(exo_handle, EX_ELEM_BLOCK, ebids[i], allconn.data(), nullptr, nullptr);
       if (error != 0) FOUR_C_THROW("exo error returned");
       std::map<int, std::vector<int>> eleconn;
 
       // Compare the desired start ID to Exodus' one-based indexing to get the offset.
-      const int node_offset = mesh_data_.node_start_id - 1;
+      const int node_offset = mesh_parameters_.node_start_id - 1;
       for (int j = 0; j < num_el_in_blk; ++j)
       {
         std::vector<int>& actconn = eleconn[j];
@@ -192,8 +191,11 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
         reorder_nodes_exodus_to_four_c(actconn, cell_type_from_exodus_string(ele_type));
       }
 
-      element_blocks_.emplace(
-          ebids[i], ElementBlock{cell_type_from_exodus_string(ele_type), eleconn, blockname});
+      element_blocks_.emplace(ebids[i], ElementBlock{
+                                            .cell_type = cell_type_from_exodus_string(ele_type),
+                                            .elements = eleconn,
+                                            .name = blockname,
+                                        });
     }
   }  // end of element section
 
@@ -209,7 +211,7 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
           ex_get_set_param(exo_handle, EX_NODE_SET, npropID[i], &num_nodes_in_set, &num_df_in_set);
 
       // get NodeSet name
-      char mychar[MAX_STR_LENGTH + 1];
+      char mychar[exodus_max_str_length + 1];
       error = ex_get_name(exo_handle, EX_NODE_SET, npropID[i], mychar);
       // prefer std::string to store name
       std::string nodesetname(mychar);
@@ -224,10 +226,11 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
         FOUR_C_THROW("error reading node set");
       std::set<int> nodes_in_set;
       // Compare the desired start ID to Exodus' one-based indexing to get the offset.
-      const int node_offset = mesh_data_.node_start_id - 1;
+      const int node_offset = mesh_parameters_.node_start_id - 1;
       for (int j = 0; j < num_nodes_in_set; ++j)
         nodes_in_set.insert(node_set_node_list[j] + node_offset);
-      NodeSet actNodeSet(nodes_in_set, nodesetname);
+      std::vector<int> nodes_in_set_vec(nodes_in_set.begin(), nodes_in_set.end());
+      NodeSet actNodeSet{.node_ids = nodes_in_set_vec, .name = nodesetname};
 
       node_sets_.insert(std::pair<int, NodeSet>(npropID[i], actNodeSet));
     }
@@ -242,7 +245,7 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
     for (int i = 0; i < num_side_sets; ++i)
     {
       // get SideSet name
-      char mychar[MAX_STR_LENGTH + 1];
+      char mychar[exodus_max_str_length + 1];
       error = ex_get_name(exo_handle, EX_SIDE_SET, spropID[i], mychar);
       // prefer std::string to store name
       std::string sidesetname(mychar);
@@ -288,8 +291,8 @@ void Core::IO::Exodus::Mesh::print(std::ostream& os, bool verbose) const
   os << get_num_nodes() << " Nodes, ";
   os << num_elem_ << " Elements, organized in " << std::endl;
   os << get_num_element_blocks() << " ElementBlocks, ";
-  os << get_num_node_sets() << " NodeSets, ";
-  os << get_num_side_sets() << " SideSets ";
+  os << node_sets_.size() << " NodeSets, ";
+  os << side_sets_.size() << " SideSets ";
   os << std::endl << std::endl;
   if (verbose)
   {
@@ -338,7 +341,7 @@ Core::IO::Exodus::NodeSet Core::IO::Exodus::Mesh::get_node_set(const int id) con
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Core::IO::Exodus::SideSet Core::IO::Exodus::Mesh::get_side_set(const int id) const
+const Core::IO::Exodus::SideSet& Core::IO::Exodus::Mesh::get_side_set(const int id) const
 {
   if (side_sets_.find(id) == side_sets_.end()) FOUR_C_THROW("SideSet {} not found.", id);
 
@@ -348,66 +351,23 @@ Core::IO::Exodus::SideSet Core::IO::Exodus::Mesh::get_side_set(const int id) con
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::vector<double> Core::IO::Exodus::Mesh::get_node(const int NodeID) const
+const std::vector<double>& Core::IO::Exodus::Mesh::get_node(const int node_id) const
 {
-  return nodes_.at(NodeID);
+  return nodes_.at(node_id);
 }
 
 
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void Core::IO::Exodus::Mesh::set_node(const int NodeID, const std::vector<double> coord)
-{
-  nodes_[NodeID] = coord;
-}
 
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void Core::IO::Exodus::Mesh::set_nsd(const int nsd)
-{
-  if (nsd != 2 && nsd != 3) return;
-
-  four_c_dim_ = nsd;
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-Core::IO::Exodus::ElementBlock::ElementBlock(
-    FE::CellType cell_type, std::map<int, std::vector<int>> eleconn, std::string name)
-    : cell_type_(cell_type), eleconn_(std::move(eleconn)), name_(name.c_str())
-{
-  // do a sanity check
-  for (const auto& elem : eleconn_ | std::views::values)
-  {
-    // check if the number of nodes in the element block is correct
-    if (static_cast<int>(elem.size()) != Core::FE::get_number_of_element_nodes(cell_type))
-      FOUR_C_THROW("number of read nodes does not fit the distype");
-  }
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-const std::vector<int>& Core::IO::Exodus::ElementBlock::get_ele_nodes(int i) const
-{
-  return eleconn_.at(i);
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 void Core::IO::Exodus::ElementBlock::print(std::ostream& os, bool verbose) const
 {
   using EnumTools::operator<<;
 
-  os << "Element Block, named: " << name_ << std::endl
-     << "of Shape: " << cell_type_ << std::endl
-     << "has " << get_num_ele() << " Elements" << std::endl;
+  os << "Element Block, named: " << name << std::endl
+     << "of Shape: " << cell_type << std::endl
+     << "has " << elements.size() << " Elements" << std::endl;
   if (verbose)
   {
-    for (const auto& [id, conn] : eleconn_)
+    for (const auto& [id, conn] : elements)
     {
       os << "Ele " << id << ": ";
       for (const int i : conn)
@@ -419,25 +379,19 @@ void Core::IO::Exodus::ElementBlock::print(std::ostream& os, bool verbose) const
   }
 }
 
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-Core::IO::Exodus::NodeSet::NodeSet(const std::set<int>& nodeids, const std::string& name)
-    : nodeids_(nodeids), name_(name.c_str())
-{
-}
-
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Core::IO::Exodus::NodeSet::print(std::ostream& os, bool verbose) const
 {
-  os << "Node Set, named: " << name_ << std::endl
-     << "has " << get_num_nodes() << " Nodes" << std::endl;
+  os << "Node Set, named: " << name << '\n' << "has " << node_ids.size() << " Nodes" << std::endl;
   if (verbose)
   {
     os << "Contains Nodes:" << std::endl;
-    std::set<int>::iterator it;
-    for (it = nodeids_.begin(); it != nodeids_.end(); it++) os << *it << ",";
+    for (const int id : node_ids)
+    {
+      os << id << ",";
+    }
     os << std::endl;
   }
 }
@@ -445,27 +399,15 @@ void Core::IO::Exodus::NodeSet::print(std::ostream& os, bool verbose) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-Core::IO::Exodus::SideSet::SideSet(
-    const std::map<int, std::vector<int>>& sides, const std::string& name)
-    : sides_(sides), name_(name.c_str())
-{
-  return;
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 void Core::IO::Exodus::SideSet::print(std::ostream& os, bool verbose) const
 {
-  os << "SideSet, named: " << name_ << std::endl
-     << "has " << get_num_sides() << " Sides" << std::endl;
+  os << "SideSet, named: " << name << std::endl << "has " << sides.size() << " Sides" << std::endl;
   if (verbose)
   {
-    std::map<int, std::vector<int>>::const_iterator it;
-    for (it = sides_.begin(); it != sides_.end(); it++)
+    for (const auto& [side, ele_side] : sides)
     {
-      os << "Side " << it->first << ": ";
-      os << "Ele: " << it->second.at(0) << ", Side: " << it->second.at(1) << std::endl;
+      os << "Side " << side << ": ";
+      os << "Ele: " << ele_side.at(0) << ", Side: " << ele_side.at(1) << std::endl;
     }
   }
 }

@@ -842,7 +842,7 @@ namespace
         }
 
         const auto& element_name = current_block_data->get<std::string>("ELEMENT_NAME");
-        const auto cell_type = eb.get_shape();
+        const auto cell_type = eb.cell_type;
         const auto cell_type_string = Core::FE::cell_type_to_string(cell_type);
 
         Core::Elements::ElementDefinition ed;
@@ -865,7 +865,7 @@ namespace
         linedef.fully_parse(element_parser, element_data);
 
 
-        for (const auto& ele_nodes : eb.get_ele_conn() | std::views::values)
+        for (const auto& ele_nodes : eb.elements | std::views::values)
         {
           auto ele = Core::Communication::factory(element_name, cell_type_string, ele_count, 0);
           if (!ele) FOUR_C_THROW("element creation failed");

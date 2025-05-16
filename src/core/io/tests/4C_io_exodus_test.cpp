@@ -20,12 +20,12 @@ namespace
     Core::IO::Exodus::Mesh mesh(TESTING::get_support_file_path("test_files/exodus/cube.exo"));
 
     EXPECT_EQ(mesh.get_num_element_blocks(), 2);
-    EXPECT_EQ(mesh.get_num_node_sets(), 1);
-    EXPECT_EQ(mesh.get_num_side_sets(), 1);
+    EXPECT_EQ(mesh.get_node_sets().size(), 1);
+    EXPECT_EQ(mesh.get_side_sets().size(), 1);
     EXPECT_EQ(mesh.get_num_nodes(), 27);
-    EXPECT_EQ(mesh.get_num_ele(), 8);
-    EXPECT_EQ(mesh.get_element_block(1).get_num_ele(), 4);
-    EXPECT_EQ(mesh.get_element_block(2).get_num_ele(), 4);
+    EXPECT_EQ(mesh.get_num_elements(), 8);
+    EXPECT_EQ(mesh.get_element_block(1).elements.size(), 4);
+    EXPECT_EQ(mesh.get_element_block(2).elements.size(), 4);
 
     mesh.print(std::cout, true);
   }
@@ -35,7 +35,7 @@ namespace
     Core::IO::Exodus::Mesh mesh(TESTING::get_support_file_path("test_files/exodus/cube.exo"),
         Core::IO::Exodus::MeshParameters{.node_start_id = 100});
     EXPECT_EQ(mesh.get_node(100), (std::vector<double>{-5.0, 0.0, 0.0}));
-    EXPECT_EQ(mesh.get_element_block(1).get_ele_nodes(1),
+    EXPECT_EQ(mesh.get_element_block(1).elements.at(1),
         (std::vector<int>{108, 100, 103, 109, 110, 104, 107, 111}));
   }
 }  // namespace
