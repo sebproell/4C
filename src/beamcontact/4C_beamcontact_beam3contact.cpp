@@ -245,8 +245,8 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::evaluate(
   set_class_variables(timeintparams);
 
   // Subdevide the two elements in segments with linear approximation
-  std::vector<Core::LinAlg::Matrix<3, 1, double>> endpoints1(0);
-  std::vector<Core::LinAlg::Matrix<3, 1, double>> endpoints2(0);
+  std::vector<Core::LinAlg::Matrix<3, 1, double>> endpoints1;
+  std::vector<Core::LinAlg::Matrix<3, 1, double>> endpoints2;
 
   // TODO: remove 0 and 1: So far the number 0 and 1 are used in order to distinguish
   // between element 1 and element 2. However, this is only necessary for debugging purposes
@@ -260,7 +260,7 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::evaluate(
 
   std::map<std::pair<int, int>, Core::LinAlg::Matrix<3, 1, double>> closelargeanglesegments;
   std::map<std::pair<int, int>, Core::LinAlg::Matrix<3, 1, double>> closesmallanglesegments;
-  std::vector<std::pair<int, int>> closeendpointsegments(0);
+  std::vector<std::pair<int, int>> closeendpointsegments;
   closelargeanglesegments.clear();
   closesmallanglesegments.clear();
 
@@ -745,7 +745,7 @@ void CONTACT::Beam3contact<numnodes, numnodalvalues>::get_active_small_angle_pai
     }
 #endif
 
-    std::vector<std::pair<double, double>> curintsegpairs(0);
+    std::vector<std::pair<double, double>> curintsegpairs;
     int size = inversepairs.size();
 
     // All segment pairs for which the segment on the slave beam 1 intersects with the considered
@@ -2088,7 +2088,7 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::closest_point_projection(d
     double& eta_left2, double& l1, double& l2, Core::LinAlg::Matrix<3, 1, double>& segmentdata,
     std::pair<TYPE, TYPE>& solutionpoints, int segid1, int segid2)
 {
-  std::vector<std::pair<double, double>> startingpoints(0);
+  std::vector<std::pair<double, double>> startingpoints;
   bool validpairfound = false;
   double gap = 0.0;
   double eta_right1 = eta_left1 + l1;

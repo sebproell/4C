@@ -2813,7 +2813,7 @@ template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int d
 std::vector<double> PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art,
     distype_cont, dim>::get_all_inter_sections()
 {
-  std::vector<double> intersections(0);
+  std::vector<double> intersections;
 
   std::vector<double> xi(numdim_, 0.0);
   double eta = 0.0;

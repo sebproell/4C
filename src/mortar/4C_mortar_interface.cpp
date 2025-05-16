@@ -1274,10 +1274,10 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     // any of the interface nodes or elements  in the natural distr. of idiscret_.
     // The corresponding code lines for creating this proc list are:
     //
-    // std::vector<int> stproc(0);
+    // std::vector<int> stproc;
     // if (oldnodecolmap_->NumMyElements() || oldelecolmap_->NumMyElements())
     //   stproc.push_back(Core::Communication::my_mpi_rank(Comm()));
-    // std::vector<int> rtproc(0);
+    // std::vector<int> rtproc;
     // Core::LinAlg::gather<int>(stproc,rtproc,Comm().NumProc(),allproc.data(),Comm());
     //
     // In this case, we use "rtproc" instead of "allproc" afterwards, i.e. when
@@ -1343,10 +1343,10 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     // any of the interface nodes or elements  in the natural distr. of idiscret_.
     // The corresponding code lines for creating this proc list are:
     //
-    // std::vector<int> stproc(0);
+    // std::vector<int> stproc;
     // if (oldnodecolmap_->NumMyElements() || oldelecolmap_->NumMyElements())
     //   stproc.push_back(Core::Communication::my_mpi_rank(Comm()));
-    // std::vector<int> rtproc(0);
+    // std::vector<int> rtproc;
     // Core::LinAlg::gather<int>(stproc,rtproc,Comm().NumProc(),allproc.data(),Comm());
     //
     // In this case, we use "rtproc" instead of "allproc" afterwards, i.e. when
@@ -1446,10 +1446,10 @@ void Mortar::Interface::extend_interface_ghosting(const bool isFinalParallelDist
     // any of the interface nodes or elements  in the natural distr. of idiscret_.
     // The corresponding code lines for creating this proc list are:
     //
-    // std::vector<int> stproc(0);
+    // std::vector<int> stproc;
     // if (oldnodecolmap_->NumMyElements() || oldelecolmap_->NumMyElements())
     //   stproc.push_back(Core::Communication::my_mpi_rank(Comm()));
-    // std::vector<int> rtproc(0);
+    // std::vector<int> rtproc;
     // Core::LinAlg::gather<int>(stproc,rtproc,Comm().NumProc(),allproc.data(),Comm());
     //
     // In this case, we use "rtproc" instead of "allproc" afterwards, i.e. when

@@ -21,7 +21,7 @@ Mortar::NodeType Mortar::NodeType::instance_;
 Core::Communication::ParObject* Mortar::NodeType::create(Core::Communication::UnpackBuffer& buffer)
 {
   std::vector<double> x(3, 0.0);
-  std::vector<int> dofs(0);
+  std::vector<int> dofs;
   auto* node = new Mortar::Node(0, x, 0, dofs, false);
   node->unpack(buffer);
   return node;

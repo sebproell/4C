@@ -2337,7 +2337,7 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   // local list of found structural DOF IDs that have a DBC
   // in this special case DBC are applied at the nodes which are interested for
   // evaluation
-  std::vector<int> sdata(0);
+  std::vector<int> sdata;
 
   // loop over Dirichlet boundary conditions
   for (int i = 0; i < (int)dbc.size(); ++i)

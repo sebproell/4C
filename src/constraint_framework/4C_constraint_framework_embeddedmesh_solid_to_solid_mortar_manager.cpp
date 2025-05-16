@@ -198,8 +198,8 @@ void Constraints::EmbeddedMesh::SolidToSolidMortarManager::setup(
 void Constraints::EmbeddedMesh::SolidToSolidMortarManager::set_global_maps()
 {
   // Get the dofs of the background and interface elements
-  std::vector<int> boundary_layer_interface_dofs(0);
-  std::vector<int> background_dofs(0);
+  std::vector<int> boundary_layer_interface_dofs;
+  std::vector<int> background_dofs;
   for (int i_node = 0; i_node < discret_->node_row_map()->NumMyElements(); i_node++)
   {
     const Core::Nodes::Node* node = discret_->l_row_node(i_node);

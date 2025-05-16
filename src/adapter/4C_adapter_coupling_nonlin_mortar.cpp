@@ -157,8 +157,8 @@ void Adapter::CouplingNonLinMortar::read_mortar_condition(
   if (couplingcond == "Mortar" || couplingcond == "Contact" || couplingcond == "EHLCoupling")
   {
     std::vector<const Core::Conditions::Condition*> conds;
-    std::vector<const Core::Conditions::Condition*> conds_master(0);
-    std::vector<const Core::Conditions::Condition*> conds_slave(0);
+    std::vector<const Core::Conditions::Condition*> conds_master;
+    std::vector<const Core::Conditions::Condition*> conds_slave;
     masterdis->get_condition(couplingcond, conds);
 
     for (unsigned i = 0; i < conds.size(); i++)
@@ -599,8 +599,8 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
 
   // get the conditions for the current evaluation we use the SpringDashpot condition as a
   // substitute for the mortar slave surface
-  std::vector<const Core::Conditions::Condition*> conds_master(0);
-  std::vector<const Core::Conditions::Condition*> conds_slave(0);
+  std::vector<const Core::Conditions::Condition*> conds_master;
+  std::vector<const Core::Conditions::Condition*> conds_slave;
 
   // Coupling condition is defined by "DESIGN SURF SPRING DASHPOT COUPLING CONDITIONS"
   std::vector<const Core::Conditions::Condition*> coup_conds;

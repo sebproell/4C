@@ -110,7 +110,7 @@ void CONTACT::Utils::get_contact_condition_groups(
   ccond_grps.clear();
   /* find all pairs of matching contact conditions
    * there is a maximum of (conditions / 2) groups */
-  std::vector<int> found_grps(0);
+  std::vector<int> found_grps;
 
   for (std::size_t i = 0; i < cconds.size(); ++i)
   {

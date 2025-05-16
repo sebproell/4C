@@ -5618,7 +5618,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d_aux_plane(const Mortar::Element& ele, c
       }
   else
   {
-    std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> nodelin(0);
+    std::vector<std::vector<Core::Gen::Pairedvector<int, double>>> nodelin;
     ie->node_linearization(nodelin);
     for (int z = 0; z < numnode; ++z)
       for (int k = 0; k < 3; ++k)

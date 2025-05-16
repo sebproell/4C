@@ -253,8 +253,8 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
 void BeamInteraction::BeamToSolidMortarManager::set_global_maps()
 {
   // Loop over all nodes on this processor -> we assume all beam and solid DOFs are based on nodes.
-  std::vector<int> beam_dofs(0);
-  std::vector<int> solid_dofs(0);
+  std::vector<int> beam_dofs;
+  std::vector<int> solid_dofs;
   for (int i_node = 0; i_node < discret_->node_row_map()->NumMyElements(); i_node++)
   {
     const Core::Nodes::Node* node = discret_->l_row_node(i_node);

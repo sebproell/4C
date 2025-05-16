@@ -245,7 +245,7 @@ namespace BeamInteraction
         // loop over all nodes of current filament, sort elements and calculate total filament
         // length
         std::vector<int> const* nodeids = filamentconditions[filiter]->get_nodes();
-        std::vector<Core::Elements::Element*> sortedfilamenteles(0);
+        std::vector<Core::Elements::Element*> sortedfilamenteles;
         double filreflength = 0.0;
         compute_filament_length_and_sort_its_elements(
             sortedfilamenteles, nodeids, filreflength, *discret);
@@ -334,7 +334,7 @@ namespace BeamInteraction
       for (int iproc = 0; iproc < Core::Communication::num_mpi_ranks(discret.get_comm()); ++iproc)
       {
         // myrank == iproc: copy set to vector in order to broadcast data
-        std::vector<int> requirednodes(0);
+        std::vector<int> requirednodes;
         if (iproc == Core::Communication::my_mpi_rank(discret.get_comm()))
           requirednodes.insert(requirednodes.begin(), setofnodegidswithrequiredelecloud.begin(),
               setofnodegidswithrequiredelecloud.end());

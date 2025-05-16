@@ -107,8 +107,8 @@ void CONTACT::IntegratorNitschePoro::gpts_forces(Mortar::Element& sele, Mortar::
   if (dim != n_dim()) FOUR_C_THROW("dimension inconsistency");
 
   Core::LinAlg::Matrix<dim, 1> slave_normal, master_normal;
-  std::vector<Core::Gen::Pairedvector<int, double>> deriv_slave_normal(0, 0);
-  std::vector<Core::Gen::Pairedvector<int, double>> deriv_master_normal(0, 0);
+  std::vector<Core::Gen::Pairedvector<int, double>> deriv_slave_normal;
+  std::vector<Core::Gen::Pairedvector<int, double>> deriv_master_normal;
   sele.compute_unit_normal_at_xi(sxi, slave_normal.data());
   mele.compute_unit_normal_at_xi(mxi, master_normal.data());
   sele.deriv_unit_normal_at_xi(sxi, deriv_slave_normal);

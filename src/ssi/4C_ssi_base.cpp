@@ -875,7 +875,7 @@ bool SSI::SSIBase::check_s2i_kinetics_condition_for_pseudo_contact(
 
   auto structdis = Global::Problem::instance()->get_dis(struct_disname);
   // get all s2i kinetics conditions
-  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions(0, nullptr);
+  std::vector<const Core::Conditions::Condition*> s2ikinetics_conditions;
   structdis->get_condition("S2IKinetics", s2ikinetics_conditions);
   // get all ssi contact conditions
   std::vector<const Core::Conditions::Condition*> ssi_contact_conditions;

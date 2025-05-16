@@ -56,7 +56,7 @@ void ntaini_ccadiscret(int argc, char** argv, std::string& inputfile_name,
 
 
   // parse command line and separate input/output arguments
-  std::vector<std::string> inout(0);
+  std::vector<std::string> inout;
   for (int i = 1; i < argc; i++)
   {
     std::string temp = argv[i];

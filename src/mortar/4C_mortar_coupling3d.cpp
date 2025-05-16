@@ -2770,7 +2770,7 @@ bool Mortar::Coupling3d::delaunay_triangulation(
   // (2) General clipping polygon: Triangulation -> IntCells
   //**********************************************************************
   // store Delaunay triangles here
-  std::vector<std::vector<int>> triangles(0, std::vector<int>(3));
+  std::vector<std::vector<int>> triangles;
 
   // start with first triangle v0,v1,v2
   std::vector<int> currtriangle(3);
@@ -2971,8 +2971,8 @@ bool Mortar::Coupling3d::delaunay_triangulation(
     }
 
     // now we build vector of all good / bad triangles
-    std::vector<std::vector<int>> goodtriangles(0, std::vector<int>(3));
-    std::vector<std::vector<int>> badtriangles(0, std::vector<int>(3));
+    std::vector<std::vector<int>> goodtriangles;
+    std::vector<std::vector<int>> badtriangles;
     for (int t = 0; t < numt; ++t)
     {
       if (bad[t])
@@ -2995,8 +2995,8 @@ bool Mortar::Coupling3d::delaunay_triangulation(
 
     // find vertices in bad triangles: ALL vertices
     // find vertices in bad triangles: NOT connected with current vertex
-    std::vector<int> badv(0);
-    std::vector<int> ncv(0);
+    std::vector<int> badv;
+    std::vector<int> ncv;
     for (int t = 0; t < numt; ++t)
     {
       if (bad[t])
@@ -3064,7 +3064,7 @@ bool Mortar::Coupling3d::delaunay_triangulation(
     }
 
     // build triangles formed by current vertex and ncv vertices
-    std::vector<std::vector<int>> addtriangles(0, std::vector<int>(3));
+    std::vector<std::vector<int>> addtriangles;
     for (int k = 0; k < (int)ncv.size(); ++k)
     {
       // find ncv vertex neighbor0
@@ -3794,7 +3794,7 @@ bool Mortar::Coupling3dQuadManager::split_int_elements(
     // create pseudo-nodes
     std::vector<Core::Nodes::Node> pseudo_nodes;
     pseudo_nodes.clear();
-    std::vector<Core::Nodes::Node*> pseudo_nodes_ptr(0);
+    std::vector<Core::Nodes::Node*> pseudo_nodes_ptr;
 
     // parameter space coords of pseudo nodes
     double pseudo_nodes_param_coords[4][2];
@@ -4087,7 +4087,7 @@ void Mortar::Coupling3dQuadManager::integrate_coupling(
   if (int_type() == Inpar::Mortar::inttype_segments)
   {
     // build linear integration elements from quadratic Mortar::Elements
-    std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements(0);
+    std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements;
     std::vector<std::vector<std::shared_ptr<Mortar::IntElement>>> mauxelements(
         master_elements().size());
     split_int_elements(slave_element(), sauxelements);
@@ -4142,8 +4142,8 @@ void Mortar::Coupling3dQuadManager::integrate_coupling(
         for (int m = 0; m < (int)master_elements().size(); ++m)
         {
           // build linear integration elements from quadratic Mortar::Elements
-          std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements(0);
-          std::vector<std::shared_ptr<Mortar::IntElement>> mauxelements(0);
+          std::vector<std::shared_ptr<Mortar::IntElement>> sauxelements;
+          std::vector<std::shared_ptr<Mortar::IntElement>> mauxelements;
           split_int_elements(slave_element(), sauxelements);
           split_int_elements(*master_elements()[m], mauxelements);
 

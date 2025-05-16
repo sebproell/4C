@@ -95,7 +95,7 @@ namespace
         Mat::make_parameter(1, Core::Materials::MaterialType::mes_isoneohooke, iso_neo_hooke_data);
 
     // Create summand vector
-    std::vector<std::shared_ptr<Mat::Elastic::Summand>> potsum(0);
+    std::vector<std::shared_ptr<Mat::Elastic::Summand>> potsum;
     potsum.emplace_back(std::make_shared<Mat::Elastic::IsoNeoHooke>(
         dynamic_cast<Mat::Elastic::PAR::IsoNeoHooke*>(iso_neo_hooke_params.get())));
 

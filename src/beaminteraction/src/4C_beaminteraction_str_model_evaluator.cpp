@@ -355,7 +355,7 @@ void Solid::ModelEvaluator::BeamInteraction::init_and_setup_sub_model_evaluators
 
   // model map
   me_map_ptr_ = FourC::BeamInteraction::SubmodelEvaluator::build_model_evaluators(*submodeltypes_);
-  std::vector<enum Inpar::BeamInteraction::SubModelType> sorted_submodeltypes(0);
+  std::vector<enum Inpar::BeamInteraction::SubModelType> sorted_submodeltypes;
 
   // build and sort submodel vector
   me_vec_ptr_ = transform_to_vector(*me_map_ptr_, sorted_submodeltypes);

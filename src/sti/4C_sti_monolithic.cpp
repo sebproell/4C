@@ -557,7 +557,7 @@ void STI::Monolithic::output_matrix_to_file(
   std::copy(myglobalelements, myglobalelements + rowmap.NumMyElements(), myrowgids.data());
 
   // communicate global IDs
-  std::vector<int> rowgids(0, 0);
+  std::vector<int> rowgids;
   Core::LinAlg::allreduce_vector(myrowgids, rowgids, comm);
 
   // retain communicated global IDs only on processor with ID 0
@@ -668,7 +668,7 @@ void STI::Monolithic::output_vector_to_file(
   std::copy(myglobalelements, myglobalelements + map.NumMyElements(), mygids.data());
 
   // communicate global IDs
-  std::vector<int> gids(0, 0);
+  std::vector<int> gids;
   Core::LinAlg::allreduce_vector(mygids, gids, comm);
 
   // retain communicated global IDs only on processor with ID 0

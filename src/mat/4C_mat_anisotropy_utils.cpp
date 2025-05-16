@@ -105,7 +105,7 @@ void Mat::unpack_fiber_vector(
   extract_from_pack(buffer, numgps);
   for (std::size_t i = 0; i < numgps; ++i)
   {
-    std::vector<T> mat(0);
+    std::vector<T> mat;
     extract_from_pack(buffer, mat);
     vct.emplace_back(mat);
   }

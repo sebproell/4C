@@ -331,8 +331,8 @@ void Solid::Nln::SOLVER::set_combo_quantity_test_params(Teuchos::ParameterList& 
     const Solid::TimeInt::BaseDataSDyn& datasdyn, const std::size_t& count,
     const std::string& testname, const std::set<enum NOX::Nln::StatusTest::QuantityType>& qtypes)
 {
-  std::vector<enum NOX::Nln::StatusTest::QuantityType> combo_or(0);
-  std::vector<enum NOX::Nln::StatusTest::QuantityType> combo_and(0);
+  std::vector<enum NOX::Nln::StatusTest::QuantityType> combo_or;
+  std::vector<enum NOX::Nln::StatusTest::QuantityType> combo_and;
   split_and_or_combo(combo_or, combo_and, datasdyn, testname, qtypes);
   std::ostringstream test_string;
   test_string << "Test " << count;

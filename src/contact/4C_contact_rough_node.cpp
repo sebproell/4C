@@ -28,7 +28,7 @@ Core::Communication::ParObject* CONTACT::RoughNodeType::create(
     Core::Communication::UnpackBuffer& buffer)
 {
   std::vector<double> x(3, 0.0);
-  std::vector<int> dofs(0);
+  std::vector<int> dofs;
 
   CONTACT::RoughNode* node = new CONTACT::RoughNode(0, x, 0, dofs, false, false, 0, 0, 0, 0, 0, 0);
   node->unpack(buffer);

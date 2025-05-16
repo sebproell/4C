@@ -867,8 +867,8 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
   for (int i = 0; i < elerowmap_->NumMyElements(); ++i) esdata[i] = elerowmap_->GID(i);
 
   // if current proc is participating it writes row IDs into (e)stproc
-  std::vector<int> stproc(0);
-  std::vector<int> estproc(0);
+  std::vector<int> stproc;
+  std::vector<int> estproc;
   if (noderowmap_->NumMyElements())
     stproc.push_back(Core::Communication::my_mpi_rank(bt_sol_discret().get_comm()));
   if (elerowmap_->NumMyElements())
@@ -880,8 +880,8 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
     allproc[i] = i;
 
   // declaring new variables into which the info of (e)stproc on all processors is gathered
-  std::vector<int> rtproc(0);
-  std::vector<int> ertproc(0);
+  std::vector<int> rtproc;
+  std::vector<int> ertproc;
 
   // gathers information of (e)stproc and writes it into (e)rtproc; in the end (e)rtproc
   // is a vector which contains the numbers of all processors which own nodes/elements.
@@ -1637,7 +1637,7 @@ std::vector<std::vector<Core::Elements::Element*>> CONTACT::Beam3cmanager::brute
     Core::LinAlg::Matrix<3, 1> firstpos = currentpositions[firstgid];
 
     // create storage for neighbouring nodes to be excluded.
-    std::vector<int> neighbournodeids(0);
+    std::vector<int> neighbournodeids;
     // create storage for near nodes to be identified
     std::vector<int> NearNodesGIDs;
 
@@ -1707,8 +1707,8 @@ std::vector<std::vector<Core::Elements::Element*>> CONTACT::Beam3cmanager::brute
     // beam3contact objects are set up and stored into the vector pairs_.
     //*********************************************************************
     // vectors of element ids
-    std::vector<int> FirstElesGIDs(0);
-    std::vector<int> SecondElesGIDs(0);
+    std::vector<int> FirstElesGIDs;
+    std::vector<int> SecondElesGIDs;
     // loop over all elements adjacent to firstnode
     for (int j = 0; j < firstnode->num_element(); ++j)
     {

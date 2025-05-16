@@ -83,10 +83,10 @@ Teuchos::RCP<::NOX::StatusTest::Generic> NOX::Nln::StatusTest::Factory::build_no
 {
   // initialized to size zero
   std::vector<double> tolerances = std::vector<double>(0);
-  std::vector<::NOX::StatusTest::NormF::ToleranceType> toltypes(0);
-  std::vector<QuantityType> quantitytypes(0);
-  std::vector<::NOX::Abstract::Vector::NormType> normtypes(0);
-  std::vector<::NOX::StatusTest::NormF::ScaleType> scaletypes(0);
+  std::vector<::NOX::StatusTest::NormF::ToleranceType> toltypes;
+  std::vector<QuantityType> quantitytypes;
+  std::vector<::NOX::Abstract::Vector::NormType> normtypes;
+  std::vector<::NOX::StatusTest::NormF::ScaleType> scaletypes;
 
   int i = 0;
   std::ostringstream quantity_string;
@@ -193,10 +193,10 @@ Teuchos::RCP<::NOX::StatusTest::Generic> NOX::Nln::StatusTest::Factory::build_no
 {
   // initialized to size zero
   std::vector<double> tolerances(0.0);
-  std::vector<NOX::Nln::StatusTest::NormUpdate::ToleranceType> toltypes(0);
-  std::vector<QuantityType> quantitytypes(0);
-  std::vector<::NOX::Abstract::Vector::NormType> normtypes(0);
-  std::vector<NOX::Nln::StatusTest::NormUpdate::ScaleType> scaletypes(0);
+  std::vector<NOX::Nln::StatusTest::NormUpdate::ToleranceType> toltypes;
+  std::vector<QuantityType> quantitytypes;
+  std::vector<::NOX::Abstract::Vector::NormType> normtypes;
+  std::vector<NOX::Nln::StatusTest::NormUpdate::ScaleType> scaletypes;
 
   // ------------------------------------------
   // Get Alpha

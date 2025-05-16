@@ -329,7 +329,7 @@ void Mortar::STRATEGY::FactoryMT::build_interfaces(const Teuchos::ParameterList&
 
   // find all pairs of matching meshtying conditions
   // there is a maximum of (conditions / 2) groups
-  std::vector<int> foundgroups(0);
+  std::vector<int> foundgroups;
   int numgroupsfound = 0;
 
   // get nurbs information

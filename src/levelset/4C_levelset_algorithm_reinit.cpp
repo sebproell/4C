@@ -549,9 +549,9 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
   discret_->get_condition("SurfacePeriodic", surfacepbcs);
   if (surfacepbcs.empty()) discret_->get_condition("LinePeriodic", surfacepbcs);
 
-  std::vector<int> planenormal(0);
-  std::vector<double> globalmins(0);
-  std::vector<double> globalmaxs(0);
+  std::vector<int> planenormal;
+  std::vector<double> globalmins;
+  std::vector<double> globalmaxs;
 
   for (size_t i = 0; i < surfacepbcs.size(); ++i)
   {

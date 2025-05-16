@@ -1637,7 +1637,7 @@ void EnsightWriter::write_nurbs_cell(const Core::FE::CellType distype, const int
       int nvpv = 2 * (nurbsdis->return_nele_x_mele_x_lele(npatch))[1] + 1;
 
       // vector containing node connectivity for all sub hexes (in blocks of 8)
-      std::vector<int> cellnodes(0);
+      std::vector<int> cellnodes;
 
       // bottom, left front
       append_nurbs_sub_hex(cellnodes, 0, 0, 0, ele_cart_id, nvpu, nvpv, npatch);
