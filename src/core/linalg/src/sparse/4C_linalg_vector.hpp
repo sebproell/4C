@@ -426,7 +426,7 @@ namespace Core::LinAlg
 
 
   template <>
-  struct WrapperFor<Epetra_Vector>
+  struct EnableViewFor<Epetra_Vector>
   {
     using type = Vector<double>;
   };

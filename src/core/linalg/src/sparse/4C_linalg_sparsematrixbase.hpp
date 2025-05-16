@@ -134,46 +134,18 @@ namespace Core::LinAlg
     int global_row_index(int local_row_index) const { return sysmat_->GRID(local_row_index); }
 
     /// Returns the Epetra_Map object associated with the rows of this matrix.
-    const Core::LinAlg::Map& row_map() const
-    {
-      if (!row_map_)
-      {  // check if view is uninitialized
-        row_map_ = Core::LinAlg::Map(sysmat_->RowMap());
-      }
-      return *row_map_;
-    }
+    const Core::LinAlg::Map& row_map() const { return row_map_.sync(sysmat_->RowMap()); }
 
     /// Returns the  Epetra_Mapobject that describes the set of column-indices that appear in
     /// each processor's locally owned matrix rows.
-    const Core::LinAlg::Map& col_map() const
-    {
-      if (!column_map_)
-      {  // check if view is uninitialized
-        column_map_ = Core::LinAlg::Map(sysmat_->ColMap());
-      }
-      return *column_map_;
-    }
+    const Core::LinAlg::Map& col_map() const { return column_map_.sync(sysmat_->ColMap()); }
 
     /// Returns the Epetra_Map object associated with the domain of this matrix operator.
-    const Map& domain_map() const override
-    {
-      if (!domain_map_)
-      {  // check if view is uninitialized
-        domain_map_ = Core::LinAlg::Map(sysmat_->DomainMap());
-      }
-      return *domain_map_;
-    }
+    const Map& domain_map() const override { return domain_map_.sync(sysmat_->DomainMap()); }
 
 
     /// Returns the Epetra_Map object associated with the range of this matrix operator.
-    const Core::LinAlg::Map& range_map() const
-    {
-      if (!range_map_)
-      {  // check if view is uninitialized
-        range_map_ = Core::LinAlg::Map(sysmat_->RangeMap());
-      }
-      return *range_map_;
-    }
+    const Core::LinAlg::Map& range_map() const { return range_map_.sync(sysmat_->RangeMap()); }
 
 
     /// Returns the current UseTranspose setting.
@@ -302,10 +274,10 @@ namespace Core::LinAlg
     /// internal epetra matrix (Epetra_CrsMatrix or Epetra_FECrsMatrix)
     std::shared_ptr<Epetra_CrsMatrix> sysmat_;
 
-    mutable std::optional<Core::LinAlg::Map> range_map_;
-    mutable std::optional<Core::LinAlg::Map> row_map_;
-    mutable std::optional<Core::LinAlg::Map> domain_map_;
-    mutable std::optional<Core::LinAlg::Map> column_map_;
+    mutable View<const Map> range_map_;
+    mutable View<const Map> row_map_;
+    mutable View<const Map> domain_map_;
+    mutable View<const Map> column_map_;
   };
 
 }  // namespace Core::LinAlg
