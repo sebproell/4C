@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_tensor_internals.hpp"
 #include "4C_linalg_tensor_meta_utils.hpp"
 
 #include <algorithm>
@@ -43,309 +44,22 @@ namespace Core::LinAlg
   concept SquareTensor =
       Rank2TensorConcept<Tensor> && Tensor::template extent<0>() == Tensor::template extent<1>();
 
-
-  namespace Internal
-  {
-
-    enum class StorageType
-    {
-      owning,
-      view
-    };
-
-    /*!
-     * @brief General tensor class for dense tensors of arbitrary rank
-     *
-     * This class is designed for small tensors typically used in physics simulations, such as
-     * strains, stresses, and linearizations at the Gauss point level. The tensor dimensions are
-     * usually small (e.g., 2x2 or 3x3), with a rank of 1 or 2, and rarely rank 4. This
-     * results in typically 9 or fewer entries (rarely 81 for 4-tensors in 3D). The data is
-     * stored on the stack avoiding dynamic memory allocation and ensuring efficient memory access
-     * via typically high locality.
-     *
-     * Key characteristics:
-     * - **Stack Allocation**: The tensor's data (if it is owning) is stored on the stack, avoiding
-     * the overhead of dynamic memory allocation.
-     * - **Temporary Objects**: Operations on tensors may create temporary objects, but these do not
-     *   involve dynamic memory allocation, ensuring efficient computation.
-     * - **Use Case**: This class is ideal for small-scale tensor operations at the Gauss point
-     * level in finite element simulations. It allows to write physical equations close to their
-     * pendant on paper.
-     *
-     * Comparison with @p LinAlg::Matrix:
-     * - **Tensor**: Designed for small, fixed-size data stored on the stack. Suitable for
-     * operations at the Gauss point level (e.g., strains, stresses).
-     * - **Matrix**: Designed for larger, dynamically allocated data. Suitable for element-level
-     *   calculations (e.g., stiffness and mass matrices). For example, a stiffness matrix for a
-     *   hex27 element may have dimensions 81x81 with 6561 entries, requiring dynamic memory
-     * allocation.
-     *
-     * Shared Backend:
-     * Both @p LinAlg::Tensor and @p LinAlg::Matrix share the same backend for matrix and vector
-     * operations, ensuring consistency and avoiding duplication of functionality.
-     *
-     * @tparam Number Type of the tensor elements (e.g., `double`).
-     * @tparam storage_type Specifies whether the tensor owns its data (`StorageType::owning`) or is
-     * a view (`StorageType::view`).
-     * @tparam n Dimensions of the tensor, specified as a variadic template parameter.
-     */
-    template <typename Number, StorageType storage_type, std::size_t... n>
-    class Tensor
-    {
-     public:
-      using value_type = Number;
-      using shape_type = std::integer_sequence<std::size_t, n...>;
-
-      static constexpr std::size_t rank_ = sizeof...(n);
-      static constexpr std::size_t size_ = (n * ...);
-
-      static_assert(storage_type == StorageType::view or
-                        std::is_same_v<std::remove_cv_t<value_type>, value_type>,
-          "Owning Tensor must have a non-const, non-volatile value_type");
-      static_assert(storage_type == StorageType::owning or
-                        std::is_same_v<std::remove_volatile_t<value_type>, value_type>,
-          "TensorView must have a non-volatile value_type");
-      static_assert(sizeof...(n) > 0, "Tensor must have at least rank one");
-      static_assert(
-          []() constexpr
-          {
-            std::array shape = {n...};
-            return std::ranges::all_of(shape, [](auto dim) { return dim > 0; });
-          }(),
-          "The extents of all axes must larger than zero");
-
-      // Container is either a std::array for an owning tensor or a std::span for a view
-      using ContainerType = std::conditional_t<storage_type == StorageType::owning,
-          std::array<Number, size_>, std::span<Number, size_>>;
-
-     private:
-      ContainerType data_;
-
-     public:
-      /*!
-       * @brief Default constructor
-       *
-       * @note Only an owning tensor has the default constructor
-       */
-      Tensor()
-        requires(std::is_default_constructible_v<ContainerType>)
-      = default;
-
-      Tensor(const Tensor&) = default;
-
-      /*!
-       * @brief Move constructor
-       *
-       * @note Copy operation of a view is cheap, so we don't need to have a move constructor
-       */
-      Tensor(Tensor&&) noexcept
-        requires(storage_type == StorageType::owning)
-      = default;
-      Tensor& operator=(const Tensor&) noexcept = default;
-
-      /*!
-       * @brief Move assignment operator
-       *
-       * @note Copy operation of a view is cheap, so we don't need to have a move assignment
-       * operator
-       */
-      Tensor& operator=(Tensor&&) noexcept
-        requires(storage_type == StorageType::owning)
-      = default;
-      ~Tensor() = default;
-
-      /*!
-       * @brief Construct an owning tensor from given data
-       *
-       * You can assign the tensor via
-       *
-       * @code
-       * Tensor<double, 3, 4> A = {{
-       *     {1.0, 2.0, 3.0, 4.0},
-       *     {5.0, 6.0, 7.0, 8.0},
-       *     {9.0, 10.0, 11.0, 12.0}
-       * }};
-       * @endcode
-       *
-       */
-      Tensor(const TensorInitializerList<Number, n...>::type& lst)
-        requires(std::is_default_constructible_v<ContainerType>);
-
-      /*!
-       * @brief Create a view on an owning tensor
-       */
-      Tensor(Tensor<Number, StorageType::owning, n...>& view_on)
-        requires(storage_type == StorageType::view)
-          : data_(view_on.container())
-      {
-      }
-
-      /*!
-       * @brief Create a constant view on a const owning tensor
-       */
-      Tensor(const Tensor<std::remove_cv_t<Number>, StorageType::owning, n...>& view_on)
-        requires(storage_type == StorageType::view && std::is_const_v<Number>)
-          : data_(view_on.container())
-      {
-      }
-
-      /*!
-       * @brief Create a copy of a view
-       */
-      Tensor(const Tensor<std::remove_cv_t<Number>, StorageType::view, n...>& other)
-        requires(storage_type == StorageType::owning)
-      {
-        std::ranges::copy(other.container(), data_.begin());
-      }
-
-      /*!
-       * @brief Access to the underlying raw data of the tensor
-       *
-       * @return Number*
-       */
-      [[nodiscard]] Number* data() { return data_.data(); }
-
-      /*!
-       * @brief Access to the underlying raw data of the tensor for readonly access
-       *
-       * @return Number*
-       */
-      [[nodiscard]] const Number* data() const { return data_.data(); }
-
-      /*!
-       * @brief Access to the underlying container (std::array or std::span, depending on whether it
-       * is owning or a view)
-       *
-       * @return Number*
-       */
-      [[nodiscard]] ContainerType& container() { return data_; }
-
-      /*!
-       * @brief Access to the underlying readonly container (std::array or std::span, depending on
-       * whether it is owning or a view)
-       *
-       * @return Number*
-       */
-      [[nodiscard]] const ContainerType& container() const { return data_; }
-
-      /*!
-       * @brief Indexing operator to access individual values of the tensor (without bound checks)
-       *
-       * @param i
-       * @return Number&
-       */
-      [[nodiscard]] Number& operator()(decltype(n)... i);
-
-      /*!
-       * @brief Indexing operator to access individual values of the tensor in readonly mode
-       * (without bound checks)
-       *
-       * @param i
-       * @return Number&
-       */
-      [[nodiscard]] const Number& operator()(decltype(n)... i) const;
-
-      /*!
-       * @brief Indexing operator to access individual values of the tensor (with bound checks)
-       *
-       * @param i
-       * @return Number&
-       */
-      [[nodiscard]] Number& at(decltype(n)... i);
-
-      /*!
-       * @brief Indexing operator to access individual values of the tensor in readonly mode
-       * (with bound checks)
-       *
-       * @param i
-       * @return Number&
-       */
-      [[nodiscard]] const Number& at(decltype(n)... i) const;
-
-      [[nodiscard]] static constexpr std::size_t rank() { return rank_; }
-      [[nodiscard]] static constexpr std::size_t size() { return size_; }
-
-      /*!
-       * @brief Returns the dimension of the i-th axis of the tensor
-       *
-       * @tparam i
-       */
-      template <std::size_t i>
-        requires(i < rank())
-      [[nodiscard]] static constexpr auto extent()
-      {
-        return std::get<i>(std::make_tuple(n...));
-      }
-
-      /*!
-       * @brief Returns a std::tuple of the shape of the tensor
-       *
-       * @return constexpr auto
-       */
-      [[nodiscard]] static constexpr auto shape() { return std::make_tuple(n...); }
-
-      /*!
-       * @brief Fills the tensor with the given value
-       *
-       * @param value
-       */
-      constexpr void fill(const Number& value) { std::ranges::fill(data_, value); }
-    };
-
-    // actual implementations
-
-    template <typename Number, Internal::StorageType storage_type, std::size_t... n>
-    Tensor<Number, storage_type, n...>::Tensor(const TensorInitializerList<Number, n...>::type& lst)
-      requires(std::is_default_constructible_v<ContainerType>)
-    {
-      constexpr std::array<std::size_t, size()> index_mapping = order_type_mapping<n...>();
-      for (std::size_t i = 0; i < size(); ++i)
-      {
-        data_[index_mapping[i]] = *(get_view_to_first_element<Number, n...>(lst) + i);
-      }
-    }
-
-    template <typename Number, Internal::StorageType storage_type, std::size_t... n>
-    Number& Tensor<Number, storage_type, n...>::operator()(decltype(n)... i)
-    {
-      return data_[get_flat_index<OrderType::column_major, TensorBoundCheck::no_check, n...>(i...)];
-    }
-
-    template <typename Number, Internal::StorageType storage_type, std::size_t... n>
-    const Number& Tensor<Number, storage_type, n...>::operator()(decltype(n)... i) const
-    {
-      return data_[get_flat_index<OrderType::column_major, TensorBoundCheck::no_check, n...>(i...)];
-    }
-
-    template <typename Number, Internal::StorageType storage_type, std::size_t... n>
-    Number& Tensor<Number, storage_type, n...>::at(decltype(n)... i)
-    {
-      return data_[get_flat_index<OrderType::column_major, TensorBoundCheck::check, n...>(i...)];
-    }
-
-    template <typename Number, Internal::StorageType storage_type, std::size_t... n>
-    const Number& Tensor<Number, storage_type, n...>::at(decltype(n)... i) const
-    {
-      return data_[get_flat_index<OrderType::column_major, TensorBoundCheck::check, n...>(i...)];
-    }
-  }  // namespace Internal
-
   /*!
    * @brief An owning, dense tensor of arbitrary rank
    *
-   * @copydetails Internal::Tensor
+   * @copydetails TensorInternal
    */
   template <typename T, std::size_t... n>
-  using Tensor = Internal::Tensor<T, Internal::StorageType::owning, n...>;  // owns the memory
+  using Tensor = TensorInternal<T, TensorStorageType::owning, n...>;  // owns the memory
 
   /*!
    * @brief A dense view to a Tensor of arbitrary rank
    *
-   * @copydetails Internal::Tensor
+   * @copydetails TensorInternal
    */
   template <typename T, std::size_t... n>
-  using TensorView = Internal::Tensor<T, Internal::StorageType::view, n...>;  // view onto's other
-                                                                              // memory
+  using TensorView = TensorInternal<T, TensorStorageType::view, n...>;  // view onto's other
+                                                                        // memory
 
   // Implementation of tensor operations
 
@@ -357,7 +71,7 @@ namespace Core::LinAlg
     template <typename T, std::size_t... s>
     struct SameShapeTensorResult<T, std::integer_sequence<std::size_t, s...>>
     {
-      using type = Tensor<T, StorageType::owning, s...>;
+      using type = TensorInternal<T, TensorStorageType::owning, s...>;
     };
 
 
@@ -368,7 +82,7 @@ namespace Core::LinAlg
     struct DyadicProductTensorResult<T, std::integer_sequence<std::size_t, s1...>,
         std::integer_sequence<std::size_t, s2...>>
     {
-      using type = Tensor<T, StorageType::owning, s1..., s2...>;
+      using type = TensorInternal<T, TensorStorageType::owning, s1..., s2...>;
     };
 
     template <typename T, typename Shape, std::size_t... new_order>
@@ -423,7 +137,7 @@ namespace Core::LinAlg
         return index_mapping;
       }
 
-      using result_type = Tensor<T, StorageType::owning, get_axis(new_order)...>;
+      using result_type = TensorInternal<T, TensorStorageType::owning, get_axis(new_order)...>;
     };
   }  // namespace Internal
 
@@ -615,116 +329,111 @@ namespace Core::LinAlg
   constexpr auto reorder_axis(auto tensor)
     requires(TensorConcept<decltype(tensor)> && sizeof...(new_order) == decltype(tensor)::rank());
 
-  namespace Internal
+
+  /*!
+   * @brief Add another tensor onto this tensor
+   *
+   * @tparam OtherTensor
+   */
+  template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
+    requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
+  constexpr TensorInternal<Number, storage_type, n...>& operator+=(
+      TensorInternal<Number, storage_type, n...>& tensor, const OtherTensor& B);
+
+  /*!
+   * @brief Subtract another tensor from this tensor
+   *
+   * @tparam OtherTensor
+   */
+  template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
+    requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
+  constexpr TensorInternal<Number, storage_type, n...>& operator-=(
+      TensorInternal<Number, storage_type, n...>& tensor, const OtherTensor& B);
+
+  /*!
+   * @brief Scale the tensor with a scalar value
+   *
+   * @tparam OtherTensor
+   */
+  template <typename Scalar, typename Number, TensorStorageType storage_type, std::size_t... n>
+    requires(std::is_arithmetic_v<Scalar>)
+  constexpr TensorInternal<Number, storage_type, n...>& operator*=(
+      TensorInternal<Number, storage_type, n...>& tensor, const Scalar b);
+
+  /*!
+   * @brief Scales the tensor with the inverse of the scalar value b
+   *
+   * @tparam Scalar
+   * @tparam Number
+   * @tparam storage_type
+   * @tparam n
+   */
+  template <typename Scalar, typename Number, TensorStorageType storage_type, std::size_t... n>
+    requires(std::is_arithmetic_v<Scalar>)
+  constexpr TensorInternal<Number, storage_type, n...>& operator/=(
+      TensorInternal<Number, storage_type, n...>& tensor, const Scalar b);
+
+  template <typename TensorLeft, typename TensorRight>
+    requires(std::is_same_v<typename TensorLeft::shape_type, typename TensorRight::shape_type>)
+  constexpr auto operator+(const TensorLeft& A, const TensorRight& B)
   {
-    // The underlying class of Tensor is in the Internal namespace, so we need to define these
-    // operators also there.
+    return add(A, B);
+  }
+  template <typename TensorLeft, typename TensorRight>
+    requires(std::is_same_v<typename TensorLeft::shape_type, typename TensorRight::shape_type>)
+  constexpr auto operator-(const TensorLeft& A, const TensorRight& B)
+  {
+    return subtract(A, B);
+  }
 
-    /*!
-     * @brief Add another tensor onto this tensor
-     *
-     * @tparam OtherTensor
-     */
-    template <typename OtherTensor, typename Number, StorageType storage_type, std::size_t... n>
-      requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
-    constexpr Tensor<Number, storage_type, n...>& operator+=(
-        Tensor<Number, storage_type, n...>& tensor, const OtherTensor& B);
+  template <typename Scalar, typename Tensor>
+    requires(std::is_arithmetic_v<Scalar>)
+  constexpr auto operator+(const Scalar b, const Tensor& tensor)
+  {
+    return add_scalar(tensor, b);
+  }
 
-    /*!
-     * @brief Subtract another tensor from this tensor
-     *
-     * @tparam OtherTensor
-     */
-    template <typename OtherTensor, typename Number, StorageType storage_type, std::size_t... n>
-      requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
-    constexpr Tensor<Number, storage_type, n...>& operator-=(
-        Tensor<Number, storage_type, n...>& tensor, const OtherTensor& B);
+  template <typename Scalar, typename Tensor>
+    requires(std::is_arithmetic_v<Scalar>)
+  constexpr auto operator*(const Tensor& tensor, const Scalar b)
+  {
+    return scale(tensor, b);
+  }
 
-    /*!
-     * @brief Scale the tensor with a scalar value
-     *
-     * @tparam OtherTensor
-     */
-    template <typename Scalar, typename Number, StorageType storage_type, std::size_t... n>
-      requires(std::is_arithmetic_v<Scalar>)
-    constexpr Tensor<Number, storage_type, n...>& operator*=(
-        Tensor<Number, storage_type, n...>& tensor, const Scalar b);
+  template <typename Scalar, typename Tensor>
+    requires(std::is_arithmetic_v<Scalar>)
+  constexpr auto operator*(const Scalar b, const Tensor& tensor)
+  {
+    return scale(tensor, b);
+  }
 
-    /*!
-     * @brief Scales the tensor with the inverse of the scalar value b
-     *
-     * @tparam Scalar
-     * @tparam Number
-     * @tparam storage_type
-     * @tparam n
-     */
-    template <typename Scalar, typename Number, StorageType storage_type, std::size_t... n>
-      requires(std::is_arithmetic_v<Scalar>)
-    constexpr Tensor<Number, storage_type, n...>& operator/=(
-        Tensor<Number, storage_type, n...>& tensor, const Scalar b);
+  template <typename Scalar, typename Tensor>
+    requires(std::is_arithmetic_v<Scalar>)
+  constexpr auto operator/(const Tensor& tensor, const Scalar b)
+  {
+    return scale(tensor, Scalar(1) / b);
+  }
 
-    template <typename TensorLeft, typename TensorRight>
-      requires(std::is_same_v<typename TensorLeft::shape_type, typename TensorRight::shape_type>)
-    constexpr auto operator+(const TensorLeft& A, const TensorRight& B)
-    {
-      return add(A, B);
-    }
-    template <typename TensorLeft, typename TensorRight>
-      requires(std::is_same_v<typename TensorLeft::shape_type, typename TensorRight::shape_type>)
-    constexpr auto operator-(const TensorLeft& A, const TensorRight& B)
-    {
-      return subtract(A, B);
-    }
+  template <typename TensorLeft, typename TensorRight>
+    requires(TensorConcept<TensorLeft> && TensorConcept<TensorRight>)
+  constexpr auto operator*(const TensorLeft& A, const TensorRight& B)
+  {
+    return dot(A, B);
+  }
 
-    template <typename Scalar, typename Tensor>
-      requires(std::is_arithmetic_v<Scalar>)
-    constexpr auto operator+(const Scalar b, const Tensor& tensor)
-    {
-      return add_scalar(tensor, b);
-    }
+  template <typename TensorLeft, typename TensorRight>
+    requires(std::is_same_v<typename TensorLeft::shape_type, typename TensorRight::shape_type>)
+  constexpr bool operator==(const TensorLeft& A, const TensorRight& B)
+  {
+    return std::ranges::equal(A.container(), B.container());
+  }
 
-    template <typename Scalar, typename Tensor>
-      requires(std::is_arithmetic_v<Scalar>)
-    constexpr auto operator*(const Tensor& tensor, const Scalar b)
-    {
-      return scale(tensor, b);
-    }
-
-    template <typename Scalar, typename Tensor>
-      requires(std::is_arithmetic_v<Scalar>)
-    constexpr auto operator*(const Scalar b, const Tensor& tensor)
-    {
-      return scale(tensor, b);
-    }
-
-    template <typename Scalar, typename Tensor>
-      requires(std::is_arithmetic_v<Scalar>)
-    constexpr auto operator/(const Tensor& tensor, const Scalar b)
-    {
-      return scale(tensor, Scalar(1) / b);
-    }
-
-    template <typename TensorLeft, typename TensorRight>
-      requires(TensorConcept<TensorLeft> && TensorConcept<TensorRight>)
-    constexpr auto operator*(const TensorLeft& A, const TensorRight& B)
-    {
-      return dot(A, B);
-    }
-
-    template <typename TensorLeft, typename TensorRight>
-      requires(std::is_same_v<typename TensorLeft::shape_type, typename TensorRight::shape_type>)
-    constexpr bool operator==(const TensorLeft& A, const TensorRight& B)
-    {
-      return std::ranges::equal(A.container(), B.container());
-    }
-
-    template <typename TensorLeft, typename TensorRight>
-      requires(std::is_same_v<typename TensorLeft::shape_type, typename TensorRight::shape_type>)
-    constexpr bool operator!=(const TensorLeft& A, const TensorRight& B)
-    {
-      return !std::ranges::equal(A.container(), B.container());
-    }
-  }  // namespace Internal
+  template <typename TensorLeft, typename TensorRight>
+    requires(std::is_same_v<typename TensorLeft::shape_type, typename TensorRight::shape_type>)
+  constexpr bool operator!=(const TensorLeft& A, const TensorRight& B)
+  {
+    return !std::ranges::equal(A.container(), B.container());
+  }
 
 
   // Actual implementations
@@ -922,46 +631,43 @@ namespace Core::LinAlg
     return result;
   }
 
-  namespace Internal
+  template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
+    requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
+  constexpr TensorInternal<Number, storage_type, n...>& operator+=(
+      TensorInternal<Number, storage_type, n...>& tensor, const OtherTensor& B)
   {
-    template <typename OtherTensor, typename Number, StorageType storage_type, std::size_t... n>
-      requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
-    constexpr Tensor<Number, storage_type, n...>& operator+=(
-        Tensor<Number, storage_type, n...>& tensor, const OtherTensor& B)
-    {
-      DenseFunctions::update<typename Tensor<Number, storage_type, n...>::value_type,
-          OtherTensor::size(), 1>(1.0, tensor.data(), 1.0, B.data());
-      return tensor;
-    }
+    DenseFunctions::update<typename TensorInternal<Number, storage_type, n...>::value_type,
+        OtherTensor::size(), 1>(1.0, tensor.data(), 1.0, B.data());
+    return tensor;
+  }
 
-    template <typename OtherTensor, typename Number, StorageType storage_type, std::size_t... n>
-      requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
-    constexpr Tensor<Number, storage_type, n...>& operator-=(
-        Tensor<Number, storage_type, n...>& tensor, const OtherTensor& B)
-    {
-      DenseFunctions::update<typename Tensor<Number, storage_type, n...>::value_type,
-          OtherTensor::size(), 1>(1.0, tensor.data(), -1.0, B.data());
-      return tensor;
-    }
+  template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
+    requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
+  constexpr TensorInternal<Number, storage_type, n...>& operator-=(
+      TensorInternal<Number, storage_type, n...>& tensor, const OtherTensor& B)
+  {
+    DenseFunctions::update<typename TensorInternal<Number, storage_type, n...>::value_type,
+        OtherTensor::size(), 1>(1.0, tensor.data(), -1.0, B.data());
+    return tensor;
+  }
 
-    template <typename Scalar, typename Number, StorageType storage_type, std::size_t... n>
-      requires(std::is_arithmetic_v<Scalar>)
-    constexpr Tensor<Number, storage_type, n...>& operator*=(
-        Tensor<Number, storage_type, n...>& tensor, const Scalar b)
-    {
-      for (auto& value : tensor.container()) value *= b;
-      return tensor;
-    }
+  template <typename Scalar, typename Number, TensorStorageType storage_type, std::size_t... n>
+    requires(std::is_arithmetic_v<Scalar>)
+  constexpr TensorInternal<Number, storage_type, n...>& operator*=(
+      TensorInternal<Number, storage_type, n...>& tensor, const Scalar b)
+  {
+    for (auto& value : tensor.container()) value *= b;
+    return tensor;
+  }
 
-    template <typename Scalar, typename Number, StorageType storage_type, std::size_t... n>
-      requires(std::is_arithmetic_v<Scalar>)
-    constexpr Tensor<Number, storage_type, n...>& operator/=(
-        Tensor<Number, storage_type, n...>& tensor, const Scalar b)
-    {
-      tensor *= Scalar(1.0) / b;
-      return tensor;
-    }
-  }  // namespace Internal
+  template <typename Scalar, typename Number, TensorStorageType storage_type, std::size_t... n>
+    requires(std::is_arithmetic_v<Scalar>)
+  constexpr TensorInternal<Number, storage_type, n...>& operator/=(
+      TensorInternal<Number, storage_type, n...>& tensor, const Scalar b)
+  {
+    tensor *= Scalar(1.0) / b;
+    return tensor;
+  }
 }  // namespace Core::LinAlg
 
 FOUR_C_NAMESPACE_CLOSE
