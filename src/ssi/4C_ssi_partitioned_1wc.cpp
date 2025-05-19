@@ -95,12 +95,12 @@ void SSI::SSIPart1WC::do_scatra_step()
         // read phinp from restart file
         std::shared_ptr<Core::LinAlg::MultiVector<double>> phinptemp = reader.read_vector("phinp");
 
-        // replace old scatra map with new map since ssi map has more dofs
-        int err = phinptemp->ReplaceMap(scatra_field()->dof_row_map()->get_epetra_map());
-        if (err) FOUR_C_THROW("Replacing old scatra map with new scatra map in ssi failed!");
+        Core::LinAlg::MultiVector<double> tmp(
+            *scatra_field()->dof_row_map(), phinptemp->NumVectors());
+        std::copy_n(phinptemp->Values(), phinptemp->MyLength(), tmp.Values());
 
         // update phinp
-        scatra_field()->phinp()->update(1.0, *phinptemp, 0.0);
+        scatra_field()->phinp()->update(1.0, tmp, 0.0);
       }
       else
       {
@@ -111,12 +111,11 @@ void SSI::SSIPart1WC::do_scatra_step()
         // read phinp from restart file
         reader.read_vector(phinptemp, "phinp");
 
-        // replace old scatra map with new map since ssi map has more dofs
-        int err = phinptemp->replace_map(*scatra_field()->dof_row_map());
-        if (err) FOUR_C_THROW("Replacing old scatra map with new scatra map in ssi failed!");
+        Core::LinAlg::Vector<double> tmp(*scatra_field()->dof_row_map());
+        std::copy_n(phinptemp->get_values(), phinptemp->local_length(), tmp.get_values());
 
         // update phinp
-        scatra_field()->phinp()->update(1.0, *phinptemp, 0.0);
+        scatra_field()->phinp()->update(1.0, tmp, 0.0);
       }
     }
   }
