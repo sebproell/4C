@@ -18,8 +18,8 @@
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_nodebased.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_nodetopoint.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_surfbased.hpp"
-#include "4C_porofluid_pressure_based_elast_scatra_monolithic_twoway.hpp"
-#include "4C_porofluid_pressure_based_elast_scatra_partitioned_twoway.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_monolithic.hpp"
+#include "4C_porofluid_pressure_based_elast_scatra_partitioned.hpp"
 #include "4C_porofluid_pressure_based_elast_utils.hpp"
 #include "4C_rebalance_binning_based.hpp"
 #include "4C_scatra_ele.hpp"
@@ -43,15 +43,16 @@ PoroPressureBased::create_algorithm_porofluid_elast_scatra(
     case SolutionSchemePorofluidElastScatra::twoway_partitioned_nested:
     {
       // call constructor
-      algo = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraPartitionedTwoWayNested>(
+      algo = std::make_shared<PoroPressureBased::PorofluidElastScatraNestedPartitionedAlgorithm>(
           comm, timeparams);
       break;
     }
     case SolutionSchemePorofluidElastScatra::twoway_partitioned_sequential:
     {
       // call constructor
-      algo = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraPartitionedTwoWaySequential>(
-          comm, timeparams);
+      algo =
+          std::make_shared<PoroPressureBased::PorofluidElastScatraSequentialPartitionedAlgorithm>(
+              comm, timeparams);
       break;
     }
     case SolutionSchemePorofluidElastScatra::twoway_monolithic:
@@ -60,16 +61,16 @@ PoroPressureBased::create_algorithm_porofluid_elast_scatra(
       if (!artery_coupl)
       {
         // call constructor
-        algo = std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraMonolithicTwoWay>(
+        algo = std::make_shared<PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm>(
             comm, timeparams);
       }
       else
       {
         // call constructor
-        algo =
-            std::make_shared<PoroPressureBased::PoroMultiPhaseScaTraMonolithicTwoWayArteryCoupling>(
+        algo = std::make_shared<
+            PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm>(
 
-                comm, timeparams);
+            comm, timeparams);
       }
       break;
     }
