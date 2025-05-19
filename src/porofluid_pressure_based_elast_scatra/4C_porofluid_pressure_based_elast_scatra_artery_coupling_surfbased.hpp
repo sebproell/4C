@@ -17,9 +17,6 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace PoroPressureBased
 {
-  // forward declaration
-  class PoroMultiPhaseScatraArteryCouplingPairBase;
-
   //! Line based coupling between artery network and poromultiphasescatra algorithm
   class PoroMultiPhaseScaTraArtCouplSurfBased : public PoroMultiPhaseScaTraArtCouplNonConforming
   {

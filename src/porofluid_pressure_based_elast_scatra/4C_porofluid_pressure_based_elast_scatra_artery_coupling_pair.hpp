@@ -63,7 +63,7 @@ namespace PoroPressureBased
   {
    public:
     //! constructor
-    PoroMultiPhaseScatraArteryCouplingPairBase() { return; };
+    PoroMultiPhaseScatraArteryCouplingPairBase() = default;
 
     //! destructor
     virtual ~PoroMultiPhaseScatraArteryCouplingPairBase() = default;
@@ -148,14 +148,14 @@ namespace PoroPressureBased
 
     //! get number of Gauss points
     virtual int num_gp() const = 0;
+  };
 
-    //! type of coupling pair
-    enum CouplingType
-    {
-      type_undefined,
-      type_porofluid,  //!< porofluid
-      type_scatra      //!< scatra
-    };
+  //! type of coupling pair
+  enum class CouplingType
+  {
+    undefined,
+    porofluid,
+    scatra
   };
 
   //! the coupling pair
