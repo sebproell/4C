@@ -89,8 +89,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::merge_maps(
     std::copy(map.MyGlobalElements(), map.MyGlobalElements() + map.NumMyElements(),
         std::inserter(mapentries, mapentries.begin()));
   }
-  return Core::LinAlg::create_map(
-      mapentries, Core::Communication::unpack_epetra_comm(maps[0]->Comm()));
+  return Core::LinAlg::create_map(mapentries, maps[0]->Comm());
 }
 
 
@@ -151,8 +150,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::MultiMapExtractor::intersect_ma
     }
     std::swap(mapentries, newset);
   }
-  return Core::LinAlg::create_map(
-      mapentries, Core::Communication::unpack_epetra_comm(maps[0]->Comm()));
+  return Core::LinAlg::create_map(mapentries, maps[0]->Comm());
 }
 
 
@@ -283,8 +281,7 @@ double Core::LinAlg::MultiMapExtractor::norm2(
   }
 
   double global_norm = 0;
-  Core::Communication::sum_all(
-      &local_norm, &global_norm, 1, Core::Communication::unpack_epetra_comm(fm.Comm()));
+  Core::Communication::sum_all(&local_norm, &global_norm, 1, fm.Comm());
   return std::sqrt(global_norm);
 }
 
@@ -347,8 +344,7 @@ Core::LinAlg::MapExtractor::MapExtractor(const Core::LinAlg::Map& fullmap,
   }
 
   // create (non-overlapping) othermap for non-condmap DOFs
-  std::shared_ptr<Core::LinAlg::Map> othermap =
-      Core::LinAlg::create_map(othergids, Core::Communication::unpack_epetra_comm(fullmap.Comm()));
+  std::shared_ptr<Core::LinAlg::Map> othermap = Core::LinAlg::create_map(othergids, fullmap.Comm());
 
   // create the extractor based on choice 'iscondmap'
   if (iscondmap)
@@ -385,8 +381,7 @@ void Core::LinAlg::MapExtractor::setup(
   std::vector<int> other_gids;
   std::ranges::set_difference(full_gids, cond_gids, std::back_inserter(other_gids));
 
-  auto other_map = Core::LinAlg::create_map(
-      other_gids, Core::Communication::unpack_epetra_comm(full_map.Comm()));
+  auto other_map = Core::LinAlg::create_map(other_gids, full_map.Comm());
 
   setup(full_map, cond_map, other_map);
 }

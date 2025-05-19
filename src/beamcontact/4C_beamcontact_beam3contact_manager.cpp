@@ -905,18 +905,16 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
       esdata, erdata, (int)ertproc.size(), ertproc.data(), bt_sol_discret().get_comm());
 
   // build completely overlapping node map (on participating processors)
-  std::shared_ptr<Core::LinAlg::Map> newnodecolmap =
-      std::make_shared<Core::LinAlg::Map>(-1, (int)rdata.size(), rdata.data(), 0,
-          Core::Communication::as_epetra_comm(bt_sol_discret().get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> newnodecolmap = std::make_shared<Core::LinAlg::Map>(
+      -1, (int)rdata.size(), rdata.data(), 0, bt_sol_discret().get_comm());
   sdata.clear();
   stproc.clear();
   rdata.clear();
   allproc.clear();
 
   // build completely overlapping element map (on participating processors)
-  std::shared_ptr<Core::LinAlg::Map> newelecolmap =
-      std::make_shared<Core::LinAlg::Map>(-1, (int)erdata.size(), erdata.data(), 0,
-          Core::Communication::as_epetra_comm(bt_sol_discret().get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> newelecolmap = std::make_shared<Core::LinAlg::Map>(
+      -1, (int)erdata.size(), erdata.data(), 0, bt_sol_discret().get_comm());
   esdata.clear();
   estproc.clear();
   erdata.clear();

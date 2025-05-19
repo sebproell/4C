@@ -361,17 +361,16 @@ namespace ReducedLung
     }
 
     // Create all necessary maps for matrix, rhs, and dof-vector.
-    const auto& epetra_comm = Core::Communication::as_epetra_comm(comm);
     // Map with all dof ids belonging to the local elements (airways and terminal units).
     const Core::LinAlg::Map locally_owned_dof_map =
-        create_domain_map(epetra_comm, airways, terminal_units);
+        create_domain_map(comm, airways, terminal_units);
     // Map with row ids for the equations of local elements, connections, bifurcations, and boundary
     // conditions.
     const Core::LinAlg::Map row_map = create_row_map(
-        epetra_comm, airways, terminal_units, connections, bifurcations, boundary_conditions);
+        comm, airways, terminal_units, connections, bifurcations, boundary_conditions);
     // Map with all relevant dof ids for the local equations.
     const Core::LinAlg::Map locally_relevant_dof_map =
-        create_column_map(epetra_comm, airways, terminal_units, global_dof_per_ele,
+        create_column_map(comm, airways, terminal_units, global_dof_per_ele,
             first_global_dof_of_ele, connections, bifurcations, boundary_conditions);
 
     // Assign global equation ids to connections, bifurcations, and boundary conditions based on the

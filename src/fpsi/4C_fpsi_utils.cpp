@@ -552,8 +552,8 @@ void FPSI::InterfaceUtils::redistribute_interface(Core::FE::Discretization& mast
 
       int globalsize;
       Core::Communication::sum_all(&myglobalelementsize, &globalsize, 1, comm);
-      Core::LinAlg::Map newelecolmap(globalsize, myglobalelementsize, myglobalelements.data(), 0,
-          Core::Communication::as_epetra_comm(comm));
+      Core::LinAlg::Map newelecolmap(
+          globalsize, myglobalelementsize, myglobalelements.data(), 0, comm);
 
       if (mastereleid == printid)
       {

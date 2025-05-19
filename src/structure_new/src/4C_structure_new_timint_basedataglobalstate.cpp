@@ -545,18 +545,16 @@ void Solid::TimeInt::BaseDataGlobalState::setup_rot_vec_map_extractor(
   additdofmapvec.reserve(additdofset.size());
   additdofmapvec.assign(additdofset.begin(), additdofset.end());
   additdofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> additdofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, additdofmapvec.size(), additdofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(discret_->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> additdofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, additdofmapvec.size(), additdofmapvec.data(), 0, discret_->get_comm());
   additdofmapvec.clear();
 
   std::vector<int> rotvecdofmapvec;
   rotvecdofmapvec.reserve(rotvecdofset.size());
   rotvecdofmapvec.assign(rotvecdofset.begin(), rotvecdofset.end());
   rotvecdofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> rotvecdofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, rotvecdofmapvec.size(), rotvecdofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(discret_->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> rotvecdofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, rotvecdofmapvec.size(), rotvecdofmapvec.data(), 0, discret_->get_comm());
   rotvecdofmapvec.clear();
 
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);

@@ -79,16 +79,14 @@ void FLD::TimIntStationaryHDG::init()
   conddofmapvec.reserve(conddofset.size());
   conddofmapvec.assign(conddofset.begin(), conddofset.end());
   conddofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> conddofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, conddofmapvec.size(), conddofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(hdgdis->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> conddofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, conddofmapvec.size(), conddofmapvec.data(), 0, hdgdis->get_comm());
   std::vector<int> otherdofmapvec;
   otherdofmapvec.reserve(otherdofset.size());
   otherdofmapvec.assign(otherdofset.begin(), otherdofset.end());
   otherdofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> otherdofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, otherdofmapvec.size(), otherdofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(hdgdis->get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> otherdofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, otherdofmapvec.size(), otherdofmapvec.data(), 0, hdgdis->get_comm());
   velpressplitter_->setup(*hdgdis->dof_row_map(), conddofmap, otherdofmap);
 
   // call init()-functions of base classes

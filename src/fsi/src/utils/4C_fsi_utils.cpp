@@ -622,8 +622,8 @@ void FSI::Utils::SlideAleUtils::redundant_elements(
 
     Core::Communication::sum_all(&partsum, &globsum, 1, comm);
     // map with ele ids
-    Core::LinAlg::Map mstruslideleids(globsum, vstruslideleids.size(), vstruslideleids.data(), 0,
-        Core::Communication::as_epetra_comm(comm));
+    Core::LinAlg::Map mstruslideleids(
+        globsum, vstruslideleids.size(), vstruslideleids.data(), 0, comm);
     // redundant version of it
     Core::LinAlg::Map redmstruslideleids(*Core::LinAlg::allreduce_e_map(mstruslideleids));
 

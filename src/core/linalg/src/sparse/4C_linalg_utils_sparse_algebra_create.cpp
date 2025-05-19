@@ -177,8 +177,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::create_map(
     const std::vector<int>& gids, MPI_Comm comm)
 {
   const int* my_gids = (gids.size() > 0) ? gids.data() : nullptr;
-  return std::make_shared<Core::LinAlg::Map>(
-      -1, gids.size(), my_gids, 0, Core::Communication::as_epetra_comm(comm));
+  return std::make_shared<Core::LinAlg::Map>(-1, gids.size(), my_gids, 0, comm);
 }
 
 /*----------------------------------------------------------------------*
@@ -213,18 +212,16 @@ void Core::LinAlg::create_map_extractor_from_discretization(
   conddofmapvec.reserve(conddofset.size());
   conddofmapvec.assign(conddofset.begin(), conddofset.end());
   conddofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> conddofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, conddofmapvec.size(), conddofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> conddofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, conddofmapvec.size(), conddofmapvec.data(), 0, dis.get_comm());
   conddofmapvec.clear();
 
   std::vector<int> otherdofmapvec;
   otherdofmapvec.reserve(otherdofset.size());
   otherdofmapvec.assign(otherdofset.begin(), otherdofset.end());
   otherdofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> otherdofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, otherdofmapvec.size(), otherdofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> otherdofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, otherdofmapvec.size(), otherdofmapvec.data(), 0, dis.get_comm());
   otherdofmapvec.clear();
 
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);
@@ -265,18 +262,16 @@ void Core::LinAlg::create_map_extractor_from_discretization(const Core::FE::Disc
   conddofmapvec.reserve(conddofset.size());
   conddofmapvec.assign(conddofset.begin(), conddofset.end());
   conddofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> conddofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, conddofmapvec.size(), conddofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> conddofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, conddofmapvec.size(), conddofmapvec.data(), 0, dis.get_comm());
   conddofmapvec.clear();
 
   std::vector<int> otherdofmapvec;
   otherdofmapvec.reserve(otherdofset.size());
   otherdofmapvec.assign(otherdofset.begin(), otherdofset.end());
   otherdofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> otherdofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, otherdofmapvec.size(), otherdofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> otherdofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, otherdofmapvec.size(), otherdofmapvec.data(), 0, dis.get_comm());
   otherdofmapvec.clear();
 
   extractor.setup(*dofset.dof_row_map(), conddofmap, otherdofmap);
@@ -322,18 +317,16 @@ void Core::LinAlg::create_map_extractor_from_discretization(const Core::FE::Disc
   conddofmapvec.reserve(conddofset.size());
   conddofmapvec.assign(conddofset.begin(), conddofset.end());
   conddofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> conddofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, conddofmapvec.size(), conddofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> conddofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, conddofmapvec.size(), conddofmapvec.data(), 0, dis.get_comm());
   conddofmapvec.clear();
 
   std::vector<int> otherdofmapvec;
   otherdofmapvec.reserve(otherdofset.size());
   otherdofmapvec.assign(otherdofset.begin(), otherdofset.end());
   otherdofset.clear();
-  std::shared_ptr<Core::LinAlg::Map> otherdofmap =
-      std::make_shared<Core::LinAlg::Map>(-1, otherdofmapvec.size(), otherdofmapvec.data(), 0,
-          Core::Communication::as_epetra_comm(dis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> otherdofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, otherdofmapvec.size(), otherdofmapvec.data(), 0, dis.get_comm());
   otherdofmapvec.clear();
 
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps(2);

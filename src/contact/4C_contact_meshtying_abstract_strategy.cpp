@@ -436,8 +436,8 @@ void CONTACT::MtAbstractStrategy::restrict_meshtying_zone()
     }
 
     // re-setup old slave dof row map (with restriction now)
-    non_redist_gsdofrowmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)data.size(), data.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+    non_redist_gsdofrowmap_ =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)data.size(), data.data(), 0, get_comm());
   }
 
   // Step 5: re-setup internal dof row map (non-interface dofs)

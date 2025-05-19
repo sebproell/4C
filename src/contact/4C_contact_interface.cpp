@@ -279,18 +279,18 @@ void CONTACT::Interface::update_master_slave_sets()
       }
     }
 
-    sdofVertexRowmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)sVr.size(), sVr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-    sdofVertexColmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)sVc.size(), sVc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-    sdofEdgeRowmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)sEr.size(), sEr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-    sdofEdgeColmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)sEc.size(), sEc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-    sdofSurfRowmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)sSr.size(), sSr.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-    sdofSurfColmap_ = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)sSc.size(), sSc.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+    sdofVertexRowmap_ =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)sVr.size(), sVr.data(), 0, get_comm());
+    sdofVertexColmap_ =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)sVc.size(), sVc.data(), 0, get_comm());
+    sdofEdgeRowmap_ =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)sEr.size(), sEr.data(), 0, get_comm());
+    sdofEdgeColmap_ =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)sEc.size(), sEc.data(), 0, get_comm());
+    sdofSurfRowmap_ =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)sSr.size(), sSr.data(), 0, get_comm());
+    sdofSurfColmap_ =
+        std::make_shared<Core::LinAlg::Map>(-1, (int)sSc.size(), sSc.data(), 0, get_comm());
   }
 }
 
@@ -530,8 +530,7 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
       Core::LinAlg::gather<int>(sdata, rdata, (int)allproc.size(), allproc.data(), get_comm());
 
       // build completely overlapping map of nodes (on ALL processors)
-      Core::LinAlg::Map newnodecolmap(
-          -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+      Core::LinAlg::Map newnodecolmap(-1, (int)rdata.size(), rdata.data(), 0, get_comm());
       sdata.clear();
       rdata.clear();
 
@@ -545,8 +544,7 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
       Core::LinAlg::gather<int>(sdata, rdata, (int)allproc.size(), allproc.data(), get_comm());
 
       // build complete overlapping map of elements (on ALL processors)
-      Core::LinAlg::Map newelecolmap(
-          -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+      Core::LinAlg::Map newelecolmap(-1, (int)rdata.size(), rdata.data(), 0, get_comm());
       sdata.clear();
       rdata.clear();
       allproc.clear();
@@ -598,8 +596,7 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
       }
 
       // build new node column map (on ALL processors)
-      Core::LinAlg::Map newnodecolmap(
-          -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+      Core::LinAlg::Map newnodecolmap(-1, (int)rdata.size(), rdata.data(), 0, get_comm());
       sdata.clear();
       rdata.clear();
 
@@ -631,8 +628,7 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
       }
 
       // build new element column map (on ALL processors)
-      Core::LinAlg::Map newelecolmap(
-          -1, (int)rdata.size(), rdata.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+      Core::LinAlg::Map newelecolmap(-1, (int)rdata.size(), rdata.data(), 0, get_comm());
       sdata.clear();
       rdata.clear();
       allproc.clear();
@@ -691,8 +687,7 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
       }
 
       std::vector<int> colnodes(nodes.begin(), nodes.end());
-      Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0,
-          Core::Communication::as_epetra_comm(get_comm()));
+      Core::LinAlg::Map nodecolmap(-1, (int)colnodes.size(), colnodes.data(), 0, get_comm());
 
       discret().export_column_nodes(nodecolmap);
       break;
@@ -768,10 +763,10 @@ void CONTACT::Interface::redistribute()
   }
 
   // we need an arbitrary preliminary element row map
-  Core::LinAlg::Map slaveCloseRowEles(-1, (int)closeele.size(), closeele.data(), 0,
-      Core::Communication::as_epetra_comm(Interface::get_comm()));
-  Core::LinAlg::Map slaveNonCloseRowEles(-1, (int)noncloseele.size(), noncloseele.data(), 0,
-      Core::Communication::as_epetra_comm(Interface::get_comm()));
+  Core::LinAlg::Map slaveCloseRowEles(
+      -1, (int)closeele.size(), closeele.data(), 0, Interface::get_comm());
+  Core::LinAlg::Map slaveNonCloseRowEles(
+      -1, (int)noncloseele.size(), noncloseele.data(), 0, Interface::get_comm());
   Core::LinAlg::Map masterRowEles(*master_row_elements());
 
   // check for consistency
@@ -1039,7 +1034,7 @@ void CONTACT::Interface::redistribute()
   const Epetra_BlockMap& bcol = outgraph->col_map();
   std::shared_ptr<Core::LinAlg::Map> scolnodes =
       std::make_shared<Core::LinAlg::Map>(bcol.NumGlobalElements(), bcol.NumMyElements(),
-          bcol.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(Interface::get_comm()));
+          bcol.MyGlobalElements(), 0, Interface::get_comm());
 
   // trash new graph
   outgraph = nullptr;
@@ -7347,12 +7342,9 @@ bool CONTACT::Interface::split_active_dofs()
   // get out of here if active set is empty
   if (activenodes_ == nullptr or activenodes_->NumGlobalElements() == 0)
   {
-    activen_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
-    activet_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
-    slipt_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    activen_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
+    activet_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
+    slipt_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     return true;
   }
 
@@ -7401,10 +7393,8 @@ bool CONTACT::Interface::split_active_dofs()
     FOUR_C_THROW("split_active_dofs: Splitting went wrong!");
 
   // create Nmap and Tmap objects
-  activen_ = std::make_shared<Core::LinAlg::Map>(
-      gcountN, countN, myNgids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
-  activet_ = std::make_shared<Core::LinAlg::Map>(
-      gcountT, countT, myTgids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  activen_ = std::make_shared<Core::LinAlg::Map>(gcountN, countN, myNgids.data(), 0, get_comm());
+  activet_ = std::make_shared<Core::LinAlg::Map>(gcountT, countT, myTgids.data(), 0, get_comm());
 
   // *******************************************************************
   // FRICTION - EXTRACTING TANGENTIAL DOFS FROM SLIP DOFS
@@ -7419,15 +7409,13 @@ bool CONTACT::Interface::split_active_dofs()
   // get out of here if slip set is empty
   if (slipnodes_ == nullptr)
   {
-    slipt_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    slipt_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     return true;
   }
 
   if (slipnodes_->NumGlobalElements() == 0)
   {
-    slipt_ =
-        std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+    slipt_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     return true;
   }
 
@@ -7464,8 +7452,8 @@ bool CONTACT::Interface::split_active_dofs()
   Core::Communication::sum_all(&countslipT, &gcountslipT, 1, get_comm());
 
   // create Tslipmap objects
-  slipt_ = std::make_shared<Core::LinAlg::Map>(gcountslipT, countslipT, myslipTgids.data(), 0,
-      Core::Communication::as_epetra_comm(get_comm()));
+  slipt_ = std::make_shared<Core::LinAlg::Map>(
+      gcountslipT, countslipT, myslipTgids.data(), 0, get_comm());
 
   return true;
 }
@@ -7549,8 +7537,8 @@ void CONTACT::Interface::update_self_contact_lag_mult_set(
     lmdofs.push_back(ref_lmgids[ref_lid]);
   }
 
-  lmdofmap_ = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(lmdofs.size()),
-      lmdofs.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  lmdofmap_ = std::make_shared<Core::LinAlg::Map>(
+      -1, static_cast<int>(lmdofs.size()), lmdofs.data(), 0, get_comm());
 }
 
 /*----------------------------------------------------------------------------*

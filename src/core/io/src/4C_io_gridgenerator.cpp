@@ -73,8 +73,7 @@ namespace Core::IO::GridGenerator
       {
         scale = 2;
       }
-      elementRowMap = std::make_shared<Core::LinAlg::Map>(
-          scale * numnewele, 0, Core::Communication::as_epetra_comm(comm));
+      elementRowMap = std::make_shared<Core::LinAlg::Map>(scale * numnewele, 0, comm);
     }
     else  // fancy final box map
     {
@@ -150,8 +149,8 @@ namespace Core::IO::GridGenerator
           for (size_t ix = xranges[mysection[0]]; ix < xranges[mysection[0] + 1]; ++ix)
             mynewele[idx++] = (iz * inputData.interval_[1] + it) * inputData.interval_[0] + ix;
 
-      elementRowMap = std::make_shared<Core::LinAlg::Map>(
-          -1, nummynewele, mynewele.data(), 0, Core::Communication::as_epetra_comm(comm));
+      elementRowMap =
+          std::make_shared<Core::LinAlg::Map>(-1, nummynewele, mynewele.data(), 0, comm);
     }
 
     // Build an input line that matches what is expected from an input file.
@@ -231,10 +230,10 @@ namespace Core::IO::GridGenerator
     {
       std::shared_ptr<const Core::LinAlg::Graph> graph =
           Core::Rebalance::build_graph(dis, *elementRowMap);
-      nodeRowMap = std::make_shared<Core::LinAlg::Map>(-1, graph->row_map().NumMyElements(),
-          graph->row_map().MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm));
-      nodeColMap = std::make_shared<Core::LinAlg::Map>(-1, graph->col_map().NumMyElements(),
-          graph->col_map().MyGlobalElements(), 0, Core::Communication::as_epetra_comm(comm));
+      nodeRowMap = std::make_shared<Core::LinAlg::Map>(
+          -1, graph->row_map().NumMyElements(), graph->row_map().MyGlobalElements(), 0, comm);
+      nodeColMap = std::make_shared<Core::LinAlg::Map>(
+          -1, graph->col_map().NumMyElements(), graph->col_map().MyGlobalElements(), 0, comm);
     }
 
 

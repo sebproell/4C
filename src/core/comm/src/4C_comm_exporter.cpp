@@ -16,7 +16,7 @@ FOUR_C_NAMESPACE_OPEN
 
 
 Core::Communication::Exporter::Exporter(MPI_Comm comm)
-    : dummymap_(0, 0, Core::Communication::as_epetra_comm(comm)),
+    : dummymap_(0, 0, comm),
       frommap_(dummymap_),
       tomap_(dummymap_),
       comm_(comm),
@@ -27,7 +27,7 @@ Core::Communication::Exporter::Exporter(MPI_Comm comm)
 
 Core::Communication::Exporter::Exporter(
     const Core::LinAlg::Map& frommap, const Core::LinAlg::Map& tomap, MPI_Comm comm)
-    : dummymap_(0, 0, Core::Communication::as_epetra_comm(comm)),
+    : dummymap_(0, 0, comm),
       frommap_(frommap),
       tomap_(tomap),
       comm_(comm),

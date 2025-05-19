@@ -1341,7 +1341,7 @@ void EnsightWriter::write_coordinates_for_nurbs_shapefunctions(std::ofstream& ge
   }
 
   vispointmap_ = std::make_shared<Core::LinAlg::Map>(numvispoints, local_vis_point_ids.size(),
-      local_vis_point_ids.data(), 0, Core::Communication::as_epetra_comm(nurbsdis->get_comm()));
+      local_vis_point_ids.data(), 0, nurbsdis->get_comm());
 
   // allocate the coordinates of the visualisation points
   nodecoords = std::make_shared<Core::LinAlg::MultiVector<double>>(*vispointmap_, 3);
@@ -1900,8 +1900,8 @@ void EnsightWriter::write_dof_result_step_for_nurbs(std::ofstream& file, const i
   coldofmapvec.reserve(coldofset.size());
   coldofmapvec.assign(coldofset.begin(), coldofset.end());
   coldofset.clear();
-  Core::LinAlg::Map coldofmap(-1, coldofmapvec.size(), coldofmapvec.data(), 0,
-      Core::Communication::as_epetra_comm(nurbsdis->get_comm()));
+  Core::LinAlg::Map coldofmap(
+      -1, coldofmapvec.size(), coldofmapvec.data(), 0, nurbsdis->get_comm());
   coldofmapvec.clear();
 
   const Core::LinAlg::Map* fulldofmap = &(coldofmap);
@@ -3426,8 +3426,8 @@ void EnsightWriter::write_nodal_result_step_for_nurbs(std::ofstream& file, const
   colnodemapvec.reserve(colnodeset.size());
   colnodemapvec.assign(colnodeset.begin(), colnodeset.end());
   colnodeset.clear();
-  Core::LinAlg::Map colnodemap(-1, colnodemapvec.size(), colnodemapvec.data(), 0,
-      Core::Communication::as_epetra_comm(nurbsdis->get_comm()));
+  Core::LinAlg::Map colnodemap(
+      -1, colnodemapvec.size(), colnodemapvec.data(), 0, nurbsdis->get_comm());
   colnodemapvec.clear();
 
   const Core::LinAlg::Map* fullnodemap = &(colnodemap);

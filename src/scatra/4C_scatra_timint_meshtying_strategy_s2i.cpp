@@ -2195,18 +2195,18 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
       }
 
       // initialize empty interface maps
-      std::shared_ptr<Core::LinAlg::Map> imastermap = std::make_shared<Core::LinAlg::Map>(
-          0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
-      std::shared_ptr<Core::LinAlg::Map> islavemap = std::make_shared<Core::LinAlg::Map>(
-          0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
-      std::shared_ptr<Core::LinAlg::Map> ifullmap = std::make_shared<Core::LinAlg::Map>(
-          0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
+      std::shared_ptr<Core::LinAlg::Map> imastermap =
+          std::make_shared<Core::LinAlg::Map>(0, 0, scatratimint_->discretization()->get_comm());
+      std::shared_ptr<Core::LinAlg::Map> islavemap =
+          std::make_shared<Core::LinAlg::Map>(0, 0, scatratimint_->discretization()->get_comm());
+      std::shared_ptr<Core::LinAlg::Map> ifullmap =
+          std::make_shared<Core::LinAlg::Map>(0, 0, scatratimint_->discretization()->get_comm());
       if (imortarredistribution_)
       {
-        imastermap_ = std::make_shared<Core::LinAlg::Map>(
-            0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
-        islavemap_ = std::make_shared<Core::LinAlg::Map>(
-            0, 0, Core::Communication::as_epetra_comm(scatratimint_->discretization()->get_comm()));
+        imastermap_ =
+            std::make_shared<Core::LinAlg::Map>(0, 0, scatratimint_->discretization()->get_comm());
+        islavemap_ =
+            std::make_shared<Core::LinAlg::Map>(0, 0, scatratimint_->discretization()->get_comm());
       }
 
       // loop over all slave-side scatra-scatra interface coupling conditions
@@ -2677,8 +2677,8 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
 
               // build Lagrange multiplier dofrowmap
               const std::shared_ptr<Core::LinAlg::Map> lmdofrowmap =
-                  std::make_shared<Core::LinAlg::Map>(-1, (int)lmdofgids.size(), lmdofgids.data(),
-                      0, Core::Communication::as_epetra_comm(comm));
+                  std::make_shared<Core::LinAlg::Map>(
+                      -1, (int)lmdofgids.size(), lmdofgids.data(), 0, comm);
 
               // initialize vectors associated with Lagrange multiplier dofs
               lm_ = std::make_shared<Core::LinAlg::Vector<double>>(*lmdofrowmap);

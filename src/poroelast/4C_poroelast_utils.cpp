@@ -228,8 +228,8 @@ void PoroElast::Utils::create_volume_ghosting(Core::FE::Discretization& idiscret
     }
 
     // re-build element column map
-    Core::LinAlg::Map newelecolmap(-1, static_cast<int>(rdata.size()), rdata.data(), 0,
-        Core::Communication::as_epetra_comm(voldi->get_comm()));
+    Core::LinAlg::Map newelecolmap(
+        -1, static_cast<int>(rdata.size()), rdata.data(), 0, voldi->get_comm());
     rdata.clear();
 
     // redistribute the volume discretization according to the

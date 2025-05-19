@@ -564,8 +564,8 @@ void STI::Monolithic::output_matrix_to_file(
   if (Core::Communication::my_mpi_rank(comm)) rowgids.clear();
 
   // create full row map on processor with ID 0
-  const Core::LinAlg::Map fullrowmap(-1, static_cast<int>(rowgids.size()),
-      rowgids.size() ? rowgids.data() : nullptr, 0, Core::Communication::as_epetra_comm(comm));
+  const Core::LinAlg::Map fullrowmap(
+      -1, static_cast<int>(rowgids.size()), rowgids.size() ? rowgids.data() : nullptr, 0, comm);
 
   // import matrix to processor with ID 0
   Core::LinAlg::SparseMatrix crsmatrix(fullrowmap, 0);
@@ -675,8 +675,8 @@ void STI::Monolithic::output_vector_to_file(
   if (Core::Communication::my_mpi_rank(comm)) gids.clear();
 
   // create full vector map on processor with ID 0
-  const Core::LinAlg::Map fullmap(-1, static_cast<int>(gids.size()),
-      gids.size() ? gids.data() : nullptr, 0, Core::Communication::as_epetra_comm(comm));
+  const Core::LinAlg::Map fullmap(
+      -1, static_cast<int>(gids.size()), gids.size() ? gids.data() : nullptr, 0, comm);
 
   // export vector to processor with ID 0
   Core::LinAlg::MultiVector<double> fullvector(fullmap, vector.NumVectors(), true);

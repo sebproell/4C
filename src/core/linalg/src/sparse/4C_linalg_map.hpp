@@ -11,6 +11,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_comm_mpi_utils.hpp"
+
 #include <Epetra_Comm.h>
 #include <Epetra_Map.h>
 #include <mpi.h>
@@ -30,17 +32,9 @@ namespace Core::LinAlg
   class Map
   {
    public:
-    //! Creates a Epetra_Map object based on Epetra_Comm
-    Map(int NumGlobalElements, int IndexBase, const Epetra_Comm& Comm);
-
     Map(int NumGlobalElements, int IndexBase, const MPI_Comm& Comm);
 
-    Map(int NumGlobalElements, int NumMyElements, int IndexBase, const Epetra_Comm& Comm);
-
     Map(int NumGlobalElements, int NumMyElements, int IndexBase, const MPI_Comm& Comm);
-
-    Map(int NumGlobalElements, int NumMyElements, const int* MyGlobalElements, int IndexBase,
-        const Epetra_Comm& Comm);
 
     Map(int NumGlobalElements, int NumMyElements, const int* MyGlobalElements, int IndexBase,
         const MPI_Comm& Comm);
@@ -126,7 +120,9 @@ namespace Core::LinAlg
     int MinMyGID(void) const { return map_->MinMyGID(); }
 
     //! Access function for Epetra_Comm communicator.
-    const Epetra_Comm& Comm() const { return map_->Comm(); }
+    const Epetra_Comm& EpetraComm() const { return map_->Comm(); }
+
+    MPI_Comm Comm() const { return Core::Communication::unpack_epetra_comm(map_->Comm()); }
 
     //! Returns true if map GIDs are 1-to-1.
     bool UniqueGIDs(void) const { return map_->UniqueGIDs(); }

@@ -9,6 +9,7 @@
 
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 
+#include "4C_comm_mpi_utils.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_unittest_utils_support_files_test.hpp"
 

@@ -572,8 +572,8 @@ void PoroElast::NoPenetrationConditionHandle::build_no_penetration_map(
   {
     condIDs.push_back(*it);
   }
-  std::shared_ptr<Core::LinAlg::Map> nopendofmap = std::make_shared<Core::LinAlg::Map>(
-      -1, int(condIDs.size()), condIDs.data(), 0, Core::Communication::as_epetra_comm(comm));
+  std::shared_ptr<Core::LinAlg::Map> nopendofmap =
+      std::make_shared<Core::LinAlg::Map>(-1, int(condIDs.size()), condIDs.data(), 0, comm);
 
   nopenetration_ = std::make_shared<Core::LinAlg::MapExtractor>(*dofRowMap, nopendofmap);
 }

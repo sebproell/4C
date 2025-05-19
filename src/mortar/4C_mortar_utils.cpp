@@ -278,7 +278,8 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
   }
 
   newcolmap = std::make_shared<Core::LinAlg::Map>(mat.col_map().NumGlobalElements(),
-      static_cast<int>(my_col_gids.size()), my_col_gids.data(), 0, mat.Comm());
+      static_cast<int>(my_col_gids.size()), my_col_gids.data(), 0,
+      Core::Communication::unpack_epetra_comm(mat.Comm()));
 }
 
 /*----------------------------------------------------------------------*
@@ -742,8 +743,8 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
     }
 
     // re-build element column map
-    Core::LinAlg::Map newelecolmap(-1, (int)rdata.size(), rdata.data(), 0,
-        Core::Communication::as_epetra_comm(voldis[disidx]->get_comm()));
+    Core::LinAlg::Map newelecolmap(
+        -1, (int)rdata.size(), rdata.data(), 0, voldis[disidx]->get_comm());
     rdata.clear();
 
     // redistribute the volume discretization according to the

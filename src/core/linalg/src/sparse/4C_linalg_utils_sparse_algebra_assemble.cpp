@@ -237,9 +237,9 @@ std::shared_ptr<Core::LinAlg::MapExtractor> Core::LinAlg::convert_dirichlet_togg
   const Epetra_BlockMap& fullblockmap = dbctoggle.get_block_map();
   // this copy is needed because the constructor of Core::LinAlg::MapExtractor
   // accepts only Core::LinAlg::Map and not Epetra_BlockMap
-  const Core::LinAlg::Map fullmap =
-      Core::LinAlg::Map(fullblockmap.NumGlobalElements(), fullblockmap.NumMyElements(),
-          fullblockmap.MyGlobalElements(), fullblockmap.IndexBase(), fullblockmap.Comm());
+  const Core::LinAlg::Map fullmap = Core::LinAlg::Map(fullblockmap.NumGlobalElements(),
+      fullblockmap.NumMyElements(), fullblockmap.MyGlobalElements(), fullblockmap.IndexBase(),
+      Core::Communication::unpack_epetra_comm(fullblockmap.Comm()));
   const int mylength = dbctoggle.local_length();
   const int* fullgids = fullmap.MyGlobalElements();
   // build sets containing the DBC or free global IDs, respectively

@@ -19,11 +19,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-Core::LinAlg::Map::Map(int NumGlobalElements, int IndexBase, const Epetra_Comm& Comm)
-    : map_(std::make_shared<Epetra_Map>(NumGlobalElements, IndexBase, Comm))
-{
-}
-
 Core::LinAlg::Map::Map(int NumGlobalElements, int IndexBase, const MPI_Comm& Comm)
     : map_(std::make_shared<Epetra_Map>(
           NumGlobalElements, IndexBase, Core::Communication::as_epetra_comm(Comm)))
@@ -31,22 +26,9 @@ Core::LinAlg::Map::Map(int NumGlobalElements, int IndexBase, const MPI_Comm& Com
 }
 
 Core::LinAlg::Map::Map(
-    int NumGlobalElements, int NumMyElements, int IndexBase, const Epetra_Comm& Comm)
-    : map_(std::make_shared<Epetra_Map>(NumGlobalElements, NumMyElements, IndexBase, Comm))
-{
-}
-
-Core::LinAlg::Map::Map(
     int NumGlobalElements, int NumMyElements, int IndexBase, const MPI_Comm& Comm)
     : map_(std::make_shared<Epetra_Map>(
           NumGlobalElements, NumMyElements, IndexBase, Core::Communication::as_epetra_comm(Comm)))
-{
-}
-
-Core::LinAlg::Map::Map(int NumGlobalElements, int NumMyElements, const int* MyGlobalElements,
-    int IndexBase, const Epetra_Comm& Comm)
-    : map_(std::make_shared<Epetra_Map>(
-          NumGlobalElements, NumMyElements, MyGlobalElements, IndexBase, Comm))
 {
 }
 

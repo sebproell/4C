@@ -10,10 +10,10 @@
 
 #include "4C_config.hpp"
 
-#include "4C_comm_mpi_utils.hpp"
-#include "4C_global_data.hpp"
 #include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_map.hpp"
+
+#include <mpi.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -146,7 +146,7 @@ namespace ReducedLung
    * @param terminal_units Vector of locally owned terminal units.
    * @return map specifying the dof-distribution over all ranks.
    */
-  Core::LinAlg::Map create_domain_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
+  Core::LinAlg::Map create_domain_map(const MPI_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units);
 
   /*!
@@ -174,7 +174,7 @@ namespace ReducedLung
    * element ids are needed.
    * @return map with locally owned rows.
    */
-  Core::LinAlg::Map create_row_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
+  Core::LinAlg::Map create_row_map(const MPI_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units, const std::vector<Connection>& connections,
       const std::vector<Bifurcation>& bifurcations,
       const std::vector<BoundaryCondition>& boundary_conditions);
@@ -201,7 +201,7 @@ namespace ReducedLung
    * element ids are needed.
    * @return map with distribution of column indices for the system matrix.
    */
-  Core::LinAlg::Map create_column_map(const Epetra_Comm& comm, const std::vector<Airway>& airways,
+  Core::LinAlg::Map create_column_map(const MPI_Comm& comm, const std::vector<Airway>& airways,
       const std::vector<TerminalUnit>& terminal_units, const std::map<int, int>& global_dof_per_ele,
       const std::map<int, int>& first_global_dof_of_ele, const std::vector<Connection>& connections,
       const std::vector<Bifurcation>& bifurcations,

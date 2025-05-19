@@ -88,9 +88,8 @@ std::shared_ptr<Core::LinAlg::Map> Core::FE::DiscretizationCreatorBase::create_m
   std::vector<int> targetgidvec(gidset.begin(), gidset.end());
   gidset.clear();
 
-  std::shared_ptr<Core::LinAlg::Map> map =
-      std::make_shared<Core::LinAlg::Map>(-1, targetgidvec.size(), targetgidvec.data(), 0,
-          Core::Communication::as_epetra_comm(targetdis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> map = std::make_shared<Core::LinAlg::Map>(
+      -1, targetgidvec.size(), targetgidvec.data(), 0, targetdis.get_comm());
   targetgidvec.clear();
 
   return map;

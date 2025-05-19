@@ -47,9 +47,8 @@ namespace
           false, false, false, Core::IO::standard, communicators_->local_comm(), 0, 0, "dummy");
 
       // create arbitrary distributed map within each group
-      std::shared_ptr<Core::LinAlg::Map> map =
-          std::make_shared<Core::LinAlg::Map>(numberOfElementsToDistribute_, 0,
-              Core::Communication::as_epetra_comm(communicators_->local_comm()));
+      std::shared_ptr<Core::LinAlg::Map> map = std::make_shared<Core::LinAlg::Map>(
+          numberOfElementsToDistribute_, 0, communicators_->local_comm());
       vector_ = std::make_shared<Core::LinAlg::Vector<double>>(*map, false);
 
       // fill test Core::LinAlg::Vector<double> with entry equals gid
@@ -89,9 +88,8 @@ namespace
           false, false, false, Core::IO::standard, communicators_->local_comm(), 0, 0, "dummy");
 
       // create arbitrary distributed map within each group
-      std::shared_ptr<Core::LinAlg::Map> rowmap =
-          std::make_shared<Core::LinAlg::Map>(numberOfElementsToDistribute_, 0,
-              Core::Communication::as_epetra_comm(communicators_->local_comm()));
+      std::shared_ptr<Core::LinAlg::Map> rowmap = std::make_shared<Core::LinAlg::Map>(
+          numberOfElementsToDistribute_, 0, communicators_->local_comm());
       int approximateNumberOfNonZeroesPerRow = 3;
       matrix_ =
           std::make_shared<Core::LinAlg::SparseMatrix>(*rowmap, approximateNumberOfNonZeroesPerRow);
@@ -160,10 +158,8 @@ namespace
           false, false, false, Core::IO::standard, communicators_->local_comm(), 0, 0, "dummy");
 
       // create arbitrary distributed map within each group
-      Core::LinAlg::Map rowmap(numberOfElementsToDistribute_, 0,
-          Core::Communication::as_epetra_comm(communicators_->local_comm()));
-      Core::LinAlg::Map colmap(2 * numberOfElementsToDistribute_, 0,
-          Core::Communication::as_epetra_comm(communicators_->local_comm()));
+      Core::LinAlg::Map rowmap(numberOfElementsToDistribute_, 0, communicators_->local_comm());
+      Core::LinAlg::Map colmap(2 * numberOfElementsToDistribute_, 0, communicators_->local_comm());
       int approximateNumberOfNonZeroesPerRow = 6;
       matrix_ =
           std::make_shared<Core::LinAlg::SparseMatrix>(rowmap, approximateNumberOfNonZeroesPerRow);

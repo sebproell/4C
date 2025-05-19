@@ -139,8 +139,8 @@ namespace
     // build node coordinates based on the node row map of first partial discretization
     {
       std::array<int, 4> nodeList{0, 2, 4, 10};  // GID list of first 4 elements
-      std::shared_ptr<Core::LinAlg::Map> node_row_map = std::make_shared<Core::LinAlg::Map>(
-          -1, nodeList.size(), nodeList.data(), 0, Core::Communication::as_epetra_comm(comm_));
+      std::shared_ptr<Core::LinAlg::Map> node_row_map =
+          std::make_shared<Core::LinAlg::Map>(-1, nodeList.size(), nodeList.data(), 0, comm_);
       std::shared_ptr<Core::LinAlg::MultiVector<double>> nodal_test_coordinates =
           test_discretization_->build_node_coordinates(node_row_map);
 
@@ -170,20 +170,20 @@ namespace
       if (Core::Communication::my_mpi_rank(comm_) == 0)
       {
         std::array<int, 2> nodeList{50, 62};
-        node_row_map = std::make_shared<Core::LinAlg::Map>(
-            -1, nodeList.size(), nodeList.data(), 0, Core::Communication::as_epetra_comm(comm_));
+        node_row_map =
+            std::make_shared<Core::LinAlg::Map>(-1, nodeList.size(), nodeList.data(), 0, comm_);
       }
       else if (Core::Communication::my_mpi_rank(comm_) == 1)
       {
         std::array<int, 1> nodeList{114};
-        node_row_map = std::make_shared<Core::LinAlg::Map>(
-            -1, nodeList.size(), nodeList.data(), 0, Core::Communication::as_epetra_comm(comm_));
+        node_row_map =
+            std::make_shared<Core::LinAlg::Map>(-1, nodeList.size(), nodeList.data(), 0, comm_);
       }
       else if (Core::Communication::my_mpi_rank(comm_) == 2)
       {
         std::array<int, 1> nodeList{212};
-        node_row_map = std::make_shared<Core::LinAlg::Map>(
-            -1, nodeList.size(), nodeList.data(), 0, Core::Communication::as_epetra_comm(comm_));
+        node_row_map =
+            std::make_shared<Core::LinAlg::Map>(-1, nodeList.size(), nodeList.data(), 0, comm_);
       }
 
       std::shared_ptr<Core::LinAlg::MultiVector<double>> nodal_test_coordinates =

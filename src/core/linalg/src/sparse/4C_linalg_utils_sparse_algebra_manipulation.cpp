@@ -601,7 +601,7 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
 std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::split_map(
     const Core::LinAlg::Map& Amap, const Core::LinAlg::Map& Agiven)
 {
-  MPI_Comm Comm = Core::Communication::unpack_epetra_comm(Amap.Comm());
+  MPI_Comm Comm = Amap.Comm();
   const Core::LinAlg::Map& Ag = Agiven;
 
   int count = 0;
@@ -616,8 +616,8 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::split_map(
   myaugids.resize(count);
   int gcount;
   Core::Communication::sum_all(&count, &gcount, 1, Comm);
-  std::shared_ptr<Core::LinAlg::Map> Aunknown = std::make_shared<Core::LinAlg::Map>(
-      gcount, count, myaugids.data(), 0, Core::Communication::as_epetra_comm(Comm));
+  std::shared_ptr<Core::LinAlg::Map> Aunknown =
+      std::make_shared<Core::LinAlg::Map>(gcount, count, myaugids.data(), 0, Comm);
 
   return Aunknown;
 }

@@ -210,15 +210,15 @@ Constraints::MPConstraint2::create_discretization_from_condition(
   // build unique node row map
   std::vector<int> boundarynoderowvec(rownodeset.begin(), rownodeset.end());
   rownodeset.clear();
-  Core::LinAlg::Map constraintnoderowmap(-1, boundarynoderowvec.size(), boundarynoderowvec.data(),
-      0, Core::Communication::as_epetra_comm(newdis->get_comm()));
+  Core::LinAlg::Map constraintnoderowmap(
+      -1, boundarynoderowvec.size(), boundarynoderowvec.data(), 0, newdis->get_comm());
   boundarynoderowvec.clear();
 
   // build overlapping node column map
   std::vector<int> constraintnodecolvec(colnodeset.begin(), colnodeset.end());
   colnodeset.clear();
-  Core::LinAlg::Map constraintnodecolmap(-1, constraintnodecolvec.size(),
-      constraintnodecolvec.data(), 0, Core::Communication::as_epetra_comm(newdis->get_comm()));
+  Core::LinAlg::Map constraintnodecolmap(
+      -1, constraintnodecolvec.size(), constraintnodecolvec.data(), 0, newdis->get_comm());
 
   constraintnodecolvec.clear();
 

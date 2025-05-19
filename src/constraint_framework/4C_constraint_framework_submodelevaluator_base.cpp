@@ -62,7 +62,8 @@ void Constraints::SubmodelEvaluator::ConstraintBase::evaluate_coupling_terms(
   for (const auto& mpc : listMPCs_) ncon_ += mpc->get_number_of_mp_cs();
 
   // ToDo: Add an offset to the constraint dof map.
-  n_condition_map_ = std::make_shared<Core::LinAlg::Map>(ncon_, 0, stiff_ptr_->Comm());
+  n_condition_map_ = std::make_shared<Core::LinAlg::Map>(
+      ncon_, 0, Core::Communication::unpack_epetra_comm(stiff_ptr_->Comm()));
 
   // initialise all global coupling objects
   constraint_vector_ = std::make_shared<Core::LinAlg::Vector<double>>(*n_condition_map_, true);

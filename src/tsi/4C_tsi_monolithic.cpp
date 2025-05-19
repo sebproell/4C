@@ -2376,8 +2376,8 @@ void TSI::Monolithic::calculate_necking_tsi_results()
   }  // loop over all STRUCTURAL DBC conditions
 
   // map containing all z-displacement DOFs which have a DBC
-  Core::LinAlg::Map newdofmap(-1, (int)sdata.size(), sdata.data(), 0,
-      Core::Communication::as_epetra_comm(structure_field()->discretization()->get_comm()));
+  Core::LinAlg::Map newdofmap(
+      -1, (int)sdata.size(), sdata.data(), 0, structure_field()->discretization()->get_comm());
 
   //---------------------------------------------------------------------------
   // ------------------------------------ initialise STRUCTURAL output variables

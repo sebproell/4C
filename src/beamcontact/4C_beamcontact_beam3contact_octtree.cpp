@@ -1015,10 +1015,8 @@ bool Beam3ContactOctTree::locate_all()
     std::vector<int> gids;
     for (int i = 0; i < bboxlengthglobal; i++) gids.push_back(i);
     // crosslinker column and row map
-    Core::LinAlg::Map octtreerowmap(
-        (int)gids.size(), 0, Core::Communication::as_epetra_comm(discret_.get_comm()));
-    Core::LinAlg::Map octtreemap(-1, (int)gids.size(), gids.data(), 0,
-        Core::Communication::as_epetra_comm(discret_.get_comm()));
+    Core::LinAlg::Map octtreerowmap((int)gids.size(), 0, discret_.get_comm());
+    Core::LinAlg::Map octtreemap(-1, (int)gids.size(), gids.data(), 0, discret_.get_comm());
 
     // build Core::LinAlg::MultiVector<double>s which hold the BBs of the OctreeMap; for
     // communication

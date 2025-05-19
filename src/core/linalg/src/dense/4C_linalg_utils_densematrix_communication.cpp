@@ -56,8 +56,7 @@ void Core::LinAlg::allreduce_vector(
 /*----------------------------------------------------------------------*/
 void Core::LinAlg::allreduce_e_map(std::vector<int>& rredundant, const Core::LinAlg::Map& emap)
 {
-  const int mynodepos =
-      find_my_pos(emap.NumMyElements(), Core::Communication::unpack_epetra_comm(emap.Comm()));
+  const int mynodepos = find_my_pos(emap.NumMyElements(), emap.Comm());
 
   std::vector<int> sredundant(emap.NumGlobalElements(), 0);
 
@@ -65,8 +64,8 @@ void Core::LinAlg::allreduce_e_map(std::vector<int>& rredundant, const Core::Lin
   std::copy(gids, gids + emap.NumMyElements(), sredundant.data() + mynodepos);
 
   rredundant.resize(emap.NumGlobalElements());
-  Core::Communication::sum_all(sredundant.data(), rredundant.data(), emap.NumGlobalElements(),
-      Core::Communication::unpack_epetra_comm(emap.Comm()));
+  Core::Communication::sum_all(
+      sredundant.data(), rredundant.data(), emap.NumGlobalElements(), emap.Comm());
 }
 
 /*----------------------------------------------------------------------*/
@@ -101,7 +100,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_e_map(
   allreduce_e_map(rv, emap);
   std::shared_ptr<Core::LinAlg::Map> rmap;
 
-  if (Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(emap.Comm())) == pid)
+  if (Core::Communication::my_mpi_rank(emap.Comm()) == pid)
   {
     rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
     // check the map
@@ -161,7 +160,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_overlapping_e_map(
   allreduce_e_map(rv, emap);
   std::shared_ptr<Core::LinAlg::Map> rmap;
 
-  if (Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(emap.Comm())) == pid)
+  if (Core::Communication::my_mpi_rank(emap.Comm()) == pid)
   {
     // remove duplicates only on proc pid
     std::set<int> rs(rv.begin(), rv.end());

@@ -351,7 +351,7 @@ namespace Core::Communication
     // do stupid conversion from Epetra_BlockMap to Core::LinAlg::Map
     const Epetra_BlockMap& vecblockmap = vec.Map();
     Core::LinAlg::Map vecmap(vecblockmap.NumGlobalElements(), vecblockmap.NumMyElements(),
-        vecblockmap.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(vec.Comm()));
+        vecblockmap.MyGlobalElements(), 0, vec.Comm());
 
     // gather data of vector to compare on gcomm proc 0 and last gcomm proc
     std::shared_ptr<Core::LinAlg::Map> proc0map;

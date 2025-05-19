@@ -158,9 +158,7 @@ void FLD::TurbulenceStatisticsGeneralMean::add_to_current_time_average(const dou
     {
       // any XFEM problem with scatra will crash here, it could probably be removed     henke 12/11
       MPI_Comm comm =
-          (discret_ != nullptr)
-              ? (discret_->get_comm())
-              : (Core::Communication::unpack_epetra_comm(standarddofset_->dof_row_map()->Comm()));
+          (discret_ != nullptr) ? (discret_->get_comm()) : (standarddofset_->dof_row_map()->Comm());
       if (Core::Communication::my_mpi_rank(comm) == 0)
         std::cout << "curr_avg_sca_ or scavec is nullptr" << std::endl;
     }

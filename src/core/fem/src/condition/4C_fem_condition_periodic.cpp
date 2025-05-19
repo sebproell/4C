@@ -7,6 +7,7 @@
 
 #include "4C_fem_condition_periodic.hpp"
 
+#include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_dofset_pbc.hpp"
@@ -1114,9 +1115,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
 
     //--------------------------------------------------
     // build noderowmap for new distribution of nodes
-    newrownodemap =
-        std::make_shared<Core::LinAlg::Map>(discret_->num_global_nodes(), nodesonthisproc.size(),
-            nodesonthisproc.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
+    newrownodemap = std::make_shared<Core::LinAlg::Map>(discret_->num_global_nodes(),
+        nodesonthisproc.size(), nodesonthisproc.data(), 0, discret_->get_comm());
 
     // create nodal graph of problem, according to old RowNodeMap
     std::shared_ptr<Core::LinAlg::Graph> oldnodegraph = discret_->build_node_graph();
@@ -1138,8 +1138,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
 
     std::shared_ptr<Core::LinAlg::Map> newcolnodemap;
 
-    newcolnodemap = std::make_shared<Core::LinAlg::Map>(-1, cntmp.NumMyElements(),
-        cntmp.MyGlobalElements(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
+    newcolnodemap = std::make_shared<Core::LinAlg::Map>(
+        -1, cntmp.NumMyElements(), cntmp.MyGlobalElements(), 0, discret_->get_comm());
 
     // time measurement --- this causes the TimeMonitor tm6 to stop here
     tm6_ref_ = nullptr;
@@ -1214,8 +1214,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
       // that might have been added in the previous loop over the inversenodecoupling
       {
         // now reconstruct the extended colmap
-        newcolnodemap = std::make_shared<Core::LinAlg::Map>(-1, mycolnodes.size(),
-            mycolnodes.data(), 0, Core::Communication::as_epetra_comm(discret_->get_comm()));
+        newcolnodemap = std::make_shared<Core::LinAlg::Map>(
+            -1, mycolnodes.size(), mycolnodes.data(), 0, discret_->get_comm());
 
         *allcoupledcolnodes_ = (*allcoupledrownodes_);
 
@@ -1255,8 +1255,8 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
       }
 
       // now reconstruct the extended colmap
-      newcolnodemap = std::make_shared<Core::LinAlg::Map>(-1, mycolnodes.size(), mycolnodes.data(),
-          0, Core::Communication::as_epetra_comm(discret_->get_comm()));
+      newcolnodemap = std::make_shared<Core::LinAlg::Map>(
+          -1, mycolnodes.size(), mycolnodes.data(), 0, discret_->get_comm());
 
       *allcoupledcolnodes_ = (*allcoupledrownodes_);
 
@@ -1502,7 +1502,7 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
       const Epetra_BlockMap& graph_row_map = nodegraph->row_map();
       const Core::LinAlg::Map graph_rowmap(graph_row_map.NumGlobalElements(),
           graph_row_map.NumMyElements(), graph_row_map.MyGlobalElements(), 0,
-          nodegraph->get_comm());
+          Core::Communication::unpack_epetra_comm(nodegraph->get_comm()));
 
       // set standard value of edge weight to 1.0
       auto edge_weights =
@@ -1567,13 +1567,11 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
 
       // the rowmap will become the new distribution of nodes
       const Core::LinAlg::Map newnoderowmap(-1, newnodegraph->row_map().NumMyElements(),
-          newnodegraph->row_map().MyGlobalElements(), 0,
-          Core::Communication::as_epetra_comm(discret_->get_comm()));
+          newnodegraph->row_map().MyGlobalElements(), 0, discret_->get_comm());
 
       // the column map will become the new ghosted distribution of nodes
       const Core::LinAlg::Map newnodecolmap(-1, newnodegraph->col_map().NumMyElements(),
-          newnodegraph->col_map().MyGlobalElements(), 0,
-          Core::Communication::as_epetra_comm(discret_->get_comm()));
+          newnodegraph->col_map().MyGlobalElements(), 0, discret_->get_comm());
 
       // do the redistribution without assigning dofs
       discret_->redistribute(newnoderowmap, newnodecolmap, {.assign_degrees_of_freedom = false});

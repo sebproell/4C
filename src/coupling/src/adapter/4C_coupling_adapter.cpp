@@ -130,17 +130,14 @@ void Coupling::Adapter::Coupling::setup_coupling(const Core::FE::Discretization&
 
   // maps in original distribution
 
-  std::shared_ptr<Core::LinAlg::Map> masternodemap =
-      std::make_shared<Core::LinAlg::Map>(-1, patchedmasternodes.size(), patchedmasternodes.data(),
-          0, Core::Communication::as_epetra_comm(masterdis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> masternodemap = std::make_shared<Core::LinAlg::Map>(
+      -1, patchedmasternodes.size(), patchedmasternodes.data(), 0, masterdis.get_comm());
 
-  std::shared_ptr<Core::LinAlg::Map> slavenodemap =
-      std::make_shared<Core::LinAlg::Map>(-1, slavenodes.size(), slavenodes.data(), 0,
-          Core::Communication::as_epetra_comm(slavedis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> slavenodemap = std::make_shared<Core::LinAlg::Map>(
+      -1, slavenodes.size(), slavenodes.data(), 0, slavedis.get_comm());
 
-  std::shared_ptr<Core::LinAlg::Map> permslavenodemap =
-      std::make_shared<Core::LinAlg::Map>(-1, permslavenodes.size(), permslavenodes.data(), 0,
-          Core::Communication::as_epetra_comm(slavedis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> permslavenodemap = std::make_shared<Core::LinAlg::Map>(
+      -1, permslavenodes.size(), permslavenodes.data(), 0, slavedis.get_comm());
 
   finish_coupling(masterdis, slavedis, masternodemap, slavenodemap, permslavenodemap, masterdofs,
       slavedofs, nds_master, nds_slave);
@@ -199,15 +196,13 @@ void Coupling::Adapter::Coupling::setup_coupling(const Core::FE::Discretization&
 
   // maps in original distribution
 
-  std::shared_ptr<Core::LinAlg::Map> masternodemap =
-      std::make_shared<Core::LinAlg::Map>(-1, mastervect.size(), mastervect.data(), 0,
-          Core::Communication::as_epetra_comm(masterdis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> masternodemap = std::make_shared<Core::LinAlg::Map>(
+      -1, mastervect.size(), mastervect.data(), 0, masterdis.get_comm());
 
   std::shared_ptr<Core::LinAlg::Map> slavenodemap = std::make_shared<Core::LinAlg::Map>(slavenodes);
 
-  std::shared_ptr<Core::LinAlg::Map> permslavenodemap =
-      std::make_shared<Core::LinAlg::Map>(-1, permslavenodes.size(), permslavenodes.data(), 0,
-          Core::Communication::as_epetra_comm(slavedis.get_comm()));
+  std::shared_ptr<Core::LinAlg::Map> permslavenodemap = std::make_shared<Core::LinAlg::Map>(
+      -1, permslavenodes.size(), permslavenodes.data(), 0, slavedis.get_comm());
 
   finish_coupling(masterdis, slavedis, masternodemap, slavenodemap, permslavenodemap,
       build_dof_vector_from_num_dof(numdof), build_dof_vector_from_num_dof(numdof), nds_master,
@@ -287,12 +282,12 @@ void Coupling::Adapter::Coupling::setup_coupling(const Core::FE::Discretization&
 
     match_nodes(masterdis, slavedis, masternodes, permslavenodes, slavenodes, matchall, tolerance);
 
-    masternodemap_cond.push_back(std::make_shared<Core::LinAlg::Map>(-1, masternodes.size(),
-        masternodes.data(), 0, Core::Communication::as_epetra_comm(masterdis.get_comm())));
-    slavenodemap_cond.push_back(std::make_shared<Core::LinAlg::Map>(-1, slavenodes.size(),
-        slavenodes.data(), 0, Core::Communication::as_epetra_comm(slavedis.get_comm())));
-    permslavenodemap_cond.push_back(std::make_shared<Core::LinAlg::Map>(-1, permslavenodes.size(),
-        permslavenodes.data(), 0, Core::Communication::as_epetra_comm(slavedis.get_comm())));
+    masternodemap_cond.push_back(std::make_shared<Core::LinAlg::Map>(
+        -1, masternodes.size(), masternodes.data(), 0, masterdis.get_comm()));
+    slavenodemap_cond.push_back(std::make_shared<Core::LinAlg::Map>(
+        -1, slavenodes.size(), slavenodes.data(), 0, slavedis.get_comm()));
+    permslavenodemap_cond.push_back(std::make_shared<Core::LinAlg::Map>(
+        -1, permslavenodes.size(), permslavenodes.data(), 0, slavedis.get_comm()));
   }
 
   // merge maps for all conditions, but keep order (= keep assignment of permuted slave node map and
@@ -380,9 +375,9 @@ void Coupling::Adapter::Coupling::finish_coupling(const Core::FE::Discretization
   const int err = permmasternodevec->export_to(*masternodevec, masternodeexport, Insert);
   if (err) FOUR_C_THROW("failed to export master nodes");
 
-  std::shared_ptr<const Core::LinAlg::Map> permmasternodemap = std::make_shared<Core::LinAlg::Map>(
-      -1, permmasternodevec->local_length(), permmasternodevec->get_values(), 0,
-      Core::Communication::as_epetra_comm(masterdis.get_comm()));
+  std::shared_ptr<const Core::LinAlg::Map> permmasternodemap =
+      std::make_shared<Core::LinAlg::Map>(-1, permmasternodevec->local_length(),
+          permmasternodevec->get_values(), 0, masterdis.get_comm());
 
   if (not slavenodemap->PointSameAs(*permmasternodemap))
     FOUR_C_THROW("slave and permuted master node maps do not match");
@@ -500,8 +495,8 @@ void Coupling::Adapter::Coupling::build_dof_maps(const Core::FE::Discretization&
   if (pos != dofmapvec.end() and *pos < 0) FOUR_C_THROW("illegal dof number {}", *pos);
 
   // dof map is the original, unpermuted distribution of dofs
-  dofmap = std::make_shared<Core::LinAlg::Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
-      Core::Communication::as_epetra_comm(dis.get_comm()));
+  dofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, dofmapvec.size(), dofmapvec.data(), 0, dis.get_comm());
 
   dofmapvec.clear();
 
@@ -520,8 +515,8 @@ void Coupling::Adapter::Coupling::build_dof_maps(const Core::FE::Discretization&
   dofs.clear();
 
   // permuted dof map according to a given permuted node map
-  permdofmap = std::make_shared<Core::LinAlg::Map>(-1, dofmapvec.size(), dofmapvec.data(), 0,
-      Core::Communication::as_epetra_comm(dis.get_comm()));
+  permdofmap = std::make_shared<Core::LinAlg::Map>(
+      -1, dofmapvec.size(), dofmapvec.data(), 0, dis.get_comm());
 
   // prepare communication plan to create a dofmap out of a permuted
   // dof map

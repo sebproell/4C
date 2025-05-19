@@ -823,8 +823,8 @@ std::shared_ptr<Core::LinAlg::Map> CONTACT::AbstractStrategy::create_determinist
 
     my_lm_gids[slid] = interface_lmgid;
   }
-  return std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(my_lm_gids.size()),
-      my_lm_gids.data(), 0, Core::Communication::as_epetra_comm(get_comm()));
+  return std::make_shared<Core::LinAlg::Map>(
+      -1, static_cast<int>(my_lm_gids.size()), my_lm_gids.data(), 0, get_comm());
 }
 
 
@@ -980,14 +980,10 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
   if (not is_self_contact()) return;
 
   // reset global slave / master Epetra Maps
-  gsnoderowmap_ =
-      std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
-  gsdofrowmap_ =
-      std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
-  gmdofrowmap_ =
-      std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
-  glmdofrowmap_ =
-      std::make_shared<Core::LinAlg::Map>(0, 0, Core::Communication::as_epetra_comm(get_comm()));
+  gsnoderowmap_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
+  gsdofrowmap_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
+  gmdofrowmap_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
+  glmdofrowmap_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
 
   // make numbering of LM dofs consecutive and unique across N interfaces
   int offset_if = 0;
