@@ -3545,7 +3545,7 @@ void ScaTra::MeshtyingStrategyS2I::init_meshtying()
     const auto& col_map = *scatratimint_->discretization()->node_col_map();
     const std::shared_ptr<Core::LinAlg::Vector<int>> numdofpernode =
         std::make_shared<Core::LinAlg::Vector<int>>(col_map);
-    auto conditioned_node_ids = Core::Conditions::find_conditioned_node_ids(
+    auto conditioned_node_ids = Core::Conditions::find_conditioned_col_node_ids(
         *scatratimint_->discretization(), "S2IKineticsGrowth");
     const std::span<const int> my_col_nodes(col_map.MyGlobalElements(), col_map.NumMyElements());
     for (const int& inode : my_col_nodes)

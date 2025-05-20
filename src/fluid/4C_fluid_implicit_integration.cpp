@@ -2524,7 +2524,7 @@ void FLD::FluidImplicitTimeInt::ale_update(std::string condName)
     const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
     // Obtain the global IDs of the condition's nodes for the current processor
-    auto gIdNodes = Core::Conditions::find_conditioned_node_ids(*discret_, selectedCond);
+    auto gIdNodes = Core::Conditions::find_conditioned_row_node_ids(*discret_, selectedCond);
 
     // Obtain fluid and ale state variables for nodes in the condition
     // **************************************************************************

@@ -830,8 +830,9 @@ void SSI::Utils::check_consistency_of_ssi_interface_contact_condition(
           "Did not find 'S2ICoupling' condition as defined in 'SSIInterfaceContact' condition!");
 
     // now get the nodes
-    auto InterfaceS2INodes = find_conditioned_node_ids(structdis, InterfaceS2IConditions);
-    auto InterfaceContactNodes = find_conditioned_node_ids(structdis, InterfaceContactConditions);
+    auto InterfaceS2INodes = find_conditioned_row_node_ids(structdis, InterfaceS2IConditions);
+    auto InterfaceContactNodes =
+        find_conditioned_row_node_ids(structdis, InterfaceContactConditions);
 
     // and compare whether same nodes are defined
     for (const auto InterfaceS2INode : InterfaceS2INodes)

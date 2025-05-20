@@ -95,9 +95,9 @@ void ScaTra::ScaTraUtils::check_consistency_of_s2_i_conditions(
       s2isclcoupling_condition.end());
 
   auto s2ievaluation_nodes =
-      Core::Conditions::find_conditioned_node_ids(*discretization, s2ievaluation_conditions);
+      Core::Conditions::find_conditioned_row_node_ids(*discretization, s2ievaluation_conditions);
   auto s2iphysics_nodes =
-      Core::Conditions::find_conditioned_node_ids(*discretization, s2iphysics_conditions);
+      Core::Conditions::find_conditioned_row_node_ids(*discretization, s2iphysics_conditions);
 
   if (s2iphysics_nodes != s2ievaluation_nodes)
   {

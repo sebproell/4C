@@ -58,14 +58,29 @@ namespace Core::Conditions
    * Loop all conditions of the given Discretization @p dis, find the ones with the
    * specified name @p condname and return the locally owned node ids.
    */
-  std::set<int> find_conditioned_node_ids(
+  std::set<int> find_conditioned_row_node_ids(
       const Core::FE::Discretization& dis, const std::string& condname);
 
   /**
    * Loop over all conditions @p conds and extract their node IDs, if they are locally owned by the
    * discretization @p dis.
    */
-  std::set<int> find_conditioned_node_ids(
+  std::set<int> find_conditioned_row_node_ids(
+      const Core::FE::Discretization& dis, std::span<const Condition*> conds);
+
+  /**
+   * Loop all conditions of the given Discretization @p dis, find the ones with the
+   * specified name @p condition_name and return the locally available node IDs. This includes
+   * owned and ghost nodes.
+   */
+  std::set<int> find_conditioned_col_node_ids(
+      const Core::FE::Discretization& dis, const std::string& condition_name);
+
+  /**
+   * Loop over all conditions @p conds and extract the node IDs that are locally available. This
+   * includes owned and ghost nodes.
+   */
+  std::set<int> find_conditioned_col_node_ids(
       const Core::FE::Discretization& dis, std::span<const Condition*> conds);
 
   /// find all local nodes from discretization marked with condition

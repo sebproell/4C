@@ -71,10 +71,10 @@ int Core::DOFSets::DofSetMergedWrapper::assign_degrees_of_freedom(
 
   // get nodes to be coupled
   auto masternodes_set =
-      Core::Conditions::find_conditioned_node_ids(*sourcedis_, couplingcond_master_);
+      Core::Conditions::find_conditioned_row_node_ids(*sourcedis_, couplingcond_master_);
   std::vector<int> masternodes(masternodes_set.begin(), masternodes_set.end());
   std::set<int> slavenodes_set =
-      Core::Conditions::find_conditioned_node_ids(dis, couplingcond_master_);
+      Core::Conditions::find_conditioned_row_node_ids(dis, couplingcond_slave_);
   std::vector<int> slavenodes(slavenodes_set.begin(), slavenodes_set.end());
 
 
@@ -131,9 +131,10 @@ int Core::DOFSets::DofSetMergedWrapper::assign_degrees_of_freedom(
   ////////////////////////////////////////////////////
 
   // get nodes to be coupled
-  masternodes_set = Core::Conditions::find_conditioned_node_ids(dis, couplingcond_slave_);
+  masternodes_set = Core::Conditions::find_conditioned_row_node_ids(dis, couplingcond_slave_);
   masternodes = std::vector<int>(masternodes_set.begin(), masternodes_set.end());
-  slavenodes_set = Core::Conditions::find_conditioned_node_ids(*sourcedis_, couplingcond_slave_);
+  slavenodes_set =
+      Core::Conditions::find_conditioned_row_node_ids(*sourcedis_, couplingcond_slave_);
   slavenodes = std::vector<int>(slavenodes_set.begin(), slavenodes_set.end());
 
 

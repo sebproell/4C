@@ -57,17 +57,17 @@ namespace
 
 
 
-std::set<int> Core::Conditions::find_conditioned_node_ids(
+std::set<int> Core::Conditions::find_conditioned_row_node_ids(
     const Core::FE::Discretization& dis, const std::string& condname)
 {
   std::vector<const Condition*> conds;
   dis.get_condition(condname, conds);
-  return find_conditioned_node_ids(dis, conds);
+  return find_conditioned_row_node_ids(dis, conds);
 }
 
 
 
-std::set<int> Core::Conditions::find_conditioned_node_ids(
+std::set<int> Core::Conditions::find_conditioned_row_node_ids(
     const Core::FE::Discretization& dis, std::span<const Condition*> conds)
 {
   std::set<int> node_set;
@@ -78,6 +78,36 @@ std::set<int> Core::Conditions::find_conditioned_node_ids(
     {
       const int gid = node;
       if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == my_rank)
+      {
+        node_set.insert(gid);
+      }
+    }
+  }
+
+  return node_set;
+}
+
+
+std::set<int> Core::Conditions::find_conditioned_col_node_ids(
+    const Core::FE::Discretization& dis, const std::string& condition_name)
+{
+  std::vector<const Condition*> conds;
+  dis.get_condition(condition_name, conds);
+  return find_conditioned_col_node_ids(dis, conds);
+}
+
+
+
+std::set<int> Core::Conditions::find_conditioned_col_node_ids(
+    const Core::FE::Discretization& dis, std::span<const Condition*> conds)
+{
+  std::set<int> node_set;
+  for (const auto& cond : conds)
+  {
+    for (const auto node : *cond->get_nodes())
+    {
+      const int gid = node;
+      if (dis.have_global_node(gid))
       {
         node_set.insert(gid);
       }
