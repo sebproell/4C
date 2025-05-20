@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_elch_input.hpp"
 #include "4C_fem_condition.hpp"
-#include "4C_inpar_elch.hpp"
 #include "4C_scatra_timint_implicit.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -37,7 +37,7 @@ namespace ScaTra
         const Core::Conditions::Condition& cccvhalfcyclecondition, bool adaptivetimestepping);
 
     //! Get phase of half cycle
-    Inpar::ElCh::CCCVHalfCyclePhase get_cccv_half_cycle_phase() const { return phase_cccv_; };
+    ElCh::CCCVHalfCyclePhase get_cccv_half_cycle_phase() const { return phase_cccv_; };
 
     //! Get ID of this half cycle condition
     int get_condition_id() const { return halfcyclecondition_id_; };
@@ -78,7 +78,7 @@ namespace ScaTra
 
     //! flag indicating whether cell is currently being operated in constant-current (CC),
     //! constant-voltage (CV), relaxation (RX), or initial relaxation mode
-    Inpar::ElCh::CCCVHalfCyclePhase phase_cccv_;
+    ElCh::CCCVHalfCyclePhase phase_cccv_;
 
     //! end time of current relaxation phase
     double relaxendtime_;
@@ -108,7 +108,7 @@ namespace ScaTra
     bool not_finished() const { return nhalfcycles_ >= ihalfcycle_; };
 
     //! phase of active half cycle
-    Inpar::ElCh::CCCVHalfCyclePhase get_cccv_half_cycle_phase() const;
+    ElCh::CCCVHalfCyclePhase get_cccv_half_cycle_phase() const;
 
     //! ID of current half cycle
     int get_half_cycle_condition_id() const;

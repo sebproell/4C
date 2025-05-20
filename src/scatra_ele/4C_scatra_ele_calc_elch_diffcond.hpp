@@ -423,7 +423,7 @@ namespace Discret
           Core::LinAlg::SerialDenseVector& conc) override;
 
       //! flag for used element formulation (material based)
-      Inpar::ElCh::DiffCondMat diffcondmat_;
+      ElCh::DiffCondMat diffcondmat_;
 
       //! parameter class for diffusion-conduction formulation
       const ScaTraEleParameterElchDiffCond* diffcondparams_;

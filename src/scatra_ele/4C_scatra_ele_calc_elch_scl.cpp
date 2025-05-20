@@ -42,7 +42,7 @@ Discret::Elements::ScaTraEleCalcElchScl<distype, probdim>::ScaTraEleCalcElchScl(
     const int numdofpernode, const int numscal, const std::string& disname)
     : Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::ScaTraEleCalcElchDiffCond(
           numdofpernode, numscal, disname),
-      diffcondmat_(Inpar::ElCh::diffcondmat_undefined),
+      diffcondmat_(ElCh::diffcondmat_undefined),
       diffcondparams_(Discret::Elements::ScaTraEleParameterElchDiffCond::instance(disname))
 {
   // replace diffusion manager for diffusion-conduciton formulation by diffusion manager for SCLs
@@ -172,7 +172,7 @@ void Discret::Elements::ScaTraEleCalcElchScl<distype, probdim>::calc_rhs_diff_cu
     Core::LinAlg::SerialDenseVector& erhs, const double rhsfac, const std::vector<double>& invfval,
     const std::vector<Core::LinAlg::Matrix<my::nsd_, 1>>& gradphi)
 {
-  if (diffcondmat_ != Inpar::ElCh::diffcondmat_scl)
+  if (diffcondmat_ != ElCh::diffcondmat_scl)
     FOUR_C_THROW("Diffusion-Conduction material has to be SCL material");
 
   for (unsigned vi = 0; vi < my::nen_; ++vi)

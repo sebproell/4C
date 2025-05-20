@@ -32,7 +32,7 @@ void ScaTra::MeshtyingStrategyFluidElch::init_meshtying()
   // safety check
   if (Teuchos::getIntegralValue<Inpar::FLUID::MeshTying>(*(scatratimint_->scatra_parameter_list()),
           "MESHTYING") == Inpar::FLUID::condensed_bmat_merged and
-      elch_tim_int()->equ_pot() == Inpar::ElCh::equpot_enc)
+      elch_tim_int()->equ_pot() == ElCh::equpot_enc)
     FOUR_C_THROW(
         "In the context of meshtying, the ion-transport system including the electroneutrality "
         "condition cannot be solved in a block matrix!");

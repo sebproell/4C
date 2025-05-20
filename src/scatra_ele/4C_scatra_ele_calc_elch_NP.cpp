@@ -136,30 +136,30 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::calc_mat_and_rhs(
   switch (myelch::elchparams_
           ->equ_pot())  // determine type of equation used for electric potential field
   {
-    case Inpar::ElCh::equpot_enc:
+    case ElCh::equpot_enc:
     {
       myelch::calc_mat_pot_equ_enc(emat, k, fac, my::scatraparatimint_->alpha_f());
       break;
     }
-    case Inpar::ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde:
     {
       calc_mat_pot_equ_encpde(emat, k, timefacfac, var_manager()->frt(), var_manager()->mig_conv(),
           var_manager()->phinp(k));
       break;
     }
-    case Inpar::ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_enc_pde_elim:
     {
       calc_mat_pot_equ_encpde_elim(emat, k, timefacfac, var_manager()->frt(),
           var_manager()->mig_conv(), var_manager()->phinp(k));
       break;
     }
-    case Inpar::ElCh::equpot_poisson:
+    case ElCh::equpot_poisson:
     {
       calc_mat_pot_equ_poisson(
           emat, k, fac, myelch::elchparams_->epsilon(), myelch::elchparams_->faraday());
       break;
     }
-    case Inpar::ElCh::equpot_laplace:
+    case ElCh::equpot_laplace:
     {
       // do nothing here, but later outside loop over scalars
       break;
@@ -229,30 +229,30 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::calc_mat_and_rhs(
   switch (myelch::elchparams_
           ->equ_pot())  // determine type of equation used for electric potential field
   {
-    case Inpar::ElCh::equpot_enc:
+    case ElCh::equpot_enc:
     {
       myelch::calc_rhs_pot_equ_enc(erhs, k, fac, var_manager()->phinp(k));
       break;
     }
-    case Inpar::ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde:
     {
       calc_rhs_pot_equ_encpde(erhs, k, rhsfac, var_manager()->mig_conv(), var_manager()->phinp(k),
           var_manager()->grad_phi(k));
       break;
     }
-    case Inpar::ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_enc_pde_elim:
     {
       calc_rhs_pot_equ_encpde_elim(erhs, k, rhsfac, var_manager()->mig_conv(),
           var_manager()->phinp(k), var_manager()->grad_phi(k));
       break;
     }
-    case Inpar::ElCh::equpot_poisson:
+    case ElCh::equpot_poisson:
     {
       calc_rhs_pot_equ_poisson(erhs, k, fac, myelch::elchparams_->epsilon(),
           myelch::elchparams_->faraday(), var_manager()->phinp(k), var_manager()->grad_pot());
       break;
     }
-    case Inpar::ElCh::equpot_laplace:
+    case ElCh::equpot_laplace:
     {
       // do nothing here, but later outside loop over scalars
       break;
@@ -287,15 +287,15 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::calc_mat_and_rhs_outside_s
   switch (myelch::elchparams_
           ->equ_pot())  // determine type of equation used for electric potential field
   {
-    case Inpar::ElCh::equpot_enc:
-    case Inpar::ElCh::equpot_enc_pde:
-    case Inpar::ElCh::equpot_enc_pde_elim:
-    case Inpar::ElCh::equpot_poisson:
+    case ElCh::equpot_enc:
+    case ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_poisson:
     {
       // has already been evaluated inside loop over scalars
       break;
     }
-    case Inpar::ElCh::equpot_laplace:
+    case ElCh::equpot_laplace:
     {
       calc_mat_pot_equ_laplace(emat, fac);
       break;
@@ -316,15 +316,15 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::calc_mat_and_rhs_outside_s
   switch (myelch::elchparams_
           ->equ_pot())  // determine type of equation used for electric potential field
   {
-    case Inpar::ElCh::equpot_enc:
-    case Inpar::ElCh::equpot_enc_pde:
-    case Inpar::ElCh::equpot_enc_pde_elim:
-    case Inpar::ElCh::equpot_poisson:
+    case ElCh::equpot_enc:
+    case ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_poisson:
     {
       // has already been evaluated inside loop over scalars
       break;
     }
-    case Inpar::ElCh::equpot_laplace:
+    case ElCh::equpot_laplace:
     {
       calc_rhs_pot_equ_laplace(erhs, fac, var_manager()->grad_pot());
       break;
@@ -946,8 +946,8 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::correction_for_flux_across
     Core::FE::Discretization& discretization, const std::vector<int>& lm,
     Core::LinAlg::SerialDenseMatrix& emat, Core::LinAlg::SerialDenseVector& erhs)
 {
-  if ((myelch::elchparams_->equ_pot() == Inpar::ElCh::equpot_enc_pde) or
-      (myelch::elchparams_->equ_pot() == Inpar::ElCh::equpot_enc_pde_elim))
+  if ((myelch::elchparams_->equ_pot() == ElCh::equpot_enc_pde) or
+      (myelch::elchparams_->equ_pot() == ElCh::equpot_enc_pde_elim))
   {
     // get dirichlet toggle from the discretization
     std::shared_ptr<const Core::LinAlg::Vector<double>> dctoggle =

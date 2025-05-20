@@ -9,7 +9,7 @@
 #define FOUR_C_SCATRA_ELE_UTILS_ELCH_SCL_HPP
 #include "4C_config.hpp"
 
-#include "4C_inpar_elch.hpp"
+#include "4C_elch_input.hpp"
 #include "4C_scatra_ele_parameter_elch.hpp"
 #include "4C_scatra_ele_utils_elch_diffcond.hpp"
 
@@ -46,7 +46,7 @@ namespace Discret
           const std::vector<double>& concentrations,                 //!< local concentration values
           double temperature,                                        //!< temperature
           std::shared_ptr<ScaTraEleDiffManagerElchScl> diffmanager,  //!< diffusion manager
-          Inpar::ElCh::DiffCondMat& diffcondmat                      //!< ion type
+          ElCh::DiffCondMat& diffcondmat                             //!< ion type
       );
       //! evaluate electrolyte phase
       void mat_elch_phase(
@@ -54,7 +54,7 @@ namespace Discret
           const std::vector<double>& concentrations,                 //!< local concentration values
           double temperature,                                        //!< temperature
           std::shared_ptr<ScaTraEleDiffManagerElchScl> diffmanager,  //!< diffusion manager
-          Inpar::ElCh::DiffCondMat& diffcondmat                      //!< ion type
+          ElCh::DiffCondMat& diffcondmat                             //!< ion type
       );
 
       //! evaluate Space Charge Layer Material

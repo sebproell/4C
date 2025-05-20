@@ -101,8 +101,8 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
   // concentration-dependent Butler-Volmer law(s)
   switch (kinetics)
   {
-    case Inpar::ElCh::butler_volmer:
-    case Inpar::ElCh::butler_volmer_yang1997:
+    case ElCh::butler_volmer:
+    case ElCh::butler_volmer_yang1997:
     {
       // read model-specific parameters
       const auto alphaa = cond.parameters().get<double>("ALPHA_A");
@@ -156,7 +156,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       else
         pow_conint_gamma_k = std::pow(conint[k] / refcon, gamma);
 
-      if (kinetics == Inpar::ElCh::butler_volmer)
+      if (kinetics == ElCh::butler_volmer)
       {
         // note: gamma==0 deactivates concentration dependency in Butler-Volmer!
         const double expterm = exp(alphaa * frt * eta) - exp((-alphac) * frt * eta);
@@ -204,7 +204,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
         }
       }  // end if(kinetics=="Butler-Volmer")
 
-      else if (kinetics == Inpar::ElCh::butler_volmer_yang1997)
+      else if (kinetics == ElCh::butler_volmer_yang1997)
       {
         if (dlcap != 0.0)
           FOUR_C_THROW(
@@ -250,7 +250,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
     // implementation of cathodic path: i_n = i_0 * (-exp(-alpha * frt* eta)
     // -> cathodic reaction path: i_0 > 0 and alpha > 0
     // -> anodic reacton path:    i_0 < 0 and alpha < 0
-    case Inpar::ElCh::tafel:
+    case ElCh::tafel:
     {
       // read model-specific parameter
       const auto alpha = cond.parameters().get<double>("ALPHA");
@@ -327,7 +327,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
     // previously implemented: i_n = i_0*(alphaa*frt*(V_M - phi) + 1.0)
     //                         -> linearization in respect to anodic branch!!
     //                         this is not the classical version of a linear electrode kinetics law
-    case Inpar::ElCh::linear:
+    case ElCh::linear:
     {
       // read model-specific parameter
       const auto alphaa = cond.parameters().get<double>("ALPHA");
@@ -408,7 +408,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       break;
     }
 
-    case Inpar::ElCh::butler_volmer_newman:
+    case ElCh::butler_volmer_newman:
     {
       // "Electrochemical systems"
       // Newman and Thomas-Alyea, 2004
@@ -529,7 +529,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       break;
     }
 
-    case Inpar::ElCh::butler_volmer_bard:
+    case ElCh::butler_volmer_bard:
     {
       // "Electrochemical Methods Fundamentals and Applications"
       // Bard and Faulkner, 2001, pp. 94 ff; pp. 99 eq. 3.4.10
@@ -655,7 +655,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_elch_kinetics_at_i
       break;
     }
 
-    case Inpar::ElCh::nernst:
+    case ElCh::nernst:
       break;
 
     default:
@@ -733,8 +733,8 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
   // concentration-dependent Butler-Volmer law(s)
   switch (kinetics)
   {
-    case Inpar::ElCh::butler_volmer:
-    case Inpar::ElCh::butler_volmer_yang1997:
+    case ElCh::butler_volmer:
+    case ElCh::butler_volmer_yang1997:
     {
       // read model-specific parameter
       const auto alphaa = cond.parameters().get<double>("ALPHA_A");
@@ -780,7 +780,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
             "The electrode kinetics flag zero_cur has only two options: false (=0) or true (=1).");
 
       double expterm(0.0);
-      if (kinetics == Inpar::ElCh::butler_volmer)
+      if (kinetics == ElCh::butler_volmer)
       {
         // general Butler-Volmer
         expterm = std::pow(conint[k] / refcon, gamma) *
@@ -788,7 +788,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
         linea = std::pow(conint[k] / refcon, gamma) * frt *
                 ((alphaa * exp(alphaa * frt * eta)) + (alphac * exp((-alphac) * frt * eta)));
       }
-      if (kinetics == Inpar::ElCh::butler_volmer_yang1997)
+      if (kinetics == ElCh::butler_volmer_yang1997)
       {
         if (((conint[k] / refcon) < 1e-13) && (gamma < 1.0))
         {  // prevents NaN's in the current density evaluation
@@ -840,7 +840,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
     // implementation of cathodic path: i_n = i_0 * (-exp(-alpha * frt* eta)
     // -> cathodic reaction path: i_0 > 0 and alpha > 0
     // -> anodic reacton path:    i_0 < 0 and alpha < 0
-    case Inpar::ElCh::tafel:
+    case ElCh::tafel:
     {
       // read model-specific parameter
       const auto alpha = cond.parameters().get<double>("ALPHA");
@@ -897,7 +897,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
     // previously implemented: i_n = i_0*(alphaa*frt*(V_M - phi) + 1.0)
     //                         -> linearization in respect to anodic branch!!
     //                         this is not the classical version of a linear electrode kinetics law
-    case Inpar::ElCh::linear:
+    case ElCh::linear:
     {
       // read model-specific parameter
       const auto alphaa = cond.parameters().get<double>("ALPHA");
@@ -970,7 +970,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
       break;
     }
 
-    case Inpar::ElCh::butler_volmer_newman:
+    case ElCh::butler_volmer_newman:
     {
       // "Electrochemical systems"
       // Newman ad Thomas-Alyea, 2004
@@ -1101,7 +1101,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
       break;
     }
 
-    case Inpar::ElCh::butler_volmer_bard:
+    case ElCh::butler_volmer_bard:
     {
       // "Electrochemical Methods Fundamentals and Applications"
       // Bard and Faulkner, 2001, pp. 94 ff; pp. 99 eq. 3.4.10
@@ -1209,7 +1209,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::evaluate_electrode_status_a
       break;
     }  // end Butler-Volmer-Bard
 
-    case Inpar::ElCh::nernst:
+    case ElCh::nernst:
     {
       const auto e0 = cond.parameters().get<double>("E0");
       const auto c0 = cond.parameters().get<double>("C0");
@@ -1258,7 +1258,7 @@ template <Core::FE::CellType distype>
 void Discret::Elements::ScaTraEleUtilsElch<distype>::mat_ion(
     const std::shared_ptr<const Core::Mat::Material> material,  //!< ion material
     const int k,                                                //!< ID of ion material
-    const Inpar::ElCh::EquPot equpot,  //!< type of closing equation for electric potential
+    const ElCh::EquPot equpot,  //!< type of closing equation for electric potential
     const std::shared_ptr<ScaTraEleDiffManagerElch>& diffmanager  //!< diffusion manager
 )
 {
@@ -1276,7 +1276,7 @@ void Discret::Elements::ScaTraEleUtilsElch<distype>::mat_ion(
   {
     // Material data of eliminated ion species is read from the LAST ion material
     // in the matlist!
-    if (equpot == Inpar::ElCh::equpot_enc_pde_elim)
+    if (equpot == ElCh::equpot_enc_pde_elim)
     {
       diffmanager->increase_length_vector(k, numscal_);
 

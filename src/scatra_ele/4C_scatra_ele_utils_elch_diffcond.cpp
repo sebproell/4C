@@ -51,9 +51,8 @@ Discret::Elements::ScaTraEleUtilsElchDiffCond<distype>::ScaTraEleUtilsElchDiffCo
 template <Core::FE::CellType distype>
 void Discret::Elements::ScaTraEleUtilsElchDiffCond<distype>::mat_elch_mat(
     std::shared_ptr<const Core::Mat::Material> material, const std::vector<double>& concentrations,
-    const double temperature, const Inpar::ElCh::EquPot equpot, const double ffrt,
-    std::shared_ptr<ScaTraEleDiffManagerElchDiffCond> diffmanager,
-    Inpar::ElCh::DiffCondMat& diffcondmat)
+    const double temperature, const ElCh::EquPot equpot, const double ffrt,
+    std::shared_ptr<ScaTraEleDiffManagerElchDiffCond> diffmanager, ElCh::DiffCondMat& diffcondmat)
 {
   // cast material to electrolyte material
   const std::shared_ptr<const Mat::ElchMat> elchmat =
@@ -81,9 +80,8 @@ void Discret::Elements::ScaTraEleUtilsElchDiffCond<distype>::mat_elch_mat(
 template <Core::FE::CellType distype>
 void Discret::Elements::ScaTraEleUtilsElchDiffCond<distype>::mat_elch_phase(
     std::shared_ptr<const Core::Mat::Material> material, const std::vector<double>& concentrations,
-    const double temperature, const Inpar::ElCh::EquPot& equpot, const double& ffrt,
-    std::shared_ptr<ScaTraEleDiffManagerElchDiffCond> diffmanager,
-    Inpar::ElCh::DiffCondMat& diffcondmat)
+    const double temperature, const ElCh::EquPot& equpot, const double& ffrt,
+    std::shared_ptr<ScaTraEleDiffManagerElchDiffCond> diffmanager, ElCh::DiffCondMat& diffcondmat)
 {
   // cast material to electrolyte phase
   const std::shared_ptr<const Mat::ElchPhase> matelchphase =
@@ -111,7 +109,7 @@ void Discret::Elements::ScaTraEleUtilsElchDiffCond<distype>::mat_elch_phase(
           FOUR_C_THROW("Newman material must be the only transported species!");
 
         // set ion type
-        diffcondmat = Inpar::ElCh::diffcondmat_newman;
+        diffcondmat = ElCh::diffcondmat_newman;
 
         // evaluate standard Newman material
         mat_newman(elchPhaseMaterial, concentrations[0], temperature, diffmanager);
@@ -122,7 +120,7 @@ void Discret::Elements::ScaTraEleUtilsElchDiffCond<distype>::mat_elch_phase(
       case Core::Materials::m_ion:
       {
         // set ion type
-        diffcondmat = Inpar::ElCh::diffcondmat_ion;
+        diffcondmat = ElCh::diffcondmat_ion;
 
         myelch::mat_ion(elchPhaseMaterial, imat, equpot, diffmanager);
 

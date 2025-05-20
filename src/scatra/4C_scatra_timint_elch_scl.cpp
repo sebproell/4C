@@ -1097,7 +1097,7 @@ void ScaTra::ScaTraTimIntElchSCL::calc_initial_potential_field()
   // safety checks
   FOUR_C_ASSERT(step_ == 0, "Step counter is not zero!");
 
-  if (equpot_ != Inpar::ElCh::equpot_divi)
+  if (equpot_ != ElCh::equpot_divi)
   {
     FOUR_C_THROW(
         "Initial potential field cannot be computed for chosen closing equation for electric "

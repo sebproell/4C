@@ -587,8 +587,7 @@ void ScaTra::MortarCellCalcElch<distype_s, distype_m>::evaluate_condition(
   // safety checks
   if (my::numdofpernode_slave_ != 2 or my::numdofpernode_master_ != 2)
     FOUR_C_THROW("Invalid number of degrees of freedom per node!");
-  if (Discret::Elements::ScaTraEleParameterElch::instance("scatra")->equ_pot() !=
-      Inpar::ElCh::equpot_divi)
+  if (Discret::Elements::ScaTraEleParameterElch::instance("scatra")->equ_pot() != ElCh::equpot_divi)
     FOUR_C_THROW("Invalid closing equation for electric potential!");
 
   // extract condition from parameter list
@@ -655,8 +654,7 @@ void ScaTra::MortarCellCalcElch<distype_s, distype_m>::evaluate_condition_nts(
   // safety checks
   if (my::numdofpernode_slave_ != 2 or my::numdofpernode_master_ != 2)
     FOUR_C_THROW("Invalid number of degrees of freedom per node!");
-  if (Discret::Elements::ScaTraEleParameterElch::instance("scatra")->equ_pot() !=
-      Inpar::ElCh::equpot_divi)
+  if (Discret::Elements::ScaTraEleParameterElch::instance("scatra")->equ_pot() != ElCh::equpot_divi)
     FOUR_C_THROW("Invalid closing equation for electric potential!");
 
   // access material of slave element
@@ -823,8 +821,7 @@ void ScaTra::MortarCellCalcElchSTIThermo<distype_s, distype_m>::evaluate_conditi
   // safety checks
   if (my::numdofpernode_slave_ != 2 or my::numdofpernode_master_ != 2)
     FOUR_C_THROW("Invalid number of degrees of freedom per node!");
-  if (Discret::Elements::ScaTraEleParameterElch::instance("scatra")->equ_pot() !=
-      Inpar::ElCh::equpot_divi)
+  if (Discret::Elements::ScaTraEleParameterElch::instance("scatra")->equ_pot() != ElCh::equpot_divi)
     FOUR_C_THROW("Invalid closing equation for electric potential!");
 
   // extract condition from parameter list

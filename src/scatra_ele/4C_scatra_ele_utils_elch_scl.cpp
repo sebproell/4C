@@ -49,7 +49,7 @@ template <Core::FE::CellType distype>
 void Discret::Elements::ScaTraEleUtilsElchScl<distype>::mat_elch_mat(
     std::shared_ptr<const Core::Mat::Material> material, const std::vector<double>& concentrations,
     const double temperature, std::shared_ptr<ScaTraEleDiffManagerElchScl> diffmanager,
-    Inpar::ElCh::DiffCondMat& diffcondmat)
+    ElCh::DiffCondMat& diffcondmat)
 {
   // cast material to electrolyte material
   const auto elchmat = std::static_pointer_cast<const Mat::ElchMat>(material);
@@ -126,7 +126,7 @@ template <Core::FE::CellType distype>
 void Discret::Elements::ScaTraEleUtilsElchScl<distype>::mat_elch_phase(
     std::shared_ptr<const Core::Mat::Material> material, const std::vector<double>& concentrations,
     const double temperature, std::shared_ptr<ScaTraEleDiffManagerElchScl> diffmanager,
-    Inpar::ElCh::DiffCondMat& diffcondmat)
+    ElCh::DiffCondMat& diffcondmat)
 {
   // cast material to electrolyte phase
   const auto matelchphase = std::static_pointer_cast<const Mat::ElchPhase>(material);
@@ -146,7 +146,7 @@ void Discret::Elements::ScaTraEleUtilsElchScl<distype>::mat_elch_phase(
     {
       case Core::Materials::m_scl:
       {
-        diffcondmat = Inpar::ElCh::diffcondmat_scl;
+        diffcondmat = ElCh::diffcondmat_scl;
         mat_scl(elchPhaseMaterial, concentrations[0], temperature, diffmanager);
         break;
       }

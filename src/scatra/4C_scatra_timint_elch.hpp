@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_elch.hpp"
+#include "4C_elch_input.hpp"
 #include "4C_io_runtime_csv_writer.hpp"
 #include "4C_scatra_timint_implicit.hpp"
 
@@ -157,7 +157,7 @@ namespace ScaTra
     void collect_runtime_output_data() override;
 
     //! output type of closing equation for electric potential
-    Inpar::ElCh::EquPot equ_pot() const { return equpot_; }
+    ElCh::EquPot equ_pot() const { return equpot_; }
 
     //! return constant F/RT
     double frt() const { return fr_ / temperature_; }
@@ -342,7 +342,7 @@ namespace ScaTra
     std::shared_ptr<const Teuchos::ParameterList> elchparams_;
 
     //! type of closing equation for electric potential
-    Inpar::ElCh::EquPot equpot_;
+    ElCh::EquPot equpot_;
 
     //! ELCH-specific parameter F/R
     const double fr_;

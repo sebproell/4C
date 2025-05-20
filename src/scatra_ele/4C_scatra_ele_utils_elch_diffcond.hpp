@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_elch.hpp"
+#include "4C_elch_input.hpp"
 #include "4C_scatra_ele_utils_elch_electrode.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -45,10 +45,10 @@ namespace Discret
           std::shared_ptr<const Core::Mat::Material> material,  //!< electrolyte material
           const std::vector<double>& concentrations,            //!< local concentration values
           double temperature,                                   //!< temperature
-          Inpar::ElCh::EquPot equpot,  //!< type of closing equation for electric potential
-          double ffrt,                 //!< factor F^2/RT
+          ElCh::EquPot equpot,  //!< type of closing equation for electric potential
+          double ffrt,          //!< factor F^2/RT
           std::shared_ptr<ScaTraEleDiffManagerElchDiffCond> diffmanager,  //!< diffusion manager
-          Inpar::ElCh::DiffCondMat& diffcondmat                           //!< ion type
+          ElCh::DiffCondMat& diffcondmat                                  //!< ion type
       );
 
       //! evaluate electrolyte phase
@@ -56,10 +56,10 @@ namespace Discret
           std::shared_ptr<const Core::Mat::Material> material,  //!< electrolyte phase
           const std::vector<double>& concentrations,            //!< local concentration values
           double temperature,                                   //!< temperature
-          const Inpar::ElCh::EquPot& equpot,  //!< type of closing equation for electric potential
-          const double& ffrt,                 //!< factor F^2/RT
+          const ElCh::EquPot& equpot,  //!< type of closing equation for electric potential
+          const double& ffrt,          //!< factor F^2/RT
           std::shared_ptr<ScaTraEleDiffManagerElchDiffCond> diffmanager,  //!< diffusion manager
-          Inpar::ElCh::DiffCondMat& diffcondmat                           //!< ion type
+          ElCh::DiffCondMat& diffcondmat                                  //!< ion type
       );
 
       //! evaluate standard Newman material

@@ -57,7 +57,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElchElectrode<distype,
     Core::LinAlg::SerialDenseMatrix& emastermatrix, Core::LinAlg::SerialDenseVector& eslaveresidual)
 {
   // safety check
-  if (myelch::elchparams_->equ_pot() != Inpar::ElCh::equpot_divi)
+  if (myelch::elchparams_->equ_pot() != ElCh::equpot_divi)
     FOUR_C_THROW("Invalid closing equation for electric potential!");
 
   // get condition specific parameter

@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_elch.hpp"
+#include "4C_elch_input.hpp"
 #include "4C_scatra_ele_parameter_base.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -37,7 +37,7 @@ namespace Discret
           ) override;
 
       //! return type of closing equation for electric potential
-      Inpar::ElCh::EquPot equ_pot() const { return equpot_; };
+      ElCh::EquPot equ_pot() const { return equpot_; };
 
       //! return Faraday constant
       double faraday() const { return faraday_; };
@@ -64,7 +64,7 @@ namespace Discret
       bool boundaryfluxcoupling_;
 
       //! equation used for closing of the elch-system
-      enum Inpar::ElCh::EquPot equpot_;
+      enum ElCh::EquPot equpot_;
 
       //! Faraday constant
       double faraday_;

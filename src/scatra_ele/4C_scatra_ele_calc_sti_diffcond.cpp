@@ -679,9 +679,9 @@ void Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::get_material_params(
         std::pow(Discret::Elements::ScaTraEleParameterElch::instance("scatra")->faraday(), 2) / rt;
 
     std::vector<double> concentrations(1, var_manager()->conc());
-    Inpar::ElCh::DiffCondMat dummy(Inpar::ElCh::diffcondmat_undefined);
-    utils_->mat_elch_mat(material, concentrations, var_manager()->phinp(0),
-        Inpar::ElCh::equpot_undefined, ffrt, diffmanagerdiffcond_, dummy);
+    ElCh::DiffCondMat dummy(ElCh::diffcondmat_undefined);
+    utils_->mat_elch_mat(material, concentrations, var_manager()->phinp(0), ElCh::equpot_undefined,
+        ffrt, diffmanagerdiffcond_, dummy);
   }
   else
     FOUR_C_THROW("Invalid scalar transport material!");

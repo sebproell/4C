@@ -7,10 +7,10 @@
 
 #include "4C_elch_moving_boundary_algorithm.hpp"
 
+#include "4C_elch_input.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_elch.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_scatra_timint_elch.hpp"
@@ -53,8 +53,8 @@ void ElCh::MovingBoundaryAlgorithm::init()
         "interface!");
   }
 
-  pseudotransient_ = (Teuchos::getIntegralValue<Inpar::ElCh::ElchMovingBoundary>(elch_params_,
-                          "MOVINGBOUNDARY") == Inpar::ElCh::elch_mov_bndry_pseudo_transient);
+  pseudotransient_ = (Teuchos::getIntegralValue<ElCh::ElchMovingBoundary>(
+                          elch_params_, "MOVINGBOUNDARY") == ElCh::elch_mov_bndry_pseudo_transient);
 }
 
 

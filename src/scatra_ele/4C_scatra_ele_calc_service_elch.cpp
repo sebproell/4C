@@ -250,7 +250,7 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::cal_error_compared_
   *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype, int probdim>
 void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::calculate_conductivity(
-    const Core::Elements::Element* ele, const enum Inpar::ElCh::EquPot equpot,
+    const Core::Elements::Element* ele, const enum ElCh::EquPot equpot,
     Core::LinAlg::SerialDenseVector& sigma_domint, bool effCond, bool specresist)
 {
   // integration points and weights
@@ -350,7 +350,7 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::calc_elch_boundary_
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ElchBoundaryKineticsPoint'!");
 
   // access parameters of the condition
-  const int kinetics = cond->parameters().get<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL");
+  const int kinetics = cond->parameters().get<ElCh::ElectrodeKinetics>("KINETIC_MODEL");
   double pot0 = cond->parameters().get<double>("POT");
   const auto functnum = cond->parameters().get<std::optional<int>>("FUNCT");
   const int nume = cond->parameters().get<int>("E-");
@@ -382,9 +382,9 @@ void Discret::Elements::ScaTraEleCalcElch<distype, probdim>::calc_elch_boundary_
     int reactspecies = 0;
     for (int kk = 0; kk < my::numscal_; ++kk) reactspecies += abs((*stoich)[kk]);
 
-    if (reactspecies > 1 and (kinetics == Inpar::ElCh::butler_volmer or
-                                 kinetics == Inpar::ElCh::butler_volmer_yang1997 or
-                                 kinetics == Inpar::ElCh::tafel or kinetics == Inpar::ElCh::linear))
+    if (reactspecies > 1 and
+        (kinetics == ElCh::butler_volmer or kinetics == ElCh::butler_volmer_yang1997 or
+            kinetics == ElCh::tafel or kinetics == ElCh::linear))
     {
       FOUR_C_THROW(
           "Kinetic model Butler-Volmer / Butler-Volmer-Yang / Tafel and Linear: \n"

@@ -14,6 +14,7 @@
 #include "4C_adapter_fld_fluid_fsi_msht.hpp"
 #include "4C_adapter_fld_fluid_xfsi.hpp"
 #include "4C_adapter_fld_poro.hpp"
+#include "4C_elch_input.hpp"
 #include "4C_fem_condition_periodic.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fluid_implicit_integration.hpp"
@@ -33,7 +34,6 @@
 #include "4C_fluid_xfluid.hpp"
 #include "4C_fluid_xfluid_fluid.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_elch.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_inpar_poroelast.hpp"
@@ -926,10 +926,9 @@ void Adapter::FluidBaseAlgorithm::setup_fluid(const Teuchos::ParameterList& prbd
         const Teuchos::ParameterList& elchcontrol =
             Global::Problem::instance()->elch_control_params();
         // is ALE needed or not?
-        const Inpar::ElCh::ElchMovingBoundary withale =
-            Teuchos::getIntegralValue<Inpar::ElCh::ElchMovingBoundary>(
-                elchcontrol, "MOVINGBOUNDARY");
-        if (withale != Inpar::ElCh::elch_mov_bndry_no)
+        const ElCh::ElchMovingBoundary withale =
+            Teuchos::getIntegralValue<ElCh::ElchMovingBoundary>(elchcontrol, "MOVINGBOUNDARY");
+        if (withale != ElCh::elch_mov_bndry_no)
         {
           std::shared_ptr<FLD::FluidImplicitTimeInt> tmpfluid;
           if (timeint == Inpar::FLUID::timeint_stationary)
