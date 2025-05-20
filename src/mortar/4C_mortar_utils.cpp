@@ -282,30 +282,6 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
       Core::Communication::unpack_epetra_comm(mat.Comm()));
 }
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Mortar::replace_column_and_domain_map(Core::LinAlg::SparseMatrix& mat,
-    const Core::LinAlg::Map& newdomainmap, std::shared_ptr<Core::LinAlg::Map>* const newcolmap_ptr)
-{
-  if (not mat.filled()) FOUR_C_THROW("Matrix must be filled!");
-
-  std::shared_ptr<Core::LinAlg::Map> newcolmap = nullptr;
-  if (newcolmap_ptr)
-  {
-    create_new_col_map(mat, newdomainmap, *newcolmap_ptr);
-    newcolmap = *newcolmap_ptr;
-  }
-  else
-    create_new_col_map(mat, newdomainmap, newcolmap);
-
-  int err = mat.epetra_matrix()->ReplaceColMap(newcolmap->get_epetra_map());
-  if (err) FOUR_C_THROW("ReplaceColMap failed! ( err = {} )", err);
-
-  Epetra_Import importer(newcolmap->get_epetra_map(), newdomainmap.get_epetra_map());
-
-  err = mat.epetra_matrix()->ReplaceDomainMapAndImporter(newdomainmap.get_epetra_map(), &importer);
-  if (err) FOUR_C_THROW("ReplaceDomainMapAndImporter failed! ( err = {} )", err);
-}
 
 /*----------------------------------------------------------------------*
  | transform the row and column maps of a matrix (GIDs)       popp 08/10|
