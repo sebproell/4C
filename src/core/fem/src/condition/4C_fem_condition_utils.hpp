@@ -69,7 +69,7 @@ namespace Core::Conditions
    * specified name @p condition_name. Depending on @p look_for, return a set of node IDs
    * that are locally owned or locally owned and ghosted.
    */
-  std::set<int> find_conditioned_node_ids(
+  [[nodiscard]] std::set<int> find_conditioned_node_ids(
       const Core::FE::Discretization& dis, const std::string& condition_name, LookFor look_for);
 
   /**
@@ -77,7 +77,7 @@ namespace Core::Conditions
    * discretization @p dis. Depending on @p look_for, return a set of node IDs
    * that are locally owned or locally owned and ghosted.
    */
-  std::set<int> find_conditioned_node_ids(const Core::FE::Discretization& dis,
+  [[nodiscard]] std::set<int> find_conditioned_node_ids(const Core::FE::Discretization& dis,
       std::span<const Condition*> conditions, LookFor look_for);
 
   /**
@@ -86,7 +86,7 @@ namespace Core::Conditions
    * may be subject to multiple conditions. Depending on @p look_for, return node IDs
    * that are locally owned or locally owned and ghosted.
    */
-  std::multimap<int, const Condition*> find_conditioned_node_ids_and_conditions(
+  [[nodiscard]] std::multimap<int, const Condition*> find_conditioned_node_ids_and_conditions(
       const Core::FE::Discretization& dis, std::span<const Condition*> conditions,
       LookFor look_for);
 
