@@ -242,6 +242,11 @@ int Solid::TimeInt::Explicit::integrate_step()
   throw_if_state_not_in_sync_with_nox_group();
   // reset the non-linear solver
   nln_solver().reset();
+
+  // reset x vector of the group
+  auto& group = nln_solver().get_solution_group();
+  group.computeX(group, group.getX(), -1.0);
+
   // solve the non-linear problem
   nln_solver().solve();
   return 0;
