@@ -55,52 +55,49 @@ namespace
   }
 }  // namespace
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Core::Conditions::find_conditioned_nodes(
-    const Core::FE::Discretization& dis, const std::string& condname, std::vector<int>& nodes)
+
+
+std::set<int> Core::Conditions::find_conditioned_node_ids(
+    const Core::FE::Discretization& dis, const std::string& condname)
 {
   std::vector<const Condition*> conds;
   dis.get_condition(condname, conds);
-  find_conditioned_nodes(dis, conds, nodes);
+  return find_conditioned_node_ids(dis, conds);
 }
 
 
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void Core::Conditions::find_conditioned_nodes(
-    const Core::FE::Discretization& dis, std::span<const Condition*> conds, std::vector<int>& nodes)
+std::set<int> Core::Conditions::find_conditioned_node_ids(
+    const Core::FE::Discretization& dis, std::span<const Condition*> conds)
 {
-  std::set<int> nodeset;
-  const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
+  std::set<int> node_set;
+  const int my_rank = Core::Communication::my_mpi_rank(dis.get_comm());
   for (const auto& cond : conds)
   {
     for (const auto node : *cond->get_nodes())
     {
       const int gid = node;
-      if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == myrank)
+      if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == my_rank)
       {
-        nodeset.insert(gid);
+        node_set.insert(gid);
       }
     }
   }
 
-  nodes.assign(nodeset.begin(), nodeset.end());
+  return node_set;
 }
 
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
+
 void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& dis,
     std::span<const Condition*> conds, std::map<int, Core::Nodes::Node*>& nodes)
 {
-  const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
+  const int my_rank = Core::Communication::my_mpi_rank(dis.get_comm());
   for (auto cond : conds)
   {
     for (int gid : *cond->get_nodes())
     {
-      if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == myrank)
+      if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == my_rank)
       {
         nodes[gid] = dis.g_node(gid);
       }
@@ -108,46 +105,44 @@ void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& di
   }
 }
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
+
+
 void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& dis,
     std::span<const Condition*> conds, std::map<int, std::shared_ptr<std::vector<int>>>& nodes,
     bool use_coupling_id)
 {
-  std::map<int, std::set<int>> nodeset;
-  const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
+  std::map<int, std::set<int>> node_set;
+  const int my_rank = Core::Communication::my_mpi_rank(dis.get_comm());
   for (const auto& cond : conds)
   {
     int id = use_coupling_id ? cond->parameters().get<int>("coupling_id") : 0;
     for (int gid : *cond->get_nodes())
     {
-      if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == myrank)
+      if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == my_rank)
       {
-        nodeset[id].insert(gid);
+        node_set[id].insert(gid);
       }
     }
   }
 
-  for (const auto& [id, gids] : nodeset)
+  for (const auto& [id, gids] : node_set)
   {
-    nodes[id] = std::make_shared<std::vector<int>>(gids.size());
-    nodes[id]->assign(gids.begin(), gids.end());
+    nodes[id] = std::make_shared<std::vector<int>>(gids.begin(), gids.end());
   }
 }
 
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
+
 void Core::Conditions::find_conditioned_nodes(const Core::FE::Discretization& dis,
     std::span<const Condition*> conds, std::map<int, std::map<int, Core::Nodes::Node*>>& nodes)
 {
-  const int myrank = Core::Communication::my_mpi_rank(dis.get_comm());
+  const int my_rank = Core::Communication::my_mpi_rank(dis.get_comm());
   for (auto* cond : conds)
   {
     int id = cond->parameters().get<int>("coupling_id");
     for (int gid : *cond->get_nodes())
     {
-      if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == myrank)
+      if (dis.have_global_node(gid) and dis.g_node(gid)->owner() == my_rank)
       {
         (nodes[id])[gid] = dis.g_node(gid);
       }
