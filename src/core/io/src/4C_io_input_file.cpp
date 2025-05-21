@@ -1006,8 +1006,8 @@ namespace Core::IO
         section |= ryml::SEQ;
         for (const auto& line : pimpl_->in_section(section_name))
         {
-          section.append_child() = ryml::csubstr(
-              line.get_as_dat_style_string().data(), line.get_as_dat_style_string().size());
+          YamlNodeRef line_node{section.append_child(), file_name};
+          emit_value_as_yaml(line_node, line.get_as_dat_style_string());
         }
       }
     }
