@@ -33,7 +33,7 @@ template <Core::FE::CellType distype_art, Core::FE::CellType distype_cont, int d
 PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_cont,
     dim>::PoroMultiPhaseScatraArteryCouplingPair()
     : PoroMultiPhaseScatraArteryCouplingPairBase(),
-      coupltype_(CouplingType::type_undefined),
+      coupltype_(CouplingType::undefined),
       couplmethod_(Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::none),
       condname_(""),
       isinit_(false),
@@ -115,13 +115,13 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
   if (element1_->element_type().name() == "ArteryType" &&
       element2_->element_type().name() == "PoroFluidMultiPhaseType")
   {
-    coupltype_ = type_porofluid;
+    coupltype_ = CouplingType::porofluid;
     nds_porofluid_ = 0;
   }
   else if (element1_->element_type().name() == "TransportType" &&
            element2_->element_type().name() == "TransportType")
   {
-    coupltype_ = type_scatra;
+    coupltype_ = CouplingType::scatra;
     nds_porofluid_ = 2;
   }
   else
@@ -140,7 +140,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
     // check couplingtype
     if (coupling_element_type_ != "ARTERY" && coupling_element_type_ != "AIRWAY")
     {
-      if (coupltype_ == type_porofluid)
+      if (coupltype_ == CouplingType::porofluid)
       {
         FOUR_C_THROW(
             "Wrong coupling type in DESIGN 1D ARTERY TO POROFLUID NONCONF COUPLING CONDITIONS.\n "
@@ -298,7 +298,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
   std::shared_ptr<Mat::MatList> contscatramat = nullptr;
   switch (coupltype_)
   {
-    case type_porofluid:
+    case CouplingType::porofluid:
     {
       multiphasemat =
           std::dynamic_pointer_cast<Mat::FluidPoroMultiPhase>(element2_->material(nds_porofluid_));
@@ -358,7 +358,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
       break;
     }
-    case type_scatra:
+    case CouplingType::scatra:
     {
       // check if we actually have three materials
       if (element2_->num_material() < 3) FOUR_C_THROW("no third material available");
@@ -433,7 +433,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
     diam_funct_active_ = true;
     artdiam_funct_ = &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
         diam_funct_num);
-    if (coupltype_ == type_porofluid)
+    if (coupltype_ == CouplingType::porofluid)
     {
       // cont derivatives + 1 artery pressure derivative
       diamderivs_ = std::vector<double>(numdof_cont_ + 1, 0.0);
@@ -538,7 +538,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
   Core::Geo::build_orthonormal_basis_from_unit_vector(tang, unit_rad_1, unit_rad_2);
 
   // get radius
-  const int artelematerial = coupltype_ == type_scatra ? 1 : 0;
+  const int artelematerial = coupltype_ == CouplingType::scatra ? 1 : 0;
   std::shared_ptr<Mat::Cnst1dArt> arterymat =
       std::static_pointer_cast<Mat::Cnst1dArt>(element1_->material(artelematerial));
   if (arterymat == nullptr)
@@ -804,7 +804,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
   switch (coupltype_)
   {
-    case type_porofluid:
+    case CouplingType::porofluid:
     {
       // extract element and node values of fluid
       variablemanager_->extract_element_and_node_values(*element2_, *contdis, la_cont, ele2pos_, 0);
@@ -862,7 +862,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
       }
       break;
     }
-    case type_scatra:
+    case CouplingType::scatra:
     {
       // extract element and node values of fluid
       variablemanager_->extract_element_and_node_values(*element2_, *contdis, la_cont, ele2pos_, 2);
@@ -1485,7 +1485,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
   // case with varying diameter and type porofluid: (integral and linearizations have to be
   // calculated) --> reset
-  if (diam_funct_active_ && coupltype_ == type_porofluid)
+  if (diam_funct_active_ && coupltype_ == CouplingType::porofluid)
   {
     integrated_diam = 0.0;
     diam_stiffmat11_.shape(dim1_, dim1_);
@@ -1538,7 +1538,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
     const std::vector<std::vector<double>>& xi, const std::vector<double>& segmentlengths,
     Core::LinAlg::SerialDenseVector& forcevec1, const double& etaA, const double& etaB)
 {
-  if (evaluate_in_ref_config_ || coupltype_ == type_scatra ||
+  if (evaluate_in_ref_config_ || coupltype_ == CouplingType::scatra ||
       couplmethod_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp)
     return;
 
@@ -1910,7 +1910,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
   {
     evaluate_diam_function_and_deriv(artpressAtGP, w_gp, N1, N2, jacobi);
     // integral is only calculated in this case
-    if (coupltype_ == type_porofluid) integrated_diam += w_gp * jacobi * arterydiam_at_gp_;
+    if (coupltype_ == CouplingType::porofluid) integrated_diam += w_gp * jacobi * arterydiam_at_gp_;
   }
 
   // artery functions
@@ -1975,7 +1975,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
   arterydiam_at_gp_ = artdiam_funct_->evaluate(variables, constants, 0);
 
   // derivatives and linearizations are so far only calculated for coupltype porofluid
-  if (coupltype_ == type_porofluid)
+  if (coupltype_ == CouplingType::porofluid)
   {
     // function derivatives
     std::vector<double> curderivs(artdiam_funct_->evaluate_derivative(variables, constants, 0));
@@ -2065,7 +2065,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
   switch (coupltype_)
   {
-    case type_porofluid:
+    case CouplingType::porofluid:
     {
       // artery
       timefacrhs_art_dens_ = timefacrhs_art_ / arterydensity;
@@ -2075,7 +2075,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
       break;
     }
-    case type_scatra:
+    case CouplingType::scatra:
     {
       // artery
       timefacrhs_art_dens_ = timefacrhs_art_ / arterydensity;
@@ -2230,7 +2230,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 {
   switch (coupltype_)
   {
-    case type_porofluid:
+    case CouplingType::porofluid:
     {
       for (unsigned int i = 0; i < numnodesart_; i++)
       {
@@ -2240,7 +2240,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
       }
       break;
     }
-    case type_scatra:
+    case CouplingType::scatra:
     {
       for (unsigned int i = 0; i < numnodesart_; i++)
       {
@@ -2265,7 +2265,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 {
   switch (coupltype_)
   {
-    case type_porofluid:
+    case CouplingType::porofluid:
     {
       for (unsigned int i = 0; i < numnodescont_; i++)
       {
@@ -2274,7 +2274,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
       }
       break;
     }
-    case type_scatra:
+    case CouplingType::scatra:
     {
       for (unsigned int i = 0; i < numnodescont_; i++)
       {
@@ -2383,7 +2383,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
   switch (coupltype_)
   {
-    case type_porofluid:
+    case CouplingType::porofluid:
     {
       // we have to derive w.r.t. fluid variables plus diameter
       std::vector<std::pair<std::string, double>> variables;
@@ -2418,7 +2418,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
       break;
     }
-    case type_scatra:
+    case CouplingType::scatra:
     {
       // scalars (both cont and art) are variables
       std::vector<std::pair<std::string, double>> variables;
@@ -3744,7 +3744,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
   switch (coupltype_)
   {
-    case type_porofluid:
+    case CouplingType::porofluid:
     {
       // special case for phases [0, ..., numfluidphases - 2]:
       // those have to assemble into the summed up fluid phase
@@ -3753,7 +3753,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
         cont_dofs_to_assemble_functions_into_[curphase].push_back(numfluidphases_ - 1);
       break;
     }
-    case type_scatra:
+    case CouplingType::scatra:
     {
       // do nothing
       break;
