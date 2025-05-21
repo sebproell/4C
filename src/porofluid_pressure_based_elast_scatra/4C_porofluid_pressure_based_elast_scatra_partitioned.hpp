@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
 namespace PoroPressureBased
 {
   //! Partitioned solution scheme of porofluid-elasticity problems with scalar transport
-  class PorofluidElastScatraPartitionedAlgorithm : public PoroMultiPhaseScaTraBase
+  class PorofluidElastScatraPartitionedAlgorithm : public PorofluidElastScatraBaseAlgorithm
   {
    public:
     PorofluidElastScatraPartitionedAlgorithm(

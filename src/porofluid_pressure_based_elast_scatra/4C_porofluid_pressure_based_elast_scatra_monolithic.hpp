@@ -38,7 +38,7 @@ namespace Core::LinearSolver
 namespace PoroPressureBased
 {
   //! Monolithic solution scheme of porofluid-elasticity problems with scalar transport
-  class PorofluidElastScatraMonolithicAlgorithm : public PoroMultiPhaseScaTraBase
+  class PorofluidElastScatraMonolithicAlgorithm : public PorofluidElastScatraBaseAlgorithm
   {
    public:
     PorofluidElastScatraMonolithicAlgorithm(

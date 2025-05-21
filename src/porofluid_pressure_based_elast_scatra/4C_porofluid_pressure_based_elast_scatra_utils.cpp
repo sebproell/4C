@@ -30,13 +30,13 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraBase>
+std::shared_ptr<PoroPressureBased::PorofluidElastScatraBaseAlgorithm>
 PoroPressureBased::create_algorithm_porofluid_elast_scatra(
     PoroPressureBased::SolutionSchemePorofluidElastScatra solscheme,
     const Teuchos::ParameterList& timeparams, MPI_Comm comm)
 {
   // Creation of Coupled Problem algorithm.
-  std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraBase> algo;
+  std::shared_ptr<PoroPressureBased::PorofluidElastScatraBaseAlgorithm> algo;
 
   switch (solscheme)
   {

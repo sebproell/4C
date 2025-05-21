@@ -36,7 +36,7 @@ FOUR_C_NAMESPACE_OPEN
  *----------------------------------------------------------------------*/
 PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::PorofluidElastScatraMonolithicAlgorithm(
     MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams)
-    : PoroMultiPhaseScaTraBase(comm, globaltimeparams),
+    : PorofluidElastScatraBaseAlgorithm(comm, globaltimeparams),
       iter_tol_inc_(0.0),
       iter_tol_res_(0.0),
       iter_max_(0),
@@ -92,9 +92,10 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::init(
     int ndsporofluid_scatra, const std::map<int, std::set<int>>* nearbyelepairs)
 {
   // call base class
-  PoroPressureBased::PoroMultiPhaseScaTraBase::init(globaltimeparams, algoparams, poroparams,
-      structparams, fluidparams, scatraparams, struct_disname, fluid_disname, scatra_disname, isale,
-      nds_disp, nds_vel, nds_solidpressure, ndsporofluid_scatra, nearbyelepairs);
+  PoroPressureBased::PorofluidElastScatraBaseAlgorithm::init(globaltimeparams, algoparams,
+      poroparams, structparams, fluidparams, scatraparams, struct_disname, fluid_disname,
+      scatra_disname, isale, nds_disp, nds_vel, nds_solidpressure, ndsporofluid_scatra,
+      nearbyelepairs);
 
   // read input variables
   iter_max_ = algoparams.get<int>("ITEMAX");
@@ -123,7 +124,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::init(
 void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_system()
 {
   // setup the poro subsystem first
-  poro_field()->setup_system();
+  porofluid_elast_algo()->setup_system();
 
   // -------------------------------------------------------------create combined map
   setup_maps();
@@ -139,9 +140,10 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_system()
 
   //! structure-scatra coupling matrix k_pss_ --> equal to zero so far
   //! fluid-scatra coupling matrix
-  k_pfs_ = std::make_shared<Core::LinAlg::SparseMatrix>(*(poro_field()->fluid_dof_row_map()),
-      //*(fluid_field()->dof_row_map()),
-      81, true, true);
+  k_pfs_ =
+      std::make_shared<Core::LinAlg::SparseMatrix>(*(porofluid_elast_algo()->fluid_dof_row_map()),
+          //*(fluid_field()->dof_row_map()),
+          81, true, true);
 
   //! scatra-structure coupling matrix
   k_sps_ = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -170,8 +172,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_maps()
 
   if (solve_structure_)
   {
-    vecSpaces.push_back(poro_field()->struct_dof_row_map());
-    vecSpaces.push_back(poro_field()->fluid_dof_row_map());
+    vecSpaces.push_back(porofluid_elast_algo()->struct_dof_row_map());
+    vecSpaces.push_back(porofluid_elast_algo()->fluid_dof_row_map());
     const Core::LinAlg::Map* dofrowmapscatra =
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
@@ -182,7 +184,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_maps()
   }
   else
   {
-    vecSpaces.push_back(poro_field()->fluid_dof_row_map());
+    vecSpaces.push_back(porofluid_elast_algo()->fluid_dof_row_map());
     const Core::LinAlg::Map* dofrowmapscatra =
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
@@ -208,7 +210,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_maps()
 void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::build_combined_dbc_map()
 {
   // Combined DBC map of poromultielast-problem
-  const std::shared_ptr<const Core::LinAlg::Map> porocondmap = poro_field()->combined_dbc_map();
+  const std::shared_ptr<const Core::LinAlg::Map> porocondmap =
+      porofluid_elast_algo()->combined_dbc_map();
   const std::shared_ptr<const Core::LinAlg::Map> scatracondmap =
       scatra_algo()->scatra_field()->dirich_maps()->cond_map();
   combinedDBCMap_ = Core::LinAlg::merge_map(porocondmap, scatracondmap, false);
@@ -221,13 +224,13 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::build_combined_
 void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::build_block_null_spaces()
 {
   // Build block null spaces of structure and fluid-field
-  if (solve_structure_) poro_field()->build_block_null_spaces(solver_);
+  if (solve_structure_) porofluid_elast_algo()->build_block_null_spaces(solver_);
   // only fluid
   else
   {
     Teuchos::ParameterList& blocksmootherparams1 = solver_->params().sublist("Inverse1");
     Core::LinearSolver::Parameters::compute_solver_parameters(
-        *poro_field()->fluid_field()->discretization(), blocksmootherparams1);
+        *porofluid_elast_algo()->fluid_field()->discretization(), blocksmootherparams1);
   }
 
   Teuchos::ParameterList& blocksmootherparams =
@@ -389,10 +392,10 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::evaluate(
   set_scatra_solution();
 
   // (3) access poro problem to build poro-poro block
-  poro_field()->evaluate(porostructinc, porofluidinc, iter_number_ == 0);
+  porofluid_elast_algo()->evaluate(porostructinc, porofluidinc, iter_number_ == 0);
 
   // (4) set fluid and structure solution on scatra field
-  set_poro_solution();
+  set_porofluid_elast_solution();
 
   // (5) access ScaTra problem to build scatra-scatra block
   evaluate_scatra();
@@ -427,7 +430,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_system_ma
   // has dimensions ((ndim+n_phases)*n_nodes)x((ndim+n_phases)*n_nodes)
   //----------------------------------------------------------------------
   // get matrix block
-  std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> mat_pp = poro_field()->block_system_matrix();
+  std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> mat_pp =
+      porofluid_elast_algo()->block_system_matrix();
 
   // uncomplete matrix block (appears to be required in certain cases (locsys+iterative solver))
   mat_pp->un_complete();
@@ -475,7 +479,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_system_ma
 
   // apply DBC's also on off-diagonal fluid-scatra coupling block (main-diagonal blocks have already
   // been set, either in poromultielast_monolithic.cpp or in the respective evaluate calls)
-  k_pfs->apply_dirichlet(*poro_field()->fluid_field()->get_dbc_map_extractor()->cond_map(), false);
+  k_pfs->apply_dirichlet(
+      *porofluid_elast_algo()->fluid_field()->get_dbc_map_extractor()->cond_map(), false);
 
   // uncomplete matrix block (appears to be required in certain cases)
   // k_pss_->UnComplete();
@@ -577,10 +582,10 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::
   // reset
   k_pfs->zero();
   // evaluate
-  poro_field()->fluid_field()->assemble_fluid_scatra_coupling_mat(k_pfs);
+  porofluid_elast_algo()->fluid_field()->assemble_fluid_scatra_coupling_mat(k_pfs);
   // complete
   k_pfs->complete(scatra_algo()->scatra_field()->system_matrix()->range_map(),
-      poro_field()->fluid_field()->system_matrix()->range_map());
+      porofluid_elast_algo()->fluid_field()->system_matrix()->range_map());
 }
 
 /*----------------------------------------------------------------------*
@@ -624,7 +629,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::apply_scatra_st
   }
 
   // complete
-  k_sps->complete(poro_field()->structure_field()->system_matrix()->range_map(),
+  k_sps->complete(porofluid_elast_algo()->structure_field()->system_matrix()->range_map(),
       scatra_algo()->scatra_field()->system_matrix()->range_map());
 
   scatra_algo()->scatra_field()->discretization()->clear_state();
@@ -669,7 +674,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::
   scatra_algo()->scatra_field()->discretization()->evaluate(sparams_fluid, scatrastrategy_fluid);
 
   // complete
-  k_spf->complete(poro_field()->fluid_field()->system_matrix()->range_map(),
+  k_spf->complete(porofluid_elast_algo()->fluid_field()->system_matrix()->range_map(),
       scatra_algo()->scatra_field()->system_matrix()->range_map());
 
   scatra_algo()->scatra_field()->discretization()->clear_state();
@@ -689,7 +694,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::update_fields_a
   update_scatra(scatrainc);
 
   // update structure and fluid field
-  poro_field()->update_fields_after_convergence(porostructinc, porofluidinc);
+  porofluid_elast_algo()->update_fields_after_convergence(porostructinc, porofluidinc);
 }
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -709,7 +714,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_rhs()
   // note: rhs of fluid-structure system already setup in evaluate call
 
   // fill the Poroelasticity rhs vector rhs_ with the single field rhss
-  setup_vector(*rhs_, poro_field()->rhs(), scatra_algo()->scatra_field()->residual());
+  setup_vector(*rhs_, porofluid_elast_algo()->rhs(), scatra_algo()->scatra_field()->residual());
 }
 
 /*----------------------------------------------------------------------*
@@ -726,9 +731,10 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_vector(
   //  std::shared_ptr<const Core::LinAlg::Vector<double>> pfx;
 
   if (solve_structure_)
-    extractor()->insert_vector(*(poro_field()->extractor()->extract_vector(*pv, 0)), 0, f);
+    extractor()->insert_vector(
+        *(porofluid_elast_algo()->extractor()->extract_vector(*pv, 0)), 0, f);
   extractor()->insert_vector(
-      *(poro_field()->extractor()->extract_vector(*pv, 1)), struct_offset_, f);
+      *(porofluid_elast_algo()->extractor()->extract_vector(*pv, 1)), struct_offset_, f);
   extractor()->insert_vector(*sv, struct_offset_ + 1, f);
 }
 
@@ -747,7 +753,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::extract_field_v
   if (solve_structure_)
     stx = extractor()->extract_vector(*x, 0);
   else
-    stx = std::make_shared<Core::LinAlg::Vector<double>>(*poro_field()->struct_dof_row_map(), true);
+    stx = std::make_shared<Core::LinAlg::Vector<double>>(
+        *porofluid_elast_algo()->struct_dof_row_map(), true);
 
   // process fluid unknowns of the second field
   flx = extractor()->extract_vector(*x, struct_offset_);
@@ -849,9 +856,9 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::build_convergen
   norm_inc_scatra_ = calculate_vector_norm(vector_norm_inc_, *inc_scatra);
 
   double norm_structure =
-      calculate_vector_norm(vector_norm_inc_, *poro_field()->structure_field()->dispnp());
+      calculate_vector_norm(vector_norm_inc_, *porofluid_elast_algo()->structure_field()->dispnp());
   double norm_porofluid =
-      calculate_vector_norm(vector_norm_inc_, *poro_field()->fluid_field()->phinp());
+      calculate_vector_norm(vector_norm_inc_, *porofluid_elast_algo()->fluid_field()->phinp());
   double norm_scatra =
       calculate_vector_norm(vector_norm_inc_, *scatra_algo()->scatra_field()->phinp());
 
@@ -1060,17 +1067,19 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::poro_multi_phas
 {
   std::cout << "\n******************finite difference check***************" << std::endl;
 
-  int dof_struct = (poro_field()->structure_field()->dof_row_map()->NumGlobalElements());
-  int dof_fluid = (poro_field()->fluid_field()->dof_row_map()->NumGlobalElements());
+  int dof_struct = (porofluid_elast_algo()->structure_field()->dof_row_map()->NumGlobalElements());
+  int dof_fluid = (porofluid_elast_algo()->fluid_field()->dof_row_map()->NumGlobalElements());
   int dof_scatra = (scatra_algo()->scatra_field()->dof_row_map()->NumGlobalElements());
 
   std::cout << "structure field has " << dof_struct << " DOFs" << std::endl;
   std::cout << "fluid field has " << dof_fluid << " DOFs" << std::endl;
   std::cout << "scatra field has " << dof_scatra << " DOFs" << std::endl;
-  if (artery_coupl_)
+  if (artery_coupling_)
   {
-    int dof_artery = (poro_field()->fluid_field()->artery_dof_row_map()->NumGlobalElements());
-    int dof_artscatra = (scatramsht_->art_scatra_field()->dof_row_map()->NumGlobalElements());
+    int dof_artery =
+        (porofluid_elast_algo()->fluid_field()->artery_dof_row_map()->NumGlobalElements());
+    int dof_artscatra =
+        (scatra_meshtying_strategy_->art_scatra_field()->dof_row_map()->NumGlobalElements());
     std::cout << "artery field has " << dof_artery << " DOFs" << std::endl;
     std::cout << "artery-scatra field has " << dof_artscatra << " DOFs" << std::endl;
 
@@ -1306,19 +1315,24 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
   //! arteryscatra-artery coupling matrix, this matrix has the full map of all coupled + uncoupled
   //! DOFs
   k_asa_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-      *(scatramsht_->art_scatra_field()->discretization()->dof_row_map()), 81, true, true);
+      *(scatra_meshtying_strategy_->art_scatra_field()->discretization()->dof_row_map()), 81, true,
+      true);
 
   //! simple check if nodal coupling active or not, if condensed and un-condensed dofrowmaps have
   //! equal size
   nodal_coupl_inactive_ =
-      ((poro_field()->artery_dof_row_map()->NumGlobalElements() == poro_field()
-                                                                       ->fluid_field()
-                                                                       ->art_net_tim_int()
-                                                                       ->discretization()
-                                                                       ->dof_row_map(0)
-                                                                       ->NumGlobalElements())) &&
-      (scatramsht_->art_scatra_dof_row_map()->NumGlobalElements() ==
-          scatramsht_->art_scatra_field()->discretization()->dof_row_map(0)->NumGlobalElements());
+      ((porofluid_elast_algo()->artery_dof_row_map()->NumGlobalElements() ==
+          porofluid_elast_algo()
+              ->fluid_field()
+              ->art_net_tim_int()
+              ->discretization()
+              ->dof_row_map(0)
+              ->NumGlobalElements())) &&
+      (scatra_meshtying_strategy_->art_scatra_dof_row_map()->NumGlobalElements() ==
+          scatra_meshtying_strategy_->art_scatra_field()
+              ->discretization()
+              ->dof_row_map(0)
+              ->NumGlobalElements());
 }
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -1329,13 +1343,13 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
 
   if (solve_structure_)
   {
-    vecSpaces.push_back(poro_field()->struct_dof_row_map());
-    vecSpaces.push_back(poro_field()->fluid_dof_row_map());
+    vecSpaces.push_back(porofluid_elast_algo()->struct_dof_row_map());
+    vecSpaces.push_back(porofluid_elast_algo()->fluid_dof_row_map());
     const Core::LinAlg::Map* dofrowmapscatra =
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
-    vecSpaces.push_back(poro_field()->artery_dof_row_map());
-    vecSpaces.push_back(scatramsht_->art_scatra_dof_row_map());
+    vecSpaces.push_back(porofluid_elast_algo()->artery_dof_row_map());
+    vecSpaces.push_back(scatra_meshtying_strategy_->art_scatra_dof_row_map());
     if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No poro structure equation. Panic.");
     if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
     if (vecSpaces[2]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
@@ -1344,12 +1358,12 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
   }
   else
   {
-    vecSpaces.push_back(poro_field()->fluid_dof_row_map());
+    vecSpaces.push_back(porofluid_elast_algo()->fluid_dof_row_map());
     const Core::LinAlg::Map* dofrowmapscatra =
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
-    vecSpaces.push_back(poro_field()->artery_dof_row_map());
-    vecSpaces.push_back(scatramsht_->art_scatra_dof_row_map());
+    vecSpaces.push_back(porofluid_elast_algo()->artery_dof_row_map());
+    vecSpaces.push_back(scatra_meshtying_strategy_->art_scatra_dof_row_map());
     if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
     if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
     if (vecSpaces[2]->NumGlobalElements() == 0) FOUR_C_THROW("No artery equation. Panic.");
@@ -1389,7 +1403,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::u
 {
   scatra_algo()->scatra_field()->update_iter(
       *blockrowdofmap_artscatra_->extract_vector(*scatrainc, 0));
-  scatramsht_->update_art_scatra_iter(scatrainc);
+  scatra_meshtying_strategy_->update_art_scatra_iter(scatrainc);
 }
 
 /*----------------------------------------------------------------------*
@@ -1408,7 +1422,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
   if (solve_structure_)
     stx = extractor()->extract_vector(*x, 0);
   else
-    stx = std::make_shared<Core::LinAlg::Vector<double>>(*poro_field()->struct_dof_row_map(), true);
+    stx = std::make_shared<Core::LinAlg::Vector<double>>(
+        *porofluid_elast_algo()->struct_dof_row_map(), true);
 
   // process artery and porofluid unknowns
   std::shared_ptr<const Core::LinAlg::Vector<double>> porofluid =
@@ -1448,7 +1463,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
 
   // --------------------------------------------------------------------------- artery-porofluid
   // get matrix block
-  std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> mat_pp = poro_field()->block_system_matrix();
+  std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> mat_pp =
+      porofluid_elast_algo()->block_system_matrix();
 
   // artery part
   systemmatrix_->assign(
@@ -1463,13 +1479,13 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
   // -------------------------------------------------------------------------arteryscatra-scatra
   // arteryscatra part
   systemmatrix_->assign(struct_offset_ + 3, struct_offset_ + 3, Core::LinAlg::DataAccess::View,
-      scatramsht_->combined_system_matrix()->matrix(1, 1));
+      scatra_meshtying_strategy_->combined_system_matrix()->matrix(1, 1));
   // scatra-arteryscatra part
   systemmatrix_->assign(struct_offset_ + 1, struct_offset_ + 3, Core::LinAlg::DataAccess::View,
-      scatramsht_->combined_system_matrix()->matrix(0, 1));
+      scatra_meshtying_strategy_->combined_system_matrix()->matrix(0, 1));
   // arteryscatra-scatra part
   systemmatrix_->assign(struct_offset_ + 3, struct_offset_ + 1, Core::LinAlg::DataAccess::View,
-      scatramsht_->combined_system_matrix()->matrix(1, 0));
+      scatra_meshtying_strategy_->combined_system_matrix()->matrix(1, 0));
 
   if (nodal_coupl_inactive_)
   {
@@ -1482,7 +1498,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
     // apply DBC's also on off-diagonal scatra-fluid coupling block (main-diagonal blocks have
     // already been set, either in poromultielast_monolithic.cpp or in the respective evaluate
     // calls)
-    k_asa->apply_dirichlet(*scatramsht_->art_scatra_field()->dirich_maps()->cond_map(), false);
+    k_asa->apply_dirichlet(
+        *scatra_meshtying_strategy_->art_scatra_field()->dirich_maps()->cond_map(), false);
 
     // arteryscatra-scatra part
     systemmatrix_->assign(
@@ -1502,21 +1519,24 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
   // structure
   if (solve_structure_)
     extractor()->insert_vector(
-        *(poro_field()->extractor()->extract_vector(*poro_field()->rhs(), 0)), 0, *rhs_);
+        *(porofluid_elast_algo()->extractor()->extract_vector(*porofluid_elast_algo()->rhs(), 0)),
+        0, *rhs_);
   // porofluid
   extractor()->insert_vector(
-      *(poro_field()->extractor()->extract_vector(*poro_field()->rhs(), 1)), struct_offset_, *rhs_);
+      *(porofluid_elast_algo()->extractor()->extract_vector(*porofluid_elast_algo()->rhs(), 1)),
+      struct_offset_, *rhs_);
   // scatra
   extractor()->insert_vector(
-      *(blockrowdofmap_artscatra_->extract_vector(*scatramsht_->combined_rhs(), 0)),
+      *(blockrowdofmap_artscatra_->extract_vector(*scatra_meshtying_strategy_->combined_rhs(), 0)),
       struct_offset_ + 1, *rhs_);
 
   // artery
-  extractor()->insert_vector(*(poro_field()->extractor()->extract_vector(*poro_field()->rhs(), 2)),
+  extractor()->insert_vector(
+      *(porofluid_elast_algo()->extractor()->extract_vector(*porofluid_elast_algo()->rhs(), 2)),
       struct_offset_ + 2, *rhs_);
   // arteryscatra
   extractor()->insert_vector(
-      *(blockrowdofmap_artscatra_->extract_vector(*scatramsht_->combined_rhs(), 1)),
+      *(blockrowdofmap_artscatra_->extract_vector(*scatra_meshtying_strategy_->combined_rhs(), 1)),
       struct_offset_ + 3, *rhs_);
 }
 
@@ -1534,7 +1554,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
   norm_rhs_artery_ = calculate_vector_norm(vector_norm_res_, *arteryrhs);
   norm_inc_artery_ = calculate_vector_norm(vector_norm_inc_, *arteryinc);
   norm_artery_pressure_ = calculate_vector_norm(
-      vector_norm_inc_, (*poro_field()->fluid_field()->art_net_tim_int()->pressurenp()));
+      vector_norm_inc_, (*porofluid_elast_algo()->fluid_field()->art_net_tim_int()->pressurenp()));
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> arteryscarhs =
       extractor()->extract_vector(*rhs_, struct_offset_ + 3);
@@ -1544,8 +1564,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
   // build also norms for artery
   norm_rhs_artery_scatra_ = calculate_vector_norm(vector_norm_res_, *arteryscarhs);
   norm_inc_artery_scatra_ = calculate_vector_norm(vector_norm_inc_, *arteryscainc);
-  norm_artery_scatra_ =
-      calculate_vector_norm(vector_norm_inc_, *(scatramsht_->art_scatra_field()->phinp()));
+  norm_artery_scatra_ = calculate_vector_norm(
+      vector_norm_inc_, *(scatra_meshtying_strategy_->art_scatra_field()->phinp()));
 
   // call base class
   PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::build_convergence_norms();
@@ -1556,7 +1576,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
 void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::evaluate_scatra()
 {
   PorofluidElastScatraMonolithicAlgorithm::evaluate_scatra();
-  scatramsht_->setup_system(
+  scatra_meshtying_strategy_->setup_system(
       scatra_algo()->scatra_field()->system_matrix(), scatra_algo()->scatra_field()->residual());
 }
 
@@ -1568,7 +1588,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
   PorofluidElastScatraMonolithicAlgorithm::build_combined_dbc_map();
 
   const std::shared_ptr<const Core::LinAlg::Map> artscatracondmap =
-      scatramsht_->art_scatra_field()->dirich_maps()->cond_map();
+      scatra_meshtying_strategy_->art_scatra_field()->dirich_maps()->cond_map();
 
   combinedDBCMap_ = Core::LinAlg::merge_map(combinedDBCMap_, artscatracondmap, false);
 }
@@ -1603,13 +1623,14 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
   sparams_artery.set("delta time", dt());
   sparams_artery.set("total time", time());
 
-  scatramsht_->art_scatra_field()->discretization()->clear_state();
-  scatramsht_->art_scatra_field()->discretization()->set_state(
-      0, "phinp", *scatramsht_->art_scatra_field()->phinp());
-  scatramsht_->art_scatra_field()->discretization()->set_state(
-      0, "hist", *scatramsht_->art_scatra_field()->hist());
-  scatramsht_->art_scatra_field()->discretization()->set_state(
-      2, "one_d_artery_pressure", *poro_field()->fluid_field()->art_net_tim_int()->pressurenp());
+  scatra_meshtying_strategy_->art_scatra_field()->discretization()->clear_state();
+  scatra_meshtying_strategy_->art_scatra_field()->discretization()->set_state(
+      0, "phinp", *scatra_meshtying_strategy_->art_scatra_field()->phinp());
+  scatra_meshtying_strategy_->art_scatra_field()->discretization()->set_state(
+      0, "hist", *scatra_meshtying_strategy_->art_scatra_field()->hist());
+  scatra_meshtying_strategy_->art_scatra_field()->discretization()->set_state(2,
+      "one_d_artery_pressure",
+      *porofluid_elast_algo()->fluid_field()->art_net_tim_int()->pressurenp());
 
   // build specific assemble strategy for mechanical-fluid system matrix
   Core::FE::AssembleStrategy artscatrastrategy_artery(0,  // scatradofset for row
@@ -1617,14 +1638,15 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
       k_asa,                                              // scatra-artery coupling matrix
       nullptr, nullptr, nullptr, nullptr);
 
-  scatramsht_->art_scatra_field()->discretization()->evaluate(
+  scatra_meshtying_strategy_->art_scatra_field()->discretization()->evaluate(
       sparams_artery, artscatrastrategy_artery);
 
   // complete
-  k_asa->complete(poro_field()->fluid_field()->art_net_tim_int()->system_matrix()->range_map(),
-      scatramsht_->art_scatra_field()->system_matrix()->range_map());
+  k_asa->complete(
+      porofluid_elast_algo()->fluid_field()->art_net_tim_int()->system_matrix()->range_map(),
+      scatra_meshtying_strategy_->art_scatra_field()->system_matrix()->range_map());
 
-  scatramsht_->art_scatra_field()->discretization()->clear_state();
+  scatra_meshtying_strategy_->art_scatra_field()->discretization()->clear_state();
 }
 
 /*----------------------------------------------------------------------*
@@ -1636,7 +1658,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
   PorofluidElastScatraMonolithicAlgorithm::build_block_null_spaces();
 
   // artery
-  poro_field()->build_artery_block_null_space(solver_, struct_offset_ + 3);
+  porofluid_elast_algo()->build_artery_block_null_space(solver_, struct_offset_ + 3);
 
   // artery-scatra
   Teuchos::ParameterList& blocksmootherparams5 =
@@ -1644,12 +1666,12 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::
 
   // build null space of complete discretization
   Core::LinearSolver::Parameters::compute_solver_parameters(
-      *scatramsht_->art_scatra_field()->discretization(), blocksmootherparams5);
+      *scatra_meshtying_strategy_->art_scatra_field()->discretization(), blocksmootherparams5);
 
   // fix the null space if some DOFs are condensed out
   Core::LinearSolver::Parameters::fix_null_space("ArteryScatra",
-      *(scatramsht_->art_scatra_field()->discretization()->dof_row_map(0)),
-      *(scatramsht_->art_scatra_dof_row_map()), blocksmootherparams5);
+      *(scatra_meshtying_strategy_->art_scatra_field()->discretization()->dof_row_map(0)),
+      *(scatra_meshtying_strategy_->art_scatra_dof_row_map()), blocksmootherparams5);
 }
 
 FOUR_C_NAMESPACE_CLOSE

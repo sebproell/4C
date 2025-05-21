@@ -33,7 +33,7 @@ namespace Core::FE
 
 namespace PoroPressureBased
 {
-  class PoroMultiPhaseScaTraBase;
+  class PorofluidElastScatraBaseAlgorithm;
   class PoroMultiPhaseScaTraArtCouplBase;
 
   //! setup discretizations and dofsets
@@ -47,7 +47,7 @@ namespace PoroPressureBased
       const std::string& fluid_disname, const std::string& scatra_disname, const bool artery_coupl);
 
   //! create solution algorithm depending on input file
-  std::shared_ptr<PoroMultiPhaseScaTraBase> create_algorithm_porofluid_elast_scatra(
+  std::shared_ptr<PorofluidElastScatraBaseAlgorithm> create_algorithm_porofluid_elast_scatra(
       SolutionSchemePorofluidElastScatra solscheme,  //!< solution scheme to build (i)
       const Teuchos::ParameterList& timeparams,      //!< problem parameters (i)
       MPI_Comm comm                                  //!< communicator(i)
