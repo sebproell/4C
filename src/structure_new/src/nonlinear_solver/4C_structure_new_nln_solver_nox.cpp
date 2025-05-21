@@ -205,6 +205,20 @@ enum Inpar::Solid::ConvergenceStatus Solid::Nln::SOLVER::Nox::solve()
 {
   check_init_setup();
 
+#if !(FOUR_C_TRILINOS_INTERNAL_VERSION_GE(2025, 4))
+  const auto solver_type =
+      nlnglobaldata_->get_nln_parameter_list().get<std::string>("Nonlinear Solver");
+
+  if (solver_type == "Single Step")
+  {
+    auto& nln_group = dynamic_cast<NOX::Nln::Group&>(*group_ptr());
+
+    nln_group.set_is_valid_newton(true);  // to circumvent the check in ::NOX::Solver::SingleStep
+    nln_group.set_is_valid_rhs(false);    // force to compute the RHS
+    nln_group.reset_x();                  // to initialize the solution vector to zero
+  }
+#endif
+
   // solve the non-linear step
   ::NOX::StatusTest::StatusType finalstatus = nlnsolver_->solve();
 
