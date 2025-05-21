@@ -16,7 +16,6 @@
 #include "4C_contact_nitsche_strategy_fsi.hpp"
 #include "4C_coupling_adapter.hpp"
 #include "4C_fluid_xfluid.hpp"
-#include "4C_fsi_debugwriter.hpp"
 #include "4C_fsi_xfem_XFAcoupling_manager.hpp"
 #include "4C_fsi_xfem_XFFcoupling_manager.hpp"
 #include "4C_fsi_xfem_XFPcoupling_manager.hpp"
@@ -123,16 +122,6 @@ FSI::MonolithicXFEM::MonolithicXFEM(MPI_Comm comm, const Teuchos::ParameterList&
   //  const Teuchos::ParameterList& xdyn       = Global::Problem::instance()->XFEMGeneralParams();
   //  const Teuchos::ParameterList& xfluiddyn  = Global::Problem::instance()->XFluidDynamicParams();
 
-  //-------------------------------------------------------------------------
-  // enable debugging
-  //-------------------------------------------------------------------------
-  if (fsidyn_.get<bool>("DEBUGOUTPUT"))
-  {
-    // debug writer for structure field
-    sdbg_ = std::make_shared<Utils::DebugWriter>(structure_poro()->discretization());
-    // debug writer for fluid field
-    fdbg_ = std::make_shared<Utils::DebugWriter>(fluid_field()->discretization());
-  }
   //-------------------------------------------------------------------------
   // write files
   //-------------------------------------------------------------------------
@@ -1466,13 +1455,6 @@ bool FSI::MonolithicXFEM::evaluate()
 
   sx_sum_ = sx;
 
-
-  // TODO:
-  if (sdbg_ != nullptr)
-  {
-    sdbg_->new_iteration();
-    sdbg_->write_vector("x", *structure_poro()->interface()->extract_fsi_cond_vector(*sx));
-  }
 
 
   // ------------------------------------------------------------------

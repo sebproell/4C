@@ -17,7 +17,6 @@
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_fem_geometry_searchtree.hpp"
 #include "4C_fem_geometry_searchtree_service.hpp"
-#include "4C_fsi_debugwriter.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_io_control.hpp"

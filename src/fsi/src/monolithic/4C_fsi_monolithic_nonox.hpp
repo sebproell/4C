@@ -26,16 +26,8 @@ namespace Adapter
 
 namespace FSI
 {
-  namespace Utils
-  {
-    class DebugWriter;
-    class MonolithicDebugWriter;
-  }  // namespace Utils
-
   class MonolithicNoNOX : public FSI::MonolithicBase, public FSI::MonolithicInterface
   {
-    friend class FSI::Utils::MonolithicDebugWriter;
-
    public:
     explicit MonolithicNoNOX(MPI_Comm comm, const Teuchos::ParameterList& timeparams);
 
@@ -279,13 +271,6 @@ namespace FSI
 
     /// output stream
     std::shared_ptr<std::ofstream> log_;
-
-    //! @name special debugging output
-    //@{
-    std::shared_ptr<Utils::DebugWriter> sdbg_;
-    std::shared_ptr<Utils::DebugWriter> fdbg_;
-
-    //@}
 
     //! @name Iterative solution technique
     //@{

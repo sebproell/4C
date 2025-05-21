@@ -17,7 +17,6 @@
 #include "4C_coupling_adapter_mortar.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
 #include "4C_fluid_xfluid.hpp"
-#include "4C_fsi_debugwriter.hpp"
 #include "4C_fsi_nox_aitken.hpp"
 #include "4C_fsi_nox_fixpoint.hpp"
 #include "4C_fsi_nox_jacobian.hpp"
@@ -49,8 +48,7 @@ FSI::Partitioned::Partitioned(MPI_Comm comm)
       counter_(7),
       mfresitemax_(0),
       coupsfm_(nullptr),
-      matchingnodes_(false),
-      debugwriter_(nullptr)
+      matchingnodes_(false)
 {
   // empty constructor
 }
@@ -141,10 +139,6 @@ void FSI::Partitioned::setup_coupling(const Teuchos::ParameterList& fsidyn, MPI_
   {
     FOUR_C_THROW("You should not arrive here");
   }
-
-  // enable debugging
-  if (fsidyn.get<bool>("DEBUGOUTPUT"))
-    debugwriter_ = std::make_shared<Utils::DebugWriter>(structure_field()->discretization());
 }
 
 
@@ -432,8 +426,6 @@ void FSI::Partitioned::timeloop(const Teuchos::RCP<::NOX::Epetra::Interface::Req
     // Increment all field counters and predict field values whenever
     // appropriate.
     prepare_time_step();
-
-    if (debugwriter_ != nullptr) debugwriter_->new_time_step(step());
 
     // reset all counters
     std::fill(counter_.begin(), counter_.end(), 0);
@@ -798,14 +790,11 @@ bool FSI::Partitioned::computeF(const Epetra_Vector& x, Epetra_Vector& F, const 
 
   if (!x.Map().UniqueGIDs()) FOUR_C_THROW("source map not unique");
 
-  if (debugwriter_ != nullptr) debugwriter_->new_iteration();
-
   const Core::LinAlg::Vector<double> x_new = Core::LinAlg::Vector<double>(x);
   Core::LinAlg::Vector<double> F_new = Core::LinAlg::Vector<double>(F);
   // Do the FSI step. The real work is in here.
   fsi_op(x_new, F_new, fillFlag);
 
-  if (debugwriter_ != nullptr) debugwriter_->write_vector("F", F_new);
   F = F_new;
 
   const double endTime = timer.wallTime();

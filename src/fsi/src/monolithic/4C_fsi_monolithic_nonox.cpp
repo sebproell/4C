@@ -14,7 +14,6 @@
 #include "4C_coupling_adapter.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
-#include "4C_fsi_debugwriter.hpp"
 #include "4C_fsi_statustest.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io_control.hpp"
@@ -40,13 +39,6 @@ FSI::MonolithicNoNOX::MonolithicNoNOX(MPI_Comm comm, const Teuchos::ParameterLis
   // use tailored fluid- and ALE-wrappers
   fluid_ = std::dynamic_pointer_cast<Adapter::FluidFluidFSI>(MonolithicBase::fluid_field());
   ale_ = std::dynamic_pointer_cast<Adapter::AleXFFsiWrapper>(MonolithicBase::ale_field());
-
-  // enable debugging
-  if (fsidyn.get<bool>("DEBUGOUTPUT"))
-  {
-    sdbg_ = std::make_shared<Utils::DebugWriter>(structure_field()->discretization());
-    // fdbg_ = Teuchos::rcp(new Utils::DebugWriter(fluid_field()->discretization()));
-  }
 
   std::string s = Global::Problem::instance()->output_control_file()->file_name();
   s.append(".iteration");
@@ -343,12 +335,6 @@ void FSI::MonolithicNoNOX::evaluate(const Core::LinAlg::Vector<double>& step_inc
     x_sum_->update(1.0, step_increment, 1.0);
 
     extract_field_vectors(x_sum_, sx, fx, ax);
-
-    if (sdbg_ != nullptr)
-    {
-      sdbg_->new_iteration();
-      sdbg_->write_vector("x", *structure_field()->interface()->extract_fsi_cond_vector(*sx));
-    }
   }
 
   // Call all fields evaluate method and assemble rhs and matrices

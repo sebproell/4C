@@ -53,12 +53,6 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               {.description = "Iteration Scheme over the fields",
                   .default_value = fsi_iter_stagg_AITKEN_rel_param}),
 
-          parameter<bool>("DEBUGOUTPUT",
-              {.description = "Output of unconverged interface values during FSI iteration. "
-                              "There will be a new control "
-                              "file for each time step. This might be helpful to understand "
-                              "the coupling iteration.",
-                  .default_value = false}),
           parameter<bool>("MATCHGRID_FLUIDALE",
               {.description = "is matching grid (fluid-ale)", .default_value = true}),
 

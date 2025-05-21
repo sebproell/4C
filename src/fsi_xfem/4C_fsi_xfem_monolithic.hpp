@@ -24,14 +24,6 @@ FOUR_C_NAMESPACE_OPEN
 
 // forward declarations
 
-namespace FSI
-{
-  namespace Utils
-  {
-    class DebugWriter;
-  }
-}  // namespace FSI
-
 namespace Core::LinAlg
 {
   class Solver;
@@ -376,15 +368,6 @@ namespace FSI
 
     //! output stream
     std::shared_ptr<std::ofstream> log_;
-
-    //@}
-
-
-    //--------------------------------------------------------------------------//
-    //! @name special debugging output
-
-    std::shared_ptr<Utils::DebugWriter> sdbg_;
-    std::shared_ptr<Utils::DebugWriter> fdbg_;
 
     //@}
 

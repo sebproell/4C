@@ -49,12 +49,6 @@ namespace FSI
 {
   class FSIResultTest;
   class OverlappingBlockMatrix;
-
-  namespace Utils
-  {
-    class DebugWriter;
-    class MonolithicDebugWriter;
-  }  // namespace Utils
 }  // namespace FSI
 
 namespace Core::LinAlg
@@ -299,8 +293,6 @@ namespace FSI
                      public ::NOX::Epetra::Interface::Preconditioner,
                      public ::NOX::Direction::UserDefinedFactory
   {
-    friend class FSI::Utils::MonolithicDebugWriter;
-
    public:
     explicit Monolithic(MPI_Comm comm, const Teuchos::ParameterList& timeparams);
 
@@ -982,13 +974,6 @@ namespace FSI
 
     /// output stream for adaptivity-file
     std::shared_ptr<std::ofstream> logada_;
-
-    /// @name special debugging output
-
-    std::shared_ptr<Utils::DebugWriter> sdbg_;
-    std::shared_ptr<Utils::DebugWriter> fdbg_;
-
-    //@}
   };
 
 
@@ -1095,9 +1080,6 @@ namespace FSI
         std::shared_ptr<const Core::LinAlg::Vector<double>> fv,
         std::shared_ptr<const Core::LinAlg::Vector<double>> av,
         const bool slave_vectors_contain_interface_dofs) override {};
-
-    /// debug writer to be used inside preconditioner
-    std::shared_ptr<Utils::MonolithicDebugWriter> pcdbg_;
 
     /*! \brief Counter of iterations to reuse the block matrix preconditioner
      *

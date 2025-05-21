@@ -49,8 +49,6 @@ namespace FSI
 {
   namespace Utils
   {
-    class DebugWriter;
-    class MonolithicDebugWriter;
     class MatrixColTransform;
   }  // namespace Utils
 }  // namespace FSI
@@ -177,8 +175,6 @@ namespace FPSI
 
   class Monolithic : public MonolithicBase
   {
-    friend class FSI::Utils::MonolithicDebugWriter;
-
    public:
     //! ctor
     explicit Monolithic(MPI_Comm comm, const Teuchos::ParameterList& fpsidynparams,

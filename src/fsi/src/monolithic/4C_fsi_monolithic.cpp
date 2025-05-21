@@ -16,7 +16,6 @@
 #include "4C_coupling_adapter.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
-#include "4C_fsi_debugwriter.hpp"
 #include "4C_fsi_nox_group.hpp"
 #include "4C_fsi_nox_linearsystem.hpp"
 #include "4C_fsi_nox_newton.hpp"
@@ -331,13 +330,6 @@ FSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& timepar
 {
   const Teuchos::ParameterList& fsidyn = Global::Problem::instance()->fsi_dynamic_params();
 
-  // enable debugging
-  if (fsidyn.get<bool>("DEBUGOUTPUT"))
-  {
-    sdbg_ = std::make_shared<Utils::DebugWriter>(structure_field()->discretization());
-    // fdbg_ = Teuchos::rcp(new Utils::DebugWriter(fluid_field()->discretization()));
-  }
-
   // write iterations-file
   std::string fileiter = Global::Problem::instance()->output_control_file()->file_name();
   fileiter.append(".iteration");
@@ -613,9 +605,6 @@ void FSI::Monolithic::time_step(
 
   Teuchos::Time timer("time step timer");
 
-  if (sdbg_ != nullptr) sdbg_->new_time_step(step(), "struct");
-  if (fdbg_ != nullptr) fdbg_->new_time_step(step(), "fluid");
-
   // Single field predictors have been applied, so store the structural
   // interface displacement increment due to predictor or inhomogeneous
   // Dirichlet boundary conditions
@@ -844,12 +833,6 @@ void FSI::Monolithic::evaluate(std::shared_ptr<const Core::LinAlg::Vector<double
   if (step_increment != nullptr)
   {
     extract_field_vectors(step_increment, sx, fx, ax);
-
-    if (sdbg_ != nullptr)
-    {
-      sdbg_->new_iteration();
-      sdbg_->write_vector("x", *structure_field()->interface()->extract_fsi_cond_vector(*sx));
-    }
   }
 
   // Call all elements and assemble rhs and matrices
@@ -1136,11 +1119,6 @@ bool FSI::BlockMonolithic::computePreconditioner(
   }
 
   precondreusecount_ -= 1;
-
-  if (pcdbg_ != nullptr)
-  {
-    pcdbg_->new_linear_system();
-  }
 
   return true;
 }
