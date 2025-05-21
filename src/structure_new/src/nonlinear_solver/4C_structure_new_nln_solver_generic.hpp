@@ -49,18 +49,18 @@ namespace Solid
       class Generic
       {
        public:
+        // TEMP
+        Generic() {}
+
         //! constructor
-        Generic();
-
-        //! destructor
-        virtual ~Generic() = default;
-
-        //! initialization
-        virtual void init(const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
+        Generic(const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
             const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
             const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
             const std::shared_ptr<Solid::Integrator>& integrator,
             const std::shared_ptr<const Solid::TimeInt::Base>& timint);
+
+        //! destructor
+        virtual ~Generic() = default;
 
         //! Setup the nonlinear solver configuration
         virtual void setup() = 0;
