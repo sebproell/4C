@@ -45,7 +45,7 @@ Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::ScaTraEleCalcElc
     const int numdofpernode, const int numscal, const std::string& disname)
     : Discret::Elements::ScaTraEleCalcElchElectrode<distype, probdim>::ScaTraEleCalcElchElectrode(
           numdofpernode, numscal, disname),
-      diffcondmat_(Inpar::ElCh::diffcondmat_undefined),
+      diffcondmat_(ElCh::diffcondmat_undefined),
       diffcondparams_(Discret::Elements::ScaTraEleParameterElchDiffCond::instance(disname))
 {
   // replace diffusion manager for electrodes by diffusion manager for diffusion-conduction
@@ -65,8 +65,8 @@ Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::ScaTraEleCalcElc
   // safety check for closing equation
   switch (myelch::elchparams_->equ_pot())
   {
-    case Inpar::ElCh::equpot_divi:
-    case Inpar::ElCh::equpot_enc:
+    case ElCh::equpot_divi:
+    case ElCh::equpot_enc:
       // valid closing equations for electric potential
       break;
     default:
@@ -124,7 +124,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_an
 
   //      ii) concentration depending diffusion coefficient
   //          (additional term for Newman material)
-  if (diffcondmat_ == Inpar::ElCh::diffcondmat_newman)
+  if (diffcondmat_ == ElCh::diffcondmat_newman)
     myelectrode::calc_mat_diff_coeff_lin(
         emat, k, timefacfac, var_manager()->grad_phi(k), diff_manager()->get_phase_poro_tort(0));
 
@@ -161,7 +161,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_an
 
     //    ii) conduction term + concentration overpotential
     //        (w_k, - t_k RT/F kappa (thermfactor) f(t_k) nabla ln c_k /(z_k F))
-    if (diffcondmat_ == Inpar::ElCh::diffcondmat_newman)
+    if (diffcondmat_ == ElCh::diffcondmat_newman)
     {
       calc_mat_cond_conc(emat, k, timefacfac,
           var_manager()->rtffc() / diff_manager()->get_valence(k),
@@ -176,7 +176,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_an
     calc_mat_cond(emat, k, timefacfac, diff_manager()->inv_f_val(k), var_manager()->cur_int());
 
     // this coupling term cancels out for a 2 equation system
-    if (diffcondmat_ == Inpar::ElCh::diffcondmat_ion)
+    if (diffcondmat_ == ElCh::diffcondmat_ion)
       calc_mat_cond_diff(
           emat, k, timefacfac, diff_manager()->inv_f_val(k), var_manager()->grad_phi());
   }  // end if(not diffcondparams_->CurSolVar())
@@ -231,8 +231,8 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_an
   {
     calc_rhs_cond_ohm(erhs, k, rhsfac, diff_manager()->inv_f_val(k), var_manager()->grad_pot());
 
-    // if(diffcondmat_==Inpar::ElCh::diffcondmat_ion): all terms cancel out
-    if (diffcondmat_ == Inpar::ElCh::diffcondmat_newman)
+    // if(diffcondmat_==ElCh::diffcondmat_ion): all terms cancel out
+    if (diffcondmat_ == ElCh::diffcondmat_newman)
     {
       calc_rhs_cond_conc(erhs, k, rhsfac, var_manager()->rtffc() / diff_manager()->get_valence(k),
           diffcondparams_->newman_constdata(), diffcondparams_->newman_const_b(),
@@ -245,7 +245,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_an
   {
     calc_rhs_cond(erhs, k, rhsfac, diff_manager()->inv_f_val(k), var_manager()->cur_int());
 
-    if (diffcondmat_ == Inpar::ElCh::diffcondmat_ion)
+    if (diffcondmat_ == ElCh::diffcondmat_ion)
       calc_rhs_cond_diff(erhs, k, rhsfac, var_manager()->grad_phi());
   }
 }
@@ -280,7 +280,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype,
   {
     // equation for current is inserted in the mass transport equation
     // 3a)  nabla cdot i = 0
-    if (myelch::elchparams_->equ_pot() == Inpar::ElCh::equpot_divi)
+    if (myelch::elchparams_->equ_pot() == ElCh::equpot_divi)
     {
       //  i)  ohmic overpotential (implemented after the scalar loop)
       //      (w_k, - kappa nabla phi)
@@ -309,7 +309,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype,
       }
     }
     // 3b)  ENC
-    else if (myelch::elchparams_->equ_pot() == Inpar::ElCh::equpot_enc)
+    else if (myelch::elchparams_->equ_pot() == ElCh::equpot_enc)
     {
       for (int k = 0; k < my::numscal_; ++k)
       {
@@ -361,13 +361,13 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype,
     // 3)   governing equation for the electric potential field and current (incl. rhs-terms)
     //------------------------------------------------------------------------------------------
 
-    if (myelch::elchparams_->equ_pot() == Inpar::ElCh::equpot_divi)
+    if (myelch::elchparams_->equ_pot() == ElCh::equpot_divi)
     {
       calc_mat_pot_equ_divi(emat, timefacfac, var_manager()->inv_f());
 
       calc_rhs_pot_equ_divi(erhs, rhsfac, var_manager()->inv_f(), var_manager()->cur_int());
     }
-    else if (myelch::elchparams_->equ_pot() == Inpar::ElCh::equpot_enc)
+    else if (myelch::elchparams_->equ_pot() == ElCh::equpot_enc)
     {
       for (int k = 0; k < my::numscal_; ++k)
       {
@@ -626,7 +626,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_po
       double laplawf(0.0);
       my::get_laplacian_weak_form(laplawf, ui, vi);
 
-      if (diffcondmat_ == Inpar::ElCh::diffcondmat_newman)
+      if (diffcondmat_ == ElCh::diffcondmat_newman)
       {
         // linearization of the diffusion overpotential term
         //
@@ -672,7 +672,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_po
             (newman_const_a + (newman_const_b * diff_manager()->get_trans_num(k))) * conintinv *
             laplawfrhs_gradphi * diff_manager()->get_deriv_therm_fac(k) * my::funct_(ui);
       }
-      else if (diffcondmat_ == Inpar::ElCh::diffcondmat_ion)
+      else if (diffcondmat_ == ElCh::diffcondmat_ion)
       {
         if (diffcondparams_->diffusion_coeff_based())
         {
@@ -811,7 +811,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_cu
       {
         for (int k = 0; k < my::numscal_; ++k)
         {
-          if (diffcondmat_ == Inpar::ElCh::diffcondmat_newman)
+          if (diffcondmat_ == ElCh::diffcondmat_newman)
           {
             emat(
                 vi * my::numdofpernode_ + (my::numscal_ + 1) + idim, ui * my::numdofpernode_ + k) +=
@@ -820,7 +820,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_mat_cu
                 (newman_const_a + (newman_const_b * diff_manager()->get_trans_num(k))) *
                 conintinv[k] * my::derxy_(idim, ui);
           }
-          else if (diffcondmat_ == Inpar::ElCh::diffcondmat_ion)
+          else if (diffcondmat_ == ElCh::diffcondmat_ion)
           {
             if (diffcondparams_->diffusion_coeff_based())
             {
@@ -979,7 +979,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_rhs_po
 {
   for (unsigned vi = 0; vi < nen_; ++vi)
   {
-    if (diffcondmat_ == Inpar::ElCh::diffcondmat_ion)
+    if (diffcondmat_ == ElCh::diffcondmat_ion)
     {
       // diffusive term second
       double laplawf2(0.0);
@@ -999,7 +999,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_rhs_po
       }
     }
     // thermodynamic factor only implemented for Newman
-    else if (diffcondmat_ == Inpar::ElCh::diffcondmat_newman)
+    else if (diffcondmat_ == ElCh::diffcondmat_newman)
     {
       // diffusive term second
       double laplawf2(0.0);
@@ -1084,7 +1084,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_rhs_cu
     {
       for (int k = 0; k < my::numscal_; ++k)
       {
-        if (diffcondmat_ == Inpar::ElCh::diffcondmat_newman)
+        if (diffcondmat_ == ElCh::diffcondmat_newman)
         {
           erhs[vi * my::numdofpernode_ + (my::numscal_ + 1) + idim] -=
               rhsfac * diff_manager()->get_phase_poro_tort(0) * my::funct_(vi) * rtffc *
@@ -1092,7 +1092,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_rhs_cu
               (newman_const_a + (newman_const_b * diff_manager()->get_trans_num(k))) *
               conintinv[k] * gradphi[k](idim);
         }
-        else if (diffcondmat_ == Inpar::ElCh::diffcondmat_ion)
+        else if (diffcondmat_ == ElCh::diffcondmat_ion)
         {
           if (diffcondparams_->diffusion_coeff_based())
           {
@@ -1162,7 +1162,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::correction_
       // since additional information about the reacting species is required. This is fulfilled
       // naturally for the Newman material since only one species is allowed in this case. Newman
       // material models binary electrolytes where the second species is condensed via the ENC!
-      if (diffcondmat_ == Inpar::ElCh::diffcondmat_newman)
+      if (diffcondmat_ == ElCh::diffcondmat_newman)
       {
         if (mydctoggle[vi * my::numdofpernode_ + my::numscal_] == 1)
         {

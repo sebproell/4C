@@ -48,7 +48,7 @@ ScaTra::ScaTraTimIntElch::ScaTraTimIntElch(std::shared_ptr<Core::FE::Discretizat
     std::shared_ptr<Core::IO::DiscretizationWriter> output)
     : ScaTraTimIntImpl(dis, solver, sctratimintparams, extraparams, output),
       elchparams_(params),
-      equpot_(Teuchos::getIntegralValue<Inpar::ElCh::EquPot>(*elchparams_, "EQUPOT")),
+      equpot_(Teuchos::getIntegralValue<ElCh::EquPot>(*elchparams_, "EQUPOT")),
       fr_(elchparams_->get<double>("FARADAY_CONSTANT") / elchparams_->get<double>("GAS_CONSTANT")),
       temperature_funct_num_(elchparams_->get<int>("TEMPERATURE_FROM_FUNCT")),
       temperature_(get_current_temperature()),
@@ -420,7 +420,7 @@ void ScaTra::ScaTraTimIntElch::set_element_specific_scatra_parameters(
   eleparams.set<double>("gas_constant", elchparams_->get<double>("GAS_CONSTANT"));
   eleparams.set<double>("frt", frt());
   eleparams.set<double>("temperature", temperature_);
-  eleparams.set<Inpar::ElCh::EquPot>("equpot", equpot_);
+  eleparams.set<ElCh::EquPot>("equpot", equpot_);
   eleparams.set<bool>("boundaryfluxcoupling", elchparams_->get<bool>("COUPLE_BOUNDARY_FLUXES"));
 
   // set additional, problem-dependent parameters
@@ -497,7 +497,7 @@ double ScaTra::ScaTraTimIntElch::extrapolate_state_adapt_time_step(double dt)
   // If so, adapt time step
   switch (cccv_condition_->get_cccv_half_cycle_phase())
   {
-    case Inpar::ElCh::CCCVHalfCyclePhase::initial_relaxation:
+    case ElCh::CCCVHalfCyclePhase::initial_relaxation:
     {
       const double time_new = time_ + 2 * dt;                     // extrapolate
       if (time_new >= cccv_condition_->get_initial_relax_time())  // check
@@ -509,7 +509,7 @@ double ScaTra::ScaTraTimIntElch::extrapolate_state_adapt_time_step(double dt)
       }
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::constant_current:
+    case ElCh::CCCVHalfCyclePhase::constant_current:
     {
       // initialize variable for cell voltage from previous time step
       if (cellvoltage_old_ < 0.0) cellvoltage_old_ = cellvoltage_;
@@ -525,7 +525,7 @@ double ScaTra::ScaTraTimIntElch::extrapolate_state_adapt_time_step(double dt)
         cellvoltage_old_ = cellvoltage_;
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::constant_voltage:
+    case ElCh::CCCVHalfCyclePhase::constant_voltage:
     {
       if (cellcrate_old_ < 0.0) cellcrate_old_ = cellcrate_;
       const double cellcrate_new = cellcrate_ + 2.0 * (cellcrate_ - cellcrate_old_);  // extrapolate
@@ -538,7 +538,7 @@ double ScaTra::ScaTraTimIntElch::extrapolate_state_adapt_time_step(double dt)
         cellcrate_old_ = cellcrate_;
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::relaxation:
+    case ElCh::CCCVHalfCyclePhase::relaxation:
     {
       const double time_new = time_ + 2 * dt;                 // extrapolate
       if (time_new >= cccv_condition_->get_relax_end_time())  // check
@@ -1731,8 +1731,8 @@ void ScaTra::ScaTraTimIntElch::valid_parameter_diff_cond()
 {
   if (myrank_ == 0)
   {
-    if (Teuchos::getIntegralValue<Inpar::ElCh::ElchMovingBoundary>(
-            *elchparams_, "MOVINGBOUNDARY") != Inpar::ElCh::elch_mov_bndry_no)
+    if (Teuchos::getIntegralValue<ElCh::ElchMovingBoundary>(*elchparams_, "MOVINGBOUNDARY") !=
+        ElCh::elch_mov_bndry_no)
       FOUR_C_THROW(
           "Moving boundaries are not supported in the ELCH diffusion-conduction framework!!");
 
@@ -1825,8 +1825,7 @@ void ScaTra::ScaTraTimIntElch::init_nernst_bc()
   for (unsigned icond = 0; icond < Elchcond.size(); ++icond)
   {
     // check if Nernst-BC is defined on electrode kinetics condition
-    if (Elchcond[icond]->parameters().get<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL") ==
-        Inpar::ElCh::nernst)
+    if (Elchcond[icond]->parameters().get<ElCh::ElectrodeKinetics>("KINETIC_MODEL") == ElCh::nernst)
     {
       // safety check
       if (!Elchcond[icond]->geometry_description())
@@ -1907,9 +1906,9 @@ void ScaTra::ScaTraTimIntElch::calc_initial_potential_field()
   FOUR_C_ASSERT(step_ == 0, "Step counter is not zero!");
   switch (equpot_)
   {
-    case Inpar::ElCh::equpot_divi:
-    case Inpar::ElCh::equpot_enc_pde:
-    case Inpar::ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_divi:
+    case ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde_elim:
     {
       // These stationary closing equations for the electric potential are OK, since they
       // explicitly contain the electric potential as variable and therefore can be solved for the
@@ -1922,8 +1921,8 @@ void ScaTra::ScaTraTimIntElch::calc_initial_potential_field()
       // the electric potential as variable, we obtain a zero block associated with the electric
       // potential on the main diagonal of the global system matrix used below. This zero block
       // makes the entire global system matrix singular! In this case, it would be possible to
-      // temporarily change the type of closing equation used, e.g., from Inpar::ElCh::equpot_enc
-      // to Inpar::ElCh::equpot_enc_pde. This should work, but has not been implemented yet.
+      // temporarily change the type of closing equation used, e.g., from ElCh::equpot_enc
+      // to ElCh::equpot_enc_pde. This should work, but has not been implemented yet.
       FOUR_C_THROW(
           "Initial potential field cannot be computed for chosen closing equation for electric "
           "potential!");
@@ -2213,7 +2212,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
       const double tol = elchparams_->get<double>("GSTATCONVTOL");
       const double effective_length = elchparams_->get<double>("GSTAT_LENGTH_CURRENTPATH");
       if (effective_length < 0.0) FOUR_C_THROW("A negative effective length is not possible!");
-      const auto approxelctresist = Teuchos::getIntegralValue<Inpar::ElCh::ApproxElectResist>(
+      const auto approxelctresist = Teuchos::getIntegralValue<ElCh::ApproxElectResist>(
           *elchparams_, "GSTAT_APPROX_ELECT_RESIST");
 
       // There are maximal two electrode conditions by definition
@@ -2421,7 +2420,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
       }
 
       // calculate the cell potential increment due to ohmic resistance
-      if (approxelctresist == Inpar::ElCh::approxelctresist_effleninitcond)
+      if (approxelctresist == ElCh::approxelctresist_effleninitcond)
       {
         // update applied electric potential
         // potential drop ButlerVolmer conditions (surface ovepotential) and in the electrolyte
@@ -2451,7 +2450,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
                       << std::endl;
           }
 
-          if (equpot_ == Inpar::ElCh::equpot_enc_pde_elim)
+          if (equpot_ == ElCh::equpot_enc_pde_elim)
           {
             double diff = sigma[0];
 
@@ -2471,8 +2470,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
         resistance = effective_length / (sigma[num_scal()] * meanelectrodesurface);
       }
 
-      else if (approxelctresist == Inpar::ElCh::approxelctresist_relpotcur and
-               conditions.size() == 2)
+      else if (approxelctresist == ElCh::approxelctresist_relpotcur and conditions.size() == 2)
       {
         // actual potential difference is used to calculate the current path length
         // -> it is possible to compute the new ohmic potential step (porous media are
@@ -2486,7 +2484,7 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
         // resistance = -1.0*(potdiffbulk/(targetcurrent));
       }
 
-      else if (approxelctresist == Inpar::ElCh::approxelctresist_efflenintegcond and
+      else if (approxelctresist == ElCh::approxelctresist_efflenintegcond and
                conditions.size() == 2)
       {
         // dummy conductivity vector
@@ -2547,12 +2545,12 @@ bool ScaTra::ScaTraTimIntElch::apply_galvanostatic_control()
         std::cout << "| the ohmic electrolyte resistance obtained from                        |"
                   << std::endl;
 
-        if (approxelctresist == Inpar::ElCh::approxelctresist_effleninitcond)
+        if (approxelctresist == ElCh::approxelctresist_effleninitcond)
         {
           std::cout << "| GSTAT_LENGTH_CURRENTPATH and the averaged electrolyte conductivity.   |"
                     << std::endl;
         }
-        else if (approxelctresist == Inpar::ElCh::approxelctresist_relpotcur)
+        else if (approxelctresist == ElCh::approxelctresist_relpotcur)
         {
           std::cout << "| the applied potential and the resulting current flow.                 |"
                     << std::endl;
@@ -2860,8 +2858,7 @@ void ScaTra::ScaTraTimIntElch::apply_dirichlet_bc(const double time,
   // constant-voltage (CCCV) cell cycling boundary condition during constant-voltage (CV) phase
   if (cccv_condition_ != nullptr)
   {
-    if (cccv_condition_->get_cccv_half_cycle_phase() ==
-        Inpar::ElCh::CCCVHalfCyclePhase::constant_voltage)
+    if (cccv_condition_->get_cccv_half_cycle_phase() == ElCh::CCCVHalfCyclePhase::constant_voltage)
     {
       // initialize set for global IDs of electric potential degrees of freedom affected by
       // constant-current constant-voltage (CCCV) cell cycling boundary condition
@@ -2954,8 +2951,7 @@ void ScaTra::ScaTraTimIntElch::apply_neumann_bc(
   // constant-voltage (CCCV) cell cycling boundary condition during constant-current (CC) phase
   if (cccv_condition_ != nullptr)
   {
-    if (cccv_condition_->get_cccv_half_cycle_phase() ==
-        Inpar::ElCh::CCCVHalfCyclePhase::constant_current)
+    if (cccv_condition_->get_cccv_half_cycle_phase() == ElCh::CCCVHalfCyclePhase::constant_current)
     {
       // extract constant-current constant-voltage (CCCV) half-cycle boundary conditions
       std::vector<const Core::Conditions::Condition*> cccvhalfcycleconditions;
@@ -3316,7 +3312,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_cccv_phase()
 
     // which mode was last converged step? Is this phase over? Is the current half cycle over?
     if (cccv_condition_->get_cccv_half_cycle_phase() ==
-        Inpar::ElCh::CCCVHalfCyclePhase::initial_relaxation)
+        ElCh::CCCVHalfCyclePhase::initial_relaxation)
     {
       // or-case is required to be independent of the time step size
       if (cccv_condition_->is_initial_relaxation(time_, dt()) or (time_ == 0.0))

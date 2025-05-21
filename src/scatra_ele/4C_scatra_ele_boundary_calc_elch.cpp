@@ -106,7 +106,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ElchBoundaryKinetics'");
 
   // access parameters of the condition
-  const auto kinetics = cond->parameters().get<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL");
+  const auto kinetics = cond->parameters().get<ElCh::ElectrodeKinetics>("KINETIC_MODEL");
   auto pot0 = cond->parameters().get<double>("POT");
   const auto curvenum = cond->parameters().get<std::optional<int>>("FUNCT");
   const auto nume = cond->parameters().get<int>("E-");
@@ -134,9 +134,9 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_elch_b
     int reactspecies = 0;
     for (int kk = 0; kk < my::numscal_; ++kk) reactspecies += abs((*stoich)[kk]);
 
-    if (reactspecies > 1 and (kinetics == Inpar::ElCh::butler_volmer or
-                                 kinetics == Inpar::ElCh::butler_volmer_yang1997 or
-                                 kinetics == Inpar::ElCh::tafel or kinetics == Inpar::ElCh::linear))
+    if (reactspecies > 1 and
+        (kinetics == ElCh::butler_volmer or kinetics == ElCh::butler_volmer_yang1997 or
+            kinetics == ElCh::tafel or kinetics == ElCh::linear))
       FOUR_C_THROW(
           "Kinetic model Butler-Volmer / Butler-Volmer-Yang / Tafel and Linear: \n"
           "Only one educt and no product is allowed in the implemented version");
@@ -223,10 +223,10 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
   const auto* cond = params.get<const Core::Conditions::Condition*>("condition");
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ElchBoundaryKinetics'");
 
-  const auto kinetics = cond->parameters().get<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL");
+  const auto kinetics = cond->parameters().get<ElCh::ElectrodeKinetics>("KINETIC_MODEL");
 
   // Nernst-BC
-  if (kinetics == Inpar::ElCh::nernst)
+  if (kinetics == ElCh::nernst)
   {
     // extract local values from the global vector
     my::extract_node_values(discretization, la);
@@ -310,7 +310,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElch<distype, probdim>::calc_nernst
         }
       }  // end of loop over integration points gpid
     }  // end loop over scalars
-  }  // end if(kinetics == Inpar::ElCh::nernst)
+  }  // end if(kinetics == ElCh::nernst)
 }
 
 

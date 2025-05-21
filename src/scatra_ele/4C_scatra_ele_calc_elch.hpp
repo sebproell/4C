@@ -236,8 +236,7 @@ namespace Discret
       //! calculate conductivity of electrolyte solution
       void calculate_conductivity(
           const Core::Elements::Element* ele,  //!< the element we are dealing with
-          const enum Inpar::ElCh::EquPot
-              equpot,  //!< type of closing equation for electric potential
+          const enum ElCh::EquPot equpot,      //!< type of closing equation for electric potential
           Core::LinAlg::SerialDenseVector&
               sigma,       //!< conductivity of all single ions + overall electrolyte solution
           bool effCond,    //!< flag if effective conductivity should be calculated
@@ -247,9 +246,8 @@ namespace Discret
 
       // Get conductivity from material
       virtual void get_conductivity(
-          const enum Inpar::ElCh::EquPot
-              equpot,         //!< type of closing equation for electric potential
-          double& sigma_all,  //!< conductivity of electrolyte solution
+          const enum ElCh::EquPot equpot,  //!< type of closing equation for electric potential
+          double& sigma_all,               //!< conductivity of electrolyte solution
           std::vector<double>&
               sigma,  //!< conductivity of all single ions + overall electrolyte solution
           bool effCond) = 0;

@@ -1165,10 +1165,10 @@ void SSI::SsiMono::distribute_solution_all_fields(const bool restore_velocity)
  *--------------------------------------------------------------------------------------*/
 void SSI::SsiMono::calc_initial_potential_field()
 {
-  const auto equpot = Teuchos::getIntegralValue<Inpar::ElCh::EquPot>(
+  const auto equpot = Teuchos::getIntegralValue<ElCh::EquPot>(
       Global::Problem::instance()->elch_control_params(), "EQUPOT");
-  if (equpot != Inpar::ElCh::equpot_divi and equpot != Inpar::ElCh::equpot_enc_pde and
-      equpot != Inpar::ElCh::equpot_enc_pde_elim)
+  if (equpot != ElCh::equpot_divi and equpot != ElCh::equpot_enc_pde and
+      equpot != ElCh::equpot_enc_pde_elim)
   {
     FOUR_C_THROW(
         "Initial potential field cannot be computed for chosen closing equation for electric "

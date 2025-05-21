@@ -37,10 +37,10 @@ Discret::Elements::ScaTraEleParameterElch::ScaTraEleParameterElch(
     const std::string& disname  //!< name of discretization
     )
     : boundaryfluxcoupling_(true),
-      equpot_(Inpar::ElCh::equpot_undefined),
+      equpot_(ElCh::equpot_undefined),
       faraday_(0.0),
       gas_constant_(0.0),
-      epsilon_(Inpar::ElCh::epsilon_const),
+      epsilon_(1e-4),
       frt_(0.0),
       temperature_(0.0)
 {
@@ -57,8 +57,8 @@ void Discret::Elements::ScaTraEleParameterElch::set_parameters(Teuchos::Paramete
   boundaryfluxcoupling_ = parameters.get<bool>("boundaryfluxcoupling");
 
   // type of closing equation for electric potential
-  equpot_ = Teuchos::getIntegralValue<Inpar::ElCh::EquPot>(parameters, "equpot");
-  if (equpot_ == Inpar::ElCh::equpot_undefined)
+  equpot_ = Teuchos::getIntegralValue<ElCh::EquPot>(parameters, "equpot");
+  if (equpot_ == ElCh::equpot_undefined)
     FOUR_C_THROW("Invalid type of closing equation for electric potential!");
 
   // get parameters

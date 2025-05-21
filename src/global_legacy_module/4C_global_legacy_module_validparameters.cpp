@@ -14,6 +14,7 @@
 #include "4C_contact_input.hpp"
 #include "4C_cut_input.hpp"
 #include "4C_ehl_input.hpp"
+#include "4C_elch_input.hpp"
 #include "4C_fbi_input.hpp"
 #include "4C_geometric_search_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
@@ -22,7 +23,6 @@
 #include "4C_inpar_cardiac_monodomain.hpp"
 #include "4C_inpar_cardiovascular0d.hpp"
 #include "4C_inpar_constraint_framework.hpp"
-#include "4C_inpar_elch.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_inpar_fpsi.hpp"
 #include "4C_inpar_fs3i.hpp"
@@ -207,7 +207,7 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
   Lubrication::set_valid_parameters(specs);
   Inpar::ScaTra::set_valid_parameters(specs);
   Inpar::LevelSet::set_valid_parameters(specs);
-  Inpar::ElCh::set_valid_parameters(specs);
+  ElCh::set_valid_parameters(specs);
   Inpar::ElectroPhysiology::set_valid_parameters(specs);
   Inpar::STI::set_valid_parameters(specs);
 

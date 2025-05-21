@@ -112,11 +112,11 @@ void ScaTra::CCCVCondition::set_first_cccv_half_cycle(const int step)
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-Inpar::ElCh::CCCVHalfCyclePhase ScaTra::CCCVCondition::get_cccv_half_cycle_phase() const
+ElCh::CCCVHalfCyclePhase ScaTra::CCCVCondition::get_cccv_half_cycle_phase() const
 {
   // find current phase. If not initial relaxation look up in active half cycle
   return (phaseinitialrelaxation_
-              ? Inpar::ElCh::CCCVHalfCyclePhase::initial_relaxation
+              ? ElCh::CCCVHalfCyclePhase::initial_relaxation
               : (charging_ ? halfcycle_charge_->get_cccv_half_cycle_phase()
                            : halfcycle_discharge_->get_cccv_half_cycle_phase()));
 }
@@ -131,17 +131,17 @@ bool ScaTra::CCCVCondition::is_end_of_half_cycle_phase(
   // is the condition fulfilled to finish current phase?
   switch (get_cccv_half_cycle_phase())
   {
-    case Inpar::ElCh::CCCVHalfCyclePhase::constant_current:
+    case ElCh::CCCVHalfCyclePhase::constant_current:
     {
       phasefinished = exceed_cell_voltage(cellvoltage);
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::constant_voltage:
+    case ElCh::CCCVHalfCyclePhase::constant_voltage:
     {
       phasefinished = exceed_cell_c_rate(cellcrate);
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::relaxation:
+    case ElCh::CCCVHalfCyclePhase::relaxation:
     {
       phasefinished = (time >= get_relax_end_time() - 1e-14);
       break;
@@ -284,7 +284,7 @@ ScaTra::CCCVHalfCycleCondition::CCCVHalfCycleCondition(
       cutoffcrate_(cccvhalfcyclecondition.parameters().get<double>("CUT_OFF_C_RATE")),
       cutoffvoltage_(cccvhalfcyclecondition.parameters().get<double>("CUT_OFF_VOLTAGE")),
       halfcyclecondition_id_(cccvhalfcyclecondition.parameters().get<int>("ConditionID")),
-      phase_cccv_(Inpar::ElCh::CCCVHalfCyclePhase::undefined),
+      phase_cccv_(ElCh::CCCVHalfCyclePhase::undefined),
       relaxendtime_(-1.0),
       relaxtime_(cccvhalfcyclecondition.parameters().get<double>("RELAX_TIME"))
 {
@@ -310,20 +310,20 @@ bool ScaTra::CCCVHalfCycleCondition::is_end_of_half_cycle_next_phase(
   // update phase and check if half cycle is over
   switch (phase_cccv_)
   {
-    case Inpar::ElCh::CCCVHalfCyclePhase::constant_current:
+    case ElCh::CCCVHalfCyclePhase::constant_current:
     {
-      phase_cccv_ = Inpar::ElCh::CCCVHalfCyclePhase::constant_voltage;
+      phase_cccv_ = ElCh::CCCVHalfCyclePhase::constant_voltage;
       if (print) std::cout << "CC-phase finished! \n";
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::constant_voltage:
+    case ElCh::CCCVHalfCyclePhase::constant_voltage:
     {
-      phase_cccv_ = Inpar::ElCh::CCCVHalfCyclePhase::relaxation;
+      phase_cccv_ = ElCh::CCCVHalfCyclePhase::relaxation;
       relaxendtime_ = time + relaxtime_;
       if (print) std::cout << "CV-phase finished! \n";
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::relaxation:
+    case ElCh::CCCVHalfCyclePhase::relaxation:
     {
       halfcycle_finished = true;
       if (print) std::cout << "Relaxation-phase finished! \n";
@@ -341,7 +341,7 @@ bool ScaTra::CCCVHalfCycleCondition::is_end_of_half_cycle_next_phase(
  *-----------------------------------------------------------------------------*/
 void ScaTra::CCCVHalfCycleCondition::reset_phase()
 {
-  phase_cccv_ = Inpar::ElCh::CCCVHalfCyclePhase::constant_current;
+  phase_cccv_ = ElCh::CCCVHalfCyclePhase::constant_current;
 }
 
 /*-----------------------------------------------------------------------------*
@@ -353,17 +353,17 @@ bool ScaTra::CCCVHalfCycleCondition::is_adaptive_time_stepping_phase() const
   // return, if adaptive time stepping is active for current phase
   switch (phase_cccv_)
   {
-    case Inpar::ElCh::CCCVHalfCyclePhase::constant_current:
+    case ElCh::CCCVHalfCyclePhase::constant_current:
     {
       adaptivetimestepping = static_cast<bool>(adaptivetimesteppingonoff_[0]);
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::constant_voltage:
+    case ElCh::CCCVHalfCyclePhase::constant_voltage:
     {
       adaptivetimestepping = static_cast<bool>(adaptivetimesteppingonoff_[1]);
       break;
     }
-    case Inpar::ElCh::CCCVHalfCyclePhase::relaxation:
+    case ElCh::CCCVHalfCyclePhase::relaxation:
     {
       adaptivetimestepping = static_cast<bool>(adaptivetimesteppingonoff_[2]);
       break;
@@ -384,7 +384,7 @@ void ScaTra::CCCVHalfCycleCondition::read_restart(Core::IO::DiscretizationReader
   relaxendtime_ = reader.read_double("relaxendtime");
 
   // current phase in half cycle
-  phase_cccv_ = static_cast<Inpar::ElCh::CCCVHalfCyclePhase>(reader.read_int("phase_cccv"));
+  phase_cccv_ = static_cast<ElCh::CCCVHalfCyclePhase>(reader.read_int("phase_cccv"));
 }
 
 FOUR_C_NAMESPACE_CLOSE

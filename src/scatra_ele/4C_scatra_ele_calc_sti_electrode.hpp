@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_elch.hpp"
+#include "4C_elch_input.hpp"
 #include "4C_mat_electrode.hpp"
 #include "4C_scatra_ele_calc.hpp"
 #include "4C_scatra_ele_calc_elch_electrode.hpp"

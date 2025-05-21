@@ -105,8 +105,8 @@ int Discret::Elements::ScaTraEleBoundaryCalcElchNP<distype, probdim>::evaluate_n
   // add boundary flux contributions to potential equation
   switch (myelch::elchparams_->equ_pot())
   {
-    case Inpar::ElCh::equpot_enc_pde:
-    case Inpar::ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde_elim:
     {
       for (int k = 0; k < my::numscal_; ++k)
       {
@@ -121,9 +121,9 @@ int Discret::Elements::ScaTraEleBoundaryCalcElchNP<distype, probdim>::evaluate_n
       break;
     }
 
-    case Inpar::ElCh::equpot_enc:
-    case Inpar::ElCh::equpot_poisson:
-    case Inpar::ElCh::equpot_laplace:
+    case ElCh::equpot_enc:
+    case ElCh::equpot_poisson:
+    case ElCh::equpot_laplace:
       // do nothing in these cases
       break;
 
@@ -168,14 +168,14 @@ void Discret::Elements::ScaTraEleBoundaryCalcElchNP<distype,
   // compute matrix and residual contributions arising from closing equation for electric potential
   switch (myelch::elchparams_->equ_pot())
   {
-    case Inpar::ElCh::equpot_enc:
+    case ElCh::equpot_enc:
     {
       // do nothing, since no boundary integral present
       break;
     }
 
-    case Inpar::ElCh::equpot_enc_pde:
-    case Inpar::ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde_elim:
     {
       for (int k = 0; k < my::numscal_; ++k)
       {
@@ -198,7 +198,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElchNP<distype,
 
     // need special treatment for Laplace equation due to missing scaling with inverse of Faraday
     // constant
-    case Inpar::ElCh::equpot_laplace:
+    case ElCh::equpot_laplace:
     {
       const double faraday = myelch::elchparams_->faraday();
       for (int k = 0; k < my::numscal_; ++k)
@@ -222,7 +222,7 @@ void Discret::Elements::ScaTraEleBoundaryCalcElchNP<distype,
       break;
     }
 
-    case Inpar::ElCh::equpot_poisson:
+    case ElCh::equpot_poisson:
     {
       FOUR_C_THROW("Poisson equation combined with electrode boundary conditions not implemented!");
       break;

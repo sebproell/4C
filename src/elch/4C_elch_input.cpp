@@ -5,15 +5,16 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_elch.hpp"
+#include "4C_elch_input.hpp"
 
 #include "4C_fem_condition_definition.hpp"
 #include "4C_inpar_scatra.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_linalg_sparseoperator.hpp"
+
 FOUR_C_NAMESPACE_OPEN
 
-void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
+void ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -42,7 +43,7 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
               {.description = "(universal) gas constant (in unit system as chosen in input file)",
                   .default_value = 8.314472}),
           // parameter for possible types of ELCH algorithms for deforming meshes
-          deprecated_selection<Inpar::ElCh::ElchMovingBoundary>("MOVINGBOUNDARY",
+          deprecated_selection<ElCh::ElchMovingBoundary>("MOVINGBOUNDARY",
               {
                   {"No", elch_mov_bndry_no},
                   {"pseudo-transient", elch_mov_bndry_pseudo_transient},
@@ -59,7 +60,7 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           parameter<bool>("GALVANOSTATIC",
               {.description = "flag for galvanostatic mode", .default_value = false}),
 
-          deprecated_selection<Inpar::ElCh::ApproxElectResist>("GSTAT_APPROX_ELECT_RESIST",
+          deprecated_selection<ElCh::ApproxElectResist>("GSTAT_APPROX_ELECT_RESIST",
               {
                   {"relation_pot_cur", approxelctresist_relpotcur},
                   {"effective_length_with_initial_cond", approxelctresist_effleninitcond},
@@ -86,7 +87,7 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           parameter<double>("GSTAT_LENGTH_CURRENTPATH",
               {.description = "average length of the current path", .default_value = 0.0}),
 
-          deprecated_selection<Inpar::ElCh::EquPot>("EQUPOT",
+          deprecated_selection<ElCh::EquPot>("EQUPOT",
               {
                   {"Undefined", equpot_undefined},
                   {"ENC", equpot_enc},
@@ -188,14 +189,14 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           parameter<double>("ADAPTED_TIME_STEP_SIZE",
               {.description = "new time step size.", .default_value = -1.0}),
 
-          deprecated_selection<ScaTra::InitialField>("INITIALFIELD",
+          deprecated_selection<Inpar::ScaTra::InitialField>("INITIALFIELD",
               {
-                  {"zero_field", ScaTra::initfield_zero_field},
-                  {"field_by_function", ScaTra::initfield_field_by_function},
-                  {"field_by_condition", ScaTra::initfield_field_by_condition},
+                  {"zero_field", Inpar::ScaTra::initfield_zero_field},
+                  {"field_by_function", Inpar::ScaTra::initfield_field_by_function},
+                  {"field_by_condition", Inpar::ScaTra::initfield_field_by_condition},
               },
               {.description = "Initial Field for scalar transport problem",
-                  .default_value = ScaTra::initfield_zero_field}),
+                  .default_value = Inpar::ScaTra::initfield_zero_field}),
 
           parameter<int>(
               "INITFUNCNO", {.description = "function number for scalar transport initial field",
@@ -204,7 +205,7 @@ void Inpar::ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 }
 
 
-void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
+void ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
 {
   using namespace Core::IO::InputSpecBuilders;
 
@@ -282,11 +283,10 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
   {
     auto reaction_model_choices = one_of({
         all_of({
-            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
+            deprecated_selection<ElCh::ElectrodeKinetics>("KINETIC_MODEL",
                 {
-                    {"Butler-Volmer", Inpar::ElCh::ElectrodeKinetics::butler_volmer},
-                    {"Butler-Volmer-Yang1997",
-                        Inpar::ElCh::ElectrodeKinetics::butler_volmer_yang1997},
+                    {"Butler-Volmer", ElCh::ElectrodeKinetics::butler_volmer},
+                    {"Butler-Volmer-Yang1997", ElCh::ElectrodeKinetics::butler_volmer_yang1997},
                 }),
             parameter<double>("ALPHA_A"),
             parameter<double>("ALPHA_C"),
@@ -296,8 +296,8 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>(
-                "KINETIC_MODEL", {{"Tafel", Inpar::ElCh::ElectrodeKinetics::tafel}}),
+            deprecated_selection<ElCh::ElectrodeKinetics>(
+                "KINETIC_MODEL", {{"Tafel", ElCh::ElectrodeKinetics::tafel}}),
             parameter<double>("ALPHA"),
             parameter<double>("I0"),
             parameter<double>("GAMMA"),
@@ -305,8 +305,8 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>(
-                "KINETIC_MODEL", {{"linear", Inpar::ElCh::ElectrodeKinetics::linear}}),
+            deprecated_selection<ElCh::ElectrodeKinetics>(
+                "KINETIC_MODEL", {{"linear", ElCh::ElectrodeKinetics::linear}}),
             parameter<double>("ALPHA"),
             parameter<double>("I0"),
             parameter<double>("GAMMA"),
@@ -314,16 +314,16 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
-                {{"Butler-Volmer-Newman", Inpar::ElCh::ElectrodeKinetics::butler_volmer_newman}}),
+            deprecated_selection<ElCh::ElectrodeKinetics>("KINETIC_MODEL",
+                {{"Butler-Volmer-Newman", ElCh::ElectrodeKinetics::butler_volmer_newman}}),
             parameter<double>("K_A"),
             parameter<double>("K_C"),
             parameter<double>("BETA"),
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
-                {{"Butler-Volmer-Bard", Inpar::ElCh::ElectrodeKinetics::butler_volmer_bard}}),
+            deprecated_selection<ElCh::ElectrodeKinetics>("KINETIC_MODEL",
+                {{"Butler-Volmer-Bard", ElCh::ElectrodeKinetics::butler_volmer_bard}}),
             parameter<double>("E0"),
             parameter<double>("K0"),
             parameter<double>("BETA"),
@@ -332,8 +332,8 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
             parameter<double>("DL_SPEC_CAP"),
         }),
         all_of({
-            deprecated_selection<Inpar::ElCh::ElectrodeKinetics>(
-                "KINETIC_MODEL", {{"Nernst", Inpar::ElCh::ElectrodeKinetics::nernst}}),
+            deprecated_selection<ElCh::ElectrodeKinetics>(
+                "KINETIC_MODEL", {{"Nernst", ElCh::ElectrodeKinetics::nernst}}),
             parameter<double>("E0"),
             parameter<double>("C0"),
             parameter<double>("DL_SPEC_CAP"),
@@ -407,9 +407,9 @@ void Inpar::ElCh::set_valid_conditions(std::vector<Core::Conditions::ConditionDe
         parameter<std::vector<int>>("STOICH", {.size = from_parameter<int>("NUMSCAL")}),
         parameter<int>("E-"),
         parameter<int>("ZERO_CUR"),
-        deprecated_selection<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL",
+        deprecated_selection<ElCh::ElectrodeKinetics>("KINETIC_MODEL",
             {
-                {"Butler-Volmer", Inpar::ElCh::ElectrodeKinetics::butler_volmer},
+                {"Butler-Volmer", ElCh::ElectrodeKinetics::butler_volmer},
             }),
         parameter<double>("A_S"),
         parameter<double>("ALPHA_A"),

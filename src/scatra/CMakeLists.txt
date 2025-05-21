@@ -12,6 +12,7 @@ set(_dependencies
     adapter
     config
     core
+    elch
     fluid
     fluid_turbulence
     global_data

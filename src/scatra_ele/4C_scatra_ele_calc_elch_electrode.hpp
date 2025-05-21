@@ -191,9 +191,9 @@ namespace Discret
           ) override;
 
       //! get conductivity
-      void get_conductivity(const enum Inpar::ElCh::EquPot
-                                equpot,  //!< type of closing equation for electric potential
-          double& sigma_all,             //!< conductivity of electrolyte solution
+      void get_conductivity(
+          const enum ElCh::EquPot equpot,  //!< type of closing equation for electric potential
+          double& sigma_all,               //!< conductivity of electrolyte solution
           std::vector<double>&
               sigma,    //!< conductivity or a single ion + overall electrolyte solution
           bool effCond  //!< flag if effective conductivity should be calculated

@@ -10,9 +10,9 @@
 
 #include "4C_config.hpp"
 
+#include "4C_elch_input.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
-#include "4C_inpar_elch.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -96,8 +96,8 @@ namespace Discret
 
       //! evaluate ion material
       void mat_ion(const std::shared_ptr<const Core::Mat::Material> material,  //!< ion material
-          const int k,                       //!< ID of ion material
-          const Inpar::ElCh::EquPot equpot,  //!< type of closing equation for electric potential
+          const int k,                //!< ID of ion material
+          const ElCh::EquPot equpot,  //!< type of closing equation for electric potential
           const std::shared_ptr<ScaTraEleDiffManagerElch>& diffmanager  //!< diffusion manager
       );
 

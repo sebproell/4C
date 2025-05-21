@@ -165,7 +165,7 @@ int Discret::Elements::ScaTraEleBoundaryCalcElchDiffCond<distype, probdim>::eval
   {
     switch (myelch::elchparams_->equ_pot())
     {
-      case Inpar::ElCh::equpot_divi:
+      case ElCh::equpot_divi:
       {
         for (int k = 0; k < my::numscal_; ++k)
         {
@@ -222,13 +222,13 @@ void Discret::Elements::ScaTraEleBoundaryCalcElchDiffCond<distype,
   // compute matrix and residual contributions arising from closing equation for electric potential
   switch (myelch::elchparams_->equ_pot())
   {
-    case Inpar::ElCh::equpot_enc:
+    case ElCh::equpot_enc:
     {
       // do nothing, since no boundary integral present
       break;
     }
 
-    case Inpar::ElCh::equpot_divi:
+    case ElCh::equpot_divi:
     {
       for (int k = 0; k < my::numscal_; ++k)
       {

@@ -7,7 +7,7 @@
 
 #include "4C_scatra_ele_parameter_elch_diffcond.hpp"
 
-#include "4C_inpar_elch.hpp"
+#include "4C_elch_input.hpp"
 #include "4C_scatra_ele_parameter_std.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.hpp"

@@ -84,7 +84,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::check_elch_
         if (singlemat->material_type() == Core::Materials::m_newman)
         {
           // Newman material must be combined with divi closing equation for electric potential
-          if (myelch::elchparams_->equ_pot() != Inpar::ElCh::equpot_divi)
+          if (myelch::elchparams_->equ_pot() != ElCh::equpot_divi)
           {
             FOUR_C_THROW(
                 "Newman material must be combined with divi closing equation for electric "
@@ -260,7 +260,7 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
   if (cond == nullptr) FOUR_C_THROW("Cannot access condition 'ElchDomainKinetics'");
 
   // access parameters of the condition
-  const int kinetics = cond->parameters().get<Inpar::ElCh::ElectrodeKinetics>("KINETIC_MODEL");
+  const int kinetics = cond->parameters().get<ElCh::ElectrodeKinetics>("KINETIC_MODEL");
   double pot0 = cond->parameters().get<double>("POT");
   const auto curvenum = cond->parameters().get<std::optional<int>>("FUNCT");
   const int nume = cond->parameters().get<int>("E-");
@@ -292,9 +292,9 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::calc_elch_d
     int reactspecies = 0;
     for (int kk = 0; kk < my::numscal_; ++kk) reactspecies += abs((*stoich)[kk]);
 
-    if (reactspecies > 1 and (kinetics == Inpar::ElCh::butler_volmer or
-                                 kinetics == Inpar::ElCh::butler_volmer_yang1997 or
-                                 kinetics == Inpar::ElCh::tafel or kinetics == Inpar::ElCh::linear))
+    if (reactspecies > 1 and
+        (kinetics == ElCh::butler_volmer or kinetics == ElCh::butler_volmer_yang1997 or
+            kinetics == ElCh::tafel or kinetics == ElCh::linear))
     {
       FOUR_C_THROW(
           "Kinetic model Butler-Volmer / Butler-Volmer-Yang / Tafel and Linear: \n"
@@ -387,13 +387,13 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype,
   // compute matrix and residual contributions arising from closing equation for electric potential
   switch (myelch::elchparams_->equ_pot())
   {
-    case Inpar::ElCh::equpot_enc:
+    case ElCh::equpot_enc:
     {
       // do nothing, since no boundary integral present
       break;
     }
 
-    case Inpar::ElCh::equpot_divi:
+    case ElCh::equpot_divi:
     {
       for (int k = 0; k < my::numscal_; ++k)
       {
@@ -481,13 +481,13 @@ void Discret::Elements::ScaTraEleCalcElchDiffCond<distype, probdim>::evaluate_el
   // compute matrix and residual contributions arising from closing equation for electric potential
   switch (myelch::elchparams_->equ_pot())
   {
-    case Inpar::ElCh::equpot_enc:
+    case ElCh::equpot_enc:
     {
       // do nothing, since no boundary integral present
       break;
     }
 
-    case Inpar::ElCh::equpot_divi:
+    case ElCh::equpot_divi:
     {
       for (int k = 0; k < my::numscal_; ++k)
       {

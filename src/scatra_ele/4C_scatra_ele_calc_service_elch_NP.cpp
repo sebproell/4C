@@ -30,11 +30,11 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::check_elch_element_paramet
   // check type of closing equation
   switch (myelch::elchparams_->equ_pot())
   {
-    case Inpar::ElCh::equpot_enc:
-    case Inpar::ElCh::equpot_enc_pde:
-    case Inpar::ElCh::equpot_enc_pde_elim:
-    case Inpar::ElCh::equpot_poisson:
-    case Inpar::ElCh::equpot_laplace:
+    case ElCh::equpot_enc:
+    case ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_poisson:
+    case ElCh::equpot_laplace:
     {
       // valid closing equations for electric potential
       break;
@@ -85,14 +85,14 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::evaluate_elch_boundary_kin
   // compute matrix and residual contributions arising from closing equation for electric potential
   switch (myelch::elchparams_->equ_pot())
   {
-    case Inpar::ElCh::equpot_enc:
+    case ElCh::equpot_enc:
     {
       // do nothing, since no boundary integral present
       break;
     }
 
-    case Inpar::ElCh::equpot_enc_pde:
-    case Inpar::ElCh::equpot_enc_pde_elim:
+    case ElCh::equpot_enc_pde:
+    case ElCh::equpot_enc_pde_elim:
     {
       for (int k = 0; k < my::numscal_; ++k)
       {
@@ -115,7 +115,7 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::evaluate_elch_boundary_kin
 
     // need special treatment for Laplace equation due to missing scaling with inverse of Faraday
     // constant
-    case Inpar::ElCh::equpot_laplace:
+    case ElCh::equpot_laplace:
     {
       const double faraday = myelch::elchparams_->faraday();
       for (int k = 0; k < my::numscal_; ++k)
@@ -139,7 +139,7 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::evaluate_elch_boundary_kin
       break;
     }
 
-    case Inpar::ElCh::equpot_poisson:
+    case ElCh::equpot_poisson:
     {
       FOUR_C_THROW("Poisson equation combined with electrode boundary conditions not implemented!");
       break;
@@ -161,7 +161,7 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::evaluate_elch_boundary_kin
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
 void Discret::Elements::ScaTraEleCalcElchNP<distype>::get_conductivity(
-    const enum Inpar::ElCh::EquPot equpot, double& sigma_all, std::vector<double>& sigma,
+    const enum ElCh::EquPot equpot, double& sigma_all, std::vector<double>& sigma,
     bool effCond  // the bool effCond is not used for the NP formulation since the volume averaging
                   // is not implemented
 )
@@ -182,7 +182,7 @@ void Discret::Elements::ScaTraEleCalcElchNP<distype>::get_conductivity(
     sigma_all += sigma_k;
 
     // effect of eliminated species c_m has to be added (c_m = - 1/z_m \sum_{k=1}^{m-1} z_k c_k)
-    if (equpot == Inpar::ElCh::equpot_enc_pde_elim)
+    if (equpot == ElCh::equpot_enc_pde_elim)
     {
       sigma_all += factor * myelch::diff_manager()->get_isotropic_diff(my::numscal_) *
                    myelch::diff_manager()->get_valence(my::numscal_) *
