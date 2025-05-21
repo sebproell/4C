@@ -21,6 +21,7 @@
 # 4C-specific changes:
 # The original script allows to overwrite the commit-msg rules, though
 # we disable that for 4C to guarantee a consistent style.
+# The original script was interactive and allowed to edit the commit message
 
 COMMIT_MSG_FILE="$1"
 COMMIT_MSG_LINES=
@@ -98,6 +99,8 @@ display_warnings() {
     return
   fi
 
+  echo -e "${RED}Your commit message is not following the commit message guidelines:${NC}\n"
+
   for i in "${!WARNINGS[@]}"; do
     printf "%-74s ${WHITE}%s${NC}\n" "${COMMIT_MSG_LINES[$(($i-1))]}" "[line ${i}]"
     IFS=';' read -ra WARNINGS_ARRAY <<< "${WARNINGS[$i]}"
@@ -105,6 +108,10 @@ display_warnings() {
       echo -e " ${YELLOW}- ${ERROR}${NC}"
     done
   done
+
+  echo -e "\n${RED}Your commit message is saved in ${COMMIT_MSG_FILE}${NC}"
+  echo -e "${RED}To retry the commit and edit that message, append the following to the git commit command:${NC}"
+  echo -e "\n${WHITE}  -F ${COMMIT_MSG_FILE} --edit${NC}\n"
 }
 
 #
@@ -142,8 +149,11 @@ validate_commit_message() {
   # reset warnings
   WARNINGS=()
 
-  # capture the subject, and remove the 'squash! ' prefix if present
+  # capture the subject, and remove special prefixes
   COMMIT_SUBJECT=${COMMIT_MSG_LINES[0]/#squash! /}
+  COMMIT_SUBJECT=${COMMIT_SUBJECT/#fixup! /}
+  COMMIT_SUBJECT=${COMMIT_SUBJECT/#amend! /}
+  COMMIT_SUBJECT=${COMMIT_SUBJECT/#reword! /}
 
   # if the commit is empty there's nothing to validate, we can return here
   COMMIT_MSG_STR="${COMMIT_MSG_LINES[*]}"
@@ -289,35 +299,13 @@ else
   TTY=/dev/tty
 fi
 
-while true; do
+read_commit_message
 
-  read_commit_message
+validate_commit_message
 
-  validate_commit_message
+# if there are no WARNINGS then we're good to break out of here
+test ${#WARNINGS[@]} -eq 0 && exit 0;
 
-  # if there are no WARNINGS are empty then we're good to break out of here
-  test ${#WARNINGS[@]} -eq 0 && exit 0;
+display_warnings
 
-  display_warnings
-
-  # if non-interactive don't prompt and exit with an error
-  if [ ! -t 1 ] && [ -z ${FAKE_TTY+x} ]; then
-    exit 1
-  fi
-
-  # Ask the question (not using "read -p" as it uses stderr not stdout)
-#  echo -en "${BLUE}Proceed with commit? [e/y/n/?] ${NC}"
-  echo -en "${BLUE}Proceed with commit? [e/n/?] ${NC}"
-
-  # Read the answer
-  read REPLY < "$TTY"
-
-  # Check if the reply is valid
-  case "$REPLY" in
-    E*|e*) $HOOK_EDITOR "$COMMIT_MSG_FILE" < $TTY; continue ;;
-#    Y*|y*) exit 0 ;;
-    N*|n*) exit 1 ;;
-    *)     SKIP_DISPLAY_WARNINGS=1; prompt_help; continue ;;
-  esac
-
-done
+exit 1
