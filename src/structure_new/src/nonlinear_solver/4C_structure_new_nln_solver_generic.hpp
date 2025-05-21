@@ -49,9 +49,6 @@ namespace Solid
       class Generic
       {
        public:
-        // TEMP
-        Generic() {}
-
         //! constructor
         Generic(const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
             const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,

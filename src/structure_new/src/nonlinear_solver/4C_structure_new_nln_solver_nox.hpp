@@ -63,9 +63,6 @@ namespace Solid
       class Nox : public Generic
       {
        public:
-        // TEMP
-        Nox() {}
-
         //! constructor
         Nox(const Teuchos::ParameterList& default_params,
             const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
