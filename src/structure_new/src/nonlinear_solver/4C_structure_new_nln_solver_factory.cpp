@@ -33,15 +33,89 @@ std::shared_ptr<Solid::Nln::SOLVER::Generic> Solid::Nln::SOLVER::Factory::build_
     const std::shared_ptr<Solid::Integrator>& integrator,
     const std::shared_ptr<const Solid::TimeInt::Base>& timint) const
 {
-  std::shared_ptr<Solid::Nln::SOLVER::Generic> nlnSolver = nullptr;
+  Teuchos::ParameterList nox_params;
 
-  const auto it_set = settings.find(nlnSolType);
-
-  Teuchos::ParameterList predefined_nox_settings;
-
-  if (it_set != settings.end())
+  switch (nlnSolType)
   {
-    predefined_nox_settings = it_set->second(*sdyn);
+    case Inpar::Solid::soltech_newtonfull:
+    {
+      // ---------------------------------------------------------------------------
+      // Set-up the full Newton method
+      // ---------------------------------------------------------------------------
+      // Non-linear solver
+      nox_params.set("Nonlinear Solver", "Line Search Based");
+
+      // Direction
+      Teuchos::ParameterList& pdir = nox_params.sublist("Direction");
+      pdir.set("Method", "Newton");
+
+      // Line Search
+      Teuchos::ParameterList& plinesearch = nox_params.sublist("Line Search");
+      plinesearch.set("Method", "Full Step");
+    }
+    break;
+
+    case Inpar::Solid::soltech_ptc:
+    {
+      // ---------------------------------------------------------------------------
+      // Set-up the pseudo transient method
+      // ---------------------------------------------------------------------------
+      // Non-linear solver
+      nox_params.set("Nonlinear Solver", "Pseudo Transient");
+
+      // Direction
+      Teuchos::ParameterList& pdir = nox_params.sublist("Direction");
+      pdir.set("Method", "Newton");
+
+      /* The following parameters create a NOX::Nln::Solver::Nox
+       * solver which is equivalent to the old 4C implementation.
+       *
+       * If you are keen on using the new features, please use the corresponding
+       * input section "STRUCT NOX/Pseudo Transient" in your input file. */
+      Teuchos::ParameterList& pptc = nox_params.sublist("Pseudo Transient");
+
+      pptc.set<double>("deltaInit", sdyn->get_initial_ptc_pseudo_time_step());
+      pptc.set<double>("deltaMax", std::numeric_limits<double>::max());
+      pptc.set<double>("deltaMin", 0.0);
+      pptc.set<int>("Maximum Number of Pseudo-Transient Iterations", (sdyn->get_iter_max() + 1));
+      pptc.set<int>("Maximum Number of Pseudo-Transient Iterations", 51);
+      pptc.set<std::string>("Time Step Control", "SER");
+      pptc.set<double>("SER_alpha", 1.0);
+      pptc.set<double>("ScalingFactor", 1.0);
+      pptc.set<std::string>("Norm Type for TSC", "Max Norm");
+      pptc.set<std::string>("Build scaling operator", "every timestep");
+      pptc.set<std::string>("Scaling Type", "Identity");
+    }
+    break;
+
+    case Inpar::Solid::soltech_singlestep:
+    {
+      nox_params.set("Nonlinear Solver", "Single Step");
+
+      // Set the printing parameters in the "Printing" sublist
+      Teuchos::ParameterList& printParams = nox_params.sublist("Printing");
+      printParams.set("Output Precision", 3);
+      printParams.set("Output Processor", 0);
+      printParams.set("Output Information",
+          ::NOX::Utils::OuterIteration + ::NOX::Utils::OuterIterationStatusTest +
+              ::NOX::Utils::InnerIteration + ::NOX::Utils::Details + ::NOX::Utils::Warning);
+
+      // Set NOX solving parameters: "Update Jacobian" is essential to compute the Newton direction,
+      // i.e. x=A^-1 b. For details behind how it's handled, see NOX_Solver_SingleStep.C
+      Teuchos::ParameterList& sssParams = nox_params.sublist("Single Step Solver");
+      sssParams.set("Update Jacobian", true);
+      sssParams.set("Print Norms", true);
+      sssParams.set("Compute Relative Norm", true);
+
+      // Sublist for linear solver for the single step
+      Teuchos::ParameterList& lsParams = sssParams.sublist("Linear Solver");
+      lsParams.set("Adaptive Control", false);
+      lsParams.set("Number of Nonlinear Iterations", 1);
+    }
+    break;
+
+    default:
+      break;
   }
 
   // ---------------------------------------------------------------------------
@@ -60,12 +134,11 @@ std::shared_ptr<Solid::Nln::SOLVER::Generic> Solid::Nln::SOLVER::Factory::build_
     // quantity and not a nodal dof
     qtypes.erase(NOX::Nln::StatusTest::quantity_eas);
 
-    Solid::Nln::SOLVER::set_status_test_params(
-        predefined_nox_settings.sublist("Status Test"), *sdyn, qtypes);
+    Solid::Nln::SOLVER::set_status_test_params(nox_params.sublist("Status Test"), *sdyn, qtypes);
   }
 
   return std::make_shared<Solid::Nln::SOLVER::Nox>(
-      predefined_nox_settings, gstate, sdyn, noxinterface, integrator, timint);
+      nox_params, gstate, sdyn, noxinterface, integrator, timint);
 }
 
 /*----------------------------------------------------------------------------*

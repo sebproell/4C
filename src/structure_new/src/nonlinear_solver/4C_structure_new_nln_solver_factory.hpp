@@ -14,9 +14,6 @@
 
 #include <Teuchos_ParameterList.hpp>
 
-#include <functional>
-#include <unordered_map>
-
 FOUR_C_NAMESPACE_OPEN
 
 namespace Solid
@@ -56,11 +53,6 @@ namespace Solid
             const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
             const std::shared_ptr<Solid::Integrator>& integrator,
             const std::shared_ptr<const Solid::TimeInt::Base>& timint) const;
-
-       private:
-        std::unordered_map<Inpar::Solid::NonlinSolTech,
-            std::function<Teuchos::ParameterList(const Solid::TimeInt::BaseDataSDyn&)>>
-            settings;
       };
 
       /*! Non-member function, which relates to the Solid::Nln::SOLVER::Factory class
