@@ -23,7 +23,7 @@ namespace Core::LinAlg
    * contain a single typedef `type` for the class that is wrapped.
    */
   template <typename T>
-  struct WrapperFor
+  struct EnableViewFor
   {
     static_assert("You need to specialize this struct for the wrapper class.");
   };
@@ -34,21 +34,23 @@ namespace Core::LinAlg
      * Helper type to work with const and non-const references.
      */
     template <typename T>
-    using WrapperForWithQualifiers = std::conditional_t<std::is_const_v<std::remove_reference_t<T>>,
-        const typename WrapperFor<std::decay_t<T>>::type,
-        typename WrapperFor<std::decay_t<T>>::type>;
+    using EnableViewForWithQualifiers =
+        std::conditional_t<std::is_const_v<std::remove_reference_t<T>>,
+            const typename EnableViewFor<std::decay_t<T>>::type,
+            typename EnableViewFor<std::decay_t<T>>::type>;
   }  // namespace Internal
 
   /**
    * Concept for a SourceType which can be viewed as a WrapperType. The WrapperType must have a
-   * static method create_view which takes a SourceType and returns a shared pointer to a
-   * WrapperType.
+   * static method create_view which takes a SourceType and returns a unique_ptr to a WrapperType
+   * which behaves like a view of the SourceType. For the implementation, the WrapperType can use
+   * Core::Utils::OwnerOrView to hold the pointer to the SourceType.
    */
   template <typename SourceType>
   concept Viewable = requires(SourceType source) {
     {
-      Internal::WrapperForWithQualifiers<SourceType>::create_view(source)
-    } -> std::same_as<std::unique_ptr<Internal::WrapperForWithQualifiers<SourceType>>>;
+      Internal::EnableViewForWithQualifiers<SourceType>::create_view(source)
+    } -> std::same_as<std::unique_ptr<Internal::EnableViewForWithQualifiers<SourceType>>>;
   };
 
   /**
@@ -70,24 +72,67 @@ namespace Core::LinAlg
    *   const Core::LinAlg::Vector<double>& vec = view.underlying();
    * @endcode
    *
+   * Another use case of this class is the following case. Suppose we want to wrap a class ExtA
+   * which can return a reference to ExtB. We have our own wrappers for ExtA and ExtB, let us call
+   * them MyA and MyB, respectively. Now we want to implement a function that returns a reference to
+   * MyB from MyA, where the MyB is a view of the ExtB object returned by ExtA wrapped by MyA. The
+   * code would look as follows:
+   *
+   * @code
+   * //! The external class we want to wrap.
+   * class ExtA
+   * {
+   *  public:
+   *   const ExtB& get_b() { return b_; }
+   *   void set_b(const ExtB& b) { b_ = b; }
+   *  private:
+   *   ExtB b_;
+   * };
+   *
+   *  //! Our wrapper class for ExtA.
+   * class MyA
+   * {
+   *  public:
+   *   const MyB& get_b() { return b_view_.sync(ext_a_.get_b()); }
+   *
+   *  private:
+   *   View<const MyB> b_view_;
+   *   ExtA ext_a_;
+   * };
+   * @endcode
+   *
+   * Essentially, this ensures that whenever we call get_b() on MyA, we get a view of the _current_
+   * ExtB object from ExtA. In the example above, one could call ExtA::set_b() and a subsequent
+   * call to MyA::get_b() would return a view of the new ExtB object.
    */
   template <typename WrapperType>
   class View
   {
    public:
     /**
+     * Construct an empty view. You either need to assign a non-empty view to it or call
+     * sync() to make it point to a valid object before using it.
+     */
+    View() = default;
+
+    /**
      * Construct a view from a source object.
      */
     template <Viewable SourceType>
-    View(SourceType& source) : view_(WrapperType::create_view(source))
+    View(SourceType& source)
     {
+      sync(source);
     }
 
-    // Make the class hard to misuse and disallow copy and move.
-    View(const View& other) = delete;
-    View& operator=(const View& other) = delete;
-    View(View&& other) = delete;
-    View& operator=(View&& other) = delete;
+    /**
+     * Copying the View creates a new View of the same underlying object.
+     */
+    View(const View& other) = default;
+    View& operator=(const View& other) = default;
+
+    View(View&& other) = default;
+    View& operator=(View&& other) = default;
+
     ~View() = default;
 
     /**
@@ -95,23 +140,51 @@ namespace Core::LinAlg
      * were the underlying type. This is useful for passing the view to functions which expect the
      * underlying wrapper type.
      */
-    operator WrapperType&() { return *view_; }
+    operator WrapperType&() const { return underlying(); }
 
     /**
      * Explicitly ask for the viewed underlying wrapper. This is simply another way to access
      * the viewed object when implicit conversion is not happening automatically.
      */
-    WrapperType& underlying() { return *view_; }
+    WrapperType& underlying() const
+    {
+      FOUR_C_ASSERT_ALWAYS(view_, "View is not viewing anything.");
+      return *view_;
+    }
+
+    /**
+     * @brief Ensure that the View is referencing the @p source object.
+     *
+     * This method exists for a typical use case where we want to keep a view of a source object
+     * up-to-date with changes in another object. If the @p source is not the same as the viewed
+     * object, this View is updated to point to the new @p source object.
+     *
+     * @return The viewed underlying wrapper which is behaving like a view of the @p source object.
+     */
+    template <Viewable SourceType>
+    WrapperType& sync(SourceType& source)
+    {
+      if (viewed_object_ != &source)
+      {
+        view_ = WrapperType::create_view(source);
+        viewed_object_ = &source;
+      }
+      return *view_;
+    }
 
    private:
     //! Source content wrapped in our own type.
-    std::unique_ptr<WrapperType> view_;
+    //! We need to share ownership so we can make copies of the view (which refer to the same
+    //! underlying object).
+    std::shared_ptr<WrapperType> view_;
+
+    const void* viewed_object_{nullptr};
   };
 
 
   // Deduction guide
   template <typename SourceType>
-  View(SourceType&) -> View<Internal::WrapperForWithQualifiers<SourceType>>;
+  View(SourceType&) -> View<Internal::EnableViewForWithQualifiers<SourceType>>;
 
 }  // namespace Core::LinAlg
 

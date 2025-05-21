@@ -273,13 +273,13 @@ namespace Core::LinAlg
   };
 
   template <>
-  struct WrapperFor<Epetra_MultiVector>
+  struct EnableViewFor<Epetra_MultiVector>
   {
     using type = MultiVector<double>;
   };
 
   template <>
-  struct WrapperFor<Epetra_FEVector>
+  struct EnableViewFor<Epetra_FEVector>
   {
     using type = MultiVector<double>;
   };
