@@ -1877,12 +1877,12 @@ void ScaTra::ScaTraTimIntElch::create_meshtying_strategy()
     strategy_ = std::make_shared<MeshtyingStrategyFluidElch>(this);
   }
   // scatra-scatra interface coupling
-  else if (s2_i_meshtying())
+  else if (s2i_meshtying())
   {
     strategy_ = std::make_shared<MeshtyingStrategyS2IElch>(this, *params_);
   }
   // ScaTra-ScaTra interface contact
-  else if (s2_i_kinetics() and !s2_i_meshtying())
+  else if (s2i_kinetics() and !s2i_meshtying())
   {
     strategy_ = std::make_shared<MeshtyingStrategyStd>(this);
   }

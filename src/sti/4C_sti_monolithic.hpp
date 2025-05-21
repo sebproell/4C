@@ -12,15 +12,12 @@
 
 #include "4C_coupling_adapter.hpp"
 #include "4C_coupling_adapter_converter.hpp"
-#include "4C_inpar_sti.hpp"
 #include "4C_sti_algorithm.hpp"
-
-// forward declarations
-class Map;
 
 FOUR_C_NAMESPACE_OPEN
 
 
+// forward declarations
 namespace Core::LinAlg
 {
   class BlockSparseMatrixBase;
@@ -72,13 +69,13 @@ namespace STI
     );
 
     //! return algebraic solver for global system of equations
-    const Core::LinAlg::Solver& solver() const { return *solver_; };
+    [[nodiscard]] const Core::LinAlg::Solver& solver() const { return *solver_; };
 
    private:
     //! Apply Dirichlet conditions to assembled OD blocks
     void apply_dirichlet_off_diag(
-        std::shared_ptr<Core::LinAlg::SparseOperator>& scatrathermo_domain_interface,
-        std::shared_ptr<Core::LinAlg::SparseOperator>& thermoscatra_domain_interface);
+        std::shared_ptr<Core::LinAlg::SparseOperator> scatrathermo_domain_interface,
+        std::shared_ptr<Core::LinAlg::SparseOperator> thermoscatra_domain_interface) const;
 
     //! Assemble interface and domain contributions of OD blocks
     void assemble_domain_interface_off_diag(
@@ -87,12 +84,6 @@ namespace STI
 
     //! assemble global system of equations
     void assemble_mat_and_rhs();
-
-    //! assemble off-diagonal scatra-thermo block of global system matrix
-    void assemble_od_block_scatra_thermo();
-
-    //! assemble off-diagonal thermo-scatra block of global system matrix
-    void assemble_od_block_thermo_scatra();
 
     //! build null spaces associated with blocks of global system matrix
     void build_null_spaces() const;
@@ -103,7 +94,7 @@ namespace STI
     ) const;
 
     //! global map of degrees of freedom
-    const std::shared_ptr<const Core::LinAlg::Map>& dof_row_map() const;
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const;
 
     //! check termination criterion for Newton-Raphson iteration
     bool exit_newton_raphson();

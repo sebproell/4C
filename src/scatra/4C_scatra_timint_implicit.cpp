@@ -557,21 +557,18 @@ void ScaTra::ScaTraTimIntImpl::setup()
     switch (outputscalars_)
     {
       case Inpar::ScaTra::outputscalars_entiredomain:
-        outputscalarstrategy_ = std::make_shared<OutputScalarsStrategyDomain>();
+        outputscalarstrategy_ = std::make_shared<OutputScalarsStrategyDomain>(this);
         break;
       case Inpar::ScaTra::outputscalars_condition:
-        outputscalarstrategy_ = std::make_shared<OutputScalarsStrategyCondition>();
+        outputscalarstrategy_ = std::make_shared<OutputScalarsStrategyCondition>(this);
         break;
       case Inpar::ScaTra::outputscalars_entiredomain_condition:
-        outputscalarstrategy_ = std::make_shared<OutputScalarsStrategyDomainAndCondition>();
+        outputscalarstrategy_ = std::make_shared<OutputScalarsStrategyDomainAndCondition>(this);
         break;
       default:
         FOUR_C_THROW("Unknown option for output of total and mean scalars!");
         break;
     }
-
-    // initialize scalar output strategy
-    outputscalarstrategy_->init(this);
   }
   else
   {
@@ -598,8 +595,7 @@ void ScaTra::ScaTraTimIntImpl::setup()
   if (computeintegrals_ != Inpar::ScaTra::computeintegrals_none)
   {
     // initialize domain integral output strategy
-    outputdomainintegralstrategy_ = std::make_shared<OutputDomainIntegralStrategy>();
-    outputdomainintegralstrategy_->init(this);
+    outputdomainintegralstrategy_ = std::make_shared<OutputDomainIntegralStrategy>(this);
   }
   else
   {
@@ -2533,7 +2529,7 @@ void ScaTra::ScaTraTimIntImpl::create_meshtying_strategy()
   {
     strategy_ = std::make_shared<MeshtyingStrategyFluid>(this);
   }
-  else if (s2_i_meshtying())  // scatra-scatra interface mesh tying
+  else if (s2i_meshtying())  // scatra-scatra interface mesh tying
   {
     strategy_ = std::make_shared<MeshtyingStrategyS2I>(this, *params_);
   }
@@ -3670,14 +3666,14 @@ void ScaTra::ScaTraTimIntImpl::build_block_maps(
 
 /*-----------------------------------------------------------------------------*
  *-----------------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::post_setup_matrix_block_maps()
+void ScaTra::ScaTraTimIntImpl::post_setup_matrix_block_maps() const
 {
   // now build the null spaces
   build_block_null_spaces(solver(), 0);
 
   // in case of an extended solver for scatra-scatra interface meshtying including interface growth
   // we need to equip it with the null space information generated above
-  if (s2_i_meshtying()) strategy_->equip_extended_solver_with_null_space_info();
+  if (s2i_meshtying()) strategy_->equip_extended_solver_with_null_space_info();
 }
 
 /*-----------------------------------------------------------------------------*

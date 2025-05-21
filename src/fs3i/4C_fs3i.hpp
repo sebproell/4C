@@ -113,7 +113,7 @@ namespace FS3I
     void setup_coupled_scatra_rhs();
 
     //! set-up of global matrix of the monolithic ScaTra problem
-    void setup_coupled_scatra_matrix();
+    void setup_coupled_scatra_matrix() const;
 
     std::shared_ptr<Core::LinAlg::Vector<double>> scatra2_to_scatra1(
         const Core::LinAlg::Vector<double>& iv) const;

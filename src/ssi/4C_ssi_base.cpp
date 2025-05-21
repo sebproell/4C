@@ -627,7 +627,7 @@ void SSI::SSIBase::set_mesh_disp(const Core::LinAlg::Vector<double>& disp)
 /*----------------------------------------------------------------------*/
 void SSI::SSIBase::check_ssi_flags() const
 {
-  if (scatra_field()->s2_i_kinetics())
+  if (scatra_field()->s2i_kinetics())
   {
     if (!(ssi_interface_contact() or ssi_interface_meshtying()))
     {
@@ -642,7 +642,7 @@ void SSI::SSIBase::check_ssi_flags() const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::SSIBase::set_dt_from_scatra_to_structure()
+void SSI::SSIBase::set_dt_from_scatra_to_structure() const
 {
   structure_field()->set_dt(scatra_field()->dt());
   structure_field()->set_timen(scatra_field()->time());
@@ -651,7 +651,7 @@ void SSI::SSIBase::set_dt_from_scatra_to_structure()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::SSIBase::set_dt_from_scatra_to_manifold()
+void SSI::SSIBase::set_dt_from_scatra_to_manifold() const
 {
   scatra_manifold()->set_dt(scatra_field()->dt());
   scatra_manifold()->set_time_step(scatra_field()->time(), scatra_field()->step());
@@ -672,7 +672,7 @@ void SSI::SSIBase::set_dt_from_scatra_to_ssi()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void SSI::SSIBase::redistribute(const RedistributionType redistribution_type)
+void SSI::SSIBase::redistribute(const RedistributionType redistribution_type) const
 {
   Global::Problem* problem = Global::Problem::instance();
 

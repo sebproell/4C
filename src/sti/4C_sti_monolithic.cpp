@@ -12,6 +12,7 @@
 #include "4C_coupling_adapter_converter.hpp"
 #include "4C_fem_general_assemblestrategy.hpp"
 #include "4C_global_data.hpp"
+#include "4C_inpar_sti.hpp"
 #include "4C_io_control.hpp"
 #include "4C_linalg_equilibrate.hpp"
 #include "4C_linalg_mapextractor.hpp"
@@ -76,7 +77,7 @@ STI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& stidyn,
 
 
   // extract coupling adapters for scatra-scatra interface mesh tying
-  if (scatra_field()->s2_i_meshtying() and
+  if (scatra_field()->s2i_meshtying() and
       strategyscatra_->coupling_type() == Inpar::S2I::coupling_matching_nodes)
   {
     icoupscatra_ = strategyscatra_->coupling_adapter();
@@ -121,7 +122,7 @@ STI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& stidyn,
   std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockmapthermointerface(nullptr);
   std::shared_ptr<Core::LinAlg::MultiMapExtractor> blockmapthermointerfaceslave(nullptr);
 
-  if (scatra_field()->s2_i_meshtying())
+  if (scatra_field()->s2i_meshtying())
   {
     // merge slave and master side full maps for interface matrix for thermo and scatra
     interface_map_scatra = Core::LinAlg::MultiMapExtractor::merge_maps(
@@ -148,7 +149,7 @@ STI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& stidyn,
     {
       blockmaps_ = maps_;
 
-      if (scatra_field()->s2_i_meshtying())
+      if (scatra_field()->s2i_meshtying())
       {
         blockmapscatrainterface =
             std::make_shared<Core::LinAlg::MultiMapExtractor>(*interface_map_scatra,
@@ -180,7 +181,7 @@ STI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& stidyn,
 
       // safety check
       blockmapthermo_->check_for_valid_map_extractor();
-      if (scatra_field()->s2_i_meshtying())
+      if (scatra_field()->s2i_meshtying())
       {
         // build block map for scatra interface by merging slave and master side for each block
         std::vector<std::shared_ptr<const Core::LinAlg::Map>> partial_blockmapscatrainterface(
@@ -754,7 +755,7 @@ void STI::Monolithic::assemble_mat_and_rhs()
       scatrathermoblockdomain_);
 
   // evaluate scatra-thermo-OD coupling. Contributions from interface
-  if (scatra_field()->s2_i_meshtying())
+  if (scatra_field()->s2i_meshtying())
     scatrathermooffdiagcoupling_->evaluate_off_diag_block_scatra_thermo_interface(
         scatrathermoblockinterface_);
 
@@ -763,7 +764,7 @@ void STI::Monolithic::assemble_mat_and_rhs()
       thermoscatrablockdomain_);
 
   // evaluate thermo-scatra-OD coupling. Contributions from interface
-  if (scatra_field()->s2_i_meshtying())
+  if (scatra_field()->s2i_meshtying())
     scatrathermooffdiagcoupling_->evaluate_off_diag_block_thermo_scatra_interface(
         thermoscatrablockinterface_);
 
@@ -1315,7 +1316,7 @@ void STI::Monolithic::compute_null_space_if_necessary(Teuchos::ParameterList& so
 
 /*--------------------------------------------------------------------------------*
  *--------------------------------------------------------------------------------*/
-const std::shared_ptr<const Core::LinAlg::Map>& STI::Monolithic::dof_row_map() const
+std::shared_ptr<const Core::LinAlg::Map> STI::Monolithic::dof_row_map() const
 {
   return maps_->full_map();
 }
@@ -1623,8 +1624,8 @@ void STI::Monolithic::solve()
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void STI::Monolithic::apply_dirichlet_off_diag(
-    std::shared_ptr<Core::LinAlg::SparseOperator>& scatrathermo_domain_interface,
-    std::shared_ptr<Core::LinAlg::SparseOperator>& thermoscatra_domain_interface)
+    std::shared_ptr<Core::LinAlg::SparseOperator> scatrathermo_domain_interface,
+    std::shared_ptr<Core::LinAlg::SparseOperator> thermoscatra_domain_interface) const
 {
   // apply Dirichlet boundary conditions to scatra-thermo matrix block
   scatrathermo_domain_interface->apply_dirichlet(*scatra_field()->dirich_maps()->cond_map(), false);
@@ -1634,7 +1635,7 @@ void STI::Monolithic::apply_dirichlet_off_diag(
 
   // zero out slave-side rows of thermo-scatra matrix block after having added them to the
   // corresponding master-side rows to finalize condensation of slave-side thermo dofs
-  if (thermo_field()->s2_i_meshtying())
+  if (thermo_field()->s2i_meshtying())
   {
     switch (strategythermo_->coupling_type())
     {

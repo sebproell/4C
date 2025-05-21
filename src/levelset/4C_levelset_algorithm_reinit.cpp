@@ -484,8 +484,6 @@ void ScaTra::LevelSetAlgorithm::correction_reinit()
   system_matrix()->reset();
   // reset the solver as well
   solver_->reset();
-
-  return;
 }
 
 

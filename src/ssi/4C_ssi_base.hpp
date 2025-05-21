@@ -256,7 +256,7 @@ namespace SSI
     [[nodiscard]] bool is_scatra_manifold_meshtying() const { return is_manifold_meshtying_; }
 
     //! Redistribute nodes and elements on processors
-    void redistribute(RedistributionType redistribution_type);
+    void redistribute(RedistributionType redistribution_type) const;
 
     //! get bool indicating if we have at least one ssi interface contact condition
     [[nodiscard]] bool ssi_interface_contact() const { return ssi_interface_contact_; }
@@ -293,13 +293,13 @@ namespace SSI
     }
 
     //! copy modified time step from scatra to scatra manifold field
-    void set_dt_from_scatra_to_manifold();
+    void set_dt_from_scatra_to_manifold() const;
 
     //! copy modified time step from scatra to this SSI algorithm
     void set_dt_from_scatra_to_ssi();
 
     //! copy modified time step from scatra to structure field
-    void set_dt_from_scatra_to_structure();
+    void set_dt_from_scatra_to_structure() const;
 
     //! set structure stress state on scatra field
     void set_mechanical_stress_state(

@@ -73,10 +73,10 @@ STI::Algorithm::Algorithm(MPI_Comm comm, const Teuchos::ParameterList& stidyn,
     FOUR_C_THROW("Thermo field must involve exactly one transported scalar!");
 
   // perform initializations associated with scatra-scatra interface mesh tying
-  if (scatra_->scatra_field()->s2_i_meshtying())
+  if (scatra_->scatra_field()->s2i_meshtying())
   {
     // safety check
-    if (!thermo_->scatra_field()->s2_i_meshtying())
+    if (!thermo_->scatra_field()->s2i_meshtying())
     {
       FOUR_C_THROW(
           "Can't evaluate scatra-scatra interface mesh tying in scatra field, but not in thermo "
@@ -173,7 +173,7 @@ void STI::Algorithm::modify_field_parameters_for_thermo_field()
   fieldparameters_->set<int>("INITFUNCNO", stiparameters_->get<int>("THERMO_INITFUNCNO"));
 
   // perform additional manipulations associated with scatra-scatra interface mesh tying
-  if (scatra_->scatra_field()->s2_i_meshtying())
+  if (scatra_->scatra_field()->s2i_meshtying())
   {
     // set flag for matrix type associated with thermo field
     fieldparameters_->set<Core::LinAlg::MatrixType>("MATRIXTYPE", Core::LinAlg::MatrixType::sparse);
@@ -303,7 +303,7 @@ void STI::Algorithm::transfer_scatra_to_thermo(
   thermo_->scatra_field()->discretization()->set_state(2, "scatra", *scatra);
 
   // transfer state vector for evaluation of scatra-scatra interface mesh tying
-  if (thermo_->scatra_field()->s2_i_meshtying())
+  if (thermo_->scatra_field()->s2i_meshtying())
   {
     switch (strategythermo_->coupling_type())
     {
@@ -370,7 +370,7 @@ void STI::Algorithm::transfer_thermo_to_scatra(
   scatra_->scatra_field()->discretization()->set_state(2, "thermo", *thermo);
 
   // transfer state vector for evaluation of scatra-scatra interface mesh tying
-  if (scatra_->scatra_field()->s2_i_meshtying() and
+  if (scatra_->scatra_field()->s2i_meshtying() and
       strategyscatra_->coupling_type() == Inpar::S2I::coupling_mortar_standard)
   {
     // extract scatra-scatra interface mesh tying conditions
