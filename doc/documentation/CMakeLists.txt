@@ -22,11 +22,6 @@ if(FOUR_C_BUILD_DOCUMENTATION)
   set(_sphinx_CONFIG_OUT ${_sphinx_OUT_DIR}/conf.py)
   set(_sphinx_HTML_DIR ${_sphinx_OUT_DIR}/html)
 
-  file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/doc/tmp)
-  file(MAKE_DIRECTORY ${_sphinx_OUT_DIR}/reference_docs)
-  file(MAKE_DIRECTORY ${_sphinx_OUT_DIR}/reference_docs/reference_images)
-  file(MAKE_DIRECTORY ${_sphinx_OUT_DIR}/reference_docs/tutorials)
-
   #install the python virtual environment with sphinx
   find_package(Sphinx REQUIRED)
 
@@ -38,8 +33,13 @@ if(FOUR_C_BUILD_DOCUMENTATION)
   add_custom_target(
     documentation ALL
     COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/doc/tmp"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${_sphinx_OUT_DIR}/reference_docs"
     COMMAND ${CMAKE_COMMAND} -E remove_directory "${_sphinx_HTML_DIR}"
+    # the following command also creates the directory ${_sphinx_OUT_DIR}/reference_docs again
     COMMAND create_rtd
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/doc/tmp"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${_sphinx_OUT_DIR}/reference_docs/tutorials"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${_sphinx_OUT_DIR}/reference_docs/reference_images"
     COMMAND ${FOUR_C_EXECUTABLE_NAME} -h > ${_sphinx_OUT_DIR}/reference_docs/4C-help.txt
     COMMAND
       ${CMAKE_COMMAND} ${PROJECT_SOURCE_DIR} --list-presets >
