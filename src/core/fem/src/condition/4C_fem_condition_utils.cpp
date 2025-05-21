@@ -105,12 +105,34 @@ std::set<int> Core::Conditions::find_conditioned_node_ids(
     const Core::FE::Discretization& dis, std::span<const Condition*> conditions, LookFor look_for)
 {
   std::set<int> node_set;
-  auto node_range =
+  const auto node_range =
       (look_for == LookFor::locally_owned) ? dis.my_row_node_range() : dis.my_col_node_range();
 
   for (const auto& cond : conditions)
   {
     fill_conditioned_node_set(node_range, cond, node_set);
+  }
+
+  return node_set;
+}
+
+
+std::multimap<int, const Core::Conditions::Condition*>
+Core::Conditions::find_conditioned_node_ids_and_conditions(
+    const Core::FE::Discretization& dis, std::span<const Condition*> conditions, LookFor look_for)
+{
+  std::multimap<int, const Condition*> node_set;
+  const auto node_range =
+      (look_for == LookFor::locally_owned) ? dis.my_row_node_range() : dis.my_col_node_range();
+
+  for (const auto& cond : conditions)
+  {
+    std::set<int> nodes_of_current_condition;
+    fill_conditioned_node_set(node_range, cond, nodes_of_current_condition);
+    for (const auto& node_id : nodes_of_current_condition)
+    {
+      node_set.emplace(node_id, cond);
+    }
   }
 
   return node_set;
