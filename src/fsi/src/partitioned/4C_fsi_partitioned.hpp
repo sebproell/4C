@@ -32,11 +32,6 @@ namespace Adapter
 
 namespace FSI
 {
-  namespace Utils
-  {
-    class DebugWriter;
-  }
-
   /**
    *
    * \brief Base class for all partitioned FSI algorithms
@@ -191,8 +186,6 @@ namespace FSI
     virtual void create_status_test(Teuchos::ParameterList& nlParams,
         Teuchos::RCP<::NOX::Epetra::Group> grp, Teuchos::RCP<::NOX::StatusTest::Combo> converged);
 
-    std::shared_ptr<Utils::DebugWriter> my_debug_writer() const { return debugwriter_; }
-
     /// return coupsfm_
     Coupling::Adapter::CouplingMortar& structure_fluid_coupling_mortar();
 
@@ -261,9 +254,6 @@ namespace FSI
 
     /// parameters handed in to NOX
     Teuchos::ParameterList noxparameterlist_;
-
-    /// special debugging output
-    std::shared_ptr<Utils::DebugWriter> debugwriter_;
   };
 
 }  // namespace FSI

@@ -114,7 +114,6 @@ MAXTIME                         3.0
 TIMESTEP                        0.02
 NUMSTEP                         2
 RESTARTEVERY                     1
-DEBUGOUTPUT                     No
 SECONDORDER                     Yes
 SLIDEALEPROJ                    None
 RESULTSEVERY                           1

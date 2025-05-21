@@ -8,11 +8,7 @@
 #include "4C_fsi_dirichletneumann.hpp"
 
 #include "4C_adapter_str_fsiwrapper.hpp"
-#include "4C_fsi_debugwriter.hpp"
-#include "4C_global_data.hpp"  // todo remove as soon as possible, only needed for FOUR_C_THROW
-#include "4C_io_control.hpp"   // todo remove as soon as possible, only needed for FOUR_C_THROW
-
-#include <Teuchos_StandardParameterEntryValidators.hpp>
+#include "4C_global_data.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -41,13 +37,10 @@ void FSI::DirichletNeumann::fsi_op(
   {
     const std::shared_ptr<Core::LinAlg::Vector<double>> icoupn =
         std::make_shared<Core::LinAlg::Vector<double>>(x);
-    if (my_debug_writer() != nullptr) my_debug_writer()->write_vector("icoupn", *icoupn);
 
     const std::shared_ptr<Core::LinAlg::Vector<double>> iforce = fluid_op(icoupn, fillFlag);
-    if (my_debug_writer() != nullptr) my_debug_writer()->write_vector("icoupn", *iforce);
 
     const std::shared_ptr<Core::LinAlg::Vector<double>> icoupnp = struct_op(iforce, fillFlag);
-    if (my_debug_writer() != nullptr) my_debug_writer()->write_vector("icoupnp", *icoupnp);
 
     F.update(1.0, *icoupnp, -1.0, *icoupn, 0.0);
   }
@@ -55,13 +48,10 @@ void FSI::DirichletNeumann::fsi_op(
   {
     const std::shared_ptr<Core::LinAlg::Vector<double>> iforcen =
         std::make_shared<Core::LinAlg::Vector<double>>(x);
-    if (my_debug_writer() != nullptr) my_debug_writer()->write_vector("iforcen", *iforcen);
 
     const std::shared_ptr<Core::LinAlg::Vector<double>> icoupn = struct_op(iforcen, fillFlag);
-    if (my_debug_writer() != nullptr) my_debug_writer()->write_vector("icoupn", *icoupn);
 
     const std::shared_ptr<Core::LinAlg::Vector<double>> iforcenp = fluid_op(icoupn, fillFlag);
-    if (my_debug_writer() != nullptr) my_debug_writer()->write_vector("iforcenp", *iforcenp);
 
     F.update(1.0, *iforcenp, -1.0, *iforcen, 0.0);
   }

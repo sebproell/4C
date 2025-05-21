@@ -17,7 +17,6 @@
 #include "4C_coupling_adapter_mortar.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_fluid_utils_mapextractor.hpp"
-#include "4C_fsi_debugwriter.hpp"
 #include "4C_fsi_statustest.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
@@ -244,12 +243,6 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::setup_system()
     // Build the global Dirichlet map extractor
     setup_dbc_map_extractor();
     // -------------------------------------------------------------------------#
-
-    // enable debugging
-    if (fsidyn.get<bool>("DEBUGOUTPUT"))
-    {
-      pcdbg_ = std::make_shared<Utils::MonolithicDebugWriter>(*this);
-    }
 
     create_system_matrix();
 

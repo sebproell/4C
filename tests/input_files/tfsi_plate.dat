@@ -154,7 +154,6 @@ MAXTIME                         800
 TIMESTEP                        0.15
 NUMSTEP                         5
 RESTARTEVERY                     2000
-DEBUGOUTPUT                     No
 SECONDORDER                     No
 SLIDEALEPROJ                    None
 RESULTSEVERY                     1

@@ -8,7 +8,6 @@
 #include "4C_fsi_dirichletneumann_disp.hpp"
 
 #include "4C_adapter_str_fsiwrapper.hpp"
-#include "4C_fsi_debugwriter.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_fsi.hpp"
 
