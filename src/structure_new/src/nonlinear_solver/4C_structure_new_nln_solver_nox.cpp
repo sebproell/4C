@@ -10,6 +10,7 @@
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_solver_nonlin_nox_constraint_interface_required.hpp"
 #include "4C_solver_nonlin_nox_globaldata.hpp"
+#include "4C_solver_nonlin_nox_group.hpp"
 #include "4C_solver_nonlin_nox_linearsystem.hpp"
 #include "4C_solver_nonlin_nox_problem.hpp"
 #include "4C_solver_nonlin_nox_solver_factory.hpp"
