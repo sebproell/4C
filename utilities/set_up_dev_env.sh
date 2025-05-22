@@ -48,8 +48,11 @@ pip install -r utilities/requirements.txt
 # Additionally store the hash of the ingredients for the virtual environment.
 ./utilities/code_checks/check_venv --update
 
+# We used to copy the `commit-msg` hook to `.git/hooks/` manually, but now we use pre-commit to manage it.
+# Thus remove the old hook if it exists.
+if [ -f ".git/hooks/commit-msg" ]; then
+    rm .git/hooks/commit-msg
+fi
+
 # Install the pre-commit hooks.
 pre-commit install
-
-# Copy the commit-msg hook to the .git/hooks directory.
-cp utilities/code_checks/commit-msg .git/hooks/commit-msg

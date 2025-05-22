@@ -1,3 +1,6 @@
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
 repos:
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v20.1.0
@@ -145,3 +148,10 @@ repos:
         language: system
         exclude_types: [markdown, rst]
         entry: ./utilities/code_checks/check_non_ascii_chars
+
+      - id: check-commit-msg
+        name: Check commit message
+        description: 'Check for valid commit message'
+        language: system
+        entry: ./utilities/code_checks/commit-msg
+        stages: [commit-msg]
