@@ -68,9 +68,8 @@ void Solid::TimeInt::Implicit::setup()
                  "solver. This is not encouraged, since it only works for linear statics analysis. "
                  "Please use NLNSOL as \"fullnewton\" for reliable result."
               << std::endl;
-  nlnsolver_ptr_ = Solid::Nln::SOLVER::build_nln_solver(nlnSolverType);
-  nlnsolver_ptr_->init(data_global_state_ptr(), data_s_dyn_ptr(), noxinterface_ptr, implint_ptr_,
-      Core::Utils::shared_ptr_from_ref(*this));
+  nlnsolver_ptr_ = Solid::Nln::SOLVER::build_nln_solver(nlnSolverType, data_global_state_ptr(),
+      data_s_dyn_ptr(), noxinterface_ptr, implint_ptr_, Core::Utils::shared_ptr_from_ref(*this));
   nlnsolver_ptr_->setup();
 
   // set setup flag

@@ -12,10 +12,22 @@
 
 #include "4C_inpar_structure.hpp"
 
+#include <Teuchos_ParameterList.hpp>
+
 FOUR_C_NAMESPACE_OPEN
 
 namespace Solid
 {
+  class Integrator;
+  namespace TimeInt
+  {
+    class Implicit;
+    class BaseDataGlobalState;
+    class BaseDataSDyn;
+    class Base;
+    class NoxInterface;
+  }  // namespace TimeInt
+
   namespace Nln
   {
     namespace SOLVER
@@ -35,13 +47,23 @@ namespace Solid
 
         //! build the specific nonlinear solver
         std::shared_ptr<Solid::Nln::SOLVER::Generic> build_nln_solver(
-            const enum Inpar::Solid::NonlinSolTech& nlnSolType) const;
+            const enum Inpar::Solid::NonlinSolTech& nlnSolType,
+            const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
+            const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
+            const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
+            const std::shared_ptr<Solid::Integrator>& integrator,
+            const std::shared_ptr<const Solid::TimeInt::Base>& timint) const;
       };
 
       /*! Non-member function, which relates to the Solid::Nln::SOLVER::Factory class
        *  Please call this method from outside! */
       std::shared_ptr<Solid::Nln::SOLVER::Generic> build_nln_solver(
-          const enum Inpar::Solid::NonlinSolTech& nlnSolType);
+          const enum Inpar::Solid::NonlinSolTech& nlnSolType,
+          const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
+          const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
+          const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
+          const std::shared_ptr<Solid::Integrator>& integrator,
+          const std::shared_ptr<const Solid::TimeInt::Base>& timint);
     }  // namespace SOLVER
   }  // namespace Nln
 }  // namespace Solid

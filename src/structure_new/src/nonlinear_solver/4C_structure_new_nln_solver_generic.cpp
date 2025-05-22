@@ -17,37 +17,22 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Solid::Nln::SOLVER::Generic::Generic()
-    : isinit_(false),
-      issetup_(false),
-      gstate_ptr_(nullptr),
-      sdyn_ptr_(nullptr),
-      noxinterface_ptr_(nullptr),
-      group_ptr_(nullptr)
-{
-  // empty constructor
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-void Solid::Nln::SOLVER::Generic::init(
+Solid::Nln::SOLVER::Generic::Generic(
     const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
     const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
     const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
     const std::shared_ptr<Solid::Integrator>& integrator,
     const std::shared_ptr<const Solid::TimeInt::Base>& timint)
+    : isinit_(true),
+      issetup_(false),
+      gstate_ptr_(gstate),
+      sdyn_ptr_(sdyn),
+      noxinterface_ptr_(noxinterface),
+      int_ptr_(integrator),
+      timint_ptr_(timint),
+      group_ptr_(nullptr)
 {
-  // We have to call setup() after init()
-  issetup_ = false;
-
-  // initialize internal variables
-  gstate_ptr_ = gstate;
-  sdyn_ptr_ = sdyn;
-  noxinterface_ptr_ = noxinterface;
-  int_ptr_ = integrator;
-  timint_ptr_ = timint;
-
-  isinit_ = true;
+  // empty constructor
 }
 
 /*----------------------------------------------------------------------------*

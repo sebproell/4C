@@ -28,9 +28,14 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-Solid::Nln::SOLVER::Nox::Nox()
+Solid::Nln::SOLVER::Nox::Nox(const Teuchos::ParameterList& default_params,
+    const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
+    const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
+    const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
+    const std::shared_ptr<Solid::Integrator>& integrator,
+    const std::shared_ptr<const Solid::TimeInt::Base>& timint)
+    : Generic(gstate, sdyn, noxinterface, integrator, timint), default_params_(default_params)
 {
-  // empty constructor
 }
 
 /*----------------------------------------------------------------------------*
@@ -86,10 +91,15 @@ void Solid::Nln::SOLVER::Nox::setup()
   Teuchos::RCP<::NOX::Epetra::Scaling> iscale = Teuchos::null;
   Solid::Nln::create_scaling(iscale, data_sdyn(), data_global_state());
 
+  // handle NOX settings
+  auto& nox_params = data_sdyn().get_nox_params();
+
+  // set parameters
+  nox_params.setParameters(default_params_);
+
   // build the global data container for the nox_nln_solver
   nlnglobaldata_ = Teuchos::make_rcp<NOX::Nln::GlobalData>(data_global_state().get_comm(),
-      data_sdyn().get_nox_params(), linsolvers, ireq, ijac, opttype, iconstr, iprec, iconstr_prec,
-      iscale);
+      nox_params, linsolvers, ireq, ijac, opttype, iconstr, iprec, iconstr_prec, iscale);
 
   // -------------------------------------------------------------------------
   // Create NOX control class: NoxProblem()
@@ -153,6 +163,12 @@ void Solid::Nln::SOLVER::Nox::reset_params()
   // safety check
   check_init_setup();
 
+  if (default_params_.isSublist("NOX"))
+  {
+    nlnglobaldata_->get_nln_parameter_list().setParametersNotAlreadySet(default_params_);
+    return;
+  }
+
   const Teuchos::ParameterList& pdir =
       nlnglobaldata_->get_nln_parameter_list().sublist("Direction", true);
   std::string method = pdir.get<std::string>("Method");
@@ -188,6 +204,20 @@ void Solid::Nln::SOLVER::Nox::reset_params()
 enum Inpar::Solid::ConvergenceStatus Solid::Nln::SOLVER::Nox::solve()
 {
   check_init_setup();
+
+#if !(FOUR_C_TRILINOS_INTERNAL_VERSION_GE(2025, 4))
+  const auto solver_type =
+      nlnglobaldata_->get_nln_parameter_list().get<std::string>("Nonlinear Solver");
+
+  if (solver_type == "Single Step")
+  {
+    auto& nln_group = dynamic_cast<NOX::Nln::Group&>(*group_ptr());
+
+    nln_group.set_is_valid_newton(true);  // to circumvent the check in ::NOX::Solver::SingleStep
+    nln_group.set_is_valid_rhs(false);    // force to compute the RHS
+    nln_group.reset_x();                  // to initialize the solution vector to zero
+  }
+#endif
 
   // solve the non-linear step
   ::NOX::StatusTest::StatusType finalstatus = nlnsolver_->solve();

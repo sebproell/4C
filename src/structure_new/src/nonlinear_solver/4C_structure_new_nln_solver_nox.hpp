@@ -13,6 +13,7 @@
 #include "4C_structure_new_nln_solver_generic.hpp"  // base class
 
 #include <NOX_StatusTest_Generic.H>
+#include <Teuchos_ParameterList.hpp>
 #include <Teuchos_RCPDecl.hpp>
 
 namespace NOX
@@ -63,7 +64,12 @@ namespace Solid
       {
        public:
         //! constructor
-        Nox();
+        Nox(const Teuchos::ParameterList& default_params,
+            const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
+            const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
+            const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
+            const std::shared_ptr<Solid::Integrator>& integrator,
+            const std::shared_ptr<const Solid::TimeInt::Base>& timint);
 
         //! derived from the base class
         void setup() override;
@@ -106,6 +112,9 @@ namespace Solid
 
         //! NOX non-linear solver
         Teuchos::RCP<::NOX::Solver::Generic> nlnsolver_;
+
+        //! Default solver parameters
+        const Teuchos::ParameterList default_params_;
 
        private:
         //! @name Variables which stay constant after init() and setup() call
