@@ -150,7 +150,7 @@ std::shared_ptr<Epetra_FEVector> CONTACT::NitscheStrategySsi::setup_rhs_block_ve
     case CONTACT::VecBlockType::elch:
     case CONTACT::VecBlockType::scatra:
       return std::make_shared<Epetra_FEVector>(
-          Global::Problem::instance()->get_dis("scatra")->dof_row_map()->get_epetra_map());
+          Global::Problem::instance()->get_dis("scatra")->dof_row_map()->get_epetra_block_map());
     default:
       return CONTACT::NitscheStrategy::setup_rhs_block_vec(bt);
   }

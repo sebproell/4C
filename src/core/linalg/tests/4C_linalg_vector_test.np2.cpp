@@ -41,7 +41,7 @@ namespace
   TEST_F(VectorTest, ConstructorsAndNorms)
   {
     // create an epetra vector
-    Epetra_Vector my_epetra_vector = Epetra_Vector(map_->get_epetra_map(), true);
+    Epetra_Vector my_epetra_vector = Epetra_Vector(map_->get_epetra_block_map(), true);
 
     // try to copy zero vector into wrapper
     Core::LinAlg::Vector<double> epetra_based_test_vector =
@@ -151,7 +151,7 @@ namespace
 
   TEST_F(VectorTest, View)
   {
-    Epetra_Vector a(map_->get_epetra_map(), true);
+    Epetra_Vector a(map_->get_epetra_block_map(), true);
     a.PutScalar(1.0);
     // Scope in which a is modified by the view
     {

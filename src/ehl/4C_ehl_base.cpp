@@ -499,7 +499,7 @@ void EHL::Base::setup_unprojectable_dbc()
   if (not Global::Problem::instance()->elasto_hydro_dynamic_params().get<bool>("UNPROJ_ZERO_DBC"))
     return;
 
-  Epetra_FEVector inf_gap_toggle(mortaradapter_->slave_dof_map()->get_epetra_map(), true);
+  Epetra_FEVector inf_gap_toggle(mortaradapter_->slave_dof_map()->get_epetra_block_map(), true);
   for (int i = 0; i < mortaradapter_->interface()->slave_row_nodes()->NumMyElements(); ++i)
   {
     Core::Nodes::Node* node = mortaradapter_->interface()->discret().g_node(

@@ -63,7 +63,6 @@ Core::LinearSolver::AMGNxN::BlockedVector::new_rcp(bool ZeroIt) const
   Teuchos::RCP<BlockedVector> out = Teuchos::make_rcp<BlockedVector>(this->get_num_blocks());
   for (int i = 0; i < get_num_blocks(); i++)
   {
-    // const Core::LinAlg::Map&  Map = this->GetVector(i)->Map();
     // int NV = this->GetNumBlocks();
     // out->SetVector(Teuchos::rcp( new Core::LinAlg::MultiVector<double>(Map,NV,ZeroIt)),i); //This
     // is buggy

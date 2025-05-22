@@ -123,7 +123,7 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
     // check if the permuted map is simply a subset of the current rowmap (no communication)
     int subset = 1;
     for (int i = 0; i < permsrcmap.NumMyElements(); ++i)
-      if (!src.row_map().MyGID(permsrcmap.get_epetra_map().GID(i)))
+      if (!src.row_map().MyGID(permsrcmap.get_epetra_block_map().GID(i)))
       {
         subset = 0;
         break;
@@ -138,7 +138,7 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
       if (exporter_ == nullptr)
       {
         exporter_ = std::make_shared<Epetra_Export>(
-            permsrcmap.get_epetra_map(), src.row_map().get_epetra_map());
+            permsrcmap.get_epetra_block_map(), src.row_map().get_epetra_block_map());
       }
 
       std::shared_ptr<Epetra_CrsMatrix> permsrc =

@@ -669,7 +669,7 @@ void CONTACT::MtManager::postprocess_quantities(Core::IO::DiscretizationWriter& 
   // evaluate slave and master forces
   std::shared_ptr<Core::LinAlg::Vector<double>> fcslave =
       std::make_shared<Core::LinAlg::Vector<double>>(
-          get_strategy().d_matrix()->row_map().get_epetra_map());
+          get_strategy().d_matrix()->row_map().get_epetra_block_map());
   std::shared_ptr<Core::LinAlg::Vector<double>> fcmaster =
       std::make_shared<Core::LinAlg::Vector<double>>(get_strategy().m_matrix()->domain_map());
   std::shared_ptr<Core::LinAlg::Vector<double>> fcslaveexp =

@@ -493,7 +493,7 @@ namespace Core::IO
 
     // Create Vectors to store the ghosting information.
     Epetra_FEVector ghosting_information(
-        discretization.element_row_map()->get_epetra_map(), n_proc);
+        discretization.element_row_map()->get_epetra_block_map(), n_proc);
 
     // Get elements ghosted by this rank.
     std::vector<int> my_ghost_elements;

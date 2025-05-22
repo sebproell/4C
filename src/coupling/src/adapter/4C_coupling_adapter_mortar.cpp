@@ -1101,8 +1101,10 @@ void Coupling::Adapter::CouplingMortar::evaluate(
 
   std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(*pmasterdofrowmap_, *pslavedofrowmap_, false);
-  Epetra_Import master_importer(dofrowmap->get_epetra_map(), pmasterdofrowmap_->get_epetra_map());
-  Epetra_Import slaveImporter(dofrowmap->get_epetra_map(), pslavedofrowmap_->get_epetra_map());
+  Epetra_Import master_importer(
+      dofrowmap->get_epetra_block_map(), pmasterdofrowmap_->get_epetra_block_map());
+  Epetra_Import slaveImporter(
+      dofrowmap->get_epetra_block_map(), pslavedofrowmap_->get_epetra_block_map());
 
   // Import master and slave displacements into a single vector
   int err = 0;
@@ -1330,9 +1332,9 @@ void Coupling::Adapter::CouplingMortar::master_to_slave(
     const Core::LinAlg::MultiVector<double>& mv, Core::LinAlg::MultiVector<double>& sv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.get_map().PointSameAs(P_->col_map().get_epetra_map()))
+  if (not mv.get_map().PointSameAs(P_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.get_map().PointSameAs(D_->col_map().get_epetra_map()))
+  if (not sv.get_map().PointSameAs(D_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("slave dof map vector expected");
 #endif
 
@@ -1361,9 +1363,9 @@ void Coupling::Adapter::CouplingMortar::slave_to_master(
     const Core::LinAlg::MultiVector<double>& sv, Core::LinAlg::MultiVector<double>& mv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.get_map().PointSameAs(P_->col_map().get_epetra_map()))
+  if (not mv.get_map().PointSameAs(P_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.get_map().PointSameAs(D_->col_map().get_epetra_map()))
+  if (not sv.get_map().PointSameAs(D_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("slave dof map vector expected");
 #endif
 

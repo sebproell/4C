@@ -547,8 +547,8 @@ void Wear::LagrangeStrategyWear::initialize()
           *gmslipn_, 100, true, false, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
       // w - rhs
-      inactive_wear_rhs_m_ = std::make_shared<Epetra_FEVector>(gwminact_->get_epetra_map());
-      wear_cond_rhs_m_ = std::make_shared<Epetra_FEVector>(gmslipn_->get_epetra_map());
+      inactive_wear_rhs_m_ = std::make_shared<Epetra_FEVector>(gwminact_->get_epetra_block_map());
+      wear_cond_rhs_m_ = std::make_shared<Epetra_FEVector>(gmslipn_->get_epetra_block_map());
     }
   }
 

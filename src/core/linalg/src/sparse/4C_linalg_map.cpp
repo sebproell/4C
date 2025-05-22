@@ -9,7 +9,9 @@
 
 #include "4C_linalg_map.hpp"
 
+#include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_utils.hpp"
+
 
 
 // Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
@@ -20,92 +22,117 @@
 FOUR_C_NAMESPACE_OPEN
 
 Core::LinAlg::Map::Map(int NumGlobalElements, int IndexBase, const MPI_Comm& Comm)
-    : map_(Utils::make_owner<Epetra_Map>(
-          NumGlobalElements, IndexBase, Core::Communication::as_epetra_comm(Comm)))
+    : map_(MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_Map>>,
+          Utils::make_owner<Epetra_Map>(
+              NumGlobalElements, IndexBase, Core::Communication::as_epetra_comm(Comm))))
 {
 }
 
 Core::LinAlg::Map::Map(
     int NumGlobalElements, int NumMyElements, int IndexBase, const MPI_Comm& Comm)
-    : map_(Utils::make_owner<Epetra_Map>(
-          NumGlobalElements, NumMyElements, IndexBase, Core::Communication::as_epetra_comm(Comm)))
+    : map_(MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_Map>>,
+          Utils::make_owner<Epetra_Map>(NumGlobalElements, NumMyElements, IndexBase,
+              Core::Communication::as_epetra_comm(Comm))))
 {
 }
 
 Core::LinAlg::Map::Map(int NumGlobalElements, int NumMyElements, const int* MyGlobalElements,
     int IndexBase, const MPI_Comm& Comm)
-    : map_(Utils::make_owner<Epetra_Map>(NumGlobalElements, NumMyElements, MyGlobalElements,
-          IndexBase, Core::Communication::as_epetra_comm(Comm)))
+    : map_(MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_Map>>,
+          Utils::make_owner<Epetra_Map>(NumGlobalElements, NumMyElements, MyGlobalElements,
+              IndexBase, Core::Communication::as_epetra_comm(Comm))))
 {
 }
 
-Core::LinAlg::Map::Map(const Map& Source)
-    : map_(Utils::make_owner<Epetra_Map>(Source.get_epetra_map()))
+Core::LinAlg::Map::Map::Map(const Map& Source)
 {
+  if (std::holds_alternative<Utils::OwnerOrView<Epetra_Map>>(Source.map_))
+  {
+    const auto& map_view = std::get<Utils::OwnerOrView<Epetra_Map>>(Source.map_);
+    map_ = Utils::make_owner<Epetra_Map>(*map_view);
+  }
+  else if (std::holds_alternative<Utils::OwnerOrView<Epetra_BlockMap>>(Source.map_))
+  {
+    const auto& block_view = std::get<Utils::OwnerOrView<Epetra_BlockMap>>(Source.map_);
+    map_ = Utils::make_owner<Epetra_BlockMap>(*block_view);
+  }
+  else
+  {
+    FOUR_C_THROW("Map::Map(const Map&) - Unknown type in variant.");
+  }
 }
+
 
 Core::LinAlg::Map& Core::LinAlg::Map::operator=(const Map& other)
 {
-  *map_ = *other.map_;
+  if (this != &other)
+  {
+    map_ = std::visit(
+        [](const auto& wrapped) -> MapVariant
+        {
+          using T = std::decay_t<decltype(*wrapped)>;
+          return Utils::make_owner<T>(*wrapped);
+        },
+        other.map_);
+  }
   return *this;
+}
+
+MPI_Comm Core::LinAlg::Map::Comm() const
+{
+  return Core::Communication::unpack_epetra_comm(
+      visit_variant([](const auto& map) -> const Epetra_Comm& { return map.Comm(); }));
 }
 
 std::unique_ptr<Core::LinAlg::Map> Core::LinAlg::Map::create_view(Epetra_Map& view)
 {
   std::unique_ptr<Map> ret(new Map);
-  ret->map_ = Utils::make_view<Epetra_Map>(&view);
+
+  ret->map_ =
+      MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_Map>>, Utils::make_view(&view));
+
   return ret;
 }
 
 std::unique_ptr<const Core::LinAlg::Map> Core::LinAlg::Map::create_view(const Epetra_Map& view)
 {
   std::unique_ptr<Map> ret(new Map);
-  // We may safely cast away const here, since the returned object is const and we use a
-  // OwnerOrView to ensure that we only ever access the viewed map through
-  // const methods.
-  ret->map_ = Utils::make_view<Epetra_Map>(const_cast<Epetra_Map*>(&view));
+
+  ret->map_ = MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_Map>>,
+      Utils::make_view(const_cast<Epetra_Map*>(&view)));
+
   return ret;
 }
 std::unique_ptr<Core::LinAlg::Map> Core::LinAlg::Map::create_view(Epetra_BlockMap& view)
 {
-  // Cast the Epetra_BlockMap to Epetra_Map and ensure that cast is valid.
-  Epetra_Map* epetra_map_ptr = dynamic_cast<Epetra_Map*>(&view);
-
-  if (epetra_map_ptr == nullptr)
-  {
-    FOUR_C_THROW(
-        "You are trying to view an Epetra_BlockMap as a LinAlg::Map. This only works if the map "
-        "you are viewing is of the derived type Epetra_Map. This is not true for the map you "
-        "passed to this function.");
-  }
-
-  // We may safely cast away const here, since the returned object is const and we use a
-  // OwnerOrView to ensure that we only ever access the viewed map through
-  // const methods.
   std::unique_ptr<Map> ret(new Map);
-  ret->map_ = Utils::make_view<Epetra_Map>(epetra_map_ptr);
+
+  ret->map_ =
+      MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_BlockMap>>, Utils::make_view(&view));
+
   return ret;
 }
 
 std::unique_ptr<const Core::LinAlg::Map> Core::LinAlg::Map::create_view(const Epetra_BlockMap& view)
 {
-  // cast the Epetra_BlockMap to Epetra_Map, this cast can go wrong.
-  const Epetra_Map* epetra_map_ptr = static_cast<const Epetra_Map*>(&view);
-
-  // We may safely cast away const here, since the returned object is const and we use a
-  // OwnerOrView to ensure that we only ever access the viewed map through
-  // const methods.
   std::unique_ptr<Map> ret(new Map);
-  ret->map_ = Utils::make_view<Epetra_Map>(const_cast<Epetra_Map*>(epetra_map_ptr));
+
+  ret->map_ = MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_BlockMap>>,
+      Utils::make_view(const_cast<Epetra_BlockMap*>(&view)));
+
   return ret;
 }
 
-Core::LinAlg::Map::Map(const Epetra_Map& Source) : map_(std::make_unique<Epetra_Map>(Source)) {}
+Core::LinAlg::Map::Map(const Epetra_Map& Source)
+    : map_(MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_Map>>,
+          Utils::make_owner<Epetra_Map>(Source)))
+{
+}
 
 Core::LinAlg::Map::Map(const Epetra_BlockMap& Source)
+    : map_(MapVariant(std::in_place_type<Utils::OwnerOrView<Epetra_BlockMap>>,
+          Utils::make_owner<Epetra_BlockMap>(Source)))
 {
-  map_ = Utils::make_owner<Epetra_Map>(Source.NumGlobalElements(), Source.NumMyElements(),
-      Source.MyGlobalElements(), Source.IndexBase(), Source.Comm());
 }
 
 // NOLINTEND(readability-identifier-naming)

@@ -535,7 +535,8 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
   // initialize global mv2 without setting to 0
   Core::LinAlg::MultiVector<double> mv2glob(*redundant_map, nsdim_);
   // create importer with redundant target map and distributed source map
-  Epetra_Import importer(redundant_map->get_epetra_map(), mv2->get_map().get_epetra_map());
+  Epetra_Import importer(
+      redundant_map->get_epetra_block_map(), mv2->get_map().get_epetra_block_map());
   // import values to global mv2
   mv2glob.Import(*mv2, importer, Insert);
 

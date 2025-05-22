@@ -124,7 +124,7 @@ void Core::LinAlg::print_vector_in_matlab_format(
         global_elements_iproc[i] = vector.get_map().MyGlobalElements()[i];
         values_iproc[i] = vector.get_values()[i];
         first_point_in_element_list_iproc[i] =
-            vector.get_map().get_epetra_map().FirstPointInElementList()[i];
+            vector.get_map().get_epetra_block_map().FirstPointInElementList()[i];
       }
     }
 

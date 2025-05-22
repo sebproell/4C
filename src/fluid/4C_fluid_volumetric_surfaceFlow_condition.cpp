@@ -1935,7 +1935,8 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::export_and_set_boundary_values(
     std::string name)
 {
   // define the exporter
-  Epetra_Export exporter(source.get_map().get_epetra_map(), target->get_map().get_epetra_map());
+  Epetra_Export exporter(
+      source.get_map().get_epetra_block_map(), target->get_map().get_epetra_block_map());
   // Export source vector to target vector
   int err = target->export_to(source, exporter, Zero);
   // check if the exporting was successful
@@ -1952,7 +1953,8 @@ void FLD::Utils::TotalTractionCorrector::export_and_set_boundary_values(
     std::string name)
 {
   // define the exporter
-  Epetra_Export exporter(source.get_map().get_epetra_map(), target->get_map().get_epetra_map());
+  Epetra_Export exporter(
+      source.get_map().get_epetra_block_map(), target->get_map().get_epetra_block_map());
   // Export source vector to target vector
   int err = target->export_to(source, exporter, Zero);
   // check if the exporting was successful

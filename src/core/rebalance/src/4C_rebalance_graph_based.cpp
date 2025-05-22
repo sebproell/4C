@@ -383,8 +383,8 @@ std::shared_ptr<const Core::LinAlg::Graph> Core::Rebalance::build_monolithic_nod
       my_colliding_primitives.begin(), my_colliding_primitives.end());
   Core::LinAlg::Map my_colliding_primitives_map(-1, my_colliding_primitives_vec.size(),
       my_colliding_primitives_vec.data(), 0, dis.get_comm());
-  Epetra_Import importer(
-      my_colliding_primitives_map.get_epetra_map(), dis.element_row_map()->get_epetra_map());
+  Epetra_Import importer(my_colliding_primitives_map.get_epetra_block_map(),
+      dis.element_row_map()->get_epetra_block_map());
   Core::LinAlg::Graph my_colliding_primitives_connectivity(
       Copy, my_colliding_primitives_map, n_nodes_per_element_max, false);
   err = my_colliding_primitives_connectivity.import_from(

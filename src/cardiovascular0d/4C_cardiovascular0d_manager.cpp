@@ -210,8 +210,9 @@ Utils::Cardiovascular0DManager::Cardiovascular0DManager(
     cardiovascular0dmap_ =
         std::make_shared<Core::LinAlg::Map>(*(cardiovascular0ddofset_->dof_row_map()));
     redcardiovascular0dmap_ = Core::LinAlg::allreduce_e_map(*cardiovascular0dmap_);
-    cardvasc0dimpo_ = std::make_shared<Epetra_Export>(
-        redcardiovascular0dmap_->get_epetra_map(), cardiovascular0dmap_->get_epetra_map());
+    cardvasc0dimpo_ =
+        std::make_shared<Epetra_Export>(redcardiovascular0dmap_->get_epetra_block_map(),
+            cardiovascular0dmap_->get_epetra_block_map());
     cv0ddofincrement_ = std::make_shared<Core::LinAlg::Vector<double>>(*cardiovascular0dmap_);
     cv0ddof_n_ = std::make_shared<Core::LinAlg::Vector<double>>(*cardiovascular0dmap_);
     cv0ddof_np_ = std::make_shared<Core::LinAlg::Vector<double>>(*cardiovascular0dmap_);

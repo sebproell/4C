@@ -554,7 +554,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Core::Rebalance::get_col_ver
   // This is a rought test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(colmap->get_epetra_map())) return state;
+  if (vecmap.PointSameAs(colmap->get_epetra_block_map())) return state;
   // if it's not in column map export and allocate
   else
   {

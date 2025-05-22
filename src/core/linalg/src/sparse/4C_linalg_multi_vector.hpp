@@ -19,7 +19,6 @@
 #include <mpi.h>
 
 #include <memory>
-#include <optional>
 
 // Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
 // naming of the Core::LinAlg::MultiVector<double>

@@ -136,7 +136,7 @@ void XFEM::DiscretizationXFEM::export_initialto_active_vector(
     else
     {
       Epetra_Import importer(
-          fullvec.get_map().get_epetra_map(), initialvec.get_map().get_epetra_map());
+          fullvec.get_map().get_epetra_block_map(), initialvec.get_map().get_epetra_block_map());
       int err = fullvec.import(initialvec, importer, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     }
@@ -224,7 +224,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
   // This is a rough test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(colmap->get_epetra_map()))
+  if (vecmap.PointSameAs(colmap->get_epetra_block_map()))
   {
     state_[nds][name] = state;
   }

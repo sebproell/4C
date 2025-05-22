@@ -36,7 +36,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
     FOUR_C_THROW("action type for element is missing");
 
   // decide whether a dof or an element based map is given
-  FOUR_C_ASSERT(state.get_map().PointSameAs(dis.dof_row_map()->get_epetra_map()),
+  FOUR_C_ASSERT(state.get_map().PointSameAs(dis.dof_row_map()->get_epetra_block_map()),
       "Only works for same maps.");
 
   // handle pbcs if existing
@@ -153,7 +153,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
 
   // step 2: use precalculated (velocity) gradient for patch-recovery of gradient
   // solution vector based on reduced node row map
-  Epetra_FEVector nodevec(noderowmap.get_epetra_map(), numvec);
+  Epetra_FEVector nodevec(noderowmap.get_epetra_block_map(), numvec);
 
   std::vector<const Core::Conditions::Condition*> conds;
   dis.get_condition("SPRboundary", conds);

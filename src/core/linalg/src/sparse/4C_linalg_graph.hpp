@@ -114,7 +114,8 @@ namespace Core::LinAlg
       int err = 0;
 
       if (graphtype_ == CRS_GRAPH)
-        err = graph_->FillComplete(domain_map.get_epetra_map(), range_map.get_epetra_map());
+        err = graph_->FillComplete(
+            domain_map.get_epetra_block_map(), range_map.get_epetra_block_map());
       else if (graphtype_ == FE_GRAPH)
         err = static_cast<Epetra_FECrsGraph*>(graph_.get())
                   ->GlobalAssemble(domain_map.get_epetra_map(), range_map.get_epetra_map());

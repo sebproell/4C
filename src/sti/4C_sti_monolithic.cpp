@@ -573,7 +573,8 @@ void STI::Monolithic::output_matrix_to_file(
   if (sparsematrix != nullptr)
   {
     if (crsmatrix.import(*sparsematrix,
-            Epetra_Import(fullrowmap.get_epetra_map(), rowmap.get_epetra_map()), Insert))
+            Epetra_Import(fullrowmap.get_epetra_block_map(), rowmap.get_epetra_block_map()),
+            Insert))
       FOUR_C_THROW("Matrix import failed!");
   }
   else
@@ -583,8 +584,8 @@ void STI::Monolithic::output_matrix_to_file(
       for (int j = 0; j < blocksparsematrix->cols(); ++j)
       {
         if (crsmatrix.import(blocksparsematrix->matrix(i, j),
-                Epetra_Import(
-                    fullrowmap.get_epetra_map(), blocksparsematrix->range_map(i).get_epetra_map()),
+                Epetra_Import(fullrowmap.get_epetra_block_map(),
+                    blocksparsematrix->range_map(i).get_epetra_block_map()),
                 Insert))
           FOUR_C_THROW("Matrix import failed!");
       }

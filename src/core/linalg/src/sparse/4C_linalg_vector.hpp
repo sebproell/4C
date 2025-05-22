@@ -196,8 +196,6 @@ namespace Core::LinAlg
     /** Replace map, only if new map has same point-structure as current map.
         return 0 if map is replaced, -1 if not.
      */
-    // int replace_map(const Epetra_BlockMap& map);
-
     int replace_map(const Map& map);
 
     int replace_global_value(int GlobalRow, int VectorIndex, double ScalarValue)
@@ -362,8 +360,6 @@ namespace Core::LinAlg
     explicit Vector(const Epetra_BlockMap& map, bool zeroOut = true);
 
     explicit Vector(const Map& map, bool zeroOut = true);
-
-    // Vector(const Epetra_BlockMap& map, int* values);
 
     Vector(const Map& map, int* values);
 

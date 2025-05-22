@@ -26,7 +26,8 @@ Core::LinAlg::MultiVector<T>::MultiVector(const Epetra_BlockMap& Map, int num_co
 template <typename T>
 Core::LinAlg::MultiVector<T>::MultiVector(
     const Core::LinAlg::Map& Map, int num_columns, bool zeroOut)
-    : vector_(std::make_shared<Epetra_MultiVector>(Map.get_epetra_map(), num_columns, zeroOut))
+    : vector_(
+          std::make_shared<Epetra_MultiVector>(Map.get_epetra_block_map(), num_columns, zeroOut))
 {
 }
 
@@ -127,7 +128,7 @@ template <typename T>
 int Core::LinAlg::MultiVector<T>::ReplaceMap(const Core::LinAlg::Map& map)
 {
   for (auto& view : column_vector_view_) view->replace_map(map);
-  return vector_->ReplaceMap(map.get_epetra_map());
+  return vector_->ReplaceMap(map.get_epetra_block_map());
 }
 
 template <typename T>

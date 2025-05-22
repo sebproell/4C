@@ -39,10 +39,10 @@ Core::LinAlg::Graph::Graph(Epetra_DataAccess CV, const Map& RowMap, const int* N
 {
   if (graphtype_ == CRS_GRAPH)
     graph_ = std::make_unique<Epetra_CrsGraph>(
-        CV, RowMap.get_epetra_map(), NumIndicesPerRow, StaticProfile);
+        CV, RowMap.get_epetra_block_map(), NumIndicesPerRow, StaticProfile);
   else if (graphtype_ == FE_GRAPH)
     graph_ = std::make_unique<Epetra_FECrsGraph>(
-        CV, RowMap.get_epetra_map(), const_cast<int*>(NumIndicesPerRow), StaticProfile);
+        CV, RowMap.get_epetra_block_map(), const_cast<int*>(NumIndicesPerRow), StaticProfile);
 }
 
 Core::LinAlg::Graph::Graph(Epetra_DataAccess CV, const Epetra_BlockMap& RowMap,
@@ -61,10 +61,10 @@ Core::LinAlg::Graph::Graph(Epetra_DataAccess CV, const Map& RowMap, int NumIndic
 {
   if (graphtype_ == CRS_GRAPH)
     graph_ = std::make_unique<Epetra_CrsGraph>(
-        CV, RowMap.get_epetra_map(), NumIndicesPerRow, StaticProfile);
+        CV, RowMap.get_epetra_block_map(), NumIndicesPerRow, StaticProfile);
   else if (graphtype_ == FE_GRAPH)
     graph_ = std::make_unique<Epetra_FECrsGraph>(
-        CV, RowMap.get_epetra_map(), NumIndicesPerRow, StaticProfile);
+        CV, RowMap.get_epetra_block_map(), NumIndicesPerRow, StaticProfile);
 }
 
 Core::LinAlg::Graph::Graph(const Graph& other)

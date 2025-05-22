@@ -333,9 +333,9 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
 
   // initialize the unaffected and current lengths
   unaffected_seg_lengths_artery_ =
-      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_map(), true);
+      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_block_map(), true);
   current_seg_lengths_artery_ =
-      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_map());
+      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_block_map());
 
   // set segment ID on coupling pairs and fill the unaffected artery length
   for (int iele = 0; iele < arterydis_->element_col_map()->NumMyElements(); ++iele)
@@ -404,7 +404,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
 void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_integrated_diam()
 {
   Epetra_FEVector unaffected_diams_artery_row(
-      arterydis_->element_row_map()->get_epetra_map(), true);
+      arterydis_->element_row_map()->get_epetra_block_map(), true);
 
   for (int i = 0; i < arterydis_->element_row_map()->NumMyElements(); ++i)
   {
@@ -506,8 +506,8 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::set_varying_diam_
   // set up the required vectors
   if (has_varying_diam_)
   {
-    integrated_diams_artery_row_ =
-        std::make_shared<Epetra_FEVector>(arterydis_->element_row_map()->get_epetra_map(), true);
+    integrated_diams_artery_row_ = std::make_shared<Epetra_FEVector>(
+        arterydis_->element_row_map()->get_epetra_block_map(), true);
     unaffected_integrated_diams_artery_col_ =
         std::make_shared<Core::LinAlg::Vector<double>>(*arterydis_->element_col_map(), true);
     integrated_diams_artery_col_ =

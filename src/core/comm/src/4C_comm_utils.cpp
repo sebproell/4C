@@ -361,7 +361,8 @@ namespace Core::Communication
           vecmap, Core::Communication::num_mpi_ranks(lcomm) - 1);
 
     // export full vectors to the two desired processors
-    Core::LinAlg::MultiVector<double> fullvec(proc0map->get_epetra_map(), vec.NumVectors(), true);
+    Core::LinAlg::MultiVector<double> fullvec(
+        proc0map->get_epetra_block_map(), vec.NumVectors(), true);
     Core::LinAlg::export_to(vec, fullvec);
 
     const int myglobalrank = Core::Communication::my_mpi_rank(gcomm);
@@ -509,7 +510,8 @@ namespace Core::Communication
           domainmap, Core::Communication::num_mpi_ranks(lcomm) - 1);
 
     // export full matrices to the two desired processors
-    Epetra_Import serialimporter(serialrowmap->get_epetra_map(), rowmap.get_epetra_map());
+    Epetra_Import serialimporter(
+        serialrowmap->get_epetra_block_map(), rowmap.get_epetra_block_map());
     Core::LinAlg::SparseMatrix serialCrsMatrix(*serialrowmap, 0);
     serialCrsMatrix.import(matrix, serialimporter, Insert);
     serialCrsMatrix.complete(*serialdomainmap, *serialrowmap);

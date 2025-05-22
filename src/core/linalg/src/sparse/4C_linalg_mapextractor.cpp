@@ -38,8 +38,8 @@ void Core::LinAlg::MultiMapExtractor::setup(const Core::LinAlg::Map& fullmap,
   {
     if (maps_[i] != nullptr)
     {
-      importer_[i] =
-          std::make_shared<Epetra_Import>(maps_[i]->get_epetra_map(), fullmap_->get_epetra_map());
+      importer_[i] = std::make_shared<Epetra_Import>(
+          maps_[i]->get_epetra_block_map(), fullmap_->get_epetra_block_map());
     }
   }
 }

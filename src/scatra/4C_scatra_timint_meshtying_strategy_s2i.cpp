@@ -2534,7 +2534,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
 
         // initialize auxiliary residual vector for master side
         imasterresidual_ =
-            std::make_shared<Epetra_FEVector>(interfacemaps_->map(2)->get_epetra_map());
+            std::make_shared<Epetra_FEVector>(interfacemaps_->map(2)->get_epetra_block_map());
       }
 
       switch (couplingtype_)
