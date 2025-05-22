@@ -45,12 +45,12 @@ Core::Conditions::PeriodicBoundaryConditions::PeriodicBoundaryConditions(
 
   // create map that will be connecting master to slave nodes owned by
   // this proc
-  //       master node -> list of his slave node(s)
+  //       master node -> list of its slave node(s)
   allcoupledrownodes_ = std::make_shared<std::map<int, std::vector<int>>>();
 
   // create map that will be connecting master to slave nodes owned or
   // ghosted by this proc
-  //       master node -> list of his slave node(s)
+  //       master node -> list of its slave node(s)
   allcoupledcolnodes_ = std::make_shared<std::map<int, std::vector<int>>>();
 
 
@@ -667,7 +667,7 @@ void Core::Conditions::PeriodicBoundaryConditions::add_connectivity(
     std::map<int, std::vector<int>>& midtosid, const int pbcid)
 {
   // the "inverse" mapping of allcoupled(row/col)nodes
-  //       slave node -> his master node (list of size 1)
+  //       slave node -> its master node (list of size 1)
   std::shared_ptr<std::map<int, std::vector<int>>> inversenodecoupling;
   inversenodecoupling = std::make_shared<std::map<int, std::vector<int>>>();
 
@@ -728,7 +728,7 @@ void Core::Conditions::PeriodicBoundaryConditions::add_connectivity(
     {
       if (pbcid > 0)
       {
-        // 1) each proc generates a list of his multiple coupled masters
+        // 1) each proc generates a list of its multiple coupled masters
         // 2) the list is communicated in a round robin pattern to all the
         //    other procs.
         // 3) the proc checks the package from each proc and inserts missing
@@ -918,7 +918,7 @@ void Core::Conditions::PeriodicBoundaryConditions::add_connectivity(
 void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_coupling()
 {
   // the "inverse" mapping of allcoupled(row/col)nodes
-  //       slave node -> his master node (list of size 1)
+  //       slave node -> its master node (list of size 1)
   std::shared_ptr<std::map<int, std::vector<int>>> inversenodecoupling;
   inversenodecoupling = std::make_shared<std::map<int, std::vector<int>>>();
 

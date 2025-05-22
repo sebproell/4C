@@ -102,7 +102,7 @@ int next_map_node(MapIterator* iterator)
         MapNode* lhs;
         MapNode* rhs;
 
-        /* we remove the first member of the stack and add his rhs and lhs */
+        /* we remove the first member of the stack and add its rhs and lhs */
         tmp = iterator->stack.head.snext->map_node;
         lhs = tmp->lhs;
         rhs = tmp->rhs;

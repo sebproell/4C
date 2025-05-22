@@ -196,7 +196,7 @@ void TSI::Partitioned::time_loop()
 
 
 /*----------------------------------------------------------------------*
- | One-way coupling (only one field knows his counterpart)   dano 06/10 |
+ | One-way coupling (only one field knows its counterpart)   dano 06/10 |
  *----------------------------------------------------------------------*/
 void TSI::Partitioned::time_loop_one_way()
 {

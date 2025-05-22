@@ -303,7 +303,7 @@ Constraints::MPConstraint3::create_discretization_from_condition(
     startID += nodeiter;
 
     // now care about the parallel distribution and ghosting.
-    // So far every processor only knows about his nodes
+    // So far every processor only knows about its nodes
 
     // build unique node row map
     std::vector<int> boundarynoderowvec(rownodeset.begin(), rownodeset.end());

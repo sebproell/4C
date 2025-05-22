@@ -652,7 +652,7 @@ bool Cut::TetMesh::is_valid_tet(const std::vector<Point*>& t)
   }  // end if(sides.size()==1)
 
   // If a TET lies completely on a cut-side, remove this tet.
-  // This is not the way of Kuettler!!! It is unclear what his vision for this was...
+  // This is not the way of Kuettler!!! It is unclear what its vision for this was...
 #ifdef REMOVE_ALL_TETS_ON_CUTSIDE
   if (sides.size() > 0)
   {

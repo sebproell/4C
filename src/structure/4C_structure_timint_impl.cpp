@@ -540,11 +540,11 @@ void Solid::TimIntImpl::prepare_partition_step()
 /* Check for LS with condensed variables and do preparations */
 void Solid::TimIntImpl::prepare_line_search()
 {
-  // each proc searches through his elements
+  // each proc searches through its elements
   int haveCondensationLocal = 0;
   int haveCondensationGlobal = 0;
 
-  // each proc searches through his elements
+  // each proc searches through its elements
   for (int i = 0; i < discret_->num_my_row_elements(); i++)
   {
     if (const auto* solid = dynamic_cast<Discret::Elements::Solid*>(discret_->l_row_element(i));

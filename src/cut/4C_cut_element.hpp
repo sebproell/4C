@@ -457,7 +457,7 @@ namespace Cut
      * created from this element when using Tessellation */
     void integrate_specific_functions_tessellation();
 
-    /*! \brief Assign the subelement his parent id (equal to the subelement
+    /*! \brief Assign the subelement its parent id (equal to the subelement
      * id eid_ for linear elements) */
     void parent_id(int id) { parent_id_ = id; }
 
