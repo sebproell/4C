@@ -182,9 +182,6 @@ namespace ScaTra
     /// add parameters depending of the problem, i.e., loma, level-set, ...
     void add_problem_specific_parameters_and_vectors(Teuchos::ParameterList& params) override;
 
-    /// manipulate velocity field away from the interface
-    void manipulate_fluid_field_for_gfunc();
-
     /// modification of convective velocity at contact points
     void apply_contact_point_boundary_condition();
 
