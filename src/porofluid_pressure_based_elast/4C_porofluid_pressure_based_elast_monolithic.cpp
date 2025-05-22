@@ -37,9 +37,9 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | constructor                                          kremheller 03/17 |
  *----------------------------------------------------------------------*/
-PoroPressureBased::PorofluidElastMonolithic::PorofluidElastMonolithic(
+PoroPressureBased::PorofluidElastMonolithicAlgorithm::PorofluidElastMonolithicAlgorithm(
     MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams)
-    : PorofluidElast(comm, globaltimeparams),
+    : PorofluidElastAlgorithm(comm, globaltimeparams),
       ittolinc_(0.0),
       ittolres_(0.0),
       itmax_(0),
@@ -78,7 +78,7 @@ PoroPressureBased::PorofluidElastMonolithic::PorofluidElastMonolithic(
 /*----------------------------------------------------------------------*
  | initialization                                       kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::init(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::init(
     const Teuchos::ParameterList& globaltimeparams, const Teuchos::ParameterList& algoparams,
     const Teuchos::ParameterList& structparams, const Teuchos::ParameterList& fluidparams,
     const std::string& struct_disname, const std::string& fluid_disname, bool isale, int nds_disp,
@@ -86,9 +86,9 @@ void PoroPressureBased::PorofluidElastMonolithic::init(
     const std::map<int, std::set<int>>* nearbyelepairs)
 {
   // call base class
-  PorofluidElast::init(globaltimeparams, algoparams, structparams, fluidparams, struct_disname,
-      fluid_disname, isale, nds_disp, nds_vel, nds_solidpressure, ndsporofluid_scatra,
-      nearbyelepairs);
+  PorofluidElastAlgorithm::init(globaltimeparams, algoparams, structparams, fluidparams,
+      struct_disname, fluid_disname, isale, nds_disp, nds_vel, nds_solidpressure,
+      ndsporofluid_scatra, nearbyelepairs);
 
   // inform user that structure field will not be solved but displacements will just be set to zero
   if (not solve_structure_) print_structure_disabled_info();
@@ -114,7 +114,7 @@ void PoroPressureBased::PorofluidElastMonolithic::init(
  | setup the system if necessary (called in poromultiphase_dyn.cpp)     |
  |                                                     kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::setup_system()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_system()
 {
   // -------------------------------------------------------------create combined map
   setup_maps();
@@ -134,8 +134,8 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system()
   // Initialize rhs
   rhs_ = std::make_shared<Core::LinAlg::Vector<double>>(*dof_row_map(), true);
 
-  k_sf_ = std::make_shared<Core::LinAlg::SparseMatrix>(*(struct_dof_row_map()), 81, true, true);
-  k_fs_ = std::make_shared<Core::LinAlg::SparseMatrix>(*(fluid_dof_row_map()), 81, true, true);
+  k_sf_ = std::make_shared<Core::LinAlg::SparseMatrix>(*(structure_dof_row_map()), 81, true, true);
+  k_fs_ = std::make_shared<Core::LinAlg::SparseMatrix>(*(porofluid_dof_row_map()), 81, true, true);
 
   // instantiate appropriate equilibration class
   auto equilibration_method =
@@ -147,10 +147,10 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system()
   //  Dirichlet BC
 
   std::vector<const Core::Conditions::Condition*> locsysconditions;
-  (structure_field()->discretization())->get_condition("Locsys", locsysconditions);
+  (structure_algo()->discretization())->get_condition("Locsys", locsysconditions);
 
   // if there are inclined structural Dirichlet BC, get the structural LocSysManager
-  if (locsysconditions.size()) locsysman_ = structure_field()->locsys_manager();
+  if (locsysconditions.size()) locsysman_ = structure_algo()->locsys_manager();
 
   return;
 }
@@ -158,13 +158,13 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system()
 /*----------------------------------------------------------------------*
  | setup the map                                       kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::setup_maps()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_maps()
 {
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
-  vecSpaces.push_back(struct_dof_row_map());
+  vecSpaces.push_back(structure_dof_row_map());
 
-  vecSpaces.push_back(fluid_dof_row_map());
+  vecSpaces.push_back(porofluid_dof_row_map());
 
   if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No structure equation. Panic.");
   if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No fluid equation. Panic.");
@@ -181,7 +181,7 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_maps()
 /*----------------------------------------------------------------------*
  | Monolithic Time Step                                kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::time_step()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::time_step()
 {
   // Prepare stuff
   setup_newton();
@@ -233,13 +233,13 @@ void PoroPressureBased::PorofluidElastMonolithic::time_step()
 /*-----------------------------------------------------------------------/
 |  build the combined dbcmap                           kremheller 03/17  |
 /-----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::build_combined_dbc_map()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::build_combined_dbc_map()
 {
   // get structure and fluid dbc maps
   const std::shared_ptr<const Core::LinAlg::Map> scondmap =
-      structure_field()->get_dbc_map_extractor()->cond_map();
+      structure_algo()->get_dbc_map_extractor()->cond_map();
   const std::shared_ptr<const Core::LinAlg::Map> fcondmap =
-      fluid_field()->get_dbc_map_extractor()->cond_map();
+      porofluid_algo()->get_dbc_map_extractor()->cond_map();
   // merge them
   combinedDBCMap_ = Core::LinAlg::merge_map(scondmap, fcondmap, false);
 
@@ -249,10 +249,10 @@ void PoroPressureBased::PorofluidElastMonolithic::build_combined_dbc_map()
 /*----------------------------------------------------------------------*
  | Evaluate (build global Matrix and RHS)            kremheller 03/17   |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::evaluate(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::evaluate(
     std::shared_ptr<const Core::LinAlg::Vector<double>> iterinc)
 {
-  TEUCHOS_FUNC_TIME_MONITOR("PoroPressureBased::PorofluidElastMonolithic::evaluate");
+  TEUCHOS_FUNC_TIME_MONITOR("PoroPressureBased::PorofluidElastMonolithicAlgorithm::evaluate");
 
   // reset timer
   timernewton_.reset();
@@ -277,38 +277,39 @@ void PoroPressureBased::PorofluidElastMonolithic::evaluate(
  | Evaluate (build global Matrix and RHS, public --> allows access      |
  | from outside --> monolithic scatra-coupling)        kremheller 06/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::evaluate(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::evaluate(
     std::shared_ptr<const Core::LinAlg::Vector<double>> sx,
     std::shared_ptr<const Core::LinAlg::Vector<double>> fx, const bool firstcall)
 {
   // (1) Update fluid Field and reconstruct pressures and saturations
-  fluid_field()->update_iter(fx);
+  porofluid_algo()->update_iter(fx);
 
   if (solve_structure_)
   {
     // (2) set fluid solution in structure field
-    structure_field()->discretization()->set_state(1, "porofluid", *fluid_field()->phinp());
+    structure_algo()->discretization()->set_state(1, "porofluid", *porofluid_algo()->phinp());
 
     // (3) evaluate structure
     if (firstcall)  // first call (iterinc_ = 0) --> sx = 0
-      structure_field()->evaluate();
+      structure_algo()->evaluate();
     else  //(this call will also update displacements and velocities)
-      structure_field()->evaluate(sx);
+      structure_algo()->evaluate(sx);
 
     // (4) Set structure solution on fluid field
-    set_struct_solution(structure_field()->dispnp(), structure_field()->velnp());
+    set_structure_solution(structure_algo()->dispnp(), structure_algo()->velnp());
   }
   else
   {
     // (4) Set structure solution on fluid field
-    set_struct_solution(struct_zeros_, struct_zeros_);
-    structure_field()->system_matrix()->zero();
-    structure_field()->system_matrix()->complete(structure_field()->system_matrix()->range_map(),
-        structure_field()->system_matrix()->range_map());
+    set_structure_solution(Core::LinAlg::create_vector(*structure_algo()->dof_row_map(), true),
+        Core::LinAlg::create_vector(*structure_algo()->dof_row_map(), true));
+    structure_algo()->system_matrix()->zero();
+    structure_algo()->system_matrix()->complete(structure_algo()->system_matrix()->range_map(),
+        structure_algo()->system_matrix()->range_map());
   }
 
   // (5) Evaluate the fluid
-  fluid_field()->evaluate();
+  porofluid_algo()->evaluate();
 
   // (6) Build the monolithic system matrix
   setup_system_matrix();
@@ -326,7 +327,7 @@ void PoroPressureBased::PorofluidElastMonolithic::evaluate(
 /*----------------------------------------------------------------------*
  | setup system matrix of poromultiphase-elasticity   kremheller 03/17  |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::setup_system_matrix(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_system_matrix(
     Core::LinAlg::BlockSparseMatrixBase& mat)
 {
   // TEUCHOS_FUNC_TIME_MONITOR("PoroElast::Monolithic::setup_system_matrix");
@@ -338,7 +339,7 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system_matrix(
   // The maps of the block matrix have to match the maps of the blocks we
   // insert here. Extract Jacobian matrices and put them into composite system
   // matrix W
-  std::shared_ptr<Core::LinAlg::SparseMatrix> k_ss = structure_field()->system_matrix();
+  std::shared_ptr<Core::LinAlg::SparseMatrix> k_ss = structure_algo()->system_matrix();
 
   if (k_ss == nullptr) FOUR_C_THROW("structure system matrix null pointer!");
 
@@ -351,11 +352,11 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system_matrix(
     // --> if dof has an inclined DBC: blank the complete row, the '1.0' is set
     //     on diagonal of row, i.e. on diagonal of k_ss
     k_ss->apply_dirichlet_with_trafo(
-        *locsysman_->trafo(), *structure_field()->get_dbc_map_extractor()->cond_map(), true);
+        *locsysman_->trafo(), *structure_algo()->get_dbc_map_extractor()->cond_map(), true);
   }  // end locsys
   // default: (locsysman_ == nullptr), i.e. NO inclined Dirichlet BC
   else
-    k_ss->apply_dirichlet(*structure_field()->get_dbc_map_extractor()->cond_map(), true);
+    k_ss->apply_dirichlet(*structure_algo()->get_dbc_map_extractor()->cond_map(), true);
 
   /*----------------------------------------------------------------------*/
   // structural part k_sf ((ndim*n_nodes)x(n_phases*n_nodes))
@@ -385,8 +386,8 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system_matrix(
   //              --> blank the row, which has a DBC
 
   // to apply Multiply in LocSys, k_st has to be FillCompleted
-  k_sf->complete(
-      fluid_field()->system_matrix()->range_map(), structure_field()->system_matrix()->range_map());
+  k_sf->complete(porofluid_algo()->system_matrix()->range_map(),
+      structure_algo()->system_matrix()->range_map());
 
   if (locsysman_ != nullptr)
   {
@@ -396,11 +397,11 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system_matrix(
     // --> if dof has an inclined DBC: blank the complete row, the '1.0' is set
     //     on diagonal of row, i.e. on diagonal of k_ss
     k_sf->apply_dirichlet_with_trafo(
-        *locsysman_->trafo(), *structure_field()->get_dbc_map_extractor()->cond_map(), false);
+        *locsysman_->trafo(), *structure_algo()->get_dbc_map_extractor()->cond_map(), false);
   }  // end locsys
   // default: (locsysman_ == nullptr), i.e. NO inclined Dirichlet BC
   else
-    k_sf->apply_dirichlet(*structure_field()->get_dbc_map_extractor()->cond_map(), false);
+    k_sf->apply_dirichlet(*structure_algo()->get_dbc_map_extractor()->cond_map(), false);
 
   /*----------------------------------------------------------------------*/
   // pure fluid part k_ff ( (n_phases*n_nodes)x(n_phases*n_nodes) )
@@ -411,7 +412,7 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system_matrix(
   // insert here. Extract Jacobian matrices and put them into composite system
   // matrix W
   // NOTE: DBC's have already been applied within Evaluate (prepare_system_for_newton_solve())
-  std::shared_ptr<Core::LinAlg::SparseMatrix> k_ff = fluid_field()->system_matrix();
+  std::shared_ptr<Core::LinAlg::SparseMatrix> k_ff = porofluid_algo()->system_matrix();
 
   if (k_ff == nullptr) FOUR_C_THROW("fluid system matrix null pointer!");
 
@@ -426,7 +427,7 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system_matrix(
   apply_fluid_coupl_matrix(k_fs);
 
   // apply DBC's also on off-diagonal fluid-structure coupling block
-  k_fs->apply_dirichlet(*fluid_field()->get_dbc_map_extractor()->cond_map(), false);
+  k_fs->apply_dirichlet(*porofluid_algo()->get_dbc_map_extractor()->cond_map(), false);
 
   // uncomplete matrix block (appears to be required in certain cases (locsys+iterative solver))
   if (solve_structure_)
@@ -456,7 +457,7 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_system_matrix(
  | get fluid structure-coupling sparse matrix           kremheller 03/17 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix>
-PoroPressureBased::PorofluidElastMonolithic::fluid_struct_coupling_matrix()
+PoroPressureBased::PorofluidElastMonolithicAlgorithm::fluid_struct_coupling_matrix()
 {
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse =
       std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(k_fs_);
@@ -469,7 +470,7 @@ PoroPressureBased::PorofluidElastMonolithic::fluid_struct_coupling_matrix()
  | get structure fluid-coupling sparse matrix           kremheller 03/17 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::SparseMatrix>
-PoroPressureBased::PorofluidElastMonolithic::struct_fluid_coupling_matrix()
+PoroPressureBased::PorofluidElastMonolithicAlgorithm::struct_fluid_coupling_matrix()
 {
   std::shared_ptr<Core::LinAlg::SparseMatrix> sparse =
       std::dynamic_pointer_cast<Core::LinAlg::SparseMatrix>(k_sf_);
@@ -481,15 +482,15 @@ PoroPressureBased::PorofluidElastMonolithic::struct_fluid_coupling_matrix()
 /*----------------------------------------------------------------------*
  | evaluate fluid-structural system matrix at state    kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::apply_fluid_coupl_matrix(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::apply_fluid_coupl_matrix(
     std::shared_ptr<Core::LinAlg::SparseOperator> k_fs  //!< off-diagonal tangent matrix term
 )
 {
   // reset
   k_fs->zero();
-  if (solve_structure_) fluid_field()->assemble_fluid_struct_coupling_mat(k_fs);
-  k_fs->complete(
-      structure_field()->system_matrix()->range_map(), fluid_field()->system_matrix()->range_map());
+  if (solve_structure_) porofluid_algo()->assemble_fluid_struct_coupling_mat(k_fs);
+  k_fs->complete(structure_algo()->system_matrix()->range_map(),
+      porofluid_algo()->system_matrix()->range_map());
 
   return;
 }
@@ -497,7 +498,7 @@ void PoroPressureBased::PorofluidElastMonolithic::apply_fluid_coupl_matrix(
 /*-----------------------------------------------------------------------------*
  | update fields after convergence as phi_i+1=phi_i+iterinc   kremheller 07/17 |
  *-----------------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::update_fields_after_convergence()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::update_fields_after_convergence()
 {
   // displacement and fluid velocity & pressure incremental vector
   std::shared_ptr<const Core::LinAlg::Vector<double>> sx;
@@ -512,19 +513,19 @@ void PoroPressureBased::PorofluidElastMonolithic::update_fields_after_convergenc
 /*-----------------------------------------------------------------------------*
  | update fields after convergence as phi_i+1=phi_i+iterinc   kremheller 07/17 |
  *-----------------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::update_fields_after_convergence(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::update_fields_after_convergence(
     std::shared_ptr<const Core::LinAlg::Vector<double>>& sx,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& fx)
 {
   // (1) Update fluid Field and reconstruct pressures and saturations
-  fluid_field()->update_iter(fx);
-  fluid_field()->reconstruct_pressures_and_saturations();
-  fluid_field()->reconstruct_flux();
+  porofluid_algo()->update_iter(fx);
+  porofluid_algo()->reconstruct_pressures_and_saturations();
+  porofluid_algo()->reconstruct_flux();
 
-  if (solve_structure_) structure_field()->evaluate(sx);
+  if (solve_structure_) structure_algo()->evaluate(sx);
 
   // (4) Set structure solution on fluid field
-  set_struct_solution(structure_field()->dispnp(), structure_field()->velnp());
+  set_structure_solution(structure_algo()->dispnp(), structure_algo()->velnp());
 
   return;
 }
@@ -532,7 +533,7 @@ void PoroPressureBased::PorofluidElastMonolithic::update_fields_after_convergenc
 /*----------------------------------------------------------------------*
  | evaluate structural-fluid system matrix at state    kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::apply_str_coupl_matrix(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::apply_str_coupl_matrix(
     std::shared_ptr<Core::LinAlg::SparseOperator> k_sf  //!< off-diagonal tangent matrix term
 )
 {
@@ -558,10 +559,10 @@ void PoroPressureBased::PorofluidElastMonolithic::apply_str_coupl_matrix(
     sparams.set<double>("delta time", dt());
     sparams.set<double>("total time", time());
 
-    structure_field()->discretization()->clear_state();
-    structure_field()->discretization()->set_state(0, "displacement", *structure_field()->dispnp());
-    structure_field()->discretization()->set_state(0, "velocity", *structure_field()->velnp());
-    structure_field()->discretization()->set_state(1, "porofluid", *fluid_field()->phinp());
+    structure_algo()->discretization()->clear_state();
+    structure_algo()->discretization()->set_state(0, "displacement", *structure_algo()->dispnp());
+    structure_algo()->discretization()->set_state(0, "velocity", *structure_algo()->velnp());
+    structure_algo()->discretization()->set_state(1, "porofluid", *porofluid_algo()->phinp());
 
     // build specific assemble strategy for mechanical-fluid system matrix
     // from the point of view of structure_field:
@@ -572,12 +573,12 @@ void PoroPressureBased::PorofluidElastMonolithic::apply_str_coupl_matrix(
         nullptr, nullptr, nullptr, nullptr);
 
     // evaluate the mechanical-fluid system matrix on the structural element
-    structure_field()->discretization()->evaluate(sparams, structuralstrategy);
+    structure_algo()->discretization()->evaluate(sparams, structuralstrategy);
 
-    structure_field()->discretization()->clear_state();
+    structure_algo()->discretization()->clear_state();
 
     // scale with time integration factor
-    k_sf->scale(1.0 - structure_field()->tim_int_param());
+    k_sf->scale(1.0 - structure_algo()->tim_int_param());
   }
 
   return;
@@ -585,7 +586,7 @@ void PoroPressureBased::PorofluidElastMonolithic::apply_str_coupl_matrix(
 /*----------------------------------------------------------------------*
  | setup solver for monolithic problem                kremheller 03/17  |
  *----------------------------------------------------------------------*/
-bool PoroPressureBased::PorofluidElastMonolithic::setup_solver()
+bool PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_solver()
 {
   //  solver
   // create a linear solver
@@ -617,7 +618,7 @@ bool PoroPressureBased::PorofluidElastMonolithic::setup_solver()
 /*----------------------------------------------------------------------*
  | Create linear (iterative) solver                  kremheller 08/17   |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::create_linear_solver(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::create_linear_solver(
     const Teuchos::ParameterList& solverparams, const Core::LinearSolver::SolverType solvertype)
 {
   solver_ = std::make_shared<Core::LinAlg::Solver>(solverparams, get_comm(),
@@ -664,22 +665,22 @@ void PoroPressureBased::PorofluidElastMonolithic::create_linear_solver(
 /*-----------------------------------------------------------------------------------*
  | build null spaces associated with blocks of global system matrix kremheller 08/17 |
  *-----------------------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::build_block_null_spaces(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::build_block_null_spaces(
     std::shared_ptr<Core::LinAlg::Solver>& solver)
 {
   Teuchos::ParameterList& structure_params = solver->params().sublist("Inverse1");
   Core::LinearSolver::Parameters::compute_solver_parameters(
-      *structure_field()->discretization(), structure_params);
+      *structure_algo()->discretization(), structure_params);
 
   Teuchos::ParameterList& fluid_params = solver->params().sublist("Inverse2");
   Core::LinearSolver::Parameters::compute_solver_parameters(
-      *fluid_field()->discretization(), fluid_params);
+      *porofluid_algo()->discretization(), fluid_params);
 }
 
 /*----------------------------------------------------------------------*
  | Setup Newton-Raphson iteration                    kremheller 03/17   |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::setup_newton()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_newton()
 {
   // initialise equilibrium loop and norms
   itnum_ = 0;
@@ -720,7 +721,7 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_newton()
 /*----------------------------------------------------------------------*
  | Print Header                                      kremheller 03/17   |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::print_header()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::print_header()
 {
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
@@ -744,7 +745,7 @@ void PoroPressureBased::PorofluidElastMonolithic::print_header()
 /*----------------------------------------------------------------------*
  | Build necessary norms                               kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::build_convergence_norms()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::build_convergence_norms()
 {
   //------------------------------------------------------------ build residual force norms
   normrhs_ = calculate_vector_norm(vectornormfres_, *rhs_);
@@ -770,8 +771,8 @@ void PoroPressureBased::PorofluidElastMonolithic::build_convergence_norms()
   normincstruct_ = calculate_vector_norm(vectornorminc_, *iterincs);
   normincfluid_ = calculate_vector_norm(vectornorminc_, *iterincf);
 
-  double dispnorm = calculate_vector_norm(vectornorminc_, (*structure_field()->dispnp()));
-  double fluidnorm = calculate_vector_norm(vectornorminc_, (*fluid_field()->phinp()));
+  double dispnorm = calculate_vector_norm(vectornorminc_, (*structure_algo()->dispnp()));
+  double fluidnorm = calculate_vector_norm(vectornorminc_, (*porofluid_algo()->phinp()));
 
   // take care of very small norms
   if (dispnorm < 1.0e-6) dispnorm = 1.0;
@@ -793,7 +794,7 @@ void PoroPressureBased::PorofluidElastMonolithic::build_convergence_norms()
 /*----------------------------------------------------------------------*
  | Newton Output (adapted form tsi)                    kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::newton_output()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::newton_output()
 {
   // print the incremental based convergence check to the screen
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
@@ -823,7 +824,7 @@ void PoroPressureBased::PorofluidElastMonolithic::newton_output()
 /*----------------------------------------------------------------------*
  | Error-Check and final output                        kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::newton_error_check()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::newton_error_check()
 {
   // print the incremental based convergence check to the screen
   if (converged())  // norminc_ < ittol_ && normrhs_ < ittol_ && normincfluid_ < ittol_ &&
@@ -882,7 +883,7 @@ void PoroPressureBased::PorofluidElastMonolithic::newton_error_check()
 /*----------------------------------------------------------------------*
  | simple convergence check                            kremheller 03/17 |
  *----------------------------------------------------------------------*/
-bool PoroPressureBased::PorofluidElastMonolithic::converged()
+bool PoroPressureBased::PorofluidElastMonolithicAlgorithm::converged()
 {
   return (normincfluid_ < ittolinc_ && normincstruct_ < ittolinc_ && normincart_ < ittolinc_ &&
           normrhs_ < ittolres_ && normrhsstruct_ < ittolres_ && normrhsfluid_ < ittolres_ &&
@@ -892,7 +893,7 @@ bool PoroPressureBased::PorofluidElastMonolithic::converged()
 /*----------------------------------------------------------------------*
  | Solve linear Poromultiphase-elasticity system     kremheller 03/17   |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::linear_solve()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::linear_solve()
 {
   // reset timer
   timernewton_.reset();
@@ -932,7 +933,8 @@ void PoroPressureBased::PorofluidElastMonolithic::linear_solve()
 /*----------------------------------------------------------------------*
  | get the dof row map                                 kremheller 03/17 |
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::PorofluidElastMonolithic::dof_row_map()
+std::shared_ptr<const Core::LinAlg::Map>
+PoroPressureBased::PorofluidElastMonolithicAlgorithm::dof_row_map()
 {
   return blockrowdofmap_->full_map();
 }
@@ -940,13 +942,13 @@ std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::PorofluidElastMonoli
 /*----------------------------------------------------------------------*
  | setup RHS (like fsimon)                             kremheller 03/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::setup_rhs()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_rhs()
 {
   // get structure part
   std::shared_ptr<Core::LinAlg::Vector<double>> str_rhs = setup_structure_partof_rhs();
 
   // fill the Poroelasticity rhs vector rhs_ with the single field rhss
-  setup_vector(*rhs_, str_rhs, fluid_field()->rhs());
+  setup_vector(*rhs_, str_rhs, porofluid_algo()->rhs());
 
 }  // setup_rhs()
 
@@ -954,12 +956,13 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_rhs()
  | setup RHS (like fsimon)                             kremheller 05/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::Vector<double>>
-PoroPressureBased::PorofluidElastMonolithic::setup_structure_partof_rhs()
+PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_structure_partof_rhs()
 {
   // Copy from TSI
-  std::shared_ptr<Core::LinAlg::Vector<double>> str_rhs = struct_zeros_;
+  std::shared_ptr<Core::LinAlg::Vector<double>> str_rhs =
+      Core::LinAlg::create_vector(*structure_algo()->dof_row_map(), true);
   if (solve_structure_)
-    str_rhs = std::make_shared<Core::LinAlg::Vector<double>>(*structure_field()->rhs());
+    str_rhs = std::make_shared<Core::LinAlg::Vector<double>>(*structure_algo()->rhs());
   if (locsysman_ != nullptr) locsysman_->rotate_global_to_local(*str_rhs);
 
   return str_rhs;
@@ -968,8 +971,8 @@ PoroPressureBased::PorofluidElastMonolithic::setup_structure_partof_rhs()
 /*----------------------------------------------------------------------*
  | setup vector of the structure and fluid field         kremheller 03/17|
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::setup_vector(Core::LinAlg::Vector<double>& f,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> sv,
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::setup_vector(
+    Core::LinAlg::Vector<double>& f, std::shared_ptr<const Core::LinAlg::Vector<double>> sv,
     std::shared_ptr<const Core::LinAlg::Vector<double>> fv)
 {
   extractor()->insert_vector(*sv, 0, f);
@@ -981,12 +984,13 @@ void PoroPressureBased::PorofluidElastMonolithic::setup_vector(Core::LinAlg::Vec
  | extract field vectors for calling evaluate() of the  kremheller 03/17|
  | single fields                                                        |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::extract_field_vectors(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::extract_field_vectors(
     std::shared_ptr<const Core::LinAlg::Vector<double>> x,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& sx,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& fx)
 {
-  TEUCHOS_FUNC_TIME_MONITOR("PoroPressureBased::PorofluidElastMonolithic::extract_field_vectors");
+  TEUCHOS_FUNC_TIME_MONITOR(
+      "PoroPressureBased::PorofluidElastMonolithicAlgorithm::extract_field_vectors");
 
   // process structure unknowns of the first field
   sx = extractor()->extract_vector(*x, 0);
@@ -997,18 +1001,18 @@ void PoroPressureBased::PorofluidElastMonolithic::extract_field_vectors(
 /*----------------------------------------------------------------------*
  | extract 3D field vectors (structure and fluid)    kremheller 10/20   |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::extract_structure_and_fluid_vectors(
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::extract_structure_and_fluid_vectors(
     std::shared_ptr<const Core::LinAlg::Vector<double>> x,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& sx,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& fx)
 {
-  PorofluidElastMonolithic::extract_field_vectors(x, sx, fx);
+  PorofluidElastMonolithicAlgorithm::extract_field_vectors(x, sx, fx);
 }
 
 /*----------------------------------------------------------------------*
  | inform user that structure is not solved            kremheller 08/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::print_structure_disabled_info()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::print_structure_disabled_info()
 {
   // print out Info
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
@@ -1026,12 +1030,12 @@ void PoroPressureBased::PorofluidElastMonolithic::print_structure_disabled_info(
 /*----------------------------------------------------------------------*
  |  check tangent stiffness matrix via finite differences     vuong 01/12 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastMonolithic::poro_fd_check()
+void PoroPressureBased::PorofluidElastMonolithicAlgorithm::poro_fd_check()
 {
   std::cout << "\n******************finite difference check***************" << std::endl;
 
-  int dof_struct = (structure_field()->dof_row_map()->NumGlobalElements());
-  int dof_fluid = (fluid_field()->dof_row_map()->NumGlobalElements());
+  int dof_struct = (structure_algo()->dof_row_map()->NumGlobalElements());
+  int dof_fluid = (porofluid_algo()->dof_row_map()->NumGlobalElements());
 
   std::cout << "structure field has " << dof_struct << " DOFs" << std::endl;
   std::cout << "fluid field has " << dof_fluid << " DOFs" << std::endl;
@@ -1115,8 +1119,8 @@ void PoroPressureBased::PorofluidElastMonolithic::poro_fd_check()
       {
         std::cout << "\n******************" << zeilennr + 1 << ". Zeile!!***************"
                   << std::endl;
-        // std::cout << "disp: " << std::endl << *(structure_field()->dispnp()->get);
-        // std::cout << "gridvel struct" << std::endl << *(structure_field()->velnp());
+        // std::cout << "disp: " << std::endl << *(structure_algo()->dispnp()->get);
+        // std::cout << "gridvel struct" << std::endl << *(structure_algo()->velnp());
 
         // std::cout << "stiff_apprx(" << zeilennr << "," << spaltenr << "): " <<
         // (*rhs_copy)[zeilennr]

@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_base.hpp"
 #include "4C_porofluid_pressure_based_input.hpp"
 
 #include <Teuchos_Time.hpp>
@@ -41,10 +41,11 @@ namespace Core::Conditions
 namespace PoroPressureBased
 {
   //! Monolithic solution scheme for porofluid-elasticity problems
-  class PorofluidElastMonolithic : public PorofluidElast
+  class PorofluidElastMonolithicAlgorithm : public PorofluidElastAlgorithm
   {
    public:
-    PorofluidElastMonolithic(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
+    PorofluidElastMonolithicAlgorithm(
+        MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
 
     /// initialization
     void init(const Teuchos::ParameterList& globaltimeparams,

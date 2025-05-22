@@ -13,7 +13,7 @@
 #include "4C_adapter_str_wrapper.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_base.hpp"
 #include "4C_scatra_timint_implicit.hpp"
 #include "4C_scatra_timint_meshtying_strategy_artery.hpp"
 
@@ -60,13 +60,13 @@ void PoroPressureBased::PorofluidElastScatraPartitionedAlgorithm::init(
   scatra_inc_np_ = std::make_shared<Core::LinAlg::Vector<double>>(
       *(scatra_algo()->scatra_field()->discretization()->dof_row_map()));
   structure_inc_np_ = std::make_shared<Core::LinAlg::Vector<double>>(
-      *(porofluid_elast_algo()->struct_dof_row_map()));
+      *(porofluid_elast_algo()->structure_dof_row_map()));
   porofluid_inc_np_ = (std::make_shared<Core::LinAlg::Vector<double>>(
-      *(porofluid_elast_algo()->fluid_dof_row_map())));
+      *(porofluid_elast_algo()->porofluid_dof_row_map())));
   if (artery_coupling_active_)
   {
     artery_pressure_inc_np_ = std::make_shared<Core::LinAlg::Vector<double>>(
-        *(porofluid_elast_algo()->fluid_field()->artery_dof_row_map()));
+        *(porofluid_elast_algo()->porofluid_algo()->artery_dof_row_map()));
     artery_scatra_inc_np_ = std::make_shared<Core::LinAlg::Vector<double>>(
         *(scatra_meshtying_strategy_->art_scatra_dof_row_map()));
   }
@@ -142,12 +142,12 @@ void PoroPressureBased::PorofluidElastScatraPartitionedAlgorithm::iter_update_st
   // store scalar from first solution for convergence check (like in
   // elch_algorithm: use current values)
   scatra_inc_np_->update(1.0, *scatra_algo()->scatra_field()->phinp(), 0.0);
-  structure_inc_np_->update(1.0, *porofluid_elast_algo()->struct_dispnp(), 0.0);
+  structure_inc_np_->update(1.0, *porofluid_elast_algo()->structure_dispnp(), 0.0);
   porofluid_inc_np_->update(1.0, *porofluid_elast_algo()->fluid_phinp(), 0.0);
   if (artery_coupling_active_)
   {
     artery_pressure_inc_np_->update(
-        1.0, *(porofluid_elast_algo()->fluid_field()->art_net_tim_int()->pressurenp()), 0.0);
+        1.0, *(porofluid_elast_algo()->porofluid_algo()->art_net_tim_int()->pressurenp()), 0.0);
     artery_scatra_inc_np_->update(
         1.0, *(scatra_meshtying_strategy_->art_scatra_field()->phinp()), 0.0);
   }
@@ -182,12 +182,12 @@ bool PoroPressureBased::PorofluidElastScatraPartitionedAlgorithm::convergence_ch
   // build the current scalar increment Inc T^{i+1}
   // \f Delta T^{k+1} = Inc T^{k+1} = T^{k+1} - T^{k}  \f
   scatra_inc_np_->update(1.0, *(scatra_algo()->scatra_field()->phinp()), -1.0);
-  structure_inc_np_->update(1.0, *(porofluid_elast_algo()->struct_dispnp()), -1.0);
+  structure_inc_np_->update(1.0, *(porofluid_elast_algo()->structure_dispnp()), -1.0);
   porofluid_inc_np_->update(1.0, *(porofluid_elast_algo()->fluid_phinp()), -1.0);
   if (artery_coupling_active_)
   {
     artery_pressure_inc_np_->update(
-        1.0, *(porofluid_elast_algo()->fluid_field()->art_net_tim_int()->pressurenp()), -1.0);
+        1.0, *(porofluid_elast_algo()->porofluid_algo()->art_net_tim_int()->pressurenp()), -1.0);
     artery_scatra_inc_np_->update(
         1.0, *(scatra_meshtying_strategy_->art_scatra_field()->phinp()), -1.0);
   }
@@ -196,16 +196,16 @@ bool PoroPressureBased::PorofluidElastScatraPartitionedAlgorithm::convergence_ch
   scatra_inc_np_->norm_2(&scatra_inc_norm);
   scatra_algo()->scatra_field()->phinp()->norm_2(&scatra_norm);
   structure_inc_np_->norm_2(&structure_inc_norm);
-  porofluid_elast_algo()->struct_dispnp()->norm_2(&structure_norm);
+  porofluid_elast_algo()->structure_dispnp()->norm_2(&structure_norm);
   porofluid_inc_np_->norm_2(&porofluid_inc_norm);
   porofluid_elast_algo()->fluid_phinp()->norm_2(&porofluid_norm);
   if (artery_coupling_active_)
   {
     artery_pressure_inc_np_->norm_2(&artery_pressure_inc_norm);
-    porofluid_elast_algo()->fluid_field()->art_net_tim_int()->pressurenp()->norm_2(
+    porofluid_elast_algo()->porofluid_algo()->art_net_tim_int()->pressurenp()->norm_2(
         &artery_pressure_norm);
     artery_scatra_inc_np_->norm_2(&artery_scatra_inc_norm);
-    porofluid_elast_algo()->fluid_field()->art_net_tim_int()->pressurenp()->norm_2(
+    porofluid_elast_algo()->porofluid_algo()->art_net_tim_int()->pressurenp()->norm_2(
         &artery_scatra_norm);
   }
 
@@ -395,21 +395,22 @@ void PoroPressureBased::PorofluidElastScatraSequentialPartitionedAlgorithm::solv
 
     // 1) set scatra and structure solution (on fluid field)
     set_scatra_solution();
-    porofluid_elast_algo()->set_struct_solution(porofluid_elast_algo()->structure_field()->dispnp(),
-        porofluid_elast_algo()->structure_field()->velnp());
+    porofluid_elast_algo()->set_structure_solution(
+        porofluid_elast_algo()->structure_algo()->dispnp(),
+        porofluid_elast_algo()->structure_algo()->velnp());
 
     // 2) solve fluid
-    porofluid_elast_algo()->fluid_field()->solve();
+    porofluid_elast_algo()->porofluid_algo()->solve();
 
     // 3) relaxation
     porofluid_elast_algo()->perform_relaxation(
-        porofluid_elast_algo()->fluid_field()->phinp(), itnum);
+        porofluid_elast_algo()->porofluid_algo()->phinp(), itnum);
 
     // 4) set relaxed fluid solution on structure field
     porofluid_elast_algo()->set_relaxed_fluid_solution();
 
     // 5) solve structure
-    porofluid_elast_algo()->structure_field()->solve();
+    porofluid_elast_algo()->structure_algo()->solve();
 
     // 6) set mesh displacement and velocity fields on ScaTra
     set_porofluid_elast_solution();

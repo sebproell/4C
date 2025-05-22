@@ -12,8 +12,8 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_poroelast_utils.hpp"
-#include "4C_porofluid_pressure_based_elast.hpp"
 #include "4C_porofluid_pressure_based_elast_artery_coupling.hpp"
+#include "4C_porofluid_pressure_based_elast_base.hpp"
 #include "4C_porofluid_pressure_based_elast_clonestrategy.hpp"
 #include "4C_porofluid_pressure_based_elast_monolithic.hpp"
 #include "4C_porofluid_pressure_based_elast_partitioned.hpp"
@@ -154,20 +154,21 @@ void PoroPressureBased::assign_material_pointers_porofluid_elast(
 /*----------------------------------------------------------------------*
  | create algorithm                                                      |
  *----------------------------------------------------------------------*/
-std::shared_ptr<PoroPressureBased::PorofluidElast>
+std::shared_ptr<PoroPressureBased::PorofluidElastAlgorithm>
 PoroPressureBased::create_algorithm_porofluid_elast(
     PoroPressureBased::SolutionSchemePorofluidElast solscheme,
     const Teuchos::ParameterList& timeparams, MPI_Comm comm)
 {
   // Creation of Coupled Problem algorithm.
-  std::shared_ptr<PoroPressureBased::PorofluidElast> algo = nullptr;
+  std::shared_ptr<PoroPressureBased::PorofluidElastAlgorithm> algo = nullptr;
 
   switch (solscheme)
   {
     case SolutionSchemePorofluidElast::twoway_partitioned:
     {
       // call constructor
-      algo = std::make_shared<PoroPressureBased::PorofluidElastPartitioned>(comm, timeparams);
+      algo =
+          std::make_shared<PoroPressureBased::PorofluidElastPartitionedAlgorithm>(comm, timeparams);
       break;
     }
     case SolutionSchemePorofluidElast::twoway_monolithic:
@@ -176,12 +177,14 @@ PoroPressureBased::create_algorithm_porofluid_elast(
       if (!artery_coupl)
       {
         // call constructor
-        algo = std::make_shared<PoroPressureBased::PorofluidElastMonolithic>(comm, timeparams);
+        algo = std::make_shared<PoroPressureBased::PorofluidElastMonolithicAlgorithm>(
+            comm, timeparams);
       }
       else
       {
         // call constructor
-        algo = std::make_shared<PoroPressureBased::PorofluidElastArteryCoupling>(comm, timeparams);
+        algo = std::make_shared<PoroPressureBased::PorofluidElastArteryCouplingAlgorithm>(
+            comm, timeparams);
       }
       break;
     }

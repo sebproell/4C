@@ -12,7 +12,7 @@
 
 #include "4C_adapter_algorithmbase.hpp"
 #include "4C_linalg_vector.hpp"
-#include "4C_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_base.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
 
@@ -106,7 +106,10 @@ namespace PoroPressureBased
     void apply_additional_dbc_for_vol_frac_species();
 
     //! access to porofluid-elasticity algorithm
-    const std::shared_ptr<PorofluidElast>& porofluid_elast_algo() { return porofluid_elast_algo_; }
+    const std::shared_ptr<PorofluidElastAlgorithm>& porofluid_elast_algo()
+    {
+      return porofluid_elast_algo_;
+    }
 
     //! access to scatra algorithm
     const std::shared_ptr<Adapter::ScaTraBaseAlgorithm>& scatra_algo() { return scatra_algo_; }
@@ -119,7 +122,7 @@ namespace PoroPressureBased
 
    private:
     //! underlying porofluid algorithm
-    std::shared_ptr<PorofluidElast> porofluid_elast_algo_;
+    std::shared_ptr<PorofluidElastAlgorithm> porofluid_elast_algo_;
 
     //! underlying scatra problem
     std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_algo_;

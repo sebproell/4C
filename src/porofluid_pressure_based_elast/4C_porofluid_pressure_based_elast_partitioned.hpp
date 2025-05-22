@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_base.hpp"
 #include "4C_porofluid_pressure_based_elast_input.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -18,10 +18,11 @@ FOUR_C_NAMESPACE_OPEN
 namespace PoroPressureBased
 {
   //! Partitioned solution scheme of porofluid-elasticity problems
-  class PorofluidElastPartitioned final : public PorofluidElast
+  class PorofluidElastPartitionedAlgorithm final : public PorofluidElastAlgorithm
   {
    public:
-    PorofluidElastPartitioned(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
+    PorofluidElastPartitionedAlgorithm(
+        MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
 
     /// initialization
     void init(const Teuchos::ParameterList& globaltimeparams,
