@@ -13,8 +13,8 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-/*! entry point for the solution of poro multiphase problems problems */
-void poromultiphasescatra_dyn(int restart /* do we have to perform a restart?  */
+/*! entry point for the solution of porofluid-elasticity problems with scalar transport */
+void porofluid_pressure_based_elast_scatra_dyn(int restart /* do we have to perform a restart?  */
 );
 
 

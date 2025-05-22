@@ -41,26 +41,28 @@ namespace ScaTra
 
 namespace PoroPressureBased
 {
-  //! Base class of all solid-scatra algorithms
-  class PoroMultiPhaseScaTraBase : public Adapter::AlgorithmBase
+  //! Base class of all algorithms for porofluid-elasticity problems with scalar transport and
+  //! possible coupling to 1D arteries
+  class PorofluidElastScatraBaseAlgorithm : public Adapter::AlgorithmBase
   {
    public:
-    PoroMultiPhaseScaTraBase(MPI_Comm comm,
-        const Teuchos::ParameterList& globaltimeparams);  // Problem builder
+    PorofluidElastScatraBaseAlgorithm(
+        MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
 
     //! initialization
-    virtual void init(const Teuchos::ParameterList& globaltimeparams,
-        const Teuchos::ParameterList& algoparams, const Teuchos::ParameterList& poroparams,
-        const Teuchos::ParameterList& structparams, const Teuchos::ParameterList& fluidparams,
-        const Teuchos::ParameterList& scatraparams, const std::string& struct_disname,
-        const std::string& fluid_disname, const std::string& scatra_disname, bool isale,
-        int nds_disp, int nds_vel, int nds_solidpressure, int ndsporofluid_scatra,
-        const std::map<int, std::set<int>>* nearbyelepairs) = 0;
+    virtual void init(const Teuchos::ParameterList& global_time_params,
+        const Teuchos::ParameterList& porofluid_elast_scatra_params,
+        const Teuchos::ParameterList& porofluid_elast_params,
+        const Teuchos::ParameterList& structure_params,
+        const Teuchos::ParameterList& porofluid_params, const Teuchos::ParameterList& scatra_params,
+        const std::string& structure_disname, const std::string& porofluid_disname,
+        const std::string& scatra_disname, bool isale, int nds_disp, int nds_vel,
+        int nds_solidpressure, int nds_porofluid_scatra,
+        const std::map<int, std::set<int>>* nearby_ele_pairs) = 0;
 
     /*!
-     * @brief Perform all the necessary tasks after initializing the
-     * algorithm. Currently, this only calls the post_setup routine of
-     * the underlying poroelast multi-phase object.
+     * @brief Perform all the necessary tasks after initializing the algorithm. Currently, this only
+     * calls the post_setup routine of the underlying porofluid-elasticity algorithm.
      */
     void post_init();
 
@@ -76,11 +78,11 @@ namespace PoroPressureBased
     //! setup solver (only needed in monolithic case)
     virtual void setup_solver() = 0;
 
-    //! prepare timeloop of coupled problem
+    //! prepare time loop of coupled problem
     void prepare_time_loop();
 
-    //! timeloop of coupled problem
-    void timeloop();
+    //! time loop of coupled problem
+    void time_loop();
 
     //! time step of coupled problem --> here the actual action happens (overwritten by sub-classes)
     virtual void time_step() = 0;
@@ -94,57 +96,55 @@ namespace PoroPressureBased
     //! update time step and print to screen
     void update_and_output();
 
-    //! apply solution of poro-problem to scatra
-    void set_poro_solution();
+    //! apply solution of porofluid-elasticity-problem to scatra
+    void set_porofluid_elast_solution();
 
-    //! apply solution of scatra to poro
+    //! apply solution of scatra to porofluid-elasticity-problem
     void set_scatra_solution();
 
     //! apply the additional Dirichlet boundary condition for volume fraction species
     void apply_additional_dbc_for_vol_frac_species();
 
-    //! access to poro field
-    const std::shared_ptr<PorofluidElast>& poro_field() { return poromulti_; }
+    //! access to porofluid-elasticity algorithm
+    const std::shared_ptr<PorofluidElast>& porofluid_elast_algo() { return porofluid_elast_algo_; }
 
-    //! access to fluid field
-    const std::shared_ptr<Adapter::ScaTraBaseAlgorithm>& scatra_algo() { return scatra_; }
+    //! access to scatra algorithm
+    const std::shared_ptr<Adapter::ScaTraBaseAlgorithm>& scatra_algo() { return scatra_algo_; }
 
     //! dof map of vector of unknowns of scatra field
-    std::shared_ptr<const Core::LinAlg::Map> scatra_dof_row_map() const;
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::Map> scatra_dof_row_map() const;
 
     //! handle divergence of solver
     void handle_divergence() const;
 
    private:
-    //! underlying poroelast multi phase
-    std::shared_ptr<PorofluidElast> poromulti_;
+    //! underlying porofluid algorithm
+    std::shared_ptr<PorofluidElast> porofluid_elast_algo_;
 
     //! underlying scatra problem
-    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_;
+    std::shared_ptr<Adapter::ScaTraBaseAlgorithm> scatra_algo_;
 
     //! flux-reconstruction method
-    PoroPressureBased::FluxReconstructionMethod fluxreconmethod_;
+    PoroPressureBased::FluxReconstructionMethod flux_reconstruction_method_;
 
     //! dofset of scatra field on fluid dis
     //! TODO: find a better way to do this. Perhaps this should be moved to the adapter?
-    int ndsporofluid_scatra_;
+    int nds_porofluid_scatra_;
 
-    Teuchos::Time timertimestep_;  //!< timer for measurement of duration of one time-step
-    double dttimestep_;            //!< duration of one time step
+    Teuchos::Time timer_timestep_;  //!< timer for measurement of duration of one time-step
+    double dt_timestep_;            //!< duration of one time step
 
    protected:
     //! what to do when nonlinear solution fails
-    enum PoroPressureBased::DivergenceAction divcontype_;
+    enum PoroPressureBased::DivergenceAction divergence_action_;
     //! do we perform coupling with 1D artery
-    const bool artery_coupl_;
+    const bool artery_coupling_;
 
     //! additional volume-fraction species Dirichlet conditions
     std::shared_ptr<Core::LinAlg::Map> add_dirichmaps_volfrac_spec_;
 
-    std::shared_ptr<ScaTra::MeshtyingStrategyArtery> scatramsht_;
-
-  };  // PoroMultiPhaseScaTraBase
-
+    std::shared_ptr<ScaTra::MeshtyingStrategyArtery> scatra_meshtying_strategy_;
+  };
 
 }  // namespace PoroPressureBased
 

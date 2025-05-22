@@ -19,11 +19,11 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void poromultiphasescatra_dyn(int restart)
+void porofluid_pressure_based_elast_scatra_dyn(int restart)
 {
   // define the discretization names
   const std::string struct_disname = "structure";
-  const std::string fluid_disname = "porofluid";
+  const std::string porofluid_disname = "porofluid";
   const std::string scatra_disname = "scatra";
 
   // access the problem
@@ -35,52 +35,55 @@ void poromultiphasescatra_dyn(int restart)
   // print problem type
   if (Core::Communication::my_mpi_rank(comm) == 0)
   {
-    std::cout << "###################################################" << std::endl;
-    std::cout << "# YOUR PROBLEM TYPE: " << problem->problem_name() << std::endl;
-    std::cout << "###################################################" << std::endl;
+    std::cout << "###################################################" << '\n';
+    std::cout << "# YOUR PROBLEM TYPE: " << problem->problem_name() << '\n';
+    std::cout << "###################################################" << '\n';
   }
 
   // Parameter reading
-  // access poro multiphase scatra params list
-  const Teuchos::ParameterList& poroscatraparams =
+  // access porofluid-elasticity-scatra params list
+  const Teuchos::ParameterList& porofluid_elast_scatra_params =
       problem->poro_multi_phase_scatra_dynamic_params();
-  // access poro multiphase params list
-  const Teuchos::ParameterList& poroparams = problem->poro_multi_phase_dynamic_params();
-  // access scatra params list
-  const Teuchos::ParameterList& structparams = problem->structural_dynamic_params();
-  // access poro fluid dynamic params list
-  const Teuchos::ParameterList& fluidparams = problem->poro_fluid_multi_phase_dynamic_params();
+  // access porofluid-elasticity params list
+  const Teuchos::ParameterList& porofluid_elast_params = problem->poro_multi_phase_dynamic_params();
+  // access structure params list
+  const Teuchos::ParameterList& structure_params = problem->structural_dynamic_params();
+  // access porofluid dynamic params list
+  const Teuchos::ParameterList& porofluid_params = problem->poro_fluid_multi_phase_dynamic_params();
   // access scatra dynamic params list
-  const Teuchos::ParameterList& scatraparams = problem->scalar_transport_dynamic_params();
+  const Teuchos::ParameterList& scatra_params = problem->scalar_transport_dynamic_params();
 
   // do we perform coupling with 1D artery
-  const bool artery_coupl = poroscatraparams.get<bool>("ARTERY_COUPLING");
+  const bool artery_coupling = porofluid_elast_scatra_params.get<bool>("ARTERY_COUPLING");
 
   // initialize variables for dof set numbers
-  int ndsporo_disp(-1);
-  int ndsporo_vel(-1);
-  int ndsporo_solidpressure(-1);
-  int ndsporofluid_scatra(-1);
+  int nds_disp(-1);
+  int nds_vel(-1);
+  int nds_solidpressure(-1);
+  int nds_porofluid_scatra(-1);
 
   // Setup discretizations and coupling. Assign the dof sets and return the numbers
-  std::map<int, std::set<int>> nearbyelepairs =
+  std::map<int, std::set<int>> nearby_ele_pairs =
       PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast_scatra(comm,
-          struct_disname, fluid_disname, scatra_disname, ndsporo_disp, ndsporo_vel,
-          ndsporo_solidpressure, ndsporofluid_scatra, artery_coupl);
+          struct_disname, porofluid_disname, scatra_disname, nds_disp, nds_vel, nds_solidpressure,
+          nds_porofluid_scatra, artery_coupling);
 
   // -------------------------------------------------------------------
   // algorithm construction depending on
   // coupling scheme
   // -------------------------------------------------------------------
-  auto solscheme = Teuchos::getIntegralValue<PoroPressureBased::SolutionSchemePorofluidElastScatra>(
-      poroscatraparams, "COUPALGO");
+  auto solution_scheme =
+      Teuchos::getIntegralValue<PoroPressureBased::SolutionSchemePorofluidElastScatra>(
+          porofluid_elast_scatra_params, "COUPALGO");
 
-  std::shared_ptr<PoroPressureBased::PoroMultiPhaseScaTraBase> algo =
-      PoroPressureBased::create_algorithm_porofluid_elast_scatra(solscheme, poroscatraparams, comm);
+  std::shared_ptr<PoroPressureBased::PorofluidElastScatraBaseAlgorithm> algo =
+      PoroPressureBased::create_algorithm_porofluid_elast_scatra(
+          solution_scheme, porofluid_elast_scatra_params, comm);
 
-  algo->init(poroscatraparams, poroscatraparams, poroparams, structparams, fluidparams,
-      scatraparams, struct_disname, fluid_disname, scatra_disname, true, ndsporo_disp, ndsporo_vel,
-      ndsporo_solidpressure, ndsporofluid_scatra, &nearbyelepairs);
+  algo->init(porofluid_elast_scatra_params, porofluid_elast_scatra_params, porofluid_elast_params,
+      structure_params, porofluid_params, scatra_params, struct_disname, porofluid_disname,
+      scatra_disname, true, nds_disp, nds_vel, nds_solidpressure, nds_porofluid_scatra,
+      &nearby_ele_pairs);
 
   // read the restart information, set vectors and variables
   if (restart)
@@ -93,10 +96,10 @@ void poromultiphasescatra_dyn(int restart)
   }
 
   // assign materials
-  // note: to be done after potential restart, as in read_restart()
-  //       the secondary material is destroyed
+  // note: to be done after potential restart, as in read_restart() the secondary material is
+  // destroyed
   PoroPressureBased::assign_material_pointers_porofluid_elast_scatra(
-      struct_disname, fluid_disname, scatra_disname, artery_coupl);
+      struct_disname, porofluid_disname, scatra_disname, artery_coupling);
 
   // Setup Solver (necessary if poro-structure coupling solved monolithically)
   algo->setup_solver();
@@ -107,7 +110,7 @@ void poromultiphasescatra_dyn(int restart)
   algo->setup_system();
 
   // Solve the whole problem
-  algo->timeloop();
+  algo->time_loop();
 
   // Summarize the performance measurements
   Teuchos::TimeMonitor::summarize();
@@ -115,8 +118,6 @@ void poromultiphasescatra_dyn(int restart)
   // perform the result test if required
   algo->create_field_test();
   problem->test_all(comm);
-
-
-}  // poromultiphase_dyn
+}
 
 FOUR_C_NAMESPACE_CLOSE
