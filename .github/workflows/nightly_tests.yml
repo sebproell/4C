@@ -8,7 +8,7 @@ jobs:
   gcc13_assertions_build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:502560ce
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:8115e93e
       options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
     defaults:
       run:
@@ -41,7 +41,7 @@ jobs:
     needs: gcc13_assertions_build
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:502560ce
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:8115e93e
       options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
     strategy:
       fail-fast: false
@@ -93,7 +93,7 @@ jobs:
   clang18_build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:502560ce
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:8115e93e
       options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
     defaults:
       run:
@@ -191,7 +191,7 @@ jobs:
     needs: clang18_build
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:502560ce
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:8115e93e
       options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
     strategy:
       fail-fast: false
@@ -240,10 +240,80 @@ jobs:
           junit-report-base-name: clang18_test_report
           retention-days: 2
 
+  clang18_build_oldest_supported_dependencies:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04-oldest-supported:8115e93e
+      options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check docker hash
+        uses: ./.github/actions/compute-and-check-dependencies-hash
+      - uses: ./.github/actions/build_4C
+        with:
+          cmake-preset: docker_clang
+          build-targets: full
+          build-directory: ${{ github.workspace }}/build
+          use-ccache: "false"
+      - uses: ./.github/actions/upload_4C_build
+        with:
+          build-directory: ${{ github.workspace }}/build
+          retention-days: 1
+      - uses: ./.github/actions/chunk_test_suite
+        id: set-matrix
+        with:
+          build-directory: ${{ github.workspace }}/build
+          source-directory: ${{ github.workspace }}
+          number-of-chunks: 15
+          junit-report-artifact-name: clang18_test_oldest_supported_dependencies_report.xml
+
+  clang18_test_oldest_supported_dependencies:
+    needs: clang18_build_oldest_supported_dependencies
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04-oldest-supported:8115e93e
+      options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
+    strategy:
+      fail-fast: false
+      matrix:
+        test-chunk: ${{fromJson(needs.clang18_build_oldest_supported_dependencies.outputs.test-chunks)}}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check docker hash
+        uses: ./.github/actions/compute-and-check-dependencies-hash
+      - name: Setup developer environment for testing
+        run: |
+          cd $GITHUB_WORKSPACE
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+      - uses: ./.github/actions/download_4C_build
+        with:
+          build-job: clang18_build_oldest_supported_dependencies
+          destination: ${{ github.workspace }}/build
+      - name: Test
+        run: |
+          cd $GITHUB_WORKSPACE/build
+          time ctest -I $TEST_CHUNK -j `nproc` --output-on-failure --output-junit $GITHUB_WORKSPACE/clang18_test_oldest_supported_dependencies_report-$TEST_CHUNK.xml
+        env:
+          TEST_CHUNK: ${{ matrix.test-chunk }}
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: clang18_test_oldest_supported_dependencies_report-${{ matrix.test-chunk }}.xml
+          path: |
+            ${{ github.workspace }}/clang18_test_oldest_supported_dependencies_report-${{ matrix.test-chunk }}.xml
+          retention-days: 1
+
   gcc13_no_optional_dependencies_build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:502560ce
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:8115e93e
       options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
     defaults:
       run:
@@ -276,7 +346,7 @@ jobs:
     needs: gcc13_no_optional_dependencies_build
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:502560ce
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:8115e93e
       options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
     strategy:
       fail-fast: false
@@ -328,7 +398,7 @@ jobs:
   gcc13_asan_build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:502560ce
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:8115e93e
       options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
     defaults:
       run:
@@ -361,7 +431,7 @@ jobs:
     needs: gcc13_asan_build
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:502560ce
+      image: ghcr.io/4c-multiphysics/4c-dependencies-ubuntu24.04:8115e93e
       options: --user root --env OMPI_ALLOW_RUN_AS_ROOT=1 --env OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
     strategy:
       fail-fast: false

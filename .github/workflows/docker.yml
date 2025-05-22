@@ -63,6 +63,32 @@ jobs:
             }}
           base-image: "ubuntu:24.04"
 
+  build-dependencies-oldest-supported:
+    runs-on: ubuntu-latest
+    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      #
+    needs: check-if-build-dependencies-is-required
+    if: ${{ github.event_name == 'workflow_dispatch' && needs.check-if-build-dependencies-is-required.outputs.build_docker_image
+      == 'true' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Build and push image
+        uses: ./.github/actions/build_dependencies
+        with:
+          docker-file: docker/oldest_supported/Dockerfile
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: ${{ env.REGISTRY }}/${{ env.PROJECT_NAMESPACE }}/4c-dependencies-ubuntu24.04-oldest-supported
+          dependencies-hash: ${{ needs.check-if-build-dependencies-is-required.outputs.dependencies_hash
+            }}
+          base-image: "ubuntu:24.04"
+
   tag-images-as-main:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' && github.repository == '4C-multiphysics/4C' }}
