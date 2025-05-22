@@ -253,7 +253,7 @@ namespace Core::Binstrategy::Utils
         FOUR_C_THROW(
             "Your displacement is incomplete (need to be based on a column map"
             " as this function is also called from a loop over elements and "
-            "each proc does (usually) not own all nodes of his row elements ");
+            "each proc does (usually) not own all nodes of its row elements ");
       for (int dim = 0; dim < 3; ++dim)
       {
         currpos[dim] = node->x()[dim] + (*disnp)[lid + dim];

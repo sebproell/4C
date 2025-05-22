@@ -204,7 +204,7 @@ Constraints::MPConstraint2::create_discretization_from_condition(
       newdis->add_element(constraintele);
     }
     // now care about the parallel distribution and ghosting.
-    // So far every processor only knows about his nodes
+    // So far every processor only knows about its nodes
   }
 
   // build unique node row map

@@ -1063,7 +1063,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::Binstrategy::BinningStrategy::
     // ghosts all elements whose XAABB cuts a bin that is next to a bin that is
     // owned by a proc an not empty. All associated nodes are ghosted as well
     // ----------------------------------------------------------------------
-    // here each proc assigns his owned elements in the means of a XAABB to
+    // here each proc assigns its owned elements in the means of a XAABB to
     // the global binids that do not need be owned by this proc.
     // binelemap on each proc than contains all bins (not necessarily owned by
     // this proc) that are cut by the procs row elements

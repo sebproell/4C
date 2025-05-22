@@ -1164,7 +1164,7 @@ void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgr
   // Nbar = ( eta^{~,trial}_{n+1} / || eta^{~,trial}_{n+1} || )
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> Nbar(Core::LinAlg::Initialization::zero);
 
-  // flow vector N_tilde according to Doghri and his explicit updating
+  // flow vector N_tilde according to Doghri and their explicit updating
   // N_tilde = 3/2 . (s_tilde - beta) / qbar_tilde
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> N_tilde(Core::LinAlg::Initialization::zero);
 

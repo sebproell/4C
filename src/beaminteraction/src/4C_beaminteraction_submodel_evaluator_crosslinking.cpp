@@ -1720,7 +1720,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_crosslinker()
         const int colelelid = discret_ptr()->element_col_map()->LID(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
-              "Crosslinker has {} bonds but his binding partner with gid {} "
+              "Crosslinker has {} bonds but its binding partner with gid {} "
               "is \nnot ghosted/owned on proc {} (owner of crosslinker)",
               cldata_i->get_number_of_bonds(), elegid, g_state().get_my_rank());
         // safety check
@@ -1766,7 +1766,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_crosslinker()
         int colelelid = discret_ptr()->element_col_map()->LID(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
-              "Crosslinker has {} bonds but his binding partner with gid {} "
+              "Crosslinker has {} bonds but its binding partner with gid {} "
               "is not \nghosted/owned on proc {} (owner of crosslinker)",
               cldata_i->get_number_of_bonds(), elegid, g_state().get_my_rank());
 #endif
@@ -1804,7 +1804,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_crosslinker()
         colelelid = discret_ptr()->element_col_map()->LID(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
-              "Crosslinker has {} bonds but his binding partner with gid {} "
+              "Crosslinker has {} bonds but its binding partner with gid {} "
               "is \nnot ghosted/owned on proc {} (owner of crosslinker)",
               cldata_i->get_number_of_bonds(), elegid, g_state().get_my_rank());
 #endif
@@ -2795,7 +2795,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::manage_binding_in_paralle
       "BeamInteraction::SubmodelEvaluator::Crosslinking::manage_binding_in_parallel");
 
   // -------------------------------------------------------------------------
-  // 1) each procs makes his requests and receives the request of other procs
+  // 1) each procs makes its requests and receives the request of other procs
   // -------------------------------------------------------------------------
   // store requested cl and its data
   std::map<int, std::vector<std::shared_ptr<BeamInteraction::Data::BindEventData>>> requestedcl;

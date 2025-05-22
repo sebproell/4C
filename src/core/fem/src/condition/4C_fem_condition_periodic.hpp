@@ -317,11 +317,11 @@ namespace Core::Conditions
     std::vector<const Core::Conditions::Condition*> mysurfpbcs_;
 
     //!\brief map connecting master to slave nodes owned by this proc
-    //       master node -> list of his slave node(s)
+    //       master node -> list of its slave node(s)
     std::shared_ptr<std::map<int, std::vector<int>>> allcoupledrownodes_;
 
     //!\brief map connecting master to slave nodes owned or ghosted by this proc
-    //       master node -> list of his slave node(s)
+    //       master node -> list of its slave node(s)
     std::shared_ptr<std::map<int, std::vector<int>>> allcoupledcolnodes_;
 
     //!\brief time measurement (total)

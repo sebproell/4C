@@ -168,7 +168,7 @@ void Core::GeometricSearch::MatchingOctree::create_global_entity_matching(
   // counterpart
   std::map<int, double> diststom;
 
-  // 1) each proc generates a list of his slavenodes
+  // 1) each proc generates a list of its slavenodes
   // 2) the list is communicated in a round robin pattern to all the
   //    other procs.
   //
@@ -408,7 +408,7 @@ void Core::GeometricSearch::MatchingOctree::find_match(const Core::FE::Discretiz
   if (Core::Communication::num_mpi_ranks(slavedis.get_comm()) != numprocs)
     FOUR_C_THROW("compared discretizations must live on same procs");
 
-  // 1) each proc generates a list of his slavenodes
+  // 1) each proc generates a list of its slavenodes
   //
   // 2) the list is communicated in a round robin pattern to all the
   //    other procs.
@@ -567,7 +567,7 @@ void Core::GeometricSearch::MatchingOctree::fill_slave_to_master_gid_mapping(
   if (Core::Communication::num_mpi_ranks(slavedis.get_comm()) != numprocs)
     FOUR_C_THROW("compared discretizations must live on same procs");
 
-  // 1) each proc generates a list of his slavenodes
+  // 1) each proc generates a list of its slavenodes
   //
   // 2) the list is communicated in a round robin pattern to all the
   //    other procs.

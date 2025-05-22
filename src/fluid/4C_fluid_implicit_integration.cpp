@@ -4245,7 +4245,7 @@ void FLD::FluidImplicitTimeInt::set_initial_flow_field(
         {
           // yes, we have one
 
-          // get the list of all his slavenodes
+          // get the list of all its slavenodes
           auto master = (discret_->get_all_pbc_coupled_col_nodes())->find(lnode->id());
 
           // slavenodes are ignored

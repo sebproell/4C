@@ -157,7 +157,7 @@ namespace Core::GeometricSearch
     Search for closest (slave) entities on all processors to given (master)
     entity set (only in bounding box of master entities)        gammi 05/07
 
-     1) each proc gets a list of his slave entities (slavenodeids)
+     1) each proc gets a list of its slave entities (slavenodeids)
 
      2) the list is communicated in a round robin pattern to all the
         other procs.

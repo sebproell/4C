@@ -21,7 +21,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-//  For comparison to Urquizas paper with his slip length implementation
+//  For comparison to Urquizas paper with their slip length implementation
 //   Only working for Navier-Slip (i.e. itraction_jump_ = 0)!
 //   Can be modified to work for this case as well.
 // #define ENFORCE_URQUIZA_GNBC

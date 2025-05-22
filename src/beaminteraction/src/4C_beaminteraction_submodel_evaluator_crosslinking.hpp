@@ -293,7 +293,7 @@ namespace BeamInteraction
        be communicated to the crosslinker owner, he randomly decides who is allowed
        to bind, sets the according stuff for the cl and  informs back the
        requesting procs so they can set the stuff for the elements.
-       As no proc on his own can decide whether a crosslink should be set, two
+       As no proc on its own can decide whether a crosslink should be set, two
        binding events for one crosslinker in one time step are excluded (for this
        the proc must be sure that a crosslink is set as the binding range is
        different for a single bonded crosslinker compared to a free one)
@@ -373,7 +373,7 @@ namespace BeamInteraction
 
       /*
        now myrank needs to decide which proc is allowed to set the requested
-       link, add it to his own list as row owner of cl sets stuff for cls, send
+       link, add it to its own list as row owner of cl sets stuff for cls, send
        back the answers to the row ele owner and receive the decisions made for
        its own requests:
        - if only one proc is requesting, the link can be set

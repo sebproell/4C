@@ -159,7 +159,7 @@ namespace Mixture
     /*!
      * \brief Setup the constituent
      *
-     * This method is called once for each element. The constituent should setup all his internal
+     * This method is called once for each element. The constituent should setup all its internal
      * variables and materials.
      *
      * @param params (in/out) : Container for additional information
