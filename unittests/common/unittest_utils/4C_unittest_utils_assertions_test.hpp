@@ -14,6 +14,8 @@
 
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
+#include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_internals.hpp"
 
 #include <type_traits>
 
@@ -279,6 +281,63 @@ namespace TESTING::INTERNAL
         });
 
     return result_based_on_non_matching_entries(nonMatchingEntries, tolerance, mat1Expr, mat2Expr);
+  }
+
+  /**
+   * Compare two Core::LinAlg::Tensor objects for double equality up to a tolerance. The signature
+   * is mandated by GoogleTest's EXPECT_PRED_FORMAT3 macro.
+   *
+   * @note This function is not intended to be used directly. Use FOUR_C_EXPECT_NEAR.
+   */
+  template <typename ToleranceType, typename T1, Core::LinAlg::TensorStorageType storage_type1,
+      typename T2, Core::LinAlg::TensorStorageType storage_type2, std::size_t... n>
+  inline ::testing::AssertionResult assert_near(const char* mat1Expr,
+      const char* t2Expr,  // NOLINT
+      const char* toleranceExpr, const Core::LinAlg::TensorInternal<T1, storage_type1, n...>& t1,
+      const Core::LinAlg::TensorInternal<T2, storage_type2, n...>& t2, ToleranceType tolerance)
+  {
+    // argument is required for the EXPECT_PRED_FORMAT3 macro of GoogleTest for pretty printing
+    (void)toleranceExpr;
+
+    const auto get_index_string = [](const auto& index)
+    {
+      constexpr auto get_array = [](auto&&... x)
+      { return std::array{std::forward<decltype(x)>(x)...}; };
+      const auto index_array = std::apply(get_array, index);
+
+      std::stringstream ss;
+
+      for (std::size_t i = 0; i < index_array.size(); ++i)
+      {
+        ss << index_array[i];
+        if (i != index_array.size() - 1) ss << ", ";
+      }
+
+      return ss.str();
+    };
+
+    const std::string nonMatchingEntries = std::invoke(
+        [&]()
+        {
+          std::stringstream ss;
+          ss << std::fixed << std::setprecision(precision_for_printing(tolerance));
+          for (const auto& item : Core::LinAlg::array_of_tensor_indices<n...>)
+          {
+            const auto value1 =
+                std::apply([&t1](const auto&... index) { return t1(index...); }, item);
+            const auto value2 =
+                std::apply([&t2](const auto&... index) { return t2(index...); }, item);
+
+            if (std::abs(value1 - value2) > tolerance)
+            {
+              ss << "(" << get_index_string(item) << "): " << value1 << " vs. " << value2
+                 << std::endl;
+            }
+          }
+          return ss.str();
+        });
+
+    return result_based_on_non_matching_entries(nonMatchingEntries, tolerance, mat1Expr, t2Expr);
   }
 
 }  // namespace TESTING::INTERNAL
