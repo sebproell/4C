@@ -1318,8 +1318,8 @@ void Mat::GrowthRemodelElastHyper::evaluate_isotropic_princ_elast(
   cmatisoprinc.multiply_nt(delta(4), iCinCiCinv, iCv, 1.);
   cmatisoprinc.multiply_nt(delta(4), iCv, iCinCiCinv, 1.);
   cmatisoprinc.multiply_nt(delta(5), iCv, iCv, 1.);
-  Core::LinAlg::Tensor::add_holzapfel_product(cmatisoprinc, iCv, delta(6));
-  Core::LinAlg::Tensor::add_holzapfel_product(cmatisoprinc, iCinv, delta(7));
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmatisoprinc, iCv, delta(6));
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmatisoprinc, iCinv, delta(7));
 }
 
 
@@ -1342,8 +1342,10 @@ void Mat::GrowthRemodelElastHyper::evaluated_sdi_fg(Core::LinAlg::Matrix<6, 9>& 
   dSdiFin.clear();
 
   // derivative of second Piola Kirchhoff stress w.r.t. inverse growth deformation gradient
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(dSdiFin, id, iFinM, gamma(0));
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(dSdiFin, iCinCM, iFinM, gamma(1));
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
+      dSdiFin, id, iFinM, gamma(0));
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
+      dSdiFin, iCinCM, iFinM, gamma(1));
   dSdiFin.multiply_nt(delta(0), iCinv, CiFin9x1, 1.);
   dSdiFin.multiply_nt(delta(1), iCinv, CiFinCe9x1, 1.);
   dSdiFin.multiply_nt(delta(1), iCinCiCinv, CiFin9x1, 1.);
@@ -1353,13 +1355,13 @@ void Mat::GrowthRemodelElastHyper::evaluated_sdi_fg(Core::LinAlg::Matrix<6, 9>& 
   dSdiFin.multiply_nt(delta(4), iCinCiCinv, CiFiniCe9x1, 1.);
   dSdiFin.multiply_nt(delta(4), iCv, CiFinCe9x1, 1.);
   dSdiFin.multiply_nt(delta(5), iCv, CiFiniCe9x1, 1.);
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
       dSdiFin, id, iFinCeM, 0.5 * delta(7));
 
   // diFin/diFg
   static Core::LinAlg::Matrix<9, 9> diFindiFg(Core::LinAlg::Initialization::zero);
   diFindiFg.clear();
-  Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id, gm_[gp], diFindiFg);
+  Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, id, gm_[gp], diFindiFg);
 
   dSdiFg.multiply_nn(1.0, dSdiFin, diFindiFg, 0.0);
 }
@@ -1498,7 +1500,7 @@ void Mat::GrowthRemodelElastHyper::evaluate_stress_cmat_membrane(
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(YM, Yv);
   static Core::LinAlg::Matrix<6, 6> dYdC(Core::LinAlg::Initialization::zero);
   dYdC.clear();
-  Core::LinAlg::Tensor::add_holzapfel_product(dYdC, Yv, -0.5);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(dYdC, Yv, -0.5);
 
   cmat.multiply_nt(0.5 * mue_el_mem * cur_rho_el_[gp] * mue_frac_[gp] / X_det.val(), Yv, Yv, 0.0);
   cmat.update(-mue_el_mem * cur_rho_el_[gp] * mue_frac_[gp] / X_det.val(), dYdC, 1.0);

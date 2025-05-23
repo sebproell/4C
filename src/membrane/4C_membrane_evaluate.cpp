@@ -375,7 +375,8 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
         mem_defgrd_global(dXds1, dXds2, dxds1, dxds2, lambda3, defgrd_glob);
 
         // surface deformation gradient in 3 dimensions in local coordinates
-        Core::LinAlg::Tensor::inverse_tensor_rotation<3>(Q_localToGlobal, defgrd_glob, defgrd_loc);
+        Core::LinAlg::FourTensorOperations::inverse_tensor_rotation<3>(
+            Q_localToGlobal, defgrd_glob, defgrd_loc);
 
         /*===============================================================================*
          | right cauchygreen tensor in local coordinates                                 |
@@ -754,7 +755,8 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
     mem_defgrd_global(dXds1, dXds2, dxds1, dxds2, lambda3, defgrd_glob);
 
     // surface deformation gradient in 3 dimensions in local coordinates
-    Core::LinAlg::Tensor::inverse_tensor_rotation<3>(Q_localToGlobal, defgrd_glob, defgrd_loc);
+    Core::LinAlg::FourTensorOperations::inverse_tensor_rotation<3>(
+        Q_localToGlobal, defgrd_glob, defgrd_loc);
 
     /*===============================================================================*
      | right cauchygreen tensor in local coordinates                                 |
@@ -800,7 +802,8 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
       mem_defgrd_global(dXds1, dXds2, dxds1, dxds2, lambda3, defgrd_glob);
 
       // update surface deformation gradient in 3 dimensions in local coordinates
-      Core::LinAlg::Tensor::inverse_tensor_rotation<3>(Q_localToGlobal, defgrd_glob, defgrd_loc);
+      Core::LinAlg::FourTensorOperations::inverse_tensor_rotation<3>(
+          Q_localToGlobal, defgrd_glob, defgrd_loc);
 
       // update three dimensional right cauchy-green strain tensor in orthonormal base
       cauchygreen_loc.multiply_tn(1.0, defgrd_loc, defgrd_loc, 0.0);
@@ -823,11 +826,13 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
 
       // Transform stress and elasticity into the local membrane coordinate system
       Core::LinAlg::Matrix<3, 3> pk2M_loc(Core::LinAlg::Initialization::zero);
-      Core::LinAlg::Tensor::inverse_tensor_rotation<3>(Q_localToGlobal, pk2M_glob, pk2M_loc);
+      Core::LinAlg::FourTensorOperations::inverse_tensor_rotation<3>(
+          Q_localToGlobal, pk2M_glob, pk2M_loc);
       Internal::local_plane_stress_to_stress_like_voigt(pk2M_loc, pk2red_loc);
 
       Core::LinAlg::Matrix<6, 6> cmat_loc(Core::LinAlg::Initialization::zero);
-      Core::LinAlg::Tensor::inverse_fourth_tensor_rotation(Q_localToGlobal, cmat_glob, cmat_loc);
+      Core::LinAlg::FourTensorOperations::inverse_fourth_tensor_rotation(
+          Q_localToGlobal, cmat_glob, cmat_loc);
       Internal::local_fourth_tensor_plane_stress_to_stress_like_voigt(cmat_loc, cmatred_loc);
     }
     else
@@ -969,7 +974,7 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
 
         // transform local cauchygreen to global coordinates
         Core::LinAlg::Matrix<noddof_, noddof_> cauchygreen_glob(Core::LinAlg::Initialization::zero);
-        Core::LinAlg::Tensor::tensor_rotation<3>(
+        Core::LinAlg::FourTensorOperations::tensor_rotation<3>(
             Q_localToGlobal, cauchygreen_loc, cauchygreen_glob);
 
         // green-lagrange strain tensor in global coordinates
@@ -999,7 +1004,7 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
 
         // transform local cauchygreen to global coordinates
         Core::LinAlg::Matrix<noddof_, noddof_> cauchygreen_glob(Core::LinAlg::Initialization::zero);
-        Core::LinAlg::Tensor::tensor_rotation<3>(
+        Core::LinAlg::FourTensorOperations::tensor_rotation<3>(
             Q_localToGlobal, cauchygreen_loc, cauchygreen_glob);
 
         // green-lagrange strain tensor in global coordinates
@@ -1040,7 +1045,7 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
 
         // transform local cauchygreen to global coordinates
         Core::LinAlg::Matrix<noddof_, noddof_> cauchygreen_glob(Core::LinAlg::Initialization::zero);
-        Core::LinAlg::Tensor::tensor_rotation<3>(
+        Core::LinAlg::FourTensorOperations::tensor_rotation<3>(
             Q_localToGlobal, cauchygreen_loc, cauchygreen_glob);
 
         // eigenvalue decomposition (from elasthyper.cpp)
@@ -1159,7 +1164,8 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
 
         // determine 2nd Piola-Kirchhoff stresses in global coordinates
         Core::LinAlg::Matrix<noddof_, noddof_> pkstress_glob(Core::LinAlg::Initialization::zero);
-        Core::LinAlg::Tensor::tensor_rotation<3>(Q_localToGlobal, pkstressM_local, pkstress_glob);
+        Core::LinAlg::FourTensorOperations::tensor_rotation<3>(
+            Q_localToGlobal, pkstressM_local, pkstress_glob);
 
         (*elestress)(gp, 0) = pkstress_glob(0, 0);
         (*elestress)(gp, 1) = pkstress_glob(1, 1);
@@ -1184,7 +1190,8 @@ void Discret::Elements::Membrane<distype>::mem_nlnstiffmass(
 
         // determine 2nd Piola-Kirchhoff stresses in global coordinates
         Core::LinAlg::Matrix<noddof_, noddof_> pkstress_glob(Core::LinAlg::Initialization::zero);
-        Core::LinAlg::Tensor::tensor_rotation<3>(Q_localToGlobal, pkstressM_loc, pkstress_glob);
+        Core::LinAlg::FourTensorOperations::tensor_rotation<3>(
+            Q_localToGlobal, pkstressM_loc, pkstress_glob);
 
         Core::LinAlg::Matrix<noddof_, noddof_> cauchy_glob(Core::LinAlg::Initialization::zero);
         mem_p_k2to_cauchy(pkstress_glob, defgrd_glob, cauchy_glob);
@@ -1575,7 +1582,8 @@ void Discret::Elements::Membrane<distype>::update_element(
       // surface deformation gradient in 3 dimensions in global coordinates
       mem_defgrd_global(dXds1, dXds2, dxds1, dxds2, lambda3, defgrd_glob);
 
-      Core::LinAlg::Tensor::inverse_tensor_rotation<3>(Q_localToGlobal, defgrd_glob, defgrd_loc);
+      Core::LinAlg::FourTensorOperations::inverse_tensor_rotation<3>(
+          Q_localToGlobal, defgrd_glob, defgrd_loc);
 
       auto material_local_coordinates =
           std::dynamic_pointer_cast<Mat::MembraneMaterialLocalCoordinates>(

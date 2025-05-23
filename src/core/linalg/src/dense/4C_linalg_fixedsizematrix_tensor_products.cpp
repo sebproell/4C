@@ -14,8 +14,8 @@ using FAD = Sacado::Fad::DFad<double>;
 
 FOUR_C_NAMESPACE_OPEN
 
-void Core::LinAlg::Tensor::add_elasticity_tensor_product(Core::LinAlg::Matrix<6, 6>& C,
-    const double scalar_AB, const Core::LinAlg::Matrix<3, 3>& A,
+void Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
+    Core::LinAlg::Matrix<6, 6>& C, const double scalar_AB, const Core::LinAlg::Matrix<3, 3>& A,
     const Core::LinAlg::Matrix<3, 3>& B, const double scalar_this)
 {
   // everything in Voigt-Notation
@@ -41,8 +41,8 @@ void Core::LinAlg::Tensor::add_elasticity_tensor_product(Core::LinAlg::Matrix<6,
   C.multiply_nt(scalar_AB, A_voigt, B_voigt, scalar_this);
 }
 
-void Core::LinAlg::Tensor::add_symmetric_elasticity_tensor_product(Core::LinAlg::Matrix<6, 6>& C,
-    const double scalar_AB, const Core::LinAlg::Matrix<3, 3>& A,
+void Core::LinAlg::FourTensorOperations::add_symmetric_elasticity_tensor_product(
+    Core::LinAlg::Matrix<6, 6>& C, const double scalar_AB, const Core::LinAlg::Matrix<3, 3>& A,
     const Core::LinAlg::Matrix<3, 3>& B, const double scalar_this)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -80,7 +80,7 @@ void Core::LinAlg::Tensor::add_symmetric_elasticity_tensor_product(Core::LinAlg:
   C.multiply_nt(scalar_AB, B_voigt, A_voigt, 1.0);
 }
 
-void Core::LinAlg::Tensor::add_kronecker_tensor_product(Core::LinAlg::Matrix<6, 6>& C,
+void Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(Core::LinAlg::Matrix<6, 6>& C,
     const double scalar_AB, const Core::LinAlg::Matrix<3, 3>& A,
     const Core::LinAlg::Matrix<3, 3>& B, const double scalar_this)
 {
@@ -147,7 +147,7 @@ void Core::LinAlg::Tensor::add_kronecker_tensor_product(Core::LinAlg::Matrix<6, 
 }
 
 
-void Core::LinAlg::Tensor::add_kronecker_tensor_product(Core::LinAlg::Matrix<6, 9>& C,
+void Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(Core::LinAlg::Matrix<6, 9>& C,
     const double scalar_AB, const Core::LinAlg::Matrix<3, 3>& A,
     const Core::LinAlg::Matrix<3, 3>& B, const double scalar_this)
 {
@@ -261,7 +261,7 @@ void Core::LinAlg::Tensor::add_kronecker_tensor_product(Core::LinAlg::Matrix<6, 
 }
 
 template <typename T>
-void Core::LinAlg::Tensor::add_holzapfel_product(
+void Core::LinAlg::FourTensorOperations::add_holzapfel_product(
     Core::LinAlg::Matrix<6, 6, T>& cmat, const Core::LinAlg::Matrix<6, 1, T>& invc, const T scalar)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
@@ -313,8 +313,9 @@ void Core::LinAlg::Tensor::add_holzapfel_product(
   cmat(5, 5) += scalar * 0.5 * (invc(0) * invc(2) + invc(5) * invc(5));
 }
 
-void Core::LinAlg::Tensor::add_symmetric_holzapfel_product(Core::LinAlg::Matrix<6, 6>& X,
-    const Core::LinAlg::Matrix<3, 3>& A, const Core::LinAlg::Matrix<3, 3>& B, const double fac)
+void Core::LinAlg::FourTensorOperations::add_symmetric_holzapfel_product(
+    Core::LinAlg::Matrix<6, 6>& X, const Core::LinAlg::Matrix<3, 3>& A,
+    const Core::LinAlg::Matrix<3, 3>& B, const double fac)
 {
   X(0, 0) += 4 * fac * A(0, 0) * B(0, 0);
   X(0, 3) += fac * (2 * A(0, 0) * B(1, 0) + 2 * A(1, 0) * B(0, 0));
@@ -360,7 +361,7 @@ void Core::LinAlg::Tensor::add_symmetric_holzapfel_product(Core::LinAlg::Matrix<
 }
 
 template <typename T>
-void Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(
+void Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
     Core::LinAlg::Matrix<6, 9, T>& out, Core::LinAlg::Matrix<3, 3, T> const& A,
     Core::LinAlg::Matrix<3, 3, T> const& B, T const fac)
 {
@@ -426,7 +427,7 @@ void Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(
 }
 
 template <typename T>
-void Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product_strain_like(
+void Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product_strain_like(
     Core::LinAlg::Matrix<6, 9, T>& out, Core::LinAlg::Matrix<3, 3, T> const& A,
     Core::LinAlg::Matrix<3, 3, T> const& B, T const fac)
 {
@@ -491,8 +492,9 @@ void Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product_strain_like
   out(5, 2) += 2 * fac * (A(0, 2) * B(2, 2) + A(2, 2) * B(0, 2));
 }
 
-void Core::LinAlg::Tensor::add_left_non_symmetric_holzapfel_product(Core::LinAlg::Matrix<9, 6>& out,
-    Core::LinAlg::Matrix<3, 3> const& A, Core::LinAlg::Matrix<3, 3> const& B, double const fac)
+void Core::LinAlg::FourTensorOperations::add_left_non_symmetric_holzapfel_product(
+    Core::LinAlg::Matrix<9, 6>& out, Core::LinAlg::Matrix<3, 3> const& A,
+    Core::LinAlg::Matrix<3, 3> const& B, double const fac)
 {
   out(0, 0) += fac * 2 * A(0, 0) * B(0, 0);
   out(0, 3) += fac * (A(0, 0) * B(0, 1) + A(0, 1) * B(0, 0));
@@ -558,7 +560,7 @@ void Core::LinAlg::Tensor::add_left_non_symmetric_holzapfel_product(Core::LinAlg
   out(2, 2) += fac * 2 * A(2, 2) * B(2, 2);
 }
 
-void Core::LinAlg::Tensor::add_adbc_tensor_product(const double fac,
+void Core::LinAlg::FourTensorOperations::add_adbc_tensor_product(const double fac,
     const Core::LinAlg::Matrix<3, 3>& A, const Core::LinAlg::Matrix<3, 3>& B,
     Core::LinAlg::Matrix<9, 9>& out)
 {
@@ -653,7 +655,7 @@ void Core::LinAlg::Tensor::add_adbc_tensor_product(const double fac,
   out(2, 2) += fac * A(2, 2) * B(2, 2);
 }
 
-void Core::LinAlg::Tensor::add_non_symmetric_product(double const& fac,
+void Core::LinAlg::FourTensorOperations::add_non_symmetric_product(double const& fac,
     Core::LinAlg::Matrix<3, 3> const& A, Core::LinAlg::Matrix<3, 3> const& B,
     Core::LinAlg::Matrix<9, 9>& out)
 {
@@ -749,7 +751,7 @@ void Core::LinAlg::Tensor::add_non_symmetric_product(double const& fac,
 }
 
 template <int dim>
-void Core::LinAlg::Tensor::multiply_four_tensor_matrix(
+void Core::LinAlg::FourTensorOperations::multiply_four_tensor_matrix(
     Core::LinAlg::FourTensor<dim>& four_tensor_result,
     const Core::LinAlg::FourTensor<dim>& four_tensor, const Core::LinAlg::Matrix<dim, dim>& matrix,
     const bool clear_result_tensor)
@@ -774,7 +776,7 @@ void Core::LinAlg::Tensor::multiply_four_tensor_matrix(
 }
 
 template <int dim>
-void Core::LinAlg::Tensor::multiply_matrix_four_tensor(
+void Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor(
     Core::LinAlg::FourTensor<dim>& four_tensor_result, const Core::LinAlg::Matrix<dim, dim>& matrix,
     const Core::LinAlg::FourTensor<dim>& four_tensor, const bool clear_result_tensor)
 {
@@ -799,7 +801,7 @@ void Core::LinAlg::Tensor::multiply_matrix_four_tensor(
 }
 
 template <int dim>
-void Core::LinAlg::Tensor::multiply_matrix_four_tensor_by_second_index(
+void Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor_by_second_index(
     Core::LinAlg::FourTensor<dim>& four_tensor_result, const Core::LinAlg::Matrix<dim, dim>& matrix,
     const Core::LinAlg::FourTensor<dim>& four_tensor, const bool clear_result_tensor)
 {
@@ -824,7 +826,7 @@ void Core::LinAlg::Tensor::multiply_matrix_four_tensor_by_second_index(
 }
 
 template <int dim>
-void Core::LinAlg::Tensor::multiply_four_tensor_four_tensor(
+void Core::LinAlg::FourTensorOperations::multiply_four_tensor_four_tensor(
     Core::LinAlg::FourTensor<dim>& four_tensor_result,
     const Core::LinAlg::FourTensor<dim>& four_tensor_1,
     const Core::LinAlg::FourTensor<dim>& four_tensor_2, const bool clear_result_tensor)
@@ -849,7 +851,7 @@ void Core::LinAlg::Tensor::multiply_four_tensor_four_tensor(
   }
 }
 
-void Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
+void Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(
     Core::LinAlg::FourTensor<3>& four_tensor_result, const Core::LinAlg::Matrix<3, 3>& matrix_A,
     const Core::LinAlg::Matrix<3, 3>& matrix_B)
 {
@@ -860,7 +862,7 @@ void Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
           four_tensor_result(i, j, k, l) += matrix_A(i, j) * matrix_B(k, l);
 }
 
-void Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
+void Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(
     Core::LinAlg::FourTensor<3>& four_tensor_result, const double scale,
     const Core::LinAlg::Matrix<3, 3>& matrix_A, const Core::LinAlg::Matrix<3, 3>& matrix_B)
 {
@@ -871,7 +873,7 @@ void Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
           four_tensor_result(i, j, k, l) += scale * matrix_A(i, j) * matrix_B(k, l);
 }
 
-void Core::LinAlg::Tensor::add_contraction_matrix_four_tensor(
+void Core::LinAlg::FourTensorOperations::add_contraction_matrix_four_tensor(
     Core::LinAlg::Matrix<3, 3>& matrix_result, const Core::LinAlg::Matrix<3, 3>& matrix,
     const Core::LinAlg::FourTensor<3>& four_tensor)
 {
@@ -882,7 +884,7 @@ void Core::LinAlg::Tensor::add_contraction_matrix_four_tensor(
           matrix_result(k, l) += matrix(i, j) * four_tensor(i, j, k, l);
 }
 
-void Core::LinAlg::Tensor::add_contraction_matrix_four_tensor(
+void Core::LinAlg::FourTensorOperations::add_contraction_matrix_four_tensor(
     Core::LinAlg::Matrix<3, 3>& matrix_result, const double scale,
     const Core::LinAlg::FourTensor<3>& four_tensor, const Core::LinAlg::Matrix<3, 3>& matrix)
 {
@@ -893,7 +895,7 @@ void Core::LinAlg::Tensor::add_contraction_matrix_four_tensor(
           matrix_result(i, j) += scale * four_tensor(i, j, k, l) * matrix(k, l);
 }
 
-double Core::LinAlg::Tensor::contract_matrix_matrix(
+double Core::LinAlg::FourTensorOperations::contract_matrix_matrix(
     const Core::LinAlg::Matrix<3, 3>& matrix_A, const Core::LinAlg::Matrix<3, 3>& matrix_B)
 {
   double scalarContraction = 0.0;
@@ -904,33 +906,35 @@ double Core::LinAlg::Tensor::contract_matrix_matrix(
 }
 
 // explicit instantiation of template functions
-template void Core::LinAlg::Tensor::add_holzapfel_product<double>(
+template void Core::LinAlg::FourTensorOperations::add_holzapfel_product<double>(
     Core::LinAlg::Matrix<6, 6, double>&, const Core::LinAlg::Matrix<6, 1, double>&,
     const double scalar);
-template void Core::LinAlg::Tensor::add_holzapfel_product<FAD>(
+template void Core::LinAlg::FourTensorOperations::add_holzapfel_product<FAD>(
     Core::LinAlg::Matrix<6, 6, FAD>&, const Core::LinAlg::Matrix<6, 1, FAD>&, const FAD scalar);
-template void Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product<double>(
+template void Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product<double>(
     Core::LinAlg::Matrix<6, 9, double>&, Core::LinAlg::Matrix<3, 3, double> const&,
     Core::LinAlg::Matrix<3, 3, double> const&, double const);
-template void Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product<FAD>(
+template void Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product<FAD>(
     Core::LinAlg::Matrix<6, 9, FAD>&, Core::LinAlg::Matrix<3, 3, FAD> const&,
     Core::LinAlg::Matrix<3, 3, FAD> const&, FAD const);
-template void Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product_strain_like<double>(
+template void
+Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product_strain_like<double>(
     Core::LinAlg::Matrix<6, 9, double>& out, Core::LinAlg::Matrix<3, 3, double> const& A,
     Core::LinAlg::Matrix<3, 3, double> const& B, double const fac);
-template void Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product_strain_like<FAD>(
+template void
+Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product_strain_like<FAD>(
     Core::LinAlg::Matrix<6, 9, FAD>& out, Core::LinAlg::Matrix<3, 3, FAD> const& A,
     Core::LinAlg::Matrix<3, 3, FAD> const& B, FAD const fac);
-template void Core::LinAlg::Tensor::multiply_four_tensor_matrix<3>(
+template void Core::LinAlg::FourTensorOperations::multiply_four_tensor_matrix<3>(
     Core::LinAlg::FourTensor<3>& four_tensor_result, const Core::LinAlg::FourTensor<3>& four_tensor,
     const Core::LinAlg::Matrix<3, 3>& matrix, const bool clear_result_tensor);
-template void Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+template void Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
     Core::LinAlg::FourTensor<3>& four_tensor_result, const Core::LinAlg::Matrix<3, 3>& matrix,
     const Core::LinAlg::FourTensor<3>& four_tensor, const bool clear_result_tensor);
-template void Core::LinAlg::Tensor::multiply_matrix_four_tensor_by_second_index<3>(
+template void Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor_by_second_index<3>(
     Core::LinAlg::FourTensor<3>& four_tensor_result, const Core::LinAlg::Matrix<3, 3>& matrix,
     const Core::LinAlg::FourTensor<3>& four_tensor, const bool clear_result_tensor);
-template void Core::LinAlg::Tensor::multiply_four_tensor_four_tensor<3>(
+template void Core::LinAlg::FourTensorOperations::multiply_four_tensor_four_tensor<3>(
     Core::LinAlg::FourTensor<3>& four_tensor_result,
     const Core::LinAlg::FourTensor<3>& four_tensor_1,
     const Core::LinAlg::FourTensor<3>& four_tensor_2, const bool clear_result_tensor);

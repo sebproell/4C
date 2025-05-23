@@ -11,8 +11,9 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-void Core::LinAlg::Tensor::add_derivative_of_squared_tensor(Core::LinAlg::Matrix<6, 6>& C,
-    double scalar_squared_dx, Core::LinAlg::Matrix<3, 3> X, double scalar_this)
+void Core::LinAlg::FourTensorOperations::add_derivative_of_squared_tensor(
+    Core::LinAlg::Matrix<6, 6>& C, double scalar_squared_dx, Core::LinAlg::Matrix<3, 3> X,
+    double scalar_this)
 {
   C(0, 0) = scalar_this * C(0, 0) + scalar_squared_dx * 2. * X(0, 0);  // C1111
   C(0, 1) = scalar_this * C(0, 1);                                     // C1122
@@ -57,7 +58,7 @@ void Core::LinAlg::Tensor::add_derivative_of_squared_tensor(Core::LinAlg::Matrix
   C(5, 5) = scalar_this * C(5, 5) + scalar_squared_dx * 0.5 * (X(2, 2) + X(0, 0));  // C1313
 }
 
-void Core::LinAlg::Tensor::add_derivative_of_inva_b_inva_product(double const& fac,
+void Core::LinAlg::FourTensorOperations::add_derivative_of_inva_b_inva_product(double const& fac,
     const Core::LinAlg::Matrix<6, 1>& invA, const Core::LinAlg::Matrix<6, 1>& invABinvA,
     Core::LinAlg::Matrix<6, 6>& out)
 {

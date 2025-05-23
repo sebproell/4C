@@ -333,10 +333,10 @@ void Mat::MuscleWeickenmeier::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   ccmat.multiply_nt(
       (beta * J + 1.) * J * expbeta + kappa * std::pow(detC, -kappa), invCv, invCv, 1.0);
   // adds scalar * (invC boeppel invC) to cmat, see Holzapfel2000, p. 254
-  Core::LinAlg::Tensor::add_holzapfel_product(
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(
       ccmat, invCv, -(J * expbeta - std::pow(detC, -kappa)));
   // adds -expbeta*detC * dinvCLinvCdCv to cmats
-  Core::LinAlg::Tensor::add_derivative_of_inva_b_inva_product(
+  Core::LinAlg::FourTensorOperations::add_derivative_of_inva_b_inva_product(
       -expbeta * detC, invCv, invCLinvCv, ccmat);
   ccmat.scale(gamma);
 

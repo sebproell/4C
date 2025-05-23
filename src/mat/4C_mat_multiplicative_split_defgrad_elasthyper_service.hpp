@@ -113,8 +113,8 @@ namespace Mat
     cmat.multiply_nt(delta(4), iCinCiCinv, iCv, 1.);
     cmat.multiply_nt(delta(4), iCv, iCinCiCinv, 1.);
     cmat.multiply_nt(delta(5), iCv, iCv, 1.);
-    Core::LinAlg::Tensor::add_holzapfel_product(cmat, iCv, delta(6));
-    Core::LinAlg::Tensor::add_holzapfel_product(cmat, iCinv, delta(7));
+    Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmat, iCv, delta(6));
+    Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmat, iCinv, delta(7));
   }
 
 }  // namespace Mat

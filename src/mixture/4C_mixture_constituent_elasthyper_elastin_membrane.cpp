@@ -357,7 +357,7 @@ void Mixture::MixtureConstituentElastHyperElastinMembrane::evaluate_stress_c_mat
       Core::LinAlg::Initialization::uninitialized);
   dAradgriXAradgr_symdC.clear();
 
-  Core::LinAlg::Tensor::add_holzapfel_product(
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(
       dAradgriXAradgr_symdC, iFinTAorthgrTiXTAorthgriFin_sym_stress, -2.0);
 
   cmat.multiply_nt(2.0 * mue * mue_frac_[gp] / detX, iFinTAorthgrTiXTAorthgriFin_sym_stress,

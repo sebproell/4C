@@ -309,7 +309,7 @@ void Mat::AAAneohooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     }
 
   // contribution: boeppel-product
-  Core::LinAlg::Tensor::add_holzapfel_product(*cmat, invc, delta7);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(*cmat, invc, delta7);
 
   // 2nd step: volumetric part
   //==========================
@@ -321,7 +321,7 @@ void Mat::AAAneohooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     for (int j = 0; j < 6; j++) (*cmat)(i, j) += delta6 * invc(i) * invc(j);
 
   // contribution: boeppel-product
-  Core::LinAlg::Tensor::add_holzapfel_product(*cmat, invc, delta7);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(*cmat, invc, delta7);
 
   return;
 }

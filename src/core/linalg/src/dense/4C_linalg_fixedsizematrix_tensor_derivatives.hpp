@@ -16,7 +16,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Core::LinAlg::Tensor
+namespace Core::LinAlg::FourTensorOperations
 {
   /*!
    * @brief Add the derivative of the square of a tensor to a 4th order symmetric material tensor in
@@ -73,7 +73,7 @@ namespace Core::LinAlg::Tensor
       const Core::LinAlg::Matrix<6, 1>& invA, const Core::LinAlg::Matrix<6, 1>& invABinvA,
       Core::LinAlg::Matrix<6, 6>& out);
 
-}  // namespace Core::LinAlg::Tensor
+}  // namespace Core::LinAlg::FourTensorOperations
 
 
 FOUR_C_NAMESPACE_CLOSE

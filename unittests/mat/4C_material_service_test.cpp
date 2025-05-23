@@ -63,7 +63,8 @@ namespace
     double scalar = 0.5;
 
     // result_ijkl = A_ik InvABInvB_jl +  A_il InvABInvB_jk + A_jk InvABInvB_il + A_jl InvABInvB_ik
-    Core::LinAlg::Tensor::add_derivative_of_inva_b_inva_product(scalar, A, InvABInvB, Result);
+    Core::LinAlg::FourTensorOperations::add_derivative_of_inva_b_inva_product(
+        scalar, A, InvABInvB, Result);
 
     Core::LinAlg::Matrix<6, 6> Result_reference(Core::LinAlg::Initialization::uninitialized);
     Result_reference(0, 0) = -0.86;
@@ -202,7 +203,7 @@ namespace
     s_ref(0, 2) = s_ref(2, 0) = 0.6;
 
     Core::LinAlg::Matrix<3, 3> s;
-    Core::LinAlg::Tensor::add_contraction_matrix_four_tensor(s, 1.0, Id, stress);
+    Core::LinAlg::FourTensorOperations::add_contraction_matrix_four_tensor(s, 1.0, Id, stress);
 
     FOUR_C_EXPECT_NEAR(s, s_ref, 1.0e-10);
   }
@@ -318,7 +319,7 @@ namespace
     x_adbc_y_ref(8, 8) = 5.0000000000;
 
     Core::LinAlg::Matrix<9, 9> x_adbc_y(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Tensor::add_adbc_tensor_product(1.0, x, y, x_adbc_y);
+    Core::LinAlg::FourTensorOperations::add_adbc_tensor_product(1.0, x, y, x_adbc_y);
 
     FOUR_C_EXPECT_NEAR(x_adbc_y, x_adbc_y_ref, 1.0e-10);
   }
@@ -335,10 +336,10 @@ namespace
     stress(0, 2) = stress(2, 0) = 0.6;
 
     Core::LinAlg::FourTensor<3> T;
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(T, 1.0, stress, stress);
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(T, 1.0, stress, stress);
 
     Core::LinAlg::Matrix<3, 3> result;
-    Core::LinAlg::Tensor::add_contraction_matrix_four_tensor(result, 1.0, T, stress);
+    Core::LinAlg::FourTensorOperations::add_contraction_matrix_four_tensor(result, 1.0, T, stress);
 
     Core::LinAlg::Matrix<3, 3> result_ref = stress;
     result_ref.scale(std::pow(stress.norm2(), 2));

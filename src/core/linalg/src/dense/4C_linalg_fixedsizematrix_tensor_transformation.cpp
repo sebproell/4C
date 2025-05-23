@@ -9,9 +9,11 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-template void Core::LinAlg::Tensor::tensor_rotation<3>(const Core::LinAlg::Matrix<3, 3>&,
-    const Core::LinAlg::Matrix<3, 3>&, Core::LinAlg::Matrix<3, 3>&);
-template void Core::LinAlg::Tensor::inverse_tensor_rotation<3>(const Core::LinAlg::Matrix<3, 3>&,
-    const Core::LinAlg::Matrix<3, 3>&, Core::LinAlg::Matrix<3, 3>&);
+template void Core::LinAlg::FourTensorOperations::tensor_rotation<3>(
+    const Core::LinAlg::Matrix<3, 3>&, const Core::LinAlg::Matrix<3, 3>&,
+    Core::LinAlg::Matrix<3, 3>&);
+template void Core::LinAlg::FourTensorOperations::inverse_tensor_rotation<3>(
+    const Core::LinAlg::Matrix<3, 3>&, const Core::LinAlg::Matrix<3, 3>&,
+    Core::LinAlg::Matrix<3, 3>&);
 
 FOUR_C_NAMESPACE_CLOSE

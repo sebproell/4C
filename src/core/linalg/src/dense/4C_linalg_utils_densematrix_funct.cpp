@@ -292,7 +292,7 @@ namespace
     // compose derivative of matrix exponential (non-symmetric Voigt-notation)
     for (int n = 1; n <= nmax; n++)
       for (int m = 1; m <= n; m++)
-        Core::LinAlg::Tensor::add_non_symmetric_product(
+        Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
             1. / fac[n], Xn.at(m - 1), Xn.at(n - m), output);
 
     err_status = Core::LinAlg::MatrixFunctErrorType::no_errors;
@@ -355,10 +355,10 @@ namespace
     for (int n = 1; n <= nmax; n++)
     {
       for (int m = 1; m <= n / 2; m++)
-        Core::LinAlg::Tensor::add_symmetric_holzapfel_product(
+        Core::LinAlg::FourTensorOperations::add_symmetric_holzapfel_product(
             output, Xn.at(m - 1), Xn.at(n - m), .5 / fac[n]);
       if (n % 2 == 1)
-        Core::LinAlg::Tensor::add_symmetric_holzapfel_product(
+        Core::LinAlg::FourTensorOperations::add_symmetric_holzapfel_product(
             output, Xn.at((n - 1) / 2), Xn.at((n - 1) / 2), .25 / fac[n]);
     }
 
@@ -466,12 +466,13 @@ namespace
       s6 = EVal(c, c) * EVal(c, c) * s3;
 
       // calculate derivative
-      Core::LinAlg::Tensor::add_derivative_of_squared_tensor(output, s1, input, 1.);
+      Core::LinAlg::FourTensorOperations::add_derivative_of_squared_tensor(output, s1, input, 1.);
       output.update(-s2, id4sharp, 1.);
-      Core::LinAlg::Tensor::add_elasticity_tensor_product(output, -1. * s3, input, input, 1.);
-      Core::LinAlg::Tensor::add_elasticity_tensor_product(output, s4, input, id2, 1.);
-      Core::LinAlg::Tensor::add_elasticity_tensor_product(output, s5, id2, input, 1.);
-      Core::LinAlg::Tensor::add_elasticity_tensor_product(output, -s6, id2, id2, 1.);
+      Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
+          output, -1. * s3, input, input, 1.);
+      Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(output, s4, input, id2, 1.);
+      Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(output, s5, id2, input, 1.);
+      Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(output, -s6, id2, id2, 1.);
     }
     else if (std::abs(EVal(0, 0) - EVal(1, 1)) > EVal_tolerance &&
              std::abs(EVal(1, 1) - EVal(2, 2)) >
@@ -501,26 +502,27 @@ namespace
         double fac = std::exp(EVal(a, a)) / ((EVal(a, a) - EVal(b, b)) * (EVal(a, a) - EVal(c, c)));
 
         // + d X^2 / d X
-        Core::LinAlg::Tensor::add_derivative_of_squared_tensor(output, fac, input, 1.);
+        Core::LinAlg::FourTensorOperations::add_derivative_of_squared_tensor(
+            output, fac, input, 1.);
 
         // - (x_b + x_c) I_s
         output.update(-1. * (EVal(b, b) + EVal(c, c)) * fac, id4sharp, 1.);
 
         // - [(x_a - x_b) + (x_a - x_c)] E_a \dyad E_a
-        Core::LinAlg::Tensor::add_elasticity_tensor_product(output,
+        Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(output,
             -1. * fac * ((EVal(a, a) - EVal(b, b)) + (EVal(a, a) - EVal(c, c))), Ea, Ea, 1.);
 
 
         // - (x_b - x_c) (E_b \dyad E_b)
-        Core::LinAlg::Tensor::add_elasticity_tensor_product(
+        Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
             output, -1. * fac * (EVal(b, b) - EVal(c, c)), Eb, Eb, 1.);
 
         // + (x_b - x_c) (E_c \dyad E_c)
-        Core::LinAlg::Tensor::add_elasticity_tensor_product(
+        Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
             output, fac * (EVal(b, b) - EVal(c, c)), Ec, Ec, 1.);
 
         // dy / dx_a E_a \dyad E_a
-        Core::LinAlg::Tensor::add_elasticity_tensor_product(
+        Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
             output, std::exp(EVal(a, a)), Ea, Ea, 1.);
       }  // end loop over all eigenvalues
     }
@@ -939,7 +941,7 @@ namespace
     {
       err_status = Core::LinAlg::MatrixFunctErrorType::no_errors;
       Core::LinAlg::Matrix<9, 9> id9x9{Core::LinAlg::Initialization::zero};
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id_3x3, id_3x3, id9x9);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, id_3x3, id_3x3, id9x9);
       return id9x9;
     }
 
@@ -984,7 +986,7 @@ namespace
       // compute \f$ \boldsymbol{I}_{AC} \boldsymbol{K}^{-1}_{DB}
       // \f$
       id_invKT.clear();
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id_3x3, invK, id_invKT);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, id_3x3, invK, id_invKT);
 
       // compute \f$ \boldsymbol{X}_{AI} \boldsymbol{K}^{-1}_{IB} \f$
       XinvK.multiply(1.0, X, invK, 0.0);
@@ -992,7 +994,7 @@ namespace
       // compute \f$ \boldsymbol{X}_{AI} \boldsymbol{K}^{-1}_{IC} \boldsymbol{K}^{-1}_{DB}
       // \f$
       XinvK_invKT.clear();
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, XinvK, invK, XinvK_invKT);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, XinvK, invK, XinvK_invKT);
 
       // add contribution of the Gauss point to the output matrix
       output.update(-trafo_point * trafo_weight, XinvK_invKT, trafo_weight, id_invKT, 1.0);
@@ -1021,7 +1023,7 @@ namespace
       id_3x3(i, i) = 1.0;
     }
     Core::LinAlg::Matrix<9, 9> id4(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id_3x3, id_3x3, id4);
+    Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, id_3x3, id_3x3, id4);
     Core::LinAlg::FourTensor<3> id4_FourTensor(true);
     Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(id4_FourTensor, id4);
     Core::LinAlg::Matrix<3, 3> temp3x3(Core::LinAlg::Initialization::zero);
@@ -1091,19 +1093,21 @@ namespace
 
       // update derivative dA_minus_id_m_dA
       temp9x9.clear();
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, A_minus_id_mmin1, id_3x3, temp9x9);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
+          1.0, A_minus_id_mmin1, id_3x3, temp9x9);
       tempFourTensor.clear();
       Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(tempFourTensor, temp9x9);
-      Core::LinAlg::Tensor::multiply_four_tensor_four_tensor(
+      Core::LinAlg::FourTensorOperations::multiply_four_tensor_four_tensor(
           leftFourTensor, tempFourTensor, id4_FourTensor, true);
       Core::LinAlg::Voigt::setup_9x9_voigt_matrix_from_four_tensor(temp9x9, leftFourTensor);
       dA_minus_id_m_dA.update(1.0, temp9x9, 0.0);
 
       temp9x9.clear();
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id_3x3, A_minus_id_mmin1, temp9x9);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
+          1.0, id_3x3, A_minus_id_mmin1, temp9x9);
       tempFourTensor.clear();
       Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(tempFourTensor, temp9x9);
-      Core::LinAlg::Tensor::multiply_four_tensor_four_tensor(
+      Core::LinAlg::FourTensorOperations::multiply_four_tensor_four_tensor(
           rightFourTensor, tempFourTensor, dA_minus_id_mmin1_dA_FourTensor, true);
       Core::LinAlg::Voigt::setup_9x9_voigt_matrix_from_four_tensor(temp9x9, rightFourTensor);
       dA_minus_id_m_dA.update(1.0, temp9x9, 1.0);
@@ -1126,7 +1130,7 @@ namespace
       id_3x3(i, i) = 1.0;
     }
     Core::LinAlg::Matrix<9, 9> id4(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id_3x3, id_3x3, id4);
+    Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, id_3x3, id_3x3, id4);
     Core::LinAlg::FourTensor<3> id4_FourTensor(true);
     Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(id4_FourTensor, id4);
     Core::LinAlg::Matrix<3, 3> temp3x3(Core::LinAlg::Initialization::zero);
@@ -1158,7 +1162,8 @@ namespace
     // \f$ \frac{\partial  \left( \bm{I} + \bm{A} \right)^{-1}}{\partial \bm{A}}  \f$
     Core::LinAlg::Matrix<9, 9> dinv_id_plus_A_dA(Core::LinAlg::Initialization::zero);
     temp9x9.clear();
-    Core::LinAlg::Tensor::add_non_symmetric_product(1.0, inv_id_plus_A, inv_id_plus_A, temp9x9);
+    Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
+        1.0, inv_id_plus_A, inv_id_plus_A, temp9x9);
     dinv_id_plus_A_dA.multiply_nn(-1.0, temp9x9, id4, 0.0);
     Core::LinAlg::FourTensor<3> dinv_id_plus_A_dA_FourTensor(true);
     Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(
@@ -1172,17 +1177,18 @@ namespace
     // get derivative of the update matrix w.r.t. input matrix \f$ \bm{A} \f$
     Core::LinAlg::Matrix<9, 9> dupdateMat_dA(Core::LinAlg::Initialization::zero);
     temp9x9.clear();
-    Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id_minus_A, id_3x3, temp9x9);
+    Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, id_minus_A, id_3x3, temp9x9);
     Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(tempFourTensor, temp9x9);
-    Core::LinAlg::Tensor::multiply_four_tensor_four_tensor(
+    Core::LinAlg::FourTensorOperations::multiply_four_tensor_four_tensor(
         leftFourTensor, tempFourTensor, dinv_id_plus_A_dA_FourTensor, true);
     Core::LinAlg::Voigt::setup_9x9_voigt_matrix_from_four_tensor(temp9x9, leftFourTensor);
     dupdateMat_dA.update(1.0, temp9x9, 0.0);
 
     temp9x9.clear();
-    Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id_3x3, inv_id_plus_A, temp9x9);
+    Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
+        1.0, id_3x3, inv_id_plus_A, temp9x9);
     Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(tempFourTensor, temp9x9);
-    Core::LinAlg::Tensor::multiply_four_tensor_four_tensor(
+    Core::LinAlg::FourTensorOperations::multiply_four_tensor_four_tensor(
         rightFourTensor, tempFourTensor, id4_FourTensor, true);
     Core::LinAlg::Voigt::setup_9x9_voigt_matrix_from_four_tensor(temp9x9, rightFourTensor);
     dupdateMat_dA.update(-1.0, temp9x9, 1.0);
@@ -1231,17 +1237,19 @@ namespace
           dupdateMat_dA_mmin1_FourTensor, dupdateMat_dA_mmin1);
 
       temp9x9.clear();
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, updateMat_mmin1, id_3x3, temp9x9);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
+          1.0, updateMat_mmin1, id_3x3, temp9x9);
       Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(tempFourTensor, temp9x9);
-      Core::LinAlg::Tensor::multiply_four_tensor_four_tensor(
+      Core::LinAlg::FourTensorOperations::multiply_four_tensor_four_tensor(
           leftFourTensor, tempFourTensor, dupdateMat_dA_FourTensor, true);
       Core::LinAlg::Voigt::setup_9x9_voigt_matrix_from_four_tensor(temp9x9, leftFourTensor);
       dupdateMat_dA_m.update(1.0, temp9x9, 0.0);
 
       temp9x9.clear();
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id_3x3, updateMat, temp9x9);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
+          1.0, id_3x3, updateMat, temp9x9);
       Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(tempFourTensor, temp9x9);
-      Core::LinAlg::Tensor::multiply_four_tensor_four_tensor(
+      Core::LinAlg::FourTensorOperations::multiply_four_tensor_four_tensor(
           rightFourTensor, tempFourTensor, dupdateMat_dA_mmin1_FourTensor, true);
       Core::LinAlg::Voigt::setup_9x9_voigt_matrix_from_four_tensor(temp9x9, rightFourTensor);
       dupdateMat_dA_m.update(1.0, temp9x9, 1.0);

@@ -123,7 +123,7 @@ void Mat::Elastic::IsoAnisoExpo::add_stress_aniso_modified(const Core::LinAlg::M
 
   Core::LinAlg::Matrix<6, 6> Psl(
       Core::LinAlg::Initialization::zero);  // Psl = Cinv o Cinv - 1/3 Cinv x Cinv
-  Core::LinAlg::Tensor::add_holzapfel_product(Psl, icg, 1.0);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(Psl, icg, 1.0);
   Psl.multiply_nt(-1. / 3., icg, icg, 1.0);
 
   Core::LinAlg::Matrix<6, 1> Aiso(structural_tensor_);
