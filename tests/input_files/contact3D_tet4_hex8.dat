@@ -57,10 +57,10 @@ NUMGP_PER_DIM                   3
 PARALLEL_REDIST                 Dynamic
 --------------------------------------------------------------------SOLVER 1
 NAME                            Structure_Solver
-SOLVER                          Superlu
+SOLVER                          UMFPACK
 --------------------------------------------------------------------SOLVER 2
 NAME                            Contact_Solver
-SOLVER                          Superlu
+SOLVER                          UMFPACK
 -------------------------------------------------------------------MATERIALS
 MAT 1 MAT_ElastHyper NUMMAT 1 MATIDS 3 DENS 1.0
 MAT 3 ELAST_CoupNeoHooke YOUNG 100.0 NUE 0.3
