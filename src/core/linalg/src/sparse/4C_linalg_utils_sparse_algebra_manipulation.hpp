@@ -16,10 +16,6 @@
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_vector.hpp"
 
-#include <Epetra_CrsMatrix.h>
-#include <Epetra_Export.h>
-#include <Epetra_Import.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN

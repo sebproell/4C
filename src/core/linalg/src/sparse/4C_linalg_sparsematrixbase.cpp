@@ -123,14 +123,14 @@ int Core::LinAlg::SparseMatrixBase::right_scale(const Core::LinAlg::Vector<doubl
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-int Core::LinAlg::SparseMatrixBase::inv_row_sums(Core::LinAlg::Vector<double>& x)
+int Core::LinAlg::SparseMatrixBase::inv_row_sums(Core::LinAlg::Vector<double>& x) const
 {
   return sysmat_->InvRowSums(x);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-int Core::LinAlg::SparseMatrixBase::inv_col_sums(Core::LinAlg::Vector<double>& x)
+int Core::LinAlg::SparseMatrixBase::inv_col_sums(Core::LinAlg::Vector<double>& x) const
 {
   return sysmat_->InvColSums(x);
 }

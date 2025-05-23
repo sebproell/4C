@@ -50,8 +50,8 @@ namespace
         A_sparse, std::make_shared<Core::LinAlg::Graph>(A->Graph()));
 
     // Check for global entries
-    const int A_sparse_nnz = A_sparse.epetra_matrix()->NumGlobalNonzeros();
-    const int A_inverse_nnz = A_inverse->epetra_matrix()->NumGlobalNonzeros();
+    const int A_sparse_nnz = A_sparse.num_global_nonzeros();
+    const int A_inverse_nnz = A_inverse->num_global_nonzeros();
     EXPECT_EQ(A_sparse_nnz, A_inverse_nnz);
 
     // Check for overall norm of matrix inverse
@@ -89,8 +89,8 @@ namespace
         A_sparse, std::make_shared<Core::LinAlg::Graph>(A->Graph()));
 
     // Check for global entries
-    const int A_sparse_nnz = A_sparse.epetra_matrix()->NumGlobalNonzeros();
-    const int A_inverse_nnz = A_inverse->epetra_matrix()->NumGlobalNonzeros();
+    const int A_sparse_nnz = A_sparse.num_global_nonzeros();
+    const int A_inverse_nnz = A_inverse->num_global_nonzeros();
     EXPECT_EQ(A_sparse_nnz, A_inverse_nnz);
 
     // Check for overall norm of matrix inverse
@@ -100,8 +100,9 @@ namespace
     if (Core::Communication::my_mpi_rank(comm_) == 0)
     {
       double* values;
+      int* indices;
       int length;
-      A_inverse->epetra_matrix()->ExtractMyRowView(0, length, values);
+      A_inverse->extract_my_row_view(0, length, values, indices);
 
       EXPECT_NEAR(values[0], 0.1, 1e-12);
       EXPECT_NEAR(values[1], -0.016666666666666673, 1e-12);
@@ -146,7 +147,7 @@ namespace
           Core::LinAlg::threshold_matrix(*A_inverse, tol);
 
       // Check for global entries
-      const int A_inverse_nnz = A_inverse->epetra_matrix()->NumGlobalNonzeros();
+      const int A_inverse_nnz = A_inverse->num_global_nonzeros();
       // Note: the number of entries lower than a tolerance is not necessarily deterministic
       EXPECT_NEAR(A_inverse_nnz, 115760, 10);
 
@@ -172,7 +173,7 @@ namespace
       A_thresh = Core::LinAlg::threshold_matrix(*A_inverse, tol);
 
       // Check for global entries
-      const int A_inverse_nnz = A_thresh->epetra_matrix()->NumGlobalNonzeros();
+      const int A_inverse_nnz = A_thresh->num_global_nonzeros();
       // Note: the number of entries lower than a tolerance is not necessarily deterministic
       EXPECT_NEAR(A_inverse_nnz, 228388, 10);
 
