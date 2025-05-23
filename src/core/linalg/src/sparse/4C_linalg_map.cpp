@@ -80,8 +80,7 @@ Core::LinAlg::Map& Core::LinAlg::Map::operator=(const Map& other)
 
 MPI_Comm Core::LinAlg::Map::Comm() const
 {
-  return Core::Communication::unpack_epetra_comm(
-      visit_variant([](const auto& map) -> const Epetra_Comm& { return map.Comm(); }));
+  return Core::Communication::unpack_epetra_comm(wrapped().Comm());
 }
 
 std::unique_ptr<Core::LinAlg::Map> Core::LinAlg::Map::create_view(Epetra_Map& view)
