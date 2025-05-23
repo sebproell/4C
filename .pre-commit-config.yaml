@@ -129,6 +129,14 @@ repos:
         files: '\.(h|hpp)$'
         entry: utilities/python-venv/bin/check-header-guards
 
+      - id: cpp-include-cycles
+        name: C++ include cycles
+        description: 'Check that all C++ headers do not have include cycles'
+        language: python
+        always_run: true
+        pass_filenames: false
+        entry: utilities/python-venv/bin/check-includes-for-cycles
+
       - id: cpp-preprocessor
         name: C++ preprocessor directives
         description: 'Check that all C++ files only use acceptable preprocessor directives'
