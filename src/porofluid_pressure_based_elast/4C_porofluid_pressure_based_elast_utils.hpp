@@ -11,7 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_vector.hpp"
-#include "4C_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_base.hpp"
 #include "4C_porofluid_pressure_based_elast_input.hpp"
 
 #include <memory>
@@ -36,7 +36,7 @@ namespace PoroPressureBased
       const std::string& struct_disname, const std::string& fluid_disname);
 
   /// create solution algorithm depending on input file
-  std::shared_ptr<PorofluidElast> create_algorithm_porofluid_elast(
+  std::shared_ptr<PorofluidElastAlgorithm> create_algorithm_porofluid_elast(
       SolutionSchemePorofluidElast solscheme,    //!< solution scheme to build (i)
       const Teuchos::ParameterList& timeparams,  //!< problem parameters (i)
       MPI_Comm comm                              //!< communicator(i)

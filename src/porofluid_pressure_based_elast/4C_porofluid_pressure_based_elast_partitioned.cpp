@@ -22,9 +22,9 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | constructor                                              vuong 08/16 |
  *----------------------------------------------------------------------*/
-PoroPressureBased::PorofluidElastPartitioned::PorofluidElastPartitioned(
+PoroPressureBased::PorofluidElastPartitionedAlgorithm::PorofluidElastPartitionedAlgorithm(
     MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams)
-    : PorofluidElast(comm, globaltimeparams),
+    : PorofluidElastAlgorithm(comm, globaltimeparams),
       phiincnp_(nullptr),
       dispincnp_(nullptr),
       fluidphinp_(nullptr),
@@ -46,7 +46,7 @@ PoroPressureBased::PorofluidElastPartitioned::PorofluidElastPartitioned(
 /*----------------------------------------------------------------------*
  | initialization                                            vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::init(
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::init(
     const Teuchos::ParameterList& globaltimeparams, const Teuchos::ParameterList& algoparams,
     const Teuchos::ParameterList& structparams, const Teuchos::ParameterList& fluidparams,
     const std::string& struct_disname, const std::string& fluid_disname, bool isale, int nds_disp,
@@ -54,26 +54,27 @@ void PoroPressureBased::PorofluidElastPartitioned::init(
     const std::map<int, std::set<int>>* nearbyelepairs)
 {
   // call base class
-  PorofluidElast::init(globaltimeparams, algoparams, structparams, fluidparams, struct_disname,
-      fluid_disname, isale, nds_disp, nds_vel, nds_solidpressure, ndsporofluid_scatra,
-      nearbyelepairs);
+  PorofluidElastAlgorithm::init(globaltimeparams, algoparams, structparams, fluidparams,
+      struct_disname, fluid_disname, isale, nds_disp, nds_vel, nds_solidpressure,
+      ndsporofluid_scatra, nearbyelepairs);
 
   artery_coupling_active_ = fluidparams.get<bool>("ARTERY_COUPLING");
 
   // initialize increment vectors
-  phiincnp_ = Core::LinAlg::create_vector(*fluid_field()->dof_row_map(0), true);
+  phiincnp_ = Core::LinAlg::create_vector(*porofluid_algo()->dof_row_map(0), true);
   if (artery_coupling_active_)
-    arterypressincnp_ = Core::LinAlg::create_vector(*fluid_field()->artery_dof_row_map(), true);
-  dispincnp_ = Core::LinAlg::create_vector(*structure_field()->dof_row_map(0), true);
+    arterypressincnp_ = Core::LinAlg::create_vector(*porofluid_algo()->artery_dof_row_map(), true);
+  dispincnp_ = Core::LinAlg::create_vector(*structure_algo()->dof_row_map(0), true);
 
   // initialize fluid vectors
-  fluidphinp_ = Core::LinAlg::create_vector(*fluid_field()->discretization()->dof_row_map(), true);
+  fluidphinp_ =
+      Core::LinAlg::create_vector(*porofluid_algo()->discretization()->dof_row_map(), true);
   fluidphioldnp_ =
-      Core::LinAlg::create_vector(*fluid_field()->discretization()->dof_row_map(), true);
+      Core::LinAlg::create_vector(*porofluid_algo()->discretization()->dof_row_map(), true);
   fluidphiincnp_ =
-      Core::LinAlg::create_vector(*fluid_field()->discretization()->dof_row_map(), true);
+      Core::LinAlg::create_vector(*porofluid_algo()->discretization()->dof_row_map(), true);
   fluidphiincnpold_ =
-      Core::LinAlg::create_vector(*fluid_field()->discretization()->dof_row_map(), true);
+      Core::LinAlg::create_vector(*porofluid_algo()->discretization()->dof_row_map(), true);
 
   // Get the parameters for the convergence_check
   itmax_ = algoparams.get<int>("ITEMAX");
@@ -94,7 +95,7 @@ void PoroPressureBased::PorofluidElastPartitioned::init(
 /*----------------------------------------------------------------------*
  | setup the system if necessary                             vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::setup_system()
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::setup_system()
 {
   // Do nothing, just monolithic coupling needs this method
   return;
@@ -103,7 +104,7 @@ void PoroPressureBased::PorofluidElastPartitioned::setup_system()
 /*----------------------------------------------------------------------*
  | Outer Timeloop  without relaxation                        vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::outer_loop()
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::outer_loop()
 {
   // reset counter
   itnum_ = 0;
@@ -137,21 +138,22 @@ void PoroPressureBased::PorofluidElastPartitioned::outer_loop()
       // in prepare_time_step()
       do_struct_step();
       // 2.) set disp and vel states in porofluid field
-      set_struct_solution(structure_field()->dispnp(), structure_field()->velnp());
+      set_structure_solution(structure_algo()->dispnp(), structure_algo()->velnp());
     }
     else
     {
       // Inform user that structure field has been disabled
       print_structure_disabled_info();
       // just set displacements and velocities to zero
-      set_struct_solution(struct_zeros_, struct_zeros_);
+      set_structure_solution(Core::LinAlg::create_vector(*structure_algo()->dof_row_map(), true),
+          Core::LinAlg::create_vector(*structure_algo()->dof_row_map(), true));
     }
 
     // 1.) solve scalar transport equation
     do_fluid_step();
 
     // perform relaxation
-    perform_relaxation(fluid_field()->phinp(), itnum_);
+    perform_relaxation(porofluid_algo()->phinp(), itnum_);
 
     // 2.) set fluid solution in structure field
     set_relaxed_fluid_solution();
@@ -167,7 +169,7 @@ void PoroPressureBased::PorofluidElastPartitioned::outer_loop()
 /*----------------------------------------------------------------------*
  | convergence check for both fields (copied form tsi)       vuong 08/16 |
  *----------------------------------------------------------------------*/
-bool PoroPressureBased::PorofluidElastPartitioned::convergence_check(int itnum)
+bool PoroPressureBased::PorofluidElastPartitionedAlgorithm::convergence_check(int itnum)
 {
   // convergence check based on the scalar increment
   bool stopnonliniter = false;
@@ -190,20 +192,20 @@ bool PoroPressureBased::PorofluidElastPartitioned::convergence_check(int itnum)
 
   // build the current scalar increment Inc T^{i+1}
   // \f Delta T^{k+1} = Inc T^{k+1} = T^{k+1} - T^{k}  \f
-  phiincnp_->update(1.0, *(fluid_field()->phinp()), -1.0);
+  phiincnp_->update(1.0, *(porofluid_algo()->phinp()), -1.0);
   if (artery_coupling_active_)
-    arterypressincnp_->update(1.0, *fluid_field()->art_net_tim_int()->pressurenp(), -1.0);
-  dispincnp_->update(1.0, *(structure_field()->dispnp()), -1.0);
+    arterypressincnp_->update(1.0, *porofluid_algo()->art_net_tim_int()->pressurenp(), -1.0);
+  dispincnp_->update(1.0, *(structure_algo()->dispnp()), -1.0);
 
   // build the L2-norm of the scalar increment and the scalar
   phiincnp_->norm_2(&phiincnorm_L2);
-  fluid_field()->phinp()->norm_2(&phinorm_L2);
+  porofluid_algo()->phinp()->norm_2(&phinorm_L2);
   dispincnp_->norm_2(&dispincnorm_L2);
-  structure_field()->dispnp()->norm_2(&dispnorm_L2);
+  structure_algo()->dispnp()->norm_2(&dispnorm_L2);
   if (artery_coupling_active_)
   {
     arterypressincnp_->norm_2(&artpressincnorm_L2);
-    fluid_field()->art_net_tim_int()->pressurenp()->norm_2(&artpressnorm_L2);
+    porofluid_algo()->art_net_tim_int()->pressurenp()->norm_2(&artpressnorm_L2);
   }
 
   // care for the case that there is (almost) zero scalar
@@ -279,7 +281,7 @@ bool PoroPressureBased::PorofluidElastPartitioned::convergence_check(int itnum)
 /*----------------------------------------------------------------------*
  | Solve structure filed                                     vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::do_struct_step()
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::do_struct_step()
 {
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
@@ -292,7 +294,7 @@ void PoroPressureBased::PorofluidElastPartitioned::do_struct_step()
   }
 
   // Newton-Raphson iteration
-  structure_field()->solve();
+  structure_algo()->solve();
 
   return;
 }
@@ -300,12 +302,12 @@ void PoroPressureBased::PorofluidElastPartitioned::do_struct_step()
 /*----------------------------------------------------------------------*
  | Solve poro fluid field                                    vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::do_fluid_step()
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::do_fluid_step()
 {
   // -------------------------------------------------------------------
   //                  solve nonlinear / linear equation
   // -------------------------------------------------------------------
-  fluid_field()->solve();
+  porofluid_algo()->solve();
 
   return;
 }
@@ -313,10 +315,10 @@ void PoroPressureBased::PorofluidElastPartitioned::do_fluid_step()
 /*----------------------------------------------------------------------*
  | Set relaxed fluid solution on structure             kremheller 09/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::set_relaxed_fluid_solution()
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::set_relaxed_fluid_solution()
 {
   // set fluid solution on structure
-  structure_field()->discretization()->set_state(1, "porofluid", *fluidphinp_);
+  structure_algo()->discretization()->set_state(1, "porofluid", *fluidphinp_);
 
   return;
 }
@@ -324,7 +326,7 @@ void PoroPressureBased::PorofluidElastPartitioned::set_relaxed_fluid_solution()
 /*----------------------------------------------------------------------*
  | Calculate relaxation parameter omega                kremheller 09/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::perform_relaxation(
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::perform_relaxation(
     std::shared_ptr<const Core::LinAlg::Vector<double>> phi, const int itnum)
 {
   // get the increment vector
@@ -378,11 +380,12 @@ void PoroPressureBased::PorofluidElastPartitioned::perform_relaxation(
 /*----------------------------------------------------------------------*
  | Perform Aitken relaxation                           kremheller 09/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::aitken_relaxation(double& omega, const int itnum)
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::aitken_relaxation(
+    double& omega, const int itnum)
 {
   // fluidphiincnpdiff =  r^{i+1}_{n+1} - r^i_{n+1}
   std::shared_ptr<Core::LinAlg::Vector<double>> fluidphiincnpdiff =
-      Core::LinAlg::create_vector(*fluid_field()->discretization()->dof_row_map(), true);
+      Core::LinAlg::create_vector(*porofluid_algo()->discretization()->dof_row_map(), true);
   fluidphiincnpdiff->update(1.0, *fluidphiincnp_, (-1.0), *fluidphiincnpold_, 0.0);
 
   double fluidphiincnpdiffnorm = 0.0;
@@ -432,15 +435,15 @@ void PoroPressureBased::PorofluidElastPartitioned::aitken_relaxation(double& ome
 /*----------------------------------------------------------------------*
  | update the current states in every iteration             vuong 08/16 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::iter_update_states()
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::iter_update_states()
 {
   // store last solutions (current states).
   // will be compared in convergence_check to the solutions,
   // obtained from the next Struct and Scatra steps.
-  phiincnp_->update(1.0, *fluid_field()->phinp(), 0.0);
+  phiincnp_->update(1.0, *porofluid_algo()->phinp(), 0.0);
   if (artery_coupling_active_)
-    arterypressincnp_->update(1.0, *fluid_field()->art_net_tim_int()->pressurenp(), 0.0);
-  dispincnp_->update(1.0, *structure_field()->dispnp(), 0.0);
+    arterypressincnp_->update(1.0, *porofluid_algo()->art_net_tim_int()->pressurenp(), 0.0);
+  dispincnp_->update(1.0, *structure_algo()->dispnp(), 0.0);
 
   return;
 }  // iter_update_states()
@@ -448,14 +451,14 @@ void PoroPressureBased::PorofluidElastPartitioned::iter_update_states()
 /*-------------------------------------------------------------------------*
  | read restart information for given time step (public) kremheller 09/17  |
  *-------------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::read_restart(int restart)
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::read_restart(int restart)
 {
   if (restart)
   {
     // call base class
-    PoroPressureBased::PorofluidElast::read_restart(restart);
+    PoroPressureBased::PorofluidElastAlgorithm::read_restart(restart);
 
-    Core::IO::DiscretizationReader reader(fluid_field()->discretization(),
+    Core::IO::DiscretizationReader reader(porofluid_algo()->discretization(),
         Global::Problem::instance()->input_control_file(), restart);
     if (restart != reader.read_int("step"))
       FOUR_C_THROW("Time step on file not equal to given step");
@@ -474,16 +477,16 @@ void PoroPressureBased::PorofluidElastPartitioned::read_restart(int restart)
 /*----------------------------------------------------------------------*
  | update fields and output results                    kremheller 09/17 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastPartitioned::update_and_output()
+void PoroPressureBased::PorofluidElastPartitionedAlgorithm::update_and_output()
 {
   // call base class
-  PoroPressureBased::PorofluidElast::update_and_output();
+  PoroPressureBased::PorofluidElastAlgorithm::update_and_output();
 
   // write interface force and relaxation parameter in restart
   if (writerestartevery_ and step() % writerestartevery_ == 0)
   {
-    fluid_field()->discretization()->writer()->write_double("omega_", omega_);
-    fluid_field()->discretization()->writer()->write_vector("fluidphioldnp_", fluidphioldnp_);
+    porofluid_algo()->discretization()->writer()->write_double("omega_", omega_);
+    porofluid_algo()->discretization()->writer()->write_vector("fluidphioldnp_", fluidphioldnp_);
   }
 }
 

@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_HPP
-#define FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_HPP
+#ifndef FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_BASE_HPP
+#define FOUR_C_POROFLUID_PRESSURE_BASED_ELAST_BASE_HPP
 
 
 #include "4C_config.hpp"
@@ -33,18 +33,19 @@ namespace Core::FE
 namespace PoroPressureBased
 {
   //! Base class of porofluid-elasticity algorithms
-  class PorofluidElast : public Adapter::AlgorithmBase
+  class PorofluidElastAlgorithm : public Adapter::AlgorithmBase
   {
    public:
-    PorofluidElast(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
+    PorofluidElastAlgorithm(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
 
     /// initialization
-    virtual void init(const Teuchos::ParameterList& globaltimeparams,
-        const Teuchos::ParameterList& algoparams, const Teuchos::ParameterList& structparams,
-        const Teuchos::ParameterList& fluidparams, const std::string& struct_disname,
-        const std::string& fluid_disname, bool isale, int nds_disp, int nds_vel,
-        int nds_solidpressure, int ndsporofluid_scatra,
-        const std::map<int, std::set<int>>* nearbyelepairs) = 0;
+    virtual void init(const Teuchos::ParameterList& global_time_params,
+        const Teuchos::ParameterList& porofluid_elast_params,
+        const Teuchos::ParameterList& structure_params,
+        const Teuchos::ParameterList& porofluid_params, const std::string& structure_disname,
+        const std::string& porofluid_disname, bool isale, int nds_disp, int nds_vel,
+        int nds_solidpressure, int nds_porofluid_scatra,
+        const std::map<int, std::set<int>>* nearby_ele_pairs) = 0;
 
     virtual void post_init();
 
@@ -57,11 +58,11 @@ namespace PoroPressureBased
     /// setup
     virtual void setup_system() = 0;
 
-    /// prepare timeloop of coupled problem
+    /// prepare time loop of coupled problem
     virtual void prepare_time_loop();
 
-    /// timeloop of coupled problem
-    virtual void timeloop();
+    /// time loop of coupled problem
+    virtual void time_loop();
 
     /// time step of coupled problem
     virtual void time_step() = 0;
@@ -73,10 +74,10 @@ namespace PoroPressureBased
     virtual void update_and_output();
 
     /// dof map of vector of unknowns of structure field
-    std::shared_ptr<const Core::LinAlg::Map> struct_dof_row_map() const;
+    std::shared_ptr<const Core::LinAlg::Map> structure_dof_row_map() const;
 
     /// dof map of vector of unknowns of fluid field
-    std::shared_ptr<const Core::LinAlg::Map> fluid_dof_row_map() const;
+    std::shared_ptr<const Core::LinAlg::Map> porofluid_dof_row_map() const;
 
     /// dof map of vector of unknowns of artery field
     std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const;
@@ -85,16 +86,19 @@ namespace PoroPressureBased
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> artery_porofluid_sysmat() const;
 
     //! access to structural field
-    const std::shared_ptr<Adapter::Structure>& structure_field() { return structure_; }
+    const std::shared_ptr<Adapter::Structure>& structure_algo() { return structure_algo_; }
 
     //! access to fluid field
-    const std::shared_ptr<Adapter::PoroFluidMultiphaseWrapper>& fluid_field() { return fluid_; }
+    const std::shared_ptr<Adapter::PoroFluidMultiphaseWrapper>& porofluid_algo()
+    {
+      return porofluid_algo_;
+    }
 
     /// set structure solution on scatra field
-    void set_struct_solution(std::shared_ptr<const Core::LinAlg::Vector<double>> disp,
+    void set_structure_solution(std::shared_ptr<const Core::LinAlg::Vector<double>> disp,
         std::shared_ptr<const Core::LinAlg::Vector<double>> vel) const;
 
-    /// set scatra solution on fluid field
+    /// set scatra solution on porofluid field
     void set_scatra_solution(
         unsigned nds, std::shared_ptr<const Core::LinAlg::Vector<double>> scalars) const;
 
@@ -102,10 +106,7 @@ namespace PoroPressureBased
     virtual bool setup_solver() { return false; };
 
     /// unknown displacements at \f$t_{n+1}\f$
-    std::shared_ptr<const Core::LinAlg::Vector<double>> struct_dispnp() const;
-
-    /// unknown velocity at \f$t_{n+1}\f$
-    std::shared_ptr<const Core::LinAlg::Vector<double>> struct_velnp() const;
+    std::shared_ptr<const Core::LinAlg::Vector<double>> structure_dispnp() const;
 
     /// return fluid flux
     std::shared_ptr<const Core::LinAlg::MultiVector<double>> fluid_flux() const;
@@ -125,12 +126,6 @@ namespace PoroPressureBased
     {
       FOUR_C_THROW("set_relaxed_fluid_solution() only available for partitioned schemes!");
     };
-
-    /// return fluid solution variable
-    std::shared_ptr<const Core::LinAlg::Vector<double>> fluid_saturation() const;
-
-    /// return fluid solution variable
-    std::shared_ptr<const Core::LinAlg::Vector<double>> fluid_pressure() const;
 
     /// return fluid solution variable
     std::shared_ptr<const Core::LinAlg::Vector<double>> solid_pressure() const;
@@ -170,7 +165,7 @@ namespace PoroPressureBased
       FOUR_C_THROW("update_fields_after_convergence() only available for monolithic schemes!");
     };
 
-    /// perform relaxaton (only for partitioned schemes)
+    /// perform relaxation (only for partitioned schemes)
     virtual void perform_relaxation(
         std::shared_ptr<const Core::LinAlg::Vector<double>> phi, const int itnum)
     {
@@ -181,7 +176,6 @@ namespace PoroPressureBased
     virtual std::shared_ptr<const Core::LinAlg::Vector<double>> rhs() const
     {
       FOUR_C_THROW("RHS() only available for monolithic schemes!");
-      return nullptr;
     };
 
     //! get extractor
@@ -203,21 +197,16 @@ namespace PoroPressureBased
     /// set structure velocity field on fluid field
     void set_velocity_fields(std::shared_ptr<const Core::LinAlg::Vector<double>> vel) const;
 
-    /// underlying structure of the PoroMultiPhase problem
-    std::shared_ptr<Adapter::Structure> structure_;
+    /// underlying structure algorithm
+    std::shared_ptr<Adapter::Structure> structure_algo_;
 
-    /// underlying fluid problem of the PoroMultiPhase problem
-    std::shared_ptr<Adapter::PoroFluidMultiphaseWrapper> fluid_;
+    /// underlying porofluid algorithm
+    std::shared_ptr<Adapter::PoroFluidMultiphaseWrapper> porofluid_algo_;
 
    protected:
-    /// a zero vector of full length of structure dofs
-    std::shared_ptr<Core::LinAlg::Vector<double>> struct_zeros_;
-    //! here the computation of the structure can be skipped, this is helpful if only fluid-scatra
-    //! coupling should be calculated
+    /// true if we solve the structure field
+    /// (false in case of porofluid-scatra coupling without mesh deformation)
     bool solve_structure_;
-
-    /// coupling with 1D artery network
-    const bool artery_coupl_;
 
     /// Print user output that structure field is disabled
     void print_structure_disabled_info() const;

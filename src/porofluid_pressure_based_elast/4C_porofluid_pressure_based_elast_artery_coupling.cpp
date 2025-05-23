@@ -37,9 +37,9 @@ FOUR_C_NAMESPACE_OPEN
 /*----------------------------------------------------------------------*
  | constructor                                         kremheller 05/18 |
  *----------------------------------------------------------------------*/
-PoroPressureBased::PorofluidElastArteryCoupling::PorofluidElastArteryCoupling(
+PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::PorofluidElastArteryCouplingAlgorithm(
     MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams)
-    : PorofluidElastMonolithic(comm, globaltimeparams)
+    : PorofluidElastMonolithicAlgorithm(comm, globaltimeparams)
 {
   blockrowdofmap_artporo_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
 
@@ -49,13 +49,13 @@ PoroPressureBased::PorofluidElastArteryCoupling::PorofluidElastArteryCoupling(
 /*----------------------------------------------------------------------*
  | setup the map                                       kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastArteryCoupling::setup_maps()
+void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::setup_maps()
 {
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> vecSpaces;
 
-  vecSpaces.push_back(struct_dof_row_map());
+  vecSpaces.push_back(structure_dof_row_map());
 
-  vecSpaces.push_back(fluid_dof_row_map());
+  vecSpaces.push_back(porofluid_dof_row_map());
 
   vecSpaces.push_back(artery_dof_row_map());
 
@@ -82,7 +82,7 @@ void PoroPressureBased::PorofluidElastArteryCoupling::setup_maps()
  | extract field vectors for calling evaluate() of the  kremheller 04/18|
  | single fields                                                        |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastArteryCoupling::build_convergence_norms()
+void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::build_convergence_norms()
 {
   std::shared_ptr<const Core::LinAlg::Vector<double>> arteryrhs =
       extractor()->extract_vector(*rhs_, 2);
@@ -93,10 +93,10 @@ void PoroPressureBased::PorofluidElastArteryCoupling::build_convergence_norms()
   normrhsart_ = calculate_vector_norm(vectornormfres_, *arteryrhs);
   normincart_ = calculate_vector_norm(vectornorminc_, *arteryinc);
   arterypressnorm_ =
-      calculate_vector_norm(vectornorminc_, (*fluid_field()->art_net_tim_int()->pressurenp()));
+      calculate_vector_norm(vectornorminc_, (*porofluid_algo()->art_net_tim_int()->pressurenp()));
 
   // call base class
-  PorofluidElastMonolithic::build_convergence_norms();
+  PorofluidElastMonolithicAlgorithm::build_convergence_norms();
 
   return;
 }
@@ -104,7 +104,7 @@ void PoroPressureBased::PorofluidElastArteryCoupling::build_convergence_norms()
  | extract field vectors for calling evaluate() of the  kremheller 04/18|
  | single fields                                                        |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastArteryCoupling::extract_field_vectors(
+void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::extract_field_vectors(
     std::shared_ptr<const Core::LinAlg::Vector<double>> x,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& sx,
     std::shared_ptr<const Core::LinAlg::Vector<double>>& fx)
@@ -135,10 +135,10 @@ void PoroPressureBased::PorofluidElastArteryCoupling::extract_field_vectors(
  | setup system matrix of poromultiphase-elasticity with artery         |
  | coupling                                           kremheller 05/18  |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastArteryCoupling::setup_system_matrix(
+void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::setup_system_matrix(
     Core::LinAlg::BlockSparseMatrixBase& mat)
 {
-  PorofluidElastMonolithic::setup_system_matrix(mat);
+  PorofluidElastMonolithicAlgorithm::setup_system_matrix(mat);
 
   // pure artery part
   mat.assign(2, 2, Core::LinAlg::DataAccess::View, artery_porofluid_sysmat()->matrix(1, 1));
@@ -154,7 +154,7 @@ void PoroPressureBased::PorofluidElastArteryCoupling::setup_system_matrix(
  | setup rhs of poromultiphase-elasticity with artery coupling          |
  |                                                    kremheller 05/18  |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastArteryCoupling::setup_rhs()
+void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::setup_rhs()
 {
   // get structure part
   std::shared_ptr<Core::LinAlg::Vector<double>> str_rhs = setup_structure_partof_rhs();
@@ -165,10 +165,10 @@ void PoroPressureBased::PorofluidElastArteryCoupling::setup_rhs()
 
   // insert artery part and porofluid part
   extractor()->insert_vector(
-      *(blockrowdofmap_artporo_->extract_vector(*fluid_field()->artery_porofluid_rhs(), 0)), 1,
+      *(blockrowdofmap_artporo_->extract_vector(*porofluid_algo()->artery_porofluid_rhs(), 0)), 1,
       *rhs_);
   extractor()->insert_vector(
-      *(blockrowdofmap_artporo_->extract_vector(*fluid_field()->artery_porofluid_rhs(), 1)), 2,
+      *(blockrowdofmap_artporo_->extract_vector(*porofluid_algo()->artery_porofluid_rhs(), 1)), 2,
       *rhs_);
 
   return;
@@ -177,12 +177,12 @@ void PoroPressureBased::PorofluidElastArteryCoupling::setup_rhs()
 /*-----------------------------------------------------------------------/
 |  build the combined dbcmap                           kremheller 05/18  |
 /-----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastArteryCoupling::build_combined_dbc_map()
+void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::build_combined_dbc_map()
 {
-  PorofluidElastMonolithic::build_combined_dbc_map();
+  PorofluidElastMonolithicAlgorithm::build_combined_dbc_map();
 
   const std::shared_ptr<const Core::LinAlg::Map> artcondmap =
-      fluid_field()->art_net_tim_int()->get_dbc_map_extractor()->cond_map();
+      porofluid_algo()->art_net_tim_int()->get_dbc_map_extractor()->cond_map();
 
   // merge them
   combinedDBCMap_ = Core::LinAlg::merge_map(combinedDBCMap_, artcondmap, false);
@@ -192,7 +192,7 @@ void PoroPressureBased::PorofluidElastArteryCoupling::build_combined_dbc_map()
 /*----------------------------------------------------------------------------*
  | build null space for artery block of global system matrix kremheller 05/18 |
  *--------------------------------------------------------------------------- */
-void PoroPressureBased::PorofluidElastArteryCoupling::build_artery_block_null_space(
+void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::build_artery_block_null_space(
     std::shared_ptr<Core::LinAlg::Solver>& solver, const int& arteryblocknum)
 {
   // equip smoother for fluid matrix block with empty parameter sublists to trigger null space
@@ -203,12 +203,12 @@ void PoroPressureBased::PorofluidElastArteryCoupling::build_artery_block_null_sp
   blocksmootherparams3.sublist("MueLu Parameters");
 
   // build null space of complete discretization
-  fluid_field()->art_net_tim_int()->discretization()->compute_null_space_if_necessary(
+  porofluid_algo()->art_net_tim_int()->discretization()->compute_null_space_if_necessary(
       blocksmootherparams3);
   // fix the null space if some DOFs are condensed out
   Core::LinearSolver::Parameters::fix_null_space("Artery",
-      *(fluid_field()->art_net_tim_int()->discretization()->dof_row_map(0)),
-      *(fluid_field()->artery_dof_row_map()), blocksmootherparams3);
+      *(porofluid_algo()->art_net_tim_int()->discretization()->dof_row_map(0)),
+      *(porofluid_algo()->artery_dof_row_map()), blocksmootherparams3);
 
   return;
 }
@@ -216,10 +216,10 @@ void PoroPressureBased::PorofluidElastArteryCoupling::build_artery_block_null_sp
 /*----------------------------------------------------------------------*
  | Create linear (iterative) solver                    kremheller 05/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PorofluidElastArteryCoupling::create_linear_solver(
+void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::create_linear_solver(
     const Teuchos::ParameterList& solverparams, const Core::LinearSolver::SolverType solvertype)
 {
-  PorofluidElastMonolithic::create_linear_solver(solverparams, solvertype);
+  PorofluidElastMonolithicAlgorithm::create_linear_solver(solverparams, solvertype);
 
   // build also the artery null space
   build_artery_block_null_space(solver_, 3);

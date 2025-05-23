@@ -144,7 +144,7 @@ void PoroPressureBased::PorofluidElastScatraBaseAlgorithm::init(
     if (scatra_meshtying_strategy_ == nullptr) FOUR_C_THROW("cast to Meshtying strategy failed!");
 
     scatra_meshtying_strategy_->set_artery_time_integrator(
-        porofluid_elast_algo()->fluid_field()->art_net_tim_int());
+        porofluid_elast_algo()->porofluid_algo()->art_net_tim_int());
     scatra_meshtying_strategy_->set_nearby_ele_pairs(nearby_ele_pairs);
   }
 
@@ -302,11 +302,11 @@ void PoroPressureBased::PorofluidElastScatraBaseAlgorithm::set_porofluid_elast_s
   if (scatra_field == nullptr) FOUR_C_THROW("cast to ScaTraTimIntPoroMulti failed!");
 
   // set displacements
-  scatra_field->apply_mesh_movement(*porofluid_elast_algo_->struct_dispnp());
+  scatra_field->apply_mesh_movement(*porofluid_elast_algo_->structure_dispnp());
 
   // set the porofluid solution
-  scatra_field->set_solution_field_of_multi_fluid(
-      porofluid_elast_algo_->relaxed_fluid_phinp(), porofluid_elast_algo_->fluid_field()->phin());
+  scatra_field->set_solution_field_of_multi_fluid(porofluid_elast_algo_->relaxed_fluid_phinp(),
+      porofluid_elast_algo_->porofluid_algo()->phin());
 
   // additionally, set nodal flux if L2-projection is desired
   if (flux_reconstruction_method_ == PoroPressureBased::FluxReconstructionMethod::l2)
@@ -333,7 +333,7 @@ void PoroPressureBased::PorofluidElastScatraBaseAlgorithm::
   const Core::LinAlg::Map* ele_col_map =
       scatra_algo()->scatra_field()->discretization()->element_col_map();
   std::shared_ptr<const Core::LinAlg::Vector<double>> valid_volfracspec_dofs =
-      porofluid_elast_algo()->fluid_field()->valid_vol_frac_spec_dofs();
+      porofluid_elast_algo()->porofluid_algo()->valid_vol_frac_spec_dofs();
 
   // we identify the volume fraction species dofs which do not have a physical meaning and set a
   // DBC on them
@@ -382,7 +382,7 @@ void PoroPressureBased::PorofluidElastScatraBaseAlgorithm::
         std::vector<int> scatra_dofs =
             scatra_algo()->scatra_field()->discretization()->dof(0, nodes[inode]);
         std::vector<int> porofluid_dofs =
-            porofluid_elast_algo()->fluid_field()->discretization()->dof(0, nodes[inode]);
+            porofluid_elast_algo()->porofluid_algo()->discretization()->dof(0, nodes[inode]);
 
         for (int idof = 0; idof < num_scatra_materials; ++idof)
         {
@@ -405,7 +405,7 @@ void PoroPressureBased::PorofluidElastScatraBaseAlgorithm::
             if (scatra_algo()->scatra_field()->dirich_maps()->cond_map()->LID(scatra_dofs[idof]) ==
                     -1 &&
                 (int)(*valid_volfracspec_dofs)[porofluid_elast_algo()
-                        ->fluid_field()
+                        ->porofluid_algo()
                         ->discretization()
                         ->dof_row_map()
                         ->LID(porofluid_dofs[scalar_to_phase_id + num_volfrac])] < 1)
@@ -438,7 +438,7 @@ void PoroPressureBased::PorofluidElastScatraBaseAlgorithm::set_scatra_solution()
   porofluid_elast_algo_->set_scatra_solution(
       nds_porofluid_scatra_, scatra_algo_->scatra_field()->phinp());
   if (artery_coupling_)
-    porofluid_elast_algo_->fluid_field()->art_net_tim_int()->discretization()->set_state(
+    porofluid_elast_algo_->porofluid_algo()->art_net_tim_int()->discretization()->set_state(
         2, "one_d_artery_phinp", *scatra_meshtying_strategy_->art_scatra_field()->phinp());
 }
 

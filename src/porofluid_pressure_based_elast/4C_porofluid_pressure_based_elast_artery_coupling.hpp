@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_porofluid_pressure_based_elast.hpp"
+#include "4C_porofluid_pressure_based_elast_base.hpp"
 #include "4C_porofluid_pressure_based_elast_monolithic.hpp"
 
 
@@ -19,10 +19,11 @@ FOUR_C_NAMESPACE_OPEN
 namespace PoroPressureBased
 {
   ///! Monolithic solution scheme for porofluid-elasticity problems with artery coupling
-  class PorofluidElastArteryCoupling final : public PorofluidElastMonolithic
+  class PorofluidElastArteryCouplingAlgorithm final : public PorofluidElastMonolithicAlgorithm
   {
    public:
-    PorofluidElastArteryCoupling(MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
+    PorofluidElastArteryCouplingAlgorithm(
+        MPI_Comm comm, const Teuchos::ParameterList& globaltimeparams);
 
     //! extract the field vectors from a given composed vector.
     /*!

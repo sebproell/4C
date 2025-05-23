@@ -65,7 +65,7 @@ void porofluid_elast_dyn(int restart)
   auto solscheme = Teuchos::getIntegralValue<PoroPressureBased::SolutionSchemePorofluidElast>(
       poroparams, "COUPALGO");
 
-  std::shared_ptr<PoroPressureBased::PorofluidElast> algo =
+  std::shared_ptr<PoroPressureBased::PorofluidElastAlgorithm> algo =
       PoroPressureBased::create_algorithm_porofluid_elast(solscheme, poroparams, comm);
 
   // initialize
@@ -98,7 +98,7 @@ void porofluid_elast_dyn(int restart)
   algo->setup_system();
 
   // Solve the whole problem
-  algo->timeloop();
+  algo->time_loop();
 
   // Summarize the performance measurements
   Teuchos::TimeMonitor::summarize();
