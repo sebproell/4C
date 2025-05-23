@@ -138,18 +138,21 @@ void SSI::SsiMono::apply_meshtying_to_sub_problems() const
       ssi_matrices_->complete_scatra_structure_matrix();
 
     strategy_meshtying_->apply_meshtying_to_scatra_structure(
-        ssi_matrices_->scatra_structure_matrix(),
+        ssi_matrices_->scatra_structure_matrix(), *ssi_maps(), *ssi_structure_mesh_tying(),
         is_uncomplete_of_matrices_necessary_for_mesh_tying());
 
     strategy_meshtying_->apply_meshtying_to_structure_matrix(*ssi_matrices_->structure_matrix(),
-        structure_field()->system_matrix(), is_uncomplete_of_matrices_necessary_for_mesh_tying());
-
-    strategy_meshtying_->apply_meshtying_to_structure_scatra(
-        ssi_matrices_->structure_scatra_matrix(),
+        *structure_field()->system_matrix(), *ssi_structure_mesh_tying(),
         is_uncomplete_of_matrices_necessary_for_mesh_tying());
 
-    ssi_vectors_->structure_residual()->update(
-        1.0, strategy_meshtying_->apply_meshtying_to_structure_rhs(*structure_field()->rhs()), 1.0);
+    strategy_meshtying_->apply_meshtying_to_structure_scatra(
+        ssi_matrices_->structure_scatra_matrix(), *ssi_maps(), *ssi_structure_mesh_tying(),
+        is_uncomplete_of_matrices_necessary_for_mesh_tying());
+
+    ssi_vectors_->structure_residual()->update(1.0,
+        strategy_meshtying_->apply_meshtying_to_structure_rhs(
+            *structure_field()->rhs(), *ssi_maps(), *ssi_structure_mesh_tying()),
+        1.0);
 
     if (is_scatra_manifold())
     {
@@ -161,15 +164,15 @@ void SSI::SsiMono::apply_meshtying_to_sub_problems() const
         manifoldscatraflux_->complete_matrix_scatra_structure();
 
       strategy_meshtying_->apply_meshtying_to_scatra_manifold_structure(
-          ssi_matrices_->scatra_manifold_structure_matrix(),
-          is_uncomplete_of_matrices_necessary_for_mesh_tying());
+          ssi_matrices_->scatra_manifold_structure_matrix(), *ssi_maps(),
+          *ssi_structure_mesh_tying(), is_uncomplete_of_matrices_necessary_for_mesh_tying());
 
       strategy_meshtying_->apply_meshtying_to_scatra_manifold_structure(
-          manifoldscatraflux_->matrix_manifold_structure(),
-          is_uncomplete_of_matrices_necessary_for_mesh_tying());
+          manifoldscatraflux_->matrix_manifold_structure(), *ssi_maps(),
+          *ssi_structure_mesh_tying(), is_uncomplete_of_matrices_necessary_for_mesh_tying());
 
       strategy_meshtying_->apply_meshtying_to_scatra_structure(
-          manifoldscatraflux_->matrix_scatra_structure(),
+          manifoldscatraflux_->matrix_scatra_structure(), *ssi_maps(), *ssi_structure_mesh_tying(),
           is_uncomplete_of_matrices_necessary_for_mesh_tying());
     }
   }
@@ -783,12 +786,12 @@ void SSI::SsiMono::setup_system()
       build_contact_strategy(nitsche_strategy_ssi(), ssi_maps_, scatra_field()->matrix_type());
 
   // instantiate appropriate mesh tying class
-  strategy_meshtying_ = build_meshtying_strategy(
-      is_scatra_manifold(), scatra_field()->matrix_type(), ssi_maps_, ssi_structure_mesh_tying());
+  strategy_meshtying_ =
+      build_meshtying_strategy(is_scatra_manifold(), scatra_field()->matrix_type(), *ssi_maps());
 
   // instantiate Dirichlet boundary condition handler class
   dbc_handler_ = build_dbc_handler(is_scatra_manifold(), matrixtype_, scatra_field(),
-      is_scatra_manifold() ? scatra_manifold() : nullptr, ssi_maps_, structure_field());
+      is_scatra_manifold() ? scatra_manifold() : nullptr, ssi_maps(), structure_field());
 }
 
 /*---------------------------------------------------------------------------------*
