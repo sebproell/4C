@@ -9,16 +9,10 @@
 
 #include "4C_fluid_implicit_integration.hpp"
 #include "4C_fluid_timint_hdg.hpp"
-#include "4C_fluid_turbulence_statistics_bfda.hpp"
-#include "4C_fluid_turbulence_statistics_bfs.hpp"
 #include "4C_fluid_turbulence_statistics_ccy.hpp"
 #include "4C_fluid_turbulence_statistics_cha.hpp"
 #include "4C_fluid_turbulence_statistics_hit.hpp"
-#include "4C_fluid_turbulence_statistics_ldc.hpp"
-#include "4C_fluid_turbulence_statistics_mean_general.hpp"
 #include "4C_fluid_turbulence_statistics_ph.hpp"
-#include "4C_fluid_turbulence_statistics_sqc.hpp"
-#include "4C_fluid_turbulence_statistics_tgv.hpp"
 #include "4C_fluid_utils.hpp"
 #include "4C_fluid_xwall.hpp"
 #include "4C_global_data.hpp"
@@ -64,16 +58,10 @@ namespace FLD
         subgrid_dissipation_(false),
         inflow_(false),
         statistics_outfilename_(fluid.statistics_outfilename_),
-        statistics_general_mean_(nullptr),
         statistics_channel_(nullptr),
         statistics_ccy_(nullptr),
-        statistics_ldc_(nullptr),
-        statistics_bfs_(nullptr),
         statistics_ph_(nullptr),
-        statistics_bfda_(nullptr),
-        statistics_sqc_(nullptr),
-        statistics_hit_(nullptr),
-        statistics_tgv_(nullptr)
+        statistics_hit_(nullptr)
   {
     subgrid_dissipation_ = params_->sublist("TURBULENCE MODEL").get<bool>("SUBGRID_DISSIPATION");
     // initialize
@@ -170,60 +158,6 @@ namespace FLD
               discret_, *params_, statistics_outfilename_, false);
       }
     }
-    else if (fluid.special_flow_ == "taylor_green_vortex")
-    {
-      flow_ = taylor_green_vortex;
-
-      // do the time integration independent setup
-      setup();
-
-      // allocate one instance of the averaging procedure for
-      // the flow under consideration
-      statistics_tgv_ =
-          std::make_shared<TurbulenceStatisticsTgv>(discret_, *params_, statistics_outfilename_);
-    }
-    else if (fluid.special_flow_ == "lid_driven_cavity")
-    {
-      flow_ = lid_driven_cavity;
-
-      // do the time integration independent setup
-      setup();
-
-      // allocate one instance of the averaging procedure for
-      // the flow under consideration
-      statistics_ldc_ =
-          std::make_shared<TurbulenceStatisticsLdc>(discret_, *params_, statistics_outfilename_);
-    }
-    else if (fluid.special_flow_ == "loma_lid_driven_cavity")
-    {
-      flow_ = loma_lid_driven_cavity;
-
-      // do the time integration independent setup
-      setup();
-
-      // allocate one instance of the averaging procedure for
-      // the flow under consideration
-      statistics_ldc_ =
-          std::make_shared<TurbulenceStatisticsLdc>(discret_, *params_, statistics_outfilename_);
-    }
-    else if (fluid.special_flow_ == "backward_facing_step")
-    {
-      flow_ = backward_facing_step;
-
-      // do the time integration independent setup
-      setup();
-
-      // allocate one instance of the averaging procedure for
-      // the flow under consideration
-      statistics_bfs_ = std::make_shared<TurbulenceStatisticsBfs>(
-          discret_, *params_, statistics_outfilename_, "geometry_DNS_incomp_flow");
-
-      // statistics manager for turbulent boundary layer not available
-      if (inflow_)
-        FOUR_C_THROW(
-            "The backward-facing step based on the geometry the DNS requires a turbulent boundary "
-            "layer inflow profile which is not supported, yet!");
-    }
     else if (fluid.special_flow_ == "periodic_hill")
     {
       flow_ = periodic_hill;
@@ -235,78 +169,6 @@ namespace FLD
       // the flow under consideration
       statistics_ph_ =
           std::make_shared<TurbulenceStatisticsPh>(discret_, *params_, statistics_outfilename_);
-    }
-    else if (fluid.special_flow_ == "loma_backward_facing_step")
-    {
-      flow_ = loma_backward_facing_step;
-
-      // do the time integration independent setup
-      setup();
-
-      // allocate one instance of the averaging procedure for
-      // the flow under consideration
-      statistics_bfs_ = std::make_shared<TurbulenceStatisticsBfs>(
-          discret_, *params_, statistics_outfilename_, "geometry_LES_flow_with_heating");
-
-      // build statistics manager for inflow channel flow
-      if (inflow_)
-      {
-        if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                "channel_flow_of_height_2" or
-            params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                "loma_channel_flow_of_height_2" or
-            params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                "scatra_channel_flow_of_height_2")
-        {
-          // do not write any dissipation rates for inflow channels
-          subgrid_dissipation_ = false;
-          // allocate one instance of the averaging procedure for the flow under consideration
-          statistics_channel_ = std::make_shared<TurbulenceStatisticsCha>(discret_, alefluid_,
-              mydispnp_, *params_, statistics_outfilename_, subgrid_dissipation_, myxwall_);
-        }
-      }
-    }
-    else if (fluid.special_flow_ == "backward_facing_step2")
-    {
-      flow_ = backward_facing_step2;
-
-      // do the time integration independent setup
-      setup();
-
-      // allocate one instance of the averaging procedure for
-      // the flow under consideration
-      statistics_bfs_ = std::make_shared<TurbulenceStatisticsBfs>(
-          discret_, *params_, statistics_outfilename_, "geometry_EXP_vogel_eaton");
-
-      // build statistics manager for inflow channel flow
-      if (inflow_)
-      {
-        if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                "channel_flow_of_height_2" or
-            params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                "loma_channel_flow_of_height_2" or
-            params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                "scatra_channel_flow_of_height_2")
-        {
-          // do not write any dissipation rates for inflow channels
-          subgrid_dissipation_ = false;
-          // allocate one instance of the averaging procedure for the flow under consideration
-          statistics_channel_ = std::make_shared<TurbulenceStatisticsCha>(discret_, alefluid_,
-              mydispnp_, *params_, statistics_outfilename_, subgrid_dissipation_, myxwall_);
-        }
-      }
-    }
-    else if (fluid.special_flow_ == "square_cylinder")
-    {
-      flow_ = square_cylinder;
-
-      // do the time integration independent setup
-      setup();
-
-      // allocate one instance of the averaging procedure for
-      // the flow under consideration
-      statistics_sqc_ =
-          std::make_shared<TurbulenceStatisticsSqc>(discret_, *params_, statistics_outfilename_);
     }
     else if (fluid.special_flow_ == "square_cylinder_nurbs")
     {
@@ -348,18 +210,6 @@ namespace FLD
       // do the time integration independent setup
       setup();
     }
-    else if (fluid.special_flow_ == "blood_fda_flow")
-    {
-      flow_ = blood_fda_flow;
-
-      // do the time integration independent setup
-      setup();
-
-      // allocate one instance of the averaging procedure for
-      // the flow under consideration
-      statistics_bfda_ =
-          std::make_shared<TurbulenceStatisticsBfda>(discret_, *params_, statistics_outfilename_);
-    }
     else
     {
       flow_ = no_special_flow;
@@ -367,31 +217,6 @@ namespace FLD
       // do the time integration independent setup
       setup();
     }
-
-    // allocate one instance of the flow independent averaging procedure
-    // providing colorful output for paraview
-    if (out_mean_)
-    {
-      Teuchos::ParameterList* modelparams = &(params_->sublist("TURBULENCE MODEL"));
-
-      std::string homdir = modelparams->get<std::string>("HOMDIR", "not_specified");
-
-      if (flow_ == rotating_circular_cylinder_nurbs_scatra)
-      {
-        // additional averaging of scalar field
-        statistics_general_mean_ = std::make_shared<TurbulenceStatisticsGeneralMean>(
-            discret_, homdir, *fluid.vel_pres_splitter(), true);
-      }
-      else
-      {
-        statistics_general_mean_ = std::make_shared<TurbulenceStatisticsGeneralMean>(
-            discret_, homdir, *fluid.vel_pres_splitter(), false);
-      }
-    }
-    else
-      statistics_general_mean_ = nullptr;
-
-    return;
   }
 
 
@@ -611,44 +436,6 @@ namespace FLD
           statistics_hit_->do_scatra_time_sample(myvelnp_, myphinp_);
           break;
         }
-        case lid_driven_cavity:
-        {
-          if (statistics_ldc_ == nullptr)
-            FOUR_C_THROW("need statistics_ldc_ to do a time sample for a cavity flow");
-
-          statistics_ldc_->do_time_sample(*myvelnp_);
-          break;
-        }
-        case loma_lid_driven_cavity:
-        {
-          if (statistics_ldc_ == nullptr)
-            FOUR_C_THROW(
-                "need statistics_ldc_ to do a time sample for a cavity flow at low Mach number");
-
-          statistics_ldc_->do_loma_time_sample(*myvelnp_, *myscaaf_, *myforce_, eosfac);
-          break;
-        }
-        case backward_facing_step:
-        case backward_facing_step2:
-        {
-          if (statistics_bfs_ == nullptr)
-            FOUR_C_THROW(
-                "need statistics_bfs_ to do a time sample for a flow over a backward-facing step");
-
-          statistics_bfs_->do_time_sample(
-              *myvelnp_, *mystressmanager_->get_stresses_wo_agg(*myforce_));
-
-          // do time sample for inflow channel flow
-          if (inflow_)
-          {
-            if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                "channel_flow_of_height_2")
-              statistics_channel_->do_time_sample(*myvelnp_, *myforce_);
-            else
-              FOUR_C_THROW("channel_flow_of_height_2 expected!");
-          }
-          break;
-        }
         case periodic_hill:
         {
           if (statistics_ph_ == nullptr)
@@ -657,116 +444,6 @@ namespace FLD
 
           statistics_ph_->do_time_sample(
               *myvelnp_, *mystressmanager_->get_wall_shear_stresses_wo_agg(*myforce_));
-          break;
-        }
-        case loma_backward_facing_step:
-        {
-          if (statistics_bfs_ == nullptr)
-            FOUR_C_THROW(
-                "need statistics_bfs_ to do a time sample for a flow over a backward-facing step "
-                "at low Mach number");
-
-          if (Teuchos::getIntegralValue<Inpar::FLUID::PhysicalType>(*params_, "Physical Type") ==
-              Inpar::FLUID::incompressible)
-          {
-            if (not withscatra_)
-            {
-              statistics_bfs_->do_time_sample(
-                  *myvelnp_, *mystressmanager_->get_stresses_wo_agg(*myforce_));
-
-              // do time sample for inflow channel flow
-              if (inflow_)
-              {
-                if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                    "channel_flow_of_height_2")
-                  statistics_channel_->do_time_sample(*myvelnp_, *myforce_);
-                else
-                  FOUR_C_THROW("channel_flow_of_height_2 expected!");
-              }
-            }
-            else
-            {
-              statistics_bfs_->do_scatra_time_sample(*myvelnp_, *myscaaf_);
-
-              // do time sample for inflow channel flow
-              if (inflow_)
-              {
-                if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                    "scatra_channel_flow_of_height_2")
-                  FOUR_C_THROW(
-                      "Use channel_flow_of_height_2 instead of scatra_channel_flow_of_height_2!");
-                // to get DoScatraTimeSample() running also for inflow problems pointswise
-                // evaluation as available for channel flow is required
-                // statistics_channel_->DoScatraTimeSample(myvelnp_,myscaaf_,myforce_);
-                // if the inflow channel is not subject to scalar transport using the functions for
-                // usual channel flow is ok
-                else if (params_->sublist("TURBULENT INFLOW")
-                             .get<std::string>("CANONICAL_INFLOW") == "channel_flow_of_height_2")
-                  statistics_channel_->do_time_sample(*myvelnp_, *myforce_);
-                else
-                  FOUR_C_THROW("channel_flow_of_height_2 expected!");
-              }
-            }
-          }
-          else
-          {
-            statistics_bfs_->do_loma_time_sample(*myvelnp_, *myscaaf_, eosfac);
-
-            // do time sample for inflow channel flow
-            if (inflow_)
-            {
-              if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                  "loma_channel_flow_of_height_2")
-              {
-                std::cout << "Warning: no statistics for loma inflow channel!" << std::endl;
-                // to get DoLomaTimeSample() running also for inflow problems pointswise evaluation
-                // as available for channel flow is required
-                // statistics_channel_->DoLomaTimeSample(myvelnp_,myscaaf_,myforce_,eosfac);
-                // statistics_channel_->DoTimeSample(myvelnp_,myforce_) is not an option,
-                // since it requires visc and dens
-                // you may use the statistics of the inlet section instead
-              }
-            }
-          }
-          break;
-        }
-        case blood_fda_flow:
-        {
-          if (statistics_bfda_ == nullptr)
-            FOUR_C_THROW("need statistics_bfda_ to do a time sample for a blood fda flow");
-
-          statistics_bfda_->do_time_sample(*myvelnp_);
-          break;
-        }
-        case square_cylinder:
-        {
-          if (statistics_sqc_ == nullptr)
-            FOUR_C_THROW(
-                "need statistics_sqc_ to do a time sample for a flow around a square cylinder");
-
-          statistics_sqc_->do_time_sample(*myvelnp_);
-
-          // computation of Lift&Drag statistics, if required
-          if (params_->get<bool>("LIFTDRAG"))
-          {
-            std::shared_ptr<std::map<int, std::vector<double>>> liftdragvals;
-
-            // spatial dimension of problem
-            const int ndim = params_->get<int>("number of velocity degrees of freedom");
-
-            FLD::Utils::lift_drag(discret_, *myforce_, mydispnp_, ndim, liftdragvals, alefluid_);
-
-            if ((*liftdragvals).size() != 1)
-            {
-              FOUR_C_THROW(
-                  "expecting only one liftdrag label for the sampling of a flow around a square "
-                  "cylinder");
-            }
-            std::map<int, std::vector<double>>::iterator theonlyldval = (*liftdragvals).begin();
-
-            statistics_sqc_->do_lift_drag_time_sample(
-                ((*theonlyldval).second)[0], ((*theonlyldval).second)[1]);
-          }
           break;
         }
         case rotating_circular_cylinder_nurbs:
@@ -815,9 +492,8 @@ namespace FLD
           case channel_flow_of_height_2:
           case loma_channel_flow_of_height_2:
           case scatra_channel_flow_of_height_2:
-          case taylor_green_vortex:
           {
-            if (statistics_channel_ == nullptr and statistics_tgv_ == nullptr)
+            if (statistics_channel_ == nullptr)
               FOUR_C_THROW("No dissipation rates for this flow type!");
 
             // set vector values needed by elements
@@ -930,17 +606,6 @@ namespace FLD
                     thermpressam, thermpressdtaf, thermpressdtam, scatrastatevecs, scatrafieldvecs);
                 break;
               }
-              case taylor_green_vortex:
-              {
-                statistics_tgv_->evaluate_residuals(statevecs, statetenss, thermpressaf,
-                    thermpressam, thermpressdtaf, thermpressdtam);
-                if (step == 0)  // sorry, this function is not called for step=0
-                {
-                  statistics_tgv_->dump_statistics(0);
-                  statistics_tgv_->clear_statistics();
-                }
-                break;
-              }
               default:
                 FOUR_C_THROW("Dissipation not supported for this flow type!");
                 break;
@@ -1001,11 +666,6 @@ namespace FLD
         }
       }
 
-      // add vector(s) to general mean value computation
-      // scatra vectors may be nullptr
-      if (statistics_general_mean_ != nullptr)
-        statistics_general_mean_->add_to_current_time_average(dt_, *myvelnp_, myscaaf_, myphinp_);
-
     }  // end step in sampling period
 
     // for homogeneous isotropic turbulence, the initial field is averaged
@@ -1064,11 +724,6 @@ namespace FLD
         }
       }
 
-      // add vector(s) to general mean value computation
-      // scatra vectors may be nullptr
-      if (statistics_general_mean_ != nullptr)
-        statistics_general_mean_->add_to_current_time_average(dt_, velnp, myscaaf_, myphinp_);
-
       if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
       {
         std::cout << "                      taking time sample (";
@@ -1111,7 +766,6 @@ namespace FLD
         write_multiple_records,
         do_not_write
       } outputformat = do_not_write;
-      bool output_inflow = false;
 
       // sampling a la Volker --- single record is constantly updated
       if (dumperiod_ != 0)
@@ -1134,15 +788,6 @@ namespace FLD
         // dump in combination with a restart/output
         if ((step % upres == 0 || (uprestart > 0 && step % uprestart == 0)) && step > samstart_)
           outputformat = write_multiple_records;
-      }
-      if (inflow_)
-      {
-        int upres = params_->get<int>("write solution every");
-        int uprestart = params_->get<int>("write restart every");
-
-        // dump in combination with a restart/output
-        if ((step % upres == 0 || (uprestart > 0 && step % uprestart == 0)) && step > samstart_)
-          output_inflow = true;
       }
 
       if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0 &&
@@ -1232,58 +877,6 @@ namespace FLD
           }
           break;
         }
-        case taylor_green_vortex:
-        {
-          // write statistics for every time step,
-          // since there is not any statistical-stationary state
-          statistics_tgv_->dump_statistics(step);
-          statistics_tgv_->clear_statistics();
-          break;
-        }
-        case lid_driven_cavity:
-        {
-          if (statistics_ldc_ == nullptr)
-            FOUR_C_THROW("need statistics_ldc_ to do a time sample for a lid driven cavity");
-
-          if (outputformat == write_single_record) statistics_ldc_->dump_statistics(step);
-
-          if (outputformat != do_not_write) statistics_ldc_->write_restart(output);
-          break;
-        }
-        case loma_lid_driven_cavity:
-        {
-          if (statistics_ldc_ == nullptr)
-            FOUR_C_THROW(
-                "need statistics_ldc_ to do a time sample for a lid driven cavity at low Mach "
-                "number");
-
-          if (outputformat == write_single_record) statistics_ldc_->dump_loma_statistics(step);
-          break;
-        }
-        case backward_facing_step:
-        case backward_facing_step2:
-        {
-          if (statistics_bfs_ == nullptr)
-            FOUR_C_THROW(
-                "need statistics_bfs_ to do a time sample for a flow over a backward-facing step");
-
-          if (outputformat == write_single_record) statistics_bfs_->dump_statistics(step);
-
-          // write statistics of inflow channel flow
-          if (inflow_)
-          {
-            if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                "channel_flow_of_height_2")
-            {
-              if (output_inflow)
-              {
-                statistics_channel_->time_average_means_and_output_of_statistics(step);
-                statistics_channel_->clear_statistics();
-              }
-            }
-          }
-          break;
-        }
         case periodic_hill:
         {
           if (statistics_ph_ == nullptr)
@@ -1291,95 +884,6 @@ namespace FLD
 
           if (outputformat == write_single_record) statistics_ph_->dump_statistics(step);
 
-          break;
-        }
-        case loma_backward_facing_step:
-        {
-          if (statistics_bfs_ == nullptr)
-            FOUR_C_THROW(
-                "need statistics_bfs_ to do a time sample for a flow over a backward-facing step "
-                "at low Mach number");
-
-          if (Teuchos::getIntegralValue<Inpar::FLUID::PhysicalType>(*params_, "Physical Type") ==
-              Inpar::FLUID::incompressible)
-          {
-            if (not withscatra_)
-            {
-              if (outputformat == write_single_record) statistics_bfs_->dump_statistics(step);
-
-              // write statistics of inflow channel flow
-              if (inflow_)
-              {
-                if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                    "channel_flow_of_height_2")
-                {
-                  if (output_inflow)
-                  {
-                    statistics_channel_->time_average_means_and_output_of_statistics(step);
-                    statistics_channel_->clear_statistics();
-                  }
-                }
-              }
-            }
-            else
-            {
-              if (outputformat == write_single_record)
-                statistics_bfs_->dump_scatra_statistics(step);
-
-              // write statistics of inflow channel flow
-              if (inflow_)
-              {
-                if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                    "scatra_channel_flow_of_height_2")
-                {
-                  if (outputformat == write_single_record)
-                    statistics_channel_->dump_scatra_statistics(step);
-                }
-                else if (params_->sublist("TURBULENT INFLOW")
-                             .get<std::string>("CANONICAL_INFLOW") == "channel_flow_of_height_2")
-                {
-                  if (output_inflow)
-                  {
-                    statistics_channel_->time_average_means_and_output_of_statistics(step);
-                    statistics_channel_->clear_statistics();
-                  }
-                }
-              }
-            }
-          }
-          else  // loma
-          {
-            if (outputformat == write_single_record) statistics_bfs_->dump_loma_statistics(step);
-
-            // write statistics of inflow channel flow
-            if (inflow_)
-            {
-              if (params_->sublist("TURBULENT INFLOW").get<std::string>("CANONICAL_INFLOW") ==
-                  "loma_channel_flow_of_height_2")
-              {
-                std::cout << "Warning: no statistics for loma inflow channel!" << std::endl;
-                //              if(outputformat == write_single_record)
-                //                statistics_channel_->DumpLomaStatistics(step);
-              }
-            }
-          }
-          break;
-        }
-        case blood_fda_flow:
-        {
-          if (statistics_bfda_ == nullptr)
-            FOUR_C_THROW("need statistics_bfda_ to do a time sample for a blood fda flow");
-
-          if (outputformat == write_single_record) statistics_bfda_->dump_statistics(step);
-
-          break;
-        }
-        case square_cylinder:
-        {
-          if (statistics_sqc_ == nullptr)
-            FOUR_C_THROW("need statistics_sqc_ to do a time sample for a square cylinder flow");
-
-          if (outputformat == write_single_record) statistics_sqc_->dump_statistics(step);
           break;
         }
         case rotating_circular_cylinder_nurbs:
@@ -1409,18 +913,6 @@ namespace FLD
         std::cout << "\n\n";
       }
 
-
-      // dump general mean value output in combination with a restart/output
-      // don't write output if turbulent inflow or twophaseflow is computed
-      if (!inflow and flow_ != bubbly_channel_flow)
-      {
-        int upres = params_->get<int>("write solution every");
-        int uprestart = params_->get<int>("write restart every");
-
-        if ((step % upres == 0 || (uprestart > 0 && step % uprestart == 0)) &&
-            (statistics_general_mean_ != nullptr))
-          statistics_general_mean_->write_old_average_vec(output);
-      }
     }  // end step is in sampling period
 
     if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0 and
@@ -1514,9 +1006,6 @@ namespace FLD
     myphidtam_ = scatra_timeint->phidtam();
     myfsphi_ = scatra_timeint->fs_phi();
 
-    if (statistics_general_mean_ != nullptr)
-      statistics_general_mean_->add_scatra_results(scatradis_, *myphinp_);
-
     if (statistics_ccy_ != nullptr) statistics_ccy_->add_scatra_results(scatradis_, *myphinp_);
 
     if (flow_ == scatra_channel_flow_of_height_2 or flow_ == loma_channel_flow_of_height_2)
@@ -1542,21 +1031,6 @@ namespace FLD
   void TurbulenceStatisticManager::do_output_for_scatra(
       Core::IO::DiscretizationWriter& output, int step)
   {
-    // sampling takes place only in the sampling period
-    if (step >= samstart_ && step <= samstop_ && flow_ != no_special_flow)
-    {
-      // statistics for scatra fields was already written during DoOutput()
-      // Thus, we have to care for the mean field only:
-
-      // dump general mean value output for scatra results
-      // in combination with a restart/output
-      int upres = params_->get("write solution every", -1);
-      int uprestart = params_->get("write restart every", -1);
-
-      if ((step % upres == 0 || step % uprestart == 0) && (statistics_general_mean_ != nullptr))
-        statistics_general_mean_->do_output_for_scatra(output, step);
-    }
-    return;
   }
 
 
@@ -1565,39 +1039,7 @@ namespace FLD
   Restart statistics collection
 
   ----------------------------------------------------------------------*/
-  void TurbulenceStatisticManager::read_restart(Core::IO::DiscretizationReader& reader, int step)
-  {
-    if (samstart_ < step && step <= samstop_)
-    {
-      if (statistics_general_mean_ != nullptr)
-      {
-        if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
-        {
-          std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXX          ";
-          std::cout << "Read general mean values           ";
-          std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXX";
-          std::cout << "\n\n";
-        }
-
-        statistics_general_mean_->read_old_statistics(reader);
-      }
-
-      if (statistics_ldc_ != nullptr)
-      {
-        if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
-        {
-          std::cout << "XXXXXXXXXXXXXXXXXXXXX              ";
-          std::cout << "Read ldc statistics                ";
-          std::cout << "XXXXXXXXXXXXXXXXXXXXX";
-          std::cout << "\n\n";
-        }
-
-        statistics_ldc_->read_restart(reader);
-      }
-    }
-
-    return;
-  }  // Restart
+  void TurbulenceStatisticManager::read_restart(Core::IO::DiscretizationReader& reader, int step) {}
 
 
   /*----------------------------------------------------------------------
@@ -1608,26 +1050,7 @@ namespace FLD
   void TurbulenceStatisticManager::read_restart_scatra(
       Core::IO::DiscretizationReader& scatrareader, int step)
   {
-    // we have only to read in the mean field.
-    // The rest of the restart was already done during the restart() call
-    if (statistics_general_mean_ != nullptr)
-    {
-      if (samstart_ < step && step <= samstop_)
-      {
-        if (Core::Communication::my_mpi_rank(discret_->get_comm()) == 0)
-        {
-          std::cout << "XXXXXXXXXXXXXXXXXXXXX        ";
-          std::cout << "Read general mean values for ScaTra      ";
-          std::cout << "XXXXXXXXXXXXXXXXXXXXX";
-          std::cout << "\n\n";
-        }
-
-        statistics_general_mean_->read_old_statistics_scatra(scatrareader);
-      }
-    }
-
-    return;
-  }  // RestartScaTra
+  }
 
 
 }  // end namespace FLD
