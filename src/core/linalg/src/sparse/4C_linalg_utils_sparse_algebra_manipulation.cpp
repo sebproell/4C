@@ -205,15 +205,14 @@ void Core::LinAlg::extract_my_vector(
 std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::threshold_matrix(
     const Core::LinAlg::SparseMatrix& A, const double threshold)
 {
-  std::unique_ptr<Core::LinAlg::SparseMatrix> A_thresh =
-      std::make_unique<Core::LinAlg::SparseMatrix>(A.row_map(), A.max_num_entries());
+  auto A_thresh = std::make_unique<Core::LinAlg::SparseMatrix>(A.row_map(), A.max_num_entries());
 
-  for (int row = 0; row < A.epetra_matrix()->NumMyRows(); row++)
+  for (int row = 0; row < A.num_my_rows(); row++)
   {
     int nnz_of_row;
     double* values;
     int* indices;
-    A.epetra_matrix()->ExtractMyRowView(row, nnz_of_row, values, indices);
+    A.extract_my_row_view(row, nnz_of_row, values, indices);
 
     std::vector<double> values_thresh(nnz_of_row);
     std::vector<int> indices_thresh(nnz_of_row);
@@ -235,7 +234,7 @@ std::unique_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::threshold_matrix(
     indices_thresh.resize(nnz_thresh);
     values_thresh.resize(nnz_thresh);
 
-    A_thresh->epetra_matrix()->InsertGlobalValues(
+    A_thresh->insert_global_values(
         A.row_map().GID(row), nnz_thresh, values_thresh.data(), indices_thresh.data());
   }
 
@@ -263,12 +262,12 @@ std::shared_ptr<Core::LinAlg::Graph> Core::LinAlg::threshold_matrix_graph(
 
   double* D = ghosted_diagonal.get_values();
 
-  for (int row = 0; row < A.epetra_matrix()->NumMyRows(); row++)
+  for (int row = 0; row < A.num_my_rows(); row++)
   {
     int nnz_of_row;
     double* values;
     int* indices;
-    A.epetra_matrix()->ExtractMyRowView(row, nnz_of_row, values, indices);
+    A.extract_my_row_view(row, nnz_of_row, values, indices);
 
     const int global_row = A.row_map().GID(row);
     const int col = A.col_map().LID(global_row);
@@ -372,12 +371,11 @@ void Core::LinAlg::split_matrix2x2(
 
   if (ABlock.rows() != 2 || ABlock.cols() != 2) FOUR_C_THROW("Can only split in 2x2 system");
   if (!ASparse.filled()) FOUR_C_THROW("SparseMatrix must be filled");
-  std::shared_ptr<Epetra_CrsMatrix> A = ASparse.epetra_matrix();
-  std::shared_ptr<Epetra_CrsMatrix> A11 = ABlock(0, 0).epetra_matrix();
-  std::shared_ptr<Epetra_CrsMatrix> A12 = ABlock(0, 1).epetra_matrix();
-  std::shared_ptr<Epetra_CrsMatrix> A21 = ABlock(1, 0).epetra_matrix();
-  std::shared_ptr<Epetra_CrsMatrix> A22 = ABlock(1, 1).epetra_matrix();
-  if (A11->Filled() || A12->Filled() || A21->Filled() || A22->Filled())
+  const Core::LinAlg::SparseMatrix& A11 = ABlock(0, 0);
+  const Core::LinAlg::SparseMatrix& A12 = ABlock(0, 1);
+  const Core::LinAlg::SparseMatrix& A21 = ABlock(1, 0);
+  const Core::LinAlg::SparseMatrix& A22 = ABlock(1, 1);
+  if (A11.filled() || A12.filled() || A21.filled() || A22.filled())
     FOUR_C_THROW("Sub-matrices of the block operator are expected to be not filled");
   const Core::LinAlg::Map& A11rmap = ABlock.range_map(0);
   const Core::LinAlg::Map& A11dmap = ABlock.domain_map(0);
@@ -387,10 +385,10 @@ void Core::LinAlg::split_matrix2x2(
   // find out about how the column map is linked to the individual processors.
   // this is done by filling the information about the rowmap into a vector that
   // is then exported to the column map
-  Core::LinAlg::Vector<double> dselector(A->DomainMap());
+  Core::LinAlg::Vector<double> dselector(ASparse.domain_map());
   for (int i = 0; i < dselector.local_length(); ++i)
   {
-    const int gid = A->DomainMap().GID(i);
+    const int gid = ASparse.domain_map().GID(i);
     if (A11dmap.MyGID(gid))
       dselector[i] = 0.;
     else if (A22dmap.MyGID(gid))
@@ -398,31 +396,31 @@ void Core::LinAlg::split_matrix2x2(
     else
       dselector[i] = -1.;
   }
-  Core::LinAlg::Vector<double> selector(A->ColMap());
+  Core::LinAlg::Vector<double> selector(ASparse.col_map());
   Core::LinAlg::export_to(dselector, selector);
 
-  std::vector<int> gcindices1(A->MaxNumEntries());
-  std::vector<double> gvalues1(A->MaxNumEntries());
-  std::vector<int> gcindices2(A->MaxNumEntries());
-  std::vector<double> gvalues2(A->MaxNumEntries());
+  std::vector<int> gcindices1(ASparse.max_num_entries());
+  std::vector<double> gvalues1(ASparse.max_num_entries());
+  std::vector<int> gcindices2(ASparse.max_num_entries());
+  std::vector<double> gvalues2(ASparse.max_num_entries());
 
-  const int length = A->NumMyRows();
+  const int length = ASparse.num_my_rows();
   for (int i = 0; i < length; ++i)
   {
     int err1 = 0;
     int err2 = 0;
     int count1 = 0;
     int count2 = 0;
-    const int grid = A->GRID(i);
+    const int grid = ASparse.global_row_index(i);
     if (!A11rmap.MyGID(grid) && !A22rmap.MyGID(grid)) continue;
     int numentries;
     double* values;
     int* cindices;
-    int err = A->ExtractMyRowView(i, numentries, values, cindices);
+    int err = ASparse.extract_my_row_view(i, numentries, values, cindices);
     if (err) FOUR_C_THROW("ExtractMyRowView returned {}", err);
     for (int j = 0; j < numentries; ++j)
     {
-      const int gcid = A->ColMap().GID(cindices[j]);
+      const int gcid = ASparse.col_map().GID(cindices[j]);
       FOUR_C_ASSERT(cindices[j] < selector.local_length(), "Internal error");
       // column is in A*1
       if (selector[cindices[j]] == 0.)
@@ -441,13 +439,13 @@ void Core::LinAlg::split_matrix2x2(
     }
     if (A11rmap.MyGID(grid))
     {
-      if (count1) err1 = A11->InsertGlobalValues(grid, count1, gvalues1.data(), gcindices1.data());
-      if (count2) err2 = A12->InsertGlobalValues(grid, count2, gvalues2.data(), gcindices2.data());
+      if (count1) err1 = A11.insert_global_values(grid, count1, gvalues1.data(), gcindices1.data());
+      if (count2) err2 = A12.insert_global_values(grid, count2, gvalues2.data(), gcindices2.data());
     }
     else
     {
-      if (count1) err1 = A21->InsertGlobalValues(grid, count1, gvalues1.data(), gcindices1.data());
-      if (count2) err2 = A22->InsertGlobalValues(grid, count2, gvalues2.data(), gcindices2.data());
+      if (count1) err1 = A21.insert_global_values(grid, count1, gvalues1.data(), gcindices1.data());
+      if (count2) err2 = A22.insert_global_values(grid, count2, gvalues2.data(), gcindices2.data());
     }
 
     if (err1 < 0 || err2 < 0)
@@ -469,11 +467,9 @@ void Core::LinAlg::split_matrixmxn(
   for (int m = 0; m < M; ++m)
   {
     for (int n = 0; n < N; ++n)
-      if (ABlock(m, n).epetra_matrix()->Filled())
+      if (ABlock(m, n).filled())
         FOUR_C_THROW("BlockSparseMatrixBase must not be filled before splitting!");
   }
-
-  const Epetra_CrsMatrix& A = *ASparse.epetra_matrix();
 
   // associate each global column ID of SparseMatrix with corresponding block ID of
   // BlockSparseMatrixBase this is done via an Core::LinAlg::Vector<double> which is filled using
@@ -493,21 +489,21 @@ void Core::LinAlg::split_matrixmxn(
       }
     }
   }
-  Core::LinAlg::Vector<double> selector(A.ColMap());
+  Core::LinAlg::Vector<double> selector(ASparse.col_map());
   Core::LinAlg::export_to(dselector, selector);
 
   // allocate vectors storing global column indexes and values of matrix entries in a given row,
   // separated by blocks allocation is done outside loop over all rows for efficiency to be on the
   // safe side, we allocate more memory than we need for most rows
-  std::vector<std::vector<int>> colgids(N, std::vector<int>(A.MaxNumEntries(), -1));
-  std::vector<std::vector<double>> rowvalues(N, std::vector<double>(A.MaxNumEntries(), 0.));
+  std::vector<std::vector<int>> colgids(N, std::vector<int>(ASparse.max_num_entries(), -1));
+  std::vector<std::vector<double>> rowvalues(N, std::vector<double>(ASparse.max_num_entries(), 0.));
 
-  for (int rowlid = 0; rowlid < A.NumMyRows(); ++rowlid)
+  for (int rowlid = 0; rowlid < ASparse.num_my_rows(); ++rowlid)
   {
     int numentries(0);
     double* values(nullptr);
     int* indices(nullptr);
-    if (A.ExtractMyRowView(rowlid, numentries, values, indices))
+    if (ASparse.extract_my_row_view(rowlid, numentries, values, indices))
       FOUR_C_THROW("Row of SparseMatrix couldn't be extracted during splitting!");
 
     std::vector<unsigned> counters(N, 0);
@@ -518,11 +514,11 @@ void Core::LinAlg::split_matrixmxn(
       if (collid >= selector.local_length()) FOUR_C_THROW("Invalid local column ID {}!", collid);
 
       const int blockid = static_cast<int>(selector[collid]);
-      colgids[blockid][counters[blockid]] = A.ColMap().GID(collid);
+      colgids[blockid][counters[blockid]] = ASparse.col_map().GID(collid);
       rowvalues[blockid][counters[blockid]++] = values[j];
     }
 
-    const int rowgid = A.GRID(rowlid);
+    const int rowgid = ASparse.global_row_index(rowlid);
     int m(0);
 
     for (m = 0; m < M; ++m)
@@ -533,7 +529,7 @@ void Core::LinAlg::split_matrixmxn(
         {
           if (counters[n])
           {
-            if (ABlock(m, n).epetra_matrix()->InsertGlobalValues(
+            if (ABlock(m, n).insert_global_values(
                     rowgid, counters[n], rowvalues[n].data(), colgids[n].data()))
               FOUR_C_THROW("Couldn't insert matrix entries into BlockSparseMatrixBase!");
           }
@@ -552,9 +548,6 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
 {
   if (mat.filled()) return -1;
 
-  std::shared_ptr<Epetra_CrsMatrix> dst_mat_ptr = mat.epetra_matrix();
-  Epetra_CrsMatrix& dst_mat = *dst_mat_ptr;
-
   const int my_num_entries = diag.get_block_map().NumMyElements();
   const int* my_gids = diag.get_block_map().MyGlobalElements();
 
@@ -565,21 +558,20 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
     const int rgid = my_gids[lid];
 
     // skip rows which are not part of the matrix
-    if (not dst_mat.RangeMap().MyGID(rgid))
+    if (not mat.range_map().MyGID(rgid))
       FOUR_C_THROW(
           "Could not find the row GID {} in the destination matrix RowMap"
           " on proc {}.",
           rgid,
-          Core::Communication::my_mpi_rank(
-              Core::Communication::unpack_epetra_comm(dst_mat.Comm())));
+          Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(mat.Comm())));
 
-    if (dst_mat.NumAllocatedGlobalEntries(rgid))
+    if (mat.num_allocated_global_entries(rgid))
     {
       // add all values, including zeros, as we need a proper matrix graph
-      int err = dst_mat.SumIntoGlobalValues(rgid, 1, (diag_values + lid), &rgid);
+      int err = mat.sum_into_global_values(rgid, 1, (diag_values + lid), &rgid);
       if (err > 0)
       {
-        err = dst_mat.InsertGlobalValues(rgid, 1, (diag_values + lid), &rgid);
+        err = mat.insert_global_values(rgid, 1, (diag_values + lid), &rgid);
         if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
       }
       else if (err < 0)
@@ -587,7 +579,7 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
     }
     else
     {
-      const int err = dst_mat.InsertGlobalValues(rgid, 1, (diag_values + lid), &rgid);
+      const int err = mat.insert_global_values(rgid, 1, (diag_values + lid), &rgid);
       if (err < 0) FOUR_C_THROW("InsertGlobalValues error: {}", err);
     }
   }

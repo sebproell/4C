@@ -69,7 +69,7 @@ void Core::LinAlg::Equilibration::compute_inv_row_sums(const Core::LinAlg::Spars
     Core::LinAlg::Vector<double>& invrowsums, const EquilibrationMethod method) const
 {
   // compute inverse row sums of matrix
-  if (matrix.epetra_matrix()->InvRowSums(invrowsums.get_ref_of_epetra_vector()))
+  if (matrix.inv_row_sums(invrowsums))
     FOUR_C_THROW("Inverse row sums of matrix could not be successfully computed!");
 
   // take square root of inverse row sums if matrix is scaled from left and right
@@ -86,7 +86,7 @@ void Core::LinAlg::Equilibration::compute_inv_col_sums(const Core::LinAlg::Spars
     Core::LinAlg::Vector<double>& invcolsums, const EquilibrationMethod method) const
 {
   // compute inverse column sums of matrix
-  if (matrix.epetra_matrix()->InvColSums(invcolsums.get_ref_of_epetra_vector()))
+  if (matrix.inv_col_sums(invcolsums))
     FOUR_C_THROW("Inverse column sums of matrix could not be successfully computed!");
 
   // take square root of inverse column sums if matrix is scaled from left and right
@@ -273,14 +273,16 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
           for (int irow = 0; irow < matrix.row_map().NumMyElements(); ++irow)
           {
             // determine length of current matrix row
-            const int length = matrix.epetra_matrix()->NumMyEntries(irow);
+            const int length = matrix.num_my_entries(irow);
 
             if (length > 0)
             {
               // extract current matrix row from matrix block
               int numentries(0);
               std::vector<double> values(length, 0.);
-              if (matrix.epetra_matrix()->ExtractMyRowCopy(irow, length, numentries, values.data()))
+              std::vector<int> indices(length, 0);
+              if (matrix.extract_my_row_copy(
+                      irow, length, numentries, values.data(), indices.data()))
                 FOUR_C_THROW("Cannot extract matrix row with local ID {} from matrix block!", irow);
 
               // compute and store current row sum
@@ -344,7 +346,7 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
           for (int irow = 0; irow < matrix.row_map().NumMyElements(); ++irow)
           {
             // determine length of current matrix row
-            const int length = matrix.epetra_matrix()->NumMyEntries(irow);
+            const int length = matrix.num_my_entries(irow);
 
             if (length > 0)
             {
@@ -352,7 +354,7 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
               int numentries(0);
               std::vector<double> values(length, 0.);
               std::vector<int> indices(length, 0);
-              if (matrix.epetra_matrix()->ExtractMyRowCopy(
+              if (matrix.extract_my_row_copy(
                       irow, length, numentries, values.data(), indices.data()))
                 FOUR_C_THROW("Cannot extract matrix row with local ID {} from matrix block!", irow);
 

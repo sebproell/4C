@@ -103,7 +103,7 @@ namespace Core::LinAlg
     /// Returns the number of rows locally owned.
     int num_my_rows() const { return sysmat_->NumMyRows(); }
 
-    int num_my_entries(int my_row) { return sysmat_->NumMyEntries(my_row); }
+    int num_my_entries(int my_row) const { return sysmat_->NumMyEntries(my_row); }
 
     /// Returns the number of global rows.
     int num_global_rows() const { return sysmat_->NumGlobalRows(); }
@@ -183,10 +183,10 @@ namespace Core::LinAlg
     int right_scale(const Core::LinAlg::Vector<double>& x);
 
     // Computes the inverse of the sum of absolute values of the rows.
-    int inv_row_sums(Core::LinAlg::Vector<double>& x);
+    int inv_row_sums(Core::LinAlg::Vector<double>& x) const;
 
     // Computes the inverse of the sum of absolute values of the columns.
-    int inv_col_sums(Core::LinAlg::Vector<double>& x);
+    int inv_col_sums(Core::LinAlg::Vector<double>& x) const;
 
     //@}
 

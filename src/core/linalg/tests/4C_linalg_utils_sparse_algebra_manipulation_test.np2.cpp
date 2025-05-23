@@ -51,7 +51,7 @@ namespace
         Core::LinAlg::threshold_matrix(A_sparse, tol);
 
     // Check for global entries
-    const int A_thresh_nnz = A_thresh->epetra_matrix()->NumGlobalNonzeros();
+    const int A_thresh_nnz = A_thresh->num_global_nonzeros();
     EXPECT_EQ(A_thresh_nnz, 20);
 
     // Check for overall norm of matrix
@@ -78,7 +78,7 @@ namespace
         Core::LinAlg::threshold_matrix(A_sparse, tol);
 
     // Check for global entries
-    const int A_thresh_nnz = A_thresh->epetra_matrix()->NumGlobalNonzeros();
+    const int A_thresh_nnz = A_thresh->num_global_nonzeros();
     EXPECT_EQ(A_thresh_nnz, 13);
 
     // Check for overall norm of matrix
