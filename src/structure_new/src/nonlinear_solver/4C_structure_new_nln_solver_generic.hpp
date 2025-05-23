@@ -53,14 +53,11 @@ namespace Solid
         Generic(const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
             const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
             const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
-            const std::shared_ptr<Solid::Integrator>& integrator,
+            const std::shared_ptr<Solid::Integrator>& integr,
             const std::shared_ptr<const Solid::TimeInt::Base>& timint);
 
         //! destructor
         virtual ~Generic() = default;
-
-        //! Setup the nonlinear solver configuration
-        virtual void setup() = 0;
 
         /*! \brief Reset internal storage before the nonlinear solution starts
          *
@@ -85,114 +82,53 @@ namespace Solid
         virtual int get_num_nln_iterations() const = 0;
 
        protected:
-        //! Returns true if init() has been called
-        inline const bool& is_init() const { return isinit_; };
-
-        //! Returns true if setup() has been called
-        inline const bool& is_setup() const { return issetup_; };
-
-        //! Check if init() and setup() have been called
-        void check_init_setup() const
-        {
-          FOUR_C_ASSERT(is_init() and is_setup(), "Call init() and setup() first!");
-        }
-
-        //! Check if init() has been called
-        void check_init() const { FOUR_C_ASSERT(is_init(), "You have to call init() first!"); }
-
         //! Returns the global state data container pointer
         std::shared_ptr<Solid::TimeInt::BaseDataGlobalState> data_global_state_ptr()
         {
-          check_init();
           return gstate_ptr_;
         }
 
         //! Returns the global state data container (read-only)
         const Solid::TimeInt::BaseDataGlobalState& data_global_state() const
         {
-          check_init();
           return *gstate_ptr_;
         }
 
         //! Returns the global state data container (read and write)
-        Solid::TimeInt::BaseDataGlobalState& data_global_state()
-        {
-          check_init();
-          return *gstate_ptr_;
-        }
+        Solid::TimeInt::BaseDataGlobalState& data_global_state() { return *gstate_ptr_; }
 
         //! Returns the structural dynamics data container pointer
-        std::shared_ptr<Solid::TimeInt::BaseDataSDyn> data_s_dyn_ptr()
-        {
-          check_init();
-          return sdyn_ptr_;
-        }
+        std::shared_ptr<Solid::TimeInt::BaseDataSDyn> data_s_dyn_ptr() { return sdyn_ptr_; }
 
         //! Returns the structural dynamics data container (read-only)
-        const Solid::TimeInt::BaseDataSDyn& data_s_dyn() const
-        {
-          check_init();
-          return *sdyn_ptr_;
-        }
+        const Solid::TimeInt::BaseDataSDyn& data_s_dyn() const { return *sdyn_ptr_; }
 
         //! Returns the structural dynamics data container (read and write)
-        Solid::TimeInt::BaseDataSDyn& data_sdyn()
-        {
-          check_init();
-          return *sdyn_ptr_;
-        }
+        Solid::TimeInt::BaseDataSDyn& data_sdyn() { return *sdyn_ptr_; }
 
         //! Returns the non-linear solver implicit time integration interface pointer
         std::shared_ptr<Solid::TimeInt::NoxInterface> nox_interface_ptr()
         {
-          check_init();
           return noxinterface_ptr_;
         }
 
         //! Returns the non-linear solver implicit time integration interface (read-only)
-        const Solid::TimeInt::NoxInterface& nox_interface() const
-        {
-          check_init();
-          return *noxinterface_ptr_;
-        }
+        const Solid::TimeInt::NoxInterface& nox_interface() const { return *noxinterface_ptr_; }
 
         //! Returns the non-linear solver implicit time integration interface (read and write)
-        Solid::TimeInt::NoxInterface& nox_interface()
-        {
-          check_init();
-          return *noxinterface_ptr_;
-        }
+        Solid::TimeInt::NoxInterface& nox_interface() { return *noxinterface_ptr_; }
 
-        Solid::Integrator& integrator()
-        {
-          check_init();
-          return *int_ptr_;
-        }
+        Solid::Integrator& integrator() { return *int_ptr_; }
 
-        const Solid::Integrator& integrator() const
-        {
-          check_init();
-          return *int_ptr_;
-        }
+        const Solid::Integrator& integrator() const { return *int_ptr_; }
 
         //! Returns the underlying time integration strategy
-        const Solid::TimeInt::Base& tim_int() const
-        {
-          check_init();
-          return *timint_ptr_;
-        }
+        const Solid::TimeInt::Base& tim_int() const { return *timint_ptr_; }
 
         /*! returns the nox group (pointer) (only for internal use)
          *
          *  The nox group has to be initialized in one of the derived setup() routines. */
         Teuchos::RCP<::NOX::Abstract::Group>& group_ptr();
-
-       protected:
-        //! init flag
-        bool isinit_;
-
-        //! setup flag
-        bool issetup_;
 
        private:
         //! global state data container of the time integrator

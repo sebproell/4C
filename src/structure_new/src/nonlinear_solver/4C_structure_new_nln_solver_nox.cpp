@@ -33,18 +33,10 @@ Solid::Nln::SOLVER::Nox::Nox(const Teuchos::ParameterList& default_params,
     const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
     const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
     const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
-    const std::shared_ptr<Solid::Integrator>& integrator,
+    const std::shared_ptr<Solid::Integrator>& integr,
     const std::shared_ptr<const Solid::TimeInt::Base>& timint)
-    : Generic(gstate, sdyn, noxinterface, integrator, timint), default_params_(default_params)
+    : Generic(gstate, sdyn, noxinterface, integr, timint), default_params_(default_params)
 {
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-void Solid::Nln::SOLVER::Nox::setup()
-{
-  check_init();
-
   /* Set ::NOX::Epetra::Interface::Required
    * This interface is necessary for the evaluation of basic things
    * which are evaluated outside of the non-linear solver, but
@@ -128,9 +120,6 @@ void Solid::Nln::SOLVER::Nox::setup()
   // -------------------------------------------------------------------------
   // get the stopping criteria from the nox parameter list
   problem_->create_status_tests(ostatus_, istatus_);
-
-  // set flag
-  issetup_ = true;
 }
 
 
@@ -138,9 +127,6 @@ void Solid::Nln::SOLVER::Nox::setup()
  *----------------------------------------------------------------------------*/
 void Solid::Nln::SOLVER::Nox::reset()
 {
-  // safety check
-  check_init_setup();
-
   // do a hard reset at the beginning to be on the safe side
   nlnsolver_ = Teuchos::null;
 
@@ -161,9 +147,6 @@ void Solid::Nln::SOLVER::Nox::reset()
  *----------------------------------------------------------------------------*/
 void Solid::Nln::SOLVER::Nox::reset_params()
 {
-  // safety check
-  check_init_setup();
-
   if (default_params_.isSublist("NOX"))
   {
     nlnglobaldata_->get_nln_parameter_list().setParametersNotAlreadySet(default_params_);
@@ -204,8 +187,6 @@ void Solid::Nln::SOLVER::Nox::reset_params()
  *----------------------------------------------------------------------------*/
 enum Inpar::Solid::ConvergenceStatus Solid::Nln::SOLVER::Nox::solve()
 {
-  check_init_setup();
-
 #if !(FOUR_C_TRILINOS_INTERNAL_VERSION_GE(2025, 4))
   const auto solver_type =
       nlnglobaldata_->get_nln_parameter_list().get<std::string>("Nonlinear Solver");
@@ -237,8 +218,6 @@ enum Inpar::Solid::ConvergenceStatus Solid::Nln::SOLVER::Nox::solve()
 enum Inpar::Solid::ConvergenceStatus Solid::Nln::SOLVER::Nox::convert_final_status(
     const ::NOX::StatusTest::StatusType& finalstatus) const
 {
-  check_init_setup();
-
   Inpar::Solid::ConvergenceStatus convstatus = Inpar::Solid::conv_success;
 
   switch (finalstatus)

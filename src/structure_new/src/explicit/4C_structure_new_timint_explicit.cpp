@@ -56,7 +56,7 @@ void Solid::TimeInt::Explicit::setup()
   }
   nlnsolver_ptr_ = Solid::Nln::SOLVER::build_nln_solver(nlnSolverType, data_global_state_ptr(),
       data_s_dyn_ptr(), noxinterface_ptr, explint_ptr_, Core::Utils::shared_ptr_from_ref(*this));
-  nlnsolver_ptr_->setup();
+
   // set setup flag
   issetup_ = true;
 }
