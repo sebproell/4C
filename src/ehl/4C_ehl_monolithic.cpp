@@ -1677,7 +1677,7 @@ void EHL::Monolithic::lin_couette_force_disp(
     Core::Nodes::Node* lnode = lub_dis.l_row_node(i);
     if (!lnode) FOUR_C_THROW("node not found");
     const double p = lubrication_->lubrication_field()->prenp()->operator[](
-        lubrication_->lubrication_field()->prenp()->get_block_map().LID(lub_dis.dof(0, lnode, 0)));
+        lubrication_->lubrication_field()->prenp()->get_map().LID(lub_dis.dof(0, lnode, 0)));
 
     std::shared_ptr<Core::Mat::Material> mat = lnode->elements()[0]->material(0);
     if (!mat) FOUR_C_THROW("null pointer");
@@ -1827,7 +1827,7 @@ void EHL::Monolithic::lin_couette_force_pres(
     Core::Nodes::Node* lnode = lub_dis.l_row_node(i);
     if (!lnode) FOUR_C_THROW("node not found");
     const double p = lubrication_->lubrication_field()->prenp()->operator[](
-        lubrication_->lubrication_field()->prenp()->get_block_map().LID(lub_dis.dof(0, lnode, 0)));
+        lubrication_->lubrication_field()->prenp()->get_map().LID(lub_dis.dof(0, lnode, 0)));
 
     std::shared_ptr<Core::Mat::Material> mat = lnode->elements()[0]->material(0);
     if (!mat) FOUR_C_THROW("null pointer");
@@ -1913,7 +1913,7 @@ void EHL::Monolithic::apply_dbc()
   if (inf_gap_toggle_lub_ != nullptr)
     for (int i = 0; i < inf_gap_toggle_lub_->local_length(); ++i)
       if (abs(inf_gap_toggle_lub_->operator[](i)) > 1.e-12)
-        rhs_->replace_global_value(inf_gap_toggle_lub_->get_block_map().GID(i), 0, 0.);
+        rhs_->replace_global_value(inf_gap_toggle_lub_->get_map().GID(i), 0, 0.);
 }
 
 FOUR_C_NAMESPACE_CLOSE

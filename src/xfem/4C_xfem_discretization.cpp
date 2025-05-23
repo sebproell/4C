@@ -135,7 +135,8 @@ void XFEM::DiscretizationXFEM::export_initialto_active_vector(
     }
     else
     {
-      Epetra_Import importer(fullvec.get_block_map(), initialvec.get_block_map());
+      Epetra_Import importer(
+          fullvec.get_map().get_epetra_block_map(), initialvec.get_map().get_epetra_block_map());
       int err = fullvec.import(initialvec, importer, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     }
@@ -215,7 +216,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
 
   if (!have_dofs()) FOUR_C_THROW("fill_complete() was not called");
   const Core::LinAlg::Map* colmap = initial_dof_col_map(nds);
-  const Epetra_BlockMap& vecmap = state->get_block_map();
+  const Core::LinAlg::Map& vecmap = state->get_map();
 
   if (state_.size() <= nds) state_.resize(nds + 1);
 
@@ -223,14 +224,14 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
   // This is a rough test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(colmap->get_epetra_map()))
+  if (vecmap.PointSameAs(colmap->get_epetra_block_map()))
   {
     state_[nds][name] = state;
   }
   else  // if it's not in column map export and allocate
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    if (not initial_dof_row_map(nds)->SameAs(state->get_block_map()))
+    if (not initial_dof_row_map(nds)->SameAs(state->get_map()))
     {
       FOUR_C_THROW(
           "row map of discretization and state vector {} are different. This is a fatal bug!",

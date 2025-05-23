@@ -82,7 +82,7 @@ double ScaTra::ScaTraResultTest::result_node(
   double result(0.);
 
   // extract row map from solution vector
-  const Epetra_BlockMap& phinpmap = scatratimint_->phinp()->get_block_map();
+  const Core::LinAlg::Map& phinpmap = scatratimint_->phinp()->get_map();
 
   // test result value of single scalar field
   if (quantity == "phi")

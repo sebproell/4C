@@ -745,10 +745,10 @@ void Core::LinearSolver::AMGNxN::IfpackWrapper::apply(const Core::LinAlg::MultiV
   }
   else
   {
-    Core::LinAlg::MultiVector<double> DX(X.Map(), X.NumVectors(), false);
+    Core::LinAlg::MultiVector<double> DX(X.get_map(), X.NumVectors(), false);
     a_->Apply(Y, DX);
     DX.Update(1.0, X, -1.0);
-    Core::LinAlg::MultiVector<double> DY(Y.Map(), X.NumVectors(), false);
+    Core::LinAlg::MultiVector<double> DY(Y.get_map(), X.NumVectors(), false);
     prec_->ApplyInverse(DX, DY);
     Y.Update(1.0, DY, 1.0);
   }

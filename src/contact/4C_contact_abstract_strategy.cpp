@@ -1013,8 +1013,8 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
       std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_, true);
 
   {
-    const int* oldgids = zincr_->get_block_map().MyGlobalElements();
-    for (int i = 0; i < zincr_->get_block_map().NumMyElements(); ++i)
+    const int* oldgids = zincr_->get_map().MyGlobalElements();
+    for (int i = 0; i < zincr_->get_map().NumMyElements(); ++i)
     {
       if (std::abs((*zincr_)[i]) > std::numeric_limits<double>::epsilon())
       {
@@ -1032,8 +1032,8 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
 
   tmp_ptr->put_scalar(0.0);
   {
-    const int* oldgids = z_->get_block_map().MyGlobalElements();
-    for (int i = 0; i < z_->get_block_map().NumMyElements(); ++i)
+    const int* oldgids = z_->get_map().MyGlobalElements();
+    for (int i = 0; i < z_->get_map().NumMyElements(); ++i)
     {
       if (std::abs((*z_)[i]) > std::numeric_limits<double>::epsilon())
       {
@@ -1625,7 +1625,7 @@ void CONTACT::AbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Qua
 
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (vectorinterface->get_block_map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (vectorinterface->get_map()).LID(cnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("StoreNodalQuantities: Did not find dof in map");
 
         switch (type)
@@ -1728,14 +1728,14 @@ void CONTACT::AbstractStrategy::compute_contact_stresses()
       // normal stress components
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (stressnormal_->get_block_map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (stressnormal_->get_map()).LID(cnode->dofs()[dof]);
         (*stressnormal_)[locindex[dof]] = -lmn * nn[dof];
       }
 
       // tangential stress components
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (stresstangential_->get_block_map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (stresstangential_->get_map()).LID(cnode->dofs()[dof]);
         (*stresstangential_)[locindex[dof]] = -lmt1 * nt1[dof] - lmt2 * nt2[dof];
       }
     }
@@ -1912,7 +1912,7 @@ void CONTACT::AbstractStrategy::do_write_restart(
       Core::Nodes::Node* node = interfaces()[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
-      int dof = (activetoggle->get_block_map()).LID(gid);
+      int dof = (activetoggle->get_map()).LID(gid);
 
       if (forcedrestart)
       {
@@ -2004,7 +2004,7 @@ void CONTACT::AbstractStrategy::do_read_restart(Core::IO::DiscretizationReader& 
     for (int j = 0; j < (interfaces()[i]->slave_row_nodes())->NumMyElements(); ++j)
     {
       int gid = (interfaces()[i]->slave_row_nodes())->GID(j);
-      int dof = (activetoggle->get_block_map()).LID(gid);
+      int dof = (activetoggle->get_map()).LID(gid);
 
       if ((*activetoggle)[dof] == 1)
       {

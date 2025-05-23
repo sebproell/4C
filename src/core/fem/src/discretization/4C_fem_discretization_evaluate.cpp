@@ -226,7 +226,7 @@ void Core::FE::Discretization::evaluate_neumann(Teuchos::ParameterList& params,
             });
 
         value *= functfac;
-        const int lid = systemvector.get_block_map().LID(gid);
+        const int lid = systemvector.get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
         systemvector[lid] += value;
       }
@@ -626,7 +626,7 @@ void Core::FE::Discretization::evaluate_scalars(
     // pointer to current element
     Core::Elements::Element* actele = l_row_element(i);
 
-    if (!scalars.Map().MyGID(actele->id()))
+    if (!scalars.get_map().MyGID(actele->id()))
       FOUR_C_THROW("Proc does not have global element {}", actele->id());
 
     // get element location vector

@@ -1126,7 +1126,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
 
     {
       Epetra_Export exporter(
-          discret_->node_row_map()->get_epetra_map(), newrownodemap->get_epetra_map());
+          discret_->node_row_map()->get_epetra_block_map(), newrownodemap->get_epetra_block_map());
       int err = nodegraph.export_to(oldnodegraph->get_epetra_crs_graph(), exporter, Add);
       if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
     }
@@ -1134,7 +1134,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     nodegraph.optimize_storage();
 
     // build nodecolmap for new distribution of nodes
-    const Epetra_BlockMap cntmp = nodegraph.col_map();
+    const Core::LinAlg::Map cntmp = nodegraph.col_map();
 
     std::shared_ptr<Core::LinAlg::Map> newcolnodemap;
 
@@ -1499,14 +1499,13 @@ void Core::Conditions::PeriodicBoundaryConditions::balance_load()
     if (numproc > 1)
     {
       // get rowmap of the graph  (from blockmap -> map)
-      const Epetra_BlockMap& graph_row_map = nodegraph->row_map();
+      const Core::LinAlg::Map& graph_row_map = nodegraph->row_map();
       const Core::LinAlg::Map graph_rowmap(graph_row_map.NumGlobalElements(),
           graph_row_map.NumMyElements(), graph_row_map.MyGlobalElements(), 0,
           Core::Communication::unpack_epetra_comm(nodegraph->get_comm()));
 
       // set standard value of edge weight to 1.0
-      auto edge_weights =
-          std::make_shared<Core::LinAlg::SparseMatrix>(graph_rowmap.get_epetra_map(), 15);
+      auto edge_weights = std::make_shared<Core::LinAlg::SparseMatrix>(graph_rowmap, 15);
       for (int i = 0; i < nodegraph->num_local_rows(); ++i)
       {
         const int grow = nodegraph->row_map().GID(i);

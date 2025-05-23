@@ -69,7 +69,7 @@ void StruResultTest::test_node(
       // test displacements or pressure
       if (dis_ != nullptr)
       {
-        const Epetra_BlockMap& disnpmap = dis_->get_block_map();
+        const Core::LinAlg::Map& disnpmap = dis_->get_map();
         int idx = -1;
         if (position == "dispx")
           idx = 0;
@@ -94,7 +94,7 @@ void StruResultTest::test_node(
       // test velocities
       if (vel_ != nullptr)
       {
-        const Epetra_BlockMap& velnpmap = vel_->get_block_map();
+        const Core::LinAlg::Map& velnpmap = vel_->get_map();
         int idx = -1;
         if (position == "velx")
           idx = 0;
@@ -117,7 +117,7 @@ void StruResultTest::test_node(
       // test accelerations
       if (acc_ != nullptr)
       {
-        const Epetra_BlockMap& accnpmap = acc_->get_block_map();
+        const Core::LinAlg::Map& accnpmap = acc_->get_map();
         int idx = -1;
         if (position == "accx")
           idx = 0;

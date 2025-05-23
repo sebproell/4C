@@ -42,7 +42,7 @@ void MultiScale::MicroStatic::determine_toggle()
       {
         const int gid = dofs[j];
 
-        const int lid = disn_->get_block_map().LID(gid);
+        const int lid = disn_->get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
 
         if ((*dirichtoggle_)[lid] != 1.0)  // be careful not to count dofs more
@@ -95,9 +95,9 @@ void MultiScale::MicroStatic::set_up_homogenization()
 
   // create importer
   importp_ = std::make_shared<Epetra_Import>(
-      pdof_->get_epetra_map(), (discret_->dof_row_map())->get_epetra_map());
+      pdof_->get_epetra_block_map(), (discret_->dof_row_map())->get_epetra_block_map());
   importf_ = std::make_shared<Epetra_Import>(
-      fdof_->get_epetra_map(), (discret_->dof_row_map())->get_epetra_map());
+      fdof_->get_epetra_block_map(), (discret_->dof_row_map())->get_epetra_block_map());
 
   // create vector containing material coordinates of prescribed nodes
   Core::LinAlg::Vector<double> Xp_temp(*pdof_);
@@ -124,7 +124,7 @@ void MultiScale::MicroStatic::set_up_homogenization()
       {
         const int gid = dofs[k];
 
-        const int lid = disn_->get_block_map().LID(gid);
+        const int lid = disn_->get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
 
         for (int l = 0; l < np_; ++l)

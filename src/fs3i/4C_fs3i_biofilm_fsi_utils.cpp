@@ -52,7 +52,7 @@ void FS3I::BioFilm::Utils::scatra_change_config(Core::FE::Discretization& scatra
 
     for (int i = 0; i < numdim; ++i)
     {
-      const int lid = gvector.get_block_map().LID(nodedofs[i]);
+      const int lid = gvector.get_map().LID(nodedofs[i]);
 
       if (lid < 0)
         FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",

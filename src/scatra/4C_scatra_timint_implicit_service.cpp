@@ -691,7 +691,7 @@ void ScaTra::ScaTraTimIntImpl::compute_density()
 
       // global and local dof ID
       const int globaldofid = nodedofs[k];
-      const int localdofid = phiafnp()->get_block_map().LID(globaldofid);
+      const int localdofid = phiafnp()->get_map().LID(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("Local dof ID not found in dof map!");
 
       // add contribution of scalar k to nodal density value
@@ -704,7 +704,7 @@ void ScaTra::ScaTraTimIntImpl::compute_density()
     // position of the last dof this way, all nodal density values will be correctly extracted in
     // the fluid algorithm
     const int globaldofid = nodedofs[numdof - 1];
-    const int localdofid = phiafnp()->get_block_map().LID(globaldofid);
+    const int localdofid = phiafnp()->get_map().LID(globaldofid);
     if (localdofid < 0) FOUR_C_THROW("Local dof ID not found in dof map!");
 
     int err = densafnp_->replace_local_value(localdofid, 0, density);
@@ -859,9 +859,9 @@ void ScaTra::ScaTraTimIntImpl::add_flux_approx_to_parameter_list(Teuchos::Parame
     {
       Core::Nodes::Node* actnode = discret_->l_row_node(i);
       int dofgid = discret_->dof(0, actnode, k);
-      fluxk->ReplaceMyValue(i, 0, ((*flux)(0))[(flux->Map()).LID(dofgid)]);
-      fluxk->ReplaceMyValue(i, 1, ((*flux)(1))[(flux->Map()).LID(dofgid)]);
-      fluxk->ReplaceMyValue(i, 2, ((*flux)(2))[(flux->Map()).LID(dofgid)]);
+      fluxk->ReplaceMyValue(i, 0, ((*flux)(0))[(flux->get_map()).LID(dofgid)]);
+      fluxk->ReplaceMyValue(i, 1, ((*flux)(1))[(flux->get_map()).LID(dofgid)]);
+      fluxk->ReplaceMyValue(i, 2, ((*flux)(2))[(flux->get_map()).LID(dofgid)]);
     }
     discret_->add_multi_vector_to_parameter_list(p, name, fluxk);
   }
@@ -1170,9 +1170,9 @@ void ScaTra::ScaTraTimIntImpl::collect_output_flux_data(
       Core::Nodes::Node* actnode = discret_->l_row_node(i);
       int dofgid = discret_->dof(0, actnode, writefluxid - 1);
       // get value for each component of flux vector
-      double xvalue = ((*flux)(0))[(flux->Map()).LID(dofgid)];
-      double yvalue = ((*flux)(1))[(flux->Map()).LID(dofgid)];
-      double zvalue = ((*flux)(2))[(flux->Map()).LID(dofgid)];
+      double xvalue = ((*flux)(0))[(flux->get_map()).LID(dofgid)];
+      double yvalue = ((*flux)(1))[(flux->get_map()).LID(dofgid)];
+      double zvalue = ((*flux)(2))[(flux->get_map()).LID(dofgid)];
       // care for the slave nodes of rotationally symm. periodic boundary conditions
       double rotangle(0.0);  // already converted to radians
       bool havetorotate = FLD::is_slave_node_of_rot_sym_pbc(actnode, rotangle);
@@ -1223,8 +1223,7 @@ void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num) const
     // global integral of reaction terms
     std::vector<double> intreacterm(num_scal(), 0.0);
     for (int k = 0; k < num_scal(); ++k)
-      Core::Communication::sum_all(&((*myreacnp)[k]), &intreacterm[k], 1,
-          Core::Communication::unpack_epetra_comm(phinp_->get_block_map().Comm()));
+      Core::Communication::sum_all(&((*myreacnp)[k]), &intreacterm[k], 1, phinp_->get_map().Comm());
 
     // print out values
     if (myrank_ == 0)
@@ -1410,9 +1409,9 @@ void ScaTra::ScaTraTimIntImpl::access_dyn_smag_filter(std::shared_ptr<FLD::DynSm
   {
     if (myrank_ == 0)
     {
-      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << '\n';
-      std::cout << "Dynamic Smagorinsky model: provided access for ScaTra       " << '\n';
-      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << '\n';
+      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+      std::cout << "Dynamic Smagorinsky model: provided access for ScaTra       " << std::endl;
+      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
     }
     DynSmag_->add_scatra(discret_);
   }
@@ -1822,7 +1821,7 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
     phinp_->update(1., phinp_original, 0.);
 
     // impose perturbation
-    if (phinp_->get_block_map().MyGID(colgid))
+    if (phinp_->get_map().MyGID(colgid))
     {
       if (phinp_->sum_into_global_value(colgid, 0, fdcheckeps_))
         FOUR_C_THROW(

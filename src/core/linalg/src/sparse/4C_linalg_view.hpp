@@ -11,6 +11,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_utils_exceptions.hpp"
+
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN

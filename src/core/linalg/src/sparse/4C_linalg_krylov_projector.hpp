@@ -22,6 +22,7 @@ namespace Core::LinAlg
   class SerialDenseMatrix;
   class SerialDenseVector;
   class SparseMatrix;
+  class Map;
 
   /*!
   A class providing a Krylov projectors. Used for projected preconditioner,
@@ -42,7 +43,7 @@ namespace Core::LinAlg
     KrylovProjector(const std::vector<int>
                         modeids,        //! ids of to-be-projected modes according element nullspace
         const std::string* weighttype,  //! type of weights: integration or pointvalues
-        const Epetra_BlockMap* map      //! map for kernel and weight vectors
+        const Core::LinAlg::Map* map    //! map for kernel and weight vectors
     );
 
     //! give out std::shared_ptr to c_ for change
@@ -52,7 +53,7 @@ namespace Core::LinAlg
     std::shared_ptr<Core::LinAlg::MultiVector<double>> get_non_const_weights();
     // set c_ and w_ from outside
     void set_cw(Core::LinAlg::MultiVector<double>& c0, Core::LinAlg::MultiVector<double>& w0,
-        const Epetra_BlockMap* newmap);
+        const Core::LinAlg::Map* newmap);
     void set_cw(Core::LinAlg::MultiVector<double>& c0, Core::LinAlg::MultiVector<double>& w0);
     //! compute (w^T c)^(-1) and completes projector for use
     void fill_complete();

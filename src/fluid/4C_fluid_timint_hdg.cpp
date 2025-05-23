@@ -300,8 +300,7 @@ void FLD::TimIntHDG::clear_state_assemble_mat_and_rhs()
     // data back before it disappears when clearing the state (at least for nproc>1)
     const Core::LinAlg::Vector<double>& intvelnpGhosted = *discret_->get_state(1, "intvelnp");
     for (int i = 0; i < intvelnp_->local_length(); ++i)
-      (*intvelnp_)[i] =
-          intvelnpGhosted[intvelnpGhosted.get_block_map().LID(intvelnp_->get_block_map().GID(i))];
+      (*intvelnp_)[i] = intvelnpGhosted[intvelnpGhosted.get_map().LID(intvelnp_->get_map().GID(i))];
   }
   first_assembly_ = false;
   FluidImplicitTimeInt::clear_state_assemble_mat_and_rhs();
@@ -473,7 +472,7 @@ namespace
       velocity = std::make_shared<Core::LinAlg::MultiVector<double>>(*dis.node_row_map(), ndim);
       pressure = std::make_shared<Core::LinAlg::Vector<double>>(*dis.node_row_map());
     }
-    tracevel = std::make_shared<Core::LinAlg::MultiVector<double>>(velocity->Map(), ndim);
+    tracevel = std::make_shared<Core::LinAlg::MultiVector<double>>(velocity->get_map(), ndim);
     cellPres = std::make_shared<Core::LinAlg::Vector<double>>(*dis.element_row_map());
 
     // call element routine for interpolate HDG to elements

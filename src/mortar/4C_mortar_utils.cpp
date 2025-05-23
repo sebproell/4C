@@ -383,7 +383,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::redistribute(
     const Core::LinAlg::SparseMatrix& src, const Core::LinAlg::Map& permrowmap,
     const Core::LinAlg::Map& permdomainmap)
 {
-  Epetra_Export exporter(permrowmap.get_epetra_map(), src.row_map().get_epetra_map());
+  Epetra_Export exporter(permrowmap.get_epetra_block_map(), src.row_map().get_epetra_block_map());
 
   auto permsrc = std::make_shared<Core::LinAlg::SparseMatrix>(permrowmap, src.max_num_entries());
   int err = permsrc->import(src, exporter, Insert);
@@ -929,13 +929,13 @@ void Mortar::Utils::mortar_rhs_condensation(
   Core::LinAlg::Vector<double> fs(*gsdofrowmap);
   Core::LinAlg::Vector<double> fm_cond(*gmdofrowmap);
   Core::LinAlg::export_to(rhs, fs);
-  Core::LinAlg::Vector<double> fs_full(rhs.get_block_map());
+  Core::LinAlg::Vector<double> fs_full(rhs.get_map());
   Core::LinAlg::export_to(fs, fs_full);
   if (rhs.update(-1., fs_full, 1.)) FOUR_C_THROW("update failed");
 
   if (p.multiply(true, fs, fm_cond)) FOUR_C_THROW("multiply failed");
 
-  Core::LinAlg::Vector<double> fm_cond_full(rhs.get_block_map());
+  Core::LinAlg::Vector<double> fm_cond_full(rhs.get_map());
   Core::LinAlg::export_to(fm_cond, fm_cond_full);
   if (rhs.update(1., fm_cond_full, 1.)) FOUR_C_THROW("update failed");
 
@@ -957,7 +957,7 @@ void Mortar::Utils::mortar_recover(Core::LinAlg::Vector<double>& inc, Core::LinA
 
   Core::LinAlg::Vector<double> s_inc(*gsdofrowmap);
   if (p.multiply(false, m_inc, s_inc)) FOUR_C_THROW("multiply failed");
-  Core::LinAlg::Vector<double> s_inc_full(inc.get_block_map());
+  Core::LinAlg::Vector<double> s_inc_full(inc.get_map());
   Core::LinAlg::export_to(s_inc, s_inc_full);
   if (inc.update(1., s_inc_full, 1.)) FOUR_C_THROW("update failed");
 

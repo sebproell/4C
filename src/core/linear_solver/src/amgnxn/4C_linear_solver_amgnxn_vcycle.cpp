@@ -302,7 +302,7 @@ void Core::LinearSolver::AMGNxN::VcycleSingle::do_vcycle(const Core::LinAlg::Mul
 
     // Compute residual
     int NV = X.NumVectors();
-    Core::LinAlg::MultiVector<double> DX(X.Map(), NV, false);
+    Core::LinAlg::MultiVector<double> DX(X.get_map(), NV, false);
     avec_[level]->Apply(Y, DX);
     DX.Update(1.0, X, -1.0);
 
@@ -317,7 +317,7 @@ void Core::LinearSolver::AMGNxN::VcycleSingle::do_vcycle(const Core::LinAlg::Mul
     do_vcycle(DXcoarse, DYcoarse, level + 1, true);
 
     // Compute correction
-    Core::LinAlg::MultiVector<double> DY(Y.Map(), NV, false);
+    Core::LinAlg::MultiVector<double> DY(Y.get_map(), NV, false);
     pvec_[level]->Apply(DYcoarse, DY);
     Y.Update(1.0, DY, 1.0);
 

@@ -16,15 +16,17 @@
 
 FOUR_C_NAMESPACE_OPEN
 
+
+
 template <typename T>
-Core::LinAlg::Vector<T>::Vector(const Epetra_BlockMap& Map, bool zeroOut)
-    : vector_(std::make_shared<Epetra_Vector>(Map, zeroOut))
+Core::LinAlg::Vector<T>::Vector(const Map& Map, bool zeroOut)
+    : vector_(std::make_shared<Epetra_Vector>(Map.get_epetra_block_map(), zeroOut))
 {
 }
 
 template <typename T>
-Core::LinAlg::Vector<T>::Vector(const Map& Map, bool zeroOut)
-    : vector_(std::make_shared<Epetra_Vector>(Map.get_epetra_map(), zeroOut))
+Core::LinAlg::Vector<T>::Vector(const Epetra_BlockMap& Map, bool zeroOut)
+    : vector_(std::make_shared<Epetra_Vector>(Map, zeroOut))
 {
 }
 
@@ -180,24 +182,25 @@ int Core::LinAlg::Vector<T>::put_scalar(double ScalarConstant)
 }
 
 
-template <typename T>
-int Core::LinAlg::Vector<T>::replace_map(const Epetra_BlockMap& map)
-{
-  if (multi_vector_view_) multi_vector_view_->ReplaceMap(map);
-  return vector_->ReplaceMap(map);
-}
 
 template <typename T>
 int Core::LinAlg::Vector<T>::replace_map(const Map& map)
 {
-  if (multi_vector_view_) multi_vector_view_->ReplaceMap(map.get_epetra_map());
-  return vector_->ReplaceMap(map.get_epetra_map());
+  if (multi_vector_view_) multi_vector_view_->ReplaceMap(map);
+  auto rv = vector_->ReplaceMap(map.get_epetra_block_map());
+  return rv;
 }
 
 template <typename T>
 MPI_Comm Core::LinAlg::Vector<T>::get_comm() const
 {
   return Core::Communication::unpack_epetra_comm(vector_->Comm());
+}
+
+template <typename T>
+const Core::LinAlg::Map& Core::LinAlg::Vector<T>::get_map() const
+{
+  return map_.sync(vector_->Map());
 }
 
 template <typename T>
@@ -212,23 +215,15 @@ template class Core::LinAlg::Vector<double>;
 
 
 
-Core::LinAlg::Vector<int>::Vector(const Epetra_BlockMap& map, bool zeroOut)
-    : vector_(std::make_shared<Epetra_IntVector>(map, zeroOut))
-{
-}
-
 Core::LinAlg::Vector<int>::Vector(const Map& map, bool zeroOut)
-    : vector_(std::make_shared<Epetra_IntVector>(map.get_epetra_map(), zeroOut))
+    : vector_(std::make_shared<Epetra_IntVector>(map.get_epetra_block_map(), zeroOut))
 {
 }
 
-Core::LinAlg::Vector<int>::Vector(const Epetra_BlockMap& map, int* values)
-    : vector_(std::make_shared<Epetra_IntVector>(Epetra_DataAccess::Copy, map, values))
-{
-}
+
 Core::LinAlg::Vector<int>::Vector(const Map& map, int* values)
-    : vector_(
-          std::make_shared<Epetra_IntVector>(Epetra_DataAccess::Copy, map.get_epetra_map(), values))
+    : vector_(std::make_shared<Epetra_IntVector>(
+          Epetra_DataAccess::Copy, map.get_epetra_block_map(), values))
 {
 }
 

@@ -245,7 +245,7 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
 
   // For parallel computations, we need to access all dofs on the elements, including the
   // nodes owned by other processors. Therefore, we need to import that data here.
-  const Epetra_BlockMap& vecmap = data->get_block_map();
+  const Core::LinAlg::Map& vecmap = data->get_map();
   const Core::LinAlg::Map* colmap = dis->dof_col_map(0);
 
   int offset = vecmap.MinAllGID() - dis->dof_row_map()->MinAllGID();
@@ -263,8 +263,8 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
     std::vector<int> gids(vecmap.NumMyElements());
     for (int i = 0; i < vecmap.NumMyElements(); ++i)
       gids[i] = vecmap.MyGlobalElements()[i] - offset;
-    Core::LinAlg::Map rowmap(vecmap.NumGlobalElements(), vecmap.NumMyElements(), gids.data(), 0,
-        Core::Communication::unpack_epetra_comm(vecmap.Comm()));
+    Core::LinAlg::Map rowmap(
+        vecmap.NumGlobalElements(), vecmap.NumMyElements(), gids.data(), 0, vecmap.Comm());
     std::shared_ptr<Core::LinAlg::Vector<double>> dofvec =
         Core::LinAlg::create_vector(rowmap, false);
     for (int i = 0; i < vecmap.NumMyElements(); ++i) (*dofvec)[i] = (*data)[i];
@@ -315,7 +315,7 @@ void PostVtuWriter::write_dof_result_step(std::ofstream& file,
 
         for (int d = 0; d < numdf; ++d)
         {
-          const int lid = ghostedData->get_block_map().LID(nodedofs[d + from]);
+          const int lid = ghostedData->get_map().LID(nodedofs[d + from]);
           if (lid > -1)
             solution.push_back((*ghostedData)[lid]);
           else
@@ -367,7 +367,7 @@ void PostVtuWriter::write_nodal_result_step(std::ofstream& file,
   // Here is the only thing we need to do for parallel computations: We need read access to all dofs
   // on the row elements, so need to get the NodeColMap to have this access
   const Core::LinAlg::Map* colmap = dis->node_col_map();
-  const Epetra_BlockMap& vecmap = data->Map();
+  const Core::LinAlg::Map& vecmap = data->get_map();
 
   FOUR_C_ASSERT(
       colmap->MaxAllGID() == vecmap.MaxAllGID() && colmap->MinAllGID() == vecmap.MinAllGID(),
@@ -412,7 +412,7 @@ void PostVtuWriter::write_nodal_result_step(std::ofstream& file,
         {
           // Core::LinAlg::Vector<double>* column = (*ghostedData)(idf);
           Core::LinAlg::Vector<double> column((*ghostedData)(idf));
-          int lid = ghostedData->Map().LID(ele->nodes()[numbering[n]]->id());
+          int lid = ghostedData->get_map().LID(ele->nodes()[numbering[n]]->id());
 
           if (lid > -1)
             solution.push_back((column)[lid]);
@@ -472,7 +472,7 @@ void PostVtuWriter::write_element_result_step(std::ofstream& file,
     FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: {}", numcol);
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> importedData;
-  if (dis->element_row_map()->SameAs(data->Map()))
+  if (dis->element_row_map()->SameAs(data->get_map()))
     importedData = data;
   else
   {
@@ -799,7 +799,7 @@ void PostVtuWriter::write_dof_result_step_nurbs_ele(const Core::Elements::Elemen
       dis->dof(ele->nodes()[m], nodedofs);
       for (int d = 0; d < numdf; ++d)
       {
-        const int lid = ghostedData.get_block_map().LID(nodedofs[d + from]);
+        const int lid = ghostedData.get_map().LID(nodedofs[d + from]);
         if (lid > -1)
           val[d] += funct(m) * ((ghostedData)[lid]);
         else
@@ -846,7 +846,7 @@ void PostVtuWriter::write_dof_result_step_beam_ele(const Discret::Elements::Beam
 
     for (std::vector<int>::const_iterator it = nodedofs.begin(); it != nodedofs.end(); ++it)
     {
-      const int lid = ghostedData->get_block_map().LID(*it);
+      const int lid = ghostedData->get_map().LID(*it);
       if (lid > -1)
         elementdofvals.push_back((*ghostedData)[lid]);
       else
@@ -988,7 +988,7 @@ void PostVtuWriter::write_nodal_result_step_nurbs_ele(const Core::Elements::Elem
       Core::LinAlg::Vector<double> column((ghostedData)(idf));
       for (unsigned m = 0; m < NUMNODES; ++m)
       {
-        int lid = ghostedData.Map().LID(ele->nodes()[m]->id());
+        int lid = ghostedData.get_map().LID(ele->nodes()[m]->id());
         if (lid > -1)
           val[idf] += funct(m) * (column)[lid];
         else

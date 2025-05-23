@@ -30,7 +30,7 @@ FOUR_C_NAMESPACE_OPEN
                           Constructor
    -------------------------------------------------------------------- */
 Core::LinAlg::KrylovProjector::KrylovProjector(
-    const std::vector<int> modeids, const std::string* weighttype, const Epetra_BlockMap* map)
+    const std::vector<int> modeids, const std::string* weighttype, const Core::LinAlg::Map* map)
     : complete_(false), modeids_(modeids), weighttype_(weighttype), p_(nullptr), pt_(nullptr)
 {
   nsdim_ = modeids_.size();
@@ -84,7 +84,7 @@ Core::LinAlg::KrylovProjector::get_non_const_weights()
 }
 
 void Core::LinAlg::KrylovProjector::set_cw(Core::LinAlg::MultiVector<double>& c0,
-    Core::LinAlg::MultiVector<double>& w0, const Epetra_BlockMap* newmap)
+    Core::LinAlg::MultiVector<double>& w0, const Core::LinAlg::Map* newmap)
 {
   c_ = nullptr;
   w_ = nullptr;
@@ -302,7 +302,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Core::LinAlg::KrylovProjector::proje
 
   // here: matvec = A c_;
   std::shared_ptr<Core::LinAlg::MultiVector<double>> matvec =
-      std::make_shared<Core::LinAlg::MultiVector<double>>(c_->Map(), nsdim_, false);
+      std::make_shared<Core::LinAlg::MultiVector<double>>(c_->get_map(), nsdim_, false);
   A.epetra_matrix()->Multiply(false, *c_, *matvec);
 
   // compute serial dense matrix c^T A c
@@ -463,7 +463,7 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_dense_matrix(
 
   // create empty multivector mvout
   std::shared_ptr<Core::LinAlg::MultiVector<double>> mvout =
-      std::make_shared<Core::LinAlg::MultiVector<double>>(mv->Map(), nsdim_);
+      std::make_shared<Core::LinAlg::MultiVector<double>>(mv->get_map(), nsdim_);
 
   // loop over all vectors of mvout
   for (int rr = 0; rr < nsdim_; ++rr)
@@ -513,8 +513,8 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
   Core::Communication::sum_all(&numnonzero, &glob_numnonzero, 1, prod.get_comm());
 
   // do stupid conversion into Epetra map
-  Core::LinAlg::Map mv1map(mv1->Map().NumGlobalElements(), mv1->Map().NumMyElements(),
-      mv1->Map().MyGlobalElements(), 0, Core::Communication::unpack_epetra_comm(mv1->Map().Comm()));
+  Core::LinAlg::Map mv1map(mv1->get_map().NumGlobalElements(), mv1->get_map().NumMyElements(),
+      mv1->get_map().MyGlobalElements(), 0, mv1->get_map().Comm());
   // initialization of mat with map of mv1
   std::shared_ptr<Core::LinAlg::SparseMatrix> mat =
       std::make_shared<Core::LinAlg::SparseMatrix>(mv1map, glob_numnonzero, false);
@@ -527,15 +527,16 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
   const int numvals = mv2->GlobalLength();
 
   // do stupid conversion into Epetra map
-  Core::LinAlg::Map mv2map(mv2->Map().NumGlobalElements(), mv2->Map().NumMyElements(),
-      mv2->Map().MyGlobalElements(), 0, Core::Communication::unpack_epetra_comm(mv2->Map().Comm()));
+  Core::LinAlg::Map mv2map(mv2->get_map().NumGlobalElements(), mv2->get_map().NumMyElements(),
+      mv2->get_map().MyGlobalElements(), 0, mv2->get_map().Comm());
 
   // fully redundant/overlapping map
   std::shared_ptr<Core::LinAlg::Map> redundant_map = Core::LinAlg::allreduce_e_map(mv2map);
   // initialize global mv2 without setting to 0
   Core::LinAlg::MultiVector<double> mv2glob(*redundant_map, nsdim_);
   // create importer with redundant target map and distributed source map
-  Epetra_Import importer(redundant_map->get_epetra_map(), mv2->Map());
+  Epetra_Import importer(
+      redundant_map->get_epetra_block_map(), mv2->get_map().get_epetra_block_map());
   // import values to global mv2
   mv2glob.Import(*mv2, importer, Insert);
 

@@ -231,7 +231,7 @@ bool Solid::ModelEvaluator::Contact::assemble_force(
     // --- constr. - block --------------------------------------------------
     block_vec_ptr = strategy().get_rhs_block_ptr(CONTACT::VecBlockType::constraint);
     if (!block_vec_ptr) return true;
-    Core::LinAlg::Vector<double> tmp(f.get_block_map());
+    Core::LinAlg::Vector<double> tmp(f.get_map());
     Core::LinAlg::export_to(*block_vec_ptr, tmp);
     f.update(1., tmp, 1.);
   }

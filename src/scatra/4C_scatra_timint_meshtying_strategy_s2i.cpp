@@ -1683,7 +1683,7 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_nts(
       vector1_side, systemvector2, vector2_side);
 
   // extract slave-side noderowmap
-  const Epetra_BlockMap& noderowmap_slave = islavenodestomasterelements.get_block_map();
+  const Core::LinAlg::Map& noderowmap_slave = islavenodestomasterelements.get_map();
 
   // loop over all slave-side nodes
   for (int inode = 0; inode < noderowmap_slave.NumMyElements(); ++inode)
@@ -2534,7 +2534,7 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
 
         // initialize auxiliary residual vector for master side
         imasterresidual_ =
-            std::make_shared<Epetra_FEVector>(interfacemaps_->map(2)->get_epetra_map());
+            std::make_shared<Epetra_FEVector>(interfacemaps_->map(2)->get_epetra_block_map());
       }
 
       switch (couplingtype_)
@@ -4008,7 +4008,7 @@ void ScaTra::MeshtyingStrategyS2I::fd_check(
     statenp.update(1., statenp_original, 0.);
 
     // impose perturbation
-    if (statenp.get_block_map().MyGID(colgid))
+    if (statenp.get_map().MyGID(colgid))
       if (statenp.sum_into_global_value(colgid, 0, fdcheckeps))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");

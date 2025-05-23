@@ -71,7 +71,7 @@ double CONTACT::NoxInterface::get_constraint_rhs_norms(const Core::LinAlg::Vecto
   std::shared_ptr<Core::LinAlg::Vector<double>> constrRhs_red = nullptr;
   // Note: PointSameAs is faster than SameAs and should do the job right here,
   // since we replace the map afterwards anyway.               hiermeier 08/17
-  if (not constrRhs->get_block_map().PointSameAs(strategy().lm_dof_row_map(true).get_epetra_map()))
+  if (not constrRhs->get_map().PointSameAs(strategy().lm_dof_row_map(true).get_epetra_block_map()))
   {
     constrRhs_red = std::make_shared<Core::LinAlg::Vector<double>>(strategy().lm_dof_row_map(true));
     Core::LinAlg::export_to(*constrRhs, *constrRhs_red);

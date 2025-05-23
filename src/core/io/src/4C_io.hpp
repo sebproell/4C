@@ -21,15 +21,13 @@
 #include <string>
 #include <vector>
 
-class Map;
-class Epetra_BlockMap;
-
 FOUR_C_NAMESPACE_OPEN
 
 namespace LinAlg
 {
   class SerialDenseMatrix;
-}
+  class Map;
+}  // namespace LinAlg
 namespace Core::FE
 {
   class Discretization;
@@ -417,7 +415,7 @@ namespace Core::IO
     std::map<const Epetra_BlockMapData*, std::string> mapcache_;
 
     /// dummy stack to really save the maps we cache
-    std::vector<Epetra_BlockMap> mapstack_;
+    std::vector<Core::LinAlg::Map> mapstack_;
 
     int resultfile_changed_;
     int meshfile_changed_;

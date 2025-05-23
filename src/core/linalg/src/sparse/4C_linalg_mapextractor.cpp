@@ -38,8 +38,8 @@ void Core::LinAlg::MultiMapExtractor::setup(const Core::LinAlg::Map& fullmap,
   {
     if (maps_[i] != nullptr)
     {
-      importer_[i] =
-          std::make_shared<Epetra_Import>(maps_[i]->get_epetra_map(), fullmap_->get_epetra_map());
+      importer_[i] = std::make_shared<Epetra_Import>(
+          maps_[i]->get_epetra_block_map(), fullmap_->get_epetra_block_map());
     }
   }
 }
@@ -233,7 +233,8 @@ void Core::LinAlg::MultiMapExtractor::add_vector(const Core::LinAlg::MultiVector
     int block, Core::LinAlg::MultiVector<double>& full, double scale) const
 {
   std::shared_ptr<Core::LinAlg::MultiVector<double>> v = extract_vector(full, block);
-  if (not v->Map().SameAs(partial.Map())) FOUR_C_THROW("The maps of the vectors must be the same!");
+  if (not v->get_map().SameAs(partial.get_map()))
+    FOUR_C_THROW("The maps of the vectors must be the same!");
   v->Update(scale, partial, 1.0);
   insert_vector(*v, block, full);
 }

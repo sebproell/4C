@@ -233,7 +233,7 @@ void FSI::FSIResultTest::test_node(
       // test Lagrange multipliers
       if (fsilambda_ != nullptr)
       {
-        const Epetra_BlockMap& fsilambdamap = fsilambda_->get_block_map();
+        const Core::LinAlg::Map& fsilambdamap = fsilambda_->get_map();
         if (quantity == "lambdax")
         {
           unknownquantity = false;

@@ -523,7 +523,7 @@ void CONTACT::MtAbstractStrategy::mesh_initialization(
 
       for (int dof = 0; dof < numdof; ++dof)
       {
-        locindex[dof] = (Xslavemodcol.get_block_map()).LID(mtnode->dofs()[dof]);
+        locindex[dof] = (Xslavemodcol.get_map()).LID(mtnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("Did not find dof in map");
         Xnew[dof] = Xslavemodcol[locindex[dof]];
       }
@@ -663,7 +663,7 @@ void CONTACT::MtAbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Q
 
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (vectorinterface.get_block_map()).LID(mtnode->dofs()[dof]);
+        locindex[dof] = (vectorinterface.get_map()).LID(mtnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("StoreNodalQuantities: Did not find dof in map");
 
         switch (type)

@@ -421,7 +421,7 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
     {
       // get global and local dof IDs
       const int gid = nodedofs[index];
-      const int lid = convel_new->get_block_map().LID(gid);
+      const int lid = convel_new->get_map().LID(gid);
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       const double convelocity = myvel[index];
       int err = convel_new->replace_local_value(lid, 0, convelocity);

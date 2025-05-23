@@ -117,15 +117,15 @@ std::shared_ptr<Core::LinAlg::Vector<int>> Core::FE::Utils::Dbc::create_toggle_v
   {
     if (systemvectors[0])
     {
-      toggleaux = std::make_shared<Core::LinAlg::Vector<int>>(systemvectors[0]->get_block_map());
+      toggleaux = std::make_shared<Core::LinAlg::Vector<int>>(systemvectors[0]->get_map());
     }
     else if (systemvectors[1])
     {
-      toggleaux = std::make_shared<Core::LinAlg::Vector<int>>(systemvectors[1]->get_block_map());
+      toggleaux = std::make_shared<Core::LinAlg::Vector<int>>(systemvectors[1]->get_map());
     }
     else if (systemvectors[2])
     {
-      toggleaux = std::make_shared<Core::LinAlg::Vector<int>>(systemvectors[2]->get_block_map());
+      toggleaux = std::make_shared<Core::LinAlg::Vector<int>>(systemvectors[2]->get_map());
     }
     else if (systemvectors[0] == nullptr and systemvectors[1] == nullptr and
              systemvectors[2] == nullptr)
@@ -299,7 +299,7 @@ void Core::FE::Utils::Dbc::read_dirichlet_condition(const Teuchos::ParameterList
       const int gid = dofs[j];
 
       // get corresponding lid
-      const int lid = info.toggle.get_block_map().LID(gid);
+      const int lid = info.toggle.get_map().LID(gid);
       if (lid < 0)
         FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
             Core::Communication::my_mpi_rank(discret.get_comm()));
@@ -514,7 +514,7 @@ void Core::FE::Utils::Dbc::do_dirichlet_condition(const Teuchos::ParameterList& 
       // get dof gid
       const int gid = dofs[j];
       // get corresponding lid
-      const int lid = toggle.get_block_map().LID(gid);
+      const int lid = toggle.get_map().LID(gid);
       if (lid < 0)
         FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
             Core::Communication::my_mpi_rank(discret.get_comm()));

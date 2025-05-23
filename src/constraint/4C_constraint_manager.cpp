@@ -124,7 +124,7 @@ void Constraints::ConstrManager::setup(
     redconstrmap_ = Core::LinAlg::allreduce_e_map(*constrmap_);
     // importer
     conimpo_ = std::make_shared<Epetra_Export>(
-        redconstrmap_->get_epetra_map(), constrmap_->get_epetra_map());
+        redconstrmap_->get_epetra_block_map(), constrmap_->get_epetra_block_map());
     // sum up initial values
     refbasevalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*constrmap_);
     std::shared_ptr<Core::LinAlg::Vector<double>> refbaseredundant =
@@ -192,7 +192,7 @@ void Constraints::ConstrManager::setup(
         std::make_shared<Core::LinAlg::Map>(num_monitor_id_, nummyele, 0, actdisc_->get_comm());
     redmonmap_ = Core::LinAlg::allreduce_e_map(*monitormap_);
     monimpo_ = std::make_shared<Epetra_Export>(
-        redmonmap_->get_epetra_map(), monitormap_->get_epetra_map());
+        redmonmap_->get_epetra_block_map(), monitormap_->get_epetra_block_map());
     monitorvalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*monitormap_);
     initialmonvalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*monitormap_);
 
@@ -415,7 +415,7 @@ void Constraints::ConstrManager::compute_monitor_values(
   areamonitor3d_->evaluate(p, actmonredundant);
   areamonitor2d_->evaluate(p, actmonredundant);
 
-  Epetra_Import monimpo(monitormap_->get_epetra_map(), redmonmap_->get_epetra_map());
+  Epetra_Import monimpo(monitormap_->get_epetra_block_map(), redmonmap_->get_epetra_block_map());
   monitorvalues_->export_to(actmonredundant, *monimpo_, Add);
 }
 
@@ -427,7 +427,7 @@ void Constraints::ConstrManager::compute_monitor_values(
   std::vector<const Core::Conditions::Condition*> monitcond;
   monitorvalues_->put_scalar(0.0);
   Teuchos::ParameterList p;
-  if (not actdisc_->dof_row_map()->SameAs(disp->get_block_map()))
+  if (not actdisc_->dof_row_map()->SameAs(disp->get_map()))
   {
     // build merged dof row map
     std::shared_ptr<Core::LinAlg::Map> largemap =
@@ -448,7 +448,7 @@ void Constraints::ConstrManager::compute_monitor_values(
   areamonitor3d_->evaluate(p, actmonredundant);
   areamonitor2d_->evaluate(p, actmonredundant);
 
-  Epetra_Import monimpo(monitormap_->get_epetra_map(), redmonmap_->get_epetra_map());
+  Epetra_Import monimpo(monitormap_->get_epetra_block_map(), redmonmap_->get_epetra_block_map());
   monitorvalues_->export_to(actmonredundant, *monimpo_, Add);
 }
 

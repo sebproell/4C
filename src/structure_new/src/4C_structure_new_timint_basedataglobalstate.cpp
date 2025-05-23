@@ -764,13 +764,12 @@ Solid::TimeInt::BaseDataGlobalState::extract_model_entries(
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> model_ptr = nullptr;
   // extract from the full state vector
-  if (source.get_block_map().NumGlobalElements() ==
-      block_extractor().full_map()->NumGlobalElements())
+  if (source.get_map().NumGlobalElements() == block_extractor().full_map()->NumGlobalElements())
   {
     model_ptr = block_extractor().extract_vector(source, model_block_id_.at(mt));
   }
   // copy the vector
-  else if (source.get_block_map().NumGlobalElements() == model_maps_.at(mt)->NumGlobalElements())
+  else if (source.get_map().NumGlobalElements() == model_maps_.at(mt)->NumGlobalElements())
   {
     model_ptr = std::make_shared<Core::LinAlg::Vector<double>>(source);
   }
@@ -1135,14 +1134,13 @@ void NOX::Nln::GROUP::PrePostOp::TimeInt::RotVecUpdater::run_pre_compute_x(
 
   /* since parallel distribution is node-wise, the three entries belonging to
    * a rotation vector should be stored on the same processor: safety-check */
-  if (x_rotvec.get_block_map().NumMyElements() % 3 != 0 or
-      dir_rotvec.get_block_map().NumMyElements() % 3 != 0)
+  if (x_rotvec.get_map().NumMyElements() % 3 != 0 or dir_rotvec.get_map().NumMyElements() % 3 != 0)
     FOUR_C_THROW(
         "fatal error: apparently, the three DOFs of a nodal rotation vector are"
         " not stored on this processor. Can't apply multiplicative update!");
 
   // rotation vectors always consist of three consecutive DoFs
-  for (int i = 0; i < x_rotvec.get_block_map().NumMyElements(); i = i + 3)
+  for (int i = 0; i < x_rotvec.get_map().NumMyElements(); i = i + 3)
   {
     // create a Core::LinAlg::Matrix from reference to three x vector entries
     Core::LinAlg::Matrix<3, 1> theta(&x_rotvec[i], true);

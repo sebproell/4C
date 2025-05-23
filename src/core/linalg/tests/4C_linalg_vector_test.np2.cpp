@@ -14,8 +14,6 @@
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 
-#include <Epetra_Map.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -43,7 +41,7 @@ namespace
   TEST_F(VectorTest, ConstructorsAndNorms)
   {
     // create an epetra vector
-    Epetra_Vector my_epetra_vector = Epetra_Vector(map_->get_epetra_map(), true);
+    Epetra_Vector my_epetra_vector = Epetra_Vector(map_->get_epetra_block_map(), true);
 
     // try to copy zero vector into wrapper
     Core::LinAlg::Vector<double> epetra_based_test_vector =
@@ -153,7 +151,7 @@ namespace
 
   TEST_F(VectorTest, View)
   {
-    Epetra_Vector a(map_->get_epetra_map(), true);
+    Epetra_Vector a(map_->get_epetra_block_map(), true);
     a.PutScalar(1.0);
     // Scope in which a is modified by the view
     {
@@ -297,8 +295,8 @@ namespace
     // A change of the map is reflected to all views
     a.replace_map(new_map);
 
-    EXPECT_TRUE(a.get_block_map().SameAs(b.Map()));
-    EXPECT_TRUE(a.get_block_map().SameAs(c.get_block_map()));
+    EXPECT_TRUE(a.get_map().SameAs(b.get_map()));
+    EXPECT_TRUE(a.get_map().SameAs(c.get_map()));
   }
 
 }  // namespace

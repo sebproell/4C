@@ -94,11 +94,11 @@ void Coupling::Adapter::Coupling::setup_condition_coupling(
 
   masterdofmap_ = mastercondmap;
   masterexport_ = std::make_shared<Epetra_Export>(
-      permmasterdofmap_->get_epetra_map(), masterdofmap_->get_epetra_map());
+      permmasterdofmap_->get_epetra_block_map(), masterdofmap_->get_epetra_block_map());
 
   slavedofmap_ = slavecondmap;
   slaveexport_ = std::make_shared<Epetra_Export>(
-      permslavedofmap_->get_epetra_map(), slavedofmap_->get_epetra_map());
+      permslavedofmap_->get_epetra_block_map(), slavedofmap_->get_epetra_block_map());
 }
 
 /*----------------------------------------------------------------------*/
@@ -169,9 +169,9 @@ void Coupling::Adapter::Coupling::setup_coupling(
   permslavedofmap_ = permslavedofmap;
 
   masterexport_ = std::make_shared<Epetra_Export>(
-      permmasterdofmap_->get_epetra_map(), masterdofmap_->get_epetra_map());
+      permmasterdofmap_->get_epetra_block_map(), masterdofmap_->get_epetra_block_map());
   slaveexport_ = std::make_shared<Epetra_Export>(
-      permslavedofmap_->get_epetra_map(), slavedofmap_->get_epetra_map());
+      permslavedofmap_->get_epetra_block_map(), slavedofmap_->get_epetra_block_map());
 }
 
 
@@ -251,13 +251,13 @@ void Coupling::Adapter::Coupling::setup_coupling(
   permmasterdofmap_ = std::make_shared<Core::LinAlg::Map>(*slavedis.dof_row_map());
   masterdofmap_ = std::make_shared<Core::LinAlg::Map>(*masterdis.dof_row_map());
   masterexport_ = std::make_shared<Epetra_Export>(
-      permmasterdofmap_->get_epetra_map(), masterdofmap_->get_epetra_map());
+      permmasterdofmap_->get_epetra_block_map(), masterdofmap_->get_epetra_block_map());
 
   // get slave dof maps and build exporter
   permslavedofmap_ = std::make_shared<Core::LinAlg::Map>(*masterdis.dof_row_map());
   slavedofmap_ = std::make_shared<Core::LinAlg::Map>(*slavedis.dof_row_map());
   slaveexport_ = std::make_shared<Epetra_Export>(
-      permslavedofmap_->get_epetra_map(), slavedofmap_->get_epetra_map());
+      permslavedofmap_->get_epetra_block_map(), slavedofmap_->get_epetra_block_map());
 }
 
 /*----------------------------------------------------------------------*/
@@ -371,7 +371,7 @@ void Coupling::Adapter::Coupling::finish_coupling(const Core::FE::Discretization
       std::make_shared<Core::LinAlg::Vector<int>>(*slavenodemap);
 
   Epetra_Export masternodeexport(
-      permslavenodemap->get_epetra_map(), slavenodemap->get_epetra_map());
+      permslavenodemap->get_epetra_block_map(), slavenodemap->get_epetra_block_map());
   const int err = permmasternodevec->export_to(*masternodevec, masternodeexport, Insert);
   if (err) FOUR_C_THROW("failed to export master nodes");
 
@@ -520,8 +520,8 @@ void Coupling::Adapter::Coupling::build_dof_maps(const Core::FE::Discretization&
 
   // prepare communication plan to create a dofmap out of a permuted
   // dof map
-  exporter =
-      std::make_shared<Epetra_Export>(permdofmap->get_epetra_map(), dofmap->get_epetra_map());
+  exporter = std::make_shared<Epetra_Export>(
+      permdofmap->get_epetra_block_map(), dofmap->get_epetra_block_map());
 }
 
 
@@ -559,7 +559,7 @@ std::shared_ptr<Epetra_FEVector> Coupling::Adapter::Coupling::master_to_slave(
     const Epetra_FEVector& mv) const
 {
   std::shared_ptr<Epetra_FEVector> sv =
-      std::make_shared<Epetra_FEVector>(slavedofmap_->get_epetra_map(), mv.NumVectors());
+      std::make_shared<Epetra_FEVector>(slavedofmap_->get_epetra_block_map(), mv.NumVectors());
 
   Core::LinAlg::View sv_view(*sv);
   Core::LinAlg::View mv_view(mv);
@@ -575,7 +575,7 @@ std::shared_ptr<Epetra_FEVector> Coupling::Adapter::Coupling::slave_to_master(
     const Epetra_FEVector& sv) const
 {
   std::shared_ptr<Epetra_FEVector> mv =
-      std::make_shared<Epetra_FEVector>(masterdofmap_->get_epetra_map(), sv.NumVectors());
+      std::make_shared<Epetra_FEVector>(masterdofmap_->get_epetra_block_map(), sv.NumVectors());
 
   Core::LinAlg::View sv_view(sv);
   Core::LinAlg::View mv_view(*mv);
@@ -619,9 +619,9 @@ void Coupling::Adapter::Coupling::master_to_slave(
     const Core::LinAlg::MultiVector<double>& mv, Core::LinAlg::MultiVector<double>& sv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.Map().PointSameAs(masterdofmap_->get_epetra_map()))
+  if (not mv.get_map().PointSameAs(masterdofmap_->get_epetra_block_map()))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.Map().PointSameAs(slavedofmap_->get_epetra_map()))
+  if (not sv.get_map().PointSameAs(slavedofmap_->get_epetra_block_map()))
     FOUR_C_THROW("slave dof map vector expected");
   if (sv.NumVectors() != mv.NumVectors())
     FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
@@ -654,14 +654,14 @@ void Coupling::Adapter::Coupling::slave_to_master(
     const Core::LinAlg::MultiVector<double>& sv, Core::LinAlg::MultiVector<double>& mv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.Map().PointSameAs(masterdofmap_->get_epetra_map()))
+  if (not mv.get_map().PointSameAs(masterdofmap_->get_epetra_block_map()))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.Map().PointSameAs(slavedofmap_->get_epetra_map()))
+  if (not sv.get_map().PointSameAs(slavedofmap_->get_epetra_block_map()))
   {
     std::cout << "slavedofmap_" << std::endl;
     std::cout << *slavedofmap_ << std::endl;
     std::cout << "sv" << std::endl;
-    std::cout << sv.Map() << std::endl;
+    std::cout << sv.get_map() << std::endl;
     FOUR_C_THROW("slave dof map vector expected");
   }
   if (sv.NumVectors() != mv.NumVectors())
@@ -763,7 +763,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::master_
 
   // OK. You cannot use the same exporter for different matrices. So we
   // recreate one all the time... This has to be optimized later on.
-  Epetra_Export exporter(permmasterdofmap_->get_epetra_map(), masterdofmap_->get_epetra_map());
+  Epetra_Export exporter(
+      permmasterdofmap_->get_epetra_block_map(), masterdofmap_->get_epetra_block_map());
   int err = permsm->import(sm, exporter, Insert);
 
   if (err) FOUR_C_THROW("Import failed with err={}", err);
@@ -789,7 +790,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::slave_t
 
   // OK. You cannot use the same exporter for different matrices. So we
   // recreate one all the time... This has to be optimized later on.
-  Epetra_Export exporter(permslavedofmap_->get_epetra_map(), slavedofmap_->get_epetra_map());
+  Epetra_Export exporter(
+      permslavedofmap_->get_epetra_block_map(), slavedofmap_->get_epetra_block_map());
   int err = permsm->import(sm, exporter, Insert);
 
   if (err) FOUR_C_THROW("Import failed with err={}", err);
@@ -848,7 +850,8 @@ void Coupling::Adapter::Coupling::setup_coupling_matrices(const Core::LinAlg::Ma
   // communicate slave to master matrix
   auto tmp = std::make_shared<Core::LinAlg::SparseMatrix>(slavedomainmap, 1);
 
-  Epetra_Import exporter(slavedomainmap.get_epetra_map(), perm_slave_dof_map()->get_epetra_map());
+  Epetra_Import exporter(
+      slavedomainmap.get_epetra_block_map(), perm_slave_dof_map()->get_epetra_block_map());
   int err = tmp->import(*matsm_trans_, exporter, Insert);
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 

@@ -1188,7 +1188,8 @@ void FLD::FluidImplicitTimeInt::evaluate_mat_and_rhs(Teuchos::ParameterList& ele
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
         Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
-    Epetra_Export exporter(residual_col->get_block_map(), tmp->get_block_map());
+    Epetra_Export exporter(
+        residual_col->get_map().get_epetra_block_map(), tmp->get_map().get_epetra_block_map());
     int err = tmp->export_to(*residual_col, exporter, Add);
     if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     residual_->update(1.0, *tmp, 1.0);
@@ -2009,8 +2010,9 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
 
   //------------------------------------------------------------
   // need to export residual_col to systemvector1 (residual_)
-  Core::LinAlg::Vector<double> res_tmp(systemvector1.get_block_map(), false);
-  Epetra_Export exporter(residual_col->get_block_map(), res_tmp.get_block_map());
+  Core::LinAlg::Vector<double> res_tmp(systemvector1.get_map(), false);
+  Epetra_Export exporter(
+      residual_col->get_map().get_epetra_block_map(), res_tmp.get_map().get_epetra_block_map());
   int err2 = res_tmp.export_to(*residual_col, exporter, Add);
   if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
   systemvector1.update(1.0, res_tmp, 1.0);
@@ -2123,8 +2125,8 @@ void FLD::FluidImplicitTimeInt::setup_krylov_space_projection(
   // set flag for projection update true only if ALE and integral weights
   if (alefluid_ and (*weighttype == "integration")) updateprojection_ = true;
 
-  auto map = discret_->dof_row_map()->get_epetra_map();
-  projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(activemodeids, weighttype, &map);
+  auto map = discret_->dof_row_map();
+  projector_ = std::make_shared<Core::LinAlg::KrylovProjector>(activemodeids, weighttype, map);
 
   // update the projector
   update_krylov_space_projection();
@@ -2228,8 +2230,7 @@ void FLD::FluidImplicitTimeInt::update_krylov_space_projection()
       c0_update = meshtying_->adapt_krylov_projector(Core::Utils::shared_ptr_from_ref(c0));
       if (msht_ == Inpar::FLUID::condensed_bmat || msht_ == Inpar::FLUID::condensed_bmat_merged)
       {
-        auto mergedmap = meshtying_->get_merged_map()->get_epetra_map();
-        projector_->set_cw(*c0_update, *w0_update, &mergedmap);
+        projector_->set_cw(*c0_update, *w0_update, meshtying_->get_merged_map());
       }
       else
       {
@@ -2257,7 +2258,7 @@ void FLD::FluidImplicitTimeInt::check_matrix_nullspace()
     int nsdim = c->NumVectors();
     if (nsdim != 1) FOUR_C_THROW("Only one mode, namely the constant pressure mode, expected.");
 
-    Core::LinAlg::Vector<double> result(c->Map(), false);
+    Core::LinAlg::Vector<double> result(c->get_map(), false);
 
     sysmat_->Apply(*c, result);
 
@@ -2977,9 +2978,9 @@ void FLD::FluidImplicitTimeInt::get_dofs_vector_local_indicesfor_node(int nodeGi
   for (int i = 0; i < dim; i++)
   {
     int dofGid = dofsGid[i];
-    if (!vec.get_block_map().MyGID(dofGid))
+    if (!vec.get_map().MyGID(dofGid))
       FOUR_C_THROW("Sparse vector does not have global row  {} or vectors don't match", dofGid);
-    (*dofsLocalInd)[i] = vec.get_block_map().LID(dofGid);
+    (*dofsLocalInd)[i] = vec.get_map().LID(dofGid);
   }
 }
 
@@ -3853,11 +3854,11 @@ void FLD::FluidImplicitTimeInt::read_restart(int step)
   // that was used when the restart data was written. Especially
   // in case of multiphysics problems & periodic boundary conditions
   // it is better to check the consistency of the maps here:
-  if (not(discret_->dof_row_map())->SameAs(velnp_->get_block_map()))
+  if (not(discret_->dof_row_map())->SameAs(velnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(veln_->get_block_map()))
+  if (not(discret_->dof_row_map())->SameAs(veln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(discret_->dof_row_map())->SameAs(accn_->get_block_map()))
+  if (not(discret_->dof_row_map())->SameAs(accn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 
@@ -4560,7 +4561,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // find out the global dof id of the last(!) dof at the scatra node
       const int numscatradof = scatradis->num_dof(dofset, lscatranode);
       const int globalscatradofid = scatradis->dof(dofset, lscatranode, numscatradof - 1);
-      const int localscatradofid = scalaraf->get_block_map().LID(globalscatradofid);
+      const int localscatradofid = scalaraf->get_map().LID(globalscatradofid);
       if (localscatradofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // get the processor's local fluid node
@@ -4568,7 +4569,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // get global and processor's local pressure dof id (using the map!)
       const int numdof = discret_->num_dof(0, lnode);
       const int globaldofid = discret_->dof(0, lnode, numdof - 1);
-      const int localdofid = scaam_->get_block_map().LID(globaldofid);
+      const int localdofid = scaam_->get_map().LID(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // now copy the values
@@ -4596,8 +4597,8 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
   {
     // given vectors are already in dofrowmap layout of fluid and values can
     // be copied directly
-    if (not scalaraf->get_block_map().SameAs(scaaf_->get_block_map()) or
-        not scalaram->get_block_map().SameAs(scaam_->get_block_map()))
+    if (not scalaraf->get_map().SameAs(scaaf_->get_map()) or
+        not scalaram->get_map().SameAs(scaam_->get_map()))
       FOUR_C_THROW("fluid dofrowmap layout expected");
 
     // loop all nodes on the processor
@@ -4608,7 +4609,7 @@ void FLD::FluidImplicitTimeInt::set_iter_scalar_fields(
       // get global and processor's local pressure dof id (using the map!)
       const int numdof = discret_->num_dof(0, lnode);
       const int globaldofid = discret_->dof(0, lnode, numdof - 1);
-      const int localdofid = scaam_->get_block_map().LID(globaldofid);
+      const int localdofid = scaam_->get_map().LID(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
       // now copy the values
@@ -4673,7 +4674,7 @@ void FLD::FluidImplicitTimeInt::set_scalar_fields(
       // respect the explicit wish of the user
       globalscatradofid = scatradis->dof(0, lscatranode, whichscalar);
     }
-    const int localscatradofid = scalarnp->get_block_map().LID(globalscatradofid);
+    const int localscatradofid = scalarnp->get_map().LID(globalscatradofid);
     if (localscatradofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     // get the processor's local fluid node
@@ -4682,7 +4683,7 @@ void FLD::FluidImplicitTimeInt::set_scalar_fields(
     nodedofs = discret_->dof(0, lnode);
     // get global and processor's local pressure dof id (using the map!)
     const int globaldofid = nodedofs[numdim_];
-    const int localdofid = scaam_->get_block_map().LID(globaldofid);
+    const int localdofid = scaam_->get_map().LID(globaldofid);
     if (localdofid < 0) FOUR_C_THROW("localdofid not found in map for given globaldofid");
 
     value = (*scalarnp)[localscatradofid];
@@ -6155,7 +6156,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> FLD::FluidImplicitTimeInt::calc_di
 
   // integrated divergence operator B in vector form
   std::shared_ptr<Core::LinAlg::Vector<double>> divop =
-      std::make_shared<Core::LinAlg::Vector<double>>(velnp_->get_block_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(velnp_->get_map(), true);
 
   // copy row map of mesh displacement to column map (only if ALE is used)
   discret_->clear_state();

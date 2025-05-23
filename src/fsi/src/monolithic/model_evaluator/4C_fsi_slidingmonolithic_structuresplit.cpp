@@ -824,7 +824,7 @@ void FSI::SlidingMonolithicStructureSplit::update()
 
     std::shared_ptr<Core::LinAlg::Vector<double>> temp =
         std::make_shared<Core::LinAlg::Vector<double>>(*iprojdisp_);
-    temp->replace_map(idispale->get_block_map());
+    temp->replace_map(idispale->get_map());
     std::shared_ptr<Core::LinAlg::Vector<double>> acx = fluid_to_ale_interface(temp);
     ale_field()->apply_interface_displacements(acx);
     fluid_field()->apply_mesh_displacement(ale_to_fluid(ale_field()->dispnp()));
@@ -935,7 +935,7 @@ void FSI::SlidingMonolithicStructureSplit::unscale_solution(
 
   // very simple hack just to see the linear solution
 
-  Core::LinAlg::Vector<double> r(b.get_block_map());
+  Core::LinAlg::Vector<double> r(b.get_map());
   mat.Apply(x, r);
   r.update(1., b, 1.);
 
@@ -1479,7 +1479,7 @@ void FSI::SlidingMonolithicStructureSplit::calculate_interface_energy_increment(
 
   // interface traction weighted by time integration factors
   std::shared_ptr<Core::LinAlg::Vector<double>> tractionstructure =
-      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_block_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(lambda_->get_map(), true);
   tractionstructure->update(stiparam - ftiparam, *lambdaold_, ftiparam - stiparam, *lambda_, 0.0);
 
   // displacement increment of this time step

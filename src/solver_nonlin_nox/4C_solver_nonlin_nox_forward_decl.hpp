@@ -14,7 +14,7 @@
 // and not using all identifiers will lead to clang-tidy thinking these are our own names.
 // NOLINTBEGIN(readability-identifier-naming)
 
-class Epetra_BlockMap;
+
 class Epetra_Operator;
 class Epetra_RowMatrix;
 class Epetra_LinearProblem;

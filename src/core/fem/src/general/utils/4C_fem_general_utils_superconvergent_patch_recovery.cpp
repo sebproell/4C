@@ -36,7 +36,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
     FOUR_C_THROW("action type for element is missing");
 
   // decide whether a dof or an element based map is given
-  FOUR_C_ASSERT(state.get_block_map().PointSameAs(dis.dof_row_map()->get_epetra_map()),
+  FOUR_C_ASSERT(state.get_map().PointSameAs(dis.dof_row_map()->get_epetra_block_map()),
       "Only works for same maps.");
 
   // handle pbcs if existing
@@ -153,7 +153,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
 
   // step 2: use precalculated (velocity) gradient for patch-recovery of gradient
   // solution vector based on reduced node row map
-  Epetra_FEVector nodevec(noderowmap.get_epetra_map(), numvec);
+  Epetra_FEVector nodevec(noderowmap.get_epetra_block_map(), numvec);
 
   std::vector<const Core::Conditions::Condition*> conds;
   dis.get_condition("SPRboundary", conds);
@@ -204,7 +204,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
           // loop over all surrounding elements
           for (int k = 0; k < numadjacent; ++k)
           {
-            const int elelid = elevec_toberecovered_col.Map().LID(adjacentele[k]->id());
+            const int elelid = elevec_toberecovered_col.get_map().LID(adjacentele[k]->id());
             for (int d = 0; d < dim; ++d)
               p(d + 1) = centercoords_col(d)[elelid] - node->x()[d] /* + ALE_DISP*/;
 
@@ -273,7 +273,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
           {
             for (int k = 0; k < numadjacenteles[s]; ++k)
             {
-              const int elelid = elevec_toberecovered_col.Map().LID(adjacenteles[s][k]->id());
+              const int elelid = elevec_toberecovered_col.get_map().LID(adjacenteles[s][k]->id());
               for (int d = 0; d < dim; ++d)
                 p(d + 1) =
                     (centercoords_col(d))[elelid] + eleoffsets[s][d] - node->x()[d] /* + ALE_DISP*/;
@@ -364,7 +364,8 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
           // loop over all surrounding elements
           for (int k = 0; k < numadjacent; ++k)
           {
-            const int elelid = elevec_toberecovered_col.Map().LID(closestnodeadjacentele[k]->id());
+            const int elelid =
+                elevec_toberecovered_col.get_map().LID(closestnodeadjacentele[k]->id());
             for (int d = 0; d < dim; ++d)
               p(d + 1) = (centercoords_col(d))[elelid] - closestnode->x()[d]; /* + ALE_DISP*/
 
@@ -504,7 +505,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
             for (int k = 0; k < numadjacenteles[s]; ++k)
             {
               const int elelid =
-                  elevec_toberecovered_col.Map().LID(closestnodeadjacenteles[s][k]->id());
+                  elevec_toberecovered_col.get_map().LID(closestnodeadjacenteles[s][k]->id());
               for (int d = 0; d < dim; ++d)
                 p(d + 1) = (centercoords_col(d))[elelid] + eleoffsets[s][d] -
                            closestnode->x()[d]; /* + ALE_DISP*/

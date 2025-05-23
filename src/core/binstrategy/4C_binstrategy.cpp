@@ -832,8 +832,8 @@ void Core::Binstrategy::BinningStrategy::distribute_bins_recurs_coord_bisection(
       Core::Rebalance::rebalance_coordinates(*bincenters, params, *binweights);
 
   // create bin row map
-  binrowmap = std::make_shared<Core::LinAlg::Map>(-1, bincenters->Map().NumMyElements(),
-      bincenters->Map().MyGlobalElements(), 0, bin_discret()->get_comm());
+  binrowmap = std::make_shared<Core::LinAlg::Map>(-1, bincenters->get_map().NumMyElements(),
+      bincenters->get_map().MyGlobalElements(), 0, bin_discret()->get_comm());
 }
 
 void Core::Binstrategy::BinningStrategy::fill_bins_into_bin_discretization(
@@ -1247,7 +1247,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
   auto balanced_bingraph = Core::Rebalance::rebalance_graph(*bingraph, paramlist, vweights);
 
   // extract repartitioned bin row map
-  const Epetra_BlockMap& rbinstmp = balanced_bingraph->row_map();
+  const Core::LinAlg::Map& rbinstmp = balanced_bingraph->row_map();
   std::shared_ptr<Core::LinAlg::Map> newrowbins = std::make_shared<Core::LinAlg::Map>(
       -1, rbinstmp.NumMyElements(), rbinstmp.MyGlobalElements(), 0, discret[0]->get_comm());
 
@@ -1436,14 +1436,15 @@ void Core::Binstrategy::BinningStrategy::standard_discretization_ghosting(
   std::shared_ptr<Core::LinAlg::Graph> newnodegraph;
 
   newnodegraph = std::make_shared<Core::LinAlg::Graph>(Copy, *newnoderowmap, 108, false);
-  Epetra_Export exporter(initgraph->row_map(), newnoderowmap->get_epetra_map());
+  Epetra_Export exporter(
+      initgraph->row_map().get_epetra_block_map(), newnoderowmap->get_epetra_block_map());
   int err = newnodegraph->export_to(initgraph->get_epetra_crs_graph(), exporter, Add);
   if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
   newnodegraph->fill_complete();
   newnodegraph->optimize_storage();
 
   // the column map will become the new ghosted distribution of nodes (standard ghosting)
-  const Epetra_BlockMap cntmp = newnodegraph->col_map();
+  const Core::LinAlg::Map cntmp = newnodegraph->col_map();
   stdnodecolmap = std::make_shared<Core::LinAlg::Map>(
       -1, cntmp.NumMyElements(), cntmp.MyGlobalElements(), 0, discret->get_comm());
 

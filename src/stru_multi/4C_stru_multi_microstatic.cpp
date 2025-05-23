@@ -827,7 +827,7 @@ void MultiScale::MicroStatic::evaluate_micro_bc(
       {
         const int gid = dofs[l];
 
-        const int lid = disp.get_block_map().LID(gid);
+        const int lid = disp.get_map().LID(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
         (disp)[lid] = disp_prescribed[l];
       }
@@ -966,7 +966,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
     // Computer Methods in Applied Mechanics and Engineering 192: 559-591, 2003.
 
     const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
-    Core::LinAlg::MultiVector<double> cmatpf(D_->Map(), 9);
+    Core::LinAlg::MultiVector<double> cmatpf(D_->get_map(), 9);
 
     // make a copy
     stiff_dirich_ = std::make_shared<Core::LinAlg::SparseMatrix>(*stiff_);

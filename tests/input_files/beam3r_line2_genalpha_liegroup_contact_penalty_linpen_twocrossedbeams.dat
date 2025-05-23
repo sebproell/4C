@@ -14,7 +14,7 @@ NUMTHERMDIS                     0
 OUTPUT_BIN                      Yes
 STRUCT_DISP                     Yes
 FILESTEPS                       1000
-VERBOSITY                       standard
+VERBOSITY                       verbose
 ----------------------------------------------------------STRUCTURAL DYNAMIC
 INT_STRATEGY                    Standard
 LINEAR_SOLVER                   1

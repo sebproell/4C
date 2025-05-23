@@ -132,9 +132,9 @@ void XFEM::XFieldField::Coupling::master_to_slave(const Core::LinAlg::MultiVecto
     case XFEM::map_nodes:
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (not mv.Map().PointSameAs(masternodemap_->get_epetra_map()))
+      if (not mv.get_map().PointSameAs(masternodemap_->get_epetra_block_map()))
         FOUR_C_THROW("master node map vector expected");
-      if (not sv.Map().PointSameAs(slavenodemap_->get_epetra_map()))
+      if (not sv.get_map().PointSameAs(slavenodemap_->get_epetra_block_map()))
         FOUR_C_THROW("slave node map vector expected");
       if (sv.NumVectors() != mv.NumVectors())
         FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
@@ -164,9 +164,9 @@ void XFEM::XFieldField::Coupling::slave_to_master(const Core::LinAlg::MultiVecto
     case XFEM::map_nodes:
     {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-      if (not mv.Map().PointSameAs(masternodemap_->get_epetra_map()))
+      if (not mv.get_map().PointSameAs(masternodemap_->get_epetra_block_map()))
         FOUR_C_THROW("master node map vector expected");
-      if (not sv.Map().PointSameAs(slavenodemap_->get_epetra_map()))
+      if (not sv.get_map().PointSameAs(slavenodemap_->get_epetra_block_map()))
         FOUR_C_THROW("slave node map vector expected");
       if (sv.NumVectors() != mv.NumVectors())
         FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
@@ -251,9 +251,9 @@ void XFEM::XFieldField::Coupling::save_node_maps(
   permslavenodemap_ = permslavenodemap;
 
   nodal_masterexport_ = std::make_shared<Epetra_Export>(
-      permmasternodemap->get_epetra_map(), masternodemap->get_epetra_map());
+      permmasternodemap->get_epetra_block_map(), masternodemap->get_epetra_block_map());
   nodal_slaveexport_ = std::make_shared<Epetra_Export>(
-      permslavenodemap->get_epetra_map(), slavenodemap->get_epetra_map());
+      permslavenodemap->get_epetra_block_map(), slavenodemap->get_epetra_block_map());
 }
 
 /*----------------------------------------------------------------------------*
@@ -322,7 +322,7 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
   /* prepare communication plan to create a dofmap out of a permuted
    * dof map */
   min_exporter = std::make_shared<Epetra_Export>(
-      min_permdofmap->get_epetra_map(), min_dofmap->get_epetra_map());
+      min_permdofmap->get_epetra_block_map(), min_dofmap->get_epetra_block_map());
 }
 
 /*----------------------------------------------------------------------------*
@@ -391,7 +391,7 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
   /* prepare communication plan to create a dofmap out of a permuted
    * dof map */
   max_exporter = std::make_shared<Epetra_Export>(
-      max_permdofmap->get_epetra_map(), max_dofmap->get_epetra_map());
+      max_permdofmap->get_epetra_block_map(), max_dofmap->get_epetra_block_map());
 }
 
 FOUR_C_NAMESPACE_CLOSE

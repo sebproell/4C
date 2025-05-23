@@ -1872,7 +1872,7 @@ void PoroPressureBased::PorofluidAlgorithm::set_velocity_field(
   if (nds_vel_ >= discret_->num_dof_sets())
     FOUR_C_THROW("Too few dofsets on poro fluid discretization!");
 
-  if (not vel->get_block_map().SameAs(discret_->dof_row_map(nds_vel_)->get_epetra_map()))
+  if (not vel->get_map().SameAs(discret_->dof_row_map(nds_vel_)->get_epetra_block_map()))
     FOUR_C_THROW(
         "Map of given velocity and associated dof row map in poro fluid discretization"
         " do not match!");

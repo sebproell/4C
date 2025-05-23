@@ -133,7 +133,7 @@ std::shared_ptr<Epetra_FEVector> CONTACT::NitscheStrategyPoro::setup_rhs_block_v
   {
     case CONTACT::VecBlockType::porofluid:
       return std::make_shared<Epetra_FEVector>(
-          Global::Problem::instance()->get_dis("porofluid")->dof_row_map()->get_epetra_map());
+          Global::Problem::instance()->get_dis("porofluid")->dof_row_map()->get_epetra_block_map());
     default:
       return CONTACT::NitscheStrategy::setup_rhs_block_vec(bt);
   }

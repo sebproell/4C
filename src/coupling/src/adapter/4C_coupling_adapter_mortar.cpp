@@ -559,7 +559,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_block_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
       }
     }
 
@@ -598,7 +598,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_block_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
       }
     }
 
@@ -693,12 +693,11 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
     for (int k = 0; k < dim; ++k)
     {
       int dof = mtnode->dofs()[k];
-      (*Xmaster)[(Xmaster->get_block_map()).LID(dof)] = mtnode->x()[k];
+      (*Xmaster)[(Xmaster->get_map()).LID(dof)] = mtnode->x()[k];
 
       // add ALE displacements, if required
       if (idisp != nullptr)
-        (*Xmaster)[(Xmaster->get_block_map()).LID(dof)] +=
-            (*idisp)[(idisp->get_block_map()).LID(dof)];
+        (*Xmaster)[(Xmaster->get_map()).LID(dof)] += (*idisp)[(idisp->get_map()).LID(dof)];
     }
   }
 
@@ -793,12 +792,12 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
         for (int k = 0; k < numdim; ++k)
         {
-          locindex[k] = (Xslavemodcol.get_block_map()).LID(mtnode->dofs()[k]);
+          locindex[k] = (Xslavemodcol.get_map()).LID(mtnode->dofs()[k]);
           if (locindex[k] < 0) FOUR_C_THROW("Did not find dof in map");
           Xnew[k] = Xslavemodcol[locindex[k]];
           Xold[k] = mtnode->x()[k];
           if (idisp != nullptr)
-            Xold[k] += (*idisp)[(idisp->get_block_map()).LID(interface_->discret().dof(node)[k])];
+            Xold[k] += (*idisp)[(idisp->get_map()).LID(interface_->discret().dof(node)[k])];
         }
 
         // check is mesh distortion is still OK
@@ -873,7 +872,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
           for (int k = 0; k < dim; ++k)
           {
             // get global ID of degree of freedom for this spatial direction
-            int dofgid = (idisp->get_block_map()).LID(gdofs[k]);
+            int dofgid = (idisp->get_map()).LID(gdofs[k]);
             // get new coordinate value for this spatial direction
             const double value = Xnewglobal[k] - node->x()[k];
             // replace respective value in displacement vector
@@ -924,7 +923,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_block_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
       }
     }
 
@@ -960,7 +959,7 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
 
       for (int k = 0; k < dim; ++k)
       {
-        val[k] += (*idisp)[(idisp->get_block_map()).LID(gdofs[k])];
+        val[k] += (*idisp)[(idisp->get_map()).LID(gdofs[k])];
       }
     }
 
@@ -1097,13 +1096,15 @@ void Coupling::Adapter::CouplingMortar::evaluate(
   FOUR_C_ASSERT(idispsl->get_map().PointSameAs(*pslavedofrowmap_),
       "Map of incoming slave vector does not match the stored slave dof row map.");
 
-  const Epetra_BlockMap stdmap = idispsl->get_block_map();
+  const Core::LinAlg::Map stdmap = idispsl->get_map();
   idispsl->replace_map(*slavedofrowmap_);
 
   std::shared_ptr<Core::LinAlg::Map> dofrowmap =
       Core::LinAlg::merge_map(*pmasterdofrowmap_, *pslavedofrowmap_, false);
-  Epetra_Import master_importer(dofrowmap->get_epetra_map(), pmasterdofrowmap_->get_epetra_map());
-  Epetra_Import slaveImporter(dofrowmap->get_epetra_map(), pslavedofrowmap_->get_epetra_map());
+  Epetra_Import master_importer(
+      dofrowmap->get_epetra_block_map(), pmasterdofrowmap_->get_epetra_block_map());
+  Epetra_Import slaveImporter(
+      dofrowmap->get_epetra_block_map(), pslavedofrowmap_->get_epetra_block_map());
 
   // Import master and slave displacements into a single vector
   int err = 0;
@@ -1287,8 +1288,7 @@ Coupling::Adapter::CouplingMortar::master_to_slave(
   // safety check
   check_setup();
 
-  FOUR_C_ASSERT(
-      masterdofrowmap_->SameAs(Core::LinAlg::Map(mv.Map())), "Vector with master dof map expected");
+  FOUR_C_ASSERT(masterdofrowmap_->SameAs(mv.get_map()), "Vector with master dof map expected");
 
   Core::LinAlg::MultiVector<double> tmp =
       Core::LinAlg::MultiVector<double>(M_->row_map(), mv.NumVectors());
@@ -1311,8 +1311,7 @@ std::shared_ptr<Core::LinAlg::Vector<double>> Coupling::Adapter::CouplingMortar:
   // safety check
   check_setup();
 
-  FOUR_C_ASSERT(
-      masterdofrowmap_->SameAs(mv.get_block_map()), "Vector with master dof map expected");
+  FOUR_C_ASSERT(masterdofrowmap_->SameAs(mv.get_map()), "Vector with master dof map expected");
 
   Core::LinAlg::Vector<double> tmp = Core::LinAlg::Vector<double>(M_->row_map());
 
@@ -1333,9 +1332,9 @@ void Coupling::Adapter::CouplingMortar::master_to_slave(
     const Core::LinAlg::MultiVector<double>& mv, Core::LinAlg::MultiVector<double>& sv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.Map().PointSameAs(P_->col_map().get_epetra_map()))
+  if (not mv.get_map().PointSameAs(P_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.Map().PointSameAs(D_->col_map().get_epetra_map()))
+  if (not sv.get_map().PointSameAs(D_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("slave dof map vector expected");
 #endif
 
@@ -1364,9 +1363,9 @@ void Coupling::Adapter::CouplingMortar::slave_to_master(
     const Core::LinAlg::MultiVector<double>& sv, Core::LinAlg::MultiVector<double>& mv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.Map().PointSameAs(P_->col_map().get_epetra_map()))
+  if (not mv.get_map().PointSameAs(P_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.Map().PointSameAs(D_->col_map().get_epetra_map()))
+  if (not sv.get_map().PointSameAs(D_->col_map().get_epetra_block_map()))
     FOUR_C_THROW("slave dof map vector expected");
 #endif
 

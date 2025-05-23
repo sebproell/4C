@@ -144,7 +144,7 @@ void PostVtiWriter::write_dof_result_step(std::ofstream& file,
   // Here is the only thing we need to do for parallel computations: We need read access to all dofs
   // on the row elements, so need to get the DofColMap to have this access
   const Core::LinAlg::Map* colmap = dis->dof_col_map(0);
-  const Epetra_BlockMap& vecmap = data->get_block_map();
+  const Core::LinAlg::Map& vecmap = data->get_map();
 
   // TODO: wic, once the vtu pressure writer is fixed, apply the same solution here.
   const int offset = (fillzeros) ? 0 : vecmap.MinAllGID() - dis->dof_row_map(0)->MinAllGID();
@@ -189,7 +189,7 @@ void PostVtiWriter::write_dof_result_step(std::ofstream& file,
 
       for (int d = 0; d < numdf; ++d)
       {
-        const int lid = ghostedData->get_block_map().LID(nodedofs[d + from] + offset);
+        const int lid = ghostedData->get_map().LID(nodedofs[d + from] + offset);
         if (lid > -1)
         {
           solution[inpos + d] = (*ghostedData)[lid];
@@ -239,7 +239,7 @@ void PostVtiWriter::write_nodal_result_step(std::ofstream& file,
   // Here is the only thing we need to do for parallel computations: We need read access to all dofs
   // on the row elements, so need to get the NodeColMap to have this access
   const Core::LinAlg::Map* colmap = dis->node_col_map();
-  const Epetra_BlockMap& vecmap = data->Map();
+  const Core::LinAlg::Map& vecmap = data->get_map();
 
   FOUR_C_ASSERT(
       colmap->MaxAllGID() == vecmap.MaxAllGID() && colmap->MinAllGID() == vecmap.MinAllGID(),
@@ -274,7 +274,7 @@ void PostVtiWriter::write_nodal_result_step(std::ofstream& file,
       {
         Core::LinAlg::Vector<double> column((*ghostedData)(idf));
 
-        const int lid = ghostedData->Map().LID(gid);
+        const int lid = ghostedData->get_map().LID(gid);
 
         if (lid > -1)
         {
@@ -335,7 +335,7 @@ void PostVtiWriter::write_element_result_step(std::ofstream& file,
     FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: {}", numcol);
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> importedData;
-  if (dis->element_col_map()->SameAs(data->Map()))
+  if (dis->element_col_map()->SameAs(data->get_map()))
     importedData = data;
   else
   {

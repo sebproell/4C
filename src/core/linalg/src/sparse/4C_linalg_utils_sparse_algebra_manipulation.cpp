@@ -24,8 +24,8 @@ void Core::LinAlg::export_to(
 {
   try
   {
-    const bool sourceunique = source.Map().UniqueGIDs();
-    const bool targetunique = target.Map().UniqueGIDs();
+    const bool sourceunique = source.get_map().UniqueGIDs();
+    const bool targetunique = target.get_map().UniqueGIDs();
 
     // both are unique, does not matter whether ex- or import
     if (sourceunique && targetunique && Core::Communication::num_mpi_ranks(source.Comm()) == 1 &&
@@ -34,11 +34,11 @@ void Core::LinAlg::export_to(
       if (source.NumVectors() != target.NumVectors())
         FOUR_C_THROW("number of vectors in source and target not the same!");
       for (int k = 0; k < source.NumVectors(); ++k)
-        for (int i = 0; i < target.Map().NumMyElements(); ++i)
+        for (int i = 0; i < target.get_map().NumMyElements(); ++i)
         {
-          const int gid = target.Map().GID(i);
+          const int gid = target.get_map().GID(i);
           if (gid < 0) FOUR_C_THROW("No gid for i");
-          const int lid = source.Map().LID(gid);
+          const int lid = source.get_map().LID(gid);
           if (lid < 0) continue;
           // FOUR_C_THROW("No source for target");
           target(k)[i] = source(k)[lid];
@@ -47,14 +47,16 @@ void Core::LinAlg::export_to(
     }
     else if (sourceunique && targetunique)
     {
-      Epetra_Export exporter(source.Map(), target.Map());
+      Epetra_Export exporter(
+          source.get_map().get_epetra_block_map(), target.get_map().get_epetra_block_map());
       int err = target.Export(source, exporter, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
     }
     else if (sourceunique && !targetunique)
     {
-      Epetra_Import importer(target.Map(), source.Map());
+      Epetra_Import importer(
+          target.get_map().get_epetra_block_map(), source.get_map().get_epetra_block_map());
       int err = target.Import(source, importer, Insert);
       if (err) FOUR_C_THROW("Export using importer returned err={}", err);
       return;
@@ -64,8 +66,8 @@ void Core::LinAlg::export_to(
       // copy locally data from source to target
       // do not allow for inter-processor communication to obtain source
       // as this may give a non-unique answer depending on the proc which is asked
-      const Epetra_BlockMap& sourcemap = source.Map();
-      const Epetra_BlockMap& targetmap = target.Map();
+      const Core::LinAlg::Map& sourcemap = source.get_map();
+      const Core::LinAlg::Map& targetmap = target.get_map();
       for (int targetlid = 0; targetlid < targetmap.NumMyElements(); ++targetlid)
       {
         const int sourcelid = sourcemap.LID(targetmap.GID(targetlid));
@@ -103,19 +105,19 @@ void Core::LinAlg::export_to(
 {
   try
   {
-    const bool sourceunique = source.get_block_map().UniqueGIDs();
-    const bool targetunique = target.get_block_map().UniqueGIDs();
+    const bool sourceunique = source.get_map().UniqueGIDs();
+    const bool targetunique = target.get_map().UniqueGIDs();
 
     // both are unique, does not matter whether ex- or import
     if (sourceunique && targetunique &&
         Core::Communication::num_mpi_ranks(source.get_comm()) == 1 &&
         Core::Communication::num_mpi_ranks(target.get_comm()) == 1)
     {
-      for (int i = 0; i < target.get_block_map().NumMyElements(); ++i)
+      for (int i = 0; i < target.get_map().NumMyElements(); ++i)
       {
-        const int gid = target.get_block_map().GID(i);
+        const int gid = target.get_map().GID(i);
         if (gid < 0) FOUR_C_THROW("No gid for i");
-        const int lid = source.get_block_map().LID(gid);
+        const int lid = source.get_map().LID(gid);
         if (lid < 0) continue;
         target[i] = source[lid];
       }
@@ -123,21 +125,24 @@ void Core::LinAlg::export_to(
     }
     else if (sourceunique && targetunique)
     {
-      Epetra_Export exporter(source.get_block_map(), target.get_block_map());
+      Epetra_Export exporter(
+          source.get_map().get_epetra_block_map(), target.get_map().get_epetra_block_map());
       int err = target.export_to(source, exporter, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
     }
     else if (sourceunique && !targetunique)
     {
-      Epetra_Import importer(target.get_block_map(), source.get_block_map());
+      Epetra_Import importer(
+          target.get_map().get_epetra_block_map(), source.get_map().get_epetra_block_map());
       int err = target.import(source, importer, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
     }
     else if (!sourceunique && targetunique)
     {
-      Epetra_Export exporter(source.get_block_map(), target.get_block_map());
+      Epetra_Export exporter(
+          source.get_map().get_epetra_block_map(), target.get_map().get_epetra_block_map());
       int err = target.export_to(source, exporter, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
@@ -179,8 +184,8 @@ std::unique_ptr<Core::LinAlg::Vector<double>> Core::LinAlg::extract_my_vector(
 void Core::LinAlg::extract_my_vector(
     const Core::LinAlg::Vector<double>& source, Core::LinAlg::Vector<double>& target)
 {
-  const int my_num_target_gids = target.get_block_map().NumMyElements();
-  const int* my_target_gids = target.get_block_map().MyGlobalElements();
+  const int my_num_target_gids = target.get_map().NumMyElements();
+  const int* my_target_gids = target.get_map().MyGlobalElements();
 
   double* target_values = target.get_values();
 
@@ -190,7 +195,7 @@ void Core::LinAlg::extract_my_vector(
   {
     const int target_gid = my_target_gids[tar_lid];
 
-    const int src_lid = source.get_block_map().LID(target_gid);
+    const int src_lid = source.get_map().LID(target_gid);
     // check if the target_map is a local sub-set of the source map on each proc
     if (src_lid == -1)
       FOUR_C_THROW("Couldn't find the target GID {} in the source map on proc {}.", target_gid,
@@ -256,7 +261,7 @@ std::shared_ptr<Core::LinAlg::Graph> Core::LinAlg::threshold_matrix_graph(
 
   Core::LinAlg::Vector<double> ghosted_diagonal(A.col_map(), true);
   const Epetra_Import importer =
-      Epetra_Import(A.col_map().get_epetra_map(), A.row_map().get_epetra_map());
+      Epetra_Import(A.col_map().get_epetra_block_map(), A.row_map().get_epetra_block_map());
   ghosted_diagonal.import(
       diagonal.get_ref_of_epetra_vector(), importer, Epetra_CombineMode::Insert);
 
@@ -385,7 +390,7 @@ void Core::LinAlg::split_matrix2x2(
   // find out about how the column map is linked to the individual processors.
   // this is done by filling the information about the rowmap into a vector that
   // is then exported to the column map
-  Core::LinAlg::Vector<double> dselector(ASparse.domain_map());
+  Core::LinAlg::Vector<double> dselector(Map(ASparse.domain_map()));
   for (int i = 0; i < dselector.local_length(); ++i)
   {
     const int gid = ASparse.domain_map().GID(i);
@@ -396,7 +401,7 @@ void Core::LinAlg::split_matrix2x2(
     else
       dselector[i] = -1.;
   }
-  Core::LinAlg::Vector<double> selector(ASparse.col_map());
+  Core::LinAlg::Vector<double> selector(Map(ASparse.col_map()));
   Core::LinAlg::export_to(dselector, selector);
 
   std::vector<int> gcindices1(ASparse.max_num_entries());
@@ -474,7 +479,7 @@ void Core::LinAlg::split_matrixmxn(
   // associate each global column ID of SparseMatrix with corresponding block ID of
   // BlockSparseMatrixBase this is done via an Core::LinAlg::Vector<double> which is filled using
   // domain map information and then exported to column map
-  Core::LinAlg::Vector<double> dselector(ASparse.domain_map());
+  Core::LinAlg::Vector<double> dselector(Core::LinAlg::Map(ASparse.domain_map()));
   for (int collid = 0; collid < dselector.local_length(); ++collid)
   {
     const int colgid = ASparse.domain_map().GID(collid);
@@ -489,7 +494,7 @@ void Core::LinAlg::split_matrixmxn(
       }
     }
   }
-  Core::LinAlg::Vector<double> selector(ASparse.col_map());
+  Core::LinAlg::Vector<double> selector(Map(ASparse.col_map()));
   Core::LinAlg::export_to(dselector, selector);
 
   // allocate vectors storing global column indexes and values of matrix entries in a given row,
@@ -548,8 +553,8 @@ int Core::LinAlg::insert_my_row_diagonal_into_unfilled_matrix(
 {
   if (mat.filled()) return -1;
 
-  const int my_num_entries = diag.get_block_map().NumMyElements();
-  const int* my_gids = diag.get_block_map().MyGlobalElements();
+  const int my_num_entries = diag.get_map().NumMyElements();
+  const int* my_gids = diag.get_map().MyGlobalElements();
 
   double* diag_values = diag.get_values();
 

@@ -558,8 +558,7 @@ void XFEM::ConditionManager::combine_level_set_field(Core::LinAlg::Vector<double
 void XFEM::ConditionManager::check_for_equal_maps(
     Core::LinAlg::Vector<double>& vec1, Core::LinAlg::Vector<double>& vec2)
 {
-  if (not vec1.get_block_map().PointSameAs(vec2.get_block_map()))
-    FOUR_C_THROW("maps do not match!");
+  if (not vec1.get_map().PointSameAs(vec2.get_map())) FOUR_C_THROW("maps do not match!");
 }
 
 

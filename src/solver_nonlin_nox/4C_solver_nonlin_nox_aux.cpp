@@ -171,7 +171,7 @@ double NOX::Nln::Aux::root_mean_square_norm(const double& atol, const double& rt
   v.update(-1.0, xincr, 1.0);
 
   // new auxiliary vector
-  Core::LinAlg::Vector<double> u(xnew.get_block_map(), false);
+  Core::LinAlg::Vector<double> u(xnew.get_map(), false);
 
   // create the weighting factor u = RTOL |x^(k-1)| + ATOL
   u.put_scalar(1.0);

@@ -56,21 +56,13 @@ namespace Core::LinAlg
       const Core::LinAlg::MultiVector<double>& nullspace, Teuchos::ParameterList& params);
 
   /*!
-   \brief Create a new Core::LinAlg::Vector<double> and return RefcountPtr to it
-
-   \param rowmap (in): row map of vector
-   \param init (in): initialize vector to zero upon construction
-   */
-  std::shared_ptr<Core::LinAlg::Vector<double>> create_vector(
-      const Epetra_BlockMap& rowmap, const bool init = true);
-  /*!
  \brief Create a new Core::LinAlg::Vector<double> and return RefcountPtr to it
 
  \param rowmap (in): row map of vector
  \param init (in): initialize vector to zero upon construction
  */
   std::shared_ptr<Core::LinAlg::Vector<double>> create_vector(
-      const Map& rowmap, const bool init = true);
+      const Core::LinAlg::Map& rowmap, const bool init = true);
 
   /*!
   \brief Create a new Core::LinAlg::MultiVector<double> and return RefcountPtr to it
@@ -80,7 +72,7 @@ namespace Core::LinAlg
   \param init (in): initialize vector to zero upon construction
   */
   std::shared_ptr<Core::LinAlg::MultiVector<double>> create_multi_vector(
-      const Map& rowmap, const int numrows, const bool init = true);
+      const Core::LinAlg::Map& rowmap, const int numrows, const bool init = true);
 
   /*!
    \brief Create an Core::LinAlg::Map from a set of gids

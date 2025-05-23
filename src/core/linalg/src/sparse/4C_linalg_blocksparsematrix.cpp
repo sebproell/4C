@@ -407,7 +407,7 @@ bool Core::LinAlg::BlockSparseMatrixBase::HasNormInf() const { return false; }
  *----------------------------------------------------------------------*/
 const Epetra_Comm& Core::LinAlg::BlockSparseMatrixBase::Comm() const
 {
-  return full_domain_map().EpetraComm();
+  return full_domain_map().get_epetra_map().Comm();
 }
 
 

@@ -112,7 +112,7 @@ namespace FSI
      * and inner fluid DOF map after evaluation
 
      */
-    bool has_fluid_dof_map_changed(const Epetra_BlockMap& fluidincrementmap) override;
+    bool has_fluid_dof_map_changed(const Core::LinAlg::Map& fluidincrementmap) override;
 
    private:
     /// build block vector from field vectors

@@ -62,7 +62,7 @@ void Airway::RedAirwayResultTest::test_node(
       if (actnode->owner() != Core::Communication::my_mpi_rank(dis_->get_comm())) return;
 
       double result = 0.;
-      const Epetra_BlockMap& nodemap = mynodesol_pressure_->get_block_map();
+      const Core::LinAlg::Map& nodemap = mynodesol_pressure_->get_map();
       std::string position = container.get<std::string>("QUANTITY");
 
       // test result value of single scalar field
@@ -124,7 +124,7 @@ void Airway::RedAirwayResultTest::test_element(
       if (actelement->owner() != Core::Communication::my_mpi_rank(dis_->get_comm())) return;
 
       double result = 0.;
-      const Epetra_BlockMap& elementmap = myelemsol_acinivol_->get_block_map();
+      const Core::LinAlg::Map& elementmap = myelemsol_acinivol_->get_map();
       std::string position = container.get<std::string>("QUANTITY");
       if (position == "pressure_external")
       {

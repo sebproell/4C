@@ -2075,7 +2075,7 @@ namespace FLD
 
       int firstgdofid = discret_->dof(0, node, 0);
 
-      int firstldofid = forcing_->get_block_map().LID(firstgdofid);
+      int firstldofid = forcing_->get_map().LID(firstgdofid);
 
       int err = forcing_->replace_local_value(firstldofid, 0, newforce);
       if (err != 0) FOUR_C_THROW("something went wrong during replacemyvalue");

@@ -374,7 +374,7 @@ void STI::Monolithic::fd_check()
     statenp->update(1., *statenp_original, 0.);
 
     // impose perturbation
-    if (statenp->get_block_map().MyGID(colgid))
+    if (statenp->get_map().MyGID(colgid))
       if (statenp->sum_into_global_value(colgid, 0, scatra_field()->fd_check_eps()))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
@@ -573,7 +573,8 @@ void STI::Monolithic::output_matrix_to_file(
   if (sparsematrix != nullptr)
   {
     if (crsmatrix.import(*sparsematrix,
-            Epetra_Import(fullrowmap.get_epetra_map(), rowmap.get_epetra_map()), Insert))
+            Epetra_Import(fullrowmap.get_epetra_block_map(), rowmap.get_epetra_block_map()),
+            Insert))
       FOUR_C_THROW("Matrix import failed!");
   }
   else
@@ -583,8 +584,8 @@ void STI::Monolithic::output_matrix_to_file(
       for (int j = 0; j < blocksparsematrix->cols(); ++j)
       {
         if (crsmatrix.import(blocksparsematrix->matrix(i, j),
-                Epetra_Import(
-                    fullrowmap.get_epetra_map(), blocksparsematrix->range_map(i).get_epetra_map()),
+                Epetra_Import(fullrowmap.get_epetra_block_map(),
+                    blocksparsematrix->range_map(i).get_epetra_block_map()),
                 Insert))
           FOUR_C_THROW("Matrix import failed!");
       }
@@ -656,7 +657,7 @@ void STI::Monolithic::output_vector_to_file(
   MPI_Comm comm = vector.Comm();
 
   // extract vector map
-  const Epetra_BlockMap& map = vector.Map();
+  const Core::LinAlg::Map& map = vector.get_map();
 
   // safety check
   if (!map.UniqueGIDs())
@@ -1575,7 +1576,7 @@ void STI::Monolithic::solve()
     // output performance statistics associated with linear solver into text file if applicable
     if (fieldparameters_->get<bool>("OUTPUTLINSOLVERSTATS"))
       scatra_field()->output_lin_solver_stats(*solver_, dtsolve_, step(), static_cast<int>(iter_),
-          residual_->get_block_map().NumGlobalElements());
+          residual_->get_map().NumGlobalElements());
 
     // update scatra field
     scatra_field()->update_iter(*maps_->extract_vector(*increment_, 0));

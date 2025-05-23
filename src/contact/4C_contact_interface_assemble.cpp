@@ -1779,8 +1779,8 @@ void CONTACT::Interface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linstick
     // in case of TSI, the nodal temperature influences the local friction coefficient
     frcoeff = cnode->fr_coeff(frcoeff_in);
 
-    double cn_input = get_cn_ref()[get_cn_ref().get_block_map().LID(cnode->id())];
-    double ct_input = get_ct_ref()[get_ct_ref().get_block_map().LID(cnode->id())];
+    double cn_input = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
+    double ct_input = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
 
     // more information from node
     double* n = cnode->mo_data().n();
@@ -2599,8 +2599,8 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
       // in case of TSI, the nodal temperature influences the local friction coefficient
       frcoeff = cnode->fr_coeff(frcoeff_in);
 
-      double cn_input = get_cn_ref()[get_cn_ref().get_block_map().LID(cnode->id())];
-      double ct_input = get_ct_ref()[get_ct_ref().get_block_map().LID(cnode->id())];
+      double cn_input = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
+      double ct_input = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
 
       // prepare assembly, get information from node
       std::vector<Core::Gen::Pairedvector<int, double>> dnmap = cnode->data().get_deriv_n();
@@ -3627,7 +3627,7 @@ void CONTACT::Interface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linslipLM
       if (cnode->owner() != Core::Communication::my_mpi_rank(get_comm()))
         FOUR_C_THROW("AssembleLinSlip: Node ownership inconsistency!");
 
-      double ct = get_ct_ref()[get_ct_ref().get_block_map().LID(cnode->id())];
+      double ct = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
 
       // preparation of assembly
       // get Deriv N and calculate DerivD form DerivN
@@ -4275,9 +4275,9 @@ void CONTACT::Interface::assemble_normal_contact_regularization(Core::LinAlg::Sp
     double dval = cnode->mo_data().get_d().at(cnode->id());
 
     if (constr_direction == CONTACT::ConstraintDirection::xyz)
-      for (int d = 0; d < dim; ++d) f[f.get_block_map().LID(cnode->dofs()[d])] += n(d) * dval * gLM;
+      for (int d = 0; d < dim; ++d) f[f.get_map().LID(cnode->dofs()[d])] += n(d) * dval * gLM;
     else
-      f[f.get_block_map().LID(cnode->dofs()[0])] += dval * gLM;
+      f[f.get_map().LID(cnode->dofs()[0])] += dval * gLM;
 
     for (int l = 0; l < dim; ++l)
     {
@@ -4357,8 +4357,8 @@ void CONTACT::Interface::assemble_lin_slip_normal_regularization(
       // in case of TSI, the nodal temperature influences the local friction coefficient
       frcoeff = cnode->fr_coeff(frcoeff_in);
 
-      double cn = get_cn_ref()[get_cn_ref().get_block_map().LID(cnode->id())];
-      double ct = get_ct_ref()[get_ct_ref().get_block_map().LID(cnode->id())];
+      double cn = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
+      double ct = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
 
       // prepare assembly, get information from node
       std::vector<Core::Gen::Pairedvector<int, double>> dnmap = cnode->data().get_deriv_n();
@@ -5288,7 +5288,7 @@ void CONTACT::Interface::assemble_coup_lin_d(
           int col = scolcurr->first;
           int slavedofgid = cnode->dofs()[prodj];
 
-          int slavedoflid = x->get_block_map().LID(slavedofgid);
+          int slavedoflid = x->get_map().LID(slavedofgid);
           if (slavedoflid < 0) FOUR_C_THROW("invalid slave dof lid");
           double val = (*x)[slavedoflid] * (scolcurr->second);
 
@@ -5367,7 +5367,7 @@ void CONTACT::Interface::assemble_coup_lin_m(
           int col = mcolcurr->first;
           int slavedofgid = cnode->dofs()[prodj];
 
-          int slavedoflid = x->get_block_map().LID(slavedofgid);
+          int slavedoflid = x->get_map().LID(slavedofgid);
           double val = (*x)[slavedoflid] * (mcolcurr->second);
 
           ++mcolcurr;

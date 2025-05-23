@@ -224,7 +224,7 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
   set_global_maps();
 
   // Create the global coupling matrices.
-  constraint_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
+  constraint_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_block_map());
   constraint_lin_beam_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *lambda_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   constraint_lin_solid_ = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -233,12 +233,12 @@ void BeamInteraction::BeamToSolidMortarManager::setup()
       *beam_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   force_solid_lin_lambda_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *solid_dof_rowmap_, 100, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  kappa_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
+  kappa_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_block_map());
   kappa_lin_beam_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *lambda_dof_rowmap_, 30, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
   kappa_lin_solid_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *lambda_dof_rowmap_, 100, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  lambda_active_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_map());
+  lambda_active_ = std::make_shared<Epetra_FEVector>(lambda_dof_rowmap_->get_epetra_block_map());
 
   // Set flag for successful setup.
   is_setup_ = true;
