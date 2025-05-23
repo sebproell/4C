@@ -447,13 +447,4 @@ void ScaTra::LevelSetAlgorithm::test_results()
 }
 
 
-/*----------------------------------------------------------------------*
- | set time and step value                              rasthofer 04/14 |
- *----------------------------------------------------------------------*/
-void ScaTra::LevelSetAlgorithm::set_time_step(const double time, const int step)
-{
-  // call base class function
-  ScaTra::ScaTraTimIntImpl::set_time_step(time, step);
-}
-
 FOUR_C_NAMESPACE_CLOSE

@@ -45,25 +45,25 @@ namespace Adapter
   {
    public:
     //! constructor
-    ScatraInterface() {};
+    ScatraInterface() = default;
 
     //! virtual to get polymorph destruction
     virtual ~ScatraInterface() = default;
 
     //! return discretization
-    virtual std::shared_ptr<Core::FE::Discretization> discretization() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<Core::FE::Discretization> discretization() const = 0;
 
     //! add parameters specific for time-integration scheme
     virtual void add_time_integration_specific_vectors(bool forcedincrementalsolver = false) = 0;
 
     //! return number of dofset associated with displacement dofs
-    virtual int nds_disp() const = 0;
+    [[nodiscard]] virtual int nds_disp() const = 0;
 
     //! return rcp ptr to neumann loads vector
     virtual std::shared_ptr<Core::LinAlg::Vector<double>> get_neumann_loads_ptr() = 0;
 
     //! return meshtying strategy (includes standard case without meshtying)
-    virtual const std::shared_ptr<ScaTra::MeshtyingStrategyBase>& strategy() const = 0;
+    [[nodiscard]] virtual std::shared_ptr<ScaTra::MeshtyingStrategyBase> strategy() const = 0;
 
     //! return scalar field phi at time n
     virtual std::shared_ptr<Core::LinAlg::Vector<double>> phin() = 0;

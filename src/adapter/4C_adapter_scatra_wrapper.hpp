@@ -43,7 +43,7 @@ namespace Adapter
 
    protected:
     //! return discretization
-    std::shared_ptr<Core::FE::Discretization> discretization() const override
+    [[nodiscard]] std::shared_ptr<Core::FE::Discretization> discretization() const override
     {
       return scatra_timint_->discretization();
     };
@@ -64,10 +64,10 @@ namespace Adapter
     };
 
     //! return meshtying strategy (includes standard case without meshtying)
-    const std::shared_ptr<ScaTra::MeshtyingStrategyBase>& strategy() const override
+    [[nodiscard]] std::shared_ptr<ScaTra::MeshtyingStrategyBase> strategy() const override
     {
       return scatra_timint_->strategy();
-    };
+    }
 
     //! return scalar field phi at time n
     std::shared_ptr<Core::LinAlg::Vector<double>> phin() override { return scatra_timint_->phin(); }

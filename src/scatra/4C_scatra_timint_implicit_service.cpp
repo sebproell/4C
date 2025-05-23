@@ -29,20 +29,8 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-
-/*==========================================================================*
- |                                                                          |
- | public:                                                                  |
- |                                                                          |
- *==========================================================================*/
-
-/*==========================================================================*/
-//! @name general framework
-/*==========================================================================*/
-
-/*----------------------------------------------------------------------*
- | calculate fluxes inside domain and/or on boundary         fang 07/16 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::calc_flux(const bool writetofile)
 {
   switch (calcflux_domain_)
@@ -93,20 +81,17 @@ void ScaTra::ScaTraTimIntImpl::calc_flux(const bool writetofile)
   }
 }
 
-
-/*----------------------------------------------------------------------*
- | calculate flux vector field inside computational domain   fang 08/16 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::calc_flux_in_domain()
+    const
 {
   // extract dofrowmap from discretization
   const Core::LinAlg::Map& dofrowmap = *discret_->dof_row_map();
 
   // initialize global flux vectors
-  std::shared_ptr<Core::LinAlg::MultiVector<double>> flux =
-      std::make_shared<Core::LinAlg::MultiVector<double>>(dofrowmap, 3);
-  std::shared_ptr<Core::LinAlg::MultiVector<double>> flux_projected =
-      std::make_shared<Core::LinAlg::MultiVector<double>>(dofrowmap, 3);
+  auto flux = std::make_shared<Core::LinAlg::MultiVector<double>>(dofrowmap, 3);
+  auto flux_projected = std::make_shared<Core::LinAlg::MultiVector<double>>(dofrowmap, 3);
 
   // parameter list for element evaluation
   Teuchos::ParameterList params;
@@ -141,8 +126,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
         "action", ScaTra::Action::integrate_shape_functions, params);
 
     // integrate shape functions
-    std::shared_ptr<Core::LinAlg::IntSerialDenseVector> dofids =
-        std::make_shared<Core::LinAlg::IntSerialDenseVector>(num_dof_per_node());
+    auto dofids = std::make_shared<Core::LinAlg::IntSerialDenseVector>(num_dof_per_node());
     dofids->putScalar(1);  // integrate shape functions for all dofs
     params.set("dofids", dofids);
     discret_->evaluate(params, nullptr, nullptr, integratedshapefcts, nullptr, nullptr);
@@ -163,8 +147,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
         "action", ScaTra::Action::calc_mass_matrix, params);
 
     // initialize global mass matrix
-    std::shared_ptr<Core::LinAlg::SparseMatrix> massmatrix =
-        std::make_shared<Core::LinAlg::SparseMatrix>(dofrowmap, 27, false);
+    auto massmatrix = std::make_shared<Core::LinAlg::SparseMatrix>(dofrowmap, 27, false);
 
     // call loop over elements
     discret_->evaluate(params, massmatrix, nullptr);
@@ -184,12 +167,10 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
   }
 
   return flux_projected;
-}  // ScaTra::ScaTraTimIntImpl::CalcFluxInDomain
+}
 
-
-/*----------------------------------------------------------------------*
- |  calculate mass / heat normal flux at specified boundaries  gjb 06/09|
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::calc_flux_at_boundary(
     const bool writetofile)
 {
@@ -272,15 +253,6 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
   if (calcflux_boundary_ == Inpar::ScaTra::flux_total or
       calcflux_boundary_ == Inpar::ScaTra::flux_convective)
   {
-    // following screen output removed, for the time being
-    /*if(myrank_ == 0)
-    {
-      std::cout << "Convective flux contribution is added to trueresidual_ vector." << std::endl;
-      std::cout << "Be sure not to address the same boundary part twice!" << std::endl;
-      std::cout << "Two flux calculation boundaries should also not share a common node!" <<
-    std::endl;
-    }*/
-
     std::vector<const Core::Conditions::Condition*> cond;
     discret_->get_condition("ScaTraFluxCalc", cond);
 
@@ -309,15 +281,15 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
 
   if (myrank_ == 0)
   {
-    std::cout << std::endl;
+    std::cout << '\n';
     std::cout << "Normal fluxes at boundary 'ScaTraFluxCalc' on discretization '"
-              << discret_->name() << "':" << std::endl;
+              << discret_->name() << "':" << '\n';
     std::cout
         << "+----+-----+-------------------------+------------------+--------------------------+"
-        << std::endl;
+        << '\n';
     std::cout
         << "| ID | DOF | Integral of normal flux | Area of boundary | Mean normal flux density |"
-        << std::endl;
+        << '\n';
   }
 
   // first, add to all conditions of interest a ConditionID
@@ -537,7 +509,9 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
         f << "\n";
       }
       else
+      {
         f.open(fname.c_str(), std::fstream::ate | std::fstream::app);
+      }
 
       f << icond << " " << step() << " " << time() << " " << parboundaryint << " ";
       for (int idof = 0; idof < num_dof_per_node(); ++idof)
@@ -555,7 +529,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
   {
     std::cout
         << "+----+-----+-------------------------+------------------+--------------------------+"
-        << std::endl;
+        << '\n';
   }
 
   // print out the accumulated normal flux over all indicated boundaries
@@ -569,16 +543,14 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
     }
     std::cout
         << "+----------------------------------------------------------------------------------+"
-        << std::endl;
+        << '\n';
   }
 
   return flux;
-}  // ScaTra::ScaTraTimIntImpl::CalcFluxAtBoundary
+}
 
-
-/*--------------------------------------------------------------------*
- | calculate initial time derivatives of state variables   fang 03/15 |
- *--------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::calc_initial_time_derivative()
 {
   // time measurement
@@ -683,13 +655,11 @@ void ScaTra::ScaTraTimIntImpl::calc_initial_time_derivative()
   hist_ = hist;
 
   // final screen output
-  if (myrank_ == 0) std::cout << "done!" << std::endl;
-}  // ScaTra::ScaTraTimIntImpl::calc_initial_time_derivative
+  if (myrank_ == 0) std::cout << "done!" << '\n';
+}
 
-
-/*---------------------------------------------------------------------------*
- | compute nodal density values from nodal concentration values   fang 12/14 |
- *---------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::compute_density()
 {
   // loop over all nodes owned by current processor
@@ -740,23 +710,19 @@ void ScaTra::ScaTraTimIntImpl::compute_density()
     int err = densafnp_->replace_local_value(localdofid, 0, density);
 
     if (err) FOUR_C_THROW("Error while inserting nodal density value into global density vector!");
-  }  // loop over all local nodes
-}  // ScaTra::ScaTraTimIntImpl::ComputeDensity
+  }
+}
 
-
-/*---------------------------------------------------------------------------*
- | compute time derivatives of discrete state variables           fang 01/17 |
- *---------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::compute_time_derivative()
 {
   // compute time derivatives of discrete state variables associated with meshtying strategy
   strategy_->compute_time_derivative();
 }
 
-
-/*----------------------------------------------------------------------*
- | output total and mean values of transported scalars       fang 03/16 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::output_total_and_mean_scalars(const int num)
 {
   if (outputscalars_ != Inpar::ScaTra::outputscalars_none)
@@ -764,13 +730,10 @@ void ScaTra::ScaTraTimIntImpl::output_total_and_mean_scalars(const int num)
     if (outputscalarstrategy_ == nullptr) FOUR_C_THROW("output strategy was not initialized!");
     outputscalarstrategy_->output_total_and_mean_scalars(this, num);
   }  // if(outputscalars_)
-}  // ScaTra::ScaTraTimIntImpl::output_total_and_mean_scalars
+}
 
-
-/*--------------------------------------------------------------------------------------------------------*
- | output domain or boundary integrals, i.e., surface areas or volumes of specified nodesets   fang
- 06/15 |
- *--------------------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::output_domain_or_boundary_integrals(const std::string& condstring)
 {
   // check whether output is applicable
@@ -782,12 +745,10 @@ void ScaTra::ScaTraTimIntImpl::output_domain_or_boundary_integrals(const std::st
 
     outputdomainintegralstrategy_->evaluate_integrals_and_print_results(this, condstring);
   }  // check whether output is applicable
-}  // ScaTra::ScaTraTimIntImpl::output_domain_or_boundary_integrals
+}
 
-
-/*----------------------------------------------------------------------*
- | Evaluate surface/interface permeability for FS3I          Thon 11/14 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::surface_permeability(
     std::shared_ptr<Core::LinAlg::SparseOperator> matrix,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
@@ -815,7 +776,7 @@ void ScaTra::ScaTraTimIntImpl::surface_permeability(
 
     if (myrank_ == 0)
       std::cout << "Replacing 'phinp' by 'meanconc_' in the evaluation of the surface permeability"
-                << std::endl;
+                << '\n';
   }
 
   if (membrane_conc_ == nullptr)
@@ -832,13 +793,10 @@ void ScaTra::ScaTraTimIntImpl::surface_permeability(
       condparams, matrix, nullptr, rhs, nullptr, nullptr, "ScaTraCoupling");
 
   matrix->complete();
-}  // ScaTra::ScaTraTimIntImpl::SurfacePermeability
+}
 
-/*----------------------------------------------------------------------------*
- |  Kedem & Katchalsky second membrane equation for FPS3i       hemmler 07/14 |
- |  see e.g. Kedem, O. T., and A. Katchalsky. "Thermodynamic analysis of the permeability of
- biological membranes to non-electrolytes." Biochimica et biophysica Acta 27 (1958): 229-246.
- *----------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::kedem_katchalsky(
     std::shared_ptr<Core::LinAlg::SparseOperator> matrix,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
@@ -877,23 +835,11 @@ void ScaTra::ScaTraTimIntImpl::kedem_katchalsky(
       condparams, matrix, nullptr, rhs, nullptr, nullptr, "ScaTraCoupling");
 
   matrix->complete();
-}  // ScaTra::ScaTraTimIntImpl::KedemKatchalsky
+}
 
-
-/*==========================================================================*
- |                                                                          |
- | protected:                                                               |
- |                                                                          |
- *==========================================================================*/
-
-/*==========================================================================*/
-// general framework
-/*==========================================================================*/
-
-/*----------------------------------------------------------------------*
- | add approximation to flux vectors to a parameter list      gjb 05/10 |
- *----------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::add_flux_approx_to_parameter_list(Teuchos::ParameterList& p)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+void ScaTra::ScaTraTimIntImpl::add_flux_approx_to_parameter_list(Teuchos::ParameterList& p) const
 {
   std::shared_ptr<Core::LinAlg::MultiVector<double>> flux = calc_flux_in_domain();
 
@@ -919,14 +865,12 @@ void ScaTra::ScaTraTimIntImpl::add_flux_approx_to_parameter_list(Teuchos::Parame
     }
     discret_->add_multi_vector_to_parameter_list(p, name, fluxk);
   }
-}  // ScaTra::ScaTraTimIntImpl::add_flux_approx_to_parameter_list
+}
 
-
-/*----------------------------------------------------------------------*
- | compute outward pointing unit normal vectors at given b.c.  gjb 01/09|
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::compute_normal_vectors(
-    const std::vector<std::string>& condnames)
+    const std::vector<std::string>& condnames) const
 {
   // create vectors for x,y and z component of average normal vector field
   // get noderowmap of discretization
@@ -967,12 +911,10 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::com
   }
 
   return normal;
-}  // ScaTra:: ScaTraTimIntImpl::compute_normal_vectors
+}
 
-
-/*------------------------------------------------------------------------------------------------*
- | compute null space information associated with global system matrix if applicable   fang 09/17 |
- *------------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::compute_null_space_if_necessary() const
 {
   // extract solver parameters
@@ -1014,14 +956,14 @@ void ScaTra::ScaTraTimIntImpl::compute_null_space_if_necessary() const
   }
 
   else
+  {
     // compute standard, vector-based null space information if applicable
     discret_->compute_null_space_if_necessary(solverparams, true);
-}  // ScaTra::ScaTraTimIntImpl::compute_null_space_if_necessary()
+  }
+}
 
-
-/*----------------------------------------------------------------------*
- | evaluate Neumann inflow boundary condition                  vg 03/09 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::compute_neumann_inflow(
     std::shared_ptr<Core::LinAlg::SparseOperator> matrix,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
@@ -1044,11 +986,10 @@ void ScaTra::ScaTraTimIntImpl::compute_neumann_inflow(
 
   std::string condstring("TransportNeumannInflow");
   discret_->evaluate_condition(condparams, matrix, nullptr, rhs, nullptr, nullptr, condstring);
-}  // ScaTra::ScaTraTimIntImpl::compute_neumann_inflow
+}
 
-/*----------------------------------------------------------------------*
- | evaluate boundary cond. due to convective heat transfer     vg 10/11 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::evaluate_convective_heat_transfer(
     std::shared_ptr<Core::LinAlg::SparseOperator> matrix,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
@@ -1068,19 +1009,12 @@ void ScaTra::ScaTraTimIntImpl::evaluate_convective_heat_transfer(
 
   std::string condstring("TransportThermoConvections");
   discret_->evaluate_condition(condparams, matrix, nullptr, rhs, nullptr, nullptr, condstring);
-}  // ScaTra::ScaTraTimIntImpl::evaluate_convective_heat_transfer
+}
 
-
-/*------------------------------------------------------------------------------------------*
- | output performance statistics associated with linear solver into *.csv file   fang 02/17 |
- *------------------------------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::output_lin_solver_stats(
-    const Core::LinAlg::Solver& solver,  //!< linear solver
-    const double& time,                  //!< solver time maximized over all processors
-    const int& step,                     //!< time step
-    const int& iteration,                //!< Newton-Raphson iteration number
-    const int& size                      //!< size of linear system
-)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+void ScaTra::ScaTraTimIntImpl::output_lin_solver_stats(const Core::LinAlg::Solver& solver,
+    const double& time, const int& step, const int& iteration, const int& size)
 {
   // extract communicator
   MPI_Comm comm = solver.get_comm();
@@ -1097,30 +1031,26 @@ void ScaTra::ScaTraTimIntImpl::output_lin_solver_stats(
     if (step == 1 and iteration == 1)
     {
       file.open(filename.c_str(), std::fstream::trunc);
-      file << "Step,NewtonRaphsonIteration,SystemSize,SolverIterations,SolverTime" << std::endl;
+      file << "Step,NewtonRaphsonIteration,SystemSize,SolverIterations,SolverTime" << '\n';
     }
     else
+    {
       file.open(filename.c_str(), std::fstream::app);
+    }
 
     // write results
     file << step << "," << iteration << "," << size << "," << solver.get_num_iters() << ","
-         << std::setprecision(16) << std::scientific << time << std::endl;
+         << std::setprecision(16) << std::scientific << time << '\n';
 
     // close file
     file.close();
   }
-}  // ScaTra::ScaTraTimIntImpl::output_lin_solver_stats
+}
 
-
-/*---------------------------------------------------------------------------------------------*
- | output performance statistics associated with nonlinear solver into *.csv file   fang 04/15 |
- *---------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::output_nonlin_solver_stats(
-    const int& iterations,  //!< iteration count of nonlinear solver
-    const double& time,     //!< solver time maximized over all processors
-    const int& step,        //!< time step
-    MPI_Comm comm           //!< communicator
-)
+    const int& iterations, const double& time, const int& step, MPI_Comm comm)
 {
   // write performance statistics to file
   if (Core::Communication::my_mpi_rank(comm) == 0)
@@ -1134,24 +1064,24 @@ void ScaTra::ScaTraTimIntImpl::output_nonlin_solver_stats(
     if (step == 1)
     {
       file.open(filename.c_str(), std::fstream::trunc);
-      file << "Step,NonlinSolverIterations,NonlinSolverTime" << std::endl;
+      file << "Step,NonlinSolverIterations,NonlinSolverTime" << '\n';
     }
     else
+    {
       file.open(filename.c_str(), std::fstream::app);
+    }
 
     // write results
     file << step << "," << iterations << "," << std::setprecision(16) << std::scientific << time
-         << std::endl;
+         << '\n';
 
     // close file
     file.close();
   }
-}  // ScaTra::ScaTraTimIntImpl::output_nonlin_solver_stats
+}
 
-
-/*----------------------------------------------------------------------*
- | write state vectors to Gmsh postprocessing files        henke   12/09|
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::output_to_gmsh(const int step, const double time) const
 {
   // turn on/off screen output for writing process of Gmsh postprocessing file
@@ -1165,15 +1095,15 @@ void ScaTra::ScaTraTimIntImpl::output_to_gmsh(const int step, const double time)
   {
     // add 'View' to Gmsh postprocessing file
     gmshfilecontent << "View \" "
-                    << "Phinp \" {" << std::endl;
+                    << "Phinp \" {" << '\n';
     // draw scalar field 'Phinp' for every element
     Core::IO::Gmsh::scalar_field_to_gmsh(*discret_, phinp_, gmshfilecontent);
-    gmshfilecontent << "};" << std::endl;
+    gmshfilecontent << "};" << '\n';
   }
   {
     // add 'View' to Gmsh postprocessing file
     gmshfilecontent << "View \" "
-                    << "Convective Velocity \" {" << std::endl;
+                    << "Convective Velocity \" {" << '\n';
 
     // extract convective velocity from discretization
     std::shared_ptr<const Core::LinAlg::Vector<double>> convel =
@@ -1183,15 +1113,14 @@ void ScaTra::ScaTraTimIntImpl::output_to_gmsh(const int step, const double time)
 
     // draw vector field 'Convective Velocity' for every element
     Core::IO::Gmsh::vector_field_dof_based_to_gmsh(*discret_, convel, gmshfilecontent, nds_vel());
-    gmshfilecontent << "};" << std::endl;
+    gmshfilecontent << "};" << '\n';
   }
   gmshfilecontent.close();
-  if (screen_out) std::cout << " done" << std::endl;
-}  // ScaTraTimIntImpl::output_to_gmsh
+  if (screen_out) std::cout << " done" << '\n';
+}
 
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::write_restart() const
 {
   // step number and time (only after that data output is possible)
@@ -1204,9 +1133,8 @@ void ScaTra::ScaTraTimIntImpl::write_restart() const
   strategy_->write_restart();
 }
 
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::collect_output_flux_data(
     std::shared_ptr<Core::LinAlg::MultiVector<double>> flux, const std::string& fluxtype)
 {
@@ -1270,10 +1198,9 @@ void ScaTra::ScaTraTimIntImpl::collect_output_flux_data(
 // TODO: SCATRA_ELE_CLEANING: BIOFILM
 // This action is not called at element level!!
 // Can it be integrated in CalcFlux_domain?
-/*----------------------------------------------------------------------*
- |  output of integral reaction                               mc   03/13|
- *----------------------------------------------------------------------*/
-void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num) const
 {
   if (outintegrreac_)
   {
@@ -1305,7 +1232,7 @@ void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num)
       for (int k = 0; k < num_scal(); k++)
       {
         std::cout << "Total reaction (r_" << k << "): " << std::setprecision(9) << intreacterm[k]
-                  << std::endl;
+                  << '\n';
       }
     }
 
@@ -1329,7 +1256,9 @@ void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num)
         f << "\n";
       }
       else
+      {
         f.open(fname.c_str(), std::fstream::ate | std::fstream::app);
+      }
 
       f << step() << " " << time() << " ";
       for (int k = 0; k < num_scal(); k++)
@@ -1342,18 +1271,10 @@ void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num)
     }
 
   }  // if(outintegrreac_)
-}  // ScaTra::ScaTraTimIntImpl::OutputIntegrReac
+}
 
-
-/*==========================================================================*/
-// ELCH
-/*==========================================================================*/
-
-
-
-/*----------------------------------------------------------------------*
- |  prepare AVM3-based scale separation                        vg 10/08 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::avm3_preparation()
 {
   // time measurement: avm3
@@ -1421,11 +1342,10 @@ void ScaTra::ScaTraTimIntImpl::avm3_preparation()
       // Mnsv_ = Core::LinAlg::Multiply(*Sep_,true,*Mnsv_,false);
     }
   }
-}  // ScaTraTimIntImpl::avm3_preparation
+}
 
-/*----------------------------------------------------------------------*
- |  scaling of AVM3-based subgrid-diffusivity matrix           vg 10/08 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::avm3_scaling(Teuchos::ParameterList& eleparams)
 {
   // time measurement: avm3
@@ -1460,13 +1380,12 @@ void ScaTra::ScaTraTimIntImpl::avm3_scaling(Teuchos::ParameterList& eleparams)
 
   // set subgrid-diffusivity vector to zero after scaling procedure
   subgrdiff_->put_scalar(0.0);
-}  // ScaTraTimIntImpl::AVM3Scaling
+}
 
-/*----------------------------------------------------------------------*
- | construct toggle vector for Dirichlet dofs                  gjb 11/08|
- | assures backward compatibility for avm3 solver; should go away once  |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>> ScaTra::ScaTraTimIntImpl::dirichlet_toggle()
+    const
 {
   if (dbcmaps_ == nullptr) FOUR_C_THROW("Dirichlet map has not been allocated");
   std::shared_ptr<Core::LinAlg::Vector<double>> dirichones =
@@ -1476,17 +1395,10 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> ScaTra::ScaTraTimIntImpl::di
       Core::LinAlg::create_vector(*(discret_->dof_row_map()), true);
   dbcmaps_->insert_cond_vector(*dirichones, *dirichtoggle);
   return dirichtoggle;
-}  // ScaTraTimIntImpl::dirichlet_toggle
+}
 
-
-/*========================================================================*/
-// turbulence and related
-/*========================================================================*/
-
-
-/*----------------------------------------------------------------------*
- | provide access to the dynamic Smagorinsky filter     rasthofer 08/12 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::access_dyn_smag_filter(std::shared_ptr<FLD::DynSmagFilter> dynSmag)
 {
   DynSmag_ = Core::Utils::shared_ptr_from_ref(*dynSmag.get());
@@ -1498,17 +1410,16 @@ void ScaTra::ScaTraTimIntImpl::access_dyn_smag_filter(std::shared_ptr<FLD::DynSm
   {
     if (myrank_ == 0)
     {
-      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-      std::cout << "Dynamic Smagorinsky model: provided access for ScaTra       " << std::endl;
-      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << '\n';
+      std::cout << "Dynamic Smagorinsky model: provided access for ScaTra       " << '\n';
+      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << '\n';
     }
     DynSmag_->add_scatra(discret_);
   }
 }
 
-/*----------------------------------------------------------------------*
- | provide access to the dynamic Vreman class               krank 09/13 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::access_vreman(std::shared_ptr<FLD::Vreman> vrem)
 {
   Vrem_ = Core::Utils::shared_ptr_from_ref(*vrem.get());
@@ -1520,29 +1431,24 @@ void ScaTra::ScaTraTimIntImpl::access_vreman(std::shared_ptr<FLD::Vreman> vrem)
   {
     if (myrank_ == 0)
     {
-      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-      std::cout << "Dynamic Vreman model: provided access for ScaTra            " << std::endl;
-      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << '\n';
+      std::cout << "Dynamic Vreman model: provided access for ScaTra            " << '\n';
+      std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << '\n';
     }
     Vrem_->add_scatra(discret_);
   }
 }
 
-
-/*----------------------------------------------------------------------*
- | read restart data                                         fang 01/17 |
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::read_restart(
     const int step, std::shared_ptr<Core::IO::InputControl> input)
 {
   // read restart data associated with meshtying strategy
-  strategy_->read_restart(step, input);
+  strategy_->read_restart(step, std::move(input));
 }  // ScaTra::ScaTraTimIntImpl::read_restart()
 
-
 /*-------------------------------------------------------------------------*
- | calculate mean CsgsB to estimate CsgsD                                  |
- | for multifractal subgrid-scale model                    rasthofer 08/12 |
  *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::recompute_mean_csgs_b()
 {
@@ -1605,20 +1511,16 @@ void ScaTra::ScaTraTimIntImpl::recompute_mean_csgs_b()
     // calculate mean Cai
     meanCai = global_sumCai / global_sumVol;
 
-    // std::cout << "Proc:  " << myrank_ << "  local vol and Cai   "
-    //<< local_sumVol << "   " << local_sumCai << "  global vol and Cai   "
-    //<< global_sumVol << "   " << global_sumCai << "  mean   " << meanCai << std::endl;
-
     if (myrank_ == 0)
     {
       std::cout << "\n+----------------------------------------------------------------------------"
                    "----------------+"
-                << std::endl;
+                << '\n';
       std::cout << "Multifractal subgrid scales: adaption of CsgsD from near-wall limit of CsgsB:  "
-                << std::setprecision(8) << meanCai << std::endl;
+                << std::setprecision(8) << meanCai << '\n';
       std::cout << "+------------------------------------------------------------------------------"
                    "--------------+\n"
-                << std::endl;
+                << '\n';
     }
 
     Discret::Elements::ScaTraEleParameterTurbulence::instance(discret_->name())
@@ -1626,10 +1528,8 @@ void ScaTra::ScaTraTimIntImpl::recompute_mean_csgs_b()
   }
 }
 
-
-/*----------------------------------------------------------------------*
- | calculate intermediate solution                       rasthofer 05/13|
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::calc_intermediate_solution()
 {
   if (special_flow_ == "scatra_forced_homogeneous_isotropic_turbulence" and
@@ -1649,7 +1549,7 @@ void ScaTra::ScaTraTimIntImpl::calc_intermediate_solution()
       {
         std::cout << "+------------------------------------------------------------------------+\n";
         std::cout << "|     calculate intermediate solution\n";
-        std::cout << "|" << std::endl;
+        std::cout << "|" << '\n';
       }
 
       // turn off forcing in nonlinear_solve()
@@ -1682,43 +1582,39 @@ void ScaTra::ScaTraTimIntImpl::calc_intermediate_solution()
         std::cout << "|\n";
         std::cout << "+------------------------------------------------------------------------+\n";
         std::cout << "+------------------------------------------------------------------------+\n";
-        std::cout << "|" << std::endl;
+        std::cout << "|" << '\n';
       }
     }
     else
+    {
       // set force to zero
       forcing_->put_scalar(0.0);
+    }
   }
 }
 
-
-/*==========================================================================*/
-// Biofilm related
-/*==========================================================================*/
-
-/*----------------------------------------------------------------------*/
-/* set scatra-fluid displacement vector due to biofilm growth          */
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::set_sc_fld_gr_disp(
     std::shared_ptr<Core::LinAlg::MultiVector<double>> scatra_fluid_growth_disp)
 {
-  scfldgrdisp_ = scatra_fluid_growth_disp;
+  scfldgrdisp_ = std::move(scatra_fluid_growth_disp);
 }
 
-/*----------------------------------------------------------------------*/
-/* set scatra-structure displacement vector due to biofilm growth          */
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::set_sc_str_gr_disp(
     std::shared_ptr<Core::LinAlg::MultiVector<double>> scatra_struct_growth_disp)
 {
-  scstrgrdisp_ = scatra_struct_growth_disp;
+  scstrgrdisp_ = std::move(scatra_struct_growth_disp);
 }
 
-/*----------------------------------------------------------------------*
- | Calculate the reconstructed nodal gradient of phi        winter 04/17|
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::MultiVector<double>>
 ScaTra::ScaTraTimIntImpl::compute_superconvergent_patch_recovery(
     std::shared_ptr<const Core::LinAlg::Vector<double>> state, const std::string& statename,
-    const int numvec, Teuchos::ParameterList& eleparams, const int dim)
+    const int numvec, Teuchos::ParameterList& eleparams, const int dim) const
 {
   // Warning, this is only tested so far for 1 scalar field!!!
 
@@ -1745,16 +1641,12 @@ ScaTra::ScaTraTimIntImpl::compute_superconvergent_patch_recovery(
       break;
     default:
       FOUR_C_THROW("only 1/2/3D implementation available for superconvergent patch recovery");
-      break;
   }
-
-  return nullptr;
 }
 
-/*--------------------------------------------------------------------------------------------------------------------*
- | convergence check (only for two-way coupled problems, e.g., low-Mach-number flow, ...) |
- *--------------------------------------------------------------------------------------------------------------------*/
-bool ScaTra::ScaTraTimIntImpl::convergence_check(int itnum, int itmax, const double ittol)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+bool ScaTra::ScaTraTimIntImpl::convergence_check(int itnum, int itmax, const double ittol) const
 {
   // declare bool variable for potentially stopping nonlinear iteration
   bool stopnonliniter = false;
@@ -1873,21 +1765,20 @@ bool ScaTra::ScaTraTimIntImpl::convergence_check(int itnum, int itmax, const dou
     }
   }
   else
+  {
     FOUR_C_THROW(
         "ScaTra convergence check for number of scalars other than one or two not yet supported!");
+  }
 
   return stopnonliniter;
-}  // ScaTra::ScaTraTimIntImplicit::convergence_check
+}
 
-
-/*----------------------------------------------------------------------------------------------*
- | finite difference check for scalar transport system matrix (for debugging only)   fang 10/14 |
- *----------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::fd_check()
 {
   // initial screen output
-  if (myrank_ == 0)
-    std::cout << std::endl << "FINITE DIFFERENCE CHECK FOR SCATRA SYSTEM MATRIX" << std::endl;
+  if (myrank_ == 0) std::cout << '\n' << "FINITE DIFFERENCE CHECK FOR SCATRA SYSTEM MATRIX" << '\n';
 
   // make a copy of state variables to undo perturbations later
   Core::LinAlg::Vector<double> phinp_original(*phinp_);
@@ -1904,7 +1795,9 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
         *(std::static_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(sysmat_)->merge()));
   }
   else
+  {
     FOUR_C_THROW("Type of system matrix unknown!");
+  }
   sysmat_original->complete();
 
   // make a copy of system right-hand side vector
@@ -1930,9 +1823,11 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
 
     // impose perturbation
     if (phinp_->get_block_map().MyGID(colgid))
+    {
       if (phinp_->sum_into_global_value(colgid, 0, fdcheckeps_))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
+    }
 
     // carry perturbation over to state vectors at intermediate time stages if necessary
     compute_intermediate_values();
@@ -1999,7 +1894,7 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
         std::cout << "sysmat[" << rowgid << "," << colgid << "]:  " << entry << "   ";
         std::cout << "finite difference suggestion:  " << fdval << "   ";
         std::cout << "absolute error:  " << abserr1 << "   ";
-        std::cout << "relative error:  " << relerr1 << std::endl;
+        std::cout << "relative error:  " << relerr1 << '\n';
 
         counter++;
       }
@@ -2034,7 +1929,7 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
                     << "]/eps:  " << left << "   ";
           std::cout << "-rhs_perturbed[" << rowgid << "]/eps:  " << right << "   ";
           std::cout << "absolute error:  " << abserr2 << "   ";
-          std::cout << "relative error:  " << relerr2 << std::endl;
+          std::cout << "relative error:  " << relerr2 << '\n';
 
           counter++;
         }
@@ -2075,9 +1970,8 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
   assemble_mat_and_rhs();
 }
 
-/*----------------------------------------------------------------------------------*
- | calculation of relative error with reference to analytical solution   fang 11/16 |
- *----------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
 {
   switch (calcerror_)
@@ -2131,15 +2025,17 @@ void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
           if (step_ == 0)
           {
             f.open(fname.c_str());
-            f << "| Step | Time | rel. L2-error | rel. H1-error |" << std::endl;
+            f << "| Step | Time | rel. L2-error | rel. H1-error |" << '\n';
           }
 
           // append error of the last time step to the error file
           else
+          {
             f.open(fname.c_str(), std::fstream::ate | std::fstream::app);
+          }
 
           f << step_ << " " << time_ << " " << std::setprecision(6) << (*relerrors_)[k * 2] << " "
-            << (*relerrors_)[k * 2 + 1] << std::endl;
+            << (*relerrors_)[k * 2 + 1] << '\n';
 
           f.flush();
           f.close();
@@ -2198,7 +2094,9 @@ void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
                 sqrt((errors)[k * 4 + 1]) / sqrt((errors)[k * 4 + 3]);
           }
           else
+          {
             FOUR_C_THROW("Can't compute relative H1 error due to numerical roundoff sensitivity!");
+          }
         }
       }
 
@@ -2235,12 +2133,14 @@ void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
             }
 
             // break line
-            f << std::endl;
+            f << '\n';
           }
 
           // append error of the last time step to the error file
           else
+          {
             f.open(fname.c_str(), std::fstream::ate | std::fstream::app);
+          }
 
           // write error
           f << step_ << " " << time_ << std::scientific << std::setprecision(6);
@@ -2257,7 +2157,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
           }
 
           // finalize
-          f << std::endl;
+          f << '\n';
           f.flush();
           f.close();
         }
@@ -2278,28 +2178,20 @@ void ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol()
       break;
     }
   }
-}  // ScaTra::ScaTraTimIntImpl::evaluate_error_compared_to_analytical_sol
+}
 
-
-/*------------------------------------------------------------------------------------------------------*
- | do explicit predictor step to obtain better starting value for Newton-Raphson iteration   fang
- 01/17 |
- *------------------------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::explicit_predictor() const
 {
   // predict discrete solution variables associated with meshtying strategy
   strategy_->explicit_predictor();
 }
 
-
-/*--------------------------------------------------------------------------*
- | perform Aitken relaxation                                     fang 08/17 |
- *--------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::perform_aitken_relaxation(
-    Core::LinAlg::Vector<double>& phinp,  //!< state vector to be relaxed
-    const Core::LinAlg::Vector<double>&
-        phinp_inc_diff  //!< difference between current and previous state vector increments
-)
+    Core::LinAlg::Vector<double>& phinp, const Core::LinAlg::Vector<double>& phinp_inc_diff)
 {
   if (solvtype_ == Inpar::ScaTra::solvertype_nonlinear_multiscale_macrotomicro_aitken)
   {
@@ -2323,11 +2215,13 @@ void ScaTra::ScaTraTimIntImpl::perform_aitken_relaxation(
   }
 
   else
+  {
     FOUR_C_THROW("Invalid Aitken method!");
+  }
 }
 
-/*--------------------------------------------------------------------------*
- *--------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::apply_bc_to_system()
 {
   apply_dirichlet_bc(time_, phinp_, nullptr);
@@ -2335,8 +2229,8 @@ void ScaTra::ScaTraTimIntImpl::apply_bc_to_system()
   apply_neumann_bc(neumann_loads_);
 }
 
-/*--------------------------------------------------------------------------*
- *--------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScaTraTimIntImpl::evaluate_initial_time_derivative(
     std::shared_ptr<Core::LinAlg::SparseOperator> matrix,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
@@ -2356,10 +2250,10 @@ void ScaTra::ScaTraTimIntImpl::evaluate_initial_time_derivative(
   matrix->complete();
 }
 
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputScalarsStrategyBase::prepare_evaluate(
-    const ScaTraTimIntImpl* const scatratimint, Teuchos::ParameterList& eleparams)
+    const ScaTraTimIntImpl* const scatratimint, Teuchos::ParameterList& eleparams) const
 {
   const std::shared_ptr<Core::FE::Discretization>& discret = scatratimint->discret_;
 
@@ -2373,42 +2267,42 @@ void ScaTra::OutputScalarsStrategyBase::prepare_evaluate(
   eleparams.set("calc_grad_phi", output_mean_grad_);
 }
 
-/*----------------------------------------------------------------------------------*
- *----------------------------------------------------------------------------------*/
-void ScaTra::OutputScalarsStrategyBase::print_header_to_screen(const std::string& dis_name)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+void ScaTra::OutputScalarsStrategyBase::print_header_to_screen(const std::string& dis_name) const
 {
   if (myrank_ == 0)
   {
     // screen output
-    std::cout << std::endl;
+    std::cout << '\n';
     std::cout << "Total and mean values of transported scalars from discretization " << dis_name
-              << ":" << std::endl;
+              << ":" << '\n';
     std::cout
         << "+-----------+-----------+--------------------+-----------------+-------------------+"
-        << std::endl;
+        << '\n';
     std::cout
         << "| domain ID | scalar ID | total scalar value | domain integral | mean scalar value |"
-        << std::endl;
+        << '\n';
     std::cout
         << "+-----------+-----------+--------------------+-----------------+-------------------+"
-        << std::endl;
+        << '\n';
   }
 }
 
 /*----------------------------------------------------------------------------------*
  *----------------------------------------------------------------------------------*/
-void ScaTra::OutputScalarsStrategyBase::finalize_screen_output()
+void ScaTra::OutputScalarsStrategyBase::finalize_screen_output() const
 {
   if (myrank_ == 0)
   {
     std::cout
         << "+-----------+-----------+--------------------+-----------------+-------------------+"
-        << std::endl;
+        << '\n';
   }
 }
 
-/*----------------------------------------------------------------------------------*
- *----------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputScalarsStrategyBase::output_total_and_mean_scalars(
     const ScaTraTimIntImpl* const scatratimint, const int num)
 {
@@ -2426,10 +2320,9 @@ void ScaTra::OutputScalarsStrategyBase::output_total_and_mean_scalars(
   runtime_csvwriter_->write_data_to_file(scatratimint->time(), scatratimint->step(), output_data);
 }
 
-
-/*--------------------------------------------------------------------------------------*
- *--------------------------------------------------------------------------------------*/
-void ScaTra::OutputScalarsStrategyBase::init(const ScaTraTimIntImpl* const scatratimint)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+ScaTra::OutputScalarsStrategyBase::OutputScalarsStrategyBase(const ScaTraTimIntImpl* scatratimint)
 {
   myrank_ = scatratimint->myrank_;
 
@@ -2445,13 +2338,13 @@ void ScaTra::OutputScalarsStrategyBase::init(const ScaTraTimIntImpl* const scatr
     filename = "scalarvalues";
 
   runtime_csvwriter_.emplace(myrank_, *scatratimint->disc_writer()->output(), filename);
-  init_strategy_specific(scatratimint);
 }
 
-/*--------------------------------------------------------------------------------------*
- *--------------------------------------------------------------------------------------*/
-void ScaTra::OutputScalarsStrategyDomain::init_strategy_specific(
-    const ScaTraTimIntImpl* const scatratimint)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+ScaTra::OutputScalarsStrategyDomain::OutputScalarsStrategyDomain(
+    const ScaTraTimIntImpl* scatratimint)
+    : OutputScalarsStrategyBase(scatratimint), dummy_domain_id_(-1)
 {
   if (not scatratimint->scalarhandler_->equal_num_dof())
   {
@@ -2492,22 +2385,22 @@ void ScaTra::OutputScalarsStrategyDomain::init_strategy_specific(
   }
 }
 
-/*----------------------------------------------------------------------------------*
- *----------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputScalarsStrategyDomain::print_to_screen()
 {
   if (myrank_ == 0)
   {
     std::cout
         << "+-----------+-----------+--------------------+-----------------+-------------------+"
-        << std::endl;
+        << '\n';
 
     for (int k = 0; k < numdofpernode_; ++k)
     {
       std::cout << "|  overall  |    " << std::setw(2) << k + 1 << "     |    " << std::scientific
                 << std::setprecision(6) << totalscalars_[dummy_domain_id_][k] << "    |   "
                 << domainintegral_[dummy_domain_id_] << "  |    "
-                << meanscalars_[dummy_domain_id_][k] << "   |" << std::endl;
+                << meanscalars_[dummy_domain_id_][k] << "   |" << '\n';
     }
     if (output_mean_grad_)
     {
@@ -2515,14 +2408,14 @@ void ScaTra::OutputScalarsStrategyDomain::print_to_screen()
       {
         std::cout << "|  overall  |  grad. " << k + 1 << "  |        ----        |   "
                   << domainintegral_[dummy_domain_id_] << "  |    "
-                  << meangradients_[dummy_domain_id_][k] << "   |" << std::endl;
+                  << meangradients_[dummy_domain_id_][k] << "   |" << '\n';
       }
     }
   }
 }
 
-/*----------------------------------------------------------------------------------*
- *----------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 std::map<std::string, std::vector<double>> ScaTra::OutputScalarsStrategyDomain::prepare_csv_output()
 {
   FOUR_C_ASSERT(runtime_csvwriter_.has_value(), "internal error: runtime csv writer not created.");
@@ -2547,8 +2440,8 @@ std::map<std::string, std::vector<double>> ScaTra::OutputScalarsStrategyDomain::
   return output_data;
 }
 
-/*--------------------------------------------------------------------------------------*
- *--------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputScalarsStrategyDomain::evaluate_integrals(
     const ScaTraTimIntImpl* const scatratimint)
 {
@@ -2587,10 +2480,11 @@ void ScaTra::OutputScalarsStrategyDomain::evaluate_integrals(
   }
 }
 
-/*--------------------------------------------------------------------------------------*
- *--------------------------------------------------------------------------------------*/
-void ScaTra::OutputScalarsStrategyCondition::init_strategy_specific(
-    const ScaTraTimIntImpl* const scatratimint)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+ScaTra::OutputScalarsStrategyCondition::OutputScalarsStrategyCondition(
+    const ScaTraTimIntImpl* scatratimint)
+    : OutputScalarsStrategyBase(scatratimint)
 {
   // extract conditions for calculation of total and mean values of transported scalars
   scatratimint->discret_->get_condition("TotalAndMeanScalar", conditions_);
@@ -2607,7 +2501,7 @@ void ScaTra::OutputScalarsStrategyCondition::init_strategy_specific(
   numscalpercondition_.clear();
 
   // loop over all conditions
-  for (auto* condition : conditions_)
+  for (const auto* condition : conditions_)
   {
     // extract condition ID
     const int condid = condition->parameters().get<int>("ConditionID");
@@ -2662,10 +2556,10 @@ void ScaTra::OutputScalarsStrategyCondition::init_strategy_specific(
   }
 }
 
-/*--------------------------------------------------------------------------------------*
- |  Initialize output class                                            kremheller 11/19 |
- *--------------------------------------------------------------------------------------*/
-void ScaTra::OutputDomainIntegralStrategy::init(const ScaTraTimIntImpl* const scatratimint)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+ScaTra::OutputDomainIntegralStrategy::OutputDomainIntegralStrategy(
+    const ScaTraTimIntImpl* scatratimint)
 {
   // extract conditions for calculation of total and mean values of transported scalars
   scatratimint->discretization()->get_condition("DomainIntegral", conditionsdomain_);
@@ -2684,13 +2578,13 @@ void ScaTra::OutputDomainIntegralStrategy::init(const ScaTraTimIntImpl* const sc
   boundaryintegralvalues_.resize(conditionsboundary_.size());
 }
 
-/*----------------------------------------------------------------------------------*
- *----------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputScalarsStrategyCondition::print_to_screen()
 {
   if (myrank_ == 0)
   {
-    for (auto* condition : conditions_)
+    for (const auto* condition : conditions_)
     {
       // extract condition ID
       const int condid = condition->parameters().get<int>("ConditionID");
@@ -2705,7 +2599,7 @@ void ScaTra::OutputScalarsStrategyCondition::print_to_screen()
         std::cout << condid_string.str() << "    " << std::setw(2) << k + 1 << "     |    "
                   << std::scientific << std::setprecision(6) << totalscalars_[condid][k]
                   << "    |   " << domainintegral_[condid] << "  |    " << meanscalars_[condid][k]
-                  << "   |" << std::endl;
+                  << "   |" << '\n';
       }
       if (output_mean_grad_)
       {
@@ -2713,21 +2607,21 @@ void ScaTra::OutputScalarsStrategyCondition::print_to_screen()
         {
           std::cout << condid_string.str() << "  grad. " << k + 1 << "  |        ----        |   "
                     << domainintegral_[condid] << "  |    " << meangradients_[condid][k] << "   |"
-                    << std::endl;
+                    << '\n';
         }
       }
     }
   }
 }
 
-/*----------------------------------------------------------------------------------*
- *----------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 std::map<std::string, std::vector<double>>
 ScaTra::OutputScalarsStrategyCondition::prepare_csv_output()
 {
   std::map<std::string, std::vector<double>> output_data;
 
-  for (auto* condition : conditions_)
+  for (const auto* condition : conditions_)
   {
     // extract condition ID
     const int condid = condition->parameters().get<int>("ConditionID");
@@ -2761,9 +2655,8 @@ ScaTra::OutputScalarsStrategyCondition::prepare_csv_output()
   return output_data;
 }
 
-/*--------------------------------------------------------------------------------------*
- |  evaluate domain integrals and print them to file and screen        kremheller 11/19 |
- *--------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputDomainIntegralStrategy::evaluate_integrals_and_print_results(
     const ScaTraTimIntImpl* const scatratimint, const std::string& condstring)
 {
@@ -2788,7 +2681,9 @@ void ScaTra::OutputDomainIntegralStrategy::evaluate_integrals_and_print_results(
         "action", ScaTra::Action::calc_domain_integral, condparams);
   }
   else
+  {
     FOUR_C_THROW("Invalid condition name!");
+  }
 
   // extract conditions for computation of domain or boundary integrals
   std::vector<const Core::Conditions::Condition*> conditions;
@@ -2799,9 +2694,9 @@ void ScaTra::OutputDomainIntegralStrategy::evaluate_integrals_and_print_results(
   // print header
   if (conditions.size() > 0 and myrank == 0)
   {
-    std::cout << std::endl << label + " integrals:" << std::endl;
-    std::cout << "+----+-------------------------+" << std::endl;
-    std::cout << "| ID | value of integral       |" << std::endl;
+    std::cout << '\n' << label + " integrals:" << '\n';
+    std::cout << "+----+-------------------------+" << '\n';
+    std::cout << "| ID | value of integral       |" << '\n';
   }
 
   // loop over all conditions
@@ -2818,7 +2713,7 @@ void ScaTra::OutputDomainIntegralStrategy::evaluate_integrals_and_print_results(
     {
       // print results to screen
       std::cout << "| " << std::setw(2) << condid << " |        " << std::setw(6) << std::scientific
-                << std::setprecision(3) << (integralvalue)(0) << "        |" << std::endl;
+                << std::setprecision(3) << (integralvalue)(0) << "        |" << '\n';
 
       // set file name
       const std::string filename(Global::Problem::instance()->output_control_file()->file_name() +
@@ -2829,14 +2724,16 @@ void ScaTra::OutputDomainIntegralStrategy::evaluate_integrals_and_print_results(
       if (scatratimint->step() == 0 and condid == 0)
       {
         file.open(filename.c_str(), std::fstream::trunc);
-        file << "Step,Time," << label << "ID," << label << "Integral" << std::endl;
+        file << "Step,Time," << label << "ID," << label << "Integral" << '\n';
       }
       else
+      {
         file.open(filename.c_str(), std::fstream::app);
+      }
 
       // write value of current domain or boundary integral to file
       file << scatratimint->step() << "," << scatratimint->time() << "," << condid << ','
-           << std::scientific << std::setprecision(6) << (integralvalue)(0) << std::endl;
+           << std::scientific << std::setprecision(6) << (integralvalue)(0) << '\n';
 
       // close file
       file.close();
@@ -2851,12 +2748,11 @@ void ScaTra::OutputDomainIntegralStrategy::evaluate_integrals_and_print_results(
   }  // loop over all conditions
 
   // print finish line to screen
-  if (conditions.size() and myrank == 0)
-    std::cout << "+----+-------------------------+" << std::endl;
+  if (conditions.size() and myrank == 0) std::cout << "+----+-------------------------+" << '\n';
 }
 
-/*--------------------------------------------------------------------------------------*
- *--------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputScalarsStrategyCondition::evaluate_integrals(
     const ScaTraTimIntImpl* const scatratimint)
 {
@@ -2866,7 +2762,7 @@ void ScaTra::OutputScalarsStrategyCondition::evaluate_integrals(
   prepare_evaluate(scatratimint, eleparams);
 
   // evaluate scalar integrals and domain integral for each subdomain
-  for (auto* condition : conditions_)
+  for (const auto* condition : conditions_)
   {
     // extract condition ID
     const int condid = condition->parameters().get<int>("ConditionID");
@@ -2907,26 +2803,26 @@ void ScaTra::OutputScalarsStrategyCondition::evaluate_integrals(
   }
 }
 
-/*--------------------------------------------------------------------------------------*
- *--------------------------------------------------------------------------------------*/
-void ScaTra::OutputScalarsStrategyDomainAndCondition::init_strategy_specific(
-    const ScaTraTimIntImpl* const scatratimint)
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
+ScaTra::OutputScalarsStrategyDomainAndCondition::OutputScalarsStrategyDomainAndCondition(
+    const ScaTraTimIntImpl* scatratimint)
+    : OutputScalarsStrategyBase(scatratimint),
+      OutputScalarsStrategyDomain(scatratimint),
+      OutputScalarsStrategyCondition(scatratimint)
 {
-  // initialize base classes
-  OutputScalarsStrategyCondition::init_strategy_specific(scatratimint);
-  OutputScalarsStrategyDomain::init_strategy_specific(scatratimint);
 }
 
-/*----------------------------------------------------------------------------------*
- *----------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputScalarsStrategyDomainAndCondition::print_to_screen()
 {
   OutputScalarsStrategyCondition::print_to_screen();
   OutputScalarsStrategyDomain::print_to_screen();
 }
 
-/*----------------------------------------------------------------------------------*
- *----------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 std::map<std::string, std::vector<double>>
 ScaTra::OutputScalarsStrategyDomainAndCondition::prepare_csv_output()
 {
@@ -2941,8 +2837,8 @@ ScaTra::OutputScalarsStrategyDomainAndCondition::prepare_csv_output()
   return output_data;
 }
 
-/*--------------------------------------------------------------------------------------*
- *--------------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::OutputScalarsStrategyDomainAndCondition::evaluate_integrals(
     const ScaTraTimIntImpl* const scatratimint)
 {
@@ -2951,13 +2847,8 @@ void ScaTra::OutputScalarsStrategyDomainAndCondition::evaluate_integrals(
   OutputScalarsStrategyDomain::evaluate_integrals(scatratimint);
 }
 
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------*
- |  set up handler class                                   vuong   04/16|
- *----------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScalarHandler::setup(const ScaTraTimIntImpl* const scatratimint)
 {
   // save reference to discretization for convenience
@@ -3002,10 +2893,9 @@ void ScaTra::ScalarHandler::setup(const ScaTraTimIntImpl* const scatratimint)
 
 /*-------------------------------------------------------------------------*
  *-------------------------------------------------------------------------*/
-int ScaTra::ScalarHandler::max_num_dof_per_node() const { return *(numdofpernode_.rbegin()); }
+int ScaTra::ScalarHandler::max_num_dof_per_node() const { return *numdofpernode_.rbegin(); }
 
 /*-------------------------------------------------------------------------*
-|  Determine number of DoFs per node in given condition       vuong   04/16|
  *-------------------------------------------------------------------------*/
 int ScaTra::ScalarHandler::num_dof_per_node_in_condition(
     const Core::Conditions::Condition& condition, const Core::FE::Discretization& discret) const
@@ -3084,9 +2974,8 @@ int ScaTra::ScalarHandler::num_dof_per_node() const
   return *(numdofpernode_.rbegin());
 }
 
-/*-----------------------------------------------------------------------------*
- |  check if class is set up                                       rauch 09/16 |
- *-----------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*
+ *-------------------------------------------------------------------------*/
 void ScaTra::ScalarHandler::check_is_setup() const
 {
   if (not issetup_) FOUR_C_THROW("ScalarHandler is not set up. Call setup() first.");

@@ -74,9 +74,6 @@ namespace ScaTra
 
     void test_results() override;
 
-    /// set time and step value
-    void set_time_step(const double time, const int step) override;
-
     // -----------------------------------------------------------------
     // general methods
     // -----------------------------------------------------------------

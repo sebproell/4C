@@ -27,18 +27,6 @@
 FOUR_C_NAMESPACE_OPEN
 
 /*==========================================================================*/
-// Style guide                                                    nis Mar12
-/*==========================================================================*/
-
-/*--- set, prepare, and predict ------------------------------------------*/
-
-/*--- calculate and update -----------------------------------------------*/
-
-/*--- query and output ---------------------------------------------------*/
-
-
-
-/*==========================================================================*/
 // forward declarations
 /*==========================================================================*/
 namespace Core::FE
@@ -123,7 +111,7 @@ namespace ScaTra
         std::shared_ptr<Teuchos::ParameterList> params,                 //!< parameter list
         std::shared_ptr<Teuchos::ParameterList> extraparams,     //!< supplementary parameter list
         std::shared_ptr<Core::IO::DiscretizationWriter> output,  //!< output writer
-        const int probnum = 0                                    //!< global problem number
+        int probnum = 0                                          //!< global problem number
     );
 
     //! don't want copy constructor
@@ -189,7 +177,7 @@ namespace ScaTra
     void add_time_integration_specific_vectors(bool forcedincrementalsolver = false) override;
 
     //! initialize system matrix
-    std::shared_ptr<Core::LinAlg::SparseOperator> init_system_matrix() const;
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::SparseOperator> init_system_matrix() const;
 
     //! prepare time loop
     virtual void prepare_time_loop();
@@ -203,10 +191,8 @@ namespace ScaTra
     //! preparations for solve
     virtual void prepare_linear_solve();
 
-    //! set time and step value
-    virtual void set_time_step(const double newtime,  //!< new time value
-        const int newstep                             //!< new step value
-    )
+    //! set time to @p newtime and step value to @p newstep
+    void set_time_step(const double newtime, const int newstep)
     {
       time_ = newtime;
       step_ = newstep;
@@ -274,11 +260,10 @@ namespace ScaTra
     {
       mean_conc_ = nullptr;
       membrane_conc_ = nullptr;
-    };
+    }
 
     //! read restart data
-    virtual void read_restart(
-        const int step, std::shared_ptr<Core::IO::InputControl> input = nullptr);
+    virtual void read_restart(int step, std::shared_ptr<Core::IO::InputControl> input = nullptr);
 
     //! setup natural convection
     virtual void setup_nat_conv();
@@ -358,7 +343,7 @@ namespace ScaTra
     //! set the Nitsche contact strategy that contributes to the RHS
     void set_nitsche_contact_strategy(std::shared_ptr<CONTACT::NitscheStrategySsi> strategy_ptr)
     {
-      contact_strategy_nitsche_ = strategy_ptr;
+      contact_strategy_nitsche_ = std::move(strategy_ptr);
     }
 
     //! create result test for scalar transport field
@@ -391,44 +376,19 @@ namespace ScaTra
      */
     void apply_mesh_movement(const Core::LinAlg::Vector<double>& dispnp) const;
 
-    //! calculate fluxes inside domain and/or on boundary
-    void calc_flux(const bool writetofile  //!< flag for writing flux info to file
-    );
+    //! calculate fluxes inside domain and/or on boundary and write result to file if
+    //! @p writetofile is true
+    void calc_flux(bool writetofile);
 
     //! calculate flux vector field inside computational domain
-    std::shared_ptr<Core::LinAlg::MultiVector<double>> calc_flux_in_domain();
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::MultiVector<double>> calc_flux_in_domain() const;
 
     //! calculate mass/heat normal flux at specified boundaries and write result to file if @p
     //! writetofile is true
-    std::shared_ptr<Core::LinAlg::MultiVector<double>> calc_flux_at_boundary(
-        const bool writetofile);
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> calc_flux_at_boundary(bool writetofile);
 
     //! calculation of relative error with reference to analytical solution
     virtual void evaluate_error_compared_to_analytical_sol();
-
-    //! Calculate the reconstructed nodal gradient of phi from L2-projection
-    std::shared_ptr<Core::LinAlg::MultiVector<double>> reconstruct_gradient_at_nodes_l2_projection(
-        const std::shared_ptr<const Core::LinAlg::Vector<double>> phi,
-        bool scalenormal = false,  ///< Scale the smoothed normal field to 1
-        bool returnnodal = false   ///< Return nodal based vector
-    );
-
-    //! Calculate the reconstructed nodal gradient of phi from super convergent patch recovery
-    std::shared_ptr<Core::LinAlg::MultiVector<double>> reconstruct_gradient_at_nodes_patch_recon(
-        const std::shared_ptr<const Core::LinAlg::Vector<double>> phi, const int dimension = 3,
-        bool scalenormal = false,  ///< Scale the smoothed normal field to 1
-        bool returnnodal = false   ///< Return nodal based vector
-    );
-
-    //! Calculate the reconstructed nodal gradient of phi from node mean averaging
-    std::shared_ptr<Core::LinAlg::MultiVector<double>> reconstruct_gradient_at_nodes_mean_average(
-        std::shared_ptr<const Core::LinAlg::Vector<double>> phi,
-        bool scalenormal = false,  ///< Scale the smoothed normal field to 1
-        bool returnnodal = false   ///< Return nodal based vector
-    );
-
-    //! Calculate the reconstructed nodal gradient of phi
-    void scale_gradients_to_one(std::shared_ptr<Core::LinAlg::MultiVector<double>> state);
 
     //! finite difference check for scalar transport system matrix
     virtual void fd_check();
@@ -440,11 +400,11 @@ namespace ScaTra
         std::shared_ptr<Core::LinAlg::Vector<double>> rhs);
 
     //! prepare time integrator specific things before calculation of initial time derivative
-    virtual void pre_calc_initial_time_derivative() {};
+    virtual void pre_calc_initial_time_derivative() {}
 
-    //! clean up settings from pre_calc_initial_time_derivative() after initial time derivative is
-    //! calculated
-    virtual void post_calc_initial_time_derivative() {};
+    //! clean up settings from pre_calc_initial_time_derivative() after the initial time derivative
+    //! is calculated
+    virtual void post_calc_initial_time_derivative() {}
 
     //! calculate mean concentrations of micro discretization at nodes
     void calc_mean_micro_concentration();
@@ -452,101 +412,113 @@ namespace ScaTra
     /*--- query and output ---------------------------------------------------*/
 
     //! return ALE flag
-    bool is_ale() const { return isale_; }
+    [[nodiscard]] bool is_ale() const { return isale_; }
 
     //! return flag for macro scale in multi-scale simulations
-    bool macro_scale() const { return macro_scale_; };
+    [[nodiscard]] bool macro_scale() const { return macro_scale_; }
 
-    //! return type of equilibration of global system of scalar transport equations
-    Core::LinAlg::EquilibrationMethod equilibration_method() const { return equilibrationmethod_; }
+    //! return the type of equilibration for the global system of scalar transport equations
+    [[nodiscard]] Core::LinAlg::EquilibrationMethod equilibration_method() const
+    {
+      return equilibrationmethod_;
+    }
 
-    //! return type of global system matrix in global system of equations
-    Core::LinAlg::MatrixType matrix_type() const { return matrixtype_; }
+    //! return the type of global system matrix in global system of equations
+    [[nodiscard]] Core::LinAlg::MatrixType matrix_type() const { return matrixtype_; }
 
-    //! Provide enum of time integration scheme
-    Inpar::ScaTra::TimeIntegrationScheme method_name() const { return timealgo_; }
+    //! Provide enum of the time integration scheme
+    [[nodiscard]] Inpar::ScaTra::TimeIntegrationScheme method_name() const { return timealgo_; }
 
-    //! Provide title of time integration scheme
+    //! Provide title of the time integration scheme
     std::string method_title() { return map_tim_int_enum_to_string(method_name()); }
 
     //! return flag for micro scale in multi-scale simulations
-    bool micro_scale() const { return micro_scale_; };
+    [[nodiscard]] bool micro_scale() const { return micro_scale_; };
 
-    //! print information about current time step to screen
+    //! print information about the current time step to screen
     virtual void print_time_step_info();
 
     //! convert dof-based result vector into node-based multi-vector for postprocessing
     [[nodiscard]] std::shared_ptr<Core::LinAlg::MultiVector<double>>
     convert_dof_vector_to_componentwise_node_vector(
         const Core::LinAlg::Vector<double>& dof_vector,  ///< dof-based result vector
-        const int nds                                    ///< number of dofset to convert
+        int nds                                          ///< number of dofset to convert
     ) const;
 
-    //! return system matrix as sparse operator
+    //! return system matrix as a sparse operator
     std::shared_ptr<Core::LinAlg::SparseOperator> system_matrix_operator() { return sysmat_; };
 
-    //! return system matrix downcasted as sparse matrix
+    //! return system matrix cast to sparse matrix
     std::shared_ptr<Core::LinAlg::SparseMatrix> system_matrix();
 
-    //! return system matrix downcasted as block sparse matrix
+    //! return system matrix cast to block sparse matrix
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> block_system_matrix();
 
-    //! return map extractor associated with blocks of global system matrix
-    std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_maps() const { return blockmaps_; }
+    //! return the map extractor associated with blocks of global system matrix
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiMapExtractor> block_maps() const
+    {
+      return blockmaps_;
+    }
 
     //! return residual vector
-    std::shared_ptr<Core::LinAlg::Vector<double>> residual() const { return residual_; };
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> residual() const
+    {
+      return residual_;
+    }
 
     //! return trueresidual vector
     std::shared_ptr<Core::LinAlg::Vector<double>> true_residual() { return trueresidual_; }
 
     //! return increment vector
-    std::shared_ptr<Core::LinAlg::Vector<double>> increment() const { return increment_; };
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> increment() const
+    {
+      return increment_;
+    }
 
     //! return flag indicating if an incremental solution approach is used
-    bool is_incremental() { return incremental_; }
+    [[nodiscard]] bool is_incremental() const { return incremental_; }
 
     //! return Krylov projector
     std::shared_ptr<Core::LinAlg::KrylovProjector> projector() { return projector_; }
 
     //! return number of dofset associated with displacement dofs
-    int nds_disp() const override { return nds_disp_; }
+    [[nodiscard]] int nds_disp() const override { return nds_disp_; }
 
     //! return number of dofset associated with interface growth dofs
-    int nds_growth() const { return nds_growth_; }
+    [[nodiscard]] int nds_growth() const { return nds_growth_; }
 
-    //! return number of dofset to store nodal micro quantities on macro dis
-    int nds_micro() const { return nds_micro_; }
+    //! return number of dofset to store nodal micro quantities on macro discretisation
+    [[nodiscard]] int nds_micro() const { return nds_micro_; }
 
     //! return number of dofset associated with pressure dofs
-    int nds_pressure() const { return nds_pres_; }
+    [[nodiscard]] int nds_pressure() const { return nds_pres_; }
 
     //! return number of dofset associated with scalar transport dofs
-    int nds_scatra() const { return nds_scatra_; }
+    [[nodiscard]] int nds_scatra() const { return nds_scatra_; }
 
     //! return number of dofset associated with thermo dofs
-    int nds_thermo() const { return nds_thermo_; }
+    [[nodiscard]] int nds_thermo() const { return nds_thermo_; }
 
     //! return number of dofset associated with two-tensor quantity dofs, e.g. stresses, strains
-    int nds_two_tensor_quantity() const { return nds_two_tensor_quantity_; }
+    [[nodiscard]] int nds_two_tensor_quantity() const { return nds_two_tensor_quantity_; }
 
     //! return number of dofset associated with velocity dofs
-    int nds_vel() const { return nds_vel_; }
+    [[nodiscard]] int nds_vel() const { return nds_vel_; }
 
     //! return number of dofset associated with wall shear stress dofs
-    int nds_wall_shear_stress() const { return nds_wss_; }
+    [[nodiscard]] int nds_wall_shear_stress() const { return nds_wss_; }
 
     //! return domain flux vector
-    std::shared_ptr<const Core::LinAlg::MultiVector<double>> flux_domain() const
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiVector<double>> flux_domain() const
     {
       return flux_domain_;
-    };
+    }
 
     //! return boundary flux vector
-    std::shared_ptr<const Core::LinAlg::MultiVector<double>> flux_boundary() const
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiVector<double>> flux_boundary() const
     {
       return flux_boundary_;
-    };
+    }
 
     //! return Dirichlet map
     std::shared_ptr<const Core::LinAlg::MapExtractor> dirich_maps() { return dbcmaps_; }
@@ -564,18 +536,30 @@ namespace ScaTra
     std::shared_ptr<const Core::LinAlg::Map> dof_row_map(int nds);
 
     //! return discretization
-    std::shared_ptr<Core::FE::Discretization> discretization() const override { return discret_; }
+    [[nodiscard]] std::shared_ptr<Core::FE::Discretization> discretization() const override
+    {
+      return discret_;
+    }
 
     //! return the parameter lists
-    std::shared_ptr<Teuchos::ParameterList> scatra_parameter_list() const { return params_; }
-    std::shared_ptr<Teuchos::ParameterList> scatra_extra_parameter_list() { return extraparams_; }
+    [[nodiscard]] std::shared_ptr<Teuchos::ParameterList> scatra_parameter_list() const
+    {
+      return params_;
+    }
+    [[nodiscard]] std::shared_ptr<Teuchos::ParameterList> scatra_extra_parameter_list() const
+    {
+      return extraparams_;
+    }
     virtual std::shared_ptr<Teuchos::ParameterList> scatra_time_parameter_list() = 0;
 
     //! Access output object: CD-Rom and DVD only - no BlueRay support!!! ;)
-    const std::shared_ptr<Core::IO::DiscretizationWriter>& disc_writer() const { return output_; }
+    [[nodiscard]] std::shared_ptr<Core::IO::DiscretizationWriter> disc_writer() const
+    {
+      return output_;
+    }
 
-    //! returns map extractor used for convergence check either in ELCH or LOMA case
-    std::shared_ptr<Core::LinAlg::MapExtractor> splitter() const { return splitter_; }
+    //! returns the map extractor used for convergence check either in ELCH or LOMA case
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::MapExtractor> splitter() const { return splitter_; }
 
     //! Checks if output of results or restart information is required and writes data to disk
     virtual void check_and_write_output_and_restart();
@@ -592,38 +576,38 @@ namespace ScaTra
     //! collect the runtime output data and write it to disk
     void write_runtime_output();
 
-    //! Convergence check for two way coupled ScaTra problems.
-    bool convergence_check(int itnum, int itmax, const double ittol);
+    //! Convergence check for two-way coupled ScaTra problems.
+    [[nodiscard]] bool convergence_check(int itnum, int itmax, double ittol) const;
 
     //! return solver
-    const std::shared_ptr<Core::LinAlg::Solver>& solver() const { return solver_; }
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Solver> solver() const { return solver_; }
 
     //! return parameters for finite difference check
-    Inpar::ScaTra::FdCheck fd_check_type() const { return fdcheck_; };
-    double fd_check_eps() const { return fdcheckeps_; };
-    double fd_check_tol() const { return fdchecktol_; };
+    [[nodiscard]] Inpar::ScaTra::FdCheck fd_check_type() const { return fdcheck_; }
+    [[nodiscard]] double fd_check_eps() const { return fdcheckeps_; }
+    [[nodiscard]] double fd_check_tol() const { return fdchecktol_; }
 
     //! return meshtying strategy (includes standard case without meshtying)
-    const std::shared_ptr<ScaTra::MeshtyingStrategyBase>& strategy() const override
+    [[nodiscard]] std::shared_ptr<ScaTra::MeshtyingStrategyBase> strategy() const override
     {
       return strategy_;
-    };
+    }
 
-    //! return flag indicating availability of scatra-scatra interface kinetics condition(s)
-    bool s2_i_kinetics() const { return s2ikinetics_; };
+    //! return flag indicating the availability of scatra-scatra interface kinetics condition(s)
+    [[nodiscard]] bool s2i_kinetics() const { return s2ikinetics_; }
 
     //! return flag for scatra-scatra interface mesh tying
-    bool s2_i_meshtying() const { return s2imeshtying_; };
+    [[nodiscard]] bool s2i_meshtying() const { return s2imeshtying_; }
 
     //! return relative errors of scalar fields in L2 and H1 norms
-    const std::shared_ptr<std::vector<double>>& rel_errors() const { return relerrors_; };
+    [[nodiscard]] std::shared_ptr<std::vector<double>> rel_errors() const { return relerrors_; }
 
     //! output performance statistics associated with linear solver into *.csv file
     static void output_lin_solver_stats(const Core::LinAlg::Solver& solver,  //!< linear solver
         const double& time,    //!< solver time maximized over all processors
         const int& step,       //!< time step
         const int& iteration,  //!< Newton-Raphson iteration number
-        const int& size        //!< size of linear system
+        const int& size        //!< size of the linear system
     );
 
     //! output performance statistics associated with nonlinear solver into *.csv file
@@ -649,25 +633,25 @@ namespace ScaTra
     /*--- query and output ---------------------------------------------------*/
 
     //! return current time value
-    double time() const { return time_; }
+    [[nodiscard]] double time() const { return time_; }
 
-    //! return current step number
-    int step() const { return step_; }
+    //! return the current step number
+    [[nodiscard]] int step() const { return step_; }
 
     //! total number of time steps ? rename StepMax?
-    int n_step() const { return stepmax_; }
+    [[nodiscard]] int n_step() const { return stepmax_; }
 
     //! return number of newton iterations in last timestep
-    const int& iter_num() const { return iternum_; }
+    [[nodiscard]] int iter_num() const { return iternum_; }
 
     //! return number of outer iterations in partitioned simulations
-    const unsigned& iter_num_outer() const { return iternum_outer_; };
+    [[nodiscard]] unsigned iter_num_outer() const { return iternum_outer_; }
 
     //! return time step size
-    double dt() const { return dta_; }
+    [[nodiscard]] double dt() const { return dta_; }
 
-    //! return if time step was changed during adapt_time_step_size()
-    bool time_step_adapted() const { return timestepadapted_; };
+    //! return if the time step was changed during adapt_time_step_size()
+    [[nodiscard]] bool time_step_adapted() const { return timestepadapted_; }
 
     /*========================================================================*/
     //! @name scalar degrees of freedom and related
@@ -676,16 +660,15 @@ namespace ScaTra
     /*--- set, prepare, and predict ------------------------------------------*/
 
     //! set the initial scalar field phi
-    virtual void set_initial_field(
-        const Inpar::ScaTra::InitialField init,  //!< type of initial field
-        const int startfuncno                    //!< number of spatial function
+    virtual void set_initial_field(Inpar::ScaTra::InitialField init,  //!< type of initial field
+        int startfuncno  //!< number of the space-time function
     );
 
     /*========================================================================*/
     //! @name Preconditioning
     /*========================================================================*/
 
-    virtual void setup_splitter() {};
+    virtual void setup_splitter() {}
 
     //! set up the (block) maps of the scatra system matrix and the meshtying object
     void setup_matrix_block_maps_and_meshtying();
@@ -695,7 +678,7 @@ namespace ScaTra
 
     //! some of the set up of the (block) maps of the scatra system matrix has to be done after
     //! setup_meshtying() has been called
-    void post_setup_matrix_block_maps();
+    void post_setup_matrix_block_maps() const;
 
     /*!
      * @brief build maps associated with blocks of global system matrix
@@ -707,8 +690,8 @@ namespace ScaTra
         const std::vector<const Core::Conditions::Condition*>& partitioningconditions,
         std::vector<std::shared_ptr<const Core::LinAlg::Map>>& blockmaps) const;
 
-    //! build null spaces associated with blocks of global system matrix. Hand in solver to access
-    //! parameter list and initial number of block (e.g. for coupled problems)
+    //! Build null spaces associated with blocks of global system matrix. Hand in solver to access
+    //! the parameter list and initial number of the block (e.g. for coupled problems)
     virtual void build_block_null_spaces(
         std::shared_ptr<Core::LinAlg::Solver> solver, int init_block_number) const;
 
@@ -721,7 +704,7 @@ namespace ScaTra
     virtual void compute_time_derivative();
 
     //! compute parameters of the Input voltage to use for the double layer current density
-    virtual void compute_time_deriv_pot0(const bool init) = 0;
+    virtual void compute_time_deriv_pot0(bool init) = 0;
 
     //! compute values at intermediate time steps (required for generalized-alpha) ? rename?
     virtual void compute_intermediate_values() = 0;
@@ -745,53 +728,74 @@ namespace ScaTra
     [[nodiscard]] int max_num_dof_per_node() const;
 
     //! return number of transported scalars
-    int num_scal() const;
+    [[nodiscard]] int num_scal() const;
 
     //! return number of dofs per node
-    int num_dof_per_node() const;
+    [[nodiscard]] int num_dof_per_node() const;
 
-    //! return number of dofs per node in condition
-    int num_dof_per_node_in_condition(const Core::Conditions::Condition& condition) const;
+    //! return the number of dofs per node in the @p condition
+    [[nodiscard]] int num_dof_per_node_in_condition(
+        const Core::Conditions::Condition& condition) const;
 
-    //! return number of transported scalars per node in condition
-    virtual int num_scal_in_condition(const Core::Conditions::Condition& condition) const
+    //! return the number of transported scalars per node in the @p condition
+    [[nodiscard]] virtual int num_scal_in_condition(
+        const Core::Conditions::Condition& condition) const
     {
       return num_dof_per_node_in_condition(condition);
-    };
+    }
 
     //! return relaxation parameters
-    std::vector<double>& omega() { return omega_; };
+    std::vector<double>& omega() { return omega_; }
 
     //! return relaxation parameters
-    const std::vector<double>& omega() const { return omega_; };
+    [[nodiscard]] const std::vector<double>& omega() const { return omega_; }
 
     //! return scalar field phi at time n
     std::shared_ptr<Core::LinAlg::Vector<double>> phin() override { return phin_; }
 
     //! return scalar field phi at time n+1
-    std::shared_ptr<Core::LinAlg::Vector<double>> phinp() const { return phinp_; }
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> phinp() const { return phinp_; }
 
     //! get mean concentration of micro discretization
-    std::shared_ptr<Core::LinAlg::Vector<double>> phinp_micro() const { return phinp_micro_; }
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> phinp_micro() const
+    {
+      return phinp_micro_;
+    }
 
     //! return increment of scalar field phi at time n+1 for partitioned simulations
-    std::shared_ptr<Core::LinAlg::Vector<double>>& phinp_inc() { return phinp_inc_; };
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> phinp_inc() const
+    {
+      return phinp_inc_;
+    }
 
-    //! return increment of scalar field phi at time n+1 for partitioned simulations
-    const std::shared_ptr<Core::LinAlg::Vector<double>>& phinp_inc() const { return phinp_inc_; };
+    //! set increment of scalar field phi at time n+1 for partitioned simulations
+    void set_phinp_inc(std::shared_ptr<Core::LinAlg::Vector<double>> phinp_inc)
+    {
+      phinp_inc_ = std::move(phinp_inc);
+    }
 
-    //! return increment of scalar field phi at time n+1 from previous outer iteration step for
+    //! return increment of scalar field phi at time n+1 from the previous outer iteration step for
     //! partitioned simulations
-    std::shared_ptr<Core::LinAlg::Vector<double>>& phinp_inc_old() { return phinp_inc_old_; };
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> phinp_inc_old() const
+    {
+      return phinp_inc_old_;
+    }
+
+    //! set increment of scalar field phi at time n+1 from the previous outer iteration step for
+    //! partitioned simulations
+    void set_phinp_inc_old(std::shared_ptr<Core::LinAlg::Vector<double>> phinp_inc_old)
+    {
+      phinp_inc_old_ = std::move(phinp_inc_old);
+    }
 
     //! return time derivative of scalar field phi at time n
-    std::shared_ptr<Core::LinAlg::Vector<double>> phidtn() { return phidtn_; }
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> phidtn() const { return phidtn_; }
 
     //! return time derivative of scalar field phi at time n+1
-    std::shared_ptr<Core::LinAlg::Vector<double>> phidtnp() { return phidtnp_; }
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> phidtnp() const { return phidtnp_; }
 
     //! return scalar field history
-    std::shared_ptr<Core::LinAlg::Vector<double>> hist() { return hist_; }
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::Vector<double>> hist() const { return hist_; }
 
     //! return scalar field phi at time n+alpha_F
     virtual std::shared_ptr<Core::LinAlg::Vector<double>> phiaf() = 0;
@@ -809,13 +813,13 @@ namespace ScaTra
     virtual std::shared_ptr<Core::LinAlg::Vector<double>> fs_phi() = 0;
 
     //! output total and mean values of transported scalars
-    virtual void output_total_and_mean_scalars(const int num = 0);
+    virtual void output_total_and_mean_scalars(int num = 0);
 
     //! output domain or boundary integrals, i.e., surface areas or volumes of specified nodesets
     void output_domain_or_boundary_integrals(const std::string& condstring);
 
     //! output of reaction(s) integral
-    void output_integr_reac(const int num = 0);
+    void output_integr_reac(int num = 0) const;
 
     //! return density field at time n+alpha_F (gen-alpha) or n+1 (otherwise) for natural convection
     std::shared_ptr<Core::LinAlg::Vector<double>> densafnp() { return densafnp_; }
@@ -825,38 +829,38 @@ namespace ScaTra
         const int step, Core::IO::DiscretizationReader& reader) {};
 
     //! return time for evaluation of elements
-    const double& dt_ele() const { return dtele_; };
+    [[nodiscard]] double dt_ele() const { return dtele_; }
 
-    //! return time for solution of linear system of equations
-    const double& dt_solve() const { return dtsolve_; };
+    //! return the time for the solution of the linear system of equations
+    [[nodiscard]] double dt_solve() const { return dtsolve_; }
 
     //! return total values of transported scalars
-    const std::map<const int, std::vector<double>>& total_scalars() const;
+    [[nodiscard]] const std::map<const int, std::vector<double>>& total_scalars() const;
 
     //! return mean values of transported scalars
-    const std::map<const int, std::vector<double>>& mean_scalars() const;
+    [[nodiscard]] const std::map<const int, std::vector<double>>& mean_scalars() const;
 
     //! return values of domain integrals
-    const std::vector<double>& domain_integrals() const;
+    [[nodiscard]] const std::vector<double>& domain_integrals() const;
 
     //! return values of boundary integrals
-    const std::vector<double>& boundary_integrals() const;
+    [[nodiscard]] const std::vector<double>& boundary_integrals() const;
 
     //! return micro-scale coupling flux for macro-micro coupling in multi-scale simulations
-    const double& q() const { return q_; };
+    [[nodiscard]] double q() const { return q_; }
 
     //! derivative of micro-scale coupling flux w.r.t. macro-scale state variable for macro-micro
     //! coupling in multi-scale simulations
-    const std::vector<double>& dq_dphi() const { return dq_dphi_; };
+    [[nodiscard]] const std::vector<double>& dq_dphi() const { return dq_dphi_; }
 
     //! return rcp ptr to neumann loads vector
     std::shared_ptr<Core::LinAlg::Vector<double>> get_neumann_loads_ptr() override
     {
       return neumann_loads_;
-    };
+    }
 
     //! return true if an external force is applied to the system
-    bool has_external_force() { return has_external_force_; };
+    [[nodiscard]] bool has_external_force() const { return has_external_force_; }
 
     //! returns if restart information is needed for the current time step
     [[nodiscard]] bool is_restart_step() const
@@ -868,10 +872,7 @@ namespace ScaTra
     }
 
     //! returns if output of results is needed for the current time step
-    [[nodiscard]] bool is_result_step() const
-    {
-      return ((step_ % upres_ == 0) or is_restart_step());
-    }
+    [[nodiscard]] bool is_result_step() const { return (step_ % upres_ == 0) or is_restart_step(); }
 
     /*========================================================================*/
     //! @name turbulence and related
@@ -905,16 +906,16 @@ namespace ScaTra
     /*========================================================================*/
 
     //! return scatra structure growth vector
-    std::shared_ptr<const Core::LinAlg::MultiVector<double>> str_growth() const
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiVector<double>> str_growth() const
     {
       return scstrgrdisp_;
-    };
+    }
 
     //! return scatra fluid growth vector
-    std::shared_ptr<const Core::LinAlg::MultiVector<double>> fld_growth() const
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::MultiVector<double>> fld_growth() const
     {
       return scfldgrdisp_;
-    };
+    }
 
     //! set scatra fluid displacement vector due to biofilm growth
     void set_sc_fld_gr_disp(
@@ -928,7 +929,7 @@ namespace ScaTra
     void set_model_evaluatro_ptr(Adapter::AdapterScatraWrapper* adapter_scatra_wrapper)
     {
       additional_model_evaluator_ = adapter_scatra_wrapper;
-    };
+    }
 
     //! set the visualization writer
     void set_visualization_writer(
@@ -938,7 +939,7 @@ namespace ScaTra
     }
 
     //! return the visualization writer
-    Core::IO::DiscretizationVisualizationWriterMesh& visualization_writer()
+    [[nodiscard]] Core::IO::DiscretizationVisualizationWriterMesh& visualization_writer() const
     {
       return *visualization_writer_;
     }
@@ -988,7 +989,7 @@ namespace ScaTra
     void update_krylov_space_projection();
 
     //! compute approximation for fluxes and add it to a parameter list
-    void add_flux_approx_to_parameter_list(Teuchos::ParameterList& p);
+    void add_flux_approx_to_parameter_list(Teuchos::ParameterList& p) const;
 
     //! calculate consistent initial scalar time derivatives in compliance with initial scalar field
     //! this function is never called directly, but only via overloading
@@ -1010,10 +1011,9 @@ namespace ScaTra
             phidt  //!< first time derivative (may be = null)
     );
 
-    //! compute outward pointing unit normal vectors at given bc's
-    std::shared_ptr<Core::LinAlg::MultiVector<double>> compute_normal_vectors(
-        const std::vector<std::string>& condnames  //!< ?
-    );
+    //! compute outward pointing unit normal vectors for given conditions
+    [[nodiscard]] std::shared_ptr<Core::LinAlg::MultiVector<double>> compute_normal_vectors(
+        const std::vector<std::string>& condnames) const;
 
     //! evaluate Neumann inflow boundary condition
     void compute_neumann_inflow(std::shared_ptr<Core::LinAlg::SparseOperator> matrix,  //!< ?
@@ -1043,7 +1043,7 @@ namespace ScaTra
     );
 
     //! return the right time-scaling-factor for the true residual
-    virtual double residual_scaling() const = 0;
+    [[nodiscard]] virtual double residual_scaling() const = 0;
 
     //! solve linear system
     void linear_solve();
@@ -1061,7 +1061,7 @@ namespace ScaTra
     //! Calculate the reconstructed nodal gradient of phi by means of SPR
     std::shared_ptr<Core::LinAlg::MultiVector<double>> compute_superconvergent_patch_recovery(
         std::shared_ptr<const Core::LinAlg::Vector<double>> state, const std::string& statename,
-        const int numvec, Teuchos::ParameterList& params, const int dim);
+        int numvec, Teuchos::ParameterList& params, int dim) const;
 
     //! compute contributions of solution-depending boundary and interface conditions to global
     //! system of equations
@@ -1092,10 +1092,10 @@ namespace ScaTra
     /*--- query and output ---------------------------------------------------*/
 
     //! returns true if \ref setup() was called and is still valid
-    bool is_setup() const { return issetup_; };
+    [[nodiscard]] bool is_setup() const { return issetup_; }
 
     //! returns true if \ ref init() was called and is still valid
-    bool is_init() const { return isinit_; };
+    [[nodiscard]] bool is_init() const { return isinit_; }
 
     //! check if \ref setup() was called
     void check_is_setup() const;
@@ -1104,21 +1104,20 @@ namespace ScaTra
     void check_is_init() const;
 
     //! helper function to get algorithm title
-    std::string map_tim_int_enum_to_string(
-        const enum Inpar::ScaTra::TimeIntegrationScheme term  //!< the enum
+    std::string map_tim_int_enum_to_string(Inpar::ScaTra::TimeIntegrationScheme term  //!< the enum
     );
 
     //! do we need a statistical sampling for boundary flux at the current time step?
-    bool do_boundary_flux_statistics()
+    [[nodiscard]] bool do_boundary_flux_statistics() const
     {
       return ((step_ >= samstart_) and (step_ <= samstop_) and
               ((calcflux_boundary_ == Inpar::ScaTra::flux_total) or
                   (calcflux_boundary_ == Inpar::ScaTra::flux_diffusive) or
                   (calcflux_boundary_ == Inpar::ScaTra::flux_convective)));
-    };
+    }
 
     //! write state vectors (phinp and convective velocity) to Gmsh postprocessing files
-    void output_to_gmsh(const int step, const double time) const;
+    void output_to_gmsh(int step, double time) const;
 
     /*!
      * @brief collect flux vectors for runtime output
@@ -1210,7 +1209,7 @@ namespace ScaTra
      * be removed.
      * note: VM3 solver still needs an explicit toggle vector for construction
      */
-    std::shared_ptr<const Core::LinAlg::Vector<double>> dirichlet_toggle();
+    [[nodiscard]] std::shared_ptr<const Core::LinAlg::Vector<double>> dirichlet_toggle() const;
 
     /*========================================================================*/
 
@@ -1687,7 +1686,7 @@ namespace ScaTra
     /*========================================================================*/
 
     //! Standard Constructor
-    ScalarHandler() : numdofpernode_(), equalnumdof_(true), issetup_(false) {};
+    ScalarHandler() = default;
 
     /**
      * Virtual destructor.
@@ -1702,27 +1701,27 @@ namespace ScaTra
     /*========================================================================*/
 
     //! return maximum number of dofs per node
-    int num_dof_per_node_in_condition(const Core::Conditions::Condition& condition,
+    [[nodiscard]] int num_dof_per_node_in_condition(const Core::Conditions::Condition& condition,
         const Core::FE::Discretization& discret) const;
 
     //! return maximum number of transported scalars per node
-    virtual int num_scal_in_condition(const Core::Conditions::Condition& condition,
+    [[nodiscard]] virtual int num_scal_in_condition(const Core::Conditions::Condition& condition,
         const std::shared_ptr<const Core::FE::Discretization>& discret) const
     {
       return num_dof_per_node_in_condition(condition, *discret);
-    };
+    }
 
     //! return number of dofs per node
-    virtual int num_dof_per_node() const;
+    [[nodiscard]] virtual int num_dof_per_node() const;
 
     //! return maximum number of dofs per node
     [[nodiscard]] int max_num_dof_per_node() const;
 
     //! return maximum number of transported scalars per node
-    virtual int num_scal() const { return num_dof_per_node(); }
+    [[nodiscard]] virtual int num_scal() const { return num_dof_per_node(); }
 
     //! return flag indicating equal number of DOFs per node in whole discretization
-    bool equal_num_dof() { return equalnumdof_; };
+    [[nodiscard]] bool equal_num_dof() const { return equalnumdof_; }
 
    protected:
     /*========================================================================*/
@@ -1756,26 +1755,32 @@ namespace ScaTra
   class OutputScalarsStrategyBase
   {
    public:
+    //! constructor
+    OutputScalarsStrategyBase(const ScaTraTimIntImpl* scatratimint);
+
     /**
      * Virtual destructor.
      */
     virtual ~OutputScalarsStrategyBase() = default;
 
-    //! initialize time integration
-    void init(const ScaTraTimIntImpl* const scatratimint);
-
     //! do the output
-    void output_total_and_mean_scalars(const ScaTraTimIntImpl* const scatratimint, const int num);
+    void output_total_and_mean_scalars(const ScaTraTimIntImpl* scatratimint, int num);
 
     /*========================================================================*/
     //! @name Access methods
     /*========================================================================*/
 
     //! return total values of transported scalars
-    const std::map<const int, std::vector<double>>& total_scalars() const { return totalscalars_; };
+    [[nodiscard]] const std::map<const int, std::vector<double>>& total_scalars() const
+    {
+      return totalscalars_;
+    }
 
     //! return mean values of transported scalars
-    const std::map<const int, std::vector<double>>& mean_scalars() const { return meanscalars_; };
+    [[nodiscard]] const std::map<const int, std::vector<double>>& mean_scalars() const
+    {
+      return meanscalars_;
+    }
 
    protected:
     /*========================================================================*/
@@ -1783,23 +1788,20 @@ namespace ScaTra
     /*========================================================================*/
 
     //! evaluate mean and total scalars and print them to file and screen
-    virtual void evaluate_integrals(const ScaTraTimIntImpl* const scatratimint) = 0;
+    virtual void evaluate_integrals(const ScaTraTimIntImpl* scatratimint) = 0;
 
     //! print bar to screen as bottom of table
-    void finalize_screen_output();
-
-    //! init objects that are specific for output strategy
-    virtual void init_strategy_specific(const ScaTraTimIntImpl* const scatratimint) = 0;
+    void finalize_screen_output() const;
 
     //! evaluate csv data and return it in a map
     virtual std::map<std::string, std::vector<double>> prepare_csv_output() = 0;
 
     //! fill parameter list and set variables in discretization for evaluation of mean scalars
     void prepare_evaluate(
-        const ScaTraTimIntImpl* const scatratimint, Teuchos::ParameterList& eleparams);
+        const ScaTraTimIntImpl* scatratimint, Teuchos::ParameterList& eleparams) const;
 
     //! print header of table for summary of mean values to screen
-    void print_header_to_screen(const std::string& dis_name);
+    void print_header_to_screen(const std::string& dis_name) const;
 
     //! Print evaluated data to screen
     virtual void print_to_screen() = 0;
@@ -1841,12 +1843,10 @@ namespace ScaTra
   class OutputScalarsStrategyDomain : virtual public OutputScalarsStrategyBase
   {
    public:
-    OutputScalarsStrategyDomain() : dummy_domain_id_(-1), numdofpernode_(0), numscal_(0) {};
+    OutputScalarsStrategyDomain(const ScaTraTimIntImpl* scatratimint);
 
    protected:
-    void evaluate_integrals(const ScaTraTimIntImpl* const scatratimint) override;
-
-    void init_strategy_specific(const ScaTraTimIntImpl* const scatratimint) override;
+    void evaluate_integrals(const ScaTraTimIntImpl* scatratimint) override;
 
     std::map<std::string, std::vector<double>> prepare_csv_output() override;
 
@@ -1869,12 +1869,10 @@ namespace ScaTra
   class OutputScalarsStrategyCondition : virtual public OutputScalarsStrategyBase
   {
    public:
-    OutputScalarsStrategyCondition() : conditions_(), numdofpernodepercondition_() {};
+    OutputScalarsStrategyCondition(const ScaTraTimIntImpl* scatratimint);
 
    protected:
-    void evaluate_integrals(const ScaTraTimIntImpl* const scatratimint) override;
-
-    void init_strategy_specific(const ScaTraTimIntImpl* const scatratimint) override;
+    void evaluate_integrals(const ScaTraTimIntImpl* scatratimint) override;
 
     std::map<std::string, std::vector<double>> prepare_csv_output() override;
 
@@ -1899,10 +1897,11 @@ namespace ScaTra
   class OutputScalarsStrategyDomainAndCondition : public OutputScalarsStrategyDomain,
                                                   public OutputScalarsStrategyCondition
   {
-   protected:
-    void evaluate_integrals(const ScaTraTimIntImpl* const scatratimint) override;
+   public:
+    OutputScalarsStrategyDomainAndCondition(const ScaTraTimIntImpl* scatratimint);
 
-    void init_strategy_specific(const ScaTraTimIntImpl* const scatratimint) override;
+   protected:
+    void evaluate_integrals(const ScaTraTimIntImpl* scatratimint) override;
 
     std::map<std::string, std::vector<double>> prepare_csv_output() override;
 
@@ -1918,28 +1917,27 @@ namespace ScaTra
   {
    public:
     //! Standard Constructor
-    OutputDomainIntegralStrategy()
-        : conditionsdomain_(),
-          conditionsboundary_(),
-          domainintegralvalues_(),
-          boundaryintegralvalues_() {};
-
-    //! initialize time integration
-    void init(const ScaTraTimIntImpl* const scatratimint);
+    explicit OutputDomainIntegralStrategy(const ScaTraTimIntImpl* scatratimint);
 
     //! evaluate domain integrals and print to screen
     void evaluate_integrals_and_print_results(
-        const ScaTraTimIntImpl* const scatratimint, const std::string& condstring);
+        const ScaTraTimIntImpl* scatratimint, const std::string& condstring);
 
     /*========================================================================*/
     //! @name Access methods
     /*========================================================================*/
 
     //! return values of domain integrals
-    const std::vector<double>& domain_integrals() const { return domainintegralvalues_; };
+    [[nodiscard]] const std::vector<double>& domain_integrals() const
+    {
+      return domainintegralvalues_;
+    }
 
     //! return values of boundary
-    const std::vector<double>& boundary_integrals() const { return boundaryintegralvalues_; };
+    [[nodiscard]] const std::vector<double>& boundary_integrals() const
+    {
+      return boundaryintegralvalues_;
+    }
 
    private:
     //! vector of 'DomainIntegral'-conditions

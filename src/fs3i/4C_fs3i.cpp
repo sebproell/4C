@@ -645,20 +645,17 @@ void FS3I::FS3IBase::setup_coupled_scatra_vector(Core::LinAlg::Vector<double>& g
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void FS3I::FS3IBase::setup_coupled_scatra_matrix()
+void FS3I::FS3IBase::setup_coupled_scatra_matrix() const
 {
-  std::shared_ptr<Core::LinAlg::SparseMatrix> scatra1 =
-      scatravec_[0]->scatra_field()->system_matrix();
-  std::shared_ptr<Core::LinAlg::SparseMatrix> scatra2 =
-      scatravec_[1]->scatra_field()->system_matrix();
+  auto scatra1 = scatravec_[0]->scatra_field()->system_matrix();
+  auto scatra2 = scatravec_[1]->scatra_field()->system_matrix();
 
   if (scatra1 == nullptr) FOUR_C_THROW("expect fluid scatra block matrix");
   if (scatra2 == nullptr) FOUR_C_THROW("expect structure scatra block matrix");
 
   if (infperm_)
   {
-    // Incomplete system matrix to be able to deal with slightly defective
-    // interface meshes.
+    // Incomplete system matrix to be able to deal with slightly defective interface meshes.
     scatra1->un_complete();
 
     // structure scatra
