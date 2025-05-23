@@ -21,14 +21,12 @@ Solid::Nln::SOLVER::Generic::Generic(
     const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
     const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
     const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
-    const std::shared_ptr<Solid::Integrator>& integrator,
+    const std::shared_ptr<Solid::Integrator>& integr,
     const std::shared_ptr<const Solid::TimeInt::Base>& timint)
-    : isinit_(true),
-      issetup_(false),
-      gstate_ptr_(gstate),
+    : gstate_ptr_(gstate),
       sdyn_ptr_(sdyn),
       noxinterface_ptr_(noxinterface),
-      int_ptr_(integrator),
+      int_ptr_(integr),
       timint_ptr_(timint),
       group_ptr_(nullptr)
 {
@@ -39,8 +37,6 @@ Solid::Nln::SOLVER::Generic::Generic(
  *----------------------------------------------------------------------------*/
 Teuchos::RCP<::NOX::Abstract::Group>& Solid::Nln::SOLVER::Generic::group_ptr()
 {
-  check_init();
-
   return group_ptr_;
 }
 
@@ -48,7 +44,6 @@ Teuchos::RCP<::NOX::Abstract::Group>& Solid::Nln::SOLVER::Generic::group_ptr()
  *----------------------------------------------------------------------------*/
 ::NOX::Abstract::Group& Solid::Nln::SOLVER::Generic::get_solution_group()
 {
-  check_init_setup();
   FOUR_C_ASSERT(group_ptr_, "The group pointer should be initialized beforehand!");
 
   return *group_ptr_;
@@ -58,7 +53,6 @@ Teuchos::RCP<::NOX::Abstract::Group>& Solid::Nln::SOLVER::Generic::group_ptr()
  *----------------------------------------------------------------------------*/
 const ::NOX::Abstract::Group& Solid::Nln::SOLVER::Generic::get_solution_group() const
 {
-  check_init_setup();
   FOUR_C_ASSERT(group_ptr_, "The group pointer should be initialized beforehand!");
 
   return *group_ptr_;

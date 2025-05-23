@@ -68,11 +68,8 @@ namespace Solid
             const std::shared_ptr<Solid::TimeInt::BaseDataGlobalState>& gstate,
             const std::shared_ptr<Solid::TimeInt::BaseDataSDyn>& sdyn,
             const std::shared_ptr<Solid::TimeInt::NoxInterface>& noxinterface,
-            const std::shared_ptr<Solid::Integrator>& integrator,
+            const std::shared_ptr<Solid::Integrator>& integr,
             const std::shared_ptr<const Solid::TimeInt::Base>& timint);
-
-        //! derived from the base class
-        void setup() override;
 
         //! derived from the base class
         void reset() override;
@@ -83,16 +80,8 @@ namespace Solid
         //! returns the outer status test object pointer
         const ::NOX::StatusTest::Generic& get_outer_status_test() const
         {
-          check_init_setup();
           FOUR_C_ASSERT(ostatus_, "The outer status test object is not defined!");
           return *ostatus_;
-        }
-
-        //! returns the outer status test object pointer
-        Teuchos::RCP<const NOX::Nln::Inner::StatusTest::Generic> get_inner_status_ptr() const
-        {
-          check_init_setup();
-          return istatus_;
         }
 
         //! get number of nonlinear iterations (derived)
@@ -117,12 +106,7 @@ namespace Solid
         const Teuchos::ParameterList default_params_;
 
        private:
-        //! @name Variables which stay constant after init() and setup() call
-        //!@{
-
-        //!@}
-
-        //! @name variables which are reset in each Solve() call
+        //! @name variables which are reset in each solve() call
         //!@{
 
         /*! \brief NOX non-linear problem class
