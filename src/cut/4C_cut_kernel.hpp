@@ -22,13 +22,8 @@
 #include <unordered_map>
 
 
-// #define DEBUG_CUTKERNEL_OUTPUT
 #define CUT_CLN_CALC
 
-
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-#include "4C_cut_output.hpp"
-#endif
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -1159,11 +1154,6 @@ namespace Cut::Kernel
       FloatType det = A_.determinant();
       if (Kernel::close_to_zero(det))
       {
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-        std::cout << " WARNING: Condition number is equal to infinity in the problem. Stopping "
-                     "the increase in precision"
-                  << std::endl;
-#endif
         return std::make_pair(false, -1.0);
       }
       A_inv.invert(A_);
@@ -1471,9 +1461,6 @@ namespace Cut::Kernel
         cond_number = cond_pair.second;
         if (not cond_pair.first)
         {
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-          std::cout << "Condition number of this problem is equal to infinity" << std::endl;
-#endif
           cond_infinity_ = true;
         }
 
@@ -1946,11 +1933,6 @@ namespace Cut::Kernel
       FloatType det = A_.determinant();
       if (Kernel::close_to_zero(det))
       {
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-        std::cout << " WARNING: Condition number is equal to infinity in the problem. Stopping "
-                     "the increase in precision"
-                  << std::endl;
-#endif
         return std::make_pair(false, -1.0);
       }
       A_inv.invert(A_);
@@ -2068,16 +2050,6 @@ namespace Cut::Kernel
     bool newton_failed()
     {
       tol_ = b_.norm2();
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-      std::stringstream str;
-      str << "compute_distance: Newton scheme did not converge:\n"
-          << std::setprecision(16) << (*xyze_side_) << (*px_) << xsi_;
-
-      std::string filename = Output::GenerateGmshOutputFilename(".NewtonFailed_distance.pos");
-      std::ofstream file(filename.c_str());
-      write_to_gmsh(file);
-      file.close();
-#endif
       return false;
     }
 
@@ -2591,13 +2563,6 @@ namespace Cut::Kernel
       // values back if we did not converge, by newton tolerance, but the error is small enough
       // treat as converged
       if ((not conv) && (err < CLN_LIMIT_ERROR) && (err > 0.0)) conv = true;
-
-      if (cond_infinity_)
-      {
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-        std::cout << "Condition number of this problem is equal to infinity" << std::endl;
-#endif
-      }
 
       get_topology_information();
       // NOTE: Might be not needed later
@@ -3379,11 +3344,6 @@ namespace Cut::Kernel
       FloatType det = A_.determinant();
       if (Kernel::close_to_zero(det))
       {
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-        std::cout << " WARNING: Condition number is equal to infinity in the problem. "
-                     "Continuing increase in precision "
-                  << std::endl;
-#endif
         return std::make_pair(false, -1.0);
       }
       A_inv.invert(A_);
@@ -3602,45 +3562,8 @@ namespace Cut::Kernel
 
     bool newton_failed()
     {
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-      // If it is not edge-edge intersections we explicitly notify, that Newton's method failed
-      if (probDim == dimEdge + dimSide)
-      {
-        std::cout << "Current type is " << typeid(floatType).name() << std::endl;
-        std::cout << "Newton method failed" << std::endl;
-        std::cout << "Residual is" << residual_ << std::endl;
-        std::cout << "Tolerance is" << tol_ << std::endl;
-        std::cout << "Precision is" << Core::CLN::ClnWrapper::precision_ << "decimal points"
-                  << std::endl;
-        std::cout << "Local coordinates are " << xsi_ << std::endl;
-      }
-#endif
-
       tol_ = c_.norm2() * std::sqrt(3.0);
 
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-      if (probDim == dimEdge + dimSide)
-      {
-        std::stringstream str;
-        str << "Newton scheme did not converge:\n  "
-#ifndef CLN_CALC
-            << (*xyze_side_)
-            << (*xyze_edge_)
-#endif
-#ifndef CLN_CALC
-                   DumpDoubles(str, xyze_side_->data(), xyze_side_->m() * xyze_side_->n());
-        str << "\n";
-        DumpDoubles(str, xyze_edge_->data(), xyze_edge_->m() * xyze_edge_->n());
-#endif
-
-
-        std::stringstream f_str;
-        f_str << ".NewtonFailed_intersection.pos";
-        std::string filename(Cut::Output::GenerateGmshOutputFilename(f_str.str()));
-        std::ofstream file(filename.c_str());
-        write_to_gmsh(file);
-      }
-#endif
       return false;
     }
 
@@ -4018,18 +3941,10 @@ namespace Cut::Kernel
         conv = true;
       else if (not conv)
       {
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-        if (probDim == dimSide + dimEdge)
-          std::cout << "Newton method failed and the residual is " << err << " / "
-                    << CLN_LIMIT_ERROR << std::endl;
-#endif
       }
 
       if (cond_infinity_)
       {
-#ifdef DEBUG_CUTKERNEL_OUTPUT
-        std::cout << "Condition number of this problem is equal to infinity" << std::endl;
-#endif
       }
 
       get_topology_information();

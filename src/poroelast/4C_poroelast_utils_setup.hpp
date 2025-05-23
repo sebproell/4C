@@ -16,7 +16,6 @@
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_global_data.hpp"
 #include "4C_poroelast_utils.hpp"
-#include "4C_poroelast_utils_setup.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
