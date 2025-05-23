@@ -167,33 +167,18 @@ namespace Core::LinAlg
     int remove_global_indices(int GlobalRow, int NumIndices, int* Indices);
 
     //! Returns the Row Map associated with this graph.
-    const Map& row_map() const
-    {
-      if (!row_map_)
-      {  // check if view is uninitialized
-        row_map_ = Core::LinAlg::Map(graph_->RowMap());
-      }
-      return *row_map_;
-    }
+    const Map& row_map() const { return row_map_.sync(graph_->RowMap()); }
 
     //! Returns the Column Map associated with this graph.
-    const Map& col_map() const
-    {
-      if (!col_map_)
-      {  // check if view is uninitialized
-        col_map_ = Core::LinAlg::Map(graph_->ColMap());
-      }
-      return *col_map_;
-    }
+    const Map& col_map() const { return col_map_.sync(graph_->ColMap()); }
 
    private:
     GraphType graphtype_;
 
     //! The actual Epetra_CrsGraph object.
     std::unique_ptr<Epetra_CrsGraph> graph_;
-
-    mutable std::optional<Map> row_map_;
-    mutable std::optional<Map> col_map_;
+    mutable View<const Map> row_map_;
+    mutable View<const Map> col_map_;
   };
 }  // namespace Core::LinAlg
 FOUR_C_NAMESPACE_CLOSE
