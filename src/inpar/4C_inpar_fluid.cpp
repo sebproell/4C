@@ -929,15 +929,22 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
           // turbulent flow problem and general characteristics
           //----------------------------------------------------------------------
           deprecated_selection<std::string>("CANONICAL_FLOW",
-              {"no", "time_averaging", "channel_flow_of_height_2", "lid_driven_cavity",
-                  "backward_facing_step", "square_cylinder", "square_cylinder_nurbs",
-                  "rotating_circular_cylinder_nurbs", "rotating_circular_cylinder_nurbs_scatra",
-                  "loma_channel_flow_of_height_2", "loma_lid_driven_cavity",
-                  "loma_backward_facing_step", "combust_oracles", "bubbly_channel_flow",
-                  "scatra_channel_flow_of_height_2", "decaying_homogeneous_isotropic_turbulence",
+              {
+                  "no",
+                  "time_averaging",
+                  "channel_flow_of_height_2",
+                  "square_cylinder_nurbs",
+                  "rotating_circular_cylinder_nurbs",
+                  "rotating_circular_cylinder_nurbs_scatra",
+                  "loma_channel_flow_of_height_2",
+                  "combust_oracles",
+                  "bubbly_channel_flow",
+                  "scatra_channel_flow_of_height_2",
+                  "decaying_homogeneous_isotropic_turbulence",
                   "forced_homogeneous_isotropic_turbulence",
-                  "scatra_forced_homogeneous_isotropic_turbulence", "taylor_green_vortex",
-                  "periodic_hill", "blood_fda_flow", "backward_facing_step2"},
+                  "scatra_forced_homogeneous_isotropic_turbulence",
+                  "periodic_hill",
+              },
               {.description =
                       ""
                       "Sampling is different for different canonical flows - so specify what kind "
@@ -956,17 +963,6 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
                       "in the "
                       "homogeneous planes - it is essentially a statistically one dimensional "
                       "flow.\n"
-                      "lid_driven_cavity: For this flow, all statistical data are evaluated on the "
-                      "center lines "
-                      "of the xy-midplane, averaged only over time.\n"
-                      "backward_facing_step: For this flow, statistical data are evaluated on "
-                      "various "
-                      "lines, "
-                      "averaged over time and z.\n"
-                      "square_cylinder: For this flow, statistical data are evaluated on various "
-                      "lines "
-                      "of the "
-                      "xy-midplane, averaged only over time.\n"
                       "square_cylinder_nurbs: For this flow, statistical data are evaluated on "
                       "various "
                       "lines of "
@@ -986,14 +982,6 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
                       "one "
                       "dimensional "
                       "flow.\n"
-                      "loma_lid_driven_cavity: For this low-Mach-number flow, all statistical data "
-                      "are "
-                      "evaluated "
-                      "on the center lines of the xy-midplane, averaged only over time.\n"
-                      "loma_backward_facing_step: For this low-Mach-number flow, statistical data "
-                      "are "
-                      "evaluated "
-                      "on various lines, averaged over time and z.\n"
                       "combust_oracles: ORACLES test rig for turbulent premixed combustion.\n"
                       "bubbly_channel_flow: Turbulent two-phase flow: bubbly channel flow, "
                       "statistical "
@@ -1022,20 +1010,11 @@ void Inpar::FLUID::set_valid_parameters(std::map<std::string, Core::IO::InputSpe
                       "be averaged in the in all homogeneous directions  - it is essentially a "
                       "statistically "
                       "zero dimensional flow.\n"
-                      "taylor_green_vortex: For this flow, dissipation rate could be averaged in "
-                      "the in "
-                      "all "
-                      "homogeneous directions  - it is essentially a statistically zero "
-                      "dimensional "
-                      "flow.\n"
                       "periodic_hill: For this flow, statistical data is evaluated on various "
                       "lines, "
                       "averaged "
                       "over time and z.\n"
                       "blood_fda_flow: For this flow, statistical data is evaluated on various "
-                      "planes.\n"
-                      "backward_facing_step2: For this flow, statistical data is evaluated on "
-                      "various "
                       "planes.\n",
                   .default_value = "no"}),
 

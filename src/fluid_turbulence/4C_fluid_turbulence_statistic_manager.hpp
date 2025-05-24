@@ -48,14 +48,8 @@ namespace FLD
   class XWall;
   class TurbulenceStatisticsCha;
   class TurbulenceStatisticsCcy;
-  class TurbulenceStatisticsLdc;
-  class TurbulenceStatisticsBfs;
-  class TurbulenceStatisticsSqc;
   class TurbulenceStatisticsHit;
-  class TurbulenceStatisticsTgv;
-  class TurbulenceStatisticsGeneralMean;
   class TurbulenceStatisticsPh;
-  class TurbulenceStatisticsBfda;
   namespace Utils
   {
     class StressManager;
@@ -162,15 +156,6 @@ namespace FLD
 
     //@}
 
-    /*!
-    \brief remote access method to general mean statistics manager
-
-    */
-    std::shared_ptr<TurbulenceStatisticsGeneralMean> get_turbulence_statistics_general_mean() const
-    {
-      return statistics_general_mean_;
-    }
-
     bool with_scatra() { return withscatra_; }
 
    private:
@@ -259,12 +244,6 @@ namespace FLD
       channel_flow_of_height_2,
       loma_channel_flow_of_height_2,
       scatra_channel_flow_of_height_2,
-      lid_driven_cavity,
-      loma_lid_driven_cavity,
-      backward_facing_step,
-      loma_backward_facing_step,
-      backward_facing_step2,
-      square_cylinder,
       square_cylinder_nurbs,
       bubbly_channel_flow,
       rotating_circular_cylinder_nurbs,
@@ -272,9 +251,7 @@ namespace FLD
       decaying_homogeneous_isotropic_turbulence,
       forced_homogeneous_isotropic_turbulence,
       scatra_forced_homogeneous_isotropic_turbulence,
-      taylor_green_vortex,
       periodic_hill,
-      blood_fda_flow,
       time_averaging
     } flow_;
 
@@ -300,34 +277,17 @@ namespace FLD
     //! name of statistics output file, despite the ending
     const std::string statistics_outfilename_;
 
-    std::shared_ptr<TurbulenceStatisticsGeneralMean> statistics_general_mean_;
-
     //! turbulence statistics for turbulent channel flow
     std::shared_ptr<TurbulenceStatisticsCha> statistics_channel_;
 
     //! turbulence statistics for a rotating circular cylinder
     std::shared_ptr<TurbulenceStatisticsCcy> statistics_ccy_;
 
-    //! turbulence statistics for lid-driven cavity
-    std::shared_ptr<TurbulenceStatisticsLdc> statistics_ldc_;
-
-    //! turbulence statistics for backward-facing step
-    std::shared_ptr<TurbulenceStatisticsBfs> statistics_bfs_;
-
     //! turbulence statistics for periodic hill
     std::shared_ptr<TurbulenceStatisticsPh> statistics_ph_;
 
-    //! turbulence statistics for blood fda flow
-    std::shared_ptr<TurbulenceStatisticsBfda> statistics_bfda_;
-
-    //! turbulence statistics for square cylinder
-    std::shared_ptr<TurbulenceStatisticsSqc> statistics_sqc_;
-
     //! turbulence statistics for homogeneous isotropic turbulence
     std::shared_ptr<TurbulenceStatisticsHit> statistics_hit_;
-
-    //! turbulence statistics for Taylor-Green Vortex
-    std::shared_ptr<TurbulenceStatisticsTgv> statistics_tgv_;
 
   };  // end class turbulence_statistic_manager
 
