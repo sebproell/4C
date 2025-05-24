@@ -41,7 +41,7 @@ double ScaTra::HDGResultTest::result_node(
 
   // test result value of single scalar field (averaged value on element node is tested)
   if (quantity == "phi")
-    result = (*scatratiminthdg_->interpolated_phinp())[phinpmap.LID(node->id())];
+    result = (*scatratiminthdg_->interpolated_phinp())[phinpmap.lid(node->id())];
   else if (quantity == "abs_L2error_phi")
     result = std::sqrt((*errors_)[0]);
   else if (quantity == "rel_L2error_phi")

@@ -648,11 +648,12 @@ void FSI::MonolithicXFEM::create_combined_dof_row_map()
   vecSpaces_mergedporo.push_back(fluid_field()->dof_row_map());
 
   // solid maps empty??
-  if (vecSpaces[structp_block_]->NumGlobalElements() == 0)
+  if (vecSpaces[structp_block_]->num_global_elements() == 0)
     FOUR_C_THROW("No solid equations. Panic.");
 
   // fluid maps empty??
-  if (vecSpaces[fluid_block_]->NumGlobalElements() == 0) FOUR_C_THROW("No fluid equations. Panic.");
+  if (vecSpaces[fluid_block_]->num_global_elements() == 0)
+    FOUR_C_THROW("No fluid equations. Panic.");
 
   if (structure_poro()->is_poro())
   {
@@ -661,7 +662,7 @@ void FSI::MonolithicXFEM::create_combined_dof_row_map()
         std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     vecSpaces_mergedporo.push_back(empty_map);
     // porofluid maps empty??
-    if (vecSpaces[fluidp_block_]->NumGlobalElements() == 0)
+    if (vecSpaces[fluidp_block_]->num_global_elements() == 0)
       FOUR_C_THROW("No porofluid equations. Panic.");
   }
 
@@ -672,7 +673,8 @@ void FSI::MonolithicXFEM::create_combined_dof_row_map()
     vecSpaces_mergedporo.push_back(ale_field()->interface()->other_map());
 
     // ale maps empty??
-    if (vecSpaces[ale_i_block_]->NumGlobalElements() == 0) FOUR_C_THROW("No ale equations. Panic.");
+    if (vecSpaces[ale_i_block_]->num_global_elements() == 0)
+      FOUR_C_THROW("No ale equations. Panic.");
   }
 
   // The vector is complete, now fill the system's global block row map
@@ -1909,14 +1911,14 @@ void FSI::MonolithicXFEM::permute_fluid_dofs_forward(Core::LinAlg::Vector<double
       if (key + 1 != p_cycle.end())  // standard during the cycle
       {
         tmp_value =
-            (fx)[fx.get_map().LID(*(key + 1))];  // save the value before it will be overwritten
-        (fx)[fx.get_map().LID(*(key + 1))] =
-            (fx)[fx.get_map().LID(*(key))];  // set current value to next position
+            (fx)[fx.get_map().lid(*(key + 1))];  // save the value before it will be overwritten
+        (fx)[fx.get_map().lid(*(key + 1))] =
+            (fx)[fx.get_map().lid(*(key))];  // set current value to next position
         // std::cout << "copy value from gid " << *(key) << " to " << *(key+1) << std::endl;
       }
       else  // last value in cycle reached
       {
-        (fx)[fx.get_map().LID(*p_cycle.begin())] = tmp_value;
+        (fx)[fx.get_map().lid(*p_cycle.begin())] = tmp_value;
         // std::cout << "copy value from tmp to " << *p_cycle.begin() << std::endl;
       }
     }
@@ -1962,16 +1964,16 @@ void FSI::MonolithicXFEM::permute_fluid_dofs_backward(Core::LinAlg::Vector<doubl
     {
       if (key_reverse != p_cycle.begin())  // standard during the cycle
       {
-        tmp_value = (fx)[fx.get_map().LID(
+        tmp_value = (fx)[fx.get_map().lid(
             *(key_reverse - 1))];  // save the value before it will be overwritten
-        (fx)[fx.get_map().LID(*(key_reverse - 1))] =
-            (fx)[fx.get_map().LID(*(key_reverse))];  // set current value to position before
+        (fx)[fx.get_map().lid(*(key_reverse - 1))] =
+            (fx)[fx.get_map().lid(*(key_reverse))];  // set current value to position before
         // std::cout << "copy value from gid " << *(key_reverse) << " to " << *(key_reverse-1) <<
         // std::endl;
       }
       else
       {
-        (fx)[fx.get_map().LID(*(p_cycle.end() - 1))] = tmp_value;
+        (fx)[fx.get_map().lid(*(p_cycle.end() - 1))] = tmp_value;
         // std::cout << "copy value from tmp to " << *(p_cycle.end()-1) << std::endl;
       }
     }

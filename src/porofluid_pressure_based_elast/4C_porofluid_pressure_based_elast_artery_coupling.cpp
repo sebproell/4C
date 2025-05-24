@@ -59,9 +59,9 @@ void PoroPressureBased::PorofluidElastArteryCouplingAlgorithm::setup_maps()
 
   vecSpaces.push_back(artery_dof_row_map());
 
-  if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No structure equation. Panic.");
-  if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No fluid equation. Panic.");
-  if (vecSpaces[2]->NumGlobalElements() == 0) FOUR_C_THROW("No fluid equation. Panic.");
+  if (vecSpaces[0]->num_global_elements() == 0) FOUR_C_THROW("No structure equation. Panic.");
+  if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No fluid equation. Panic.");
+  if (vecSpaces[2]->num_global_elements() == 0) FOUR_C_THROW("No fluid equation. Panic.");
 
   // full Poromultiphase-elasticity-map
   fullmap_ = Core::LinAlg::MultiMapExtractor::merge_maps(vecSpaces);

@@ -122,15 +122,15 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
 
     // check if the permuted map is simply a subset of the current rowmap (no communication)
     int subset = 1;
-    for (int i = 0; i < permsrcmap.NumMyElements(); ++i)
-      if (!src.row_map().MyGID(permsrcmap.get_epetra_block_map().GID(i)))
+    for (int i = 0; i < permsrcmap.num_my_elements(); ++i)
+      if (!src.row_map().my_gid(permsrcmap.get_epetra_block_map().GID(i)))
       {
         subset = 0;
         break;
       }
 
     int gsubset = 0;
-    Core::Communication::min_all(&subset, &gsubset, 1, logical_range_map.Comm());
+    Core::Communication::min_all(&subset, &gsubset, 1, logical_range_map.get_comm());
 
     // need communication -> call import on permuted map
     if (!gsubset)
@@ -184,7 +184,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::setup_gid_map(
       ex.do_export(gidmap_);
     }
     else
-      for (int i = 0; i < colmap.NumMyElements(); ++i) gidmap_[colmap.GID(i)] = colmap.GID(i);
+      for (int i = 0; i < colmap.num_my_elements(); ++i) gidmap_[colmap.gid(i)] = colmap.gid(i);
     havegidmap_ = true;
   }
 }
@@ -204,7 +204,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::internal_add(Epetra_CrsM
   for (int i = 0; i < dselector.local_length(); ++i)
   {
     const int gid = esrc.DomainMap().GID(i);
-    if (logical_domain_map.MyGID(gid))
+    if (logical_domain_map.my_gid(gid))
       dselector[i] = 1.;
     else
       dselector[i] = 0.;
@@ -241,30 +241,30 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_filled(Epetra_C
   // 3. Match columns of row i in source matrix (called A) to the columns in the destination
   //    matrix (called B)
   // 4. Perform addition
-  if (int(lidvector_.size()) != srccolmap.NumMyElements())
+  if (int(lidvector_.size()) != srccolmap.num_my_elements())
   {
     lidvector_.clear();
-    lidvector_.resize(srccolmap.NumMyElements(), -1);
+    lidvector_.resize(srccolmap.num_my_elements(), -1);
     for (std::map<int, int>::const_iterator iter = gidmap_.begin(); iter != gidmap_.end(); ++iter)
     {
-      const int lid = srccolmap.LID(iter->first);
+      const int lid = srccolmap.lid(iter->first);
       if (lid != -1) lidvector_[lid] = edst.ColMap().LID(iter->second);
     }
   }
 
-  int rows = logical_range_map.NumMyElements();
+  int rows = logical_range_map.num_my_elements();
   for (int i = 0; i < rows; ++i)
   {
     int NumEntriesA, NumEntriesB;
     double *ValuesA, *ValuesB;
     int *IndicesA, *IndicesB;
-    const int rowA = esrc.RowMap().LID(logical_range_map.GID(i));
+    const int rowA = esrc.RowMap().LID(logical_range_map.gid(i));
     if (rowA == -1) FOUR_C_THROW("Internal error");
     int err = esrc.ExtractMyRowView(rowA, NumEntriesA, ValuesA, IndicesA);
     if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
 
     // identify the local row index in the destination matrix corresponding to i
-    const int rowB = dstrowmap.LID(matching_dst_rows.GID(i));
+    const int rowB = dstrowmap.lid(matching_dst_rows.gid(i));
     err = edst.ExtractMyRowView(rowB, NumEntriesB, ValuesB, IndicesB);
     if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
 
@@ -278,7 +278,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_filled(Epetra_C
       if (col == -1)
       {
         if (exactmatch)
-          FOUR_C_THROW("gid {} not found in map for lid {} at {}", srccolmap.GID(IndicesA[jA]),
+          FOUR_C_THROW("gid {} not found in map for lid {} at {}", srccolmap.gid(IndicesA[jA]),
               IndicesA[jA], jA);
         else
           continue;
@@ -298,7 +298,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_filled(Epetra_C
         FOUR_C_THROW(
             "Source matrix entry with global row ID {} and global column ID {} couldn't be added to"
             " destination matrix entry with global row ID {} and unknown global column ID {}!",
-            esrc.RowMap().GID(i), srccolmap.GID(IndicesA[jA]), matching_dst_rows.GID(i),
+            esrc.RowMap().GID(i), srccolmap.gid(IndicesA[jA]), matching_dst_rows.gid(i),
             edst.ColMap().GID(col));
       }
 
@@ -321,14 +321,14 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_unfilled(Epetra
   // standard code for the unfilled case
   std::vector<int> idx;
   std::vector<double> vals;
-  int rows = logical_range_map.NumMyElements();
+  int rows = logical_range_map.num_my_elements();
   for (int i = 0; i < rows; ++i)
   {
     int NumEntries;
     double* Values;
     int* Indices;
     int err = esrc.ExtractMyRowView(
-        esrc.RowMap().LID(logical_range_map.GID(i)), NumEntries, Values, Indices);
+        esrc.RowMap().LID(logical_range_map.gid(i)), NumEntries, Values, Indices);
     if (err != 0) FOUR_C_THROW("ExtractMyRowView error: {}", err);
 
     idx.clear();
@@ -339,7 +339,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_unfilled(Epetra
       // skip entries belonging to a different block of the logical block matrix
       if (selector[Indices[j]] == 0.) continue;
 
-      int gid = srccolmap.GID(Indices[j]);
+      int gid = srccolmap.gid(Indices[j]);
       std::map<int, int>::const_iterator iter = gidmap_.find(gid);
       if (iter != gidmap_.end())
       {
@@ -355,7 +355,7 @@ void Coupling::Adapter::MatrixLogicalSplitAndTransform::add_into_unfilled(Epetra
     }
 
     NumEntries = vals.size();
-    const int globalRow = matching_dst_rows.GID(i);
+    const int globalRow = matching_dst_rows.gid(i);
 
     // put row into matrix
     //

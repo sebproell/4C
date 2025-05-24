@@ -119,14 +119,14 @@ namespace FLD
             if (rest < numdim_)
             {
               const int pos = nodespassed * numdim_ + rest;
-              localcol00[pos] = (colmap00.LID(cgid));
-              localcol10[pos] = (colmap10.LID(cgid));
+              localcol00[pos] = (colmap00.lid(cgid));
+              localcol10[pos] = (colmap10.lid(cgid));
             }
             else
             {
               const int pos = nodespassed;
-              localcol01[pos] = (colmap01.LID(cgid));
-              localcol11[pos] = (colmap11.LID(cgid));
+              localcol01[pos] = (colmap01.lid(cgid));
+              localcol11[pos] = (colmap11.lid(cgid));
               nodespassed++;
             }
           }
@@ -143,13 +143,13 @@ namespace FLD
             int rowblock = row_block(lrow, rgid);
             if (rowblock == 0)
             {
-              rlid0 = rowmap00.LID(rgid);
-              rlid1 = rowmap01.LID(rgid);
+              rlid0 = rowmap00.lid(rgid);
+              rlid1 = rowmap01.lid(rgid);
             }
             else
             {
-              rlid0 = rowmap10.LID(rgid);
-              rlid1 = rowmap11.LID(rgid);
+              rlid0 = rowmap10.lid(rgid);
+              rlid1 = rowmap11.lid(rgid);
             }
 #ifdef FOUR_C_ENABLE_ASSERTIONS
             if (rlid0 < 0) FOUR_C_THROW("Sparse matrix A does not have global row {}", rgid);

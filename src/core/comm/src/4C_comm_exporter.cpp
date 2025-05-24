@@ -162,7 +162,7 @@ void Core::Communication::Exporter::broadcast(
 
 void Core::Communication::Exporter::construct_exporter()
 {
-  if (source_map().SameAs(target_map())) return;
+  if (source_map().same_as(target_map())) return;
 
   // allocate a sendplan array and init to zero
   // send_plan():
@@ -174,15 +174,17 @@ void Core::Communication::Exporter::construct_exporter()
   // To build these plans, everybody has to communicate what he has and wants:
   // bundle this info to save on communication:
   int sizes[2];
-  sizes[0] = source_map().NumMyElements();
-  sizes[1] = target_map().NumMyElements();
+  sizes[0] = source_map().num_my_elements();
+  sizes[1] = target_map().num_my_elements();
   const int sendsize = sizes[0] + sizes[1];
   std::vector<int> sendbuff;
   sendbuff.reserve(sendsize);
-  std::copy(source_map().MyGlobalElements(),
-      source_map().MyGlobalElements() + source_map().NumMyElements(), std::back_inserter(sendbuff));
-  std::copy(target_map().MyGlobalElements(),
-      target_map().MyGlobalElements() + target_map().NumMyElements(), std::back_inserter(sendbuff));
+  std::copy(source_map().my_global_elements(),
+      source_map().my_global_elements() + source_map().num_my_elements(),
+      std::back_inserter(sendbuff));
+  std::copy(target_map().my_global_elements(),
+      target_map().my_global_elements() + target_map().num_my_elements(),
+      std::back_inserter(sendbuff));
 
   for (int proc = 0; proc < num_proc(); ++proc)
   {
@@ -203,9 +205,9 @@ void Core::Communication::Exporter::construct_exporter()
       for (int i = 0; i < recvsizes[1]; ++i)
       {
         const int gid = want[i];
-        if (source_map().MyGID(gid))
+        if (source_map().my_gid(gid))
         {
-          const int lid = source_map().LID(gid);
+          const int lid = source_map().lid(gid);
           send_plan()[proc].insert(lid);
         }
       }
@@ -241,7 +243,7 @@ void Core::Communication::Exporter::generic_export(ExporterHelper& helper)
 
     for (int lid : send_plan()[tproc])
     {
-      const int gid = source_map().GID(lid);
+      const int gid = source_map().gid(lid);
       if (helper.pack_object(gid, sendblock)) sendgid.push_back(gid);
     }
 

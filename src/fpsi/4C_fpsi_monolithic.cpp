@@ -219,7 +219,7 @@ FPSI::Monolithic::Monolithic(MPI_Comm comm, const Teuchos::ParameterList& fpsidy
   // Check if FSI-Interface exists and set flag
   // Will be used to jump over all sections, which are just for FSI condensation procedure required!
 
-  if (fluid_field()->interface()->map(FLD::Utils::MapExtractor::cond_fsi)->NumGlobalElements())
+  if (fluid_field()->interface()->map(FLD::Utils::MapExtractor::cond_fsi)->num_global_elements())
   {
     FSI_Interface_exists_ = true;
     if (Core::Communication::my_mpi_rank(comm) == 0)
@@ -313,7 +313,7 @@ void FPSI::Monolithic::setup_system_fsi()
   // map at the structural side. This enables us to use just one
   // interface dof map for all fields and have just one transfer
   // operator from the interface map to the full field map.
-  if (not coupsf_fsi.master_dof_map()->SameAs(*coupsa_fsi.master_dof_map()))
+  if (not coupsf_fsi.master_dof_map()->same_as(*coupsa_fsi.master_dof_map()))
     FOUR_C_THROW("fsi structure interface dof maps do not match");
 
   return;
@@ -1585,11 +1585,11 @@ void FPSI::Monolithic::fpsifd_check()
 
   for (int i_loc = 0; i_loc < dofs; ++i_loc)  // loop over columns
   {
-    int i = dof_row_map()->GID(i_loc);
-    int im1 = dof_row_map()->GID(i_loc - 1);
-    int ip1 = dof_row_map()->GID(i_loc + 1);
+    int i = dof_row_map()->gid(i_loc);
+    int im1 = dof_row_map()->gid(i_loc - 1);
+    int ip1 = dof_row_map()->gid(i_loc + 1);
     std::cout << i << "... " << std::flush;
-    if (combined_dbc_map()->MyGID(i) or fluid_field()->interface()->fsi_cond_map()->MyGID(i))
+    if (combined_dbc_map()->my_gid(i) or fluid_field()->interface()->fsi_cond_map()->my_gid(i))
     {
       iterinc->replace_global_value(i, 0, 0.0);
     }
@@ -1622,13 +1622,13 @@ void FPSI::Monolithic::fpsifd_check()
     int* index = &i;
     for (int j_loc = 0; j_loc < dofs; ++j_loc)  // loop over rows
     {
-      int j = dof_row_map()->GID(j_loc);
+      int j = dof_row_map()->gid(j_loc);
       double value = (rhs_copy)[j_loc];
       stiff_approx->insert_global_values(j, 1, &value, index);
     }  // j-loop (rows)
 
-    if (not combined_dbc_map()->MyGID(i) and
-        not fluid_field()->interface()->fsi_cond_map()->MyGID(i))
+    if (not combined_dbc_map()->my_gid(i) and
+        not fluid_field()->interface()->fsi_cond_map()->my_gid(i))
       iterinc->replace_global_value(i, 0, -delta);
 
     iterinc->replace_global_value(im1, 0, 0.0);
@@ -1646,7 +1646,7 @@ void FPSI::Monolithic::fpsifd_check()
   // calc error (subtraction of sparse_crs and stiff_approx_sparse)
   for (int i_loc = 0; i_loc < dofs; i_loc++)
   {
-    int i = dof_row_map()->GID(i_loc);
+    int i = dof_row_map()->gid(i_loc);
     int length;
     int numentries = sparse_crs.num_global_entries(i);
     std::vector<double> values(numentries);
@@ -1667,16 +1667,16 @@ void FPSI::Monolithic::fpsifd_check()
   double error_max = 0.0;
   for (int i_loc = 0; i_loc < dofs; ++i_loc)
   {
-    int i = dof_row_map()->GID(i_loc);
-    if (not combined_dbc_map()->MyGID(i) and
-        not fluid_field()->interface()->fsi_cond_map()->MyGID(
+    int i = dof_row_map()->gid(i_loc);
+    if (not combined_dbc_map()->my_gid(i) and
+        not fluid_field()->interface()->fsi_cond_map()->my_gid(
             i))  // only if there is no dirichlet value on dof and dof is not condensed
     {
       for (int j_loc = 0; j_loc < dofs; ++j_loc)
       {
-        int j = dof_row_map()->GID(j_loc);
-        if (not combined_dbc_map()->MyGID(j) and
-            not fluid_field()->interface()->fsi_cond_map()->MyGID(j))
+        int j = dof_row_map()->gid(j_loc);
+        if (not combined_dbc_map()->my_gid(j) and
+            not fluid_field()->interface()->fsi_cond_map()->my_gid(j))
         {
           double stiff_approx_ij = 0.0;
           double sparse_ij = 0.0;
@@ -1792,7 +1792,7 @@ void FPSI::Monolithic::extract_columnsfrom_sparse(Core::LinAlg::SparseMatrix& sr
   int rows = src.num_global_rows();
   for (int row = 0; row < rows; ++row)
   {
-    int g_row = src.range_map().GID(row);
+    int g_row = src.range_map().gid(row);
     int numentries;
     int length = src.num_global_entries(g_row);
     std::vector<double> values(length);
@@ -1800,7 +1800,7 @@ void FPSI::Monolithic::extract_columnsfrom_sparse(Core::LinAlg::SparseMatrix& sr
     src.extract_global_row_copy(g_row, length, numentries, values.data(), indices.data());
     for (int col = 0; col < length; ++col)
     {
-      if (colmap.LID(indices[col]) != -1)
+      if (colmap.lid(indices[col]) != -1)
       {
         dst.insert_global_values(g_row, 1, &values[col], &indices[col]);
       }

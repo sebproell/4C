@@ -338,7 +338,7 @@ void Mortar::STRATEGY::FactoryMT::build_interfaces(const Teuchos::ParameterList&
   // maximum dof number in discretization
   // later we want to create NEW Lagrange multiplier degrees of
   // freedom, which of course must not overlap with displacement dofs
-  int maxdof = discret().dof_row_map()->MaxAllGID();
+  int maxdof = discret().dof_row_map()->max_all_gid();
 
   for (int i = 0; i < (int)contactconditions.size(); ++i)
   {
@@ -467,7 +467,7 @@ void Mortar::STRATEGY::FactoryMT::build_interfaces(const Teuchos::ParameterList&
       {
         int gid = (*nodeids)[k];
         // do only nodes that I have in my discretization
-        if (!discret_ptr_->node_col_map()->MyGID(gid)) continue;
+        if (!discret_ptr_->node_col_map()->my_gid(gid)) continue;
         Core::Nodes::Node* node = discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
 

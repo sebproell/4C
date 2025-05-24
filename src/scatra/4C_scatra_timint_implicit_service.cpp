@@ -348,7 +348,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
       discret_->evaluate_condition(params, integratedshapefunc, "ScaTraFluxCalc", icond);
 
       // compute normal boundary fluxes
-      for (int idof = 0; idof < dofrowmap.NumMyElements(); ++idof)
+      for (int idof = 0; idof < dofrowmap.num_my_elements(); ++idof)
         (*normalfluxes)[idof] = (*trueresidual_boundary)[idof] / (*integratedshapefunc)[idof];
 
       // get value of boundary integral on this processor
@@ -407,9 +407,9 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> ScaTra::ScaTraTimIntImpl::cal
       for (int idof = 0; idof < discret_->num_dof(0, actnode); ++idof)
       {
         const int dofgid = discret_->dof(0, actnode, idof);
-        if (dofrowmap.MyGID(dofgid))
+        if (dofrowmap.my_gid(dofgid))
         {
-          const int doflid = dofrowmap.LID(dofgid);
+          const int doflid = dofrowmap.lid(dofgid);
 
           // compute integral value for every degree of freedom
           normfluxintegral[idof] += (*trueresidual_boundary)[doflid];
@@ -691,7 +691,7 @@ void ScaTra::ScaTraTimIntImpl::compute_density()
 
       // global and local dof ID
       const int globaldofid = nodedofs[k];
-      const int localdofid = phiafnp()->get_map().LID(globaldofid);
+      const int localdofid = phiafnp()->get_map().lid(globaldofid);
       if (localdofid < 0) FOUR_C_THROW("Local dof ID not found in dof map!");
 
       // add contribution of scalar k to nodal density value
@@ -704,7 +704,7 @@ void ScaTra::ScaTraTimIntImpl::compute_density()
     // position of the last dof this way, all nodal density values will be correctly extracted in
     // the fluid algorithm
     const int globaldofid = nodedofs[numdof - 1];
-    const int localdofid = phiafnp()->get_map().LID(globaldofid);
+    const int localdofid = phiafnp()->get_map().lid(globaldofid);
     if (localdofid < 0) FOUR_C_THROW("Local dof ID not found in dof map!");
 
     int err = densafnp_->replace_local_value(localdofid, 0, density);
@@ -859,9 +859,9 @@ void ScaTra::ScaTraTimIntImpl::add_flux_approx_to_parameter_list(Teuchos::Parame
     {
       Core::Nodes::Node* actnode = discret_->l_row_node(i);
       int dofgid = discret_->dof(0, actnode, k);
-      fluxk->ReplaceMyValue(i, 0, ((*flux)(0))[(flux->get_map()).LID(dofgid)]);
-      fluxk->ReplaceMyValue(i, 1, ((*flux)(1))[(flux->get_map()).LID(dofgid)]);
-      fluxk->ReplaceMyValue(i, 2, ((*flux)(2))[(flux->get_map()).LID(dofgid)]);
+      fluxk->ReplaceMyValue(i, 0, ((*flux)(0))[(flux->get_map()).lid(dofgid)]);
+      fluxk->ReplaceMyValue(i, 1, ((*flux)(1))[(flux->get_map()).lid(dofgid)]);
+      fluxk->ReplaceMyValue(i, 2, ((*flux)(2))[(flux->get_map()).lid(dofgid)]);
     }
     discret_->add_multi_vector_to_parameter_list(p, name, fluxk);
   }
@@ -1170,9 +1170,9 @@ void ScaTra::ScaTraTimIntImpl::collect_output_flux_data(
       Core::Nodes::Node* actnode = discret_->l_row_node(i);
       int dofgid = discret_->dof(0, actnode, writefluxid - 1);
       // get value for each component of flux vector
-      double xvalue = ((*flux)(0))[(flux->get_map()).LID(dofgid)];
-      double yvalue = ((*flux)(1))[(flux->get_map()).LID(dofgid)];
-      double zvalue = ((*flux)(2))[(flux->get_map()).LID(dofgid)];
+      double xvalue = ((*flux)(0))[(flux->get_map()).lid(dofgid)];
+      double yvalue = ((*flux)(1))[(flux->get_map()).lid(dofgid)];
+      double zvalue = ((*flux)(2))[(flux->get_map()).lid(dofgid)];
       // care for the slave nodes of rotationally symm. periodic boundary conditions
       double rotangle(0.0);  // already converted to radians
       bool havetorotate = FLD::is_slave_node_of_rot_sym_pbc(actnode, rotangle);
@@ -1223,7 +1223,8 @@ void ScaTra::ScaTraTimIntImpl::output_integr_reac(const int num) const
     // global integral of reaction terms
     std::vector<double> intreacterm(num_scal(), 0.0);
     for (int k = 0; k < num_scal(); ++k)
-      Core::Communication::sum_all(&((*myreacnp)[k]), &intreacterm[k], 1, phinp_->get_map().Comm());
+      Core::Communication::sum_all(
+          &((*myreacnp)[k]), &intreacterm[k], 1, phinp_->get_map().get_comm());
 
     // print out values
     if (myrank_ == 0)
@@ -1328,9 +1329,9 @@ void ScaTra::ScaTraTimIntImpl::avm3_preparation()
 
     // complete scale-separation matrix and check maps
     Sep_->complete(Sep_->domain_map(), Sep_->range_map());
-    if (!Sep_->row_map().SameAs(sysmat_sd_->row_map())) FOUR_C_THROW("rowmap not equal");
-    if (!Sep_->range_map().SameAs(sysmat_sd_->range_map())) FOUR_C_THROW("rangemap not equal");
-    if (!Sep_->domain_map().SameAs(sysmat_sd_->domain_map())) FOUR_C_THROW("domainmap not equal");
+    if (!Sep_->row_map().same_as(sysmat_sd_->row_map())) FOUR_C_THROW("rowmap not equal");
+    if (!Sep_->range_map().same_as(sysmat_sd_->range_map())) FOUR_C_THROW("rangemap not equal");
+    if (!Sep_->domain_map().same_as(sysmat_sd_->domain_map())) FOUR_C_THROW("domainmap not equal");
 
     // precomputation of unscaled diffusivity matrix:
     // either two-sided S^T*M*S: multiply M by S from left- and right-hand side
@@ -1618,7 +1619,7 @@ ScaTra::ScaTraTimIntImpl::compute_superconvergent_patch_recovery(
   // Warning, this is only tested so far for 1 scalar field!!!
 
   // dependent on the desired projection, just remove this line
-  if (not state->get_map().SameAs(*discret_->dof_row_map()))
+  if (not state->get_map().same_as(*discret_->dof_row_map()))
     FOUR_C_THROW("input map is not a dof row map of the fluid");
 
   // set given state for element evaluation
@@ -1809,10 +1810,10 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
   double maxabserr(0.);
   double maxrelerr(0.);
 
-  for (int colgid = 0; colgid <= sysmat_original->col_map().MaxAllGID(); ++colgid)
+  for (int colgid = 0; colgid <= sysmat_original->col_map().max_all_gid(); ++colgid)
   {
     // check whether current column index is a valid global column index and continue loop if not
-    int collid(sysmat_original->col_map().LID(colgid));
+    int collid(sysmat_original->col_map().lid(colgid));
     int maxcollid(-1);
     Core::Communication::max_all(&collid, &maxcollid, 1, discret_->get_comm());
     if (maxcollid < 0) continue;
@@ -1821,7 +1822,7 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
     phinp_->update(1., phinp_original, 0.);
 
     // impose perturbation
-    if (phinp_->get_map().MyGID(colgid))
+    if (phinp_->get_map().my_gid(colgid))
     {
       if (phinp_->sum_into_global_value(colgid, 0, fdcheckeps_))
         FOUR_C_THROW(
@@ -1846,10 +1847,10 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
     // Note that we still need to evaluate the first comparison as well. For small entries in the
     // system matrix, the second comparison might yield good agreement in spite of the entries being
     // wrong!
-    for (int rowlid = 0; rowlid < discret_->dof_row_map()->NumMyElements(); ++rowlid)
+    for (int rowlid = 0; rowlid < discret_->dof_row_map()->num_my_elements(); ++rowlid)
     {
       // get global index of current matrix row
-      const int rowgid = sysmat_original->col_map().GID(rowlid);
+      const int rowgid = sysmat_original->col_map().gid(rowlid);
       if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
       // get relevant entry in current row of original system matrix
@@ -1862,7 +1863,7 @@ void ScaTra::ScaTraTimIntImpl::fd_check()
           rowlid, length, numentries, values.data(), indices.data());
       for (int ientry = 0; ientry < length; ++ientry)
       {
-        if (sysmat_original->col_map().GID(indices[ientry]) == colgid)
+        if (sysmat_original->col_map().gid(indices[ientry]) == colgid)
         {
           entry = values[ientry];
           break;
@@ -2913,7 +2914,7 @@ int ScaTra::ScalarHandler::num_dof_per_node_in_condition(
   for (int nodegid : *nodegids)
   {
     // if on this proc
-    if (discret.node_row_map()->MyGID(nodegid))
+    if (discret.node_row_map()->my_gid(nodegid))
     {
       // get node
       Core::Nodes::Node* curnode = discret.g_node(nodegid);

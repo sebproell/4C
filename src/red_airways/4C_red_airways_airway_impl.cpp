@@ -984,7 +984,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
           // -----------------------------------------------------------------------------
           // get the local id of the node to whom the bc is prescribed
           // -----------------------------------------------------------------------------
-          int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+          int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
           if (local_id < 0)
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
@@ -1103,7 +1103,7 @@ void Discret::Elements::AirwayImpl<distype>::evaluate_terminal_bc(RedAirway* ele
           // get the local id of the node to whom the bc is prescribed
           // -------------------------------------------------------------
 
-          int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+          int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
           if (local_id < 0)
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),

@@ -314,8 +314,8 @@ void Core::FE::Discretization::build_node_to_element_pointers()
 int Core::FE::Discretization::assign_degrees_of_freedom(int start)
 {
   if (!filled()) FOUR_C_THROW("Filled()==false");
-  if (!node_row_map()->UniqueGIDs()) FOUR_C_THROW("Nodal row map is not unique");
-  if (!element_row_map()->UniqueGIDs()) FOUR_C_THROW("Element row map is not unique");
+  if (!node_row_map()->unique_gids()) FOUR_C_THROW("Nodal row map is not unique");
+  if (!element_row_map()->unique_gids()) FOUR_C_THROW("Element row map is not unique");
 
   // Set the havedof flag before dofs are assigned. Some dof set
   // implementations do query the discretization after the assignment has been

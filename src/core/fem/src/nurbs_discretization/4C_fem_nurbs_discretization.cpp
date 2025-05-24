@@ -184,7 +184,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
     }
     std::shared_ptr<Core::LinAlg::Map> dbcmap =
         std::make_shared<Core::LinAlg::Map>(-1, nummyelements, myglobalelements,
-            discret.dof_row_map()->IndexBase(), discret.dof_row_map()->Comm());
+            discret.dof_row_map()->index_base(), discret.dof_row_map()->get_comm());
     // build the map extractor of Dirichlet-conditioned and free DOFs
     auxdbcmapextractor = Core::LinAlg::MapExtractor(*(discret.dof_row_map()), dbcmap);
   }
@@ -204,7 +204,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
       myglobalelements = dbcgidsv.data();
     }
     dbccolmap = std::make_shared<Core::LinAlg::Map>(-1, nummyelements, myglobalelements,
-        nurbs_dis.dof_col_map()->IndexBase(), discret.dof_row_map()->Comm());
+        nurbs_dis.dof_col_map()->index_base(), discret.dof_row_map()->get_comm());
   }
 
   // -------------------------------------------------------------------
@@ -214,7 +214,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
   // -------------------------------------------------------------------
   const std::shared_ptr<const Core::LinAlg::Map> dofrowmap = auxdbcmapextractor.cond_map();
 
-  if (dofrowmap->NumGlobalElements() == 0) return;  // no dbc gids ->leave
+  if (dofrowmap->num_global_elements() == 0) return;  // no dbc gids ->leave
 
   // read information from condition
   const std::vector<int>* nodeids = cond.get_nodes();
@@ -353,7 +353,7 @@ void Core::FE::Utils::DbcNurbs::do_dirichlet_condition(const Teuchos::ParameterL
       for (unsigned j = 0; j < lm_full.size(); ++j)
       {
         int gid = lm_full[j];
-        if (dbccolmap->MyGID(gid))
+        if (dbccolmap->my_gid(gid))
         {
           lm.push_back(gid);
           lmowner.push_back(lmowner_full[j]);

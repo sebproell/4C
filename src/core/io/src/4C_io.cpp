@@ -150,12 +150,12 @@ void Core::IO::DiscretizationReader::read_serial_dense_matrix(
 
 
   Communication::UnpackBuffer buffer(*data);
-  for (int i = 0; i < elemap->NumMyElements(); ++i)
+  for (int i = 0; i < elemap->num_my_elements(); ++i)
   {
     std::shared_ptr<Core::LinAlg::SerialDenseMatrix> matrix =
         std::make_shared<Core::LinAlg::SerialDenseMatrix>();
     extract_from_pack(buffer, *matrix);
-    (mapdata)[elemap->GID(i)] = matrix;
+    (mapdata)[elemap->gid(i)] = matrix;
   }
 }
 
@@ -862,7 +862,7 @@ void Core::IO::DiscretizationWriter::write_multi_vector(
 
     valuename = groupname.str() + valuename;
 
-    const Epetra_BlockMapData* mapdata = vec.get_map().DataPtr();
+    const Epetra_BlockMapData* mapdata = vec.get_map().get_data_ptr();
     std::map<const Epetra_BlockMapData*, std::string>::const_iterator m = mapcache_.find(mapdata);
     if (m != mapcache_.end())
     {
@@ -873,7 +873,7 @@ void Core::IO::DiscretizationWriter::write_multi_vector(
     {
       const hsize_t mapsize = vec.MyLength();
       idname = name + ".ids";
-      int* ids = vec.get_map().MyGlobalElements();
+      int* ids = vec.get_map().my_global_elements();
       if (size != 0)
       {
         const herr_t make_status =
@@ -985,7 +985,7 @@ void Core::IO::DiscretizationWriter::write_vector(const std::string name,
 
     valuename = groupname.str() + valuename;
 
-    const Epetra_BlockMapData* mapdata = elemap.DataPtr();
+    const Epetra_BlockMapData* mapdata = elemap.get_data_ptr();
     std::map<const Epetra_BlockMapData*, std::string>::const_iterator m = mapcache_.find(mapdata);
     if (m != mapcache_.end())
     {
@@ -994,9 +994,9 @@ void Core::IO::DiscretizationWriter::write_vector(const std::string name,
     }
     else
     {
-      const hsize_t mapsize = elemap.NumMyElements();
+      const hsize_t mapsize = elemap.num_my_elements();
       idname = name + ".ids";
-      int* ids = elemap.MyGlobalElements();
+      int* ids = elemap.my_global_elements();
       const herr_t make_status =
           H5LTmake_dataset_int(resultgroup_, idname.c_str(), 1, &mapsize, ids);
       if (make_status < 0) FOUR_C_THROW("Failed to create dataset in HDF-resultfile");
@@ -1114,7 +1114,7 @@ void Core::IO::DiscretizationWriter::write_mesh(const int step, const double tim
             Core::Communication::my_mpi_rank(get_comm()));
     }
 
-    int max_nodeid = dis_->node_row_map()->MaxAllGID();
+    int max_nodeid = dis_->node_row_map()->max_all_gid();
 
     // ... write other mesh information
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
@@ -1126,7 +1126,7 @@ void Core::IO::DiscretizationWriter::write_mesh(const int step, const double tim
                               << "    num_nd = " << dis_->num_global_nodes() << "\n"
                               << "    max_nodeid = " << max_nodeid << "\n"
                               << "    num_ele = " << dis_->num_global_elements() << "\n"
-                              << "    num_dof = " << dis_->dof_row_map(0)->NumGlobalElements()
+                              << "    num_dof = " << dis_->dof_row_map(0)->num_global_elements()
                               << "\n"
                               << "    num_dim = " << dis_->n_dim() << "\n\n";
 
@@ -1176,7 +1176,7 @@ void Core::IO::DiscretizationWriter::write_mesh(
                               << "    step = " << step << "\n\n"
                               << "    num_nd = " << dis_->num_global_nodes() << "\n"
                               << "    num_ele = " << dis_->num_global_elements() << "\n"
-                              << "    num_dof = " << dis_->dof_row_map(0)->NumGlobalElements()
+                              << "    num_dof = " << dis_->dof_row_map(0)->num_global_elements()
                               << "\n"
                               << "    num_dim = " << dis_->n_dim() << "\n\n";
 
@@ -1250,7 +1250,7 @@ void Core::IO::DiscretizationWriter::write_only_nodes_in_new_field_group_to_cont
      * nodes is important more exactly: the maximum nodal id is used to
      * determine number of particles during output unused particles are
      * located at the origin and are waiting for activation */
-    int max_nodeid = dis_->node_row_map()->MaxAllGID();
+    int max_nodeid = dis_->node_row_map()->max_all_gid();
 
     // ... write other mesh information
     if (Core::Communication::my_mpi_rank(get_comm()) == 0)
@@ -1264,7 +1264,7 @@ void Core::IO::DiscretizationWriter::write_only_nodes_in_new_field_group_to_cont
                               << "    num_nd = " << 0 << "\n"
                               << "    max_nodeid = " << max_nodeid << "\n"
                               << "    num_ele = " << 0 << "\n"
-                              << "    num_dof = " << dis_->dof_row_map(0)->NumGlobalElements()
+                              << "    num_dof = " << dis_->dof_row_map(0)->num_global_elements()
                               << "\n"
                               << "    num_dim = " << dis_->n_dim() << "\n\n";
 
@@ -1371,14 +1371,14 @@ void Core::IO::DiscretizationWriter::write_node_data(bool writeowner)
     const Core::LinAlg::Map* noderowmap = dis_->node_row_map();
     if (writeowner == true)
     {
-      for (int i = 0; i < noderowmap->NumMyElements(); ++i)
+      for (int i = 0; i < noderowmap->num_my_elements(); ++i)
       {
         // write owner of every node
         dis_->l_row_node(i)->vis_owner(names);
       }
     }
 
-    for (int i = 0; i < noderowmap->NumMyElements(); ++i)
+    for (int i = 0; i < noderowmap->num_my_elements(); ++i)
     {
       // get names and dimensions from every node
       dis_->l_row_node(i)->vis_names(names);
@@ -1402,7 +1402,7 @@ void Core::IO::DiscretizationWriter::write_node_data(bool writeowner)
       // MultiVector stuff from the nodes is put in
       Core::LinAlg::MultiVector<double> sysdata(*noderowmap, dimension, true);
 
-      for (int i = 0; i < noderowmap->NumMyElements(); ++i)
+      for (int i = 0; i < noderowmap->num_my_elements(); ++i)
       {
         // zero is the default value if not all nodes write the same node data
         for (int idim = 0; idim < dimension; ++idim) nodedata[idim] = 0.0;

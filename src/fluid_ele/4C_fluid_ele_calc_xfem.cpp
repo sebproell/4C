@@ -4454,7 +4454,7 @@ namespace Discret
         int gdof = lm[idof];
 
         // f^i = ( N^i, t ) = ( N^i, (-pI+2mu*eps(u))*n )
-        (iforcecol)[dofcolmap->LID(gdof)] += iforce[idof];
+        (iforcecol)[dofcolmap->lid(gdof)] += iforce[idof];
       }
 
       return;

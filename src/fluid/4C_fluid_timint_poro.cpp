@@ -131,7 +131,7 @@ void FLD::TimIntPoro::set_initial_porosity_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
           // evaluate component k of spatial function
           int err = init_porosity_field_->replace_local_values(1, &initialval, &doflid);
           if (err != 0) FOUR_C_THROW("dof not on proc");

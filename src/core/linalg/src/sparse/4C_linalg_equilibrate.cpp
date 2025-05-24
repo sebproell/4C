@@ -105,7 +105,7 @@ void Core::LinAlg::Equilibration::compute_inv_symmetry(
       Core::LinAlg::create_vector(matrix.range_map(), true);
   matrix.extract_diagonal_copy(*diag);
 
-  for (int my_row = 0; my_row < diag->get_map().NumMyElements(); ++my_row)
+  for (int my_row = 0; my_row < diag->get_map().num_my_elements(); ++my_row)
   {
     (invsymmetry)[my_row] = 1.0 / std::sqrt((*diag)[my_row]);
   }
@@ -270,7 +270,7 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
           const Core::LinAlg::SparseMatrix& matrix = blocksparsematrix->matrix(i, j);
 
           // loop over all rows of current matrix block
-          for (int irow = 0; irow < matrix.row_map().NumMyElements(); ++irow)
+          for (int irow = 0; irow < matrix.row_map().num_my_elements(); ++irow)
           {
             // determine length of current matrix row
             const int length = matrix.num_my_entries(irow);
@@ -343,7 +343,7 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
           const Core::LinAlg::SparseMatrix& matrix = blocksparsematrix->matrix(i, j);
 
           // loop over all rows of current matrix block
-          for (int irow = 0; irow < matrix.row_map().NumMyElements(); ++irow)
+          for (int irow = 0; irow < matrix.row_map().num_my_elements(); ++irow)
           {
             // determine length of current matrix row
             const int length = matrix.num_my_entries(irow);
@@ -361,7 +361,7 @@ void Core::LinAlg::EquilibrationBlock::equilibrate_matrix(
               // add entries of current matrix row to column sums
               for (int ientry = 0; ientry < numentries; ++ientry)
                 invcolsums->sum_into_global_value(
-                    matrix.col_map().GID(indices[ientry]), 0, std::abs(values[ientry]));
+                    matrix.col_map().gid(indices[ientry]), 0, std::abs(values[ientry]));
             }
           }
         }

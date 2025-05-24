@@ -370,8 +370,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
       kss, str_gni_dofs, dummy_map1, gdisprowmap_, dummy_map2, kss_ni, dummy1, tmp, dummy2);
 
   // this should be a split in rows, so that two blocks should have zero columns
-  if (dummy1->domain_map().NumGlobalElements() != 0 ||
-      dummy2->domain_map().NumGlobalElements() != 0)
+  if (dummy1->domain_map().num_global_elements() != 0 ||
+      dummy2->domain_map().num_global_elements() != 0)
     FOUR_C_THROW("this split should only split rows, no columns expected for this matrix blocks");
 
   // reset
@@ -385,8 +385,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
       tmp, gmdofrowmap_, dummy_map1, gdisprowmap_, dummy_map2, kss_m, dummy1, kss_a, dummy2);
 
   // this should be a split in rows, so that two blocks should have zero columns
-  if (dummy1->domain_map().NumGlobalElements() != 0 ||
-      dummy2->domain_map().NumGlobalElements() != 0)
+  if (dummy1->domain_map().num_global_elements() != 0 ||
+      dummy2->domain_map().num_global_elements() != 0)
     FOUR_C_THROW("this split should only split rows, no columns expected for this matrix blocks");
 
   // reset
@@ -407,8 +407,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
       kst, str_gni_dofs, dummy_map1, thermo_all_dofs, dummy_map2, kst_ni, dummy1, tmp, dummy2);
 
   // this should be a split in rows, so that two blocks should have zero columns
-  if (dummy1->domain_map().NumGlobalElements() != 0 ||
-      dummy2->domain_map().NumGlobalElements() != 0)
+  if (dummy1->domain_map().num_global_elements() != 0 ||
+      dummy2->domain_map().num_global_elements() != 0)
     FOUR_C_THROW("this split should only split rows, no columns expected for this matrix blocks");
 
   // reset
@@ -422,8 +422,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
       tmp, gmdofrowmap_, dummy_map1, thermo_all_dofs, dummy_map2, kst_m, dummy1, kst_a, dummy2);
 
   // this should be a split in rows, so that two blocks should have zero columns
-  if (dummy1->domain_map().NumGlobalElements() != 0 ||
-      dummy2->domain_map().NumGlobalElements() != 0)
+  if (dummy1->domain_map().num_global_elements() != 0 ||
+      dummy2->domain_map().num_global_elements() != 0)
     FOUR_C_THROW("this split should only split rows, no columns expected for this matrix blocks");
 
   // reset
@@ -444,8 +444,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
       kts, thermo_gni_dofs, dummy_map1, gdisprowmap_, dummy_map2, kts_ni, dummy1, tmp, dummy2);
 
   // this should be a split in rows, so that two blocks should have zero columns
-  if (dummy1->domain_map().NumGlobalElements() != 0 ||
-      dummy2->domain_map().NumGlobalElements() != 0)
+  if (dummy1->domain_map().num_global_elements() != 0 ||
+      dummy2->domain_map().num_global_elements() != 0)
     FOUR_C_THROW("this split should only split rows, no columns expected for this matrix blocks");
 
   // reset
@@ -459,8 +459,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
       tmp, thermo_m_dofs, dummy_map1, gdisprowmap_, dummy_map2, kts_m, dummy1, kts_a, dummy2);
 
   // this should be a split in rows, so that two blocks should have zero columns
-  if (dummy1->domain_map().NumGlobalElements() != 0 ||
-      dummy2->domain_map().NumGlobalElements() != 0)
+  if (dummy1->domain_map().num_global_elements() != 0 ||
+      dummy2->domain_map().num_global_elements() != 0)
     FOUR_C_THROW("this split should only split rows, no columns expected for this matrix blocks");
 
   // reset
@@ -481,8 +481,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
       ktt, thermo_gni_dofs, dummy_map1, thermo_all_dofs, dummy_map2, ktt_ni, dummy1, tmp, dummy2);
 
   // this should be a split in rows, so that two blocks should have zero columns
-  if (dummy1->domain_map().NumGlobalElements() != 0 ||
-      dummy2->domain_map().NumGlobalElements() != 0)
+  if (dummy1->domain_map().num_global_elements() != 0 ||
+      dummy2->domain_map().num_global_elements() != 0)
     FOUR_C_THROW("this split should only split rows, no columns expected for this matrix blocks");
 
   // reset
@@ -496,8 +496,8 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
       tmp, thermo_m_dofs, dummy_map1, thermo_all_dofs, dummy_map2, ktt_m, dummy1, ktt_a, dummy2);
 
   // this should be a split in rows, so that two blocks should have zero columns
-  if (dummy1->domain_map().NumGlobalElements() != 0 ||
-      dummy2->domain_map().NumGlobalElements() != 0)
+  if (dummy1->domain_map().num_global_elements() != 0 ||
+      dummy2->domain_map().num_global_elements() != 0)
     FOUR_C_THROW("this split should only split rows, no columns expected for this matrix blocks");
 
   // reset
@@ -552,7 +552,7 @@ void CONTACT::LagrangeStrategyTsi::evaluate(
   // now we have added the additional linearizations.
   // if there are no active nodes, we can leave now
 
-  if (gactivenodes_->NumGlobalElements() == 0)
+  if (gactivenodes_->num_global_elements() == 0)
   {
     sysmat->reset();
     sysmat->assign(0, 0, Core::LinAlg::DataAccess::Copy, *kss);
@@ -809,8 +809,8 @@ void CONTACT::Utils::add_vector(
   if (src.global_length() == 0) return;
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  for (int i = 0; i < src.get_map().NumMyElements(); ++i)
-    if ((dst.get_map().LID(src.get_map().GID(i))) < 0)
+  for (int i = 0; i < src.get_map().num_my_elements(); ++i)
+    if ((dst.get_map().lid(src.get_map().gid(i))) < 0)
       FOUR_C_THROW("src is not a vector on a sub-map of dst");
 #endif
 
@@ -832,7 +832,7 @@ void CONTACT::LagrangeStrategyTsi::recover_coupled(
     z_thermo_old = std::make_shared<Core::LinAlg::Vector<double>>(*z_thermo_);
 
   // recover contact LM
-  if (gactivedofs_->NumGlobalElements() > 0)
+  if (gactivedofs_->num_global_elements() > 0)
   {
     // do we have everything we need?
     if (rs_a_ == nullptr || kss_a_ == nullptr || kst_a_ == nullptr || dinvA_ == nullptr)
@@ -918,15 +918,15 @@ void CONTACT::LagrangeStrategyTsi::store_nodal_quantities(
         if (vectorglobal != nullptr) Core::LinAlg::export_to(*vectorglobal, *vectorinterface);
 
         // loop over all slave nodes (column or row) on the current interface
-        for (int j = 0; j < snodemap->NumMyElements(); ++j)
+        for (int j = 0; j < snodemap->num_my_elements(); ++j)
         {
-          int gid = snodemap->GID(j);
+          int gid = snodemap->gid(j);
           Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
           if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
           Node* cnode = dynamic_cast<Node*>(node);
 
           cnode->tsi_data().thermo_lm() =
-              (*vectorinterface)[(vectorinterface->get_map()).LID(cnode->dofs()[0])];
+              (*vectorinterface)[(vectorinterface->get_map()).lid(cnode->dofs()[0])];
         }
       }
       break;

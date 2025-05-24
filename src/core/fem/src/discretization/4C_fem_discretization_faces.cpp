@@ -1010,7 +1010,7 @@ const Core::LinAlg::Map* Core::FE::DiscretizationFaces::face_col_map() const
 int Core::FE::DiscretizationFaces::num_global_faces() const
 {
   FOUR_C_ASSERT(filled(), "fill_complete() must be called before call to NumGlobalFaces()");
-  return face_row_map()->NumGlobalElements();
+  return face_row_map()->num_global_elements();
 }
 
 
@@ -1020,7 +1020,7 @@ int Core::FE::DiscretizationFaces::num_global_faces() const
 int Core::FE::DiscretizationFaces::num_my_row_faces() const
 {
   FOUR_C_ASSERT(filled(), "fill_complete() must be called before call to NumMyRowFaces()");
-  return face_row_map()->NumMyElements();
+  return face_row_map()->num_my_elements();
 }
 
 
@@ -1030,7 +1030,7 @@ int Core::FE::DiscretizationFaces::num_my_row_faces() const
 int Core::FE::DiscretizationFaces::num_my_col_faces() const
 {
   if (filled())
-    return face_col_map()->NumMyElements();
+    return face_col_map()->num_my_elements();
   else
     return (int)faces_.size();
 }

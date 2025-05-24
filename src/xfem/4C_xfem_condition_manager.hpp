@@ -392,7 +392,7 @@ namespace XFEM
       // find out which level-set index is the active one for the given background element
 
       const Core::LinAlg::Map* elecolmap = bg_dis_->element_col_map();
-      const int lid = elecolmap->LID(back_eid);
+      const int lid = elecolmap->lid(back_eid);
 
       const int lsc_idx = (*ele_lsc_coup_idx_col_)[lid];
 

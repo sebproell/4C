@@ -129,8 +129,8 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
     const Core::FE::Discretization& dis, const unsigned dspos, const int start)
 {
   if (!dis.filled()) FOUR_C_THROW("discretization Filled()==false");
-  if (!dis.node_row_map()->UniqueGIDs()) FOUR_C_THROW("Nodal row map is not unique");
-  if (!dis.element_row_map()->UniqueGIDs()) FOUR_C_THROW("Element row map is not unique");
+  if (!dis.node_row_map()->unique_gids()) FOUR_C_THROW("Nodal row map is not unique");
+  if (!dis.element_row_map()->unique_gids()) FOUR_C_THROW("Element row map is not unique");
 
   // A definite offset is currently not supported.
   // TODO (kronbichler) find a better solution for this
@@ -282,10 +282,10 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
         const std::vector<int>* ndvec = couplingconditions[condition_id]->get_nodes();
         for (const auto nd : *ndvec)
         {
-          if (!dis.node_row_map()->MyGID(nd))
+          if (!dis.node_row_map()->my_gid(nd))
           {
             allononeproc = false;
-            std::cout << "Node " << nd << " (LID " << dis.node_row_map()->LID(nd)
+            std::cout << "Node " << nd << " (LID " << dis.node_row_map()->lid(nd)
                       << ") in condition " << condition_id << "(" << k_on
                       << ") is not in the current row map!\n";
           }
@@ -384,12 +384,12 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
         for (int face = 0; face < dis.l_col_element(i)->num_face(); ++face)
           if (faces[face]->owner() == mypid)
           {
-            const int mylid = facedis->face_row_map()->LID(faces[face]->id());
+            const int mylid = facedis->face_row_map()->lid(faces[face]->id());
             numdfrowfaces[mylid] = num_dof_per_face(*(dis.l_col_element(i)), face);
           }
       }
 
-      int minfacegid = facedis->face_row_map()->MinAllGID();
+      int minfacegid = facedis->face_row_map()->min_all_gid();
       int maxfacenumdf = numdfrowfaces.max_value();
 
       for (int i = 0; i < numcolelements; ++i)
@@ -400,7 +400,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
           if (faces[face]->owner() == mypid)
           {
             const int gid = faces[face]->id();
-            const int mylid = facedis->face_row_map()->LID(gid);
+            const int mylid = facedis->face_row_map()->lid(gid);
             int numdf = numdfrowfaces[mylid];
             int dof = count + (gid - minfacegid) * maxfacenumdf;
             idxrowfaces[mylid] = dof;
@@ -441,7 +441,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
       numdfrowelements[i] = numdf;
     }
 
-    int minelementgid = dis.element_row_map()->MinAllGID();
+    int minelementgid = dis.element_row_map()->min_all_gid();
     maxelementnumdf = numdfrowelements.max_value();
     localrowdofs.reserve(numrownodes * maxnodenumdf + numrowelements * maxelementnumdf);
 
@@ -527,7 +527,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
 
   dofrowmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, localrowdofs.size(), localrowdofs.data(), 0, dis.get_comm());
-  if (!dofrowmap_->UniqueGIDs()) FOUR_C_THROW("Dof row map is not unique");
+  if (!dofrowmap_->unique_gids()) FOUR_C_THROW("Dof row map is not unique");
   dofcolmap_ = std::make_shared<Core::LinAlg::Map>(
       -1, localcoldofs.size(), localcoldofs.data(), 0, dis.get_comm());
 
@@ -562,7 +562,7 @@ int Core::DOFSets::DofSet::assign_degrees_of_freedom(
   notify_assigned();
 
   // return maximum dof number of this dofset (+1)
-  count = dofrowmap_->MaxAllGID() + 1;
+  count = dofrowmap_->max_all_gid() + 1;
   return count;
 }
 
@@ -601,7 +601,7 @@ int Core::DOFSets::DofSet::num_global_elements() const
 {
   if (dofrowmap_ == nullptr)
     FOUR_C_THROW("Core::DOFSets::DofSet::NumGlobalElements(): dofrowmap_ not initialized, yet");
-  return dofrowmap_->NumGlobalElements();
+  return dofrowmap_->num_global_elements();
 }
 
 
@@ -611,7 +611,7 @@ int Core::DOFSets::DofSet::max_all_gid() const
 {
   if (dofrowmap_ == nullptr)
     FOUR_C_THROW("Core::DOFSets::DofSet::MaxAllGID(): dofrowmap_ not initialized, yet");
-  return dofrowmap_->MaxAllGID();
+  return dofrowmap_->max_all_gid();
 }
 
 
@@ -621,7 +621,7 @@ int Core::DOFSets::DofSet::min_all_gid() const
 {
   if (dofrowmap_ == nullptr)
     FOUR_C_THROW("Core::DOFSets::DofSet::MinAllGID(): dofrowmap_ not initialized, yet");
-  return dofrowmap_->MinAllGID();
+  return dofrowmap_->min_all_gid();
 }
 
 
@@ -639,7 +639,7 @@ int Core::DOFSets::DofSet::get_first_gid_number_to_be_used(
 int Core::DOFSets::DofSet::get_minimal_node_gid_if_relevant(
     const Core::FE::Discretization& dis) const
 {
-  return dis.node_row_map()->MinAllGID();
+  return dis.node_row_map()->min_all_gid();
 }
 
 FOUR_C_NAMESPACE_CLOSE

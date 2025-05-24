@@ -520,8 +520,8 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     }
 
     // abbreviations for slave and master set
-    const int sset = gsdofrowmap_->NumGlobalElements();
-    const int mset = gmdofrowmap_->NumGlobalElements();
+    const int sset = gsdofrowmap_->num_global_elements();
+    const int mset = gmdofrowmap_->num_global_elements();
 
     // we want to split fsm into 2 groups s,m
     fs = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
@@ -598,10 +598,10 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
         kaa, gactivedofs_, gidofs, gstdofs, gslipdofs_, kast, kasl, temp1mtx4, temp1mtx5);
 
     // abbreviations for active and inactive set, stick and slip set
-    const int aset = gactivedofs_->NumGlobalElements();
-    const int iset = gidofs->NumGlobalElements();
-    const int stickset = gstdofs->NumGlobalElements();
-    const int slipset = gslipdofs_->NumGlobalElements();
+    const int aset = gactivedofs_->num_global_elements();
+    const int iset = gidofs->num_global_elements();
+    const int stickset = gstdofs->num_global_elements();
+    const int slipset = gslipdofs_->num_global_elements();
 
     // we want to split fs into 2 groups a,i
     std::shared_ptr<Core::LinAlg::Vector<double>> fa =
@@ -891,7 +891,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       Core::LinAlg::Vector<double> tempvecm(*gmdofrowmap_);
       Core::LinAlg::Vector<double> tempvecm2(mold_->domain_map());
       Core::LinAlg::Vector<double> zoldexp(mold_->row_map());
-      if (mold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+      if (mold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
       mold_->multiply(true, zoldexp, tempvecm2);
       if (mset) Core::LinAlg::export_to(tempvecm2, tempvecm);
       fm->update(alphaf_, tempvecm, 1.0);
@@ -913,7 +913,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
     {
       Core::LinAlg::Vector<double> tempvec(dold_->domain_map());
       Core::LinAlg::Vector<double> zoldexp(dold_->row_map());
-      if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+      if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
       dold_->multiply(true, zoldexp, tempvec);
       if (sset) Core::LinAlg::export_to(tempvec, fsadd);
     }
@@ -1261,7 +1261,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       Core::LinAlg::Vector<double> fsexp(*problem_dofs());
       Core::LinAlg::Vector<double> tempvecd(dmatrix_->domain_map());
       Core::LinAlg::Vector<double> zexp(dmatrix_->row_map());
-      if (dmatrix_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*z_, zexp);
+      if (dmatrix_->row_map().num_global_elements()) Core::LinAlg::export_to(*z_, zexp);
       dmatrix_->multiply(true, zexp, tempvecd);
       Core::LinAlg::export_to(tempvecd, fsexp);
       feff->update(-(1.0 - alphaf_), fsexp, 1.0);
@@ -1276,7 +1276,7 @@ void CONTACT::LagrangeStrategy::evaluate_friction(
       Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
       Core::LinAlg::Vector<double> tempvecdold(dold_->domain_map());
       Core::LinAlg::Vector<double> zoldexp(dold_->row_map());
-      if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+      if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
       dold_->multiply(true, zoldexp, tempvecdold);
       Core::LinAlg::export_to(tempvecdold, fsoldexp);
       feff->update(-alphaf_, fsoldexp, 1.0);
@@ -1442,9 +1442,9 @@ void CONTACT::LagrangeStrategy::compute_contact_stresses()
     for (int i = 0; i < (int)interface_.size(); ++i)
     {
       // loop over all slave row nodes on the current interface
-      for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+      for (int j = 0; j < interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
       {
-        int gid = interface_[i]->slave_row_nodes()->GID(j);
+        int gid = interface_[i]->slave_row_nodes()->gid(j);
         Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         Node* cnode = dynamic_cast<Node*>(node);
@@ -1453,7 +1453,7 @@ void CONTACT::LagrangeStrategy::compute_contact_stresses()
 
         for (int dof = 0; dof < n_dim(); ++dof)
         {
-          locindex[dof] = (forcenormal.get_map()).LID(cnode->dofs()[dof]);
+          locindex[dof] = (forcenormal.get_map()).lid(cnode->dofs()[dof]);
 
           if (cnode->mo_data().get_dscale() < 1e-8 and cnode->active())
           {
@@ -1534,9 +1534,9 @@ void CONTACT::LagrangeStrategy::save_reference_state(
 
     // reset kappa
     // loop over all slave row nodes on the current interface
-    for (int j = 0; j < interface_[i]->master_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->master_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interface_[i]->master_row_nodes()->GID(j);
+      int gid = interface_[i]->master_row_nodes()->gid(j);
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -1545,9 +1545,9 @@ void CONTACT::LagrangeStrategy::save_reference_state(
 
     // loop over proc's slave elements of the interface for integration
     // use standard column map to include processor's ghosted elements
-    for (int j = 0; j < interface_[i]->master_col_elements()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->master_col_elements()->num_my_elements(); ++j)
     {
-      int gid1 = interface_[i]->master_col_elements()->GID(j);
+      int gid1 = interface_[i]->master_col_elements()->gid(j);
       Core::Elements::Element* ele1 = interface_[i]->discret().g_element(gid1);
       if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
       Element* selement = dynamic_cast<Element*>(ele1);
@@ -1668,9 +1668,9 @@ void CONTACT::LagrangeStrategy::save_reference_state(
     }
 
     // loop over all slave row nodes on the current interface
-    for (int j = 0; j < interface_[i]->master_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->master_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interface_[i]->master_row_nodes()->GID(j);
+      int gid = interface_[i]->master_row_nodes()->gid(j);
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -2311,8 +2311,8 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     }
 
     // abbreviations for slave  and master set
-    const int sset = gsdofrowmap_->NumGlobalElements();
-    const int mset = gmdofrowmap_->NumGlobalElements();
+    const int sset = gsdofrowmap_->num_global_elements();
+    const int mset = gmdofrowmap_->num_global_elements();
 
     // we want to split fsm into 2 groups s,m
     fs = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
@@ -2373,8 +2373,8 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
         kms, gmdofrowmap_, tempmap, gactivedofs_, gidofs, kma, kmi, tempmtx1, tempmtx2);
 
     // abbreviations for active and inactive set
-    const int aset = gactivedofs_->NumGlobalElements();
-    const int iset = gidofs->NumGlobalElements();
+    const int aset = gactivedofs_->num_global_elements();
+    const int iset = gidofs->num_global_elements();
 
     // we want to split fsmod into 2 groups a,i
     std::shared_ptr<Core::LinAlg::Vector<double>> fa =
@@ -2588,7 +2588,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       Core::LinAlg::Vector<double> tempvecm(*gmdofrowmap_);
       Core::LinAlg::Vector<double> tempvecm2(mold_->domain_map());
       Core::LinAlg::Vector<double> zoldexp(mold_->row_map());
-      if (mold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+      if (mold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
       mold_->multiply(true, zoldexp, tempvecm2);
       if (mset) Core::LinAlg::export_to(tempvecm2, tempvecm);
       fm->update(alphaf_, tempvecm, 1.0);
@@ -2610,7 +2610,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
     {
       Core::LinAlg::Vector<double> tempvec(dold_->domain_map());
       Core::LinAlg::Vector<double> zoldexp(dold_->row_map());
-      if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+      if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
       dold_->multiply(true, zoldexp, tempvec);
       if (sset) Core::LinAlg::export_to(tempvec, fsadd);
     }
@@ -2869,7 +2869,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       Core::LinAlg::Vector<double> fsexp(*problem_dofs());
       Core::LinAlg::Vector<double> tempvecd(dmatrix_->domain_map());
       Core::LinAlg::Vector<double> zexp(dmatrix_->row_map());
-      if (dmatrix_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*z_, zexp);
+      if (dmatrix_->row_map().num_global_elements()) Core::LinAlg::export_to(*z_, zexp);
       dmatrix_->multiply(true, zexp, tempvecd);
       Core::LinAlg::export_to(tempvecd, fsexp);
       feff->update(-(1.0 - alphaf_), fsexp, 1.0);
@@ -2884,7 +2884,7 @@ void CONTACT::LagrangeStrategy::evaluate_contact(
       Core::LinAlg::Vector<double> fsoldexp(*problem_dofs());
       Core::LinAlg::Vector<double> tempvecdold(dold_->domain_map());
       Core::LinAlg::Vector<double> zoldexp(dold_->row_map());
-      if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, zoldexp);
+      if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, zoldexp);
       dold_->multiply(true, zoldexp, tempvecdold);
       Core::LinAlg::export_to(tempvecdold, fsoldexp);
       feff->update(-alphaf_, fsoldexp, 1.0);
@@ -2999,7 +2999,7 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     // build constraint matrix kzd
     if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     {
-      if (gactivedofs_->NumGlobalElements())
+      if (gactivedofs_->num_global_elements())
       {
         kzd.add(*smatrix_, false, 1.0, 1.0);
         kzd.add(*tderivmatrix_, false, 1.0, 1.0);
@@ -3007,8 +3007,8 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     }
     else
     {
-      if (gactiven_->NumGlobalElements()) kzd.add(*smatrix_, false, 1.0, 1.0);
-      if (gactivet_->NumGlobalElements()) kzd.add(*tderivmatrix_, false, 1.0, 1.0);
+      if (gactiven_->num_global_elements()) kzd.add(*smatrix_, false, 1.0, 1.0);
+      if (gactivet_->num_global_elements()) kzd.add(*tderivmatrix_, false, 1.0, 1.0);
     }
     kzd.complete(*gdisprowmap_, *gsdofrowmap_);
 
@@ -3021,8 +3021,8 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     onesdiag.complete();
 
     // build constraint matrix kzz
-    if (gidofs->NumGlobalElements()) kzz.add(onesdiag, false, 1.0, 1.0);
-    if (gactivet_->NumGlobalElements()) kzz.add(*tmatrix_, false, 1.0, 1.0);
+    if (gidofs->num_global_elements()) kzz.add(onesdiag, false, 1.0, 1.0);
+    if (gactivet_->num_global_elements()) kzz.add(*tmatrix_, false, 1.0, 1.0);
     kzz.complete(*gsdofrowmap_, *gsdofrowmap_);
   }
 
@@ -3040,15 +3040,15 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     // build constraint matrix kzd
     if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     {
-      if (gactivedofs_->NumGlobalElements()) kzd.add(*smatrix_, false, 1.0, 1.0);
-      if (gstickdofs->NumGlobalElements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
-      if (gslipdofs_->NumGlobalElements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
+      if (gactivedofs_->num_global_elements()) kzd.add(*smatrix_, false, 1.0, 1.0);
+      if (gstickdofs->num_global_elements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
+      if (gslipdofs_->num_global_elements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
     }
     else
     {
-      if (gactiven_->NumGlobalElements()) kzd.add(*smatrix_, false, 1.0, 1.0);
-      if (gstickt->NumGlobalElements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
-      if (gslipt_->NumGlobalElements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
+      if (gactiven_->num_global_elements()) kzd.add(*smatrix_, false, 1.0, 1.0);
+      if (gstickt->num_global_elements()) kzd.add(*linstickDIS_, false, 1.0, 1.0);
+      if (gslipt_->num_global_elements()) kzd.add(*linslipDIS_, false, 1.0, 1.0);
     }
     kzd.complete(*gdisprowmap_, *gsdofrowmap_);
 
@@ -3063,15 +3063,15 @@ void CONTACT::LagrangeStrategy::build_saddle_point_system(
     // build constraint matrix kzz
     if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
     {
-      if (gidofs->NumGlobalElements()) kzz.add(onesdiag, false, 1.0, 1.0);
-      if (gstickdofs->NumGlobalElements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
-      if (gslipdofs_->NumGlobalElements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
+      if (gidofs->num_global_elements()) kzz.add(onesdiag, false, 1.0, 1.0);
+      if (gstickdofs->num_global_elements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
+      if (gslipdofs_->num_global_elements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
     }
     else
     {
-      if (gidofs->NumGlobalElements()) kzz.add(onesdiag, false, 1.0, 1.0);
-      if (gstickt->NumGlobalElements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
-      if (gslipt_->NumGlobalElements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
+      if (gidofs->num_global_elements()) kzz.add(onesdiag, false, 1.0, 1.0);
+      if (gstickt->num_global_elements()) kzz.add(*linstickLM_, false, 1.0, 1.0);
+      if (gslipt_->num_global_elements()) kzz.add(*linslipLM_, false, 1.0, 1.0);
     }
     kzz.complete(*gsdofrowmap_, *gsdofrowmap_);
   }
@@ -3298,7 +3298,7 @@ void CONTACT::LagrangeStrategy::evaluate_constr_rhs()
   else
   {
     gact = Core::LinAlg::create_vector(*gactivenodes_, true);
-    if (gactiven_->NumGlobalElements())
+    if (gactiven_->num_global_elements())
     {
       Core::LinAlg::export_to(*wgap_, *gact);
       gact->replace_map(*gactiven_);
@@ -4024,7 +4024,7 @@ void CONTACT::LagrangeStrategy::eval_str_contact_rhs()
     Core::LinAlg::Vector<double> fsexp(*problem_dofs());
     Core::LinAlg::Vector<double> tempvecd(dmatrix_->domain_map());
     Core::LinAlg::Vector<double> zexp(dmatrix_->row_map());
-    if (dmatrix_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*z_, zexp);
+    if (dmatrix_->row_map().num_global_elements()) Core::LinAlg::export_to(*z_, zexp);
     dmatrix_->multiply(true, zexp, tempvecd);
     Core::LinAlg::export_to(tempvecd, fsexp);
     strcontactrhs_->update(1., fsexp, 1.0);
@@ -4200,7 +4200,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> CONTACT::LagrangeStrategy::get_matri
       Core::LinAlg::SparseMatrix kzd_ptr(slave_dof_row_map(true), 100, false, true);
 
       // build constraint matrix kzd
-      if (gactiven_->NumGlobalElements())
+      if (gactiven_->num_global_elements())
       {
         kzd_ptr.add(*smatrix_, false, 1.0, 1.0);
 
@@ -4210,9 +4210,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> CONTACT::LagrangeStrategy::get_matri
         // frictional contact
         else
         {
-          //          if (gslipnodes_->NumGlobalElements())
           kzd_ptr.add(*linslipDIS_, false, 1.0, 1.0);
-          //          if (gslipnodes_->NumGlobalElements()!=gactivenodes_->NumGlobalElements())
           kzd_ptr.add(*linstickDIS_, false, 1.0, 1.0);
         }
       }
@@ -4259,11 +4257,11 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> CONTACT::LagrangeStrategy::get_matri
       onesdiag.complete();
 
       // build constraint matrix kzz
-      if (gidofs->NumGlobalElements()) kzz_ptr->add(onesdiag, false, 1.0, 1.0);
+      if (gidofs->num_global_elements()) kzz_ptr->add(onesdiag, false, 1.0, 1.0);
 
       if (!is_friction())
       {
-        if (gactivet_->NumGlobalElements()) kzz_ptr->add(*tmatrix_, false, 1.0, 1.0);
+        if (gactivet_->num_global_elements()) kzz_ptr->add(*tmatrix_, false, 1.0, 1.0);
       }
       else
       {
@@ -4312,7 +4310,7 @@ void CONTACT::LagrangeStrategy::run_post_compute_x(const CONTACT::ParamsInterfac
 {
   if (system_type() != CONTACT::SystemType::condensed)
   {
-    if (lm_dof_row_map(true).NumGlobalElements() > 0)
+    if (lm_dof_row_map(true).num_global_elements() > 0)
     {
       Core::LinAlg::Vector<double> zdir_ptr(lm_dof_row_map(true), true);
       Core::LinAlg::export_to(dir, zdir_ptr);
@@ -4403,7 +4401,7 @@ void CONTACT::LagrangeStrategy::reset_lagrange_multipliers(
 {
   if (system_type() != CONTACT::SystemType::condensed)
   {
-    if (lm_dof_row_map(true).NumGlobalElements() == 0) return;
+    if (lm_dof_row_map(true).num_global_elements() == 0) return;
 
     Core::LinAlg::Vector<double> znew_ptr(lm_dof_row_map(true), true);
     Core::LinAlg::export_to(xnew, znew_ptr);
@@ -4453,15 +4451,15 @@ void CONTACT::LagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<dou
 
     // extract slave displacements from disi
     Core::LinAlg::Vector<double> disis(*gsdofrowmap_);
-    if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disis);
+    if (gsdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disis);
 
     // extract master displacements from disi
     Core::LinAlg::Vector<double> disim(*gmdofrowmap_);
-    if (gmdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disim);
+    if (gmdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disim);
 
     // extract other displacements from disi
     Core::LinAlg::Vector<double> disin(*gndofrowmap_);
-    if (gndofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disin);
+    if (gndofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disin);
 
     // condensation has been performed for active LM only,
     // thus we construct a modified invd matrix here which
@@ -4517,11 +4515,11 @@ void CONTACT::LagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<dou
       ksn_->multiply(false, disin, mod);
       z_->update(-1.0, mod, 1.0);
       Core::LinAlg::Vector<double> mod2((dold_->row_map()));
-      if (dold_->row_map().NumGlobalElements()) Core::LinAlg::export_to(*zold_, mod2);
+      if (dold_->row_map().num_global_elements()) Core::LinAlg::export_to(*zold_, mod2);
       Core::LinAlg::Vector<double> mod3((dold_->row_map()));
       dold_->multiply(true, mod2, mod3);
       Core::LinAlg::Vector<double> mod4(*gsdofrowmap_);
-      if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(mod3, mod4);
+      if (gsdofrowmap_->num_global_elements()) Core::LinAlg::export_to(mod3, mod4);
       z_->update(-alphaf_, mod4, 1.0);
       Core::LinAlg::Vector<double> zcopy(*z_);
       invdmod.multiply(true, zcopy, *z_);
@@ -4599,15 +4597,15 @@ void CONTACT::LagrangeStrategy::update_active_set()
   for (int i = 0; i < (int)interface_.size(); ++i)
   {
     // loop over all slave nodes on the current interface
-    for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interface_[i]->slave_row_nodes()->GID(j);
+      int gid = interface_[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
 
       // compute weighted gap
-      double wgap = (*wgap_)[wgap_->get_map().LID(gid)];
+      double wgap = (*wgap_)[wgap_->get_map().lid(gid)];
 
       // compute normal part of Lagrange multiplier
       double nz = 0.0;
@@ -4673,7 +4671,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
           {
             FriNode* frinode = dynamic_cast<FriNode*>(cnode);
             const Core::LinAlg::Vector<double>& ct_ref = interface_[i]->ct_ref();
-            double ct = ct_ref[ct_ref.get_map().LID(frinode->id())];
+            double ct = ct_ref[ct_ref.get_map().lid(frinode->id())];
 
             // CAREFUL: friction bound is now interface-local (popp 08/2012)
             double frbound = interface_[i]->interface_params().get<double>("FRBOUND");
@@ -4711,7 +4709,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
           {
             FriNode* frinode = dynamic_cast<FriNode*>(cnode);
             const Core::LinAlg::Vector<double>& ct_ref = interface_[i]->ct_ref();
-            double ct = ct_ref[ct_ref.get_map().LID(frinode->id())];
+            double ct = ct_ref[ct_ref.get_map().lid(frinode->id())];
 
             // CAREFUL: friction coefficient is now interface-local (popp 08/2012)
             double frcoeff = interface_[i]->interface_params().get<double>("FRCOEFF");
@@ -4828,7 +4826,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
     {
       if (zigzagtwo_ != nullptr)
       {
-        if (zigzagtwo_->SameAs(*gactivenodes_))
+        if (zigzagtwo_->same_as(*gactivenodes_))
         {
           // set active set converged
           activesetconv_ = true;
@@ -4842,7 +4840,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
 
       if (zigzagthree_ != nullptr)
       {
-        if (zigzagthree_->SameAs(*gactivenodes_))
+        if (zigzagthree_->same_as(*gactivenodes_))
         {
           // set active set converged
           activesetconv_ = true;
@@ -4874,7 +4872,7 @@ void CONTACT::LagrangeStrategy::update_active_set()
               << " STEP(S)................." << std::endl;
 
   // update flag for global contact status
-  if (gactivenodes_->NumGlobalElements())
+  if (gactivenodes_->num_global_elements())
   {
     isincontact_ = true;
     wasincontact_ = true;
@@ -4902,9 +4900,9 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
     for (int i = 0; i < (int)interface_.size(); ++i)
     {
       // loop over all slave nodes on the current interface
-      for (int j = 0; j < interface_[i]->slave_row_nodes()->NumMyElements(); ++j)
+      for (int j = 0; j < interface_[i]->slave_row_nodes()->num_my_elements(); ++j)
       {
-        int gid = interface_[i]->slave_row_nodes()->GID(j);
+        int gid = interface_[i]->slave_row_nodes()->gid(j);
         Core::Nodes::Node* node = interface_[i]->discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         Node* cnode = dynamic_cast<Node*>(node);
@@ -5041,7 +5039,7 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
     {
       if (zigzagtwo_ != nullptr)
       {
-        if (zigzagtwo_->SameAs(*gactivenodes_))
+        if (zigzagtwo_->same_as(*gactivenodes_))
         {
           // detect zig-zagging
           zigzagging = 1;
@@ -5050,7 +5048,7 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
 
       if (zigzagthree_ != nullptr)
       {
-        if (zigzagthree_->SameAs(*gactivenodes_))
+        if (zigzagthree_->same_as(*gactivenodes_))
         {
           // detect zig-zagging
           zigzagging = 2;
@@ -5090,7 +5088,7 @@ void CONTACT::LagrangeStrategy::update_active_set_semi_smooth(const bool firstSt
               << std::endl;
 
   // update flag for global contact status
-  if (gactivenodes_->NumGlobalElements())
+  if (gactivenodes_->num_global_elements())
   {
     isincontact_ = true;
     wasincontact_ = true;
@@ -5340,7 +5338,7 @@ void CONTACT::LagrangeStrategy::condense_friction(
   }
 
   // abbreviations for slave set
-  const int sset = gsdofrowmap_->NumGlobalElements();
+  const int sset = gsdofrowmap_->num_global_elements();
 
   // we want to split fsm into 2 groups s,m
   fs = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
@@ -5395,10 +5393,10 @@ void CONTACT::LagrangeStrategy::condense_friction(
       kaa, gactivedofs_, gidofs, gstdofs, gslipdofs_, kast, kasl, temp1mtx4, temp1mtx5);
 
   // abbreviations for active and inactive set, stick and slip set
-  const int aset = gactivedofs_->NumGlobalElements();
-  const int iset = gidofs->NumGlobalElements();
-  const int stickset = gstdofs->NumGlobalElements();
-  const int slipset = gslipdofs_->NumGlobalElements();
+  const int aset = gactivedofs_->num_global_elements();
+  const int iset = gidofs->num_global_elements();
+  const int stickset = gstdofs->num_global_elements();
+  const int slipset = gslipdofs_->num_global_elements();
 
   // we want to split fs into 2 groups a,i
   std::shared_ptr<Core::LinAlg::Vector<double>> fa =
@@ -5864,9 +5862,9 @@ void CONTACT::LagrangeStrategy::condense_friction(
   if (slipset) kteffnew.add(*linslipDIS_, false, -1.0, +1.0);
 
   // add diagonal entries to sparsity pattern for dbc
-  for (int i = 0; i < kteffnew.row_map().NumMyElements(); ++i)
+  for (int i = 0; i < kteffnew.row_map().num_my_elements(); ++i)
   {
-    int gid = kteffnew.row_map().GID(i);
+    int gid = kteffnew.row_map().gid(i);
     kteffnew.assemble(0., gid, gid);
   }
 
@@ -6182,7 +6180,7 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
   }
 
   // abbreviations for slave set
-  const int sset = gsdofrowmap_->NumGlobalElements();
+  const int sset = gsdofrowmap_->num_global_elements();
 
   // we want to split fsm into 2 groups s,m
   fs = std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_);
@@ -6221,8 +6219,8 @@ void CONTACT::LagrangeStrategy::condense_frictionless(
       kms, gmdofrowmap_, tempmap, gactivedofs_, gidofs, kma, kmi, tempmtx1, tempmtx2);
 
   // abbreviations for active and inactive set
-  const int aset = gactivedofs_->NumGlobalElements();
-  const int iset = gidofs->NumGlobalElements();
+  const int aset = gactivedofs_->num_global_elements();
+  const int iset = gidofs->num_global_elements();
 
   // we want to split fsmod into 2 groups a,i
   std::shared_ptr<Core::LinAlg::Vector<double>> fa =
@@ -6634,15 +6632,15 @@ void CONTACT::LagrangeStrategy::run_pre_apply_jacobian_inverse(
   auto lagmultquad = Teuchos::getIntegralValue<Inpar::Mortar::LagMultQuad>(params(), "LM_QUAD");
   if (is_dual_quad_slave_trafo() && lagmultquad == Inpar::Mortar::lagmult_lin)
   {
-    if (not(systrafo_->domain_map().SameAs(kteff->domain_map()))) FOUR_C_THROW("stop");
+    if (not(systrafo_->domain_map().same_as(kteff->domain_map()))) FOUR_C_THROW("stop");
 
     *kteff = *Core::LinAlg::matrix_multiply(*systrafo_, true, *kteff, false, false, false, true);
     Core::LinAlg::Vector<double> rhs_str(*problem_dofs());
     Core::LinAlg::Vector<double> rhs_str2(*problem_dofs());
     Core::LinAlg::export_to(rhs, rhs_str);
     if (systrafo_->multiply(true, rhs_str, rhs_str2)) FOUR_C_THROW("multiply failed");
-    for (int i = 0; i < rhs_str2.get_map().NumMyElements(); ++i)
-      rhs[rhs.get_map().LID(rhs_str2.get_map().GID(i))] = rhs_str2[i];
+    for (int i = 0; i < rhs_str2.get_map().num_my_elements(); ++i)
+      rhs[rhs.get_map().lid(rhs_str2.get_map().gid(i))] = rhs_str2[i];
   }
 
 
@@ -6683,15 +6681,15 @@ void CONTACT::LagrangeStrategy::run_post_apply_jacobian_inverse(
 
     // extract slave displacements from disi
     Core::LinAlg::Vector<double> disis(*gsdofrowmap_);
-    if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disis);
+    if (gsdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disis);
 
     // extract master displacements from disi
     Core::LinAlg::Vector<double> disim(*gmdofrowmap_);
-    if (gmdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disim);
+    if (gmdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disim);
 
     // extract other displacements from disi
     Core::LinAlg::Vector<double> disin(*gndofrowmap_);
-    if (gndofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disin);
+    if (gndofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disin);
 
     // condensation has been performed for active LM only,
     // thus we construct a modified invd matrix here which

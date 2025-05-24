@@ -365,7 +365,7 @@ ScaTra::ScaTraUtils::compute_gradient_at_nodes_mean_average(Core::FE::Discretiza
 
     int GID = lm[0];  // Global ID of DoF Map
     // get local processor id according to global node id
-    const int lid = (*gradphirow).get_map().LID(GID);
+    const int lid = (*gradphirow).get_map().lid(GID);
     if (lid < 0)
       FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
           Core::Communication::my_mpi_rank((*gradphirow).Comm()), GID);

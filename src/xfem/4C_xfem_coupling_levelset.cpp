@@ -117,10 +117,10 @@ bool XFEM::LevelSetCoupling::have_matching_nodes(
   const Core::LinAlg::Map* noderowmap_A = dis_A.node_row_map();
   const Core::LinAlg::Map* noderowmap_B = dis_B.node_row_map();
 
-  if (!(noderowmap_A->SameAs(*noderowmap_B))) return false;
+  if (!(noderowmap_A->same_as(*noderowmap_B))) return false;
 
   // check for equal node coordinates
-  for (int lid = 0; lid < noderowmap_A->NumMyElements(); ++lid)
+  for (int lid = 0; lid < noderowmap_A->num_my_elements(); ++lid)
   {
     const Core::Nodes::Node* node_A = dis_A.l_row_node(lid);
     const Core::Nodes::Node* node_B = dis_B.l_row_node(lid);
@@ -413,7 +413,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
     if (lm.size() != 1) FOUR_C_THROW("assume 1 dof in cutterdis-Dofset for phi vector");
 
     const int gid = lm[0];
-    const int lid = cutter_phinp_->get_map().LID(gid);
+    const int lid = cutter_phinp_->get_map().lid(gid);
     err = cutter_phinp_->replace_local_values(1, &value, &lid);
     if (err) FOUR_C_THROW("could not replace values for phi vector");
   }
@@ -478,7 +478,7 @@ bool XFEM::LevelSetCoupling::set_level_set_field(const double time)
 
       // SAFETY check
       // dependent on the desired projection, just remove this line
-      if (not modphinp->get_map().SameAs(
+      if (not modphinp->get_map().same_as(
               *std::dynamic_pointer_cast<XFEM::DiscretizationXFEM>(cutter_dis_)
                   ->initial_dof_row_map()))
         FOUR_C_THROW("input map is not a dof row map of the fluid");
@@ -565,7 +565,7 @@ void XFEM::LevelSetCoupling::map_cutter_to_bg_vector(Core::FE::Discretization& s
       std::vector<double> val_source = Core::FE::extract_values(source_vec_dofbased, lm_source);
 
       // set to a dofrowmap based vector!
-      const int lid_target = target_vec_dofbased.get_map().LID(lm_target[0]);
+      const int lid_target = target_vec_dofbased.get_map().lid(lm_target[0]);
       const int err = target_vec_dofbased.replace_local_values(1, val_source.data(), &lid_target);
       if (err) FOUR_C_THROW("could not replace values for convective velocity");
     }
@@ -593,7 +593,7 @@ XFEM::LevelSetCoupling::get_level_set_field_as_node_row_vector()
 
     if (val_source.size() != 1) FOUR_C_THROW("we expect only one dof");
 
-    const int lid_target = bg_dis_->node_row_map()->LID(node->id());
+    const int lid_target = bg_dis_->node_row_map()->lid(node->id());
     const int err = bg_phinp_nodemap_->replace_local_values(1, val_source.data(), &lid_target);
     if (err) FOUR_C_THROW("could not replace values for phi vector");
   }

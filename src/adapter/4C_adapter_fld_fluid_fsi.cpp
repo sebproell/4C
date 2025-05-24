@@ -129,7 +129,7 @@ void Adapter::FluidFSI::init()
 
     // store number of interface DOFs subject to Dirichlet BCs on structure and fluid side of the
     // interface
-    numfsidbcdofs_ = intersectionmap->NumGlobalElements();
+    numfsidbcdofs_ = intersectionmap->num_global_elements();
   }
 }
 
@@ -304,7 +304,7 @@ void Adapter::FluidFSI::displacement_to_velocity(std::shared_ptr<Core::LinAlg::V
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // check, whether maps are the same
-  if (!fcx->get_map().PointSameAs(veln_vector->get_map()))
+  if (!fcx->get_map().point_same_as(veln_vector->get_map()))
   {
     FOUR_C_THROW("Maps do not match, but they have to.");
   }
@@ -331,7 +331,7 @@ void Adapter::FluidFSI::velocity_to_displacement(std::shared_ptr<Core::LinAlg::V
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // check, whether maps are the same
-  if (!fcx->get_map().PointSameAs(veln_vector->get_map()))
+  if (!fcx->get_map().point_same_as(veln_vector->get_map()))
   {
     FOUR_C_THROW("Maps do not match, but they have to.");
   }
@@ -393,7 +393,7 @@ void Adapter::FluidFSI::proj_vel_to_div_zero()
   // create an element map with offset
   const int numallele = discretization()->num_global_elements();
   const int mapoffset =
-      dbcfsimap->MaxAllGID() + discretization()->element_row_map()->MinAllGID() + 1;
+      dbcfsimap->max_all_gid() + discretization()->element_row_map()->min_all_gid() + 1;
   std::shared_ptr<Core::LinAlg::Map> elemap =
       std::make_shared<Core::LinAlg::Map>(numallele, mapoffset, discretization()->get_comm());
 
@@ -449,17 +449,17 @@ void Adapter::FluidFSI::proj_vel_to_div_zero()
 
     // assembly
     std::vector<int> lmcol(1);
-    lmcol[0] = actele->id() + dbcfsimap->MaxAllGID() + 1;
+    lmcol[0] = actele->id() + dbcfsimap->max_all_gid() + 1;
     B->assemble(actele->id(), lmstride, elevector1, lm, lmowner, lmcol);
   }  // end of loop over all fluid elements
 
   discretization()->clear_state();
 
   // insert '1's for all DBC and interface DOFs
-  for (int i = 0; i < dbcfsimap->NumMyElements(); i++)
+  for (int i = 0; i < dbcfsimap->num_my_elements(); i++)
   {
-    int rowid = dbcfsimap->GID(i);
-    int colid = dbcfsimap->GID(i);
+    int rowid = dbcfsimap->gid(i);
+    int colid = dbcfsimap->gid(i);
     B->assemble(1.0, rowid, colid);
   }
 
@@ -661,13 +661,13 @@ void Adapter::FluidFSI::indicate_error_norms(double& err, double& errcond, doubl
 
   // calculate L2-norms of different subsets of temporal discretization error vector
   // (neglect Dirichlet and pressure DOFs for length scaling)
-  err =
-      calculate_error_norm(*locerrvelnp_, get_dbc_map_extractor()->cond_map()->NumGlobalElements() +
-                                              pressure_row_map()->NumGlobalElements());
+  err = calculate_error_norm(
+      *locerrvelnp_, get_dbc_map_extractor()->cond_map()->num_global_elements() +
+                         pressure_row_map()->num_global_elements());
   errcond = calculate_error_norm(errorcond, numfsidbcdofs_);
-  errother = calculate_error_norm(
-      *errorother, pressure_row_map()->NumGlobalElements() +
-                       (get_dbc_map_extractor()->cond_map()->NumGlobalElements() - numfsidbcdofs_));
+  errother = calculate_error_norm(*errorother,
+      pressure_row_map()->num_global_elements() +
+          (get_dbc_map_extractor()->cond_map()->num_global_elements() - numfsidbcdofs_));
 
   // calculate L-inf-norms of temporal discretization errors
   locerrvelnp_->norm_inf(&errinf);

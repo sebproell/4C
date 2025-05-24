@@ -101,7 +101,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
   // maximum dof number in discretization
   // later we want to create NEW Lagrange multiplier degrees of
   // freedom, which of course must not overlap with existing displacement dofs
-  int maxdof = discret.dof_row_map()->MaxAllGID();
+  int maxdof = discret.dof_row_map()->max_all_gid();
 
   // get input parameters
   auto stype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(contactParams, "STRATEGY");
@@ -307,7 +307,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
       {
         int gid = (*nodeids)[k];
         // do only nodes that I have in my discretization
-        if (!discret.node_col_map()->MyGID(gid)) continue;
+        if (!discret.node_col_map()->my_gid(gid)) continue;
         Core::Nodes::Node* node = discret.g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
 
@@ -489,7 +489,7 @@ CONTACT::Manager::Manager(Core::FE::Discretization& discret, double alphaf)
               std::dynamic_pointer_cast<Core::Elements::FaceElement>(ele);
           if (faceele == nullptr) FOUR_C_THROW("Cast to FaceElement failed!");
           if (faceele->parent_element() == nullptr) FOUR_C_THROW("face parent does not exist");
-          if (discret.element_col_map()->LID(faceele->parent_element()->id()) == -1)
+          if (discret.element_col_map()->lid(faceele->parent_element()->id()) == -1)
             FOUR_C_THROW("vol dis does not have parent ele");
           cele->set_parent_master_element(faceele->parent_element(), faceele->face_parent_number());
         }
@@ -1399,16 +1399,16 @@ void CONTACT::Manager::reconnect_parent_elements()
     {
       const Core::LinAlg::Map* ielecolmap = interface->discret().element_col_map();
 
-      for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
+      for (int i = 0; i < ielecolmap->num_my_elements(); ++i)
       {
-        int gid = ielecolmap->GID(i);
+        int gid = ielecolmap->gid(i);
 
         Core::Elements::Element* ele = interface->discret().g_element(gid);
         if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
         Core::Elements::FaceElement* faceele = dynamic_cast<Core::Elements::FaceElement*>(ele);
 
         int volgid = faceele->parent_element_id();
-        if (elecolmap->LID(volgid) == -1)  // Volume discretization has not Element
+        if (elecolmap->lid(volgid) == -1)  // Volume discretization has not Element
           FOUR_C_THROW(
               "Manager::reconnect_parent_elements: Element {} does not exist on this Proc!",
               volgid);

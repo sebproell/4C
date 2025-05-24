@@ -173,7 +173,7 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
   std::shared_ptr<Core::LinAlg::Map> slipt = slipt_;
 
   // nothing to do if no stick nodes
-  if (slipnodes->NumMyElements() == 0) return;
+  if (slipnodes->num_my_elements() == 0) return;
 
   // information from interface contact parameter list
   auto ftype = Teuchos::getIntegralValue<CONTACT::FrictionType>(interface_params(), "FRICTION");
@@ -197,9 +197,9 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
 
   using _CI = std::map<int, double>::const_iterator;
   // loop over all stick nodes of the interface
-  for (int i = 0; i < slipnodes->NumMyElements(); ++i)
+  for (int i = 0; i < slipnodes->num_my_elements(); ++i)
   {
-    int gid = slipnodes->GID(i);
+    int gid = slipnodes->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     FriNode* cnode = dynamic_cast<FriNode*>(node);
@@ -226,10 +226,10 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
           "2-Dimensional thermo-contact not implemented 'cause there's no 2-D thermo element");
     else if (n_dim() == 3)
     {
-      row[0] = slipt->GID(2 * i);
-      if (slipt->GID(2 * i) != cnode->dofs()[1]) FOUR_C_THROW("why");
-      row[1] = slipt->GID(2 * i) + 1;
-      if (slipt->GID(2 * i) + 1 != cnode->dofs()[2]) FOUR_C_THROW("why2");
+      row[0] = slipt->gid(2 * i);
+      if (slipt->gid(2 * i) != cnode->dofs()[1]) FOUR_C_THROW("why");
+      row[1] = slipt->gid(2 * i) + 1;
+      if (slipt->gid(2 * i) + 1 != cnode->dofs()[2]) FOUR_C_THROW("why2");
     }
     else
       FOUR_C_THROW("AssemblelinStick: Dimension not correct");
@@ -285,7 +285,7 @@ void CONTACT::TSIInterface::assemble_lin_conduct(Core::LinAlg::SparseMatrix& lin
     Core::LinAlg::SparseMatrix& linConductContactLMglobal)
 {
   // nothing to do if no active contact nodes
-  if (activenodes_->NumMyElements() == 0) return;
+  if (activenodes_->num_my_elements() == 0) return;
 
   // heat transfer factors
   const double alpha_s = interface_params().get<double>("HEATTRANSSLAVE");
@@ -311,9 +311,9 @@ void CONTACT::TSIInterface::assemble_dual_mass_lumped(
 {
   // loop over proc's slave nodes of the interface for assembly
   // use standard row map to assemble each node only once
-  for (int i = 0; i < activenodes_->NumMyElements(); ++i)
+  for (int i = 0; i < activenodes_->num_my_elements(); ++i)
   {
-    int gid = activenodes_->GID(i);
+    int gid = activenodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     CONTACT::Node* conode = dynamic_cast<CONTACT::Node*>(node);
@@ -395,9 +395,9 @@ void CONTACT::TSIInterface::assemble_lin_dm_x(Core::LinAlg::SparseMatrix* linD_X
   const double dt = interface_params().get<double>("TIMESTEP");
 
   // loop over all LM slave nodes (row map)
-  for (int j = 0; j < node_rowmap->NumMyElements(); ++j)
+  for (int j = 0; j < node_rowmap->num_my_elements(); ++j)
   {
-    int gid = node_rowmap->GID(j);
+    int gid = node_rowmap->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -562,9 +562,9 @@ void CONTACT::TSIInterface::assemble_dm_lin_diss(Core::LinAlg::SparseMatrix* d_L
   const double dt = interface_params().get<double>("TIMESTEP");
 
   // loop over all LM slave nodes (row map)
-  for (int j = 0; j < activenodes_->NumMyElements(); ++j)
+  for (int j = 0; j < activenodes_->num_my_elements(); ++j)
   {
-    int gid = activenodes_->GID(j);
+    int gid = activenodes_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -685,9 +685,9 @@ void CONTACT::TSIInterface::assemble_lin_l_mn_dm_temp(
   using _cimm = std::map<int, std::map<int, double>>::const_iterator;
 
   // loop over all LM slave nodes (row map)
-  for (int j = 0; j < activenodes_->NumMyElements(); ++j)
+  for (int j = 0; j < activenodes_->num_my_elements(); ++j)
   {
-    int gid = activenodes_->GID(j);
+    int gid = activenodes_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -762,9 +762,9 @@ void CONTACT::TSIInterface::assemble_dm_l_mn(const double fac, Core::LinAlg::Spa
   using _cip = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // loop over all LM slave nodes (row map)
-  for (int j = 0; j < activenodes_->NumMyElements(); ++j)
+  for (int j = 0; j < activenodes_->num_my_elements(); ++j)
   {
-    int gid = activenodes_->GID(j);
+    int gid = activenodes_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -806,9 +806,9 @@ void CONTACT::TSIInterface::assemble_inactive(Core::LinAlg::SparseMatrix* linCon
       Core::LinAlg::split_map(*snoderowmap_, *activenodes_);
 
   // loop over all LM slave nodes (row map)
-  for (int j = 0; j < inactivenodes->NumMyElements(); ++j)
+  for (int j = 0; j < inactivenodes->num_my_elements(); ++j)
   {
-    int gid = inactivenodes->GID(j);
+    int gid = inactivenodes->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);

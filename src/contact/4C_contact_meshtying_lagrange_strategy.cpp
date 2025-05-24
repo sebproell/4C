@@ -893,15 +893,15 @@ void CONTACT::MtLagrangeStrategy::recover(std::shared_ptr<Core::LinAlg::Vector<d
 
     // extract slave displacements from disi
     Core::LinAlg::Vector<double> disis(*gsdofrowmap_);
-    if (gsdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disis);
+    if (gsdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disis);
 
     // extract master displacements from disi
     Core::LinAlg::Vector<double> disim(*gmdofrowmap_);
-    if (gmdofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disim);
+    if (gmdofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disim);
 
     // extract other displacements from disi
     Core::LinAlg::Vector<double> disin(*gndofrowmap_);
-    if (gndofrowmap_->NumGlobalElements()) Core::LinAlg::export_to(*disi, disin);
+    if (gndofrowmap_->num_global_elements()) Core::LinAlg::export_to(*disi, disin);
 
     /**********************************************************************/
     /* Update slave increment \Delta d_s                                  */

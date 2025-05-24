@@ -502,10 +502,10 @@ void Core::Binstrategy::BinningStrategy::get_all_bin_centers(
     Core::LinAlg::Map& binrowmap, Core::LinAlg::MultiVector<double>& bincenters) const
 {
   // loop over row bins and get center coordinates
-  for (int i = 0; i < binrowmap.NumMyElements(); ++i)
+  for (int i = 0; i < binrowmap.num_my_elements(); ++i)
   {
     // get global id of bin
-    const int gidofbin = binrowmap.GID(i);
+    const int gidofbin = binrowmap.gid(i);
 
     // get coordinates of bin center
     Core::LinAlg::Matrix<3, 1> center = get_bin_centroid(gidofbin);
@@ -594,7 +594,7 @@ void Core::Binstrategy::BinningStrategy::determine_boundary_row_bins()
 
   // loop over row bins and decide whether they are located at the boundary
   const Core::LinAlg::Map* binrowmap = bindis_->element_row_map();
-  for (int lid = 0; lid < binrowmap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < binrowmap->num_my_elements(); ++lid)
   {
     Core::Elements::Element* currbin = bindis_->l_row_element(lid);
     std::vector<int> binvec;
@@ -614,7 +614,7 @@ void Core::Binstrategy::BinningStrategy::determine_boundary_row_bins()
     rowbinvec.reserve(nummaxneighbors);
     for (int& it : binvec)
     {
-      if (binrowmap->LID(it) != -1) rowbinvec.push_back(it);
+      if (binrowmap->lid(it) != -1) rowbinvec.push_back(it);
     }
 
     if (rowbinvec.size() < nummaxneighbors) boundaryrowbins_.push_back(currbin);
@@ -732,7 +732,7 @@ void Core::Binstrategy::BinningStrategy::write_bin_output(int const step, double
   }
 
   // get max gid before adding elements
-  int maxgid = bindis_->element_row_map()->MaxAllGID() + 1;
+  int maxgid = bindis_->element_row_map()->max_all_gid() + 1;
   if (writebinstype_ == WriteBins::cols)
   {
     // gather all numbers of ghosted bins that are going to be row eles
@@ -832,17 +832,17 @@ void Core::Binstrategy::BinningStrategy::distribute_bins_recurs_coord_bisection(
       Core::Rebalance::rebalance_coordinates(*bincenters, params, *binweights);
 
   // create bin row map
-  binrowmap = std::make_shared<Core::LinAlg::Map>(-1, bincenters->get_map().NumMyElements(),
-      bincenters->get_map().MyGlobalElements(), 0, bin_discret()->get_comm());
+  binrowmap = std::make_shared<Core::LinAlg::Map>(-1, bincenters->get_map().num_my_elements(),
+      bincenters->get_map().my_global_elements(), 0, bin_discret()->get_comm());
 }
 
 void Core::Binstrategy::BinningStrategy::fill_bins_into_bin_discretization(
     Core::LinAlg::Map& rowbins)
 {
   // fill bins into bindis_
-  for (int i = 0; i < rowbins.NumMyElements(); ++i)
+  for (int i = 0; i < rowbins.num_my_elements(); ++i)
   {
-    const int gid = rowbins.GID(i);
+    const int gid = rowbins.gid(i);
     std::shared_ptr<Core::Elements::Element> bin =
         Core::Communication::factory("MESHFREEMULTIBIN", "dummy", gid, myrank_);
     bindis_->add_element(bin);
@@ -925,7 +925,7 @@ void Core::Binstrategy::BinningStrategy::assign_eles_to_bins(Core::FE::Discretiz
   for (const auto& [bin_gid, ele_gids] : extended_bin_to_row_ele_map)
   {
     // extract bins from discretization after checking on existence
-    const int bin_lid = bindis_->element_col_map()->LID(bin_gid);
+    const int bin_lid = bindis_->element_col_map()->lid(bin_gid);
     if (bin_lid < 0) continue;
 
     // get current bin
@@ -951,7 +951,7 @@ void Core::Binstrategy::BinningStrategy::get_bin_content(std::set<Core::Elements
   for (biniter = binIds.begin(); biniter != binIds.end(); ++biniter)
   {
     // extract bins from discretization after checking on existence
-    const int lid = bindis_->element_col_map()->LID(*biniter);
+    const int lid = bindis_->element_col_map()->lid(*biniter);
     if (lid < 0) continue;
 
     // get content of current bin
@@ -1087,9 +1087,9 @@ std::shared_ptr<Core::LinAlg::Map> Core::Binstrategy::BinningStrategy::
     // get the node ids of the elements that are to be ghosted
     // and create a proper node column map for their export
     std::set<int> nodes;
-    for (int lid = 0; lid < extendedelecolmap->NumMyElements(); ++lid)
+    for (int lid = 0; lid < extendedelecolmap->num_my_elements(); ++lid)
     {
-      Core::Elements::Element* ele = discret[i]->g_element(extendedelecolmap->GID(lid));
+      Core::Elements::Element* ele = discret[i]->g_element(extendedelecolmap->gid(lid));
       const int* nodeids = ele->node_ids();
       for (int inode = 0; inode < ele->num_node(); ++inode) nodes.insert(nodeids[inode]);
     }
@@ -1151,9 +1151,9 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
     bingraph = std::make_shared<Core::LinAlg::Graph>(Copy, *oldrowmap, maxband, false);
 
     // fill all local entries into the graph
-    for (int lid = 0; lid < oldrowmap->NumMyElements(); ++lid)
+    for (int lid = 0; lid < oldrowmap->num_my_elements(); ++lid)
     {
-      const int binId = oldrowmap->GID(lid);
+      const int binId = oldrowmap->gid(lid);
 
       std::vector<int> neighbors;
       get_neighbor_bin_ids(binId, neighbors);
@@ -1203,7 +1203,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
     std::map<int, std::vector<int>>::const_iterator biniter;
     for (biniter = nodesinmybins.begin(); biniter != nodesinmybins.end(); ++biniter)
     {
-      int lid = rowbins->LID(biniter->first);
+      int lid = rowbins->lid(biniter->first);
       // safety check
       if (lid < 0)
         FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
@@ -1215,9 +1215,9 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
   }
 
   // fill bin connectivity into bin graph
-  for (int lid = 0; lid < rowbins->NumMyElements(); ++lid)
+  for (int lid = 0; lid < rowbins->num_my_elements(); ++lid)
   {
-    int rowbinid = rowbins->GID(lid);
+    int rowbinid = rowbins->gid(lid);
     // insert 26 (one level) neighboring bins to graph
     // (if active, periodic boundary conditions are considered here)
     std::vector<int> neighbors;
@@ -1249,7 +1249,7 @@ Core::Binstrategy::BinningStrategy::weighted_distribution_of_bins_to_procs(
   // extract repartitioned bin row map
   const Core::LinAlg::Map& rbinstmp = balanced_bingraph->row_map();
   std::shared_ptr<Core::LinAlg::Map> newrowbins = std::make_shared<Core::LinAlg::Map>(
-      -1, rbinstmp.NumMyElements(), rbinstmp.MyGlobalElements(), 0, discret[0]->get_comm());
+      -1, rbinstmp.num_my_elements(), rbinstmp.my_global_elements(), 0, discret[0]->get_comm());
 
   return newrowbins;
 }
@@ -1272,8 +1272,8 @@ std::shared_ptr<Core::LinAlg::Map> Core::Binstrategy::BinningStrategy::extend_el
       // either use given column layout of bins ...
       if (bin_colmap != nullptr)
       {
-        int nummyeles = bin_colmap->NumMyElements();
-        int* entries = bin_colmap->MyGlobalElements();
+        int nummyeles = bin_colmap->num_my_elements();
+        int* entries = bin_colmap->my_global_elements();
         bins.insert(entries, entries + nummyeles);
       }
       else  // ... or add an extra layer to the given bin distribution
@@ -1285,7 +1285,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::Binstrategy::BinningStrategy::extend_el
           // avoid getting two layer ghosting as this is not needed
           if (bin_rowmap != nullptr)
           {
-            const int lid = bin_rowmap->LID(binId);
+            const int lid = bin_rowmap->lid(binId);
             if (lid < 0) continue;
           }
           std::vector<int> binvec;
@@ -1335,8 +1335,8 @@ std::shared_ptr<Core::LinAlg::Map> Core::Binstrategy::BinningStrategy::extend_el
 
   // insert standard ghosting
   if (ele_colmap_from_standardghosting != nullptr)
-    for (int lid = 0; lid < ele_colmap_from_standardghosting->NumMyElements(); ++lid)
-      coleleset.insert(ele_colmap_from_standardghosting->GID(lid));
+    for (int lid = 0; lid < ele_colmap_from_standardghosting->num_my_elements(); ++lid)
+      coleleset.insert(ele_colmap_from_standardghosting->gid(lid));
 
   std::vector<int> colgids(coleleset.begin(), coleleset.end());
 
@@ -1351,13 +1351,13 @@ void Core::Binstrategy::BinningStrategy::extend_ghosting_of_binning_discretizati
   std::set<int> bins(colbins.begin(), colbins.end());
 
   // insert row bins
-  for (int i = 0; i < rowbins.NumMyElements(); ++i) bins.insert(rowbins.GID(i));
+  for (int i = 0; i < rowbins.num_my_elements(); ++i) bins.insert(rowbins.gid(i));
 
   std::vector<int> bincolmapvec(bins.begin(), bins.end());
   Core::LinAlg::Map bincolmap(
       -1, static_cast<int>(bincolmapvec.size()), bincolmapvec.data(), 0, bindis_->get_comm());
 
-  if (bincolmap.NumGlobalElements() == 1 &&
+  if (bincolmap.num_global_elements() == 1 &&
       Core::Communication::num_mpi_ranks(bindis_->get_comm()) > 1)
     FOUR_C_THROW("one bin cannot be run in parallel -> reduce BIN_SIZE_LOWER_BOUND");
 
@@ -1446,7 +1446,7 @@ void Core::Binstrategy::BinningStrategy::standard_discretization_ghosting(
   // the column map will become the new ghosted distribution of nodes (standard ghosting)
   const Core::LinAlg::Map cntmp = newnodegraph->col_map();
   stdnodecolmap = std::make_shared<Core::LinAlg::Map>(
-      -1, cntmp.NumMyElements(), cntmp.MyGlobalElements(), 0, discret->get_comm());
+      -1, cntmp.num_my_elements(), cntmp.my_global_elements(), 0, discret->get_comm());
 
   // rebuild of the discretizations with new maps for standard ghosting
   std::shared_ptr<Core::LinAlg::Map> roweles;
@@ -1484,7 +1484,7 @@ void Core::Binstrategy::BinningStrategy::
         std::map<int, std::vector<int>>& allnodesinmybins) const
 {
   // do communication to gather all nodes
-  const int numproc = Core::Communication::num_mpi_ranks(rowbins.Comm());
+  const int numproc = Core::Communication::num_mpi_ranks(rowbins.get_comm());
   for (int iproc = 0; iproc < numproc; ++iproc)
   {
     // vector with row bins on this proc
@@ -1492,17 +1492,17 @@ void Core::Binstrategy::BinningStrategy::
     int numbin;
     if (iproc == myrank_)
     {
-      int* myrowbinsdata = rowbins.MyGlobalElements();
-      numbin = rowbins.NumMyElements();
+      int* myrowbinsdata = rowbins.my_global_elements();
+      numbin = rowbins.num_my_elements();
       binids.insert(binids.begin(), myrowbinsdata, myrowbinsdata + numbin);
     }
 
     // first: proc i tells all procs how many bins it has
-    Core::Communication::broadcast(&numbin, 1, iproc, rowbins.Comm());
+    Core::Communication::broadcast(&numbin, 1, iproc, rowbins.get_comm());
     binids.resize(numbin);
     // second: proc i tells all procs which bins it has, now each proc contains
     // rowbingids of iproc in vector binids
-    Core::Communication::broadcast(binids.data(), numbin, iproc, rowbins.Comm());
+    Core::Communication::broadcast(binids.data(), numbin, iproc, rowbins.get_comm());
 
     // loop over all own bins and find requested ones, fill in master elements in these bins
     // (map key is bin gid owned by iproc, vector contains all node gids of all procs in this bin)
@@ -1521,7 +1521,7 @@ void Core::Binstrategy::BinningStrategy::
     }
 
     // iprocs gathers all this information from other procs
-    Core::LinAlg::gather<int>(sdata, rdata, 1, &iproc, rowbins.Comm());
+    Core::LinAlg::gather<int>(sdata, rdata, 1, &iproc, rowbins.get_comm());
 
     // iproc has to store the received data
     if (iproc == myrank_)
@@ -1569,7 +1569,7 @@ void Core::Binstrategy::BinningStrategy::
   if (set_bin_size_lower_bound_) bin_size_lower_bound_ = 0.0;
 
   // safety check
-  FOUR_C_ASSERT_ALWAYS(discret[0]->node_row_map()->NumMyElements() > 0,
+  FOUR_C_ASSERT_ALWAYS(discret[0]->node_row_map()->num_my_elements() > 0,
       "At least one proc does not even own at least one element, this leads to problems."
       " Choose less procs or change parallel distribution");
 
@@ -1768,7 +1768,7 @@ void Core::Binstrategy::BinningStrategy::transfer_nodes_and_elements(
 
   double currpos[3] = {0.0, 0.0, 0.0};
   // loop over all column nodes and check ownership
-  for (int i = 0; i < discret.node_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < discret.node_col_map()->num_my_elements(); ++i)
   {
     // get current node and position
     Core::Nodes::Node* currnode = discret.l_col_node(i);

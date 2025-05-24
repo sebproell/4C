@@ -63,7 +63,7 @@ namespace
   {
     const Core::LinAlg::MultiVector<double>& data = *all_data.at(name_and_component.name);
 
-    int local_id = data.get_map().LID(node_id);
+    int local_id = data.get_map().lid(node_id);
 
     if (local_id < 0)
     {
@@ -120,7 +120,7 @@ namespace
           label.c_str(), prefix.c_str(), prefix.c_str());
     }
 
-    int local_id = nodal_data.get_map().LID(node_id);
+    int local_id = nodal_data.get_map().lid(node_id);
 
     if (local_id < 0)
     {
@@ -245,7 +245,7 @@ int Solid::ResultTest::get_nodal_result(
     if (idx >= 0)
     {
       unknownpos = false;
-      int lid = disnpmap.LID(strudisc_->dof(0, actnode, idx));
+      int lid = disnpmap.lid(strudisc_->dof(0, actnode, idx));
       if (lid < 0)
         FOUR_C_THROW(
             "You tried to test {} on nonexistent dof {} on node {}", position, idx, actnode->id());
@@ -268,7 +268,7 @@ int Solid::ResultTest::get_nodal_result(
     if (idx >= 0)
     {
       unknownpos = false;
-      int lid = velnpmap.LID(strudisc_->dof(0, actnode, idx));
+      int lid = velnpmap.lid(strudisc_->dof(0, actnode, idx));
       if (lid < 0)
         FOUR_C_THROW(
             "You tried to test {} on nonexistent dof {} on node {}", position, idx, actnode->id());
@@ -291,7 +291,7 @@ int Solid::ResultTest::get_nodal_result(
     if (idx >= 0)
     {
       unknownpos = false;
-      int lid = accnpmap.LID(strudisc_->dof(0, actnode, idx));
+      int lid = accnpmap.lid(strudisc_->dof(0, actnode, idx));
       if (lid < 0)
         FOUR_C_THROW(
             "You tried to test {} on nonexistent dof {} on node {}", position, idx, actnode->id());
@@ -356,7 +356,7 @@ int Solid::ResultTest::get_nodal_result(
     if (idx >= 0)
     {
       unknownpos = false;
-      int lid = reactmap.LID(strudisc_->dof(0, actnode, idx));
+      int lid = reactmap.lid(strudisc_->dof(0, actnode, idx));
       if (lid < 0)
         FOUR_C_THROW(
             "You tried to test {} on nonexistent dof {} on node {}", position, idx, actnode->id());
@@ -639,7 +639,7 @@ std::optional<int> Solid::ResultTest::get_nodes_per_proc_number(
   {
     // extract number of nodes owned by specified processor
     special_status = Status::evaluated;
-    result = strudisc_->node_row_map()->NumMyElements();
+    result = strudisc_->node_row_map()->num_my_elements();
   }
 
   return result;

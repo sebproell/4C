@@ -104,10 +104,11 @@ void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::reset()
   check_init_setup();
 
   // reset crosslinker pairs
-  int unsigned const numrowsphereeles = ele_type_map_extractor_ptr()->sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles =
+      ele_type_map_extractor_ptr()->sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere const* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere const*>(discret().g_element(elegid));
 
@@ -179,10 +180,11 @@ bool BeamInteraction::SubmodelEvaluator::SphereBeamLinking::evaluate_force()
   // element gids of interacting elements
   std::vector<int> elegids(2);
 
-  int unsigned const numrowsphereeles = ele_type_map_extractor_ptr()->sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles =
+      ele_type_map_extractor_ptr()->sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere const* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere const*>(discret().g_element(elegid));
 
@@ -240,10 +242,11 @@ bool BeamInteraction::SubmodelEvaluator::SphereBeamLinking::evaluate_stiff()
   // element gids of interacting elements
   std::vector<int> elegids(2);
 
-  int unsigned const numrowsphereeles = ele_type_map_extractor_ptr()->sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles =
+      ele_type_map_extractor_ptr()->sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere const* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere const*>(discret().g_element(elegid));
 
@@ -304,10 +307,11 @@ bool BeamInteraction::SubmodelEvaluator::SphereBeamLinking::evaluate_force_stiff
 
   // element gids of interacting elements
   std::vector<int> elegids(2);
-  int unsigned const numrowsphereeles = ele_type_map_extractor_ptr()->sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles =
+      ele_type_map_extractor_ptr()->sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere const* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere const*>(discret().g_element(elegid));
 
@@ -389,10 +393,11 @@ void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::update_step_element(
   unbind_sphere_beam_bonds(num_local[2]);
 
   // sphere loop
-  int unsigned const numrowsphereeles = ele_type_map_extractor_ptr()->sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles =
+      ele_type_map_extractor_ptr()->sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere*>(discret().g_element(elegid));
 
@@ -452,10 +457,10 @@ BeamInteraction::SubmodelEvaluator::SphereBeamLinking::get_energy() const
 
   std::map<Solid::EnergyType, double> sp_beam_link_energies;
 
-  int unsigned const numrowsphereeles = ele_type_map_extractor().sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles = ele_type_map_extractor().sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor().sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor().sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere const* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere const*>(discret().g_element(elegid));
 
@@ -559,7 +564,7 @@ void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::get_half_interaction
   // loop over all sphere elements (needed in case interaction distance should be
   // radius dependent in the future)
   double curr_ia_dist = 0.0;
-  int unsigned const numrowsphereeles = ele_type_map_extractor().sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles = ele_type_map_extractor().sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
     //    int const elegid = EleTypeMapExtractor().sphere_map()->GID(rowele_i);
@@ -616,10 +621,10 @@ void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::write_output_runtime
 
   // get number of linker on current proc
   unsigned int num_row_points = 0;
-  int unsigned const numrowsphereeles = ele_type_map_extractor().sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles = ele_type_map_extractor().sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor().sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor().sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere const* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere const*>(discret().g_element(elegid));
 
@@ -645,7 +650,7 @@ void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::write_output_runtime
   unsigned int bond_i = 0;
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor().sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor().sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere const* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere const*>(discret().g_element(elegid));
 
@@ -721,12 +726,13 @@ void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::find_and_store_neigh
   std::unordered_set<int> tobebonded;
 
   // loop over all sphere elements
-  int unsigned const numrowsphereeles = ele_type_map_extractor_ptr()->sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles =
+      ele_type_map_extractor_ptr()->sphere_map()->num_my_elements();
   std::vector<int> rand_row_sphere = BeamInteraction::Utils::permutation(numrowsphereeles);
 
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->GID(rand_row_sphere[rowele_i]);
+    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->gid(rand_row_sphere[rowele_i]);
     Core::Elements::Element* currsphere = discret_ptr()->g_element(elegid);
 
     // (unique) set of neighboring bins for all col bins assigned to current element
@@ -1020,11 +1026,12 @@ void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::unbind_sphere_beam_b
   double p_unbind = 0.0;
 
   // sphere loop
-  int unsigned const numrowsphereeles = ele_type_map_extractor_ptr()->sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles =
+      ele_type_map_extractor_ptr()->sphere_map()->num_my_elements();
   std::vector<int> rand_row_sphere = BeamInteraction::Utils::permutation(numrowsphereeles);
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->GID(rand_row_sphere[rowele_i]);
+    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->gid(rand_row_sphere[rowele_i]);
     Discret::Elements::Rigidsphere* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere*>(discret().g_element(elegid));
 
@@ -1129,10 +1136,11 @@ void BeamInteraction::SubmodelEvaluator::SphereBeamLinking::update_linker_length
       spherebeamlinking_params_ptr_->contraction_rate(Inpar::BeamInteraction::linkertype_integrin) *
       (*g_state().get_delta_time())[0];
   double scalefac = 0.0;
-  int unsigned const numrowsphereeles = ele_type_map_extractor_ptr()->sphere_map()->NumMyElements();
+  int unsigned const numrowsphereeles =
+      ele_type_map_extractor_ptr()->sphere_map()->num_my_elements();
   for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor_ptr()->sphere_map()->gid(rowele_i);
     Discret::Elements::Rigidsphere* sphere =
         dynamic_cast<Discret::Elements::Rigidsphere*>(discret().g_element(elegid));
 

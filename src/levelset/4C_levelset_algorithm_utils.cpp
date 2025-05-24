@@ -233,7 +233,7 @@ void ScaTra::LevelSetAlgorithm::evaluate_error_compared_to_analytical_sol()
           for (int k = 0; k < numdofs; ++k)
           {
             const int dofgid = nodedofset[k];
-            int doflid = dofrowmap->LID(dofgid);
+            int doflid = dofrowmap->lid(dofgid);
             // evaluate component k of spatial function
             double initialval =
                 problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
@@ -411,7 +411,7 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
       iter != nodal_correction.end(); iter++)
   {
     const int gnodeid = iter->first;
-    const int lnodeid = noderowmap->LID(gnodeid);
+    const int lnodeid = noderowmap->lid(gnodeid);
     Core::Nodes::Node* lnode = discret_->l_row_node(lnodeid);
 
     std::vector<int> nodedofs = discret_->dof(nds_vel(), lnode);
@@ -421,7 +421,7 @@ void ScaTra::LevelSetAlgorithm::apply_contact_point_boundary_condition()
     {
       // get global and local dof IDs
       const int gid = nodedofs[index];
-      const int lid = convel_new->get_map().LID(gid);
+      const int lid = convel_new->get_map().lid(gid);
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       const double convelocity = myvel[index];
       int err = convel_new->replace_local_value(lid, 0, convelocity);

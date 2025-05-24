@@ -171,9 +171,9 @@ namespace Core::IO::GridGenerator
         });
 
     // Create the actual elements according to the row map
-    for (int lid = 0; lid < elementRowMap->NumMyElements(); ++lid)
+    for (int lid = 0; lid < elementRowMap->num_my_elements(); ++lid)
     {
-      int eleid = elementRowMap->GID(lid);
+      int eleid = elementRowMap->gid(lid);
       FOUR_C_ASSERT(eleid >= 0, "Missing gid");
 
       const auto& linedef = ed.element_lines(inputData.elementtype_, inputData.distype_);
@@ -231,9 +231,9 @@ namespace Core::IO::GridGenerator
       std::shared_ptr<const Core::LinAlg::Graph> graph =
           Core::Rebalance::build_graph(dis, *elementRowMap);
       nodeRowMap = std::make_shared<Core::LinAlg::Map>(
-          -1, graph->row_map().NumMyElements(), graph->row_map().MyGlobalElements(), 0, comm);
+          -1, graph->row_map().num_my_elements(), graph->row_map().my_global_elements(), 0, comm);
       nodeColMap = std::make_shared<Core::LinAlg::Map>(
-          -1, graph->col_map().NumMyElements(), graph->col_map().MyGlobalElements(), 0, comm);
+          -1, graph->col_map().num_my_elements(), graph->col_map().my_global_elements(), 0, comm);
     }
 
 
@@ -268,9 +268,9 @@ namespace Core::IO::GridGenerator
       coordm[2] = (inputData.top_corner_point_[2] + inputData.bottom_corner_point_[2]) / 2.;
     }
 
-    for (int lid = 0; lid < nodeRowMap->NumMyElements(); ++lid)
+    for (int lid = 0; lid < nodeRowMap->num_my_elements(); ++lid)
     {
-      const int gid = nodeRowMap->GID(lid);
+      const int gid = nodeRowMap->gid(lid);
       maxgid = std::max(gid, maxgid);
 
       const int posid = gid - inputData.node_gid_of_first_new_node_;

@@ -515,13 +515,13 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
       gsc_lmdofmap_ptr = Core::LinAlg::merge_map(selfcontact_lmmap, gsc_lmdofmap_ptr);
       gsc_refdofmap_ptr = Core::LinAlg::merge_map(refdofrowmap, gsc_refdofmap_ptr);
 
-      const int loffset_interface = selfcontact_lmmap->NumGlobalElements();
+      const int loffset_interface = selfcontact_lmmap->num_global_elements();
       if (loffset_interface > 0) offset_if += loffset_interface;
     }
     else
     {
       interfaces()[i]->update_lag_mult_sets(offset_if, redistributed);
-      const int loffset_interface = interfaces()[i]->lag_mult_dofs()->NumGlobalElements();
+      const int loffset_interface = interfaces()[i]->lag_mult_dofs()->num_global_elements();
       if (loffset_interface > 0) offset_if += loffset_interface;
     }
 
@@ -589,7 +589,7 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
   gdisprowmap_ = Core::LinAlg::merge_map(*gndofrowmap_, *gsmdofrowmap_, false);
 
   // initialize flags for global contact status
-  if (gactivenodes_->NumGlobalElements())
+  if (gactivenodes_->num_global_elements())
   {
     isincontact_ = true;
     wasincontact_ = true;
@@ -676,7 +676,7 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
       dold_->zero();
       dold_->complete();
     }
-    else if (dold_->row_map().NumGlobalElements() > 0)
+    else if (dold_->row_map().num_global_elements() > 0)
       dold_ = Mortar::matrix_row_col_transform(
           *dold_, *slave_dof_row_map_ptr(true), *slave_dof_row_map_ptr(true));
 
@@ -686,7 +686,7 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
       mold_->zero();
       mold_->complete(*gmdofrowmap_, slave_dof_row_map(true));
     }
-    else if (mold_->row_map().NumGlobalElements() > 0)
+    else if (mold_->row_map().num_global_elements() > 0)
       mold_ = Mortar::matrix_row_col_transform(*mold_, *slave_dof_row_map_ptr(true), *gmdofrowmap_);
   }
 
@@ -786,8 +786,8 @@ void CONTACT::AbstractStrategy::setup(bool redistributed, bool init)
 std::shared_ptr<Core::LinAlg::Map> CONTACT::AbstractStrategy::create_deterministic_lm_dof_row_map(
     const Core::LinAlg::Map& gsdofrowmap) const
 {
-  const unsigned num_my_sdofs = gsdofrowmap.NumMyElements();
-  const int* my_sdof_gids = gsdofrowmap.MyGlobalElements();
+  const unsigned num_my_sdofs = gsdofrowmap.num_my_elements();
+  const int* my_sdof_gids = gsdofrowmap.my_global_elements();
 
   std::vector<int> my_lm_gids(num_my_sdofs, -1);
 
@@ -803,7 +803,7 @@ std::shared_ptr<Core::LinAlg::Map> CONTACT::AbstractStrategy::create_determinist
       const Interface& interface = **cit;
       std::shared_ptr<const Core::LinAlg::Map> sdof_map = interface.slave_row_dofs();
 
-      interface_slid = sdof_map->LID(sgid);
+      interface_slid = sdof_map->lid(sgid);
       if (interface_slid != -1) break;
     }
 
@@ -814,7 +814,7 @@ std::shared_ptr<Core::LinAlg::Map> CONTACT::AbstractStrategy::create_determinist
           sgid, Core::Communication::my_mpi_rank(get_comm()));
 
     // get the corresponding Lagrange Multiplier GID
-    const int interface_lmgid = interfaces()[interface_id]->lag_mult_dofs()->GID(interface_slid);
+    const int interface_lmgid = interfaces()[interface_id]->lag_mult_dofs()->gid(interface_slid);
     if (interface_lmgid == -1)
       FOUR_C_THROW(
           "Couldn't find the corresponding Lagrange multiplier GID! "
@@ -998,7 +998,7 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
     // merge interface Lagrange multiplier dof maps to global LM dof map
     glmdofrowmap_ =
         Core::LinAlg::merge_map(lm_dof_row_map_ptr(true), interfaces()[i]->lag_mult_dofs());
-    offset_if = lm_dof_row_map(true).NumGlobalElements();
+    offset_if = lm_dof_row_map(true).num_global_elements();
     if (offset_if < 0) offset_if = 0;
 
     // merge interface master, slave maps to global master, slave map
@@ -1013,12 +1013,12 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
       std::make_shared<Core::LinAlg::Vector<double>>(*gsdofrowmap_, true);
 
   {
-    const int* oldgids = zincr_->get_map().MyGlobalElements();
-    for (int i = 0; i < zincr_->get_map().NumMyElements(); ++i)
+    const int* oldgids = zincr_->get_map().my_global_elements();
+    for (int i = 0; i < zincr_->get_map().num_my_elements(); ++i)
     {
       if (std::abs((*zincr_)[i]) > std::numeric_limits<double>::epsilon())
       {
-        const int new_lid = gsdofrowmap_->LID(oldgids[i]);
+        const int new_lid = gsdofrowmap_->lid(oldgids[i]);
         if (new_lid == -1)
           FOUR_C_THROW(
               "Self contact: The Lagrange multiplier increment vector "
@@ -1032,12 +1032,12 @@ void CONTACT::AbstractStrategy::update_global_self_contact_state()
 
   tmp_ptr->put_scalar(0.0);
   {
-    const int* oldgids = z_->get_map().MyGlobalElements();
-    for (int i = 0; i < z_->get_map().NumMyElements(); ++i)
+    const int* oldgids = z_->get_map().my_global_elements();
+    for (int i = 0; i < z_->get_map().num_my_elements(); ++i)
     {
       if (std::abs((*z_)[i]) > std::numeric_limits<double>::epsilon())
       {
-        const int new_lid = gsdofrowmap_->LID(oldgids[i]);
+        const int new_lid = gsdofrowmap_->lid(oldgids[i]);
         if (new_lid == -1)
           FOUR_C_THROW(
               "Self contact: The Lagrange multiplier vector "
@@ -1412,7 +1412,7 @@ void CONTACT::AbstractStrategy::evaluate_reference_state()
     }
 
     // initialize flags for global contact status
-    if (gactivenodes_->NumGlobalElements())
+    if (gactivenodes_->num_global_elements())
     {
       isincontact_ = true;
       wasincontact_ = true;
@@ -1420,7 +1420,7 @@ void CONTACT::AbstractStrategy::evaluate_reference_state()
     }
 
     // error if no nodes are initialized to active
-    if (gactivenodes_->NumGlobalElements() == 0)
+    if (gactivenodes_->num_global_elements() == 0)
       FOUR_C_THROW("No active nodes: Choose bigger value for INITCONTACTGAPVALUE!");
   }
 
@@ -1608,9 +1608,9 @@ void CONTACT::AbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Qua
       Core::LinAlg::export_to(*vectorglobal, *vectorinterface);
 
     // loop over all slave nodes (column or row) on the current interface
-    for (int j = 0; j < snodemap->NumMyElements(); ++j)
+    for (int j = 0; j < snodemap->num_my_elements(); ++j)
     {
-      int gid = snodemap->GID(j);
+      int gid = snodemap->gid(j);
       Core::Nodes::Node* node = interfaces()[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -1625,7 +1625,7 @@ void CONTACT::AbstractStrategy::store_nodal_quantities(Mortar::StrategyBase::Qua
 
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (vectorinterface->get_map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (vectorinterface->get_map()).lid(cnode->dofs()[dof]);
         if (locindex[dof] < 0) FOUR_C_THROW("StoreNodalQuantities: Did not find dof in map");
 
         switch (type)
@@ -1692,9 +1692,9 @@ void CONTACT::AbstractStrategy::compute_contact_stresses()
   for (int i = 0; i < (int)interfaces().size(); ++i)
   {
     // loop over all slave row nodes on the current interface
-    for (int j = 0; j < interfaces()[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interfaces()[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interfaces()[i]->slave_row_nodes()->GID(j);
+      int gid = interfaces()[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interfaces()[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -1728,14 +1728,14 @@ void CONTACT::AbstractStrategy::compute_contact_stresses()
       // normal stress components
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (stressnormal_->get_map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (stressnormal_->get_map()).lid(cnode->dofs()[dof]);
         (*stressnormal_)[locindex[dof]] = -lmn * nn[dof];
       }
 
       // tangential stress components
       for (int dof = 0; dof < n_dim(); ++dof)
       {
-        locindex[dof] = (stresstangential_->get_map()).LID(cnode->dofs()[dof]);
+        locindex[dof] = (stresstangential_->get_map()).lid(cnode->dofs()[dof]);
         (*stresstangential_)[locindex[dof]] = -lmt1 * nt1[dof] - lmt2 * nt2[dof];
       }
     }
@@ -1752,9 +1752,9 @@ void CONTACT::AbstractStrategy::store_dirichlet_status(
   for (unsigned i = 0; i < interfaces().size(); ++i)
   {
     // loop over all slave row nodes on the current interface
-    for (int j = 0; j < interfaces()[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interfaces()[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interfaces()[i]->slave_row_nodes()->GID(j);
+      int gid = interfaces()[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interfaces()[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -1763,7 +1763,7 @@ void CONTACT::AbstractStrategy::store_dirichlet_status(
       for (int k = 0; k < cnode->num_dof(); ++k)
       {
         int currdof = cnode->dofs()[k];
-        int lid = (dbcmaps->cond_map())->LID(currdof);
+        int lid = (dbcmaps->cond_map())->lid(currdof);
 
         // store dbc status if found
         if (lid >= 0 && cnode->dbc_dofs()[k] == false) cnode->set_dbc() = true;
@@ -1853,7 +1853,7 @@ void CONTACT::AbstractStrategy::update(std::shared_ptr<const Core::LinAlg::Vecto
   reset_active_set();
 
   // update flag for global contact status of last time step
-  if (gactivenodes_->NumGlobalElements())
+  if (gactivenodes_->num_global_elements())
   {
     wasincontact_ = true;
     wasincontactlts_ = true;
@@ -1906,13 +1906,13 @@ void CONTACT::AbstractStrategy::do_write_restart(
   for (int i = 0; i < (int)interfaces().size(); ++i)
   {
     // loop over all slave nodes on the current interface
-    for (int j = 0; j < interfaces()[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interfaces()[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interfaces()[i]->slave_row_nodes()->GID(j);
+      int gid = interfaces()[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interfaces()[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
-      int dof = (activetoggle->get_map()).LID(gid);
+      int dof = (activetoggle->get_map()).lid(gid);
 
       if (forcedrestart)
       {
@@ -2001,10 +2001,10 @@ void CONTACT::AbstractStrategy::do_read_restart(Core::IO::DiscretizationReader& 
   for (int i = 0; i < (int)interfaces().size(); ++i)
   {
     // loop over all slave nodes on the current interface
-    for (int j = 0; j < (interfaces()[i]->slave_row_nodes())->NumMyElements(); ++j)
+    for (int j = 0; j < (interfaces()[i]->slave_row_nodes())->num_my_elements(); ++j)
     {
-      int gid = (interfaces()[i]->slave_row_nodes())->GID(j);
-      int dof = (activetoggle->get_map()).LID(gid);
+      int gid = (interfaces()[i]->slave_row_nodes())->gid(j);
+      int dof = (activetoggle->get_map()).lid(gid);
 
       if ((*activetoggle)[dof] == 1)
       {
@@ -2090,7 +2090,7 @@ void CONTACT::AbstractStrategy::do_read_restart(Core::IO::DiscretizationReader& 
   }
 
   // update flags for global contact status
-  if (gactivenodes_->NumGlobalElements())
+  if (gactivenodes_->num_global_elements())
   {
     isincontact_ = true;
     wasincontact_ = true;
@@ -2416,9 +2416,9 @@ void CONTACT::AbstractStrategy::print_active_set() const
   for (int i = 0; i < (int)interfaces().size(); ++i)
   {
     // loop over all slave nodes on the current interface
-    for (int j = 0; j < interfaces()[i]->slave_row_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < interfaces()[i]->slave_row_nodes()->num_my_elements(); ++j)
     {
-      int gid = interfaces()[i]->slave_row_nodes()->GID(j);
+      int gid = interfaces()[i]->slave_row_nodes()->gid(j);
       Core::Nodes::Node* node = interfaces()[i]->discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
 

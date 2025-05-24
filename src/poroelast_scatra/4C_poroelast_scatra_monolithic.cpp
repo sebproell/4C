@@ -347,9 +347,9 @@ void PoroElastScaTra::PoroScatraMono::setup_system()
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
   }
 
-  if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No poro structure equation. Panic.");
-  if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
-  if (vecSpaces[2]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
+  if (vecSpaces[0]->num_global_elements() == 0) FOUR_C_THROW("No poro structure equation. Panic.");
+  if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
+  if (vecSpaces[2]->num_global_elements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
 
   // build dof row map of monolithic system
   set_dof_row_maps(vecSpaces);
@@ -1251,7 +1251,7 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
   const int spaltenr = -1;
   for (int i = 0; i < dofs; ++i)
   {
-    if (combined_dbc_map()->MyGID(i))
+    if (combined_dbc_map()->my_gid(i))
     {
       iterinc->replace_global_value(i, 0, 0.0);
     }
@@ -1314,7 +1314,7 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
       }
     }
 
-    if (not combined_dbc_map()->MyGID(i)) iterinc->replace_global_value(i, 0, -delta);
+    if (not combined_dbc_map()->my_gid(i)) iterinc->replace_global_value(i, 0, -delta);
 
     iterinc->replace_global_value(i - 1, 0, 0.0);
 
@@ -1345,11 +1345,11 @@ void PoroElastScaTra::PoroScatraMono::fd_check()
   double error_max_abs = 0.0;
   for (int i = 0; i < dofs; ++i)
   {
-    if (not combined_dbc_map()->MyGID(i))
+    if (not combined_dbc_map()->my_gid(i))
     {
       for (int j = 0; j < dofs; ++j)
       {
-        if (not combined_dbc_map()->MyGID(j))
+        if (not combined_dbc_map()->my_gid(j))
         {
           double stiff_approx_ij = 0.0;
           double sparse_ij = 0.0;

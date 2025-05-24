@@ -79,11 +79,11 @@ Coupling::VolMortar::VolMortarCoupl::VolMortarCoupl(int dim,
   else
     dofset12_ = *dofset12;
 
-  const int* rownodes1 = dis1->node_row_map()->MyGlobalElements();
-  const int numrownode1 = dis1->node_row_map()->NumMyElements();
+  const int* rownodes1 = dis1->node_row_map()->my_global_elements();
+  const int numrownode1 = dis1->node_row_map()->num_my_elements();
 
-  const int* rownodes2 = dis2->node_row_map()->MyGlobalElements();
-  const int numrownode2 = dis2->node_row_map()->NumMyElements();
+  const int* rownodes2 = dis2->node_row_map()->my_global_elements();
+  const int numrownode2 = dis2->node_row_map()->num_my_elements();
 
   // determine row map of projection operators
   build_maps(dis1, p12_dofrowmap_, coupleddof21, rownodes1, numrownode1, dofset12_.first);
@@ -94,11 +94,11 @@ Coupling::VolMortar::VolMortarCoupl::VolMortarCoupl(int dim,
   build_maps(dis1, p21_dofdomainmap_, coupleddof21, rownodes1, numrownode1, dofset21_.second);
   build_maps(dis2, p12_dofdomainmap_, coupleddof12, rownodes2, numrownode2, dofset12_.second);
 
-  const int* colnodes1 = dis1->node_col_map()->MyGlobalElements();
-  const int numcolnode1 = dis1->node_col_map()->NumMyElements();
+  const int* colnodes1 = dis1->node_col_map()->my_global_elements();
+  const int numcolnode1 = dis1->node_col_map()->num_my_elements();
 
-  const int* colnodes2 = dis2->node_col_map()->MyGlobalElements();
-  const int numcolnode2 = dis2->node_col_map()->NumMyElements();
+  const int* colnodes2 = dis2->node_col_map()->my_global_elements();
+  const int numcolnode2 = dis2->node_col_map()->num_my_elements();
 
   // determine column map of projection operators
   build_maps(dis1, p21_dofcolmap_, coupleddof21, colnodes1, numcolnode1, dofset21_.second);
@@ -737,7 +737,7 @@ void Coupling::VolMortar::VolMortarCoupl::evaluate_consistent_interpolation()
   for (int i = 0; i < dis1_->num_my_col_nodes(); ++i)
   {
     // 1 map node into bele
-    int gid = dis1_->node_col_map()->GID(i);
+    int gid = dis1_->node_col_map()->gid(i);
     Core::Nodes::Node* anode = dis1_->g_node(gid);
 
     // get found elements from other discr.
@@ -750,7 +750,7 @@ void Coupling::VolMortar::VolMortarCoupl::evaluate_consistent_interpolation()
   for (int i = 0; i < dis2_->num_my_col_nodes(); ++i)
   {
     // 1 map node into bele
-    int gid = dis2_->node_col_map()->GID(i);
+    int gid = dis2_->node_col_map()->gid(i);
     Core::Nodes::Node* bnode = dis2_->g_node(gid);
 
     // get found elements from other discr.
@@ -1229,9 +1229,9 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
     std::shared_ptr<Core::LinAlg::Vector<double>> mergedXb =
         Core::LinAlg::create_vector(*discret2()->dof_row_map(dofsetb));
 
-    for (int n = 0; n < dis1_->node_row_map()->NumMyElements(); ++n)
+    for (int n = 0; n < dis1_->node_row_map()->num_my_elements(); ++n)
     {
-      int gid = dis1_->node_row_map()->GID(n);
+      int gid = dis1_->node_row_map()->gid(n);
       Core::Nodes::Node* node = dis1_->g_node(gid);
 
       Core::LinAlg::SerialDenseVector pos(3);
@@ -1253,9 +1253,9 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
       Core::LinAlg::assemble(*mergedXa, pos, id, owner);
     }
 
-    for (int n = 0; n < dis2_->node_row_map()->NumMyElements(); ++n)
+    for (int n = 0; n < dis2_->node_row_map()->num_my_elements(); ++n)
     {
-      int gid = dis2_->node_row_map()->GID(n);
+      int gid = dis2_->node_row_map()->gid(n);
       Core::Nodes::Node* node = dis2_->g_node(gid);
 
       Core::LinAlg::SerialDenseVector pos(3);
@@ -1422,7 +1422,7 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
         // loop over slave dofs
         for (int jdof = 0; jdof < nsdof; ++jdof)
         {
-          const int lid = sola->get_map().LID(discret1()->dof(dofseta, cnode, jdof));
+          const int lid = sola->get_map().lid(discret1()->dof(dofseta, cnode, jdof));
           nvector[jdof] = (*sola)[lid] - cnode->x()[jdof];
         }
         cnode->change_pos(nvector);
@@ -1441,7 +1441,7 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
         // loop over slave dofs
         for (int jdof = 0; jdof < nsdof; ++jdof)
         {
-          const int lid = solb->get_map().LID(discret2()->dof(dofsetb, cnode, jdof));
+          const int lid = solb->get_map().lid(discret2()->dof(dofsetb, cnode, jdof));
           nvector[jdof] = (*solb)[lid] - cnode->x()[jdof];
         }
         cnode->change_pos(nvector);
@@ -1457,9 +1457,9 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
     std::shared_ptr<Core::LinAlg::Vector<double>> checkb =
         Core::LinAlg::create_vector(*discret2()->dof_row_map(dofsetb));
 
-    for (int n = 0; n < dis1_->node_row_map()->NumMyElements(); ++n)
+    for (int n = 0; n < dis1_->node_row_map()->num_my_elements(); ++n)
     {
-      int gid = dis1_->node_row_map()->GID(n);
+      int gid = dis1_->node_row_map()->gid(n);
       Core::Nodes::Node* node = dis1_->g_node(gid);
 
       Core::LinAlg::SerialDenseVector pos(3);
@@ -1480,9 +1480,9 @@ void Coupling::VolMortar::VolMortarCoupl::mesh_init()
       Core::LinAlg::assemble(*checka, pos, id, owner);
     }
 
-    for (int n = 0; n < dis2_->node_row_map()->NumMyElements(); ++n)
+    for (int n = 0; n < dis2_->node_row_map()->num_my_elements(); ++n)
     {
-      int gid = dis2_->node_row_map()->GID(n);
+      int gid = dis2_->node_row_map()->gid(n);
       Core::Nodes::Node* node = dis2_->g_node(gid);
 
       Core::LinAlg::SerialDenseVector pos(3);

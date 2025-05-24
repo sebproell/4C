@@ -530,10 +530,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::eval_local_normalized_radii(
   // "center-of-mass and current-node" vector.
   Core::LinAlg::Matrix<(dim), 1> dir_vec(Core::LinAlg::Initialization::zero);
 
-  for (int lid = 0; lid < cond_surfnoderowmap_->NumMyElements(); lid++)
+  for (int lid = 0; lid < cond_surfnoderowmap_->num_my_elements(); lid++)
   {
     // get the global id of the current node
-    int gid = cond_surfnoderowmap_->GID(lid);
+    int gid = cond_surfnoderowmap_->gid(lid);
 
     double R_r = 0.0;
     double R_l = 0.0;
@@ -1071,9 +1071,9 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::velocities(Core::FE::Discretizati
   // evaluate the average velocity and apply it to the design surface
   // -------------------------------------------------------------------
   // loop over all of the nodes
-  for (int lid = 0; lid < cond_noderowmap.NumMyElements(); lid++)
+  for (int lid = 0; lid < cond_noderowmap.num_my_elements(); lid++)
   {
-    int gid = cond_noderowmap.GID(lid);
+    int gid = cond_noderowmap.gid(lid);
 
     // check if the node exists on the current processor
     if (disc.have_global_node(gid))
@@ -1086,7 +1086,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::velocities(Core::FE::Discretizati
         // loop over the dof of a map
         // eval the velocity of a dof
         double velocity = 0.0;
-        double r = (local_radii)[cond_noderowmap.LID(gid)];
+        double r = (local_radii)[cond_noderowmap.lid(gid)];
 
         //------------------------------------------------------------
         // Check for the velocity profile type
@@ -1108,7 +1108,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::velocities(Core::FE::Discretizati
         // else check for Womersley type
         else if (flowType == "WOMERSLEY")
         {
-          double R = (border_radii)[cond_noderowmap.LID(gid)];
+          double R = (border_radii)[cond_noderowmap.lid(gid)];
 
           // first calculate the parabolic profile of the 0th
           // harmonics
@@ -1262,10 +1262,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::correct_flow_rate(
     double correction = 0.0;
     for (int lid = 0; lid < correction_velnp->local_length(); lid++)
     {
-      int gid = correction_velnp->get_map().GID(lid);
+      int gid = correction_velnp->get_map().gid(lid);
       correction = correction_factor * (*correction_velnp)[lid];
 
-      int bc_lid = cond_velocities_->get_map().LID(gid);
+      int bc_lid = cond_velocities_->get_map().lid(gid);
       (*cond_velocities_)[bc_lid] += correction;
     }
   }
@@ -1276,10 +1276,10 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::correct_flow_rate(
     double correction = 0.0;
     for (int lid = 0; lid < correction_velnp->local_length(); lid++)
     {
-      int gid = correction_velnp->get_map().GID(lid);
+      int gid = correction_velnp->get_map().gid(lid);
       correction = correction_factor * (*correction_velnp)[lid];
 
-      int bc_lid = cond_velocities_->get_map().LID(gid);
+      int bc_lid = cond_velocities_->get_map().lid(gid);
       (*cond_velocities_)[bc_lid] = correction;
     }
   }
@@ -1294,7 +1294,7 @@ void FLD::Utils::FluidVolumetricSurfaceFlowBc::set_velocities(
 {
   for (int lid = 0; lid < cond_velocities_->local_length(); lid++)
   {
-    int gid = cond_velocities_->get_map().GID(lid);
+    int gid = cond_velocities_->get_map().gid(lid);
     double val = (*cond_velocities_)[lid];
 
     velocities.replace_global_values(1, &val, &gid);
@@ -1341,13 +1341,13 @@ double FLD::Utils::FluidVolumetricSurfaceFlowBc::flow_rate_calculation(
   discret_->evaluate_condition(eleparams, flowrates, condstring, condid);
 
   double local_flowrate = 0.0;
-  for (int i = 0; i < dofrowmap->NumMyElements(); i++)
+  for (int i = 0; i < dofrowmap->num_my_elements(); i++)
   {
     local_flowrate += ((*flowrates)[i]);
   }
 
   double flowrate = 0.0;
-  Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->Comm());
+  Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->get_comm());
 
   return flowrate;
 

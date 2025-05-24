@@ -588,7 +588,7 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
       double max = -10e19;
       for (int gid : nodeids)
       {
-        const int lid = discret_->node_row_map()->LID(gid);
+        const int lid = discret_->node_row_map()->lid(gid);
         if (lid < 0) continue;
         const Core::Nodes::Node* lnode = discret_->l_row_node(lid);
         const auto& coord = lnode->x();
@@ -624,7 +624,7 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
     for (size_t ivec = 0; ivec < allcuteleids.size(); ++ivec)
     {
       int elegid = allcuteleids[ivec];
-      int elelid = discret_->element_row_map()->LID(elegid);
+      int elelid = discret_->element_row_map()->lid(elegid);
       if (elelid >= 0)
       {
         const int coordbase = 3 * numnodesperele * ivec;
@@ -656,7 +656,7 @@ void ScaTra::LevelSetAlgorithm::reinit_geo(
     // get the dof associated with this node
     const int dofgid =
         discret_->dof(0, lnode, 0);  // since this is a scalar field the dof is always 0
-    int doflid = dofrowmap->LID(dofgid);
+    int doflid = dofrowmap->lid(dofgid);
     if (doflid < 0)
       FOUR_C_THROW(
           "Proc {}: Cannot find dof gid={} in Core::LinAlg::Vector<double>", myrank_, dofgid);

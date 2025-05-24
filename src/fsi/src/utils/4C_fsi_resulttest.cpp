@@ -237,17 +237,17 @@ void FSI::FSIResultTest::test_node(
         if (quantity == "lambdax")
         {
           unknownquantity = false;
-          result = (*fsilambda_)[fsilambdamap.LID(slavedisc_->dof(0, actnode, 0))];
+          result = (*fsilambda_)[fsilambdamap.lid(slavedisc_->dof(0, actnode, 0))];
         }
         else if (quantity == "lambday")
         {
           unknownquantity = false;
-          result = (*fsilambda_)[fsilambdamap.LID(slavedisc_->dof(0, actnode, 1))];
+          result = (*fsilambda_)[fsilambdamap.lid(slavedisc_->dof(0, actnode, 1))];
         }
         else if (quantity == "lambdaz")
         {
           unknownquantity = false;
-          result = (*fsilambda_)[fsilambdamap.LID(slavedisc_->dof(0, actnode, 2))];
+          result = (*fsilambda_)[fsilambdamap.lid(slavedisc_->dof(0, actnode, 2))];
         }
       }
 

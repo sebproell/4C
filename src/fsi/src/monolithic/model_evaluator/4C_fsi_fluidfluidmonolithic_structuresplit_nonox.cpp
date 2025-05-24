@@ -43,7 +43,7 @@ FSI::FluidFluidMonolithicStructureSplitNoNOX::FluidFluidMonolithicStructureSplit
   std::shared_ptr<Core::LinAlg::Map> intersectionmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
   {
     std::stringstream errormsg;
     errormsg << "  "
@@ -98,7 +98,7 @@ FSI::FluidFluidMonolithicStructureSplitNoNOX::FluidFluidMonolithicStructureSplit
   intersectionmaps.push_back(structure_field()->get_dbc_map_extractor()->cond_map());
   intersectionmaps.push_back(structure_field()->interface()->fsi_cond_map());
   intersectionmap = Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
     FOUR_C_THROW(
         "Could not remove structural interface Dirichlet conditions from structure DBC map.");
 #endif
@@ -751,7 +751,7 @@ void FSI::FluidFluidMonolithicStructureSplitNoNOX::create_combined_dof_row_map()
   vecSpaces.push_back(fluid_field()->dof_row_map());
   vecSpaces.push_back(ale_field()->interface()->other_map());
 
-  if (vecSpaces[0]->NumGlobalElements() == 0)
+  if (vecSpaces[0]->num_global_elements() == 0)
     FOUR_C_THROW("No inner structural equations. Splitting not possible. Panic.");
 
   set_dof_row_maps(vecSpaces);
@@ -987,7 +987,7 @@ void FSI::FluidFluidMonolithicStructureSplitNoNOX::handle_fluid_dof_map_change_i
 bool FSI::FluidFluidMonolithicStructureSplitNoNOX::has_fluid_dof_map_changed(
     const Core::LinAlg::Map& fluidincrementmap)
 {
-  return !fluid_field()->dof_row_map()->SameAs(fluidincrementmap);
+  return !fluid_field()->dof_row_map()->same_as(fluidincrementmap);
 }
 
 FOUR_C_NAMESPACE_CLOSE

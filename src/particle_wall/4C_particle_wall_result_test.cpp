@@ -99,7 +99,7 @@ void PARTICLEWALL::WallResultTest::test_node(
         if (disp != nullptr)
         {
           const Core::LinAlg::Map& disnpmap = disp->get_map();
-          int lid = disnpmap.LID(walldiscretization_->dof(0, actnode, idx));
+          int lid = disnpmap.lid(walldiscretization_->dof(0, actnode, idx));
           if (lid < 0)
             FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", quantity, idx,
                 actnode->id());
@@ -126,7 +126,7 @@ void PARTICLEWALL::WallResultTest::test_node(
       if (idx >= 0)
       {
         const Core::LinAlg::Map& disnpmap = disp->get_map();
-        int lid = disnpmap.LID(walldiscretization_->dof(0, actnode, idx));
+        int lid = disnpmap.lid(walldiscretization_->dof(0, actnode, idx));
         if (lid < 0)
           FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", quantity, idx,
               actnode->id());

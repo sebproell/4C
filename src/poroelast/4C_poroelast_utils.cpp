@@ -199,16 +199,16 @@ void PoroElast::Utils::create_volume_ghosting(Core::FE::Discretization& idiscret
     const std::shared_ptr<Core::LinAlg::Map> allredelecolmap =
         Core::LinAlg::allreduce_e_map(*voldi->element_row_map());
 
-    for (int i = 0; i < elecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < elecolmap->num_my_elements(); ++i)
     {
-      int gid = elecolmap->GID(i);
+      int gid = elecolmap->gid(i);
       rdata.push_back(gid);
     }
 
     // Find elements, which are ghosted on the interface but not in the volume discretization
-    for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < ielecolmap->num_my_elements(); ++i)
     {
-      int gid = ielecolmap->GID(i);
+      int gid = ielecolmap->gid(i);
 
       Core::Elements::Element* ele = idiscret.g_element(gid);
       if (!ele) FOUR_C_THROW("ERROR: Cannot find element with gid %", gid);
@@ -221,8 +221,8 @@ void PoroElast::Utils::create_volume_ghosting(Core::FE::Discretization& idiscret
         volgid = faceele->parent_element_id();
 
       // Ghost the parent element additionally
-      if (elecolmap->LID(volgid) == -1 &&
-          allredelecolmap->LID(volgid) !=
+      if (elecolmap->lid(volgid) == -1 &&
+          allredelecolmap->lid(volgid) !=
               -1)  // Volume discretization has not Element on this proc but on another
         rdata.push_back(volgid);
     }
@@ -255,9 +255,9 @@ void PoroElast::Utils::reconnect_parent_pointers(Core::FE::Discretization& idisc
   const Core::LinAlg::Map* ielecolmap = idiscret.element_col_map();
   const Core::LinAlg::Map* elecolmap = voldiscret.element_col_map();
 
-  for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
+  for (int i = 0; i < ielecolmap->num_my_elements(); ++i)
   {
-    int gid = ielecolmap->GID(i);
+    int gid = ielecolmap->gid(i);
 
     Core::Elements::Element* ele = idiscret.g_element(gid);
     if (!ele) FOUR_C_THROW("ERROR: Cannot find element with gid %", gid);
@@ -275,7 +275,7 @@ void PoroElast::Utils::set_slave_and_master(const Core::FE::Discretization& vold
 {
   int volgid = faceele->parent_element_id();
 
-  if (elecolmap->LID(volgid) == -1)  // Volume discretization has not Element
+  if (elecolmap->lid(volgid) == -1)  // Volume discretization has not Element
     FOUR_C_THROW("create_volume_ghosting: Element {} does not exist on this Proc!", volgid);
 
   Core::Elements::Element* vele = voldiscret.g_element(volgid);
@@ -285,7 +285,7 @@ void PoroElast::Utils::set_slave_and_master(const Core::FE::Discretization& vold
   if (voldiscret2)
   {
     const Core::LinAlg::Map* elecolmap2 = voldiscret2->element_col_map();
-    if (elecolmap2->LID(volgid) == -1)  // Volume discretization has not Element
+    if (elecolmap2->lid(volgid) == -1)  // Volume discretization has not Element
       faceele->set_parent_slave_element(nullptr, -1);
     else
     {

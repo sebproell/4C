@@ -149,7 +149,7 @@ PoroPressureBased::convert_dof_vector_to_node_based_multi_vector(
     Core::Nodes::Node* node = dis.l_row_node(inode);
     // copy each dof value of node
     for (int idof = 0; idof < numdofpernode; ++idof)
-      (*multi)(idof)[inode] = vector[vectormap.LID(dis.dof(nds, node, idof))];
+      (*multi)(idof)[inode] = vector[vectormap.lid(dis.dof(nds, node, idof))];
   }
 
   return multi;
@@ -215,18 +215,18 @@ std::map<int, std::set<int>> PoroPressureBased::extended_ghosting_artery_discret
   // to be filled with additional elements to be ghosted
   std::set<int> elecolset;
   const Core::LinAlg::Map* elecolmap = artdis->element_col_map();
-  for (int lid = 0; lid < elecolmap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < elecolmap->num_my_elements(); ++lid)
   {
-    int gid = elecolmap->GID(lid);
+    int gid = elecolmap->gid(lid);
     elecolset.insert(gid);
   }
 
   // to be filled with additional nodes to be ghosted
   std::set<int> nodecolset;
   const Core::LinAlg::Map* nodecolmap = artdis->node_col_map();
-  for (int lid = 0; lid < nodecolmap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < nodecolmap->num_my_elements(); ++lid)
   {
-    int gid = nodecolmap->GID(lid);
+    int gid = nodecolmap->gid(lid);
     nodecolset.insert(gid);
   }
 
@@ -241,10 +241,10 @@ std::map<int, std::set<int>> PoroPressureBased::extended_ghosting_artery_discret
         else
         {
           std::vector<int> artEleGIDs_help;
-          artEleGIDs_help.reserve(artsearchdis->element_col_map()->NumMyElements());
-          for (int iart = 0; iart < artsearchdis->element_col_map()->NumMyElements(); ++iart)
+          artEleGIDs_help.reserve(artsearchdis->element_col_map()->num_my_elements());
+          for (int iart = 0; iart < artsearchdis->element_col_map()->num_my_elements(); ++iart)
           {
-            artEleGIDs_help.push_back(artsearchdis->element_col_map()->GID(iart));
+            artEleGIDs_help.push_back(artsearchdis->element_col_map()->gid(iart));
           }
           return artEleGIDs_help;
         }
@@ -436,9 +436,9 @@ std::map<int, Core::LinAlg::Matrix<3, 1>> PoroPressureBased::get_nodal_positions
     Core::FE::Discretization& dis, const Core::LinAlg::Map* nodemap)
 {
   std::map<int, Core::LinAlg::Matrix<3, 1>> positions;
-  for (int lid = 0; lid < nodemap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < nodemap->num_my_elements(); ++lid)
   {
-    const Core::Nodes::Node* node = dis.g_node(nodemap->GID(lid));
+    const Core::Nodes::Node* node = dis.g_node(nodemap->gid(lid));
     Core::LinAlg::Matrix<3, 1> currpos;
 
     currpos(0) = node->x()[0];

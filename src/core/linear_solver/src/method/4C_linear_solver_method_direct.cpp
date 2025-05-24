@@ -49,7 +49,7 @@ void Core::LinearSolver::DirectSolver<MatrixType, VectorType>::setup(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> Ablock =
         std::dynamic_pointer_cast<Core::LinAlg::BlockSparseMatrixBase>(matrix);
 
-    int matrixDim = Ablock->full_range_map().NumGlobalElements();
+    int matrixDim = Ablock->full_range_map().num_global_elements();
     if (matrixDim > 50000)
       std::cout << "\n WARNING: Direct linear solver is merging matrix, this is very expensive! \n";
 

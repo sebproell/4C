@@ -137,8 +137,8 @@ void FBI::FBIGeometryCoupler::extend_beam_ghosting(Core::FE::Discretization& dis
 
   // fill my own row node ids
   const Core::LinAlg::Map* noderowmap = discretization.node_row_map();
-  std::vector<int> sdata(noderowmap->NumMyElements());
-  for (int i = 0; i < noderowmap->NumMyElements(); ++i) sdata[i] = noderowmap->GID(i);
+  std::vector<int> sdata(noderowmap->num_my_elements());
+  for (int i = 0; i < noderowmap->num_my_elements(); ++i) sdata[i] = noderowmap->gid(i);
 
   // gather all gids of nodes redundantly
   std::vector<int> rdata;
@@ -153,8 +153,8 @@ void FBI::FBIGeometryCoupler::extend_beam_ghosting(Core::FE::Discretization& dis
 
   // fill my own row element ids
   const Core::LinAlg::Map* elerowmap = discretization.element_row_map();
-  sdata.resize(elerowmap->NumMyElements());
-  for (int i = 0; i < elerowmap->NumMyElements(); ++i) sdata[i] = elerowmap->GID(i);
+  sdata.resize(elerowmap->num_my_elements());
+  for (int i = 0; i < elerowmap->num_my_elements(); ++i) sdata[i] = elerowmap->gid(i);
 
   // gather all gids of elements redundantly
   rdata.resize(0);
@@ -242,9 +242,9 @@ void FBI::FBIGeometryCoupler::prepare_pair_creation(
 
   // Add my current column elements to the set for the map
   const Core::LinAlg::Map* elecolmap = discretizations[1]->element_col_map();
-  for (int i = 0; i < elecolmap->NumMyElements(); ++i)
+  for (int i = 0; i < elecolmap->num_my_elements(); ++i)
   {
-    int gid = elecolmap->GID(i);
+    int gid = elecolmap->gid(i);
     Core::Elements::Element* ele = discretizations[1]->g_element(gid);
     if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
     element_recvdata.push_back(gid);
@@ -255,7 +255,7 @@ void FBI::FBIGeometryCoupler::prepare_pair_creation(
       -1, (int)element_recvdata.size(), element_recvdata.data(), 0, discretizations[1]->get_comm());
 
 
-  if (!newelecolmap.SameAs(*elecolmap))
+  if (!newelecolmap.same_as(*elecolmap))
   {
     // get node gids of all nodes within the elements to be communicated
     for (int proc = 0; proc < (int)element_senddata.size(); proc++)
@@ -278,9 +278,9 @@ void FBI::FBIGeometryCoupler::prepare_pair_creation(
 
     // add new node gids to overlapping column map
     const Core::LinAlg::Map* nodecolmap = discretizations[1]->node_col_map();
-    for (int i = 0; i < nodecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < nodecolmap->num_my_elements(); ++i)
     {
-      int gid = nodecolmap->GID(i);
+      int gid = nodecolmap->gid(i);
       Core::Nodes::Node* node = discretizations[1]->g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       node_recvdata.push_back(gid);

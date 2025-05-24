@@ -708,10 +708,10 @@ void BeamInteraction::SubmodelEvaluator::BeamContact::get_half_interaction_dista
   // loop over all beams to get largest interaction radius
   double locmax_ia_distance = 0.0;
   double curr_ia_distance = 0.0;
-  int const numroweles = ele_type_map_extractor_ptr()->beam_map()->NumMyElements();
+  int const numroweles = ele_type_map_extractor_ptr()->beam_map()->num_my_elements();
   for (int rowele_i = 0; rowele_i < numroweles; ++rowele_i)
   {
-    int const elegid = ele_type_map_extractor_ptr()->beam_map()->GID(rowele_i);
+    int const elegid = ele_type_map_extractor_ptr()->beam_map()->gid(rowele_i);
     Discret::Elements::Beam3Base* currele =
         dynamic_cast<Discret::Elements::Beam3Base*>(discret_ptr()->g_element(elegid));
 
@@ -748,10 +748,10 @@ void BeamInteraction::SubmodelEvaluator::BeamContact::get_half_interaction_dista
     // loop over all spheres
     double curr_ia_dist = 0.0;
     double loc_max_ia_dist = 0.0;
-    int unsigned const numrowsphereeles = ele_type_map_extractor().sphere_map()->NumMyElements();
+    int unsigned const numrowsphereeles = ele_type_map_extractor().sphere_map()->num_my_elements();
     for (unsigned int rowele_i = 0; rowele_i < numrowsphereeles; ++rowele_i)
     {
-      int const elegid = ele_type_map_extractor().sphere_map()->GID(rowele_i);
+      int const elegid = ele_type_map_extractor().sphere_map()->gid(rowele_i);
       Discret::Elements::Rigidsphere* sphere =
           dynamic_cast<Discret::Elements::Rigidsphere*>(discret().g_element(elegid));
 
@@ -815,10 +815,10 @@ void BeamInteraction::SubmodelEvaluator::BeamContact::find_and_store_neighboring
     // loop over all row beam elements
     // note: like this we ensure that first element of pair is always a beam element, also only
     // beam to something contact considered
-    int const numroweles = ele_type_map_extractor_ptr()->beam_map()->NumMyElements();
+    int const numroweles = ele_type_map_extractor_ptr()->beam_map()->num_my_elements();
     for (int rowele_i = 0; rowele_i < numroweles; ++rowele_i)
     {
-      int const elegid = ele_type_map_extractor_ptr()->beam_map()->GID(rowele_i);
+      int const elegid = ele_type_map_extractor_ptr()->beam_map()->gid(rowele_i);
       Core::Elements::Element* currele = discret_ptr()->g_element(elegid);
 
       // (unique) set of neighboring bins for all col bins assigned to current element
@@ -857,11 +857,11 @@ void BeamInteraction::SubmodelEvaluator::BeamContact::find_and_store_neighboring
            Inpar::BeamInteraction::SearchStrategy::bounding_volume_hierarchy)
   {
     // Get vector of all beam element bounding boxes.
-    int const numroweles = ele_type_map_extractor_ptr()->beam_map()->NumMyElements();
+    int const numroweles = ele_type_map_extractor_ptr()->beam_map()->num_my_elements();
     std::vector<std::pair<int, Core::GeometricSearch::BoundingVolume>> beam_bounding_boxes;
     for (int rowele_i = 0; rowele_i < numroweles; ++rowele_i)
     {
-      int const elegid = ele_type_map_extractor_ptr()->beam_map()->GID(rowele_i);
+      int const elegid = ele_type_map_extractor_ptr()->beam_map()->gid(rowele_i);
       Core::Elements::Element* currele = discret().g_element(elegid);
 
       beam_bounding_boxes.emplace_back(

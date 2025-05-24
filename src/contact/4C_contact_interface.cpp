@@ -237,9 +237,9 @@ void CONTACT::Interface::update_master_slave_sets()
     std::vector<int> sSc;  // master column map
     std::vector<int> sSr;  // master row map
 
-    for (int i = 0; i < discret().node_col_map()->NumMyElements(); ++i)
+    for (int i = 0; i < discret().node_col_map()->num_my_elements(); ++i)
     {
-      int gid = discret().node_col_map()->GID(i);
+      int gid = discret().node_col_map()->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       auto* mrtrnode = dynamic_cast<Node*>(node);
@@ -253,7 +253,7 @@ void CONTACT::Interface::update_master_slave_sets()
         {
           for (int j = 0; j < numdof; ++j) sVc.push_back(mrtrnode->dofs()[j]);
 
-          if (discret().node_row_map()->MyGID(gid))
+          if (discret().node_row_map()->my_gid(gid))
             for (int j = 0; j < numdof; ++j) sVr.push_back(mrtrnode->dofs()[j]);
         }
         // edge
@@ -261,7 +261,7 @@ void CONTACT::Interface::update_master_slave_sets()
         {
           for (int j = 0; j < numdof; ++j) sEc.push_back(mrtrnode->dofs()[j]);
 
-          if (discret().node_row_map()->MyGID(gid))
+          if (discret().node_row_map()->my_gid(gid))
             for (int j = 0; j < numdof; ++j) sEr.push_back(mrtrnode->dofs()[j]);
         }
         // surface
@@ -269,7 +269,7 @@ void CONTACT::Interface::update_master_slave_sets()
         {
           for (int j = 0; j < numdof; ++j) sSc.push_back(mrtrnode->dofs()[j]);
 
-          if (discret().node_row_map()->MyGID(gid))
+          if (discret().node_row_map()->my_gid(gid))
             for (int j = 0; j < numdof; ++j) sSr.push_back(mrtrnode->dofs()[j]);
         }
         else
@@ -317,9 +317,9 @@ void CONTACT::Interface::set_cn_ct_values(const int& iter)
   }
 
   // modification for edge/corner nodes
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -352,16 +352,16 @@ void CONTACT::Interface::set_cn_ct_values(const int& iter)
 
     if (cnode->is_on_edge())
     {
-      get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())] = cn * (length * length);
-      if (friction_) get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())] = ct * (length * length);
+      get_cn_ref()[get_cn_ref().get_map().lid(cnode->id())] = cn * (length * length);
+      if (friction_) get_ct_ref()[get_ct_ref().get_map().lid(cnode->id())] = ct * (length * length);
     }
 
     if (cnode->is_on_corner())
     {
-      get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())] =
+      get_cn_ref()[get_cn_ref().get_map().lid(cnode->id())] =
           cn * (length * length * length * length);
       if (friction_)
-        get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())] =
+        get_ct_ref()[get_ct_ref().get_map().lid(cnode->id())] =
             ct * (length * length * length * length);
     }
   }
@@ -521,8 +521,8 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
 
       // fill my own row node ids
       const Core::LinAlg::Map* noderowmap = discret().node_row_map();
-      std::vector<int> sdata(noderowmap->NumMyElements());
-      for (int i = 0; i < noderowmap->NumMyElements(); ++i) sdata[i] = noderowmap->GID(i);
+      std::vector<int> sdata(noderowmap->num_my_elements());
+      for (int i = 0; i < noderowmap->num_my_elements(); ++i) sdata[i] = noderowmap->gid(i);
 
       // gather all gids of nodes redundantly
       std::vector<int> rdata;
@@ -535,8 +535,8 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
 
       // fill my own row element ids
       const Core::LinAlg::Map* elerowmap = discret().element_row_map();
-      sdata.resize(elerowmap->NumMyElements());
-      for (int i = 0; i < elerowmap->NumMyElements(); ++i) sdata[i] = elerowmap->GID(i);
+      sdata.resize(elerowmap->num_my_elements());
+      for (int i = 0; i < elerowmap->num_my_elements(); ++i) sdata[i] = elerowmap->gid(i);
 
       // gather all gids of elements redundantly
       rdata.resize(0);
@@ -570,9 +570,9 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
       // fill my own master row node ids
       const Core::LinAlg::Map* noderowmap = discret().node_row_map();
       std::vector<int> sdata;
-      for (int i = 0; i < noderowmap->NumMyElements(); ++i)
+      for (int i = 0; i < noderowmap->num_my_elements(); ++i)
       {
-        int gid = noderowmap->GID(i);
+        int gid = noderowmap->gid(i);
         Core::Nodes::Node* node = discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         auto* mrtrnode = dynamic_cast<Mortar::Node*>(node);
@@ -585,9 +585,9 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
 
       // add my own slave column node ids (non-redundant, standard overlap)
       const Core::LinAlg::Map* nodecolmap = discret().node_col_map();
-      for (int i = 0; i < nodecolmap->NumMyElements(); ++i)
+      for (int i = 0; i < nodecolmap->num_my_elements(); ++i)
       {
-        int gid = nodecolmap->GID(i);
+        int gid = nodecolmap->gid(i);
         Core::Nodes::Node* node = discret().g_node(gid);
         if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
         auto* mrtrnode = dynamic_cast<Mortar::Node*>(node);
@@ -602,9 +602,9 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
       // fill my own master row element ids
       const Core::LinAlg::Map* elerowmap = discret().element_row_map();
       sdata.resize(0);
-      for (int i = 0; i < elerowmap->NumMyElements(); ++i)
+      for (int i = 0; i < elerowmap->num_my_elements(); ++i)
       {
-        int gid = elerowmap->GID(i);
+        int gid = elerowmap->gid(i);
         Core::Elements::Element* ele = discret().g_element(gid);
         if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
         auto* mrtrele = dynamic_cast<Mortar::Element*>(ele);
@@ -617,9 +617,9 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
 
       // add my own slave column node ids (non-redundant, standard overlap)
       const Core::LinAlg::Map* elecolmap = discret().element_col_map();
-      for (int i = 0; i < elecolmap->NumMyElements(); ++i)
+      for (int i = 0; i < elecolmap->num_my_elements(); ++i)
       {
-        int gid = elecolmap->GID(i);
+        int gid = elecolmap->gid(i);
         Core::Elements::Element* ele = discret().g_element(gid);
         if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
         auto* mrtrele = dynamic_cast<Mortar::Element*>(ele);
@@ -677,10 +677,10 @@ void CONTACT::Interface::extend_interface_ghosting_safely(const double meanVeloc
       // get the node ids of the elements that are to be ghosted and create a proper node column
       // map for their export
       std::set<int> nodes;
-      const int numMasterColElements = extendedmastercolmap->NumMyElements();
+      const int numMasterColElements = extendedmastercolmap->num_my_elements();
       for (int lid = 0; lid < numMasterColElements; ++lid)
       {
-        Core::Elements::Element* ele = discret().g_element(extendedmastercolmap->GID(lid));
+        Core::Elements::Element* ele = discret().g_element(extendedmastercolmap->gid(lid));
         const int* nodeids = ele->node_ids();
         for (int inode = 0; inode < ele->num_node(); ++inode) nodes.insert(nodeids[inode]);
       }
@@ -750,10 +750,10 @@ void CONTACT::Interface::redistribute()
 
   // loop over all elements to reset candidates / search lists
   // (use standard slave column map)
-  const int numMySlaveColElements = slave_col_elements()->NumMyElements();
+  const int numMySlaveColElements = slave_col_elements()->num_my_elements();
   for (int i = 0; i < numMySlaveColElements; ++i)
   {
-    int gid = slave_col_elements()->GID(i);
+    int gid = slave_col_elements()->gid(i);
     Core::Elements::Element* ele = discret().g_element(gid);
     if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
     auto* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -769,7 +769,8 @@ void CONTACT::Interface::redistribute()
   Core::LinAlg::Map masterRowEles(*master_row_elements());
 
   // check for consistency
-  if (slaveCloseRowEles.NumGlobalElements() == 0 && slaveNonCloseRowEles.NumGlobalElements() == 0)
+  if (slaveCloseRowEles.num_global_elements() == 0 &&
+      slaveNonCloseRowEles.num_global_elements() == 0)
     FOUR_C_THROW("CONTACT redistribute: Both slave sets (close/non-close) are empty");
 
   //**********************************************************************
@@ -778,9 +779,9 @@ void CONTACT::Interface::redistribute()
   // print element overview
   if (!myrank)
   {
-    int cl = slaveCloseRowEles.NumGlobalElements();
-    int ncl = slaveNonCloseRowEles.NumGlobalElements();
-    int ma = masterRowEles.NumGlobalElements();
+    int cl = slaveCloseRowEles.num_global_elements();
+    int ncl = slaveNonCloseRowEles.num_global_elements();
+    int ma = masterRowEles.num_global_elements();
     std::cout << "Element overview: " << cl << " / " << ncl << " / " << ma
               << "  (close-S / non-close-S / M)";
   }
@@ -794,7 +795,8 @@ void CONTACT::Interface::redistribute()
 
   // use simple base class method if there are ONLY close or non-close elements
   // (return value TRUE, because redistribution performed)
-  if (slaveCloseRowEles.NumGlobalElements() == 0 || slaveNonCloseRowEles.NumGlobalElements() == 0)
+  if (slaveCloseRowEles.num_global_elements() == 0 ||
+      slaveNonCloseRowEles.num_global_elements() == 0)
   {
     Mortar::Interface::redistribute();
     return;
@@ -817,12 +819,12 @@ void CONTACT::Interface::redistribute()
   // calculate real number of procs to be used
   if (minele > 0)
   {
-    scproc = static_cast<int>((slaveCloseRowEles.NumGlobalElements()) / minele);
-    sncproc = static_cast<int>((slaveNonCloseRowEles.NumGlobalElements()) / minele);
-    mproc = static_cast<int>((masterRowEles.NumGlobalElements()) / minele);
-    if (slaveCloseRowEles.NumGlobalElements() < 2 * minele) scproc = 1;
-    if (slaveNonCloseRowEles.NumGlobalElements() < 2 * minele) sncproc = 1;
-    if (masterRowEles.NumGlobalElements() < 2 * minele) mproc = 1;
+    scproc = static_cast<int>((slaveCloseRowEles.num_global_elements()) / minele);
+    sncproc = static_cast<int>((slaveNonCloseRowEles.num_global_elements()) / minele);
+    mproc = static_cast<int>((masterRowEles.num_global_elements()) / minele);
+    if (slaveCloseRowEles.num_global_elements() < 2 * minele) scproc = 1;
+    if (slaveNonCloseRowEles.num_global_elements() < 2 * minele) sncproc = 1;
+    if (masterRowEles.num_global_elements() < 2 * minele) mproc = 1;
     if (scproc > numproc) scproc = numproc;
     if (sncproc > numproc) sncproc = numproc;
     if (mproc > numproc) mproc = numproc;
@@ -844,10 +846,10 @@ void CONTACT::Interface::redistribute()
       std::make_shared<Core::LinAlg::Graph>(Copy, *slave_row_nodes(), 108, false);
 
   // loop over all row nodes to fill graph
-  const int numMySlaveRowNodes = slave_row_nodes()->NumMyElements();
+  const int numMySlaveRowNodes = slave_row_nodes()->num_my_elements();
   for (int slaveRowNode = 0; slaveRowNode < numMySlaveRowNodes; ++slaveRowNode)
   {
-    int gid = slave_row_nodes()->GID(slaveRowNode);
+    int gid = slave_row_nodes()->gid(slaveRowNode);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
 
@@ -970,34 +972,34 @@ void CONTACT::Interface::redistribute()
     }
 
     // build slave node row map
-    const int numMySlaveCloseRowNodes = slaveCloseRowNodes->NumMyElements();
-    const int numMySlaveNonCloseRowNodes = slaveNonCloseRowNodes->NumMyElements();
+    const int numMySlaveCloseRowNodes = slaveCloseRowNodes->num_my_elements();
+    const int numMySlaveNonCloseRowNodes = slaveNonCloseRowNodes->num_my_elements();
     std::vector<int> mygids(numMySlaveCloseRowNodes + numMySlaveNonCloseRowNodes);
-    int count = slaveCloseRowNodes->NumMyElements();
+    int count = slaveCloseRowNodes->num_my_elements();
 
     // first get GIDs of input slaveCloseRowNodes
-    for (int i = 0; i < count; ++i) mygids[i] = slaveCloseRowNodes->GID(i);
+    for (int i = 0; i < count; ++i) mygids[i] = slaveCloseRowNodes->gid(i);
 
     // then add GIDs of input slaveNonCloseRowNodes (only new ones)
     for (int i = 0; i < numMySlaveNonCloseRowNodes; ++i)
     {
       // check for intersection gid
       // don't do anything for intersection gids (slaveCloseRowNodes dominates!!!)
-      auto found = intersec.find(slaveNonCloseRowNodes->GID(i));
+      auto found = intersec.find(slaveNonCloseRowNodes->gid(i));
       if (found != intersec.end()) continue;
 
       // check for overlap
-      if (slaveCloseRowNodes->MyGID(slaveNonCloseRowNodes->GID(i)))
+      if (slaveCloseRowNodes->my_gid(slaveNonCloseRowNodes->gid(i)))
         FOUR_C_THROW("Core::LinAlg::merge_map: Result map is overlapping");
 
       // add new GIDs to mygids
-      mygids[count] = slaveNonCloseRowNodes->GID(i);
+      mygids[count] = slaveNonCloseRowNodes->gid(i);
       ++count;
     }
     mygids.resize(count);
     sort(mygids.begin(), mygids.end());
     srownodes = std::make_shared<Core::LinAlg::Map>(
-        -1, (int)mygids.size(), mygids.data(), 0, slaveCloseRowNodes->Comm());
+        -1, (int)mygids.size(), mygids.data(), 0, slaveCloseRowNodes->get_comm());
   }
 
   // merge interface node row map from slave and master parts
@@ -1032,8 +1034,8 @@ void CONTACT::Interface::redistribute()
   // get column map from the graph -> build slave node column map
   const Core::LinAlg::Map& bcol = outgraph->col_map();
   std::shared_ptr<Core::LinAlg::Map> scolnodes =
-      std::make_shared<Core::LinAlg::Map>(bcol.NumGlobalElements(), bcol.NumMyElements(),
-          bcol.MyGlobalElements(), 0, Interface::get_comm());
+      std::make_shared<Core::LinAlg::Map>(bcol.num_global_elements(), bcol.num_my_elements(),
+          bcol.my_global_elements(), 0, Interface::get_comm());
 
   // trash new graph
   outgraph = nullptr;
@@ -1069,10 +1071,10 @@ void CONTACT::Interface::split_into_far_and_close_sets(std::vector<int>& closeel
   if (performSplitting)
   {
     // loop over all row elements to gather the local information
-    for (int i = 0; i < slave_row_elements()->NumMyElements(); ++i)
+    for (int i = 0; i < slave_row_elements()->num_my_elements(); ++i)
     {
       // get element
-      int gid = slave_row_elements()->GID(i);
+      int gid = slave_row_elements()->gid(i);
       Core::Elements::Element* ele = discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
       auto* cele = dynamic_cast<Mortar::Element*>(ele);
@@ -1094,10 +1096,10 @@ void CONTACT::Interface::split_into_far_and_close_sets(std::vector<int>& closeel
   else
   {
     // loop over all row elements to gather the local information
-    for (int i = 0; i < slave_row_elements()->NumMyElements(); ++i)
+    for (int i = 0; i < slave_row_elements()->num_my_elements(); ++i)
     {
       // get element
-      int gid = slave_row_elements()->GID(i);
+      int gid = slave_row_elements()->gid(i);
       Core::Elements::Element* ele = discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
       auto* cele = dynamic_cast<Mortar::Element*>(ele);
@@ -1115,9 +1117,9 @@ void CONTACT::Interface::split_into_far_and_close_sets(std::vector<int>& closeel
 void CONTACT::Interface::collect_distribution_data(int& numColElements, int& numRowElements)
 {
   // loop over proc's column slave elements of the interface
-  for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
   {
-    int gid1 = selecolmap_->GID(i);
+    int gid1 = selecolmap_->gid(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
     auto* slaveElement = dynamic_cast<Element*>(ele1);
@@ -1237,9 +1239,9 @@ void CONTACT::Interface::initialize_data_container()
     const std::shared_ptr<Core::LinAlg::Map> masternodes =
         Core::LinAlg::allreduce_e_map(*(master_row_nodes()));
 
-    for (int i = 0; i < masternodes->NumMyElements(); ++i)
+    for (int i = 0; i < masternodes->num_my_elements(); ++i)
     {
-      int gid = masternodes->GID(i);
+      int gid = masternodes->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
       auto* mnode = dynamic_cast<CONTACT::Node*>(node);
@@ -1269,9 +1271,9 @@ void CONTACT::Interface::initialize()
   // init normal data in master node data container for cpp calculation
   if (interface_params().get<bool>("CPP_NORMALS"))
   {
-    for (int i = 0; i < master_col_nodes()->NumMyElements(); ++i)
+    for (int i = 0; i < master_col_nodes()->num_my_elements(); ++i)
     {
-      int gid = master_col_nodes()->GID(i);
+      int gid = master_col_nodes()->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
       Node* cnode = dynamic_cast<Node*>(node);
@@ -1305,9 +1307,9 @@ void CONTACT::Interface::initialize()
 
   // loop over all slave nodes to reset stuff (standard column map)
   // (include slave side boundary nodes / crosspoints)
-  for (int i = 0; i < slave_col_nodes_bound()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_col_nodes_bound()->num_my_elements(); ++i)
   {
-    int gid = slave_col_nodes_bound()->GID(i);
+    int gid = slave_col_nodes_bound()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1456,9 +1458,9 @@ void CONTACT::Interface::initialize()
   {
     // loop over all elements to reset candidates / search lists
     // (use standard slave column map)
-    for (int i = 0; i < slave_col_elements()->NumMyElements(); ++i)
+    for (int i = 0; i < slave_col_elements()->num_my_elements(); ++i)
     {
-      int gid = slave_col_elements()->GID(i);
+      int gid = slave_col_elements()->gid(i);
       Core::Elements::Element* ele = discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find ele with gid {}", gid);
       auto* mele = dynamic_cast<Mortar::Element*>(ele);
@@ -1475,9 +1477,9 @@ void CONTACT::Interface::initialize()
   if (Teuchos::getIntegralValue<Inpar::Mortar::AlgorithmType>(imortar_, "ALGORITHM") ==
       Inpar::Mortar::algorithm_gpts)
   {
-    for (int e = 0; e < discret().element_col_map()->NumMyElements(); ++e)
+    for (int e = 0; e < discret().element_col_map()->num_my_elements(); ++e)
     {
-      dynamic_cast<Mortar::Element*>(discret().g_element(discret().element_col_map()->GID(e)))
+      dynamic_cast<Mortar::Element*>(discret().g_element(discret().element_col_map()->gid(e)))
           ->get_nitsche_container()
           .clear();
     }
@@ -1569,9 +1571,9 @@ void CONTACT::Interface::pre_evaluate(const int& step, const int& iter)
 void CONTACT::Interface::store_nt_svalues()
 {
   // loop over all possibly non-smooth nodes
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1666,12 +1668,12 @@ void CONTACT::Interface::store_nt_svalues()
 void CONTACT::Interface::store_lt_svalues()
 {
   // loop over all possibly non-smooth nodes
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
     double msum = 0.0;
     double ssum = 0.0;
 
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -1808,9 +1810,9 @@ void CONTACT::Interface::add_ltl_forces_friction(Epetra_FEVector& feff)
   std::array<double, 3> oldtraction = {0.0, 0.0, 0.0};
 
   // loop over all slave nodes
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<FriNode*>(node);
@@ -1831,9 +1833,9 @@ void CONTACT::Interface::add_ltl_forces_friction(Epetra_FEVector& feff)
 
   // maybe the old traction is here zero (first contact step)
   // loop over all slave nodes
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<FriNode*>(node);
@@ -1948,9 +1950,9 @@ void CONTACT::Interface::add_ltl_stiffness_friction(Core::LinAlg::SparseMatrix& 
   std::array<double, 3> oldtraction = {0.0, 0.0, 0.0};
 
   // loop over all slave nodes
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<FriNode*>(node);
@@ -1971,9 +1973,9 @@ void CONTACT::Interface::add_ltl_stiffness_friction(Core::LinAlg::SparseMatrix& 
 
   // maybe the old traction is here zero (first contact step)
   // loop over all slave nodes
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<FriNode*>(node);
@@ -2373,9 +2375,9 @@ void CONTACT::Interface::add_nts_forces_master(Epetra_FEVector& feff)
   const double penalty = interface_params().get<double>("PENALTYPARAM");
 
   // loop over all slave nodes
-  for (int j = 0; j < mnoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < mnoderowmap_->num_my_elements(); ++j)
   {
-    int gid = mnoderowmap_->GID(j);
+    int gid = mnoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -2453,9 +2455,9 @@ void CONTACT::Interface::add_lts_forces_master(Epetra_FEVector& feff)
   const double penalty = interface_params().get<double>("PENALTYPARAM");
 
   // loop over all slave nodes
-  for (int j = 0; j < mnoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < mnoderowmap_->num_my_elements(); ++j)
   {
-    int gid = mnoderowmap_->GID(j);
+    int gid = mnoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -2539,9 +2541,9 @@ void CONTACT::Interface::add_ltl_forces(Epetra_FEVector& feff)
   const double penalty = interface_params().get<double>("PENALTYPARAM");
 
   // loop over all slave nodes
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -2615,9 +2617,9 @@ void CONTACT::Interface::add_lts_stiffness_master(Core::LinAlg::SparseMatrix& kt
   const double penalty = interface_params().get<double>("PENALTYPARAM");
 
   // loop over all slave nodes
-  for (int j = 0; j < mnoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < mnoderowmap_->num_my_elements(); ++j)
   {
-    int gid = mnoderowmap_->GID(j);
+    int gid = mnoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -2807,9 +2809,9 @@ void CONTACT::Interface::add_nts_stiffness_master(Core::LinAlg::SparseMatrix& kt
   const double penalty = interface_params().get<double>("PENALTYPARAM");
 
   // loop over all slave nodes
-  for (int j = 0; j < mnoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < mnoderowmap_->num_my_elements(); ++j)
   {
-    int gid = mnoderowmap_->GID(j);
+    int gid = mnoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -2952,9 +2954,9 @@ void CONTACT::Interface::add_ltl_stiffness(Core::LinAlg::SparseMatrix& kteff)
   const double penalty = interface_params().get<double>("PENALTYPARAM");
 
   // loop over all slave nodes
-  for (int j = 0; j < snoderowmap_->NumMyElements(); ++j)
+  for (int j = 0; j < snoderowmap_->num_my_elements(); ++j)
   {
-    int gid = snoderowmap_->GID(j);
+    int gid = snoderowmap_->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -3870,9 +3872,9 @@ void CONTACT::Interface::evaluate_cpp_normals()
   // Build averaged normal field on physically smooth surface
   // loop over proc's master nodes of the interface
   // use row map and export to column map later
-  for (int i = 0; i < master_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < master_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = master_row_nodes()->GID(i);
+    int gid = master_row_nodes()->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* mrtrnode = dynamic_cast<Node*>(node);
@@ -3888,9 +3890,9 @@ void CONTACT::Interface::evaluate_cpp_normals()
   export_master_nodal_normals();
 
   // loop over slave nodes
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Mortar::Node*>(node);
@@ -3972,9 +3974,9 @@ void CONTACT::Interface::export_master_nodal_normals() const
       Core::LinAlg::allreduce_e_map(*(mnoderowmap_));
 
   // build info on row map
-  for (int i = 0; i < mnoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < mnoderowmap_->num_my_elements(); ++i)
   {
-    int gid = mnoderowmap_->GID(i);
+    int gid = mnoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<CONTACT::Node*>(node);
@@ -4074,10 +4076,10 @@ void CONTACT::Interface::export_master_nodal_normals() const
   ex.do_export(teta_z_val);
 
   // extract info on column map
-  for (int i = 0; i < masternodes->NumMyElements(); ++i)
+  for (int i = 0; i < masternodes->num_my_elements(); ++i)
   {
     // only do something for ghosted nodes
-    int gid = masternodes->GID(i);
+    int gid = masternodes->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<CONTACT::Node*>(node);
@@ -5092,9 +5094,9 @@ void CONTACT::Interface::export_nodal_normals() const
   };
 
   // Build info on row map
-  for (int i = 0; i < snoderowmapbound_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmapbound_->num_my_elements(); ++i)
   {
-    int gid = snoderowmapbound_->GID(i);
+    int gid = snoderowmapbound_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -5176,11 +5178,11 @@ void CONTACT::Interface::export_nodal_normals() const
   ex.do_export(node_data_collection);
 
   // extract info on column map
-  for (int i = 0; i < snodecolmapbound_->NumMyElements(); ++i)
+  for (int i = 0; i < snodecolmapbound_->num_my_elements(); ++i)
   {
     // only do something for ghosted nodes
-    int gid = snodecolmapbound_->GID(i);
-    if (snoderowmapbound_->MyGID(gid)) continue;
+    int gid = snodecolmapbound_->gid(i);
+    if (snoderowmapbound_->my_gid(gid)) continue;
 
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
@@ -5295,9 +5297,9 @@ bool CONTACT::Interface::evaluate_search_binarytree()
 
     // initialize node data container
     // (include slave side boundary nodes / crosspoints)
-    for (int i = 0; i < slave_col_nodes_bound()->NumMyElements(); ++i)
+    for (int i = 0; i < slave_col_nodes_bound()->num_my_elements(); ++i)
     {
-      int gid = slave_col_nodes_bound()->GID(i);
+      int gid = slave_col_nodes_bound()->gid(i);
       Core::Nodes::Node* node = discret().g_node(gid);
       if (!node) FOUR_C_THROW("Cannot find node with gid {}", gid);
       auto* mnode = dynamic_cast<Mortar::Node*>(node);
@@ -5328,9 +5330,9 @@ void CONTACT::Interface::evaluate_stl()
   if (n_dim() == 2) FOUR_C_THROW("LTS algorithm only for 3D simulations!");
 
   // loop over slave elements
-  for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
   {
-    int gid1 = selecolmap_->GID(i);
+    int gid1 = selecolmap_->gid(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
     auto* selement = dynamic_cast<Element*>(ele1);
@@ -5446,9 +5448,9 @@ void CONTACT::Interface::evaluate_lts()
   std::set<std::pair<int, int>> donebefore;
 
   // loop over slave elements
-  for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
   {
-    int gid1 = selecolmap_->GID(i);
+    int gid1 = selecolmap_->gid(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
     auto* selement = dynamic_cast<Element*>(ele1);
@@ -5675,9 +5677,9 @@ void CONTACT::Interface::evaluate_ltl()
   std::set<std::pair<int, int>> donebeforeS;
 
   // loop over slave elements
-  for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
   {
-    int gid1 = selecolmap_->GID(i);
+    int gid1 = selecolmap_->gid(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
     auto* selement = dynamic_cast<Element*>(ele1);
@@ -6038,9 +6040,9 @@ void CONTACT::Interface::evaluate_nts()
   NTS::Interpolator interpolator(interface_params(), n_dim());
 
   // loop over slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* mrtrnode = dynamic_cast<Mortar::Node*>(node);
@@ -6259,13 +6261,13 @@ void CONTACT::Interface::evaluate_relative_movement(
   double pp = interface_params().get<double>("PENALTYPARAM");
 
   // loop over all slave row nodes on the current interface
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<FriNode*>(node);
-    double cn = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
+    double cn = get_cn_ref()[get_cn_ref().get_map().lid(cnode->id())];
 
     // get some information form the node
     double gap = cnode->data().getg();
@@ -6356,7 +6358,7 @@ void CONTACT::Interface::evaluate_relative_movement(
 
         for (int dim = 0; dim < csnode->num_dof(); ++dim)
         {
-          int locid = (xsmod->get_map()).LID(csnode->dofs()[dim]);
+          int locid = (xsmod->get_map()).lid(csnode->dofs()[dim]);
           jump[dim] -= (dik - dikold) * (*xsmod)[locid];
         }
       }  //  loop over adjacent slave nodes
@@ -6548,7 +6550,7 @@ void CONTACT::Interface::evaluate_relative_movement(
           // loop over dimensions
           for (int dim = 0; dim < cnode->num_dof(); ++dim)
           {
-            int locid = (xsmod->get_map()).LID(csnode->dofs()[dim]);
+            int locid = (xsmod->get_map()).lid(csnode->dofs()[dim]);
             double val = -colcurr->second * (*xsmod)[locid];
             if (abs(val) > 1e-14) cnode->add_deriv_jump_value(dim, col, val);
           }
@@ -6628,9 +6630,9 @@ void CONTACT::Interface::evaluate_distances(
   // use standard column map to include processor's ghosted elements
   Core::Communication::barrier(get_comm());
 
-  for (int i = 0; i < selecolmap_->NumMyElements(); ++i)
+  for (int i = 0; i < selecolmap_->num_my_elements(); ++i)
   {
-    int gid1 = selecolmap_->GID(i);
+    int gid1 = selecolmap_->gid(i);
     Core::Elements::Element* ele1 = idiscret_->g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find slave element with gid %", gid1);
     auto* selement = dynamic_cast<CONTACT::Element*>(ele1);
@@ -6889,9 +6891,9 @@ void CONTACT::Interface::evaluate_tangent_norm(double& cnormtan)
   double frcoeff = interface_params().get<double>("FRCOEFF");
 
   // loop over all slave row nodes on the current interface
-  for (int i = 0; i < slave_row_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < slave_row_nodes()->num_my_elements(); ++i)
   {
-    int gid = slave_row_nodes()->GID(i);
+    int gid = slave_row_nodes()->gid(i);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     auto* cnode = dynamic_cast<FriNode*>(node);
@@ -6996,16 +6998,16 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
   int localcheck = true;
 
   // loop over all slave nodes on the current interface
-  for (int j = 0; j < slave_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < slave_row_nodes()->num_my_elements(); ++j)
   {
-    int gid = slave_row_nodes()->GID(j);
+    int gid = slave_row_nodes()->gid(j);
     Core::Nodes::Node* node = discret().g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
 
     Node* cnode = dynamic_cast<Node*>(node);
 
-    cn = get_cn_ref()[get_cn_ref().get_map().LID(cnode->id())];
-    if (friction_) ct = get_ct_ref()[get_ct_ref().get_map().LID(cnode->id())];
+    cn = get_cn_ref()[get_cn_ref().get_map().lid(cnode->id())];
+    if (friction_) ct = get_ct_ref()[get_ct_ref().get_map().lid(cnode->id())];
 
     // get weighted gap
     double wgap = cnode->data().getg();
@@ -7205,10 +7207,10 @@ bool CONTACT::Interface::update_active_set_semi_smooth()
 void CONTACT::Interface::update_active_set_initial_status() const
 {
   // List of GIDs of all my slave row nodes
-  int* my_slave_row_node_gids = slave_row_nodes()->MyGlobalElements();
+  int* my_slave_row_node_gids = slave_row_nodes()->my_global_elements();
 
   // loop over all slave nodes on the current interface
-  for (int j = 0; j < slave_row_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < slave_row_nodes()->num_my_elements(); ++j)
   {
     // Grab the current slave node
     const int gid = my_slave_row_node_gids[j];
@@ -7235,9 +7237,9 @@ bool CONTACT::Interface::build_active_set(bool init)
   std::vector<int> mymdofgids;
 
   // loop over all slave nodes
-  for (int i = 0; i < snoderowmap_->NumMyElements(); ++i)
+  for (int i = 0; i < snoderowmap_->num_my_elements(); ++i)
   {
-    int gid = snoderowmap_->GID(i);
+    int gid = snoderowmap_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -7339,7 +7341,7 @@ bool CONTACT::Interface::build_active_set(bool init)
 bool CONTACT::Interface::split_active_dofs()
 {
   // get out of here if active set is empty
-  if (activenodes_ == nullptr or activenodes_->NumGlobalElements() == 0)
+  if (activenodes_ == nullptr or activenodes_->num_global_elements() == 0)
   {
     activen_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     activet_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
@@ -7350,17 +7352,17 @@ bool CONTACT::Interface::split_active_dofs()
   // define local variables
   int countN = 0;
   int countT = 0;
-  std::vector<int> myNgids(activenodes_->NumMyElements());
-  std::vector<int> myTgids((n_dim() - 1) * activenodes_->NumMyElements());
+  std::vector<int> myNgids(activenodes_->num_my_elements());
+  std::vector<int> myTgids((n_dim() - 1) * activenodes_->num_my_elements());
 
   // dimension check
-  double dimcheck = (activedofs_->NumGlobalElements()) / (activenodes_->NumGlobalElements());
+  double dimcheck = (activedofs_->num_global_elements()) / (activenodes_->num_global_elements());
   if (dimcheck != n_dim()) FOUR_C_THROW("SplitActiveDofs: Nodes <-> Dofs dimension mismatch!");
 
   // loop over all active row nodes
-  for (int i = 0; i < activenodes_->NumMyElements(); ++i)
+  for (int i = 0; i < activenodes_->num_my_elements(); ++i)
   {
-    int gid = activenodes_->GID(i);
+    int gid = activenodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -7388,7 +7390,7 @@ bool CONTACT::Interface::split_active_dofs()
   Core::Communication::sum_all(&countT, &gcountT, 1, get_comm());
 
   // check global dimensions
-  if ((gcountN + gcountT) != activedofs_->NumGlobalElements())
+  if ((gcountN + gcountT) != activedofs_->num_global_elements())
     FOUR_C_THROW("split_active_dofs: Splitting went wrong!");
 
   // create Nmap and Tmap objects
@@ -7412,7 +7414,7 @@ bool CONTACT::Interface::split_active_dofs()
     return true;
   }
 
-  if (slipnodes_->NumGlobalElements() == 0)
+  if (slipnodes_->num_global_elements() == 0)
   {
     slipt_ = std::make_shared<Core::LinAlg::Map>(0, 0, get_comm());
     return true;
@@ -7420,16 +7422,16 @@ bool CONTACT::Interface::split_active_dofs()
 
   // define local variables
   int countslipT = 0;
-  std::vector<int> myslipTgids((n_dim() - 1) * slipnodes_->NumMyElements());
+  std::vector<int> myslipTgids((n_dim() - 1) * slipnodes_->num_my_elements());
 
   // dimension check
-  dimcheck = (slipdofs_->NumGlobalElements()) / (slipnodes_->NumGlobalElements());
+  dimcheck = (slipdofs_->num_global_elements()) / (slipnodes_->num_global_elements());
   if (dimcheck != n_dim()) FOUR_C_THROW("SplitActiveDofs: Nodes <-> Dofs dimension mismatch!");
 
   // loop over all slip row nodes
-  for (int i = 0; i < slipnodes_->NumMyElements(); ++i)
+  for (int i = 0; i < slipnodes_->num_my_elements(); ++i)
   {
-    int gid = slipnodes_->GID(i);
+    int gid = slipnodes_->gid(i);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
@@ -7471,9 +7473,9 @@ const CONTACT::Interface& CONTACT::Interface::get_ma_sharing_ref_interface() con
 void CONTACT::Interface::store_to_old(Mortar::StrategyBase::QuantityType type)
 {
   // loop over all slave row nodes on the current interface
-  for (int j = 0; j < slave_col_nodes()->NumMyElements(); ++j)
+  for (int j = 0; j < slave_col_nodes()->num_my_elements(); ++j)
   {
-    int gid = slave_col_nodes()->GID(j);
+    int gid = slave_col_nodes()->gid(j);
     Core::Nodes::Node* node = idiscret_->g_node(gid);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
 
@@ -7513,11 +7515,11 @@ void CONTACT::Interface::store_to_old(Mortar::StrategyBase::QuantityType type)
 void CONTACT::Interface::update_self_contact_lag_mult_set(
     const Core::LinAlg::Map& gref_lmmap, const Core::LinAlg::Map& gref_smmap)
 {
-  if (gref_lmmap.NumMyElements() != gref_smmap.NumMyElements()) FOUR_C_THROW("Size mismatch!");
+  if (gref_lmmap.num_my_elements() != gref_smmap.num_my_elements()) FOUR_C_THROW("Size mismatch!");
 
-  const int num_sgids = sdofrowmap_->NumMyElements();
-  const int* sgids = sdofrowmap_->MyGlobalElements();
-  const int* ref_lmgids = gref_lmmap.MyGlobalElements();
+  const int num_sgids = sdofrowmap_->num_my_elements();
+  const int* sgids = sdofrowmap_->my_global_elements();
+  const int* ref_lmgids = gref_lmmap.my_global_elements();
 
   std::vector<int> lmdofs;
   lmdofs.reserve(num_sgids);
@@ -7525,7 +7527,7 @@ void CONTACT::Interface::update_self_contact_lag_mult_set(
   for (int i = 0; i < num_sgids; ++i)
   {
     const int sgid = sgids[i];
-    const int ref_lid = gref_smmap.LID(sgid);
+    const int ref_lid = gref_smmap.lid(sgid);
     if (ref_lid == -1)
     {
       FOUR_C_THROW(
@@ -7767,7 +7769,7 @@ void CONTACT::Interface::postprocess_quantities(const Teuchos::ParameterList& ou
         Core::LinAlg::merge_map(selerowmap_, melerowmap_, false);
     std::shared_ptr<Core::LinAlg::Vector<double>> owner = Core::LinAlg::create_vector(*eleRowMap);
 
-    for (int i = 0; i < idiscret_->element_row_map()->NumMyElements(); ++i)
+    for (int i = 0; i < idiscret_->element_row_map()->num_my_elements(); ++i)
       (*owner)[i] = idiscret_->l_row_element(i)->owner();
 
     writer->write_vector("Owner", owner, Core::IO::VectorType::elementvector);

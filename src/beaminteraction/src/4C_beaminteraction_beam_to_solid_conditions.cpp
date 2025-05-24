@@ -122,7 +122,7 @@ BeamInteraction::BeamToSolidCondition::create_indirect_assembly_manager(
   {
     // Create the mortar manager. We add 1 to the MaxAllGID since this gives the maximum GID and NOT
     // the length of the GIDs.
-    const int start_gid_lambda = discret->dof_row_map()->MaxAllGID() + 1;
+    const int start_gid_lambda = discret->dof_row_map()->max_all_gid() + 1;
     std::shared_ptr<BeamToSolidMortarManager> mortar_manager = nullptr;
     if (std::dynamic_pointer_cast<const BeamToSolidSurfaceContactParams>(beam_to_solid_params_) ==
         nullptr)

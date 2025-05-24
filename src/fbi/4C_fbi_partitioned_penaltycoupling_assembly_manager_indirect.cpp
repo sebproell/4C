@@ -36,7 +36,7 @@ BeamInteraction::SubmodelEvaluator::PartitionedBeamInteractionAssemblyManagerInd
 {
   // Create the mortar manager.
   mortar_manager_ = std::make_shared<BeamInteraction::BeamToFluidMortarManager>(discretization1,
-      discretization2, beam_contact_params_ptr, discretization1->dof_row_map()->MaxAllGID());
+      discretization2, beam_contact_params_ptr, discretization1->dof_row_map()->max_all_gid());
 
   // Setup the mortar manager.
   mortar_manager_->setup();

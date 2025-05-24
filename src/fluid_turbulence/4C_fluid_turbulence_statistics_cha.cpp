@@ -442,9 +442,9 @@ FLD::TurbulenceStatisticsCha::TurbulenceStatisticsCha(
     const Core::LinAlg::Map* elementmap = nurbsdis->element_row_map();
 
     // loop all available elements
-    for (int iele = 0; iele < elementmap->NumMyElements(); ++iele)
+    for (int iele = 0; iele < elementmap->num_my_elements(); ++iele)
     {
-      Core::Elements::Element* const actele = nurbsdis->g_element(elementmap->GID(iele));
+      Core::Elements::Element* const actele = nurbsdis->g_element(elementmap->gid(iele));
       Core::Nodes::Node** nodes = actele->nodes();
 
       // get gid, location in the patch

@@ -42,7 +42,7 @@ void FLD::Utils::MapExtractor::setup(std::shared_ptr<const Core::LinAlg::Map>& a
   othermaps.push_back(additionalothermap);
   othermaps.push_back(extractor.other_map());
 
-  if (Core::LinAlg::MultiMapExtractor::intersect_maps(othermaps)->NumGlobalElements() > 0)
+  if (Core::LinAlg::MultiMapExtractor::intersect_maps(othermaps)->num_global_elements() > 0)
     FOUR_C_THROW("Failed to add dofmap of foreign discretization to other_map. Detected overlap.");
 
   std::shared_ptr<const Core::LinAlg::Map> mergedothermap =
@@ -145,7 +145,7 @@ void FLD::Utils::FsiMapExtractor::setup(
   othermaps.push_back(additionalothermap);
   othermaps.push_back(extractor.other_map());
 
-  if (Core::LinAlg::MultiMapExtractor::intersect_maps(othermaps)->NumGlobalElements() > 0)
+  if (Core::LinAlg::MultiMapExtractor::intersect_maps(othermaps)->num_global_elements() > 0)
     FOUR_C_THROW("Failed to add dofmap of foreign discretization to other_map. Detected overlap.");
 
   std::shared_ptr<const Core::LinAlg::Map> mergedothermap =

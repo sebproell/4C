@@ -349,8 +349,8 @@ namespace Core::Communication
 
     // do stupid conversion from Core::LinAlg::Map to Core::LinAlg::Map
     const Core::LinAlg::Map& vecblockmap = vec.get_map();
-    Core::LinAlg::Map vecmap(vecblockmap.NumGlobalElements(), vecblockmap.NumMyElements(),
-        vecblockmap.MyGlobalElements(), 0, vec.Comm());
+    Core::LinAlg::Map vecmap(vecblockmap.num_global_elements(), vecblockmap.num_my_elements(),
+        vecblockmap.my_global_elements(), 0, vec.Comm());
 
     // gather data of vector to compare on gcomm proc 0 and last gcomm proc
     std::shared_ptr<Core::LinAlg::Map> proc0map;
@@ -423,7 +423,7 @@ namespace Core::Communication
           std::stringstream diff;
           diff << std::scientific << std::setprecision(16) << maxdiff;
           std::cout << "vectors " << name << " do not match, difference in row "
-                    << fullvec.get_map().GID(i) << " between entries is: " << diff.str().c_str()
+                    << fullvec.get_map().gid(i) << " between entries is: " << diff.str().c_str()
                     << std::endl;
         }
         maxdiff = std::max(maxdiff, difference);
@@ -523,9 +523,9 @@ namespace Core::Communication
     data_values.reserve(serialCrsMatrix.num_my_nonzeros());
     if (myglobalrank == 0 || myglobalrank == Core::Communication::num_mpi_ranks(gcomm) - 1)
     {
-      for (int i = 0; i < serialrowmap->NumMyElements(); ++i)
+      for (int i = 0; i < serialrowmap->num_my_elements(); ++i)
       {
-        int rowgid = serialrowmap->GID(i);
+        int rowgid = serialrowmap->gid(i);
         int NumEntries;
         double* Values;
         int* Indices;

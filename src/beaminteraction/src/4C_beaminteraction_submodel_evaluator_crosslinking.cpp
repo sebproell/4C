@@ -165,7 +165,7 @@ bool BeamInteraction::SubmodelEvaluator::Crosslinking::post_partition_problem()
   // set initially set crosslinker
   for (auto& iter : newlinker)
   {
-    int cl_lid = bin_discret().node_col_map()->LID(iter->get_id());
+    int cl_lid = bin_discret().node_col_map()->lid(iter->get_id());
     crosslinker_data_[cl_lid]->set_b_spots(iter->get_b_spots());
     crosslinker_data_[cl_lid]->set_number_of_bonds(iter->get_number_of_bonds());
     crosslinker_data_[cl_lid]->set_position(iter->get_position());
@@ -218,7 +218,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::post_setup()
       // loop over all dofs
       for (unsigned int dim = 0; dim < 3; ++dim)
       {
-        int doflid = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
+        int doflid = dis_at_last_redistr_->get_map().lid(dofnode[dim]);
         (*dis_at_last_redistr_)[doflid] = crosslinker_i->x()[dim];
       }
     }
@@ -317,12 +317,12 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::get_all_possible_bspot_li
   my_bspot_linker.clear();
 
   // loop over all row beam elements
-  int unsigned const numbeams = ele_type_map_extractor_ptr()->beam_map()->NumMyElements();
+  int unsigned const numbeams = ele_type_map_extractor_ptr()->beam_map()->num_my_elements();
   my_bspot_linker.reserve(numbeams);
   for (unsigned int rowbeam_i = 0; rowbeam_i < numbeams; ++rowbeam_i)
   {
     Discret::Elements::Beam3Base* beamele = dynamic_cast<Discret::Elements::Beam3Base*>(
-        discret().g_element(ele_type_map_extractor_ptr()->beam_map()->GID(rowbeam_i)));
+        discret().g_element(ele_type_map_extractor_ptr()->beam_map()->gid(rowbeam_i)));
 
     BeamInteraction::Data::BeamData const* beamdata_i = beam_data_[beamele->lid()].get();
 
@@ -600,7 +600,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::unambiguous_decisions_on_
       ++numpertype[iter.get_mat_id()];
 
       // check ownership
-      if (discret().element_row_map()->LID(iter.get_ele_gid1()) == -1) continue;
+      if (discret().element_row_map()->lid(iter.get_ele_gid1()) == -1) continue;
 
       // store data of new crosslinker
       std::shared_ptr<BeamInteraction::Data::CrosslinkerData> cldata =
@@ -653,7 +653,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::setup_my_initial_double_b
   for (int i = 0; i < g_state().get_my_rank(); ++i) mystartgid += numnewlinks[i];
 
   // loop over new linker on myrank
-  int gid = bin_discret_ptr()->node_row_map()->MaxAllGID() + 1 + mystartgid;
+  int gid = bin_discret_ptr()->node_row_map()->max_all_gid() + 1 + mystartgid;
   std::vector<double> X(3);
   for (unsigned int i = 0; i < newlinker.size(); ++i)
   {
@@ -671,8 +671,8 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::setup_my_initial_double_b
     dbondcl.eleids.push_back(bspots[0]);
     dbondcl.eleids.push_back(bspots[1]);
 
-    int colelelid = discret_ptr()->element_col_map()->LID(bspots[0].first);
-    int nb_colelelid = discret_ptr()->element_col_map()->LID(bspots[1].first);
+    int colelelid = discret_ptr()->element_col_map()->lid(bspots[0].first);
+    int nb_colelelid = discret_ptr()->element_col_map()->lid(bspots[1].first);
     dbondcl.bspotposs.push_back(beam_data_[colelelid]->get_b_spot_position(
         newcrosslinker->get_material()->linker_type(), bspots[0].second));
     dbondcl.bspotposs.push_back(beam_data_[nb_colelelid]->get_b_spot_position(
@@ -691,12 +691,12 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::setup_my_initial_double_b
     for (int dim = 0; dim < 3; ++dim) newpos[dim] = newlinker[i]->get_position()(dim);
     newcrosslinker->set_pos(newpos);
 
-    beam_data_[discret_ptr()->element_col_map()->LID(newlinker[i]->get_b_spots()[0].first)]
+    beam_data_[discret_ptr()->element_col_map()->lid(newlinker[i]->get_b_spots()[0].first)]
         ->add_bond_to_binding_spot(newcrosslinker->get_material()->linker_type(),
             newlinker[i]->get_b_spots()[0].second, gid);
 
     if (discret().have_global_element(newlinker[i]->get_b_spots()[1].first))
-      beam_data_[discret_ptr()->element_col_map()->LID(newlinker[i]->get_b_spots()[1].first)]
+      beam_data_[discret_ptr()->element_col_map()->lid(newlinker[i]->get_b_spots()[1].first)]
           ->add_bond_to_binding_spot(newcrosslinker->get_material()->linker_type(),
               newlinker[i]->get_b_spots()[1].second, gid);
 
@@ -782,7 +782,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::reset()
       int elegid = elepairptr->get_ele_gid(i);
 
       // safety check
-      if (discret_ptr()->element_col_map()->LID(elegid) < 0)
+      if (discret_ptr()->element_col_map()->lid(elegid) < 0)
       {
         elepairptr->print(std::cout);
         FOUR_C_THROW("reset(): elegid {} not there on proc {} ", elegid, g_state().get_my_rank());
@@ -997,7 +997,7 @@ bool BeamInteraction::SubmodelEvaluator::Crosslinking::pre_update_step_element(b
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // safety check
-  if (not dis_at_last_redistr_->get_map().SameAs(*bin_discret().dof_row_map()))
+  if (not dis_at_last_redistr_->get_map().same_as(*bin_discret().dof_row_map()))
     FOUR_C_THROW(
         "current linker dof map and map of disp vector after last redistribution are\n "
         "are not the same. Something went wrong");
@@ -1024,7 +1024,7 @@ bool BeamInteraction::SubmodelEvaluator::Crosslinking::pre_update_step_element(b
 
     for (int dim = 0; dim < 3; ++dim)
     {
-      doflid[dim] = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
+      doflid[dim] = dis_at_last_redistr_->get_map().lid(dofnode[dim]);
       d(dim) = (*dis_at_last_redistr_)[doflid[dim]];
       (*linker_disnp_)[doflid[dim]] = ref(dim) = node->x()[dim];
     }
@@ -1307,7 +1307,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::fill_state_data_vectors_f
     // loop over all dofs
     for (unsigned int dim = 0; dim < num_spatial_dim; ++dim)
     {
-      int doflid = displacement.get_map().LID(dofnode[dim]);
+      int doflid = displacement.get_map().lid(dofnode[dim]);
       (displacement)[doflid] = crosslinker_i->x()[dim];
 
       if (numbonds == 2)
@@ -1359,9 +1359,9 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::write_restart(
   unsigned int numrowcl = bin_discret().num_my_row_nodes();
   for (unsigned int i = 0; i < numrowcl; ++i)
   {
-    int const clgid = bin_discret().node_row_map()->GID(i);
+    int const clgid = bin_discret().node_row_map()->gid(i);
     std::shared_ptr<BeamInteraction::Data::CrosslinkerData> cl_data_i =
-        crosslinker_data_[bin_discret().node_col_map()->LID(clgid)];
+        crosslinker_data_[bin_discret().node_col_map()->lid(clgid)];
 
     cl_data_i->pack(cldata_buffer);
   }
@@ -1373,12 +1373,12 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::write_restart(
   // 3) beam data
   // -------------------------------------------------------------------------
   Core::Communication::PackBuffer beamdata_buffer;
-  unsigned int numrowbeam = ele_type_map_extractor().beam_map()->NumMyElements();
+  unsigned int numrowbeam = ele_type_map_extractor().beam_map()->num_my_elements();
   for (unsigned int i = 0; i < numrowbeam; ++i)
   {
-    int const beamgid = ele_type_map_extractor().beam_map()->GID(i);
+    int const beamgid = ele_type_map_extractor().beam_map()->gid(i);
     std::shared_ptr<BeamInteraction::Data::BeamData> beam_data_i =
-        beam_data_[discret().element_col_map()->LID(beamgid)];
+        beam_data_[discret().element_col_map()->lid(beamgid)];
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     if (beam_data_i == nullptr)
@@ -1483,7 +1483,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::read_restart(
     std::shared_ptr<BeamInteraction::Data::CrosslinkerData> cl_data(
         BeamInteraction::Data::create_data_container<BeamInteraction::Data::CrosslinkerData>(
             cl_buffer));
-    crosslinker_data_[bin_discret().node_col_map()->LID(cl_data->get_id())] = cl_data;
+    crosslinker_data_[bin_discret().node_col_map()->lid(cl_data->get_id())] = cl_data;
   }
 
   // -------------------------------------------------------------------------
@@ -1532,7 +1532,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::read_restart(
     Core::Communication::UnpackBuffer buffer(iter.second);
     std::shared_ptr<BeamInteraction::Data::BeamData> beam_data(
         BeamInteraction::Data::create_data_container<BeamInteraction::Data::BeamData>(buffer));
-    beam_data_[discret().element_col_map()->LID(beam_data->get_id())] = beam_data;
+    beam_data_[discret().element_col_map()->lid(beam_data->get_id())] = beam_data;
   }
 
   // init maps
@@ -1561,7 +1561,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::post_read_restart()
     // loop over all dofs
     for (unsigned int dim = 0; dim < 3; ++dim)
     {
-      int doflid = dis_at_last_redistr_->get_map().LID(dofnode[dim]);
+      int doflid = dis_at_last_redistr_->get_map().lid(dofnode[dim]);
       (*dis_at_last_redistr_)[doflid] = crosslinker_i->x()[dim];
     }
   }
@@ -1583,8 +1583,8 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::
   check_init_setup();
 
   bool map_changed = false;
-  if (not(cl_noderowmap_prior_redistr_->SameAs(*bin_discret().node_row_map()) and
-          cl_nodecolmap_prior_redistr_->SameAs(*bin_discret().node_col_map())))
+  if (not(cl_noderowmap_prior_redistr_->same_as(*bin_discret().node_row_map()) and
+          cl_nodecolmap_prior_redistr_->same_as(*bin_discret().node_col_map())))
     map_changed = true;
 
   std::set<int> colbinsext;
@@ -1717,7 +1717,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_crosslinker()
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
         // safety check
-        const int colelelid = discret_ptr()->element_col_map()->LID(elegid);
+        const int colelelid = discret_ptr()->element_col_map()->lid(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
               "Crosslinker has {} bonds but its binding partner with gid {} "
@@ -1763,7 +1763,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_crosslinker()
               " double bonded crosslinker has stored beam partner gid or loc bsponum of -1, "
               " something went wrong");
         // safety check
-        int colelelid = discret_ptr()->element_col_map()->LID(elegid);
+        int colelelid = discret_ptr()->element_col_map()->lid(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
               "Crosslinker has {} bonds but its binding partner with gid {} "
@@ -1801,7 +1801,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::diffuse_crosslinker()
           FOUR_C_THROW(
               " double bonded crosslinker has stored beam partner gid or loc bsponum of -1, "
               " something went wrong");
-        colelelid = discret_ptr()->element_col_map()->LID(elegid);
+        colelelid = discret_ptr()->element_col_map()->lid(elegid);
         if (colelelid < 0)
           FOUR_C_THROW(
               "Crosslinker has {} bonds but its binding partner with gid {} "
@@ -1984,7 +1984,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::
 
   // update position
   const int collidoccbeam =
-      discret_ptr()->element_col_map()->LID(cldata->get_b_spots()[stayoccpotid].first);
+      discret_ptr()->element_col_map()->lid(cldata->get_b_spots()[stayoccpotid].first);
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // safety check
@@ -2044,12 +2044,12 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_and_export_crossli
 
   // we first need to pack our stuff into and std::vector< char > for communication
   std::map<int, std::vector<char>> allpacks;
-  unsigned int numrowcl = cl_noderowmap_prior_redistr_->NumMyElements();
+  unsigned int numrowcl = cl_noderowmap_prior_redistr_->num_my_elements();
   for (unsigned int i = 0; i < numrowcl; ++i)
   {
-    int const clgid = cl_noderowmap_prior_redistr_->GID(i);
+    int const clgid = cl_noderowmap_prior_redistr_->gid(i);
     std::shared_ptr<BeamInteraction::Data::CrosslinkerData> cl_data_i =
-        crosslinker_data_[cl_nodecolmap_prior_redistr_->LID(clgid)];
+        crosslinker_data_[cl_nodecolmap_prior_redistr_->lid(clgid)];
 
     Core::Communication::PackBuffer data;
     cl_data_i->pack(data);
@@ -2067,7 +2067,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_and_export_crossli
     std::shared_ptr<BeamInteraction::Data::CrosslinkerData> cl_data(
         BeamInteraction::Data::create_data_container<BeamInteraction::Data::CrosslinkerData>(
             buffer));
-    crosslinker_data_[bin_discret().node_col_map()->LID(cl_data->get_id())] = cl_data;
+    crosslinker_data_[bin_discret().node_col_map()->lid(cl_data->get_id())] = cl_data;
   }
 }
 
@@ -2100,13 +2100,13 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_and_export_beam_da
 
   // we first need to pack our row stuff into and std::vector< char > for communication
   std::map<int, std::vector<char>> allpacks;
-  unsigned int numrowele = beam_elerowmap_prior_redistr_->NumMyElements();
+  unsigned int numrowele = beam_elerowmap_prior_redistr_->num_my_elements();
   for (unsigned int i = 0; i < numrowele; ++i)
   {
-    int const elegid = beam_elerowmap_prior_redistr_->GID(i);
+    int const elegid = beam_elerowmap_prior_redistr_->gid(i);
 
     std::shared_ptr<BeamInteraction::Data::BeamData> beam_data_i =
-        beam_data_[beam_elecolmap_prior_redistr_->LID(elegid)];
+        beam_data_[beam_elecolmap_prior_redistr_->lid(elegid)];
 
     // safety check
     if (beam_data_i == nullptr)
@@ -2116,7 +2116,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_and_export_beam_da
     if (update_states)
     {
       // safety check
-      if (discret().element_col_map()->LID(elegid) < 0)
+      if (discret().element_col_map()->lid(elegid) < 0)
         FOUR_C_THROW(" Element {} has moved too far between two redistributions.", elegid);
 
       // beam element i for which data will be collected
@@ -2166,7 +2166,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_and_export_beam_da
     Core::Communication::UnpackBuffer buffer(iter.second);
     std::shared_ptr<BeamInteraction::Data::BeamData> beam_data(
         BeamInteraction::Data::create_data_container<BeamInteraction::Data::BeamData>(buffer));
-    beam_data_[discret().element_col_map()->LID(beam_data->get_id())] = beam_data;
+    beam_data_[discret().element_col_map()->lid(beam_data->get_id())] = beam_data;
   }
 }
 
@@ -2437,7 +2437,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::prepare_binding(Core::Nod
           cldata_i->get_b_spots()[get_single_occupied_cl_bspot(cldata_i->get_b_spots())].first;
 
       // safety check
-      if (discret().element_col_map()->LID(cl_bondedtogid) < 0)
+      if (discret().element_col_map()->lid(cl_bondedtogid) < 0)
         FOUR_C_THROW("Element {} not ghosted on rank {}", cl_bondedtogid, g_state().get_my_rank());
 
       // 2. criterion:
@@ -2503,7 +2503,7 @@ bool BeamInteraction::SubmodelEvaluator::Crosslinking::check_bind_event_criteria
 {
   check_init();
 
-  int const potbeampartnerrowlid = discret().element_row_map()->LID(potbeampartner->id());
+  int const potbeampartnerrowlid = discret().element_row_map()->lid(potbeampartner->id());
   Inpar::BeamInteraction::CrosslinkerType linkertype = crosslinker_i->get_material()->linker_type();
 
   // check compatibility of crosslinker type and filament type (some linker can only
@@ -2643,7 +2643,7 @@ bool BeamInteraction::SubmodelEvaluator::Crosslinking::
   int const elegid = cldata_i->get_b_spots()[occbspotid].first;
   int const locbspotnum = cldata_i->get_b_spots()[occbspotid].second;
 
-  int const elecollid = discret().element_col_map()->LID(elegid);
+  int const elecollid = discret().element_col_map()->lid(elegid);
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   // safety check
@@ -2685,7 +2685,7 @@ bool BeamInteraction::SubmodelEvaluator::Crosslinking::
     if (bondedcl_data_i->get_number_of_bonds() == 1)
     {
       // this is needed in case a binding event was allowed in this time step in opposite direction
-      int const elelid = discret().element_row_map()->LID(elegid);
+      int const elelid = discret().element_row_map()->lid(elegid);
       if (elelid != -1 and
           intendedbeambonds.at(linkertype)[elelid][locbspotnum].find(bonded_crosslinker_i->id()) !=
               intendedbeambonds.at(linkertype)[elelid][locbspotnum].end())
@@ -2767,7 +2767,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::get_occupied_cl_b_spot_be
 
   const int locbspotnum = cldata_i->get_b_spots()[occbspotid].second;
   const int elegid = cldata_i->get_b_spots()[occbspotid].first;
-  const int elecollid = discret().element_col_map()->LID(elegid);
+  const int elecollid = discret().element_col_map()->lid(elegid);
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   if (elecollid < 0)
@@ -2862,8 +2862,8 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_crosslinker_bin
 #endif
 
     // get current linker and beam data
-    const int clcollid = bin_discret_ptr()->node_col_map()->LID(cliter.first);
-    const int colelelid = discret_ptr()->element_col_map()->LID(binevdata->get_ele_id());
+    const int clcollid = bin_discret_ptr()->node_col_map()->lid(cliter.first);
+    const int colelelid = discret_ptr()->element_col_map()->lid(binevdata->get_ele_id());
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // safety checks
@@ -2970,7 +2970,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_crosslinker_bin
 
         // create double bond cl data
         int occ_colelelid =
-            discret_ptr()->element_col_map()->LID(cldata_i->get_b_spots()[occbspotid].first);
+            discret_ptr()->element_col_map()->lid(cldata_i->get_b_spots()[occbspotid].first);
         NewDoubleBonds dbondcl;
         dbondcl.id = binevdata->get_cl_id();
         if (cldata_i->get_b_spots()[freebspotid].first > cldata_i->get_b_spots()[occbspotid].first)
@@ -3051,7 +3051,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_element_binding
     // get linker data and beam data
     CrossLinking::CrosslinkerNode* linker =
         dynamic_cast<CrossLinking::CrosslinkerNode*>(bin_discret_ptr()->g_node(cliter.first));
-    int const colelelid = discret_ptr()->element_col_map()->LID(binevdata->get_ele_id());
+    int const colelelid = discret_ptr()->element_col_map()->lid(binevdata->get_ele_id());
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // safety checks
@@ -3403,11 +3403,11 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_beam_binding_statu
     // get data
     const int elegidtoupdate = iter->get_ele_toupdate().first;
     const int bspotlocn = iter->get_ele_toupdate().second;
-    const int colelelid = discret().element_col_map()->LID(elegidtoupdate);
+    const int colelelid = discret().element_col_map()->lid(elegidtoupdate);
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     // safety check
-    if (discret().element_row_map()->LID(elegidtoupdate) < 0)
+    if (discret().element_row_map()->lid(elegidtoupdate) < 0)
       FOUR_C_THROW(
           "element with gid {} not owned by proc {}", elegidtoupdate, g_state().get_my_rank());
 #endif
@@ -3434,7 +3434,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_double_bonds_af
     const int clgid = iter->first;
 
     // safety check
-    if (bin_discret_ptr()->node_col_map()->LID(clgid) < 0)
+    if (bin_discret_ptr()->node_col_map()->lid(clgid) < 0)
       FOUR_C_THROW(
           "Crosslinker {} moved further than the bin length in one time step on rank {}, "
           "this is not allowed (maybe increase cutoff radius). ",
@@ -3477,7 +3477,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_double_bonds_re
     const int clgid = iter->first;
 
     // not owned
-    if (bin_discret_ptr()->node_row_map()->LID(clgid) < 0) notonmyrank.insert(clgid);
+    if (bin_discret_ptr()->node_row_map()->lid(clgid) < 0) notonmyrank.insert(clgid);
   }
 
   int const size = static_cast<int>(notonmyrank.size());
@@ -3485,7 +3485,7 @@ void BeamInteraction::SubmodelEvaluator::Crosslinking::update_my_double_bonds_re
   std::vector<int> unique_pidlist(size);
 
   // find new host procs for double bonded crosslinker by communication
-  int err = bin_discret_ptr()->node_row_map()->RemoteIDList(
+  int err = bin_discret_ptr()->node_row_map()->remote_id_list(
       size, unique_clgidlist.data(), unique_pidlist.data(), nullptr);
   if (err < 0) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDList returned err={}", err);
 

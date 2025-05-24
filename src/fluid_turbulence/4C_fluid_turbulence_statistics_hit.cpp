@@ -413,13 +413,13 @@ namespace FLD
       const int pos = loc[2] + nummodes_ * (loc[1] + nummodes_ * loc[0]);
 
       // get local dof id corresponding to the global id
-      int lid = discret_->dof_row_map()->LID(dofs[0]);
+      int lid = discret_->dof_row_map()->lid(dofs[0]);
       // set value
       (local_u1)[pos] = (*velnp)[lid];
       // analogously for remaining directions
-      lid = discret_->dof_row_map()->LID(dofs[1]);
+      lid = discret_->dof_row_map()->lid(dofs[1]);
       (local_u2)[pos] = (*velnp)[lid];
-      lid = discret_->dof_row_map()->LID(dofs[2]);
+      lid = discret_->dof_row_map()->lid(dofs[2]);
       (local_u3)[pos] = (*velnp)[lid];
     }
 
@@ -768,13 +768,13 @@ namespace FLD
       const int pos = loc[2] + nummodes_ * (loc[1] + nummodes_ * loc[0]);
 
       // get local dof id corresponding to the global id
-      int lid = discret_->dof_row_map()->LID(dofs[0]);
+      int lid = discret_->dof_row_map()->lid(dofs[0]);
       // set value
       (local_u1)[pos] = (*velnp)[lid];
       // analogously for remaining directions
-      lid = discret_->dof_row_map()->LID(dofs[1]);
+      lid = discret_->dof_row_map()->lid(dofs[1]);
       (local_u2)[pos] = (*velnp)[lid];
-      lid = discret_->dof_row_map()->LID(dofs[2]);
+      lid = discret_->dof_row_map()->lid(dofs[2]);
       (local_u3)[pos] = (*velnp)[lid];
     }
 
@@ -819,7 +819,7 @@ namespace FLD
       const int pos = loc[2] + nummodes_ * (loc[1] + nummodes_ * loc[0]);
 
       // get local dof id corresponding to the global id
-      int lid = scatradiscret_->dof_row_map()->LID(dofs[0]);
+      int lid = scatradiscret_->dof_row_map()->lid(dofs[0]);
       // set value
       (local_phi)[pos] = (*phinp)[lid];
     }

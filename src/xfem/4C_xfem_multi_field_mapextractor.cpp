@@ -157,7 +157,7 @@ void XFEM::MultiFieldMapExtractor::init(const XDisVec& dis_vec, int max_num_rese
   {
     for (unsigned d = 0; d < sl_dis_vec().size(); ++d)
     {
-      if (sl_dis_vec()[d]->node_row_map()->MyGID(*ngid))
+      if (sl_dis_vec()[d]->node_row_map()->my_gid(*ngid))
       {
         std::pair<std::set<int>::iterator, bool> is_unique = my_coupled_sl_dis[*ngid].insert(d);
         if (not is_unique.second)
@@ -331,7 +331,7 @@ void XFEM::MultiFieldMapExtractor::init(const XDisVec& dis_vec, int max_num_rese
     if (sl_dis_id_to_copy_from == -1) sl_dis_id_to_copy_from = *cit_map->second.begin();
 
     // add the node on the owning processor
-    if (sl_dis_vec()[sl_dis_id_to_copy_from]->node_row_map()->MyGID(ngid))
+    if (sl_dis_vec()[sl_dis_id_to_copy_from]->node_row_map()->my_gid(ngid))
     {
       // clone the node, thus it becomes independent of any redistribution
       Core::Nodes::Node* node = sl_dis_vec()[sl_dis_id_to_copy_from]->g_node(ngid);
@@ -420,7 +420,7 @@ void XFEM::MultiFieldMapExtractor::build_slave_node_map_extractors()
     std::vector<int> my_non_interface_row_node_gids;
 
     const int num_my_rnodes = (*cit_dis)->num_my_row_nodes();
-    int* my_row_node_gids = (*cit_dis)->node_row_map()->MyGlobalElements();
+    int* my_row_node_gids = (*cit_dis)->node_row_map()->my_global_elements();
 
     for (unsigned nlid = 0; nlid < static_cast<unsigned>(num_my_rnodes); ++nlid)
     {
@@ -465,16 +465,16 @@ void XFEM::MultiFieldMapExtractor::build_slave_dof_map_extractors()
   unsigned dis_count = 0;
   for (cit_dis = sl_dis_vec().begin(); cit_dis != sl_dis_vec().end(); ++cit_dis)
   {
-    int* my_node_gids = (*cit_dis)->node_row_map()->MyGlobalElements();
+    int* my_node_gids = (*cit_dis)->node_row_map()->my_global_elements();
 
     // loop over my nodes
-    for (int nlid = 0; nlid < (*cit_dis)->node_row_map()->NumMyElements(); ++nlid)
+    for (int nlid = 0; nlid < (*cit_dis)->node_row_map()->num_my_elements(); ++nlid)
     {
       int ngid = my_node_gids[nlid];
       // ----------------------------------------------------------------------
       // interface DoF's
       // ----------------------------------------------------------------------
-      if (slave_node_row_map(dis_count, MultiField::block_interface).MyGID(ngid))
+      if (slave_node_row_map(dis_count, MultiField::block_interface).my_gid(ngid))
       {
         const Core::Nodes::Node* node = (*cit_dis)->l_row_node(nlid);
         const unsigned numdof = (*cit_dis)->num_dof(node);
@@ -526,8 +526,8 @@ void XFEM::MultiFieldMapExtractor::build_interface_coupling_dof_set()
     const Core::LinAlg::Map& sl_inodemap = slave_node_row_map(i, MultiField::block_interface);
     const Core::LinAlg::Map& ma_inodemap = master_interface_node_row_map(i);
 
-    int nnodes = sl_inodemap.NumMyElements();
-    int* ngids = sl_inodemap.MyGlobalElements();
+    int nnodes = sl_inodemap.num_my_elements();
+    int* ngids = sl_inodemap.my_global_elements();
 
     int my_num_std_dof = -1;
 
@@ -643,8 +643,8 @@ void XFEM::MultiFieldMapExtractor::build_master_dof_map_extractor()
   {
     my_ma_interface_dofs.clear();
 
-    const int num_my_inodes = master_interface_node_row_map(i).NumMyElements();
-    int* inode_gids = master_interface_node_row_map(i).MyGlobalElements();
+    const int num_my_inodes = master_interface_node_row_map(i).num_my_elements();
+    int* inode_gids = master_interface_node_row_map(i).my_global_elements();
 
     // get the dofs of the master interface coupling nodes
     for (int nlid = 0; nlid < num_my_inodes; ++nlid)
@@ -984,7 +984,7 @@ void XFEM::MultiFieldMapExtractor::build_global_interface_node_gid_set()
         for (unsigned i = 0; i < static_cast<unsigned>(slave_discret_vec_[j]->num_my_row_nodes());
             ++i)
         {
-          int gid = slave_discret_vec_[j]->node_row_map()->GID(i);
+          int gid = slave_discret_vec_[j]->node_row_map()->gid(i);
           // insert the gid and check if it is unique on the current processor
           std::pair<std::set<int>::iterator, bool> is_unique =
               my_unique_row_node_gid_set.insert(gid);

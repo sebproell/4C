@@ -169,10 +169,10 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_transform_gids(
     std::vector<int> idx(NumEntries);
     for (int j = 0; j < NumEntries; ++j)
     {
-      idx[j] = (inmat.col_map()).GID(Indices[j]);
+      idx[j] = (inmat.col_map()).gid(Indices[j]);
     }
 
-    err = outmat->insert_global_values(newrowmap.GID(i), NumEntries, Values, idx.data());
+    err = outmat->insert_global_values(newrowmap.gid(i), NumEntries, Values, idx.data());
     if (err < 0) FOUR_C_THROW("insert_global_values error: {}", err);
   }
 
@@ -196,8 +196,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
   std::map<int, int> gidmap;
   Core::Communication::Exporter ex(
       inmat.domain_map(), inmat.col_map(), Core::Communication::unpack_epetra_comm(inmat.Comm()));
-  for (int i = 0; i < inmat.domain_map().NumMyElements(); ++i)
-    gidmap[inmat.domain_map().GID(i)] = newdomainmap.GID(i);
+  for (int i = 0; i < inmat.domain_map().num_my_elements(); ++i)
+    gidmap[inmat.domain_map().gid(i)] = newdomainmap.gid(i);
   ex.do_export(gidmap);
 
   // transform input matrix to newdomainmap
@@ -215,7 +215,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
 
     for (int j = 0; j < NumEntries; ++j)
     {
-      int gid = (inmat.col_map()).GID(Indices[j]);
+      int gid = (inmat.col_map()).gid(Indices[j]);
       std::map<int, int>::const_iterator iter = gidmap.find(gid);
       if (iter != gidmap.end())
       {
@@ -228,7 +228,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_col_transform_gids(
 
     Values = vals.data();
     NumEntries = vals.size();
-    err = outmat->insert_global_values(inmat.row_map().GID(i), NumEntries, Values, idx.data());
+    err = outmat->insert_global_values(inmat.row_map().gid(i), NumEntries, Values, idx.data());
     if (err < 0) FOUR_C_THROW("insert_global_values error: {}", err);
   }
 
@@ -245,7 +245,7 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
 {
   if (not mat.filled()) FOUR_C_THROW("Matrix must be filled!");
 
-  if (newcolmap and mat.col_map().SameAs(*newcolmap)) return;
+  if (newcolmap and mat.col_map().same_as(*newcolmap)) return;
 
   // reset old no longer correct column map
   newcolmap = nullptr;
@@ -255,12 +255,12 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
   Core::Communication::Exporter exDomain2Col(
       mat.domain_map(), mat.col_map(), Core::Communication::unpack_epetra_comm(mat.Comm()));
 
-  const int nummyelements = mat.domain_map().NumMyElements();
-  if (nummyelements != newdomainmap.NumMyElements())
+  const int nummyelements = mat.domain_map().num_my_elements();
+  if (nummyelements != newdomainmap.num_my_elements())
     FOUR_C_THROW("NumMyElements must be the same on each proc!");
 
-  const int* old_gids = mat.domain_map().MyGlobalElements();
-  const int* new_gids = newdomainmap.MyGlobalElements();
+  const int* old_gids = mat.domain_map().my_global_elements();
+  const int* new_gids = newdomainmap.my_global_elements();
 
   for (int i = 0; i < nummyelements; ++i) gidmap[old_gids[i]] = new_gids[i];
 
@@ -269,7 +269,7 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
   std::vector<int> my_col_gids(gidmap.size(), -1);
   for (std::map<int, int>::const_iterator cit = gidmap.begin(); cit != gidmap.end(); ++cit)
   {
-    const int lid = mat.col_map().LID(cit->first);
+    const int lid = mat.col_map().lid(cit->first);
     if (lid == -1)
       FOUR_C_THROW("Couldn't find the GID {} in the old column map on proc {}.", cit->first,
           Core::Communication::my_mpi_rank(Core::Communication::unpack_epetra_comm(mat.Comm())));
@@ -277,7 +277,7 @@ void Mortar::create_new_col_map(const Core::LinAlg::SparseMatrix& mat,
     my_col_gids[lid] = cit->second;
   }
 
-  newcolmap = std::make_shared<Core::LinAlg::Map>(mat.col_map().NumGlobalElements(),
+  newcolmap = std::make_shared<Core::LinAlg::Map>(mat.col_map().num_global_elements(),
       static_cast<int>(my_col_gids.size()), my_col_gids.data(), 0,
       Core::Communication::unpack_epetra_comm(mat.Comm()));
 }
@@ -298,8 +298,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
   std::map<int, int> gidmap;
   Core::Communication::Exporter ex(
       inmat.domain_map(), inmat.col_map(), Core::Communication::unpack_epetra_comm(inmat.Comm()));
-  for (int i = 0; i < inmat.domain_map().NumMyElements(); ++i)
-    gidmap[inmat.domain_map().GID(i)] = newdomainmap.GID(i);
+  for (int i = 0; i < inmat.domain_map().num_my_elements(); ++i)
+    gidmap[inmat.domain_map().gid(i)] = newdomainmap.gid(i);
   ex.do_export(gidmap);
 
   // transform input matrix to newrowmap and newdomainmap
@@ -317,7 +317,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
 
     for (int j = 0; j < NumEntries; ++j)
     {
-      int gid = (inmat.col_map()).GID(Indices[j]);
+      int gid = (inmat.col_map()).gid(Indices[j]);
       std::map<int, int>::const_iterator iter = gidmap.find(gid);
       if (iter != gidmap.end())
       {
@@ -330,7 +330,7 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::matrix_row_col_transform_gid
 
     Values = vals.data();
     NumEntries = vals.size();
-    err = outmat->insert_global_values(newrowmap.GID(i), NumEntries, Values, idx.data());
+    err = outmat->insert_global_values(newrowmap.gid(i), NumEntries, Values, idx.data());
     if (err < 0) FOUR_C_THROW("insert_global_values error: {}", err);
   }
 
@@ -680,7 +680,7 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
 
   if (check_on_in)
     for (int c = 1; c < (int)voldis.size(); ++c)
-      if (voldis.at(c)->element_row_map()->SameAs(*voldis.at(0)->element_row_map()) == false)
+      if (voldis.at(c)->element_row_map()->same_as(*voldis.at(0)->element_row_map()) == false)
         FOUR_C_THROW("row maps on input do not coincide");
 
   const Core::LinAlg::Map* ielecolmap = dis_src.element_col_map();
@@ -695,16 +695,16 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
     const std::shared_ptr<Core::LinAlg::Map> allredelecolmap =
         Core::LinAlg::allreduce_e_map(*voldis[disidx]->element_row_map());
 
-    for (int i = 0; i < elecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < elecolmap->num_my_elements(); ++i)
     {
-      int gid = elecolmap->GID(i);
+      int gid = elecolmap->gid(i);
       rdata.push_back(gid);
     }
 
     // Find elements, which are ghosted on the interface but not in the volume discretization
-    for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < ielecolmap->num_my_elements(); ++i)
     {
-      int gid = ielecolmap->GID(i);
+      int gid = ielecolmap->gid(i);
 
       Core::Elements::Element* ele = dis_src.g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
@@ -712,8 +712,8 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
       if (!faceele) FOUR_C_THROW("source element is not a face element");
       int volgid = faceele->parent_element_id();
       // Ghost the parent element additionally
-      if (elecolmap->LID(volgid) == -1 &&
-          allredelecolmap->LID(volgid) !=
+      if (elecolmap->lid(volgid) == -1 &&
+          allredelecolmap->lid(volgid) !=
               -1)  // Volume discretization has not Element on this proc but on another
         rdata.push_back(volgid);
     }
@@ -732,9 +732,9 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
   {
     const Core::LinAlg::Map* elecolmap = voldis[0]->element_col_map();
 
-    for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < ielecolmap->num_my_elements(); ++i)
     {
-      int gid = ielecolmap->GID(i);
+      int gid = ielecolmap->gid(i);
 
       Core::Elements::Element* ele = dis_src.g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
@@ -742,7 +742,7 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
       if (!faceele) FOUR_C_THROW("source element is not a face element");
       int volgid = faceele->parent_element_id();
 
-      if (elecolmap->LID(volgid) == -1)  // Volume discretization has not Element
+      if (elecolmap->lid(volgid) == -1)  // Volume discretization has not Element
         FOUR_C_THROW("create_volume_ghosting: Element {} does not exist on this Proc!", volgid);
 
       Core::Elements::Element* vele = voldis[0]->g_element(volgid);
@@ -753,7 +753,7 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
       if (voldis.size() == 2)
       {
         const auto* elecolmap2 = voldis[1]->element_col_map();
-        if (elecolmap2->LID(volgid) == -1)
+        if (elecolmap2->lid(volgid) == -1)
           faceele->set_parent_slave_element(nullptr, -1);
         else
         {
@@ -768,9 +768,9 @@ void Mortar::Utils::create_volume_ghosting(const Core::FE::Discretization& dis_s
   if (check_on_exit)
     for (int c = 1; c < (int)voldis.size(); ++c)
     {
-      if (voldis.at(c)->element_row_map()->SameAs(*voldis.at(0)->element_row_map()) == false)
+      if (voldis.at(c)->element_row_map()->same_as(*voldis.at(0)->element_row_map()) == false)
         FOUR_C_THROW("row maps on exit do not coincide");
-      if (voldis.at(c)->element_col_map()->SameAs(*voldis.at(0)->element_col_map()) == false)
+      if (voldis.at(c)->element_col_map()->same_as(*voldis.at(0)->element_col_map()) == false)
         FOUR_C_THROW("col maps on exit do not coincide");
     }
 

@@ -408,16 +408,16 @@ void SSI::MeshtyingStrategyBase::finalize_meshtying_structure_matrix(
   // subject slave-side rows of structure system matrix to pseudo Dirichlet conditions to finalize
   // structure mesh tying
   const double one(1.0);
-  for (int doflid_slave = 0; doflid_slave < slavemaps->NumMyElements(); ++doflid_slave)
+  for (int doflid_slave = 0; doflid_slave < slavemaps->num_my_elements(); ++doflid_slave)
   {
     // extract global ID of current slave-side row
-    const int dofgid_slave = slavemaps->GID(doflid_slave);
+    const int dofgid_slave = slavemaps->gid(doflid_slave);
     if (dofgid_slave < 0) FOUR_C_THROW("Local ID not found!");
 
     // apply pseudo Dirichlet conditions to filled matrix, i.e., to local row and column indices
     if (ssi_structure_matrix.filled())
     {
-      const int rowlid_slave = ssi_structure_matrix.row_map().LID(dofgid_slave);
+      const int rowlid_slave = ssi_structure_matrix.row_map().lid(dofgid_slave);
       if (rowlid_slave < 0) FOUR_C_THROW("Global ID not found!");
       if (ssi_structure_matrix.replace_my_values(rowlid_slave, 1, &one, &rowlid_slave))
         FOUR_C_THROW("replace_my_values failed!");

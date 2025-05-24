@@ -548,9 +548,9 @@ void CONTACT::SelfBinaryTree::init_internal_variables()
 void CONTACT::SelfBinaryTree::init_leaf_nodes_and_map(std::vector<int>& elelist)
 {
   // build global element list
-  for (int i = 0; i < elements_->NumMyElements(); ++i)
+  for (int i = 0; i < elements_->num_my_elements(); ++i)
   {
-    int gid = elements_->GID(i);
+    int gid = elements_->gid(i);
     elelist.push_back(gid);
   }
 
@@ -887,9 +887,9 @@ void CONTACT::SelfBinaryTree::set_enlarge()
   double lmin = 1.0e12;
 
   // calculate minimal length
-  for (int i = 0; i < elements_->NumMyElements(); ++i)
+  for (int i = 0; i < elements_->num_my_elements(); ++i)
   {
-    int gid = elements_->GID(i);
+    int gid = elements_->gid(i);
     Core::Elements::Element* element = discret().g_element(gid);
     if (!element) FOUR_C_THROW("Cannot find element with gid {}", gid);
     CONTACT::Element* celement = dynamic_cast<Element*>(element);
@@ -1557,9 +1557,9 @@ void CONTACT::SelfBinaryTree::search_contact()
 
   // make contact pairs information redundant on all procs
   std::vector<int> locdata;
-  for (int i = 0; i < elements_->NumMyElements(); ++i)
+  for (int i = 0; i < elements_->num_my_elements(); ++i)
   {
-    int gid = elements_->GID(i);
+    int gid = elements_->gid(i);
     if (contactpairs_.find(gid) != contactpairs_.end()) locdata.push_back(gid);
   }
   Core::LinAlg::Map mymap(-1, (int)locdata.size(), locdata.data(), 0, get_comm());
@@ -1578,9 +1578,9 @@ void CONTACT::SelfBinaryTree::search_contact()
   //**********************************************************************
   // STEP 6: check consistency of slave and master facet sorting
   //**********************************************************************
-  for (int i = 0; i < elements_->NumMyElements(); ++i)
+  for (int i = 0; i < elements_->num_my_elements(); ++i)
   {
-    int gid1 = elements_->GID(i);
+    int gid1 = elements_->gid(i);
     Core::Elements::Element* ele1 = discret().g_element(gid1);
     if (!ele1) FOUR_C_THROW("Cannot find element with gid %", gid1);
     Mortar::Element* element1 = dynamic_cast<Mortar::Element*>(ele1);

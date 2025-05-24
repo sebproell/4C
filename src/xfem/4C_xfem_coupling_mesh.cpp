@@ -368,10 +368,10 @@ void XFEM::MeshVolCoupling::redistribute_embedded_discretization()
 
   // STEP 1: Query
   // loop over nodes of cutter discretization (conditioned nodes)
-  for (int icondn = 0; icondn != cutter_dis_->node_row_map()->NumMyElements(); ++icondn)
+  for (int icondn = 0; icondn != cutter_dis_->node_row_map()->num_my_elements(); ++icondn)
   {
     // get node GID
-    const int cond_node_gid = cutter_dis_->node_row_map()->GID(icondn);
+    const int cond_node_gid = cutter_dis_->node_row_map()->gid(icondn);
 
     // node from coupling discretization (is on this proc, as cutter_dis nodes are
     // a subset!)
@@ -438,7 +438,7 @@ void XFEM::MeshVolCoupling::redistribute_embedded_discretization()
     for (int fele_lid = 0; fele_lid < cutter_dis_->num_my_col_elements(); fele_lid++)
     {
       Core::Elements::FaceElement* fele = dynamic_cast<Core::Elements::FaceElement*>(
-          cutter_dis_->g_element(cutter_dis_->element_col_map()->GID(fele_lid)));
+          cutter_dis_->g_element(cutter_dis_->element_col_map()->gid(fele_lid)));
       if (!fele) FOUR_C_THROW("Cast to FaceElement failed!");
 
       Core::Elements::Element* ele = cond_dis_->g_element(fele->parent_element_id());
@@ -550,14 +550,14 @@ void XFEM::MeshVolCoupling::create_auxiliary_discretization()
       const int node_gid(nodeids[n]);
       // yes, we have a xfem condition:
       // node stored on this proc? add to the set of row nodes!
-      if (coupl_dis_->node_row_map()->MyGID(node_gid)) adjacent_row.insert(node_gid);
+      if (coupl_dis_->node_row_map()->my_gid(node_gid)) adjacent_row.insert(node_gid);
 
       // always add to set of col nodes
       adjacent_col.insert(node_gid);
     }
 
     // add the element to the discretization
-    if (cond_dis_->element_row_map()->MyGID(actele->id()))
+    if (cond_dis_->element_row_map()->my_gid(actele->id()))
     {
       std::shared_ptr<Core::Elements::Element> bndele(actele->clone());
       aux_coup_dis_->add_element(bndele);
@@ -813,7 +813,7 @@ void XFEM::MeshCouplingBC::compute_interface_velocity_from_displacement(
   for (int dof = 0; dof < numdof; ++dof)
   {
     int gid = nodedofset[dof];
-    int lid = idispnp_->get_map().LID(gid);
+    int lid = idispnp_->get_map().lid(gid);
 
     const double dispnp = (*idispnp_)[lid];
     const double dispn = (*idispn_)[lid];
@@ -1683,15 +1683,15 @@ void XFEM::MeshCouplingFSI::read_restart(const int step)
   boundaryreader.read_vector(idispnp_, "idispnp_res");
   boundaryreader.read_vector(idispnpi_, "idispnpi_res");
 
-  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(ivelnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(iveln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispnpi_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 
@@ -1919,7 +1919,7 @@ void XFEM::MeshCouplingFSI::lift_drag(const int step, const double time) const
       for (int isd = 0; isd < nsd; ++isd)
       {
         // [// minus to get correct sign of lift and drag (force acting on the body) ]
-        c(isd) += (*iforcecol)[dofcolmap->LID(dof[isd])];
+        c(isd) += (*iforcecol)[dofcolmap->lid(dof[isd])];
       }
     }
 
@@ -2665,15 +2665,15 @@ void XFEM::MeshCouplingFluidFluid::read_restart(const int step)
   boundaryreader.read_vector(idispnp_, "idispnp_res");
   boundaryreader.read_vector(idispnpi_, "idispnpi_res");
 
-  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(ivelnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(iveln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispnpi_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 

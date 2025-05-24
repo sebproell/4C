@@ -3145,7 +3145,7 @@ void Solid::TimIntImpl::cmt_linear_solve()
           // set the nullspace
           std::shared_ptr<Core::LinAlg::MultiVector<double>> nullspace =
               std::make_shared<Core::LinAlg::MultiVector<double>>(dofmap, dim_nullspace, true);
-          for (int ldof = 0; ldof < dofmap.NumMyElements(); ++ldof)
+          for (int ldof = 0; ldof < dofmap.num_my_elements(); ++ldof)
           {
             nullspace->ReplaceMyValue(ldof, ldof % dim_nullspace, 1.0);
           }

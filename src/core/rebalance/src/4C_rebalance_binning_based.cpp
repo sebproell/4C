@@ -109,9 +109,9 @@ void Core::Rebalance::ghost_discretization_on_all_procs(Core::FE::Discretization
   // fill my own row node ids
   const Core::LinAlg::Map* noderowmap = distobeghosted.node_row_map();
   std::vector<int> sdata;
-  for (int lid = 0; lid < noderowmap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < noderowmap->num_my_elements(); ++lid)
   {
-    int gid = noderowmap->GID(lid);
+    int gid = noderowmap->gid(lid);
     sdata.push_back(gid);
   }
 
@@ -127,9 +127,9 @@ void Core::Rebalance::ghost_discretization_on_all_procs(Core::FE::Discretization
   // fill my own row element ids
   const Core::LinAlg::Map* elerowmap = distobeghosted.element_row_map();
   sdata.resize(0);
-  for (int i = 0; i < elerowmap->NumMyElements(); ++i)
+  for (int i = 0; i < elerowmap->num_my_elements(); ++i)
   {
-    int gid = elerowmap->GID(i);
+    int gid = elerowmap->gid(i);
     sdata.push_back(gid);
   }
 
@@ -150,7 +150,7 @@ void Core::Rebalance::ghost_discretization_on_all_procs(Core::FE::Discretization
 
   // Safety checks in DEBUG
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  int nummycolnodes = newnodecolmap.NumMyElements();
+  int nummycolnodes = newnodecolmap.num_my_elements();
   std::vector<int> sizelist(Core::Communication::num_mpi_ranks(com));
   Core::Communication::gather_all(&nummycolnodes, sizelist.data(), 1, com);
   Core::Communication::barrier(com);
@@ -320,11 +320,11 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     // MATCH CONDITIONED ELEMENTS
     ////////////////////////////////////////
     // fill element gid vectors
-    for (int lid = 0; lid < template_cond_dis_elecolmap->NumMyElements(); lid++)
-      my_template_colelegid_vec.push_back(template_cond_dis_elecolmap->GID(lid));
+    for (int lid = 0; lid < template_cond_dis_elecolmap->num_my_elements(); lid++)
+      my_template_colelegid_vec.push_back(template_cond_dis_elecolmap->gid(lid));
 
-    for (int lid = 0; lid < rebalance_elerowmap->NumMyElements(); lid++)
-      rebalance_rowelegid_vec.push_back(rebalance_elerowmap->GID(lid));
+    for (int lid = 0; lid < rebalance_elerowmap->num_my_elements(); lid++)
+      rebalance_rowelegid_vec.push_back(rebalance_elerowmap->gid(lid));
 
 
     // initialize search tree for matching with template (source,master) elements
@@ -375,11 +375,11 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     // ALSO APPEND UNCONDITIONED ELEMENTS
     ////////////////////////////////////////
     // add row elements
-    for (int lid = 0; lid < dis_to_rebalance.element_col_map()->NumMyElements(); lid++)
+    for (int lid = 0; lid < dis_to_rebalance.element_col_map()->num_my_elements(); lid++)
     {
       bool conditionedele = false;
       Core::Elements::Element* ele =
-          dis_to_rebalance.g_element(dis_to_rebalance.element_col_map()->GID(lid));
+          dis_to_rebalance.g_element(dis_to_rebalance.element_col_map()->gid(lid));
       Core::Nodes::Node** nodes = ele->nodes();
       for (int node = 0; node < ele->num_node(); node++)
       {
@@ -417,11 +417,11 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     // MATCH CONDITIONED NODES
     ////////////////////////////////////////
     // fill vector with processor local conditioned node gids for template dis
-    for (int lid = 0; lid < dis_template.node_col_map()->NumMyElements(); ++lid)
+    for (int lid = 0; lid < dis_template.node_col_map()->num_my_elements(); ++lid)
     {
-      if (dis_template.g_node(dis_template.node_col_map()->GID(lid))
+      if (dis_template.g_node(dis_template.node_col_map()->gid(lid))
               ->get_condition(condname_template) != nullptr)
-        my_template_nodegid_vec.push_back(dis_template.node_col_map()->GID(lid));
+        my_template_nodegid_vec.push_back(dis_template.node_col_map()->gid(lid));
     }
 
     // fill vec with processor local node gids of dis to be rebalanced
@@ -482,24 +482,24 @@ void Core::Rebalance::match_element_distribution_of_matching_conditioned_element
     // ALSO APPEND UNCONDITIONED  NODES
     ////////////////////////////////////////
     // add row nodes
-    for (int lid = 0; lid < dis_to_rebalance.node_row_map()->NumMyElements(); lid++)
+    for (int lid = 0; lid < dis_to_rebalance.node_row_map()->num_my_elements(); lid++)
     {
       Core::Conditions::Condition* testcond =
-          dis_to_rebalance.g_node(dis_to_rebalance.node_row_map()->GID(lid))
+          dis_to_rebalance.g_node(dis_to_rebalance.node_row_map()->gid(lid))
               ->get_condition(condname_rebalance);
       if (testcond == nullptr)
         rebalance_rownodegid_vec.push_back(
-            dis_to_rebalance.g_node(dis_to_rebalance.node_row_map()->GID(lid))->id());
+            dis_to_rebalance.g_node(dis_to_rebalance.node_row_map()->gid(lid))->id());
     }
     // add col nodes
-    for (int lid = 0; lid < dis_to_rebalance.node_col_map()->NumMyElements(); lid++)
+    for (int lid = 0; lid < dis_to_rebalance.node_col_map()->num_my_elements(); lid++)
     {
       Core::Conditions::Condition* testcond =
-          dis_to_rebalance.g_node(dis_to_rebalance.node_col_map()->GID(lid))
+          dis_to_rebalance.g_node(dis_to_rebalance.node_col_map()->gid(lid))
               ->get_condition(condname_rebalance);
       if (testcond == nullptr)
         rebalance_colnodegid_vec.push_back(
-            dis_to_rebalance.g_node(dis_to_rebalance.node_col_map()->GID(lid))->id());
+            dis_to_rebalance.g_node(dis_to_rebalance.node_col_map()->gid(lid))->id());
     }
 
     // construct rebalanced node row map
@@ -554,7 +554,7 @@ std::shared_ptr<const Core::LinAlg::Vector<double>> Core::Rebalance::get_col_ver
   // This is a rought test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.PointSameAs(colmap->get_epetra_block_map())) return state;
+  if (vecmap.point_same_as(colmap->get_epetra_block_map())) return state;
   // if it's not in column map export and allocate
   else
   {
@@ -576,8 +576,8 @@ std::shared_ptr<Core::LinAlg::Map> Core::Rebalance::compute_node_col_map(
 {
   const Core::LinAlg::Map* oldcolnodemap = sourcedis.node_col_map();
 
-  std::vector<int> mycolnodes(oldcolnodemap->NumMyElements());
-  oldcolnodemap->MyGlobalElements(mycolnodes.data());
+  std::vector<int> mycolnodes(oldcolnodemap->num_my_elements());
+  oldcolnodemap->my_global_elements(mycolnodes.data());
   for (int inode = 0; inode != subdis.num_my_col_nodes(); ++inode)
   {
     const Core::Nodes::Node* newnode = subdis.l_col_node(inode);
@@ -604,16 +604,16 @@ void Core::Rebalance::match_element_row_col_distribution(
   // preliminary work
   const Core::LinAlg::Map* rebalance_elerowmap = dis_to_rebalance.element_row_map();
   const Core::LinAlg::Map* template_elecolmap = dis_template.element_col_map();
-  std::vector<int> my_template_elegid_vec(template_elecolmap->NumMyElements());
+  std::vector<int> my_template_elegid_vec(template_elecolmap->num_my_elements());
   std::vector<int> my_rebalance_elegid_vec;
 
   // fill vector with processor local ele gids for template dis
-  for (int lid = 0; lid < template_elecolmap->NumMyElements(); ++lid)
-    my_template_elegid_vec[lid] = template_elecolmap->GID(lid);
+  for (int lid = 0; lid < template_elecolmap->num_my_elements(); ++lid)
+    my_template_elegid_vec[lid] = template_elecolmap->gid(lid);
 
   // fill vec with processor local ele gids of dis to be rebalanced
-  for (int lid = 0; lid < rebalance_elerowmap->NumMyElements(); ++lid)
-    my_rebalance_elegid_vec.push_back(rebalance_elerowmap->GID(lid));
+  for (int lid = 0; lid < rebalance_elerowmap->num_my_elements(); ++lid)
+    my_rebalance_elegid_vec.push_back(rebalance_elerowmap->gid(lid));
 
   // initialize search tree for matching with template (source,master) elements
   auto elementmatchingtree = Core::GeometricSearch::ElementMatchingOctree();
@@ -661,16 +661,16 @@ void Core::Rebalance::match_nodal_row_col_distribution(const Core::FE::Discretiz
   // preliminary work
   const Core::LinAlg::Map* rebalance_noderowmap = dis_to_rebalance.node_row_map();
   const Core::LinAlg::Map* template_nodecolmap = dis_template.node_col_map();
-  std::vector<int> my_template_nodegid_vec(template_nodecolmap->NumMyElements());
+  std::vector<int> my_template_nodegid_vec(template_nodecolmap->num_my_elements());
   std::vector<int> my_rebalance_nodegid_vec;
 
   // fill vector with processor local node gids for template dis
-  for (int lid = 0; lid < template_nodecolmap->NumMyElements(); ++lid)
-    my_template_nodegid_vec[lid] = template_nodecolmap->GID(lid);
+  for (int lid = 0; lid < template_nodecolmap->num_my_elements(); ++lid)
+    my_template_nodegid_vec[lid] = template_nodecolmap->gid(lid);
 
   // fill vec with processor local node gids of dis to be rebalanced
-  for (int lid = 0; lid < rebalance_noderowmap->NumMyElements(); ++lid)
-    my_rebalance_nodegid_vec.push_back(rebalance_noderowmap->GID(lid));
+  for (int lid = 0; lid < rebalance_noderowmap->num_my_elements(); ++lid)
+    my_rebalance_nodegid_vec.push_back(rebalance_noderowmap->gid(lid));
 
   // initialize search tree for matching with template (source) nodes
   auto nodematchingtree = Core::GeometricSearch::NodeMatchingOctree();

@@ -418,7 +418,7 @@ int Solid::TimeInt::BaseDataGlobalState::setup_block_information(
   // create a global problem map
   gproblem_map_ptr_ = Core::LinAlg::merge_map(gproblem_map_ptr_, me_map_ptr);
 
-  return gproblem_map_ptr_->MaxAllGID();
+  return gproblem_map_ptr_->max_all_gid();
 }
 
 /*----------------------------------------------------------------------------*
@@ -529,7 +529,7 @@ void Solid::TimeInt::BaseDataGlobalState::setup_rot_vec_map_extractor(
       if (nodaladditdofs.size() + nodalrotvecdofs.size() !=
           (unsigned)beameleptr->num_dof_per_node(*nodeptr))
         FOUR_C_THROW("Expected {} DoFs for node with GID {} but collected {} DoFs",
-            beameleptr->num_dof_per_node(*nodeptr), discret_->node_row_map()->GID(i),
+            beameleptr->num_dof_per_node(*nodeptr), discret_->node_row_map()->gid(i),
             nodaladditdofs.size() + nodalrotvecdofs.size());
     }
 
@@ -764,12 +764,12 @@ Solid::TimeInt::BaseDataGlobalState::extract_model_entries(
 {
   std::shared_ptr<Core::LinAlg::Vector<double>> model_ptr = nullptr;
   // extract from the full state vector
-  if (source.get_map().NumGlobalElements() == block_extractor().full_map()->NumGlobalElements())
+  if (source.get_map().num_global_elements() == block_extractor().full_map()->num_global_elements())
   {
     model_ptr = block_extractor().extract_vector(source, model_block_id_.at(mt));
   }
   // copy the vector
-  else if (source.get_map().NumGlobalElements() == model_maps_.at(mt)->NumGlobalElements())
+  else if (source.get_map().num_global_elements() == model_maps_.at(mt)->num_global_elements())
   {
     model_ptr = std::make_shared<Core::LinAlg::Vector<double>>(source);
   }
@@ -1134,13 +1134,14 @@ void NOX::Nln::GROUP::PrePostOp::TimeInt::RotVecUpdater::run_pre_compute_x(
 
   /* since parallel distribution is node-wise, the three entries belonging to
    * a rotation vector should be stored on the same processor: safety-check */
-  if (x_rotvec.get_map().NumMyElements() % 3 != 0 or dir_rotvec.get_map().NumMyElements() % 3 != 0)
+  if (x_rotvec.get_map().num_my_elements() % 3 != 0 or
+      dir_rotvec.get_map().num_my_elements() % 3 != 0)
     FOUR_C_THROW(
         "fatal error: apparently, the three DOFs of a nodal rotation vector are"
         " not stored on this processor. Can't apply multiplicative update!");
 
   // rotation vectors always consist of three consecutive DoFs
-  for (int i = 0; i < x_rotvec.get_map().NumMyElements(); i = i + 3)
+  for (int i = 0; i < x_rotvec.get_map().num_my_elements(); i = i + 3)
   {
     // create a Core::LinAlg::Matrix from reference to three x vector entries
     Core::LinAlg::Matrix<3, 1> theta(&x_rotvec[i], true);

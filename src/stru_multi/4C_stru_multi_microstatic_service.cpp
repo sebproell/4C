@@ -32,7 +32,7 @@ void MultiScale::MicroStatic::determine_toggle()
     for (int i : nodeids)
     {
       // do only nodes in my row map
-      if (!discret_->node_row_map()->MyGID(i)) continue;
+      if (!discret_->node_row_map()->my_gid(i)) continue;
       Core::Nodes::Node* actnode = discret_->g_node(i);
       if (!actnode) FOUR_C_THROW("Cannot find global node {}", i);
       std::vector<int> dofs = discret_->dof(actnode);
@@ -42,7 +42,7 @@ void MultiScale::MicroStatic::determine_toggle()
       {
         const int gid = dofs[j];
 
-        const int lid = disn_->get_map().LID(gid);
+        const int lid = disn_->get_map().lid(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
 
         if ((*dirichtoggle_)[lid] != 1.0)  // be careful not to count dofs more
@@ -66,7 +66,7 @@ void MultiScale::MicroStatic::set_up_homogenization()
   int indp = 0;
   int indf = 0;
 
-  ndof_ = discret_->dof_row_map()->NumMyElements();
+  ndof_ = discret_->dof_row_map()->num_my_elements();
 
   std::vector<int> pdof(np_);
   std::vector<int> fdof(ndof_ - np_);  // changed this, previously this
@@ -78,12 +78,12 @@ void MultiScale::MicroStatic::set_up_homogenization()
   {
     if ((*dirichtoggle_)[it] == 1.0)
     {
-      pdof[indp] = discret_->dof_row_map()->GID(it);
+      pdof[indp] = discret_->dof_row_map()->gid(it);
       ++indp;
     }
     else
     {
-      fdof[indf] = discret_->dof_row_map()->GID(it);
+      fdof[indf] = discret_->dof_row_map()->gid(it);
       ++indf;
     }
   }
@@ -111,7 +111,7 @@ void MultiScale::MicroStatic::set_up_homogenization()
     for (int i : nodeids)
     {
       // do only nodes in my row map
-      if (!discret_->node_row_map()->MyGID(i)) continue;
+      if (!discret_->node_row_map()->my_gid(i)) continue;
       Core::Nodes::Node* actnode = discret_->g_node(i);
       if (!actnode) FOUR_C_THROW("Cannot find global node {}", i);
 
@@ -124,7 +124,7 @@ void MultiScale::MicroStatic::set_up_homogenization()
       {
         const int gid = dofs[k];
 
-        const int lid = disn_->get_map().LID(gid);
+        const int lid = disn_->get_map().lid(gid);
         if (lid < 0) FOUR_C_THROW("Global id {} not on this proc in system vector", gid);
 
         for (int l = 0; l < np_; ++l)

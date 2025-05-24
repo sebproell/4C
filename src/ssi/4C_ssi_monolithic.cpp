@@ -882,7 +882,7 @@ void SSI::SsiMono::newton_loop()
     // applicable
     if (scatra_field()->scatra_parameter_list()->get<bool>("OUTPUTLINSOLVERSTATS"))
       scatra_field()->output_lin_solver_stats(*solver_, dt_solve_, step(), iteration_count(),
-          ssi_vectors_->residual()->get_map().NumGlobalElements());
+          ssi_vectors_->residual()->get_map().num_global_elements());
 
     // update states for next Newton iteration
     update_iter_scatra();

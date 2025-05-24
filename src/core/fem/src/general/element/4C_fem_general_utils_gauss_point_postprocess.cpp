@@ -41,7 +41,7 @@ void Core::FE::assemble_gauss_point_values(
   for (int gp = 0; gp < gp_data.numRows(); ++gp)
   {
     const Core::LinAlg::Map& elemap = global_data[gp]->get_map();
-    int lid = elemap.LID(ele.id());
+    int lid = elemap.lid(ele.id());
     if (lid != -1)
     {
       for (int i = 0; i < gp_data.numCols(); ++i)
@@ -57,7 +57,7 @@ void Core::FE::assemble_nodal_element_count(
 {
   for (int n = 0; n < ele.num_node(); ++n)
   {
-    const int lid = global_count.get_map().LID(ele.node_ids()[n]);
+    const int lid = global_count.get_map().lid(ele.node_ids()[n]);
 
     if (lid != -1)
     {

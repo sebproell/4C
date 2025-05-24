@@ -171,7 +171,7 @@ void PARTICLEWALL::WallHandlerBase::check_wall_nodes_located_in_bounding_box() c
       for (int dim = 0; dim < 3; ++dim)
       {
         // local id of nodal dof in current spatial direction
-        const int lid = walldiscretization_->dof_row_map()->LID(lm[dim]);
+        const int lid = walldiscretization_->dof_row_map()->lid(lm[dim]);
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
         // safety check
@@ -199,7 +199,7 @@ void PARTICLEWALL::WallHandlerBase::get_max_wall_position_increment(
     if (walldatastate_->get_disp_row_last_transfer() == nullptr)
       FOUR_C_THROW("vector of wall displacements after last transfer not set!");
 
-    if (not walldatastate_->get_disp_row()->get_map().SameAs(
+    if (not walldatastate_->get_disp_row()->get_map().same_as(
             walldatastate_->get_disp_row_last_transfer()->get_map()))
       FOUR_C_THROW("maps are not equal as expected!");
 #endif
@@ -259,7 +259,7 @@ void PARTICLEWALL::WallHandlerBase::relate_bins_to_col_wall_eles()
 
     // relate ids of owned bins to column wall elements
     for (int gidofbin : binids)
-      if (not(bincolmap_->LID(gidofbin) < 0)) binstocolwalleles_[collidofele].push_back(gidofbin);
+      if (not(bincolmap_->lid(gidofbin) < 0)) binstocolwalleles_[collidofele].push_back(gidofbin);
   }
 
   // validate flag denoting validity of map relating bins to column wall elements
@@ -319,10 +319,10 @@ void PARTICLEWALL::WallHandlerBase::build_particle_to_wall_neighbors(
     for (int gidofneighborbin : neighborbins)
     {
       // consider only owned neighboring bins
-      if (binrowmap_->LID(gidofneighborbin) < 0) continue;
+      if (binrowmap_->lid(gidofneighborbin) < 0) continue;
 
       // get local id of neighboring bin
-      const int collidofneighboringbin = bincolmap_->LID(gidofneighborbin);
+      const int collidofneighboringbin = bincolmap_->lid(gidofneighborbin);
 
       // check if current neighboring bin contains particles
       if (particlestobins[collidofneighboringbin].empty()) continue;
@@ -381,7 +381,7 @@ void PARTICLEWALL::WallHandlerBase::determine_col_wall_ele_nodal_pos(
     Core::Elements::Element* ele, std::map<int, Core::LinAlg::Matrix<3, 1>>& colelenodalpos) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (walldiscretization_->element_col_map()->LID(ele->id()) < 0)
+  if (walldiscretization_->element_col_map()->lid(ele->id()) < 0)
     FOUR_C_THROW("element gid={} not in element column map!", ele->id());
 #endif
 
@@ -391,7 +391,7 @@ void PARTICLEWALL::WallHandlerBase::determine_col_wall_ele_nodal_pos(
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
   for (int i = 0; i < numnodes; ++i)
-    if (walldiscretization_->node_col_map()->LID(nodes[i]->id()) < 0)
+    if (walldiscretization_->node_col_map()->lid(nodes[i]->id()) < 0)
       FOUR_C_THROW(
           "node gid={} of column element gid={} not in node column map", nodes[i]->id(), ele->id());
 #endif
@@ -408,7 +408,7 @@ void PARTICLEWALL::WallHandlerBase::determine_col_wall_ele_nodal_pos(
 
 #ifdef FOUR_C_ENABLE_ASSERTIONS
     for (int i = 0; i < numnodes * 3; ++i)
-      if (walldiscretization_->dof_col_map()->LID(lm_wall[i]) < 0)
+      if (walldiscretization_->dof_col_map()->lid(lm_wall[i]) < 0)
         FOUR_C_THROW("dof gid={} not in dof column map!", lm_wall[i]);
 #endif
 

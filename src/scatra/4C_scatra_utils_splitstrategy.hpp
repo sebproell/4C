@@ -117,15 +117,15 @@ namespace ScaTra
           {
             const int lcol = p + sclarid;
             const int cgid = lmcol[lcol];
-            (localcol00map[sclarid])[inode] = (colmap00.LID(cgid));
+            (localcol00map[sclarid])[inode] = (colmap00.lid(cgid));
             const int pos = inode * numscal_ + sclarid;
-            localcol10[pos] = (colmap10.LID(cgid));
+            localcol10[pos] = (colmap10.lid(cgid));
           }
           // the el. potential
           const int lcol = p + numscal_;
           const int cgid = lmcol[lcol];
-          localcol01[inode] = (colmap01.LID(cgid));
-          localcol11[inode] = (colmap11.LID(cgid));
+          localcol01[inode] = (colmap01.lid(cgid));
+          localcol11[inode] = (colmap11.lid(cgid));
         }
 
         int rlid0;
@@ -145,8 +145,8 @@ namespace ScaTra
           if (scalarid < numscal_)
           {
             // the current row belongs to the transport equation of species 'scalarid'
-            rlid0 = rowmap00.LID(rgid);
-            rlid1 = rowmap01.LID(rgid);
+            rlid0 = rowmap00.lid(rgid);
+            rlid1 = rowmap01.lid(rgid);
 #ifdef FOUR_C_ENABLE_ASSERTIONS
             if (rlid0 < 0) FOUR_C_THROW("Sparse matrix A00 does not have global row {}", rgid);
             if (rlid1 < 0) FOUR_C_THROW("Sparse matrix A01 does not have global row {}", rgid);
@@ -174,8 +174,8 @@ namespace ScaTra
           else
           {
             // the current row belongs to the equation for the electric potential
-            rlid0 = rowmap10.LID(rgid);
-            rlid1 = rowmap11.LID(rgid);
+            rlid0 = rowmap10.lid(rgid);
+            rlid1 = rowmap11.lid(rgid);
 #ifdef FOUR_C_ENABLE_ASSERTIONS
             if (rlid0 < 0) FOUR_C_THROW("Sparse matrix A10 does not have global row {}", rgid);
             if (rlid1 < 0) FOUR_C_THROW("Sparse matrix A11 does not have global row {}", rgid);

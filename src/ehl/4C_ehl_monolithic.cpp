@@ -387,8 +387,8 @@ void EHL::Monolithic::setup_system()
   vecSpaces.push_back(structure_field()->dof_row_map(0));
   vecSpaces.push_back(lubrication_->lubrication_field()->dof_row_map(0));
 
-  if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No structure equation. Panic.");
-  if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No pressure equation. Panic.");
+  if (vecSpaces[0]->num_global_elements() == 0) FOUR_C_THROW("No structure equation. Panic.");
+  if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No pressure equation. Panic.");
 
   set_dof_row_maps(vecSpaces);
 
@@ -1672,12 +1672,12 @@ void EHL::Monolithic::lin_couette_force_disp(
   const int ndim = Global::Problem::instance()->n_dim();
   Core::FE::Discretization& lub_dis = *lubrication_->lubrication_field()->discretization();
   Core::LinAlg::Vector<double> visc_vec(*lubrication_->lubrication_field()->dof_row_map(1));
-  for (int i = 0; i < lub_dis.node_row_map()->NumMyElements(); ++i)
+  for (int i = 0; i < lub_dis.node_row_map()->num_my_elements(); ++i)
   {
     Core::Nodes::Node* lnode = lub_dis.l_row_node(i);
     if (!lnode) FOUR_C_THROW("node not found");
     const double p = lubrication_->lubrication_field()->prenp()->operator[](
-        lubrication_->lubrication_field()->prenp()->get_map().LID(lub_dis.dof(0, lnode, 0)));
+        lubrication_->lubrication_field()->prenp()->get_map().lid(lub_dis.dof(0, lnode, 0)));
 
     std::shared_ptr<Core::Mat::Material> mat = lnode->elements()[0]->material(0);
     if (!mat) FOUR_C_THROW("null pointer");
@@ -1822,12 +1822,12 @@ void EHL::Monolithic::lin_couette_force_pres(
   std::shared_ptr<Core::LinAlg::SparseMatrix> dVisc_dp =
       std::make_shared<Core::LinAlg::SparseMatrix>(*(lub_dis.dof_row_map(1)), 81);
 
-  for (int i = 0; i < lub_dis.node_row_map()->NumMyElements(); ++i)
+  for (int i = 0; i < lub_dis.node_row_map()->num_my_elements(); ++i)
   {
     Core::Nodes::Node* lnode = lub_dis.l_row_node(i);
     if (!lnode) FOUR_C_THROW("node not found");
     const double p = lubrication_->lubrication_field()->prenp()->operator[](
-        lubrication_->lubrication_field()->prenp()->get_map().LID(lub_dis.dof(0, lnode, 0)));
+        lubrication_->lubrication_field()->prenp()->get_map().lid(lub_dis.dof(0, lnode, 0)));
 
     std::shared_ptr<Core::Mat::Material> mat = lnode->elements()[0]->material(0);
     if (!mat) FOUR_C_THROW("null pointer");
@@ -1913,7 +1913,7 @@ void EHL::Monolithic::apply_dbc()
   if (inf_gap_toggle_lub_ != nullptr)
     for (int i = 0; i < inf_gap_toggle_lub_->local_length(); ++i)
       if (abs(inf_gap_toggle_lub_->operator[](i)) > 1.e-12)
-        rhs_->replace_global_value(inf_gap_toggle_lub_->get_map().GID(i), 0, 0.);
+        rhs_->replace_global_value(inf_gap_toggle_lub_->get_map().gid(i), 0, 0.);
 }
 
 FOUR_C_NAMESPACE_CLOSE

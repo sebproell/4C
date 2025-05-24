@@ -82,7 +82,7 @@ void BeamInteraction::BeamToFluidMortarManager::setup()
 {
   // Get the global ids of all beam centerline nodes on this rank.
   std::vector<int> my_nodes_gid;
-  for (int i_node = 0; i_node < discretization_structure_->node_row_map()->NumMyElements();
+  for (int i_node = 0; i_node < discretization_structure_->node_row_map()->num_my_elements();
       i_node++)
   {
     Core::Nodes::Node const& node = *(discretization_structure_->l_row_node(i_node));
@@ -91,8 +91,8 @@ void BeamInteraction::BeamToFluidMortarManager::setup()
 
   // Get the global ids of all beam elements on this rank.
   std::vector<int> my_elements_gid;
-  for (int i_element = 0; i_element < discretization_structure_->element_row_map()->NumMyElements();
-      i_element++)
+  for (int i_element = 0;
+      i_element < discretization_structure_->element_row_map()->num_my_elements(); i_element++)
   {
     Core::Elements::Element const& element = *(discretization_structure_->l_row_element(i_element));
     if (BeamInteraction::Utils::is_beam_element(element)) my_elements_gid.push_back(element.id());
@@ -156,7 +156,7 @@ void BeamInteraction::BeamToFluidMortarManager::setup()
       for (unsigned int i_lambda = 0; i_lambda < n_lambda_node_; i_lambda++)
       {
         // Get the global Lagrange multiplier id for this node.
-        lagrange_gid = lambda_dof_rowmap_->GID(i_node * n_lambda_node_ + i_lambda);
+        lagrange_gid = lambda_dof_rowmap_->gid(i_node * n_lambda_node_ + i_lambda);
 
         // Set the global Lagrange multiplier id for this node.
         error_code = node_gid_to_lambda_gid_->ReplaceMyValue(i_node, i_lambda, lagrange_gid);
@@ -169,7 +169,7 @@ void BeamInteraction::BeamToFluidMortarManager::setup()
       for (unsigned int i_lambda = 0; i_lambda < n_lambda_element_; i_lambda++)
       {
         // Get the global Lagrange multiplier id for this element.
-        lagrange_gid = lambda_dof_rowmap_->GID(
+        lagrange_gid = lambda_dof_rowmap_->gid(
             n_nodes * n_lambda_node_ + i_element * n_lambda_element_ + i_lambda);
 
         // Set the global Lagrange multiplier id for this element.
@@ -203,7 +203,7 @@ void BeamInteraction::BeamToFluidMortarManager::set_global_maps()
   // Loop over all nodes on this processor -> we assume all beam and fluid DOFs are based on nodes.
   std::vector<std::vector<int>> field_dofs(2);
 
-  for (int i_node = 0; i_node < discretization_structure_->node_row_map()->NumMyElements();
+  for (int i_node = 0; i_node < discretization_structure_->node_row_map()->num_my_elements();
       i_node++)
   {
     const Core::Nodes::Node* node = discretization_structure_->l_row_node(i_node);
@@ -212,7 +212,7 @@ void BeamInteraction::BeamToFluidMortarManager::set_global_maps()
     else
       FOUR_C_THROW("The given structure element is not a beam element!");
   }
-  for (int i_node = 0; i_node < discretization_fluid_->node_row_map()->NumMyElements(); i_node++)
+  for (int i_node = 0; i_node < discretization_fluid_->node_row_map()->num_my_elements(); i_node++)
   {
     const Core::Nodes::Node* node = discretization_fluid_->l_row_node(i_node);
     discretization_fluid_->dof(node, field_dofs[1]);
@@ -312,11 +312,11 @@ void BeamInteraction::BeamToFluidMortarManager::set_local_maps(
   if (node_gid_to_lambda_gid_ != nullptr)
   {
     std::vector<int> temp_node(n_lambda_node_);
-    for (int i_node = 0; i_node < node_gid_needed_rowmap.NumMyElements(); i_node++)
+    for (int i_node = 0; i_node < node_gid_needed_rowmap.num_my_elements(); i_node++)
     {
       for (unsigned int i_temp = 0; i_temp < n_lambda_node_; i_temp++)
         temp_node[i_temp] = (int)((*node_gid_to_lambda_gid_copy)(i_temp)[i_node]);
-      node_gid_to_lambda_gid_map_[node_gid_needed_rowmap.GID(i_node)] = temp_node;
+      node_gid_to_lambda_gid_map_[node_gid_needed_rowmap.gid(i_node)] = temp_node;
       lambda_gid_for_col_map.insert(
           std::end(lambda_gid_for_col_map), std::begin(temp_node), std::end(temp_node));
     }
@@ -324,11 +324,11 @@ void BeamInteraction::BeamToFluidMortarManager::set_local_maps(
   if (element_gid_to_lambda_gid_ != nullptr)
   {
     std::vector<int> temp_elements(n_lambda_element_);
-    for (int i_element = 0; i_element < element_gid_needed_rowmap.NumMyElements(); i_element++)
+    for (int i_element = 0; i_element < element_gid_needed_rowmap.num_my_elements(); i_element++)
     {
       for (unsigned int i_temp = 0; i_temp < n_lambda_element_; i_temp++)
         temp_elements[i_temp] = (int)((*element_gid_to_lambda_gid_copy)(i_temp)[i_element]);
-      element_gid_to_lambda_gid_map_[element_gid_needed_rowmap.GID(i_element)] = temp_elements;
+      element_gid_to_lambda_gid_map_[element_gid_needed_rowmap.gid(i_element)] = temp_elements;
       lambda_gid_for_col_map.insert(
           std::end(lambda_gid_for_col_map), std::begin(temp_elements), std::end(temp_elements));
     }
@@ -632,7 +632,7 @@ BeamInteraction::BeamToFluidMortarManager::invert_kappa() const
 
   // Calculate the local inverse of kappa.
   double local_kappa_inv_value = 0.;
-  for (int lid = 0; lid < lambda_dof_rowmap_->NumMyElements(); lid++)
+  for (int lid = 0; lid < lambda_dof_rowmap_->num_my_elements(); lid++)
   {
     if (global_active_lambda_->Values()[lid] > 0.1)
       local_kappa_inv_value = 1. / global_kappa_->Values()[lid];

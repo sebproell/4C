@@ -348,7 +348,7 @@ void ElCh::MovingBoundaryAlgorithm::compute_interface_vectors(
     // get the degrees of freedom associated with this fluid node
     std::vector<int> fluidnodedofs = fluiddis->dof(0, fluidlnode);
 
-    if (ivelmap.MyGID(fluidnodedofs[0]))  // is this GID (implies: node) relevant for iveln_?
+    if (ivelmap.my_gid(fluidnodedofs[0]))  // is this GID (implies: node) relevant for iveln_?
     {
       // determine number of space dimensions (numdof - pressure dof)
       const int numdim = ((int)fluidnodedofs.size()) - 1;

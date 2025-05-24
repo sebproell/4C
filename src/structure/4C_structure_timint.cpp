@@ -881,17 +881,17 @@ void Solid::TimInt::apply_mesh_initialization(
       Core::LinAlg::create_vector(*discret_->dof_col_map(), false);
   Core::LinAlg::export_to(*Xslavemod, *Xslavemodcol);
 
-  const int numnode = allreduceslavemap->NumMyElements();
+  const int numnode = allreduceslavemap->num_my_elements();
   const int numdim = Global::Problem::instance()->n_dim();
   const Core::LinAlg::Vector<double>& gvector = *Xslavemodcol;
 
   // loop over all slave nodes (for all procs)
   for (int index = 0; index < numnode; ++index)
   {
-    int gid = allreduceslavemap->GID(index);
+    int gid = allreduceslavemap->gid(index);
 
     // only do something for nodes in my column map
-    int ilid = discret_->node_col_map()->LID(gid);
+    int ilid = discret_->node_col_map()->lid(gid);
     if (ilid < 0) continue;
 
     Core::Nodes::Node* mynode = discret_->g_node(gid);
@@ -903,7 +903,7 @@ void Solid::TimInt::apply_mesh_initialization(
     // create new position vector
     for (int i = 0; i < numdim; ++i)
     {
-      const int lid = gvector.get_map().LID(nodedofs[i]);
+      const int lid = gvector.get_map().lid(nodedofs[i]);
 
       if (lid < 0)
         FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
@@ -1419,7 +1419,7 @@ void Solid::TimInt::update_step_contact_vum()
           Core::LinAlg::create_vector(*activenodemap, true);
       std::shared_ptr<Core::LinAlg::Vector<double>> wt =
           Core::LinAlg::create_vector(*activenodemap, true);
-      for (int i = 0; i < activenodemap->NumMyElements(); ++i)
+      for (int i = 0; i < activenodemap->num_my_elements(); ++i)
       {
         if ((*wc)[i] > 0)
         {
@@ -1462,7 +1462,7 @@ void Solid::TimInt::update_step_contact_vum()
       {
         double C = (gain - loss) / gain;
         wtemp1->update(C, *wn, 0.0);
-        for (int i = 0; i < activenodemap->NumMyElements(); ++i)
+        for (int i = 0; i < activenodemap->num_my_elements(); ++i)
         {
           (*wtemp2)[i] = pow((*b)[i], 2) / (4 * (*AD)[i]);
           if ((*wtemp1)[i] > (*wtemp2)[i])
@@ -1492,7 +1492,7 @@ void Solid::TimInt::update_step_contact_vum()
           Core::LinAlg::create_vector(*activenodemap, true);
       if (gain > loss)
       {
-        for (int i = 0; i < activenodemap->NumMyElements(); ++i)
+        for (int i = 0; i < activenodemap->num_my_elements(); ++i)
         {
           (*p1)[i] =
               (-(*b)[i] + pow(pow((*b)[i], 2) - 4 * (*AD)[i] * (*w)[i], 0.5)) / (2 * (*AD)[i]);
@@ -1509,7 +1509,7 @@ void Solid::TimInt::update_step_contact_vum()
       }
       else
       {
-        for (int i = 0; i < activenodemap->NumMyElements(); ++i)
+        for (int i = 0; i < activenodemap->num_my_elements(); ++i)
         {
           (*p1)[i] =
               (-(*b)[i] + pow(pow((*b)[i], 2) - 4 * (*AD)[i] * (*w)[i], 0.5)) / (2 * (*AD)[i]);
@@ -1539,13 +1539,13 @@ void Solid::TimInt::update_step_contact_vum()
       Core::LinAlg::SparseMatrix DF(*activenodemap, 10);
 
       // rhs f
-      for (int i = 0; i < activenodemap->NumMyElements(); ++i)
+      for (int i = 0; i < activenodemap->num_my_elements(); ++i)
       {
         x->put_scalar(0.0);
         (A->epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
         x->replace_local_values(NumEntries, Values, Indices);
         (*f)[i] = (*b)[i] * (*p)[i] + (*w)[i];
-        for (int j = 0; j < activenodemap->NumMyElements(); ++j)
+        for (int j = 0; j < activenodemap->num_my_elements(); ++j)
         {
           (*f)[i] += (*x)[j] * (*p)[i] * (*p)[j];
         }
@@ -1556,25 +1556,25 @@ void Solid::TimInt::update_step_contact_vum()
       res = initres;
 
       // jacobian DF
-      for (int i = 0; i < activenodemap->NumMyElements(); ++i)
+      for (int i = 0; i < activenodemap->num_my_elements(); ++i)
       {
         x->put_scalar(0.0);
         (A->epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
         x->replace_local_values(NumEntries, Values, Indices);
-        for (int k = 0; k < activenodemap->NumMyElements(); ++k)
+        for (int k = 0; k < activenodemap->num_my_elements(); ++k)
         {
           if (k == i)
           {
             dfik = (*x)[i] * (*p)[i] + (*b)[i];
-            for (int j = 0; j < activenodemap->NumMyElements(); ++j)
+            for (int j = 0; j < activenodemap->num_my_elements(); ++j)
             {
               dfik += (*x)[j] * (*p)[j];
             }
-            DF.assemble(dfik, activenodemap->GID(i), activenodemap->GID(k));
+            DF.assemble(dfik, activenodemap->gid(i), activenodemap->gid(k));
           }
           else
           {
-            DF.assemble((*x)[k] * (*p)[i], activenodemap->GID(i), activenodemap->GID(k));
+            DF.assemble((*x)[k] * (*p)[i], activenodemap->gid(i), activenodemap->gid(k));
           }
         }
       }
@@ -1601,13 +1601,13 @@ void Solid::TimInt::update_step_contact_vum()
         p->update(1.0, *dp, 1.0);
 
         // rhs f
-        for (int i = 0; i < activenodemap->NumMyElements(); ++i)
+        for (int i = 0; i < activenodemap->num_my_elements(); ++i)
         {
           x->put_scalar(0.0);
           (A->epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
           x->replace_local_values(NumEntries, Values, Indices);
           (*f)[i] = (*b)[i] * (*p)[i] + (*w)[i];
-          for (int j = 0; j < activenodemap->NumMyElements(); ++j)
+          for (int j = 0; j < activenodemap->num_my_elements(); ++j)
           {
             (*f)[i] += (*x)[j] * (*p)[i] * (*p)[j];
           }
@@ -1619,25 +1619,25 @@ void Solid::TimInt::update_step_contact_vum()
 
         // jacobian DF
         DF.put_scalar(0.0);
-        for (int i = 0; i < activenodemap->NumMyElements(); ++i)
+        for (int i = 0; i < activenodemap->num_my_elements(); ++i)
         {
           x->put_scalar(0.0);
           (A->epetra_matrix())->ExtractMyRowView(i, NumEntries, Values, Indices);
           x->replace_local_values(NumEntries, Values, Indices);
-          for (int k = 0; k < activenodemap->NumMyElements(); ++k)
+          for (int k = 0; k < activenodemap->num_my_elements(); ++k)
           {
             if (k == i)
             {
               dfik = (*x)[i] * (*p)[i] + (*b)[i];
-              for (int j = 0; j < activenodemap->NumMyElements(); ++j)
+              for (int j = 0; j < activenodemap->num_my_elements(); ++j)
               {
                 dfik += (*x)[j] * (*p)[j];
               }
-              DF.assemble(dfik, activenodemap->GID(i), activenodemap->GID(k));
+              DF.assemble(dfik, activenodemap->gid(i), activenodemap->gid(k));
             }
             else
             {
-              DF.assemble((*x)[k] * (*p)[i], activenodemap->GID(i), activenodemap->GID(k));
+              DF.assemble((*x)[k] * (*p)[i], activenodemap->gid(i), activenodemap->gid(k));
             }
           }
         }

@@ -458,9 +458,9 @@ int Discret::Elements::Membrane<distype>::evaluate(Teuchos::ParameterList& param
         for (int i = 0; i < numnod_; ++i)
         {
           int gid = node_ids()[i];
-          if (postthick->get_map().MyGID(node_ids()[i]))  // rownode
+          if (postthick->get_map().my_gid(node_ids()[i]))  // rownode
           {
-            int lid = postthick->get_map().LID(gid);
+            int lid = postthick->get_map().lid(gid);
             int myadjele = nodes()[i]->num_element();
             (*postthick)(0)[lid] += nodalthickness(i) / myadjele;
           }

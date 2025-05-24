@@ -337,11 +337,11 @@ void PoroPressureBased::PorofluidElastScatraBaseAlgorithm::
 
   // we identify the volume fraction species dofs which do not have a physical meaning and set a
   // DBC on them
-  for (int iele = 0; iele < ele_col_map->NumMyElements(); ++iele)
+  for (int iele = 0; iele < ele_col_map->num_my_elements(); ++iele)
   {
     // dynamic_cast necessary because virtual inheritance needs runtime information
     Discret::Elements::Transport* current_ele = dynamic_cast<Discret::Elements::Transport*>(
-        scatra_algo()->scatra_field()->discretization()->g_element(ele_col_map->GID(iele)));
+        scatra_algo()->scatra_field()->discretization()->g_element(ele_col_map->gid(iele)));
 
     const Core::Mat::Material& material2 = *(current_ele->material(2));
 
@@ -402,13 +402,13 @@ void PoroPressureBased::PorofluidElastScatraBaseAlgorithm::
             const int scalar_to_phase_id = scatra_volfrac_material->phase_id();
             // if not already in original dirich map     &&   if it is not a valid volume fraction
             // species dof identified with < 1
-            if (scatra_algo()->scatra_field()->dirich_maps()->cond_map()->LID(scatra_dofs[idof]) ==
+            if (scatra_algo()->scatra_field()->dirich_maps()->cond_map()->lid(scatra_dofs[idof]) ==
                     -1 &&
                 (int)(*valid_volfracspec_dofs)[porofluid_elast_algo()
                         ->porofluid_algo()
                         ->discretization()
                         ->dof_row_map()
-                        ->LID(porofluid_dofs[scalar_to_phase_id + num_volfrac])] < 1)
+                        ->lid(porofluid_dofs[scalar_to_phase_id + num_volfrac])] < 1)
             {
               dirichlet_dofs.push_back(scatra_dofs[idof]);
               scatra_algo()->scatra_field()->phinp()->replace_global_value(

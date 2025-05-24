@@ -947,13 +947,13 @@ double FLD::Utils::FluidCouplingBc::flow_rate_calculation(double time, double dt
   discret_3d_->evaluate_condition(eleparams, flowrates, condstring, condid);
 
   double local_flowrate = 0.0;
-  for (int i = 0; i < dofrowmap->NumMyElements(); i++)
+  for (int i = 0; i < dofrowmap->num_my_elements(); i++)
   {
     local_flowrate += ((*flowrates)[i]);
   }
 
   double flowrate = 0.0;
-  Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->Comm());
+  Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->get_comm());
 
   return flowrate;
 }  // FluidImplicitTimeInt::flow_rate_calculation
@@ -1201,9 +1201,9 @@ void FLD::Utils::FluidCouplingBc::evaluate_dirichlet(
       {
         int dof_gid = discret_3d_->dof(node, dof);
         //        std::cout<<"("<<dof<<")+>["<<dof_gid<<"]\t";
-        if (condmap.MyGID(dof_gid))
+        if (condmap.my_gid(dof_gid))
         {
-          int lid = discret_3d_->dof_row_map()->LID(dof_gid);
+          int lid = discret_3d_->dof_row_map()->lid(dof_gid);
 
           double val = (velnp)[lid] * velocity_;
           //        std::cout<<"Vel["<<gid<<"]: "<<(*velnp) [lid]<<std::endl;

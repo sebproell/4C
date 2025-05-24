@@ -44,10 +44,10 @@ void CONTACT::NitscheStrategy::apply_force_stiff_cmt(
   {
     interface->initialize();
     interface->evaluate(0, step_, iter_);
-    for (int e = 0; e < interface->discret().element_col_map()->NumMyElements(); ++e)
+    for (int e = 0; e < interface->discret().element_col_map()->num_my_elements(); ++e)
     {
       auto* mele = dynamic_cast<Mortar::Element*>(
-          interface->discret().g_element(interface->discret().element_col_map()->GID(e)));
+          interface->discret().g_element(interface->discret().element_col_map()->gid(e)));
       mele->get_nitsche_container().assemble_rhs(mele, CONTACT::VecBlockType::displ, fc);
       mele->get_nitsche_container().assemble_matrix(mele, CONTACT::MatBlockType::displ_displ, kc);
     }
@@ -154,9 +154,9 @@ void CONTACT::NitscheStrategy::set_parent_state(const enum Mortar::StateType& st
     {
       Core::FE::Discretization& idiscret = interface->discret();
 
-      for (int j = 0; j < interface->discret().element_col_map()->NumMyElements(); ++j)
+      for (int j = 0; j < interface->discret().element_col_map()->num_my_elements(); ++j)
       {
-        const int gid = interface->discret().element_col_map()->GID(j);
+        const int gid = interface->discret().element_col_map()->gid(j);
 
         auto* ele = dynamic_cast<Mortar::Element*>(idiscret.g_element(gid));
 
@@ -267,10 +267,10 @@ std::shared_ptr<Epetra_FEVector> CONTACT::NitscheStrategy::create_rhs_block_ptr(
 
   for (const auto& interface : interface_)
   {
-    for (int e = 0; e < interface->discret().element_col_map()->NumMyElements(); ++e)
+    for (int e = 0; e < interface->discret().element_col_map()->num_my_elements(); ++e)
     {
       auto* mele = dynamic_cast<Mortar::Element*>(
-          interface->discret().g_element(interface->discret().element_col_map()->GID(e)));
+          interface->discret().g_element(interface->discret().element_col_map()->gid(e)));
       auto& nitsche_container = mele->get_nitsche_container();
       nitsche_container.assemble_rhs(mele, bt, fc);
     }
@@ -340,10 +340,10 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> CONTACT::NitscheStrategy::create_mat
 
   for (const auto& interface : interface_)
   {
-    for (int e = 0; e < interface->discret().element_col_map()->NumMyElements(); ++e)
+    for (int e = 0; e < interface->discret().element_col_map()->num_my_elements(); ++e)
     {
       auto* mele = dynamic_cast<Mortar::Element*>(
-          interface->discret().g_element(interface->discret().element_col_map()->GID(e)));
+          interface->discret().g_element(interface->discret().element_col_map()->gid(e)));
       mele->get_nitsche_container().assemble_matrix(mele, bt, kc);
     }
   }
@@ -389,10 +389,10 @@ void CONTACT::NitscheStrategy::update_trace_ineq_etimates()
   auto NitWgt = Teuchos::getIntegralValue<CONTACT::NitscheWeighting>(params(), "NITSCHE_WEIGHTING");
   for (const auto& interface : interface_)
   {
-    for (int e = 0; e < interface->discret().element_col_map()->NumMyElements(); ++e)
+    for (int e = 0; e < interface->discret().element_col_map()->num_my_elements(); ++e)
     {
       auto* mele = dynamic_cast<Mortar::Element*>(
-          interface->discret().g_element(interface->discret().element_col_map()->GID(e)));
+          interface->discret().g_element(interface->discret().element_col_map()->gid(e)));
       if (NitWgt == CONTACT::NitscheWeighting::slave && !mele->is_slave()) continue;
       if (NitWgt == CONTACT::NitscheWeighting::master && mele->is_slave()) continue;
       mele->estimate_nitsche_trace_max_eigenvalue();
@@ -440,16 +440,16 @@ void CONTACT::NitscheStrategy::reconnect_parent_elements()
 
     const Core::LinAlg::Map* ielecolmap = contact_interface->discret().element_col_map();
 
-    for (int i = 0; i < ielecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < ielecolmap->num_my_elements(); ++i)
     {
-      const int gid = ielecolmap->GID(i);
+      const int gid = ielecolmap->gid(i);
 
       Core::Elements::Element* ele = contact_interface->discret().g_element(gid);
       if (!ele) FOUR_C_THROW("Cannot find element with gid %", gid);
       auto* faceele = dynamic_cast<Core::Elements::FaceElement*>(ele);
 
       const int volgid = faceele->parent_element_id();
-      if (elecolmap->LID(volgid) == -1)  // Volume discretization has not Element
+      if (elecolmap->lid(volgid) == -1)  // Volume discretization has not Element
         FOUR_C_THROW(
             "Manager::reconnect_parent_elements: Element {} does not exist on this Proc!", volgid);
 

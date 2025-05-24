@@ -76,7 +76,7 @@ void FLD::Utils::DbcHdgFluid::read_dirichlet_condition(const Teuchos::ParameterL
         {
           std::vector<int> predof = discret.dof(0, discret.l_row_element(0));
           const int gid = predof[0];
-          const int lid = discret.dof_row_map(0)->LID(gid);
+          const int lid = discret.dof_row_map(0)->lid(gid);
 
           // set toggle vector
           info.toggle[lid] = 1;
@@ -107,7 +107,7 @@ void FLD::Utils::DbcHdgFluid::read_dirichlet_condition(const Teuchos::ParameterL
         // get global id
         const int gid = dofs[j];
         // get corresponding local id
-        const int lid = info.toggle.get_map().LID(gid);
+        const int lid = info.toggle.get_map().lid(gid);
         if (lid < 0)
           FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
               Core::Communication::my_mpi_rank(discret.get_comm()));
@@ -251,7 +251,7 @@ void FLD::Utils::DbcHdgFluid::do_dirichlet_condition(const Teuchos::ParameterLis
         {
           std::vector<int> predof = discret.dof(0, discret.l_row_element(0));
           const int gid = predof[0];
-          const int lid = discret.dof_row_map(0)->LID(gid);
+          const int lid = discret.dof_row_map(0)->lid(gid);
 
           // amend vector of DOF-IDs which are Dirichlet BCs
           if (systemvectors[0] != nullptr) (*systemvectors[0])[lid] = 0.0;
@@ -355,7 +355,7 @@ void FLD::Utils::DbcHdgFluid::do_dirichlet_condition(const Teuchos::ParameterLis
         // get global id
         const int gid = dofs[j];
         // get corresponding local id
-        const int lid = toggle.get_map().LID(gid);
+        const int lid = toggle.get_map().lid(gid);
         if (lid < 0)
           FOUR_C_THROW("Global id {} not on this proc {} in system vector", dofs[j],
               Core::Communication::my_mpi_rank(discret.get_comm()));

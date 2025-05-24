@@ -265,9 +265,9 @@ void Core::Conditions::LocsysManager::update(const double time,
 
   trafo_ = std::make_shared<Core::LinAlg::SparseMatrix>(*dofrowmap, 3);
 
-  for (int i = 0; i < noderowmap->NumMyElements(); ++i)
+  for (int i = 0; i < noderowmap->num_my_elements(); ++i)
   {
-    int nodeGID = noderowmap->GID(i);
+    int nodeGID = noderowmap->gid(i);
     Core::Nodes::Node* node = discret().g_node(nodeGID);
     if (!node) FOUR_C_THROW("Cannot find node with gid %", nodeGID);
     std::vector<int> dofs = discret().dof(0, node);
@@ -276,7 +276,7 @@ void Core::Conditions::LocsysManager::update(const double time,
 
     // skip nodes whose dofs have already been processed
     for (int rr = 0; rr < numdof; ++rr)
-      if ((*already_processed)[dofrowmap->LID(dofs[rr])] > 1e-9) continue;
+      if ((*already_processed)[dofrowmap->lid(dofs[rr])] > 1e-9) continue;
 
     // unity matrix for non-locsys node
     if (locsysindex < 0)
@@ -351,7 +351,7 @@ void Core::Conditions::LocsysManager::update(const double time,
       }
 
       // node dofs are marked now as already processed
-      for (int rr = 0; rr < numdof; ++rr) (*already_processed)[dofrowmap->LID(dofs[rr])] = 1.0;
+      for (int rr = 0; rr < numdof; ++rr) (*already_processed)[dofrowmap->lid(dofs[rr])] = 1.0;
     }
   }
 
@@ -393,7 +393,7 @@ void Core::Conditions::LocsysManager::update(const double time,
     myglobalentries = locsysdofs.data();
   }
   locsysdofmap_ = std::make_shared<Core::LinAlg::Map>(
-      -1, nummyentries, myglobalentries, discret_.dof_row_map()->IndexBase(), discret_.get_comm());
+      -1, nummyentries, myglobalentries, discret_.dof_row_map()->index_base(), discret_.get_comm());
   if (locsysdofmap_ == nullptr) FOUR_C_THROW("Creation failed.");
 
   // The matrix subtrafo_ is used in order to apply the Dirichlet Conditions in a more efficient
@@ -618,7 +618,7 @@ void Core::Conditions::LocsysManager::calc_rotation_vector_for_normal_system(
     double length = 0.0;
     for (int jdim = 0; jdim < dim_; jdim++)
     {
-      const int localId = massConsistentNodeNormals->get_map().LID(nodeGIDs[jdim]);
+      const int localId = massConsistentNodeNormals->get_map().lid(nodeGIDs[jdim]);
       nodeNormal(jdim, 0) = (*massConsistentNodeNormals)[localId];
       length += nodeNormal(jdim, 0) * nodeNormal(jdim, 0);
     }

@@ -514,13 +514,13 @@ namespace FLD
       const int pos = loc[2] + nummodes_ * (loc[1] + nummodes_ * loc[0]);
 
       // get local dof id corresponding to the global id
-      int lid = discret_->dof_row_map()->LID(dofs[0]);
+      int lid = discret_->dof_row_map()->lid(dofs[0]);
       // set value
       int err = velnp_->replace_local_values(1, &((u1)[pos]), &lid);
       // analogous for remaining directions
-      lid = discret_->dof_row_map()->LID(dofs[1]);
+      lid = discret_->dof_row_map()->lid(dofs[1]);
       err = velnp_->replace_local_values(1, &((u2)[pos]), &lid);
-      lid = discret_->dof_row_map()->LID(dofs[2]);
+      lid = discret_->dof_row_map()->lid(dofs[2]);
       err = velnp_->replace_local_values(1, &((u3)[pos]), &lid);
       if (err > 0) FOUR_C_THROW("Could not set initial field!");
     }
@@ -1237,14 +1237,14 @@ namespace FLD
         FOUR_C_ASSERT(
             localDofs.size() == static_cast<std::size_t>(elevec1.numRows()), "Internal error");
         for (unsigned int i = 0; i < localDofs.size(); ++i)
-          localDofs[i] = intdofrowmap->LID(localDofs[i]);
+          localDofs[i] = intdofrowmap->lid(localDofs[i]);
         intvelnp_->replace_local_values(localDofs.size(), elevec1.values(), localDofs.data());
       }
 
       // now fill the ele vector into the discretization
       for (unsigned int i = 0; i < la[0].lm_.size(); ++i)
       {
-        const int lid = discret_->dof_row_map()->LID(la[0].lm_[i]);
+        const int lid = discret_->dof_row_map()->lid(la[0].lm_[i]);
         if (lid >= 0)
         {
           // Here we are facing a difficulty:

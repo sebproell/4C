@@ -53,7 +53,7 @@ Mat::ScatraMultiScaleGP::ScatraMultiScaleGP(
     const int ele_id, const int gp_id, const int microdisnum, const bool is_ale)
     : gp_id_(gp_id),
       ele_id_(ele_id),
-      eleowner_(Global::Problem::instance()->get_dis("scatra")->element_row_map()->MyGID(ele_id)),
+      eleowner_(Global::Problem::instance()->get_dis("scatra")->element_row_map()->my_gid(ele_id)),
       microdisnum_(microdisnum),
       step_(0),
       phin_(nullptr),
@@ -184,7 +184,7 @@ void Mat::ScatraMultiScaleGP::init()
       // loop over all nodes in nodal cloud
       for (int inode : *nodeids)
       {
-        if (microdis->node_row_map()->MyGID(inode))
+        if (microdis->node_row_map()->my_gid(inode))
         {
           // extract node from micro-scale discretization
           Core::Nodes::Node* node = microdis->g_node(inode);

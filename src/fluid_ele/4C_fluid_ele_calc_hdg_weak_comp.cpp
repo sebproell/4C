@@ -343,7 +343,7 @@ int Discret::Elements::FluidEleCalcHDGWeakComp<distype>::compute_error(
   std::vector<double> vecValues(localDofs.size());
   for (unsigned int i = 0; i < localDofs.size(); ++i)
   {
-    const int lid = matrix_state->get_map().LID(localDofs[i]);
+    const int lid = matrix_state->get_map().lid(localDofs[i]);
     vecValues[i] = (*matrix_state)[lid];
   }
 
@@ -685,7 +685,7 @@ int Discret::Elements::FluidEleCalcHDGWeakComp<distype>::interpolate_solution_to
   for (unsigned int i = 0; i < solvalues.size(); ++i)
   {
     // Finding the local id of the current "localDofs"
-    const int lid = matrix_state->get_map().LID(localDofs[i]);
+    const int lid = matrix_state->get_map().lid(localDofs[i]);
     // Saving the value of the "localDofs[i]" in the "solvalues" vector
     solvalues[i] = (*matrix_state)[lid];
   }
@@ -749,7 +749,7 @@ int Discret::Elements::FluidEleCalcHDGWeakComp<distype>::interpolate_solution_to
 
   for (unsigned int i = 0; i < solvalues.size(); ++i)
   {
-    const int lid = matrix_state->get_map().LID(localDofs[i]);
+    const int lid = matrix_state->get_map().lid(localDofs[i]);
     solvalues[i] = (*matrix_state)[lid];
   }
   for (int i = (msd_ + 1 + nsd_) * nen_; i < elevec1.numRows(); ++i) elevec1(i) = 0.0;

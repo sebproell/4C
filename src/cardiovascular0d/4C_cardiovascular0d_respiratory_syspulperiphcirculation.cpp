@@ -896,7 +896,7 @@ void Utils::CardiovascularRespiratory0DSysPulPeriphCirculation::evaluate(
     {
       for (int k = 0; k < num_dof_; k++)
       {
-        havegid[k] = sysmat1->row_map().MyGID(gindex[k]);
+        havegid[k] = sysmat1->row_map().my_gid(gindex[k]);
         if (havegid[k])
         {
           sysmat1->assemble(wkstiff(k, j), gindex[k], gindex[j]);

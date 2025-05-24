@@ -147,10 +147,10 @@ void PostVtiWriter::write_dof_result_step(std::ofstream& file,
   const Core::LinAlg::Map& vecmap = data->get_map();
 
   // TODO: wic, once the vtu pressure writer is fixed, apply the same solution here.
-  const int offset = (fillzeros) ? 0 : vecmap.MinAllGID() - dis->dof_row_map(0)->MinAllGID();
+  const int offset = (fillzeros) ? 0 : vecmap.min_all_gid() - dis->dof_row_map(0)->min_all_gid();
 
   std::shared_ptr<Core::LinAlg::Vector<double>> ghostedData;
-  if (colmap->SameAs(vecmap))
+  if (colmap->same_as(vecmap))
     ghostedData = data;
   else
   {
@@ -189,7 +189,7 @@ void PostVtiWriter::write_dof_result_step(std::ofstream& file,
 
       for (int d = 0; d < numdf; ++d)
       {
-        const int lid = ghostedData->get_map().LID(nodedofs[d + from] + offset);
+        const int lid = ghostedData->get_map().lid(nodedofs[d + from] + offset);
         if (lid > -1)
         {
           solution[inpos + d] = (*ghostedData)[lid];
@@ -241,12 +241,12 @@ void PostVtiWriter::write_nodal_result_step(std::ofstream& file,
   const Core::LinAlg::Map* colmap = dis->node_col_map();
   const Core::LinAlg::Map& vecmap = data->get_map();
 
-  FOUR_C_ASSERT(
-      colmap->MaxAllGID() == vecmap.MaxAllGID() && colmap->MinAllGID() == vecmap.MinAllGID(),
+  FOUR_C_ASSERT(colmap->max_all_gid() == vecmap.max_all_gid() &&
+                    colmap->min_all_gid() == vecmap.min_all_gid(),
       "Given data vector does not seem to match discretization node map");
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> ghostedData;
-  if (colmap->SameAs(vecmap))
+  if (colmap->same_as(vecmap))
     ghostedData = data;
   else
   {
@@ -274,7 +274,7 @@ void PostVtiWriter::write_nodal_result_step(std::ofstream& file,
       {
         Core::LinAlg::Vector<double> column((*ghostedData)(idf));
 
-        const int lid = ghostedData->get_map().LID(gid);
+        const int lid = ghostedData->get_map().lid(gid);
 
         if (lid > -1)
         {
@@ -335,7 +335,7 @@ void PostVtiWriter::write_element_result_step(std::ofstream& file,
     FOUR_C_THROW("violated column range of Core::LinAlg::MultiVector<double>: {}", numcol);
 
   std::shared_ptr<Core::LinAlg::MultiVector<double>> importedData;
-  if (dis->element_col_map()->SameAs(data->get_map()))
+  if (dis->element_col_map()->same_as(data->get_map()))
     importedData = data;
   else
   {
@@ -449,7 +449,7 @@ void PostVtiWriter::writer_prep_timestep()
     int i = round((coord[0] - lorigin[0]) / spacing_[0]);
     int j = round((coord[1] - lorigin[1]) / spacing_[1]);
     int k = round((coord[2] - lorigin[2]) / spacing_[2]);
-    idmapping_[dis->node_col_map()->GID(n)] = (k * ny + j) * nx + i;
+    idmapping_[dis->node_col_map()->gid(n)] = (k * ny + j) * nx + i;
   }
 
   // create element id mapping by the coordinates of the lowest node coordinate
@@ -471,7 +471,7 @@ void PostVtiWriter::writer_prep_timestep()
     int i = round((mincoord[0] - lorigin[0]) / spacing_[0]);
     int j = round((mincoord[1] - lorigin[1]) / spacing_[1]);
     int k = round((mincoord[2] - lorigin[2]) / spacing_[2]);
-    eidmapping_[dis->element_col_map()->GID(e)] = (k * ny + j) * nx + i;
+    eidmapping_[dis->element_col_map()->gid(e)] = (k * ny + j) * nx + i;
   }
   return;
 }

@@ -178,9 +178,10 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_maps()
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
 
-    if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No poro structure equation. Panic.");
-    if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
-    if (vecSpaces[2]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
+    if (vecSpaces[0]->num_global_elements() == 0)
+      FOUR_C_THROW("No poro structure equation. Panic.");
+    if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
+    if (vecSpaces[2]->num_global_elements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
   }
   else
   {
@@ -189,8 +190,8 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::setup_maps()
         (scatra_algo()->scatra_field()->discretization())->dof_row_map(0);
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
 
-    if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
-    if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
+    if (vecSpaces[0]->num_global_elements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
+    if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
   }
 
   // full fluid-structure-scatra-map
@@ -1067,9 +1068,9 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::poro_multi_phas
 {
   std::cout << "\n******************finite difference check***************" << std::endl;
 
-  int dof_struct = (porofluid_elast_algo()->structure_algo()->dof_row_map()->NumGlobalElements());
-  int dof_fluid = (porofluid_elast_algo()->porofluid_algo()->dof_row_map()->NumGlobalElements());
-  int dof_scatra = (scatra_algo()->scatra_field()->dof_row_map()->NumGlobalElements());
+  int dof_struct = (porofluid_elast_algo()->structure_algo()->dof_row_map()->num_global_elements());
+  int dof_fluid = (porofluid_elast_algo()->porofluid_algo()->dof_row_map()->num_global_elements());
+  int dof_scatra = (scatra_algo()->scatra_field()->dof_row_map()->num_global_elements());
 
   std::cout << "structure field has " << dof_struct << " DOFs" << std::endl;
   std::cout << "fluid field has " << dof_fluid << " DOFs" << std::endl;
@@ -1077,9 +1078,9 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::poro_multi_phas
   if (artery_coupling_)
   {
     int dof_artery =
-        (porofluid_elast_algo()->porofluid_algo()->artery_dof_row_map()->NumGlobalElements());
+        (porofluid_elast_algo()->porofluid_algo()->artery_dof_row_map()->num_global_elements());
     int dof_artscatra =
-        (scatra_meshtying_strategy_->art_scatra_field()->dof_row_map()->NumGlobalElements());
+        (scatra_meshtying_strategy_->art_scatra_field()->dof_row_map()->num_global_elements());
     std::cout << "artery field has " << dof_artery << " DOFs" << std::endl;
     std::cout << "artery-scatra field has " << dof_artscatra << " DOFs" << std::endl;
 
@@ -1113,7 +1114,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::poro_multi_phas
   const int column_id = -1;
   for (int i = 0; i < dofs; ++i)
   {
-    if (combined_dbc_map()->MyGID(i))
+    if (combined_dbc_map()->my_gid(i))
     {
       iter_inc->replace_global_value(i, 0, 0.0);
     }
@@ -1155,7 +1156,7 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::poro_multi_phas
       }
     }
 
-    if (not combined_dbc_map()->MyGID(i)) iter_inc->replace_global_value(i, 0, -delta);
+    if (not combined_dbc_map()->my_gid(i)) iter_inc->replace_global_value(i, 0, -delta);
 
     iter_inc->replace_global_value(i - 1, 0, 0.0);
 
@@ -1186,11 +1187,11 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::poro_multi_phas
   double error_max_abs = 0.0;
   for (int i = 0; i < dofs; ++i)
   {
-    if (not combined_dbc_map()->MyGID(i))
+    if (not combined_dbc_map()->my_gid(i))
     {
       for (int j = 0; j < dofs; ++j)
       {
-        if (not combined_dbc_map()->MyGID(j))
+        if (not combined_dbc_map()->my_gid(j))
         {
           double stiff_approx_ij = 0.0;
           double sparse_ij = 0.0;
@@ -1321,18 +1322,18 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
   //! simple check if nodal coupling active or not, if condensed and un-condensed dofrowmaps have
   //! equal size
   nodal_coupl_inactive_ =
-      ((porofluid_elast_algo()->artery_dof_row_map()->NumGlobalElements() ==
+      ((porofluid_elast_algo()->artery_dof_row_map()->num_global_elements() ==
           porofluid_elast_algo()
               ->porofluid_algo()
               ->art_net_tim_int()
               ->discretization()
               ->dof_row_map(0)
-              ->NumGlobalElements())) &&
-      (scatra_meshtying_strategy_->art_scatra_dof_row_map()->NumGlobalElements() ==
+              ->num_global_elements())) &&
+      (scatra_meshtying_strategy_->art_scatra_dof_row_map()->num_global_elements() ==
           scatra_meshtying_strategy_->art_scatra_field()
               ->discretization()
               ->dof_row_map(0)
-              ->NumGlobalElements());
+              ->num_global_elements());
 }
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -1350,11 +1351,12 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
     vecSpaces.push_back(porofluid_elast_algo()->artery_dof_row_map());
     vecSpaces.push_back(scatra_meshtying_strategy_->art_scatra_dof_row_map());
-    if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No poro structure equation. Panic.");
-    if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
-    if (vecSpaces[2]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
-    if (vecSpaces[3]->NumGlobalElements() == 0) FOUR_C_THROW("No artery equation. Panic.");
-    if (vecSpaces[4]->NumGlobalElements() == 0) FOUR_C_THROW("No artery scatra equation. Panic.");
+    if (vecSpaces[0]->num_global_elements() == 0)
+      FOUR_C_THROW("No poro structure equation. Panic.");
+    if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
+    if (vecSpaces[2]->num_global_elements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
+    if (vecSpaces[3]->num_global_elements() == 0) FOUR_C_THROW("No artery equation. Panic.");
+    if (vecSpaces[4]->num_global_elements() == 0) FOUR_C_THROW("No artery scatra equation. Panic.");
   }
   else
   {
@@ -1364,10 +1366,10 @@ void PoroPressureBased::PorofluidElastScatraMonolithicArteryCouplingAlgorithm::s
     vecSpaces.push_back(Core::Utils::shared_ptr_from_ref(*dofrowmapscatra));
     vecSpaces.push_back(porofluid_elast_algo()->artery_dof_row_map());
     vecSpaces.push_back(scatra_meshtying_strategy_->art_scatra_dof_row_map());
-    if (vecSpaces[0]->NumGlobalElements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
-    if (vecSpaces[1]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
-    if (vecSpaces[2]->NumGlobalElements() == 0) FOUR_C_THROW("No artery equation. Panic.");
-    if (vecSpaces[3]->NumGlobalElements() == 0) FOUR_C_THROW("No artery scatra equation. Panic.");
+    if (vecSpaces[0]->num_global_elements() == 0) FOUR_C_THROW("No poro fluid equation. Panic.");
+    if (vecSpaces[1]->num_global_elements() == 0) FOUR_C_THROW("No scatra equation. Panic.");
+    if (vecSpaces[2]->num_global_elements() == 0) FOUR_C_THROW("No artery equation. Panic.");
+    if (vecSpaces[3]->num_global_elements() == 0) FOUR_C_THROW("No artery scatra equation. Panic.");
   }
 
   // full fluid-structure-scatra-artery-arteryscatra map

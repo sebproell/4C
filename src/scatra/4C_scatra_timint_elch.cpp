@@ -1072,7 +1072,7 @@ ScaTra::ScaTraTimIntElch::evaluate_single_electrode_info_point(
   int procid(-1);
 
   // consider node only if it is owned by current processor
-  if (discret_->node_row_map()->MyGID(nodeid))
+  if (discret_->node_row_map()->my_gid(nodeid))
   {
     // extract number of processor owning conditioned node
     procid = Core::Communication::my_mpi_rank(discret_->get_comm());
@@ -1521,7 +1521,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_cell_voltage()
         const int nodeid = (*nodeids)[0];
 
         // process row nodes only
-        if (discret_->node_row_map()->MyGID(nodeid))
+        if (discret_->node_row_map()->my_gid(nodeid))
         {
           // extract node
           Core::Nodes::Node* node = discret_->g_node(nodeid);
@@ -1534,7 +1534,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_cell_voltage()
           const std::vector<int> dofs = discret_->dof(0, node);
 
           // extract local ID of degree of freedom associated with electrode potential
-          const int lid = discret_->dof_row_map()->LID(*dofs.rbegin());
+          const int lid = discret_->dof_row_map()->lid(*dofs.rbegin());
           if (lid < 0)
             FOUR_C_THROW("Cannot extract degree of freedom with global ID {}!", *dofs.rbegin());
 
@@ -1844,7 +1844,7 @@ void ScaTra::ScaTraTimIntElch::init_nernst_bc()
         // loop over all global nodes part of the Nernst-BC
         for (int ii = 0; ii < (int(nodegids->size())); ++ii)
         {
-          if (discret_->node_row_map()->MyGID((*nodegids)[ii]))
+          if (discret_->node_row_map()->my_gid((*nodegids)[ii]))
           {
             // get node with global node id (*nodegids)[ii]
             Core::Nodes::Node* node = discret_->g_node((*nodegids)[ii]);
@@ -2685,7 +2685,7 @@ void ScaTra::ScaTraTimIntElch::evaluate_electrode_boundary_kinetics_point_condit
     const int nodeid = (*nodeids)[0];
 
     // consider node only if it is owned by current processor
-    if (discret_->node_row_map()->MyGID(nodeid))
+    if (discret_->node_row_map()->my_gid(nodeid))
     {
       // equip element parameter list with current condition
       condparams.set<const Core::Conditions::Condition*>("condition", condition);
@@ -2821,7 +2821,7 @@ void ScaTra::ScaTraTimIntElch::check_concentration_values(Core::LinAlg::Vector<d
 
     for (int k = 0; k < num_scal(); k++)
     {
-      const int lid = discret_->dof_row_map()->LID(dofs[k]);
+      const int lid = discret_->dof_row_map()->lid(dofs[k]);
       if (((vec)[lid]) < 1e-13)
       {
         numfound[k]++;
@@ -2927,7 +2927,7 @@ void ScaTra::ScaTraTimIntElch::apply_dirichlet_bc(const double time,
       // transform set into vector and then into map
       std::vector<int> dbcgidsvec(dbcgids.begin(), dbcgids.end());
       auto dbcmap = std::make_shared<Core::LinAlg::Map>(-1, static_cast<int>(dbcgids.size()),
-          dbcgidsvec.data(), dof_row_map()->IndexBase(), dof_row_map()->Comm());
+          dbcgidsvec.data(), dof_row_map()->index_base(), dof_row_map()->get_comm());
 
       // merge map with existing map for Dirichlet boundary conditions
       // Note: the dbcmaps_ internal member is reset every time evaluate_dirichlet() is called on
@@ -3012,7 +3012,7 @@ void ScaTra::ScaTraTimIntElch::apply_neumann_bc(
               auto* node = discret_->g_node(node_gid);
               auto dofs = discret_->dof(0, node);
               const int dof_gid = dofs[2];
-              const int dof_lid = dof_row_map()->LID(dof_gid);
+              const int dof_lid = dof_row_map()->lid(dof_gid);
 
               const auto neumann_value = condition->parameters().get<double>("CURRENT");
 
@@ -3242,7 +3242,7 @@ void ScaTra::ScaTraTimIntElch::reduce_dimension_null_space_blocks(
     {
       // remove zero null space vector associated with electric potential dofs by truncating
       // null space
-      nullspace.resize(block_maps()->map(iblock)->NumMyElements());
+      nullspace.resize(block_maps()->map(iblock)->num_my_elements());
     }
     // null space associated with electric potential dofs
     else
@@ -3250,7 +3250,7 @@ void ScaTra::ScaTraTimIntElch::reduce_dimension_null_space_blocks(
       // remove zero null space vector(s) associated with concentration dofs and retain only
       // the last null space vector associated with electric potential dofs
       nullspace.erase(
-          nullspace.begin(), nullspace.end() - block_maps()->map(iblock)->NumMyElements());
+          nullspace.begin(), nullspace.end() - block_maps()->map(iblock)->num_my_elements());
     }
 
     // decrease null space dimension and number of partial differential equations by one

@@ -83,7 +83,7 @@ void StruResultTest::test_node(
         if (idx >= 0)
         {
           unknownpos = false;
-          int lid = disnpmap.LID(strudisc_->dof(0, actnode, idx));
+          int lid = disnpmap.lid(strudisc_->dof(0, actnode, idx));
           if (lid < 0)
             FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position, idx,
                 actnode->id());
@@ -106,7 +106,7 @@ void StruResultTest::test_node(
         if (idx >= 0)
         {
           unknownpos = false;
-          int lid = velnpmap.LID(strudisc_->dof(0, actnode, idx));
+          int lid = velnpmap.lid(strudisc_->dof(0, actnode, idx));
           if (lid < 0)
             FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position, idx,
                 actnode->id());
@@ -129,7 +129,7 @@ void StruResultTest::test_node(
         if (idx >= 0)
         {
           unknownpos = false;
-          int lid = accnpmap.LID(strudisc_->dof(0, actnode, idx));
+          int lid = accnpmap.lid(strudisc_->dof(0, actnode, idx));
           if (lid < 0)
             FOUR_C_THROW("You tried to test {} on nonexistent dof {} on node {}", position, idx,
                 actnode->id());

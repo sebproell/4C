@@ -147,7 +147,7 @@ void Core::LinearSolver::AMGNxN::Hierarchies::setup()
   std::vector<int> offsets(num_level_amg_ - 1, 0);
   for (int block = 0; block < num_blocks_; block++)
   {
-    int offsetFineLevel = a_->get_matrix(block, block)->row_map().MinAllGID();
+    int offsetFineLevel = a_->get_matrix(block, block)->row_map().min_all_gid();
     Teuchos::RCP<Epetra_Operator> A_eop =
         Teuchos::rcpFromRef(*a_->get_matrix(block, block)->epetra_operator());
     h_block_[block] =

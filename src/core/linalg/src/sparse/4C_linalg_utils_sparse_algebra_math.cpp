@@ -209,9 +209,9 @@ void Core::LinAlg::matrix_put(const Core::LinAlg::SparseMatrix& A, const double 
   int err;
 
   // loop rows in #tomap and replace the rows of #this->sysmat_ with provided input matrix #A
-  for (int lid = 0; lid < tomap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < tomap->num_my_elements(); ++lid)
   {
-    const int Row = tomap->GID(lid);
+    const int Row = tomap->gid(lid);
     if (Row < 0) FOUR_C_THROW("DOF not found on processor.");
     err =
         Aprime->ExtractGlobalRowCopy(Row, MaxNumEntries, NumEntries, Values.data(), Indices.data());

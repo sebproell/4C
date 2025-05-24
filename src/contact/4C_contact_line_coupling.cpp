@@ -2688,9 +2688,9 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     int oldID = -1;
 
     // loop over all slave nodes
-    for (int i = 0; i < idiscret_.node_col_map()->NumMyElements(); ++i)
+    for (int i = 0; i < idiscret_.node_col_map()->num_my_elements(); ++i)
     {
-      int gid1 = idiscret_.node_col_map()->GID(i);
+      int gid1 = idiscret_.node_col_map()->gid(i);
       Core::Nodes::Node* node1 = idiscret_.g_node(gid1);
       if (!node1) FOUR_C_THROW("Cannot find node with gid %", gid1);
       Node* contactnode = dynamic_cast<Node*>(node1);

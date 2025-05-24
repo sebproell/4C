@@ -595,15 +595,15 @@ void XFEM::MeshCouplingFPI::read_restart(const int step)
   boundaryreader.read_vector(idispnp_, "idispnp_res");
   boundaryreader.read_vector(idispnpi_, "idispnpi_res");
 
-  if (not(cutter_dis_->dof_row_map())->SameAs(ivelnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(ivelnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(iveln_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(iveln_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnp_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispnp_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispn_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispn_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
-  if (not(cutter_dis_->dof_row_map())->SameAs(idispnpi_->get_map()))
+  if (not(cutter_dis_->dof_row_map())->same_as(idispnpi_->get_map()))
     FOUR_C_THROW("Global dof numbering in maps does not match");
 }
 
@@ -764,7 +764,7 @@ void XFEM::MeshCouplingFPI::lift_drag(const int step, const double time) const
       for (int isd = 0; isd < nsd; ++isd)
       {
         // [// minus to get correct sign of lift and drag (force acting on the body) ]
-        c(isd) += (*iforcecol)[dofcolmap->LID(dof[isd])];
+        c(isd) += (*iforcecol)[dofcolmap->lid(dof[isd])];
       }
     }
 
@@ -938,7 +938,7 @@ double XFEM::MeshCouplingFPI::compute_jacobianand_pressure(
           for (unsigned int idof = 0; idof < SLAVE_NUMDOF; ++idof)
           {
             int lid =
-                fulldispnp_->get_map().LID(get_cond_dis()->dof(0, coupl_ele->nodes()[inode], idof));
+                fulldispnp_->get_map().lid(get_cond_dis()->dof(0, coupl_ele->nodes()[inode], idof));
 
             const auto& x = nodes[inode]->x();
             xrefe(idof, inode) = x[idof];
@@ -948,7 +948,7 @@ double XFEM::MeshCouplingFPI::compute_jacobianand_pressure(
             else
               FOUR_C_THROW("Local ID for dispnp not found (lid = -1)!");
           }
-          int lidp = fullpres_->get_map().LID(lm_struct_x_lm_pres_.operator[](
+          int lidp = fullpres_->get_map().lid(lm_struct_x_lm_pres_.operator[](
               get_cond_dis()->dof(0, coupl_ele->nodes()[inode], 2)));
 
           if (lidp != -1)

@@ -123,10 +123,11 @@ template <typename VectorType, int dim, int spacedim>
 void DealiiWrappers::VectorConverter<VectorType, dim, spacedim>::to_dealii(
     VectorType& dealii_vector, const Core::LinAlg::Vector<double>& four_c_vector) const
 {
-  FOUR_C_ASSERT_ALWAYS(four_c_vector.get_map().PointSameAs(dealii_to_four_c_importer_.TargetMap()),
+  FOUR_C_ASSERT_ALWAYS(
+      four_c_vector.get_map().point_same_as(dealii_to_four_c_importer_.TargetMap()),
       "The 4C vector passed to the converter needs to have dof_row_map layout.");
   const int n_local_elements = dealii_vector.locally_owned_size();
-  FOUR_C_ASSERT(n_local_elements == dealii_to_four_c_map_.NumMyElements(), "Internal error.");
+  FOUR_C_ASSERT(n_local_elements == dealii_to_four_c_map_.num_my_elements(), "Internal error.");
 
 
   vector_in_dealii_layout_.export_to(four_c_vector, dealii_to_four_c_importer_, Insert);
@@ -140,10 +141,11 @@ template <typename VectorType, int dim, int spacedim>
 void DealiiWrappers::VectorConverter<VectorType, dim, spacedim>::to_four_c(
     Core::LinAlg::Vector<double>& four_c_vector, const VectorType& dealii_vector) const
 {
-  FOUR_C_ASSERT_ALWAYS(four_c_vector.get_map().PointSameAs(dealii_to_four_c_importer_.TargetMap()),
+  FOUR_C_ASSERT_ALWAYS(
+      four_c_vector.get_map().point_same_as(dealii_to_four_c_importer_.TargetMap()),
       "The 4C vector passed to the converter needs to have dof_row_map layout.");
   const int n_local_elements = dealii_vector.locally_owned_size();
-  FOUR_C_ASSERT(n_local_elements == dealii_to_four_c_map_.NumMyElements(), "Internal error.");
+  FOUR_C_ASSERT(n_local_elements == dealii_to_four_c_map_.num_my_elements(), "Internal error.");
 
   std::vector<int> indices(n_local_elements);
   std::iota(indices.begin(), indices.end(), 0);

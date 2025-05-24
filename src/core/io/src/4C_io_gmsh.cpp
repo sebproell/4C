@@ -144,7 +144,7 @@ void Core::IO::Gmsh::scalar_field_dof_based_to_gmsh(Core::FE::Discretization& di
 void Core::IO::Gmsh::scalar_element_field_to_gmsh(const Core::FE::Discretization& discret,
     const Core::LinAlg::Vector<double>& scalarfield_ele_row, std::ostream& s)
 {
-  if (scalarfield_ele_row.get_map().SameAs(*discret.element_row_map()) == false)
+  if (scalarfield_ele_row.get_map().same_as(*discret.element_row_map()) == false)
   {
     std::cout << scalarfield_ele_row.get_map() << std::endl
               << *discret.element_row_map() << std::endl;

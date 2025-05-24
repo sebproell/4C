@@ -593,13 +593,13 @@ void CONTACT::Beam3cmanager::shift_dis_map(
 {
   // export displacements into fully overlapping column map format
   Core::LinAlg::Vector<double> discrow(*bt_sol_discret().dof_row_map(), true);
-  int numbtsdofs = (*bt_sol_discret().dof_row_map()).NumMyElements();
+  int numbtsdofs = (*bt_sol_discret().dof_row_map()).num_my_elements();
 
   for (int i = 0; i < numbtsdofs; i++)
   {
-    int btsolcontact_gid = (*bt_sol_discret().dof_row_map()).GID(i);
+    int btsolcontact_gid = (*bt_sol_discret().dof_row_map()).gid(i);
     int problem_gid = dofoffsetmap_[btsolcontact_gid];
-    double disp = disrow[(*problem_discret().dof_row_map()).LID(problem_gid)];
+    double disp = disrow[(*problem_discret().dof_row_map()).lid(problem_gid)];
     discrow.replace_global_value(btsolcontact_gid, 0, disp);
   }
   Core::LinAlg::export_to(discrow, disccol);
@@ -633,7 +633,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
   nodedofs.clear();
 
   // loop over all column nodes of underlying problem discret and add
-  for (int i = 0; i < (problem_discret().node_col_map())->NumMyElements(); ++i)
+  for (int i = 0; i < (problem_discret().node_col_map())->num_my_elements(); ++i)
   {
     Core::Nodes::Node* node = problem_discret().l_col_node(i);
     if (!node) FOUR_C_THROW("Cannot find node with lid %", i);
@@ -657,9 +657,9 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
     }
   }
 
-  int maxproblemid = problem_discret().element_row_map()->MaxAllGID();
+  int maxproblemid = problem_discret().element_row_map()->max_all_gid();
   // loop over all column elements of underlying problem discret and add
-  for (int i = 0; i < (problem_discret().element_col_map())->NumMyElements(); ++i)
+  for (int i = 0; i < (problem_discret().element_col_map())->num_my_elements(); ++i)
   {
     Core::Elements::Element* ele = problem_discret().l_col_element(i);
     if (!ele) FOUR_C_THROW("Cannot find element with lid %", i);
@@ -710,7 +710,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
     {
       int gid = (*nodeids)[k];
       // do only nodes that I have in my discretization
-      if (!problem_discret().node_col_map()->MyGID(gid)) continue;
+      if (!problem_discret().node_col_map()->my_gid(gid)) continue;
       Core::Nodes::Node* node = problem_discret().g_node(gid);
 
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
@@ -787,7 +787,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
     {
       int gid = (*nodeids)[k];
       // do only nodes that I have in my discretization
-      if (!problem_discret().node_col_map()->MyGID(gid)) continue;
+      if (!problem_discret().node_col_map()->my_gid(gid)) continue;
       Core::Nodes::Node* node = problem_discret().g_node(gid);
 
       if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
@@ -861,17 +861,17 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
 
   // build fully overlapping node and element maps
   // fill my own row node ids into vector (e)sdata
-  std::vector<int> sdata(noderowmap_->NumMyElements());
-  std::vector<int> esdata(elerowmap_->NumMyElements());
-  for (int i = 0; i < noderowmap_->NumMyElements(); ++i) sdata[i] = noderowmap_->GID(i);
-  for (int i = 0; i < elerowmap_->NumMyElements(); ++i) esdata[i] = elerowmap_->GID(i);
+  std::vector<int> sdata(noderowmap_->num_my_elements());
+  std::vector<int> esdata(elerowmap_->num_my_elements());
+  for (int i = 0; i < noderowmap_->num_my_elements(); ++i) sdata[i] = noderowmap_->gid(i);
+  for (int i = 0; i < elerowmap_->num_my_elements(); ++i) esdata[i] = elerowmap_->gid(i);
 
   // if current proc is participating it writes row IDs into (e)stproc
   std::vector<int> stproc;
   std::vector<int> estproc;
-  if (noderowmap_->NumMyElements())
+  if (noderowmap_->num_my_elements())
     stproc.push_back(Core::Communication::my_mpi_rank(bt_sol_discret().get_comm()));
-  if (elerowmap_->NumMyElements())
+  if (elerowmap_->num_my_elements())
     estproc.push_back(Core::Communication::my_mpi_rank(bt_sol_discret().get_comm()));
 
   // information how many processors participate in total
@@ -938,7 +938,7 @@ void CONTACT::Beam3cmanager::init_beam_contact_discret()
   ex.do_export(nodedofs);
 
   // Determine offset between the IDs of problem discretization and BTSol discretization
-  for (int i = 0; i < (bt_sol_discret().node_col_map())->NumMyElements(); ++i)
+  for (int i = 0; i < (bt_sol_discret().node_col_map())->num_my_elements(); ++i)
   {
     Core::Nodes::Node* node = bt_sol_discret().l_col_node(i);
     int nodeid = node->id();
@@ -973,7 +973,7 @@ void CONTACT::Beam3cmanager::set_current_positions(
   //**********************************************************************
 
   // loop over all beam contact nodes
-  for (int i = 0; i < full_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < full_nodes()->num_my_elements(); ++i)
   {
     // get node pointer
     Core::Nodes::Node* node = bt_sol_discret().l_col_node(i);
@@ -990,9 +990,9 @@ void CONTACT::Beam3cmanager::set_current_positions(
 
     // nodal positions
     Core::LinAlg::Matrix<3, 1> currpos;
-    currpos(0) = node->x()[0] + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[0])];
-    currpos(1) = node->x()[1] + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[1])];
-    currpos(2) = node->x()[2] + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[2])];
+    currpos(0) = node->x()[0] + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[0])];
+    currpos(1) = node->x()[1] + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[1])];
+    currpos(2) = node->x()[2] + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[2])];
 
     // store into currentpositions
     currentpositions[node->id()] = currpos;
@@ -1014,7 +1014,7 @@ void CONTACT::Beam3cmanager::set_state(std::map<int, Core::LinAlg::Matrix<3, 1>>
 
   // Update of nodal tangents for Kirchhoff elements; nodal positions have already been set in
   // set_current_positions loop over all beam contact nodes
-  for (int i = 0; i < full_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < full_nodes()->num_my_elements(); ++i)
   {
     // get node pointer
     Core::Nodes::Node* node = bt_sol_discret().l_col_node(i);
@@ -1044,11 +1044,11 @@ void CONTACT::Beam3cmanager::set_state(std::map<int, Core::LinAlg::Matrix<3, 1>>
           const Discret::Elements::Beam3eb* ele =
               dynamic_cast<const Discret::Elements::Beam3eb*>(node->elements()[0]);
           currtan(0) =
-              ((ele->tref())[i])(0) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[3])];
+              ((ele->tref())[i])(0) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[3])];
           currtan(1) =
-              ((ele->tref())[i])(1) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[4])];
+              ((ele->tref())[i])(1) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[4])];
           currtan(2) =
-              ((ele->tref())[i])(2) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[5])];
+              ((ele->tref())[i])(2) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[5])];
         }
         else if (node->elements()[0]->nodes()[i]->id() == node->id() and
                  node->elements()[0]->element_type() == Discret::Elements::Beam3kType::instance())
@@ -1056,11 +1056,11 @@ void CONTACT::Beam3cmanager::set_state(std::map<int, Core::LinAlg::Matrix<3, 1>>
           const Discret::Elements::Beam3k* ele =
               dynamic_cast<const Discret::Elements::Beam3k*>(node->elements()[0]);
           currtan(0) =
-              ((ele->tref())[i])(0) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[3])];
+              ((ele->tref())[i])(0) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[3])];
           currtan(1) =
-              ((ele->tref())[i])(1) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[4])];
+              ((ele->tref())[i])(1) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[4])];
           currtan(2) =
-              ((ele->tref())[i])(2) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[5])];
+              ((ele->tref())[i])(2) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[5])];
         }
         else if (node->elements()[0]->nodes()[i]->id() == node->id() and
                  node->elements()[0]->element_type() == Discret::Elements::Beam3rType::instance())
@@ -1068,11 +1068,11 @@ void CONTACT::Beam3cmanager::set_state(std::map<int, Core::LinAlg::Matrix<3, 1>>
           const Discret::Elements::Beam3r* ele =
               dynamic_cast<const Discret::Elements::Beam3r*>(node->elements()[0]);
           currtan(0) =
-              ((ele->tref())[i])(0) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[6])];
+              ((ele->tref())[i])(0) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[6])];
           currtan(1) =
-              ((ele->tref())[i])(1) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[7])];
+              ((ele->tref())[i])(1) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[7])];
           currtan(2) =
-              ((ele->tref())[i])(2) + disccol[bt_sol_discret().dof_col_map()->LID(dofnode[8])];
+              ((ele->tref())[i])(2) + disccol[bt_sol_discret().dof_col_map()->lid(dofnode[8])];
         }
       }
       // store into currenttangents
@@ -1250,8 +1250,8 @@ void CONTACT::Beam3cmanager::evaluate_all_pairs(Teuchos::ParameterList timeintpa
     // least one node of one of the two elements of the pair
     int firsteleid = (pairs_[i]->element1())->id();
     int secondeleid = (pairs_[i]->element2())->id();
-    bool firstisincolmap = col_elements()->MyGID(firsteleid);
-    bool secondisincolmap = col_elements()->MyGID(secondeleid);
+    bool firstisincolmap = col_elements()->my_gid(firsteleid);
+    bool secondisincolmap = col_elements()->my_gid(secondeleid);
 
     // evaluate additional contact forces and stiffness
     if (firstisincolmap || secondisincolmap)
@@ -1278,8 +1278,8 @@ void CONTACT::Beam3cmanager::evaluate_all_pairs(Teuchos::ParameterList timeintpa
     // least one node of one of the two elements of the pair
     int firsteleid = (btsolpairs_[i]->element1())->id();
     int secondeleid = (btsolpairs_[i]->element2())->id();
-    bool firstisincolmap = col_elements()->MyGID(firsteleid);
-    bool secondisincolmap = col_elements()->MyGID(secondeleid);
+    bool firstisincolmap = col_elements()->my_gid(firsteleid);
+    bool secondisincolmap = col_elements()->my_gid(secondeleid);
     // evaluate additional contact forces and stiffness
     if (firstisincolmap || secondisincolmap)
     {
@@ -1609,10 +1609,10 @@ std::vector<std::vector<Core::Elements::Element*>> CONTACT::Beam3cmanager::brute
   // each processor looks for close nodes (directly connect with the corresponding node) for each of
   // these nodes
   //**********************************************************************
-  for (int i = 0; i < col_nodes()->NumMyElements(); ++i)
+  for (int i = 0; i < col_nodes()->num_my_elements(); ++i)
   {
     // get global id, node itself and current position
-    int firstgid = col_nodes()->GID(i);
+    int firstgid = col_nodes()->gid(i);
     Core::Nodes::Node* firstnode = bt_sol_discret().g_node(firstgid);
 
     // TODO see also LOOP 2 below
@@ -1658,10 +1658,10 @@ std::vector<std::vector<Core::Elements::Element*>> CONTACT::Beam3cmanager::brute
     // LOOP 2: all nodes (fully overlapping column map)
     // each processor looks for close nodes within these nodes
     //**********************************************************************
-    for (int j = 0; j < full_nodes()->NumMyElements(); ++j)
+    for (int j = 0; j < full_nodes()->num_my_elements(); ++j)
     {
       // get global node id and current position
-      int secondgid = full_nodes()->GID(j);
+      int secondgid = full_nodes()->gid(j);
 
       // TODO see comment above
       if (currentpositions.find(secondgid) == currentpositions.end()) continue;
@@ -1902,10 +1902,10 @@ void CONTACT::Beam3cmanager::set_min_max_ele_radius()
   bool minbeamradiusinitialized = false;
 
   // loop over all elements in row map
-  for (int i = 0; i < row_elements()->NumMyElements(); ++i)
+  for (int i = 0; i < row_elements()->num_my_elements(); ++i)
   {
     // get pointer onto element
-    int gid = row_elements()->GID(i);
+    int gid = row_elements()->gid(i);
     Core::Elements::Element* thisele = bt_sol_discret().g_element(gid);
 
     double eleradius = 0.0;
@@ -1941,10 +1941,10 @@ void CONTACT::Beam3cmanager::set_min_max_ele_radius()
 void CONTACT::Beam3cmanager::get_max_ele_length(double& maxelelength)
 {
   // loop over all elements in row map
-  for (int i = 0; i < row_elements()->NumMyElements(); i++)
+  for (int i = 0; i < row_elements()->num_my_elements(); i++)
   {
     // get pointer onto element
-    int gid = row_elements()->GID(i);
+    int gid = row_elements()->gid(i);
     Core::Elements::Element* thisele = bt_sol_discret().g_element(gid);
 
     double elelength = 0.0;
@@ -2216,7 +2216,7 @@ void CONTACT::Beam3cmanager::update_constr_norm()
   {
     // make sure to evaluate each pair only once
     int firsteleid = (pairs_[i]->element1())->id();
-    bool firstisinrowmap = row_elements()->MyGID(firsteleid);
+    bool firstisinrowmap = row_elements()->my_gid(firsteleid);
 
     // only relevant if current pair is active
     if (pairs_[i]->get_contact_flag() and firstisinrowmap)
@@ -2449,7 +2449,7 @@ void CONTACT::Beam3cmanager::console_output()
       {
         // make sure to print each pair only once
         int firsteleid = (pairs_[i]->element1())->id();
-        bool firstisinrowmap = row_elements()->MyGID(firsteleid);
+        bool firstisinrowmap = row_elements()->my_gid(firsteleid);
 
         // abbreviations
         int id1 = (pairs_[i]->element1())->id();

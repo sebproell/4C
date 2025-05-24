@@ -438,8 +438,8 @@ void PoroElast::PoroBase::setup_coupling()
   const Core::LinAlg::Map* structnoderowmap = structdis->node_row_map();
   const Core::LinAlg::Map* fluidnoderowmap = fluiddis->node_row_map();
 
-  const int numglobalstructnodes = structnoderowmap->NumGlobalElements();
-  const int numglobalfluidnodes = fluidnoderowmap->NumGlobalElements();
+  const int numglobalstructnodes = structnoderowmap->num_global_elements();
+  const int numglobalfluidnodes = fluidnoderowmap->num_global_elements();
 
   if (matchinggrid_)
   {
@@ -450,7 +450,7 @@ void PoroElast::PoroBase::setup_coupling()
     submeshes_ = false;
 
   const int ndim = Global::Problem::instance()->n_dim();
-  const int numglobalstructdofs = structdis->dof_row_map()->NumGlobalElements();
+  const int numglobalstructdofs = structdis->dof_row_map()->num_global_elements();
   if (numglobalstructdofs == numglobalstructnodes * ndim)
     porosity_dof_ = false;
   else

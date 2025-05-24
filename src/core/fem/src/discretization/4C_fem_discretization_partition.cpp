@@ -19,7 +19,7 @@ void Core::FE::Discretization::export_row_nodes(
     const Core::LinAlg::Map& newmap, bool killdofs, bool killcond)
 {
   // test whether newmap is non-overlapping
-  if (!newmap.UniqueGIDs()) FOUR_C_THROW("new map not unique");
+  if (!newmap.unique_gids()) FOUR_C_THROW("new map not unique");
 
   // destroy all ghosted nodes
   const int myrank = Core::Communication::my_mpi_rank(get_comm());
@@ -71,10 +71,10 @@ void Core::FE::Discretization::export_column_nodes(
 
   // test whether all nodes in oldmap are also in newmap, otherwise
   // this would be a change of owner which is not allowed here
-  for (int i = 0; i < oldmap.NumMyElements(); ++i)
+  for (int i = 0; i < oldmap.num_my_elements(); ++i)
   {
-    int gid = oldmap.GID(i);
-    if (!(newmap.MyGID(gid)))
+    int gid = oldmap.gid(i);
+    if (!(newmap.my_gid(gid)))
       FOUR_C_THROW("Proc {}: Node gid={} from oldmap is not in newmap", myrank, gid);
   }
 
@@ -97,7 +97,7 @@ void Core::FE::Discretization::proc_zero_distribute_elements_to_all(
   // proc 0 looks for elements that are to be send to other procs
   int size = (int)gidlist.size();
   std::vector<int> pidlist(size);  // gids on proc 0
-  int err = target.RemoteIDList(size, gidlist.data(), pidlist.data(), nullptr);
+  int err = target.remote_id_list(size, gidlist.data(), pidlist.data(), nullptr);
   if (err < 0) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDList returned err={}", err);
 
   std::map<int, std::vector<char>> sendmap;  // proc to send a set of elements to
@@ -193,11 +193,11 @@ void Core::FE::Discretization::proc_zero_distribute_nodes_to_all(Core::LinAlg::M
   reset();
   build_node_row_map();
   const Core::LinAlg::Map& oldmap = *noderowmap_;
-  int size = oldmap.NumMyElements();
+  int size = oldmap.num_my_elements();
   if (myrank) size = 0;
   std::vector<int> pidlist(size, -1);
   {
-    int err = target.RemoteIDList(size, oldmap.MyGlobalElements(), pidlist.data(), nullptr);
+    int err = target.remote_id_list(size, oldmap.my_global_elements(), pidlist.data(), nullptr);
     if (err) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDLis returned err={}", err);
   }
 
@@ -209,8 +209,8 @@ void Core::FE::Discretization::proc_zero_distribute_nodes_to_all(Core::LinAlg::M
     {
       // proc 0 does not send to itself
       if (pidlist[i] == myrank || pidlist[i] == -1) continue;
-      Core::Nodes::Node* node = g_node(oldmap.MyGlobalElements()[i]);
-      if (!node) FOUR_C_THROW("Proc 0 cannot find global node {}", oldmap.MyGlobalElements()[i]);
+      Core::Nodes::Node* node = g_node(oldmap.my_global_elements()[i]);
+      if (!node) FOUR_C_THROW("Proc 0 cannot find global node {}", oldmap.my_global_elements()[i]);
       node->pack(sendpb[pidlist[i]]);
       node_.erase(node->id());
     }
@@ -292,7 +292,7 @@ void Core::FE::Discretization::export_row_elements(
     const Core::LinAlg::Map& newmap, bool killdofs, bool killcond)
 {
   // test whether newmap is non-overlapping
-  if (!newmap.UniqueGIDs()) FOUR_C_THROW("new map not unique");
+  if (!newmap.unique_gids()) FOUR_C_THROW("new map not unique");
 
   // destroy all ghosted elements
   const int myrank = Core::Communication::my_mpi_rank(get_comm());
@@ -343,10 +343,10 @@ void Core::FE::Discretization::export_column_elements(
 
   // test whether all elements in oldmap are also in newmap
   // Otherwise, this would be a change of owner which is not allowed here
-  for (int i = 0; i < oldmap.NumMyElements(); ++i)
+  for (int i = 0; i < oldmap.num_my_elements(); ++i)
   {
-    int gid = oldmap.GID(i);
-    if (!(newmap.MyGID(gid)))
+    int gid = oldmap.gid(i);
+    if (!(newmap.my_gid(gid)))
       FOUR_C_THROW("Proc {}: Element gid={} from oldmap is not in newmap", myrank, gid);
   }
 
@@ -384,7 +384,7 @@ std::shared_ptr<Core::LinAlg::Graph> Core::FE::Discretization::build_node_graph(
     for (int row = 0; row < nnode; ++row)
     {
       const int rownode = nodeids[row];
-      if (!noderowmap->MyGID(rownode)) continue;
+      if (!noderowmap->my_gid(rownode)) continue;
       for (int col = 0; col < nnode; ++col)
       {
         int colnode = nodeids[col];
@@ -413,11 +413,11 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::Discretization::bui
   std::shared_ptr<Core::LinAlg::MultiVector<double>> coordinates =
       std::make_shared<Core::LinAlg::MultiVector<double>>(*noderowmap, 3, true);
 
-  for (int lid = 0; lid < noderowmap->NumMyElements(); ++lid)
+  for (int lid = 0; lid < noderowmap->num_my_elements(); ++lid)
   {
-    if (!node_.count(noderowmap->GID(lid))) continue;
+    if (!node_.count(noderowmap->gid(lid))) continue;
     for (int dim = 0; dim < 3; ++dim)
-      coordinates->ReplaceMyValue(lid, dim, node_.at(noderowmap->GID(lid))->x()[dim]);
+      coordinates->ReplaceMyValue(lid, dim, node_.at(noderowmap->gid(lid))->x()[dim]);
   }
 
   return coordinates;
@@ -436,13 +436,13 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
   // - noderowmap need not match distribution of nodes in this
   //   discretization at all.
   // - noderowmap is a non-overlapping map, that's tested
-  if (!noderowmap.UniqueGIDs()) FOUR_C_THROW("noderowmap is not a unique map");
+  if (!noderowmap.unique_gids()) FOUR_C_THROW("noderowmap is not a unique map");
 
   // find all owners for the overlapping node map
-  const int ncnode = nodecolmap.NumMyElements();
+  const int ncnode = nodecolmap.num_my_elements();
   std::vector<int> cnodeowner(ncnode);
-  int err =
-      noderowmap.RemoteIDList(ncnode, nodecolmap.MyGlobalElements(), cnodeowner.data(), nullptr);
+  int err = noderowmap.remote_id_list(
+      ncnode, nodecolmap.my_global_elements(), cnodeowner.data(), nullptr);
   if (err) FOUR_C_THROW("Core::LinAlg::Map::RemoteIDLis returned err={}", err);
 
   // build connectivity of elements
@@ -475,7 +475,7 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
 
   // communicate number of nodes per proc
   std::vector<int> nodesperproc(numproc);
-  int nummynodes = noderowmap.NumMyElements();
+  int nummynodes = noderowmap.num_my_elements();
   Core::Communication::gather_all(&nummynodes, nodesperproc.data(), 1, get_comm());
 
   // estimate no. of elements equal to no. of nodes
@@ -510,7 +510,7 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
       // count nodes I own of this element
       int nummine = 0;
       for (int j = 0; j < numnode; ++j)
-        if (noderowmap.MyGID(nodeids[j])) ++nummine;
+        if (noderowmap.my_gid(nodeids[j])) ++nummine;
 
       // Check if I own nodes of this element
       if (!nummine)
@@ -521,7 +521,7 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
           // If all nodes of the element are in col map we still ghost it
           bool all_nodes_in_col = true;
           for (int j = 0; j < numnode; ++j)
-            if (!nodecolmap.MyGID(nodeids[j])) all_nodes_in_col = false;
+            if (!nodecolmap.my_gid(nodeids[j])) all_nodes_in_col = false;
 
           if (all_nodes_in_col)
           {
@@ -539,7 +539,7 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
       // check whether I ghost all nodes of this element
       // this is necessary to be able to own or ghost the element
       for (int j = 0; j < numnode; ++j)
-        if (!nodecolmap.MyGID(nodeids[j]))
+        if (!nodecolmap.my_gid(nodeids[j]))
           FOUR_C_THROW("I do not have own/ghosted node gid={}", nodeids[j]);
 
       // find out who owns how many of the nodes
@@ -548,7 +548,7 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
       for (int j = 0; j < numproc; ++j) numperproc[j] = 0;
       for (int j = 0; j < numnode; ++j)
       {
-        const int lid = nodecolmap.LID(nodeids[j]);
+        const int lid = nodecolmap.lid(nodeids[j]);
         const int owner = cnodeowner[lid];
         nodeowner[j] = owner;
         numperproc[owner]++;
@@ -563,7 +563,7 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
       // the element
       int owner = -1;
       int maxnode = 0;
-      int minrownodes = noderowmap.NumGlobalElements();
+      int minrownodes = noderowmap.num_global_elements();
       for (int j = 0; j < numnode; ++j)
       {
         int currentproc = nodeowner[j];
@@ -602,7 +602,7 @@ Core::FE::Discretization::build_element_row_column(const Core::LinAlg::Map& node
   // build the rowmap of elements
   std::shared_ptr<Core::LinAlg::Map> elerowmap =
       std::make_shared<Core::LinAlg::Map>(-1, nummyele, myele.data(), 0, get_comm());
-  if (!elerowmap->UniqueGIDs()) FOUR_C_THROW("Element row map is not unique");
+  if (!elerowmap->unique_gids()) FOUR_C_THROW("Element row map is not unique");
 
   // build elecolmap
   std::vector<int> elecol(nummyele + nummyghostele);
@@ -668,17 +668,17 @@ void Core::FE::Discretization::extended_ghosting(const Core::LinAlg::Map& elecol
   {
     const Core::LinAlg::Map* oldelecolmap = element_col_map();
     // check whether standard ghosting is included in extended ghosting
-    for (int i = 0; i < oldelecolmap->NumMyElements(); ++i)
+    for (int i = 0; i < oldelecolmap->num_my_elements(); ++i)
     {
-      bool hasgid = elecolmap.MyGID(oldelecolmap->GID(i));
+      bool hasgid = elecolmap.my_gid(oldelecolmap->gid(i));
       if (!hasgid)
         FOUR_C_THROW("standard ghosting of ele {} is not included in extended ghosting",
-            oldelecolmap->GID(i));
+            oldelecolmap->gid(i));
     }
 
     if (checkghosting)
     {
-      int diff = elecolmap.NumGlobalElements() - oldelecolmap->NumGlobalElements();
+      int diff = elecolmap.num_global_elements() - oldelecolmap->num_global_elements();
       if (diff == 0 and Core::Communication::my_mpi_rank(get_comm()) == 0)
         FOUR_C_THROW("no additional elements have been ghosted");
     }
@@ -736,9 +736,9 @@ void Core::FE::Discretization::extended_ghosting(const Core::LinAlg::Map& elecol
   // get the node ids of the elements that have to be ghosted and create a proper node column map
   // for their export
   std::set<int> nodes;
-  for (int lid = 0; lid < elecolmap.NumMyElements(); ++lid)
+  for (int lid = 0; lid < elecolmap.num_my_elements(); ++lid)
   {
-    Core::Elements::Element* ele = this->g_element(elecolmap.GID(lid));
+    Core::Elements::Element* ele = this->g_element(elecolmap.gid(lid));
     const int* nodeids = ele->node_ids();
     for (int inode = 0; inode < ele->num_node(); ++inode)
     {
@@ -877,9 +877,9 @@ void Core::FE::Discretization::setup_ghosting(
   const Core::LinAlg::Map& brow = graph->row_map();
   const Core::LinAlg::Map& bcol = graph->col_map();
   Core::LinAlg::Map noderowmap(
-      brow.NumGlobalElements(), brow.NumMyElements(), brow.MyGlobalElements(), 0, comm_);
+      brow.num_global_elements(), brow.num_my_elements(), brow.my_global_elements(), 0, comm_);
   Core::LinAlg::Map nodecolmap(
-      bcol.NumGlobalElements(), bcol.NumMyElements(), bcol.MyGlobalElements(), 0, comm_);
+      bcol.num_global_elements(), bcol.num_my_elements(), bcol.my_global_elements(), 0, comm_);
 
   graph = nullptr;
 

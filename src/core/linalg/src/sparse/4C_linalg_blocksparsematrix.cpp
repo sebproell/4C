@@ -91,7 +91,7 @@ void Core::LinAlg::BlockSparseMatrixBase::assign(
     int r, int c, DataAccess access, const SparseMatrix& mat)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not matrix(r, c).row_map().SameAs(mat.row_map()))
+  if (not matrix(r, c).row_map().same_as(mat.row_map()))
     FOUR_C_THROW("cannot assign nonmatching matrices");
 #endif
   matrix(r, c).assign(access, mat);
@@ -143,8 +143,8 @@ void Core::LinAlg::BlockSparseMatrixBase::complete(bool enforce_complete)
       for (int r = 0; r < rows(); ++r)
       {
         const Core::LinAlg::Map& colmap = matrix(r, c).col_map();
-        colmapentries.insert(colmapentries.end(), colmap.MyGlobalElements(),
-            colmap.MyGlobalElements() + colmap.NumMyElements());
+        colmapentries.insert(colmapentries.end(), colmap.my_global_elements(),
+            colmap.my_global_elements() + colmap.num_my_elements());
       }
     }
     std::sort(colmapentries.begin(), colmapentries.end());
@@ -455,8 +455,8 @@ std::shared_ptr<Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrix
 Core::LinAlg::block_matrix2x2(Core::LinAlg::SparseMatrix& A00, Core::LinAlg::SparseMatrix& A01,
     Core::LinAlg::SparseMatrix& A10, Core::LinAlg::SparseMatrix& A11)
 {
-  if (!A00.range_map().SameAs(A01.range_map()) || !A00.domain_map().SameAs(A10.domain_map()) ||
-      !A01.domain_map().SameAs(A11.domain_map()) || !A10.range_map().SameAs(A11.range_map()))
+  if (!A00.range_map().same_as(A01.range_map()) || !A00.domain_map().same_as(A10.domain_map()) ||
+      !A01.domain_map().same_as(A11.domain_map()) || !A10.range_map().same_as(A11.range_map()))
     FOUR_C_THROW("Core::LinAlg::BlockMatrix2x2: block maps are not compatible.");
 
 
@@ -530,9 +530,9 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
   {
     const Core::LinAlg::Map& rowmap = mat_.range_map(rblock);
 
-    for (int rlid = 0; rlid < rowmap.NumMyElements(); ++rlid)
+    for (int rlid = 0; rlid < rowmap.num_my_elements(); ++rlid)
     {
-      int rgid = rowmap.GID(rlid);
+      int rgid = rowmap.gid(rlid);
       std::transform(ghost_[rgid].begin(), ghost_[rgid].end(), std::inserter(cgids, cgids.begin()),
           [](const auto& pair) { return pair.first; });
     }
@@ -548,11 +548,11 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
 
   std::vector<int> cpidlist(cgidlist.size());
 
-  int err = mat_.full_domain_map().RemoteIDList(
+  int err = mat_.full_domain_map().remote_id_list(
       cgidlist.size(), cgidlist.data(), cpidlist.data(), nullptr);
   if (err != 0) FOUR_C_THROW("RemoteIDList failed");
 
-  MPI_Comm comm = mat_.full_range_map().Comm();
+  MPI_Comm comm = mat_.full_range_map().get_comm();
   const int numproc = Core::Communication::num_mpi_ranks(comm);
 
   // Send the ghost gids to their respective processor to ask for the domain
@@ -584,7 +584,7 @@ void Core::LinAlg::DefaultBlockMatrixStrategy::complete(bool enforce_complete)
       {
         // assume row and range equal domain
         const Core::LinAlg::Map& domainmap = mat_.domain_map(cblock);
-        if (domainmap.MyGID(gid))
+        if (domainmap.my_gid(gid))
         {
           block[proc].push_back(cblock);
           break;

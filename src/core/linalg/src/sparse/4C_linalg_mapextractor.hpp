@@ -343,7 +343,7 @@ namespace Core::LinAlg
       add_vector(cond, 1, full, scale);
     }
     const std::shared_ptr<const Core::LinAlg::Map>& cond_map() const { return map(1); }
-    bool cond_relevant() const { return cond_map()->NumGlobalElements() != 0; }
+    bool cond_relevant() const { return cond_map()->num_global_elements() != 0; }
     void cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
     {
       put_scalar(full, 1, scalar);
@@ -379,7 +379,7 @@ namespace Core::LinAlg
       add_vector(cond, 0, full, scale);
     }
     const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(0); }
-    bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+    bool other_relevant() const { return other_map()->num_global_elements() != 0; }
     void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
     {
       put_scalar(full, 0, scalar);

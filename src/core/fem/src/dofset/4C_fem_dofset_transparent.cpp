@@ -47,18 +47,18 @@ void Core::DOFSets::TransparentDofSet::transfer_degrees_of_freedom(
     const Core::FE::Discretization& sourcedis, const Core::FE::Discretization& newdis,
     const int start)
 {
-  if (!sourcedis.dof_row_map()->UniqueGIDs()) FOUR_C_THROW("dof_row_map is not unique");
-  if (!sourcedis.node_row_map()->UniqueGIDs()) FOUR_C_THROW("NodeRowMap is not unique");
-  if (!sourcedis.element_row_map()->UniqueGIDs()) FOUR_C_THROW("ElementRowMap is not unique");
+  if (!sourcedis.dof_row_map()->unique_gids()) FOUR_C_THROW("dof_row_map is not unique");
+  if (!sourcedis.node_row_map()->unique_gids()) FOUR_C_THROW("NodeRowMap is not unique");
+  if (!sourcedis.element_row_map()->unique_gids()) FOUR_C_THROW("ElementRowMap is not unique");
 
-  if (!newdis.dof_row_map()->UniqueGIDs()) FOUR_C_THROW("dof_row_map is not unique");
-  if (!newdis.node_row_map()->UniqueGIDs()) FOUR_C_THROW("NodeRowMap is not unique");
-  if (!newdis.element_row_map()->UniqueGIDs()) FOUR_C_THROW("ElementRowMap is not unique");
+  if (!newdis.dof_row_map()->unique_gids()) FOUR_C_THROW("dof_row_map is not unique");
+  if (!newdis.node_row_map()->unique_gids()) FOUR_C_THROW("NodeRowMap is not unique");
+  if (!newdis.element_row_map()->unique_gids()) FOUR_C_THROW("ElementRowMap is not unique");
 
   // build dofrowmap
   std::set<int> dofrowset;
   std::vector<int> dofrowvec;
-  dofrowvec.reserve(dofrowmap_->NumMyElements());
+  dofrowvec.reserve(dofrowmap_->num_my_elements());
   for (int inode = 0; inode != newdis.num_my_row_nodes(); ++inode)
   {
     const Core::Nodes::Node* newnode = newdis.l_row_node(inode);
@@ -89,7 +89,7 @@ void Core::DOFSets::TransparentDofSet::transfer_degrees_of_freedom(
   // build dofcolvec
   std::set<int> dofcolset;
   std::vector<int> dofcolvec;
-  dofcolvec.reserve(dofcolmap_->NumMyElements());
+  dofcolvec.reserve(dofcolmap_->num_my_elements());
   for (int inode = 0; inode != newdis.num_my_col_nodes(); ++inode)
   {
     const Core::Nodes::Node* newnode = newdis.l_col_node(inode);
@@ -132,13 +132,13 @@ void Core::DOFSets::TransparentDofSet::parallel_transfer_degrees_of_freedom(
     const Core::FE::Discretization& sourcedis, const Core::FE::Discretization& newdis,
     const int start)
 {
-  if (!sourcedis.dof_row_map()->UniqueGIDs()) FOUR_C_THROW("dof_row_map is not unique");
-  if (!sourcedis.node_row_map()->UniqueGIDs()) FOUR_C_THROW("NodeRowMap is not unique");
-  if (!sourcedis.element_row_map()->UniqueGIDs()) FOUR_C_THROW("ElementRowMap is not unique");
+  if (!sourcedis.dof_row_map()->unique_gids()) FOUR_C_THROW("dof_row_map is not unique");
+  if (!sourcedis.node_row_map()->unique_gids()) FOUR_C_THROW("NodeRowMap is not unique");
+  if (!sourcedis.element_row_map()->unique_gids()) FOUR_C_THROW("ElementRowMap is not unique");
 
-  if (!newdis.dof_row_map()->UniqueGIDs()) FOUR_C_THROW("dof_row_map is not unique");
-  if (!newdis.node_row_map()->UniqueGIDs()) FOUR_C_THROW("NodeRowMap is not unique");
-  if (!newdis.element_row_map()->UniqueGIDs()) FOUR_C_THROW("ElementRowMap is not unique");
+  if (!newdis.dof_row_map()->unique_gids()) FOUR_C_THROW("dof_row_map is not unique");
+  if (!newdis.node_row_map()->unique_gids()) FOUR_C_THROW("NodeRowMap is not unique");
+  if (!newdis.element_row_map()->unique_gids()) FOUR_C_THROW("ElementRowMap is not unique");
 
   // list all my rownode ids
 
@@ -243,7 +243,7 @@ void Core::DOFSets::TransparentDofSet::parallel_transfer_degrees_of_freedom(
   // build dofrowmap
   std::set<int> dofrowset;
   std::vector<int> dofrowvec;
-  dofrowvec.reserve(dofrowmap_->NumMyElements());
+  dofrowvec.reserve(dofrowmap_->num_my_elements());
   for (int inode = 0; inode != newdis.num_my_row_nodes(); ++inode)
   {
     const Core::Nodes::Node* newnode = newdis.l_row_node(inode);
@@ -290,7 +290,7 @@ void Core::DOFSets::TransparentDofSet::parallel_transfer_degrees_of_freedom(
   // build dofcolvec
   std::set<int> dofcolset;
   std::vector<int> dofcolvec;
-  dofcolvec.reserve(dofcolmap_->NumMyElements());
+  dofcolvec.reserve(dofcolmap_->num_my_elements());
   for (int inode = 0; inode != newdis.num_my_col_nodes(); ++inode)
   {
     const Core::Nodes::Node* newnode = newdis.l_col_node(inode);
@@ -341,7 +341,7 @@ void Core::DOFSets::TransparentDofSet::set_source_dofs_available_on_this_proc(
   for (std::map<int, std::vector<int>>::iterator curr = gid_to_dofs.begin();
       curr != gid_to_dofs.end(); ++curr)
   {
-    const int lid = sourcedis_->node_row_map()->LID(curr->first);
+    const int lid = sourcedis_->node_row_map()->lid(curr->first);
 
     if (lid > -1)
     {

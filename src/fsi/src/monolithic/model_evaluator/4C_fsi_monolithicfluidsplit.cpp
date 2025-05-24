@@ -50,7 +50,7 @@ FSI::MonolithicFluidSplit::MonolithicFluidSplit(
       Core::LinAlg::MultiMapExtractor::intersect_maps(intersectionmaps);
 
   // Check whether the intersection is empty
-  if (intersectionmap->NumGlobalElements() != 0)
+  if (intersectionmap->num_global_elements() != 0)
   {
     //    std::cout << "Slave interface nodes with Dirichlet boundary condition (input file
     //    numbering):" << std::endl; for (int i=0; i <
@@ -253,7 +253,7 @@ void FSI::MonolithicFluidSplit::create_combined_dof_row_map()
   vecSpaces.push_back(fluid_field()->dof_row_map());
   vecSpaces.push_back(ale_field()->interface()->other_map());
 
-  if (vecSpaces[1]->NumGlobalElements() == 0)
+  if (vecSpaces[1]->num_global_elements() == 0)
     FOUR_C_THROW("No inner fluid equations. Splitting not possible. Panic.");
 
   set_dof_row_maps(vecSpaces);

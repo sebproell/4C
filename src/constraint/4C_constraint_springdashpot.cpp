@@ -551,7 +551,7 @@ void Constraints::SpringDashpot::evaluate_robin(std::shared_ptr<Core::LinAlg::Sp
           if (dof_onoff == 0) continue;
 
           const int dof_gid = dofs_gid[dof];
-          const int dof_lid = actdisc_->dof_row_map()->LID(dof_gid);
+          const int dof_lid = actdisc_->dof_row_map()->lid(dof_gid);
 
           const double dof_disp = (*disp)[dof_lid];
           const double dof_vel = (*velo)[dof_lid];
@@ -643,7 +643,7 @@ void Constraints::SpringDashpot::evaluate_force(Core::LinAlg::Vector<double>& fi
   for (int node_gid : *nodes_)
   {
     // nodes owned by processor
-    if (actdisc_->node_row_map()->MyGID(node_gid))
+    if (actdisc_->node_row_map()->my_gid(node_gid))
     {
       int gid = node_gid;
       Core::Nodes::Node* node = actdisc_->g_node(gid);
@@ -766,7 +766,7 @@ void Constraints::SpringDashpot::evaluate_force_stiff(Core::LinAlg::SparseMatrix
   for (int node_gid : *nodes_)
   {
     // nodes owned by processor
-    if (actdisc_->node_row_map()->MyGID(node_gid))
+    if (actdisc_->node_row_map()->my_gid(node_gid))
     {
       Core::Nodes::Node* node = actdisc_->g_node(node_gid);
       if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
@@ -925,7 +925,7 @@ void Constraints::SpringDashpot::reset_prestress(const Core::LinAlg::Vector<doub
     for (int node_gid : *nodes_)
     {
       // nodes owned by processor
-      if (actdisc_->node_row_map()->MyGID(node_gid))
+      if (actdisc_->node_row_map()->my_gid(node_gid))
       {
         Core::Nodes::Node* node = actdisc_->g_node(node_gid);
         if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
@@ -960,7 +960,7 @@ void Constraints::SpringDashpot::set_restart_old(Core::LinAlg::MultiVector<doubl
   for (int node_gid : *nodes_)
   {
     // nodes owned by processor
-    if (actdisc_->node_row_map()->MyGID(node_gid))
+    if (actdisc_->node_row_map()->my_gid(node_gid))
     {
       Core::Nodes::Node* node = actdisc_->g_node(node_gid);
       if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);
@@ -977,7 +977,7 @@ void Constraints::SpringDashpot::set_restart_old(Core::LinAlg::MultiVector<doubl
         for (auto& i : offset_prestr_)
         {
           // global id -> local id
-          const int lid = vec.get_map().LID(i.first);
+          const int lid = vec.get_map().lid(i.first);
           // local id on processor
           if (lid >= 0)
           {
@@ -1003,7 +1003,7 @@ void Constraints::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
   for (const auto& i : gap_)
   {
     // global id -> local id
-    const int lid = gap.get_map().LID(i.first);
+    const int lid = gap.get_map().lid(i.first);
     // local id on processor
     if (lid >= 0) (gap)[lid] += i.second;
   }
@@ -1012,7 +1012,7 @@ void Constraints::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
   for (const auto& normal : normals_)
   {
     // global id -> local id
-    const int lid = normals.get_map().LID(normal.first);
+    const int lid = normals.get_map().lid(normal.first);
     // local id on processor
     if (lid >= 0)
     {
@@ -1027,7 +1027,7 @@ void Constraints::SpringDashpot::output_gap_normal(Core::LinAlg::Vector<double>&
   for (const auto& i : springstress_)
   {
     // global id -> local id
-    const int lid = stress.get_map().LID(i.first);
+    const int lid = stress.get_map().lid(i.first);
     // local id on processor
     if (lid >= 0)
     {
@@ -1058,7 +1058,7 @@ void Constraints::SpringDashpot::output_prestr_offset_old(
   for (const auto& i : offset_prestr_)
   {
     // global id -> local id
-    const int lid = springprestroffset.get_map().LID(i.first);
+    const int lid = springprestroffset.get_map().lid(i.first);
     // local id on processor
     if (lid >= 0)
     {
@@ -1217,7 +1217,7 @@ void Constraints::SpringDashpot::get_area(
       }
 
       const int gid = element.nodes()[i]->id();
-      if (!actdisc_->node_row_map()->MyGID(gid)) continue;
+      if (!actdisc_->node_row_map()->my_gid(gid)) continue;
 
       // store area in map (gid, area). erase old value before adding new one
       const double newarea = area_[gid] + apernode;
@@ -1237,7 +1237,7 @@ void Constraints::SpringDashpot::initialize_prestr_offset()
 
   for (int node_gid : *nodes_)
   {
-    if (actdisc_->node_row_map()->MyGID(node_gid))
+    if (actdisc_->node_row_map()->my_gid(node_gid))
     {
       Core::Nodes::Node* node = actdisc_->g_node(node_gid);
       if (!node) FOUR_C_THROW("Cannot find global node {}", node_gid);

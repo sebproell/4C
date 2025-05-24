@@ -2390,9 +2390,9 @@ bool CONTACT::Beam3contact<numnodes, numnodalvalues>::closest_point_projection(d
           // simulation and which do therefore not contain the current values of such element
           // quantities
           Core::Elements::Element* element1 =
-              pdiscret_.l_col_element(pdiscret_.element_col_map()->LID(element1_->id()));
+              pdiscret_.l_col_element(pdiscret_.element_col_map()->lid(element1_->id()));
           Core::Elements::Element* element2 =
-              pdiscret_.l_col_element(pdiscret_.element_col_map()->LID(element2_->id()));
+              pdiscret_.l_col_element(pdiscret_.element_col_map()->lid(element2_->id()));
 
           const Core::Elements::ElementType& eot = element1->element_type();
           if (eot == Discret::Elements::Beam3ebType::instance())

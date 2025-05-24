@@ -1260,7 +1260,7 @@ void ScaTra::ScaTraTimIntImpl::set_velocity_field_from_function()
 
           // get global and local dof IDs
           const int gid = nodedofs[index];
-          const int lid = convel->get_map().LID(gid);
+          const int lid = convel->get_map().lid(gid);
 
           if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
           err = convel->replace_local_value(lid, 0, value);
@@ -1331,7 +1331,7 @@ void ScaTra::ScaTraTimIntImpl::set_external_force() const
       const double force_velocity_value = external_force_value * intrinsic_mobility_value;
 
       const int gid = nodedofs[spatial_dimension];
-      const int lid = force_velocity->get_map().LID(gid);
+      const int lid = force_velocity->get_map().lid(gid);
 
       if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
       const int error_force_velocity =
@@ -1367,7 +1367,8 @@ void ScaTra::ScaTraTimIntImpl::set_wall_shear_stresses(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  FOUR_C_ASSERT(wall_shear_stress.get_map().SameAs(*discret_->dof_row_map(nds_wall_shear_stress())),
+  FOUR_C_ASSERT(
+      wall_shear_stress.get_map().same_as(*discret_->dof_row_map(nds_wall_shear_stress())),
       "Maps are NOT identical. Emergency!");
 
   discret_->set_state(nds_wall_shear_stress(), "WallShearStress", wall_shear_stress);
@@ -1392,7 +1393,7 @@ void ScaTra::ScaTraTimIntImpl::set_pressure_field(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  FOUR_C_ASSERT(pressure.get_map().SameAs(*discret_->dof_row_map(nds_pressure())),
+  FOUR_C_ASSERT(pressure.get_map().same_as(*discret_->dof_row_map(nds_pressure())),
       "Maps are NOT identical. Emergency!");
 
   discret_->set_state(nds_pressure(), "Pressure", pressure);
@@ -1412,7 +1413,7 @@ void ScaTra::ScaTraTimIntImpl::set_membrane_concentration(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not MembraneConc->get_map().SameAs(*discret_->dof_row_map(0)))
+  if (not MembraneConc->get_map().same_as(*discret_->dof_row_map(0)))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1436,7 +1437,7 @@ void ScaTra::ScaTraTimIntImpl::set_mean_concentration(
   // have changed meanwhile (e.g., due to periodic boundary conditions applied only
   // to the fluid field)!
   // We have to be sure that everything is still matching.
-  if (not MeanConc->get_map().SameAs(*discret_->dof_row_map(0)))
+  if (not MeanConc->get_map().same_as(*discret_->dof_row_map(0)))
     FOUR_C_THROW("Maps are NOT identical. Emergency!");
 #endif
 
@@ -1771,7 +1772,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (convel_multi)(idim)[inode] =
-            (*convel)[convel->get_map().LID(discret_->dof(nds_vel(), node, idim))];
+            (*convel)[convel->get_map().lid(discret_->dof(nds_vel(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "convec_velocity");
@@ -1793,7 +1794,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
         const Core::Nodes::Node* node = discret_->l_row_node(inode);
         for (int idim = 0; idim < nsd_; ++idim)
           (multi_vector)(idim)[inode] =
-              (*state_vector)[state_vector->get_map().LID(discret_->dof(nds_vel(), node, idim))];
+              (*state_vector)[state_vector->get_map().lid(discret_->dof(nds_vel(), node, idim))];
       }
       const std::vector<std::optional<std::string>> context(nsd_, field_name);
       visualization_writer_->append_result_data_vector_with_context(
@@ -1819,7 +1820,7 @@ void ScaTra::ScaTraTimIntImpl::collect_runtime_output_data()
       Core::Nodes::Node* node = discret_->l_row_node(inode);
       for (int idim = 0; idim < nsd_; ++idim)
         (dispnp_multi)(idim)[inode] =
-            (*dispnp)[dispnp->get_map().LID(discret_->dof(nds_disp(), node, idim))];
+            (*dispnp)[dispnp->get_map().lid(discret_->dof(nds_disp(), node, idim))];
     }
 
     std::vector<std::optional<std::string>> context(nsd_, "ale-displacement");
@@ -1932,7 +1933,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
           // evaluate component k of spatial function
           double initialval =
               problem_->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)
@@ -2069,7 +2070,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
 
           double initialval = 0.0;
           if (x > -1e-10) initialval = 1.0;
@@ -2128,7 +2129,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
 
           if (x2 < loc12 - 1e-10)
             initialval = (1.0 - (1.0 / beta1)) * exp((x2 - trans1) / delta1);
@@ -2190,7 +2191,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
 
           // compute tanh-distribution
           double initialval = 0.0;
@@ -2227,7 +2228,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
 
           // compute initial values 0.0 or 1.0 depending on geometrical location
           double initialval = 0.0;
@@ -2263,7 +2264,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
           // evaluate component k of spatial function
 
           double initialval;
@@ -2303,7 +2304,7 @@ void ScaTra::ScaTraTimIntImpl::set_initial_field(
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
           // evaluate component k of spatial function
 
           double initval = 0.0;
@@ -3025,7 +3026,7 @@ void ScaTra::ScaTraTimIntImpl::nonlinear_solve()
       // output performance statistics associated with linear solver into text file if applicable
       if (params_->get<bool>("OUTPUTLINSOLVERSTATS"))
         output_lin_solver_stats(strategy_->solver(), dtsolve_, step(), iternum_,
-            strategy_->dof_row_map().NumGlobalElements());
+            strategy_->dof_row_map().num_global_elements());
     }
 
     //------------------------------------------------ update solution vector
@@ -3185,7 +3186,7 @@ ScaTra::ScaTraTimIntImpl::convert_dof_vector_to_componentwise_node_vector(
     Core::Nodes::Node* node = discret_->l_row_node(inode);
     for (int idim = 0; idim < nsd_; ++idim)
       (*componentwise_node_vector)(idim)[inode] =
-          (dof_vector)[dof_vector.get_map().LID(discret_->dof(nds, node, idim))];
+          (dof_vector)[dof_vector.get_map().lid(discret_->dof(nds, node, idim))];
   }
   return componentwise_node_vector;
 }
@@ -3381,7 +3382,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_macro_micro_coupling()
     for (int inode : *nodeids)
     {
       // process row nodes only
-      if (discret_->node_row_map()->MyGID(inode))
+      if (discret_->node_row_map()->my_gid(inode))
       {
         // extract node
         Core::Nodes::Node* node = discret_->g_node(inode);
@@ -3406,7 +3407,7 @@ void ScaTra::ScaTraTimIntImpl::evaluate_macro_micro_coupling()
         for (int gid : dofs)
         {
           // extract global and local IDs of degree of freedom
-          const int lid = discret_->dof_row_map()->LID(gid);
+          const int lid = discret_->dof_row_map()->lid(gid);
           if (lid < 0) FOUR_C_THROW("Cannot extract degree of freedom with global ID {}!", gid);
 
           // compute matrix and vector contributions according to kinetic model for current
@@ -3809,9 +3810,9 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
   discret_->evaluate(eleparams, strategy);
 
   // copy states from first dof of MAT_Electrode
-  for (int ele_lid = 0; ele_lid < discret_->element_row_map()->NumMyElements(); ++ele_lid)
+  for (int ele_lid = 0; ele_lid < discret_->element_row_map()->num_my_elements(); ++ele_lid)
   {
-    const int ele_gid = discret_->element_row_map()->GID(ele_lid);
+    const int ele_gid = discret_->element_row_map()->gid(ele_lid);
     auto* ele = discret_->g_element(ele_gid);
 
     if (ele->material()->material_type() != Core::Materials::m_electrode) continue;
@@ -3825,8 +3826,8 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
       int dof_macro = discret_->dof(0, node)[0];
       int dof_micro = discret_->dof(nds_micro(), node)[0];
 
-      const int dof_lid_micro = phinp_micro_->get_map().LID(dof_micro);
-      const int dof_lid_macro = phinp_->get_map().LID(dof_macro);
+      const int dof_lid_micro = phinp_micro_->get_map().lid(dof_micro);
+      const int dof_lid_macro = phinp_->get_map().lid(dof_macro);
 
       // only if owned by this proc
       if (dof_lid_micro != -1 and dof_lid_macro != -1)
@@ -3840,16 +3841,16 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
 
   // divide nodal values by number of adjacent elements (due to assembly)
   const auto* node_row_map = discret_->node_row_map();
-  for (int node_lid = 0; node_lid < node_row_map->NumMyElements(); ++node_lid)
+  for (int node_lid = 0; node_lid < node_row_map->num_my_elements(); ++node_lid)
   {
-    const int node_gid = node_row_map->GID(node_lid);
+    const int node_gid = node_row_map->gid(node_lid);
     const auto* node = discret_->g_node(node_gid);
     std::vector<int> dofs = discret_->dof(nds_micro(), node);
 
     if (dofs.size() != 1) FOUR_C_THROW("Only one dof expected.");
 
     const int dof_gid = dofs[0];
-    const int dof_lid = phinp_micro_->get_map().LID(dof_gid);
+    const int dof_lid = phinp_micro_->get_map().lid(dof_gid);
 
     // only if this dof is part of the phinp_micro_ vector/map
     if (dof_lid != -1)
@@ -3868,9 +3869,9 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
 
   // loop over all element and search for nodes that are on elements with 2 dof on one side and 3
   // dofs at the other side
-  for (int ele_lid = 0; ele_lid < discretization()->element_row_map()->NumMyElements(); ++ele_lid)
+  for (int ele_lid = 0; ele_lid < discretization()->element_row_map()->num_my_elements(); ++ele_lid)
   {
-    const int ele_gid = discretization()->element_row_map()->GID(ele_lid);
+    const int ele_gid = discretization()->element_row_map()->gid(ele_lid);
     auto* ele = discretization()->g_element(ele_gid);
 
     for (auto mat_id = 0; mat_id < ele->num_material(); ++mat_id)
@@ -3926,7 +3927,7 @@ void ScaTra::ScaTraTimIntImpl::calc_mean_micro_concentration()
   // correct values on hybrid dofs (value on node with 2 dofs is artificially set to 0.0)
   for (int hybrid_dof : hybrid_dofs)
   {
-    const int lid = phinp_micro_->get_map().LID(hybrid_dof);
+    const int lid = phinp_micro_->get_map().lid(hybrid_dof);
     if (lid != -1)
     {
       const double value = (*phinp_micro_)[lid];

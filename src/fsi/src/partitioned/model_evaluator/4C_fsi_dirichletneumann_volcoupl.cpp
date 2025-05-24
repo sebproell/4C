@@ -411,7 +411,7 @@ void FSI::VolCorrector::correct_vol_displacements_phys_space(
   for (int i = 0; i < fluidale->ale_field()->discretization()->num_my_col_elements(); ++i)
   {
     // 1 map node into bele
-    int gid = fluidale->ale_field()->discretization()->element_col_map()->GID(i);
+    int gid = fluidale->ale_field()->discretization()->element_col_map()->gid(i);
     Core::Elements::Element* aleele = fluidale->ale_field()->discretization()->g_element(gid);
 
     if (FSIaleeles->find(aleele->id()) == FSIaleeles->end()) continue;
@@ -484,7 +484,7 @@ void FSI::VolCorrector::setup(const int dim, std::shared_ptr<Adapter::FluidAle> 
   for (int i = 0; i < fluidale->ale_field()->discretization()->num_my_col_elements(); ++i)
   {
     // 1 map node into bele
-    int gid = fluidale->ale_field()->discretization()->element_col_map()->GID(i);
+    int gid = fluidale->ale_field()->discretization()->element_col_map()->gid(i);
     Core::Elements::Element* aleele = fluidale->ale_field()->discretization()->g_element(gid);
 
     if (FSIaleeles->find(aleele->id()) == FSIaleeles->end()) continue;
@@ -531,7 +531,7 @@ void FSI::VolCorrector::setup(const int dim, std::shared_ptr<Adapter::FluidAle> 
             lpos[0] > 1.0 + tol || lpos[1] > 1.0 + tol || lpos[2] > 1.0 + tol)
           continue;
 
-        if (FSIfluidnodes->MyGID(nodegid))
+        if (FSIfluidnodes->my_gid(nodegid))
         {
           localnodeidsFSI.push_back(nodegid);
           continue;

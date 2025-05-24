@@ -882,7 +882,7 @@ void Thermo::TimInt::set_initial_field(const Thermo::InitialField init, const in
         for (int k = 0; k < numdofs; ++k)
         {
           const int dofgid = nodedofset[k];
-          int doflid = dofrowmap->LID(dofgid);
+          int doflid = dofrowmap->lid(dofgid);
           // evaluate component k of spatial function
           double initialval = Global::Problem::instance()
                                   ->function_by_id<Core::Utils::FunctionOfSpaceTime>(startfuncno)

@@ -78,12 +78,13 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_coup
     std::vector<int> mygpvec(numgp_per_artele, 0);
     std::vector<int> sumgpvec(numgp_per_artele, 0);
     // loop over all GIDs
-    for (int gid = gp_vector->get_map().MinAllGID(); gid <= gp_vector->get_map().MaxAllGID(); gid++)
+    for (int gid = gp_vector->get_map().min_all_gid(); gid <= gp_vector->get_map().max_all_gid();
+        gid++)
     {
       // reset
       std::fill(sumgpvec.data(), sumgpvec.data() + numgp_per_artele, 0);
 
-      const int mylid = gp_vector->get_map().LID(gid);
+      const int mylid = gp_vector->get_map().lid(gid);
       // if not owned or ghosted fill with zeros
       if (mylid < 0) std::fill(mygpvec.data(), mygpvec.data() + numgp_per_artele, 0);
       // else get the GP vector

@@ -83,12 +83,12 @@ void Discret::Elements::FluidHDGType::compute_null_space(
   if (Core::FE::DiscretizationFaces* facedis = dynamic_cast<Core::FE::DiscretizationFaces*>(&dis))
   {
     const Core::LinAlg::Map* rowmap = dis.dof_row_map();
-    const int lrows = rowmap->NumMyElements();
+    const int lrows = rowmap->num_my_elements();
     double* mode[6];
     for (int i = 0; i < dimns; ++i) mode[i] = &(ns[i * lrows]);
 
     const Core::LinAlg::Map* frowmap = facedis->face_row_map();
-    for (int i = 0; i < frowmap->NumMyElements(); ++i)
+    for (int i = 0; i < frowmap->num_my_elements(); ++i)
     {
       std::vector<int> dofs = facedis->dof(0, facedis->l_row_face(i));
       const unsigned int dim = Core::FE::get_dimension(facedis->l_row_face(i)->shape()) + 1;
@@ -96,17 +96,17 @@ void Discret::Elements::FluidHDGType::compute_null_space(
       const unsigned int ndofs = dofs.size() / dim;
       for (unsigned int i = 0; i < dofs.size(); ++i)
       {
-        const unsigned int lid = rowmap->LID(dofs[i]);
+        const unsigned int lid = rowmap->lid(dofs[i]);
         for (unsigned int d = 0; d < dim + 1; ++d) mode[d][lid] = 0.;
         mode[i / ndofs][lid] = 1.;
       }
     }
     const Core::LinAlg::Map* erowmap = dis.element_row_map();
-    for (int i = 0; i < erowmap->NumMyElements(); ++i)
+    for (int i = 0; i < erowmap->num_my_elements(); ++i)
     {
       std::vector<int> dofs = dis.dof(0, dis.l_row_element(i));
       FOUR_C_ASSERT(dofs.size() == 1, "Expect a single pressure dof per element for fluid HDG");
-      const unsigned int lid = rowmap->LID(dofs[0]);
+      const unsigned int lid = rowmap->lid(dofs[0]);
       const unsigned int dim = Core::FE::get_dimension(dis.l_row_element(i)->shape());
       for (unsigned int d = 0; d < dim; ++d) mode[d][lid] = 0.;
       mode[dim][lid] = 1.;

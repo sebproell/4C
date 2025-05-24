@@ -154,8 +154,8 @@ void LowMach::Algorithm::setup()
     }
 
     // check existence of elements
-    if (dofrowmaps[0]->NumGlobalElements() == 0) FOUR_C_THROW("No fluid elements!");
-    if (dofrowmaps[1]->NumGlobalElements() == 0) FOUR_C_THROW("No scatra elements!");
+    if (dofrowmaps[0]->num_global_elements() == 0) FOUR_C_THROW("No fluid elements!");
+    if (dofrowmaps[1]->num_global_elements() == 0) FOUR_C_THROW("No scatra elements!");
 
     std::shared_ptr<Core::LinAlg::Map> fullmap =
         Core::LinAlg::MultiMapExtractor::merge_maps(dofrowmaps);

@@ -444,7 +444,7 @@ void FLD::Boxfilter::apply_box_filter(
             Core::Communication::my_mpi_rank(discret_->get_comm()))
           continue;
 
-        int lid = noderowmap->LID(master_gid);
+        int lid = noderowmap->lid(master_gid);
         if (lid < 0) FOUR_C_THROW("nodelid < 0 ?");
 
         val = (patchvol)[lid];
@@ -476,7 +476,7 @@ void FLD::Boxfilter::apply_box_filter(
         // loop all this masters slaves
         for (auto slave_gid : slave_gids)
         {
-          lid = noderowmap->LID(slave_gid);
+          lid = noderowmap->lid(slave_gid);
           val += (patchvol)[lid];
 
           if (density_) dens_val += (*filtered_dens_)[lid];
@@ -505,7 +505,7 @@ void FLD::Boxfilter::apply_box_filter(
         }  // end loop slaves
 
         // replace value by sum
-        lid = noderowmap->LID(master_gid);
+        lid = noderowmap->lid(master_gid);
         int error = patchvol.replace_local_values(1, &val, &lid);
         if (error != 0) FOUR_C_THROW("dof not on proc");
 
@@ -553,7 +553,7 @@ void FLD::Boxfilter::apply_box_filter(
         for (auto slave_gid : slave_gids)
         {
           int err = 0;
-          lid = noderowmap->LID(slave_gid);
+          lid = noderowmap->lid(slave_gid);
           err += patchvol.replace_local_values(1, &val, &lid);
 
           {
@@ -623,7 +623,7 @@ void FLD::Boxfilter::apply_box_filter(
       for (int index = 0; index < numdim; ++index)
       {
         int gid = nodedofset[index];
-        int lid = dofrowmap->LID(gid);
+        int lid = dofrowmap->lid(gid);
 
         if ((dirichtoggle)[lid] == 1)  // this is a dirichlet node
         {
@@ -708,7 +708,7 @@ void FLD::Boxfilter::apply_box_filter(
         for (int idim = 0; idim < numdim; ++idim)
         {
           int gid_i = nodedofset[idim];
-          int lid_i = dofrowmap->LID(gid_i);
+          int lid_i = dofrowmap->lid(gid_i);
           double valvel_i = (*velocity)[lid_i];
           if (velocity_)
           {
@@ -729,7 +729,7 @@ void FLD::Boxfilter::apply_box_filter(
             if (reynoldsstress_)
             {
               int gid_j = nodedofset[jdim];
-              int lid_j = dofrowmap->LID(gid_j);
+              int lid_j = dofrowmap->lid(gid_j);
 
               double valvel_j = (*velocity)[lid_j];
               double valvel_ij = dens * valvel_i * valvel_j;
@@ -884,7 +884,7 @@ void FLD::Boxfilter::apply_box_filter(
         // get global id of the dof
         int gid = dofs[d];
         // get local dof id corresponding to the global id
-        int lid = discret_->dof_row_map()->LID(gid);
+        int lid = discret_->dof_row_map()->lid(gid);
         // filtered velocity and all scale velocity
         double filteredvel = (((*filtered_vel_)(d)))[nid];
         double vel = (*velocity)[lid];
@@ -1182,7 +1182,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
             Core::Communication::my_mpi_rank(scatradiscret_->get_comm()))
           continue;
 
-        int lid = noderowmap->LID(master_gid);
+        int lid = noderowmap->lid(master_gid);
         if (lid < 0) FOUR_C_THROW("nodelid < 0 ?");
 
         val = (patchvol)[lid];
@@ -1213,7 +1213,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
         // loop all this masters slaves
         for (auto slave_gid : slave_gids)
         {
-          lid = noderowmap->LID(slave_gid);
+          lid = noderowmap->lid(slave_gid);
           val += (patchvol)[lid];
 
           dens_val += (*filtered_dens_)[lid];
@@ -1241,7 +1241,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
         }  // end loop slaves
 
         // replace value by sum
-        lid = noderowmap->LID(master_gid);
+        lid = noderowmap->lid(master_gid);
         int error = patchvol.replace_local_values(1, &val, &lid);
         if (error != 0) FOUR_C_THROW("dof not on proc");
 
@@ -1280,7 +1280,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
         for (auto slave_gid : slave_gids)
         {
           int err = 0;
-          lid = noderowmap->LID(slave_gid);
+          lid = noderowmap->lid(slave_gid);
           err += patchvol.replace_local_values(1, &val, &lid);
 
           err += filtered_dens_->replace_local_values(1, &dens_val, &lid);
@@ -1331,7 +1331,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
 
     // as we want to identify nodes at walls,
     // we have to be sure that fluid and scatra are still matching
-    if (not scatradiscret_->node_row_map()->SameAs(*(discret_->node_row_map())))
+    if (not scatradiscret_->node_row_map()->same_as(*(discret_->node_row_map())))
       FOUR_C_THROW("Fluid and ScaTra noderowmaps are NOT identical.");
 
     // loop all nodes on the processor
@@ -1362,7 +1362,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
         {
           // get global and local dof IDs
           const int gid = nodedofs[idim];
-          const int lid = convel->get_map().LID(gid);
+          const int lid = convel->get_map().lid(gid);
           if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
           double vel_i = (*convel)[lid];
@@ -1383,7 +1383,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
           // check whether the dofs are Dirichlet constrained
           bool is_dirichlet_node = false;
           int gid = nodedofset[0];
-          int lid = dofrowmap->LID(gid);
+          int lid = dofrowmap->lid(gid);
 
           // this is a dirichlet node
           if ((dirichtoggle)[lid] == 1) is_dirichlet_node = true;
@@ -1425,7 +1425,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
           {
             // get global and local dof IDs
             const int gid = nodedofs[idim];
-            const int lid = convel->get_map().LID(gid);
+            const int lid = convel->get_map().lid(gid);
             if (lid < 0) FOUR_C_THROW("Local ID not found in map for given global ID!");
 
             double valvel_i = (*convel)[lid];

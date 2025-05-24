@@ -298,7 +298,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::check_dbc_on_coup
   std::shared_ptr<Core::LinAlg::Map> intersect_dbc_coupled =
       Core::LinAlg::MultiMapExtractor::intersect_maps(dummy);
 
-  if (intersect_dbc_coupled->NumGlobalElements() > 0)
+  if (intersect_dbc_coupled->num_global_elements() > 0)
   {
     if (myrank_ == 0)
     {
@@ -310,7 +310,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNodeBased::check_dbc_on_coup
                    "The problematic DOFs are:"
                 << std::endl;
     }
-    intersect_dbc_coupled->Print(std::cout);
+    intersect_dbc_coupled->print(std::cout);
     FOUR_C_THROW("Re-think your Input file definition");
   }
 }

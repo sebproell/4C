@@ -645,7 +645,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
   // maximum dof number in discretization
   // later we want to create NEW Lagrange multiplier degrees of
   // freedom, which of course must not overlap with displacement dofs
-  int maxdof = discret().dof_row_map()->MaxAllGID();
+  int maxdof = discret().dof_row_map()->max_all_gid();
 
   // get input par.
   auto stype = Teuchos::getIntegralValue<CONTACT::SolvingStrategy>(params, "STRATEGY");
@@ -1089,7 +1089,7 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
               std::dynamic_pointer_cast<Core::Elements::FaceElement>(ele);
           if (faceele == nullptr) FOUR_C_THROW("Cast to FaceElement failed!");
           if (faceele->parent_element() == nullptr) FOUR_C_THROW("face parent does not exist");
-          if (discret().element_col_map()->LID(faceele->parent_element()->id()) == -1)
+          if (discret().element_col_map()->lid(faceele->parent_element()->id()) == -1)
             FOUR_C_THROW("vol dis does not have parent ele");
           cele->set_parent_master_element(faceele->parent_element(), faceele->face_parent_number());
         }
@@ -1209,7 +1209,7 @@ int CONTACT::STRATEGY::Factory::identify_full_subset(const Core::LinAlg::Map& ma
 
   int sub_id = -1;
 
-  if (map_0.NumGlobalElements() >= map_1.NumGlobalElements())
+  if (map_0.num_global_elements() >= map_1.num_global_elements())
   {
     ref_map = &map_0;
 
@@ -1224,15 +1224,15 @@ int CONTACT::STRATEGY::Factory::identify_full_subset(const Core::LinAlg::Map& ma
     sub_map = &map_0;
   }
 
-  const unsigned nummysubentries = sub_map->NumMyElements();
-  const int* mysubgids = sub_map->MyGlobalElements();
+  const unsigned nummysubentries = sub_map->num_my_elements();
+  const int* mysubgids = sub_map->my_global_elements();
 
   bool is_fullsubmap = false;
   for (unsigned i = 0; i < nummysubentries; ++i)
   {
-    if (i == 0 and ref_map->MyGID(mysubgids[i]))
+    if (i == 0 and ref_map->my_gid(mysubgids[i]))
       is_fullsubmap = true;
-    else if (is_fullsubmap != ref_map->MyGID(mysubgids[i]))
+    else if (is_fullsubmap != ref_map->my_gid(mysubgids[i]))
     {
       if (throw_if_partial_subset_on_proc)
         FOUR_C_THROW(

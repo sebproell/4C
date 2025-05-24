@@ -91,18 +91,18 @@ Airway::RedAirwayImplicitTimeInt::RedAirwayImplicitTimeInt(
     // making discret fully overlapping)
     std::set<int> elecolset;
     const Core::LinAlg::Map* elecolmap = discret_->element_col_map();
-    for (int lid = 0; lid < elecolmap->NumMyElements(); ++lid)
+    for (int lid = 0; lid < elecolmap->num_my_elements(); ++lid)
     {
-      int gid = elecolmap->GID(lid);
+      int gid = elecolmap->gid(lid);
       elecolset.insert(gid);
     }
 
     // to be filled with additional nodes to be ghosted
     std::set<int> nodecolset;
     const Core::LinAlg::Map* nodecolmap = discret_->node_col_map();
-    for (int lid = 0; lid < nodecolmap->NumMyElements(); ++lid)
+    for (int lid = 0; lid < nodecolmap->num_my_elements(); ++lid)
     {
-      int gid = nodecolmap->GID(lid);
+      int gid = nodecolmap->gid(lid);
       nodecolset.insert(gid);
     }
 
@@ -324,7 +324,7 @@ Airway::RedAirwayImplicitTimeInt::RedAirwayImplicitTimeInt(
     // check if element is an airway
     if (((*generations_)[j] != -1) and ((*generations_)[j] != -2))
     {
-      int GID = discret_->element_col_map()->GID(j);  // global element ID
+      int GID = discret_->element_col_map()->gid(j);  // global element ID
       const Core::Elements::ElementType& ele_type = discret_->g_element(GID)->element_type();
       if (ele_type == Discret::Elements::RedAirwayType::instance())
       {
@@ -414,7 +414,7 @@ void Airway::RedAirwayImplicitTimeInt::compute_vol0_for_pre_stress()
     // check if element is an acinus
     if ((*generations_)[i] == -1)
     {
-      int GID = discret_->element_col_map()->GID(i);  // global element ID
+      int GID = discret_->element_col_map()->gid(i);  // global element ID
 
       // check if aciuns is ogden type material
       if (discret_->g_element(GID)->material(0)->material_type() ==
@@ -484,7 +484,7 @@ void Airway::RedAirwayImplicitTimeInt::compute_nearest_acinus(
   for (int j = 0; j < (search_discret.num_my_col_elements()); j++)
   {
     // global element ID airway
-    int GID1 = search_discret.element_col_map()->GID(j);
+    int GID1 = search_discret.element_col_map()->gid(j);
 
     // check if element is airway element
     Discret::Elements::RedAirway* ele_aw =
@@ -516,7 +516,7 @@ void Airway::RedAirwayImplicitTimeInt::compute_nearest_acinus(
       for (int i = 0; i < (search_discret.num_my_col_elements()); i++)
       {
         // global acinus element ID
-        int GID2 = search_discret.element_col_map()->GID(i);
+        int GID2 = search_discret.element_col_map()->gid(i);
 
         Discret::Elements::RedAcinus* ele_ac =
             dynamic_cast<Discret::Elements::RedAcinus*>(search_discret.g_element(GID2));
@@ -546,7 +546,7 @@ void Airway::RedAirwayImplicitTimeInt::compute_nearest_acinus(
       }
 
       // global element ID
-      int GID3 = search_discret.element_col_map()->GID(min_index);
+      int GID3 = search_discret.element_col_map()->gid(min_index);
 
       // why cast
       Discret::Elements::RedAcinus* ele_acinus =
@@ -1823,7 +1823,7 @@ bool Airway::RedAirwayImplicitTimeInt::sum_all_col_elem_val(
 {
   // Check if the vector is a ColElement vector
   const Core::LinAlg::Map* elementcolmap = discret_->element_col_map();
-  if (!vec.get_map().SameAs(*elementcolmap) && !sumCond.get_map().SameAs(*elementcolmap))
+  if (!vec.get_map().same_as(*elementcolmap) && !sumCond.get_map().same_as(*elementcolmap))
   {
     return true;
   }

@@ -295,8 +295,8 @@ namespace
     // A change of the map is reflected to all views
     a.replace_map(new_map);
 
-    EXPECT_TRUE(a.get_map().SameAs(b.get_map()));
-    EXPECT_TRUE(a.get_map().SameAs(c.get_map()));
+    EXPECT_TRUE(a.get_map().same_as(b.get_map()));
+    EXPECT_TRUE(a.get_map().same_as(c.get_map()));
   }
 
 }  // namespace

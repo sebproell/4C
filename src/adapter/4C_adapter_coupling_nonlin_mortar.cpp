@@ -670,7 +670,7 @@ void Adapter::CouplingNonLinMortar::setup_spring_dashpot(
   std::map<int, std::shared_ptr<Core::Elements::Element>>::const_iterator elemiter;
 
   // eleoffset is necessary because slave and master elements are from different conditions
-  const int eleoffset = masterdis->element_row_map()->MaxAllGID() + 1;
+  const int eleoffset = masterdis->element_row_map()->max_all_gid() + 1;
 
   // MASTER NODES
   // feeding master nodes to the interface including ghosted nodes
@@ -799,9 +799,9 @@ void Adapter::CouplingNonLinMortar::integrate_lin_d(const std::string& statename
   interface_->set_element_areas();
 
   // loop over all slave col elements and direct integration
-  for (int j = 0; j < interface_->slave_col_elements()->NumMyElements(); ++j)
+  for (int j = 0; j < interface_->slave_col_elements()->num_my_elements(); ++j)
   {
-    int gid = interface_->slave_col_elements()->GID(j);
+    int gid = interface_->slave_col_elements()->gid(j);
     Core::Elements::Element* ele = interface_->discret().g_element(gid);
     if (!ele) FOUR_C_THROW("ERROR: Cannot find ele with gid %", gid);
     CONTACT::Element* cele = dynamic_cast<CONTACT::Element*>(ele);

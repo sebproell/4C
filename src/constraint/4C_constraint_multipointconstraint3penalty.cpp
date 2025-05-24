@@ -279,9 +279,9 @@ Constraints::MPConstraint3Penalty::create_discretization_from_condition(
       copy(ngid_ele.data(), ngid_ele.data() + numnodes, inserter(colnodeset, colnodeset.begin()));
 
       // construct constraint nodes, which use the same global id as the standard nodes
-      for (int i = 0; i < actnoderowmap->NumMyElements(); ++i)
+      for (int i = 0; i < actnoderowmap->num_my_elements(); ++i)
       {
-        const int gid = actnoderowmap->GID(i);
+        const int gid = actnoderowmap->gid(i);
         if (rownodeset.find(gid) != rownodeset.end())
         {
           const Core::Nodes::Node* standardnode = actdisc->l_row_node(i);

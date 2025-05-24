@@ -238,7 +238,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
           BCin += functionfac * curve2fac;
 
           // Get the local id of the node to whom the bc is prescribed
-          int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+          int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
           if (local_id < 0)
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),
@@ -379,7 +379,7 @@ void Discret::Elements::InterAcinarDepImpl<distype>::evaluate_terminal_bc(RedInt
         if (ele->nodes()[i]->num_element() == 1)
         {
           // Get the local id of the node to whom the bc is prescribed
-          int local_id = discretization.node_row_map()->LID(ele->nodes()[i]->id());
+          int local_id = discretization.node_row_map()->lid(ele->nodes()[i]->id());
           if (local_id < 0)
           {
             FOUR_C_THROW("node ({}) doesn't exist on proc({})", ele->nodes()[i]->id(),

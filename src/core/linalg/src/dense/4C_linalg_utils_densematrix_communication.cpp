@@ -56,16 +56,16 @@ void Core::LinAlg::allreduce_vector(
 /*----------------------------------------------------------------------*/
 void Core::LinAlg::allreduce_e_map(std::vector<int>& rredundant, const Core::LinAlg::Map& emap)
 {
-  const int mynodepos = find_my_pos(emap.NumMyElements(), emap.Comm());
+  const int mynodepos = find_my_pos(emap.num_my_elements(), emap.get_comm());
 
-  std::vector<int> sredundant(emap.NumGlobalElements(), 0);
+  std::vector<int> sredundant(emap.num_global_elements(), 0);
 
-  int* gids = emap.MyGlobalElements();
-  std::copy(gids, gids + emap.NumMyElements(), sredundant.data() + mynodepos);
+  int* gids = emap.my_global_elements();
+  std::copy(gids, gids + emap.num_my_elements(), sredundant.data() + mynodepos);
 
-  rredundant.resize(emap.NumGlobalElements());
+  rredundant.resize(emap.num_global_elements());
   Core::Communication::sum_all(
-      sredundant.data(), rredundant.data(), emap.NumGlobalElements(), emap.Comm());
+      sredundant.data(), rredundant.data(), emap.num_global_elements(), emap.get_comm());
 }
 
 /*----------------------------------------------------------------------*/
@@ -73,7 +73,7 @@ void Core::LinAlg::allreduce_e_map(std::vector<int>& rredundant, const Core::Lin
 void Core::LinAlg::allreduce_e_map(std::map<int, int>& idxmap, const Core::LinAlg::Map& emap)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
+  if (not emap.unique_gids()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
 #endif
 
   idxmap.clear();
@@ -94,25 +94,25 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_e_map(
     const Core::LinAlg::Map& emap, const int pid)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
+  if (not emap.unique_gids()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
 #endif
   std::vector<int> rv;
   allreduce_e_map(rv, emap);
   std::shared_ptr<Core::LinAlg::Map> rmap;
 
-  if (Core::Communication::my_mpi_rank(emap.Comm()) == pid)
+  if (Core::Communication::my_mpi_rank(emap.get_comm()) == pid)
   {
-    rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
+    rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.get_comm());
     // check the map
-    FOUR_C_ASSERT(rmap->NumMyElements() == rmap->NumGlobalElements(),
+    FOUR_C_ASSERT(rmap->num_my_elements() == rmap->num_global_elements(),
         "Processor with pid does not get all map elements");
   }
   else
   {
     rv.clear();
-    rmap = std::make_shared<Core::LinAlg::Map>(-1, 0, nullptr, 0, emap.Comm());
+    rmap = std::make_shared<Core::LinAlg::Map>(-1, 0, nullptr, 0, emap.get_comm());
     // check the map
-    FOUR_C_ASSERT(rmap->NumMyElements() == 0, "At least one proc will keep a map element");
+    FOUR_C_ASSERT(rmap->num_my_elements() == 0, "At least one proc will keep a map element");
   }
   return rmap;
 }
@@ -123,13 +123,13 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_e_map(
 std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_e_map(const Core::LinAlg::Map& emap)
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not emap.UniqueGIDs()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
+  if (not emap.unique_gids()) FOUR_C_THROW("works only for unique Core::LinAlg::Maps");
 #endif
   std::vector<int> rv;
   allreduce_e_map(rv, emap);
   std::shared_ptr<Core::LinAlg::Map> rmap;
 
-  rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
+  rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.get_comm());
 
   return rmap;
 }
@@ -147,7 +147,7 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_overlapping_e_map(
   std::set<int> rs(rv.begin(), rv.end());
   rv.assign(rs.begin(), rs.end());
 
-  return std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
+  return std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.get_comm());
 }
 
 /*----------------------------------------------------------------------*
@@ -160,23 +160,23 @@ std::shared_ptr<Core::LinAlg::Map> Core::LinAlg::allreduce_overlapping_e_map(
   allreduce_e_map(rv, emap);
   std::shared_ptr<Core::LinAlg::Map> rmap;
 
-  if (Core::Communication::my_mpi_rank(emap.Comm()) == pid)
+  if (Core::Communication::my_mpi_rank(emap.get_comm()) == pid)
   {
     // remove duplicates only on proc pid
     std::set<int> rs(rv.begin(), rv.end());
     rv.assign(rs.begin(), rs.end());
 
-    rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.Comm());
+    rmap = std::make_shared<Core::LinAlg::Map>(-1, rv.size(), rv.data(), 0, emap.get_comm());
     // check the map
-    FOUR_C_ASSERT(rmap->NumMyElements() == rmap->NumGlobalElements(),
+    FOUR_C_ASSERT(rmap->num_my_elements() == rmap->num_global_elements(),
         "Processor with pid does not get all map elements");
   }
   else
   {
     rv.clear();
-    rmap = std::make_shared<Core::LinAlg::Map>(-1, 0, nullptr, 0, emap.Comm());
+    rmap = std::make_shared<Core::LinAlg::Map>(-1, 0, nullptr, 0, emap.get_comm());
     // check the map
-    FOUR_C_ASSERT(rmap->NumMyElements() == 0, "At least one proc will keep a map element");
+    FOUR_C_ASSERT(rmap->num_my_elements() == 0, "At least one proc will keep a map element");
   }
   return rmap;
 }

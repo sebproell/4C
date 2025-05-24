@@ -160,7 +160,7 @@ namespace FPSI
         add_vector(cond, cond_other, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& other_map() const { return map(cond_other); }
-      bool other_relevant() const { return other_map()->NumGlobalElements() != 0; }
+      bool other_relevant() const { return other_map()->num_global_elements() != 0; }
       void other_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_other, scalar);
@@ -196,7 +196,7 @@ namespace FPSI
         add_vector(cond, cond_fsi, full, scale);
       }
       const std::shared_ptr<const Core::LinAlg::Map>& fsi_cond_map() const { return map(cond_fsi); }
-      bool fsi_cond_relevant() const { return fsi_cond_map()->NumGlobalElements() != 0; }
+      bool fsi_cond_relevant() const { return fsi_cond_map()->num_global_elements() != 0; }
       void fsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_fsi, scalar);
@@ -235,7 +235,7 @@ namespace FPSI
       {
         return map(cond_fpsi);
       }
-      bool fpsi_cond_relevant() const { return fpsi_cond_map()->NumGlobalElements() != 0; }
+      bool fpsi_cond_relevant() const { return fpsi_cond_map()->num_global_elements() != 0; }
       void fpsi_cond_put_scalar(Core::LinAlg::Vector<double>& full, double scalar) const
       {
         put_scalar(full, cond_fpsi, scalar);

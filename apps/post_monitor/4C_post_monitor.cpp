@@ -101,7 +101,7 @@ void MonWriter::write_mon_file(PostProblem& problem, std::string& infieldtype, i
   // Note that datamap can only be computed in WriteResult(...), which is pure virtual on
   // this level. Hence offset is split up into two parts!
   // First part:
-  const int offset1 = -field->discretization()->dof_row_map()->MinAllGID();
+  const int offset1 = -field->discretization()->dof_row_map()->min_all_gid();
 
   // global nodal dof numbers
   std::vector<int> gdof;
@@ -269,7 +269,7 @@ void MonWriter::write_mon_str_file(const std::string& filename, PostProblem& pro
   // Note that datamap can only be compute in WriteResult(...), which is pure virtual on
   // this level. Hence offset is split up into two parts!
   // First part:
-  const int offset1 = -field->discretization()->dof_row_map()->MinAllGID();
+  const int offset1 = -field->discretization()->dof_row_map()->min_all_gid();
 
   if (nodeowner_)
   {
@@ -415,7 +415,7 @@ void MonWriter::write_mon_thermo_file(const std::string& filename, PostProblem& 
   // Note that datamap can only be compute in WriteResult(...), which is pure virtual on
   // this level. Hence offset is split up into two parts!
   // First part:
-  const int offset1 = -field->discretization()->dof_row_map()->MinAllGID();
+  const int offset1 = -field->discretization()->dof_row_map()->min_all_gid();
 
   if (nodeowner_)
   {
@@ -529,12 +529,12 @@ void FluidMonWriter::write_result(
   outfile << std::right << std::setw(20) << std::scientific << result.time();
 
   // compute second part of offset
-  int offset2 = velmap.MinAllGID();
+  int offset2 = velmap.min_all_gid();
 
   // do output for velocity and pressure
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = velmap.LID(gdof[i] + offset2);
+    const int lid = velmap.lid(gdof[i] + offset2);
     outfile << std::right << std::setw(20) << std::setprecision(10) << std::scientific
             << (*resvec)[lid];
   }
@@ -587,7 +587,7 @@ void RedAirwayMonWriter::write_result(
   // do output for velocity and pressure
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = pmap.LID(gdof[i]);
+    const int lid = pmap.lid(gdof[i]);
     outfile << std::right << std::setw(20) << (*resvec)[lid];
   }
   outfile << "\n";
@@ -677,12 +677,12 @@ void StructMonWriter::write_result(
   const Core::LinAlg::Map& dispmap = resvec->get_map();
 
   // compute second part of offset
-  int offset2 = dispmap.MinAllGID();
+  int offset2 = dispmap.min_all_gid();
 
   // do output of displacement
   for (unsigned i = 0; i < noddof; ++i)
   {
-    const int lid = dispmap.LID(gdof[i] + offset2);
+    const int lid = dispmap.lid(gdof[i] + offset2);
     if (lid == -1) FOUR_C_THROW("illegal gid {} at {}!", gdof[i], i);
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
@@ -695,12 +695,12 @@ void StructMonWriter::write_result(
     const Core::LinAlg::Map& pressmap = resvec->get_map();
 
     // compute second part of offset
-    offset2 = pressmap.MinAllGID();
+    offset2 = pressmap.min_all_gid();
 
     // do output of pressure
     {
       const unsigned i = (unsigned)dim;
-      const int lid = pressmap.LID(gdof[i] + offset2);
+      const int lid = pressmap.lid(gdof[i] + offset2);
       if (lid == -1) FOUR_C_THROW("illegal gid {} at {}!", gdof[i], i);
       outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
     }
@@ -898,12 +898,12 @@ void AleMonWriter::write_result(
   outfile << std::right << std::setw(16) << std::scientific << result.time();
 
   // compute second part of offset
-  int offset2 = dispmap.MinAllGID();
+  int offset2 = dispmap.min_all_gid();
 
   // do output for velocity and pressure
   for (unsigned i = 0; i < gdof.size() - 1; ++i)
   {
-    const int lid = dispmap.LID(gdof[i] + offset2);
+    const int lid = dispmap.lid(gdof[i] + offset2);
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
   outfile << "\n";
@@ -974,11 +974,11 @@ void FsiFluidMonWriter::write_result(
   outfile << std::right << std::setw(16) << std::scientific << result.time();
 
   // compute second part of offset
-  int offset2 = dispmap.MinAllGID();
+  int offset2 = dispmap.min_all_gid();
 
   for (unsigned i = 0; i < gdof.size() - 1; ++i)
   {
-    const int lid = dispmap.LID(gdof[i] + offset2);
+    const int lid = dispmap.lid(gdof[i] + offset2);
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
 
@@ -988,12 +988,12 @@ void FsiFluidMonWriter::write_result(
   const Core::LinAlg::Map& velmap = resvec->get_map();
 
   // compute second part of offset
-  offset2 = velmap.MinAllGID();
+  offset2 = velmap.min_all_gid();
 
   // do output for velocity and pressure
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = velmap.LID(gdof[i] + offset2);
+    const int lid = velmap.lid(gdof[i] + offset2);
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
 
@@ -1006,11 +1006,11 @@ void FsiFluidMonWriter::write_result(
     const Core::LinAlg::Map& lambdamap = resvec->get_map();
 
     // compute second part of offset
-    offset2 = lambdamap.MinAllGID();
+    offset2 = lambdamap.min_all_gid();
 
     for (unsigned i = 0; i < gdof.size() - 1; ++i)
     {
-      const int lid = lambdamap.LID(gdof[i] + offset2);
+      const int lid = lambdamap.lid(gdof[i] + offset2);
       outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
     }
   }
@@ -1105,12 +1105,12 @@ void FsiStructMonWriter::write_result(
   const Core::LinAlg::Map& dispmap = resvec->get_map();
 
   // compute second part of offset
-  int offset2 = dispmap.MinAllGID();
+  int offset2 = dispmap.min_all_gid();
 
   // do output of displacement
   for (unsigned i = 0; i < noddof; ++i)
   {
-    const int lid = dispmap.LID(gdof[i] + offset2);
+    const int lid = dispmap.lid(gdof[i] + offset2);
     if (lid == -1) FOUR_C_THROW("illegal gid {} at {}!", gdof[i], i);
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
@@ -1124,12 +1124,12 @@ void FsiStructMonWriter::write_result(
     const Core::LinAlg::Map& pressmap = resvec->get_map();
 
     // compute second part of offset
-    offset2 = pressmap.MinAllGID();
+    offset2 = pressmap.min_all_gid();
 
     // do output of pressure
     {
       const unsigned i = (unsigned)dim;
-      const int lid = pressmap.LID(gdof[i] + offset2);
+      const int lid = pressmap.lid(gdof[i] + offset2);
       if (lid == -1) FOUR_C_THROW("illegal gid {} at {}!", gdof[i], i);
       outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
     }
@@ -1147,11 +1147,11 @@ void FsiStructMonWriter::write_result(
     const Core::LinAlg::Map& lambdamap = resvec->get_map();
 
     // compute second part of offset
-    offset2 = lambdamap.MinAllGID();
+    offset2 = lambdamap.min_all_gid();
 
     for (unsigned i = 0; i < noddof; ++i)
     {
-      const int lid = lambdamap.LID(gdof[i] + offset2);
+      const int lid = lambdamap.lid(gdof[i] + offset2);
       if (lid == -1) FOUR_C_THROW("illegal gid {} at {}!", gdof[i], i);
       outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
     }
@@ -1245,12 +1245,12 @@ void ScatraMonWriter::write_result(
   outfile << std::right << std::setw(20) << std::scientific << result.time();
 
   // compute second part of offset
-  int offset2 = dispmap.MinAllGID();
+  int offset2 = dispmap.min_all_gid();
 
   // do output for velocity
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = dispmap.LID(gdof[i] + offset2);
+    const int lid = dispmap.lid(gdof[i] + offset2);
     outfile << std::right << std::setw(20) << std::setprecision(10) << std::scientific
             << (*resvec)[lid];
   }
@@ -1304,12 +1304,12 @@ void ThermoMonWriter::write_result(
   const Core::LinAlg::Map& dispmap = resvec->get_map();
 
   // compute second part of offset
-  int offset2 = dispmap.MinAllGID();
+  int offset2 = dispmap.min_all_gid();
 
   // do output of temperature (always one DOF)
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = dispmap.LID(gdof[i] + offset2);
+    const int lid = dispmap.lid(gdof[i] + offset2);
     if (lid == -1) FOUR_C_THROW("illegal gid {} at {}!", gdof[i], i);
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
@@ -1321,12 +1321,12 @@ void ThermoMonWriter::write_result(
   const Core::LinAlg::Map& ratemap = resvec->get_map();
 
   // compute second part of offset
-  offset2 = ratemap.MinAllGID();
+  offset2 = ratemap.min_all_gid();
 
   // do output of temperature rate
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = ratemap.LID(gdof[i] + offset2);
+    const int lid = ratemap.lid(gdof[i] + offset2);
     if (lid == -1) FOUR_C_THROW("illegal gid {} at {}!", gdof[i], i);
     outfile << std::right << std::setw(16) << std::scientific << (*resvec)[lid];
   }
@@ -1586,26 +1586,26 @@ void PoroFluidMultiMonWriter::write_result(
   outfile << std::right << std::setw(20) << std::scientific << result.time();
 
   // compute second part of offset
-  int offset2 = phimap.MinAllGID();
+  int offset2 = phimap.min_all_gid();
 
   // do output for primary variable
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = phimap.LID(gdof[i] + offset2);
+    const int lid = phimap.lid(gdof[i] + offset2);
     outfile << std::right << std::setw(20) << std::setprecision(10) << std::scientific
             << (*resvec)[lid];
   }
   // do output for saturations
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = satmap.LID(gdof[i] + offset2);
+    const int lid = satmap.lid(gdof[i] + offset2);
     outfile << std::right << std::setw(20) << std::setprecision(10) << std::scientific
             << (*resvec_sat)[lid];
   }
   // do output for pressures
   for (unsigned i = 0; i < gdof.size(); ++i)
   {
-    const int lid = pressmap.LID(gdof[i] + offset2);
+    const int lid = pressmap.lid(gdof[i] + offset2);
     outfile << std::right << std::setw(20) << std::setprecision(10) << std::scientific
             << (*resvec_press)[lid];
   }

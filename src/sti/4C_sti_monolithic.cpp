@@ -362,10 +362,10 @@ void STI::Monolithic::fd_check()
   double maxabserr(0.);
   double maxrelerr(0.);
 
-  for (int colgid = 0; colgid <= sysmat_original->col_map().MaxAllGID(); ++colgid)
+  for (int colgid = 0; colgid <= sysmat_original->col_map().max_all_gid(); ++colgid)
   {
     // check whether current column index is a valid global column index and continue loop if not
-    int collid(sysmat_original->col_map().LID(colgid));
+    int collid(sysmat_original->col_map().lid(colgid));
     int maxcollid(-1);
     Core::Communication::max_all(&collid, &maxcollid, 1, get_comm());
     if (maxcollid < 0) continue;
@@ -374,7 +374,7 @@ void STI::Monolithic::fd_check()
     statenp->update(1., *statenp_original, 0.);
 
     // impose perturbation
-    if (statenp->get_map().MyGID(colgid))
+    if (statenp->get_map().my_gid(colgid))
       if (statenp->sum_into_global_value(colgid, 0, scatra_field()->fd_check_eps()))
         FOUR_C_THROW(
             "Perturbation could not be imposed on state vector for finite difference check!");
@@ -400,10 +400,10 @@ void STI::Monolithic::fd_check()
     // Note that we still need to evaluate the first comparison as well. For small entries in the
     // system matrix, the second comparison might yield good agreement in spite of the entries being
     // wrong!
-    for (int rowlid = 0; rowlid < dof_row_map()->NumMyElements(); ++rowlid)
+    for (int rowlid = 0; rowlid < dof_row_map()->num_my_elements(); ++rowlid)
     {
       // get global index of current matrix row
-      const int rowgid = sysmat_original->row_map().GID(rowlid);
+      const int rowgid = sysmat_original->row_map().gid(rowlid);
       if (rowgid < 0) FOUR_C_THROW("Invalid global ID of matrix row!");
 
       // get relevant entry in current row of original system matrix
@@ -416,7 +416,7 @@ void STI::Monolithic::fd_check()
           rowlid, length, numentries, values.data(), indices.data());
       for (int ientry = 0; ientry < length; ++ientry)
       {
-        if (sysmat_original->col_map().GID(indices[ientry]) == colgid)
+        if (sysmat_original->col_map().gid(indices[ientry]) == colgid)
         {
           entry = values[ientry];
           break;
@@ -550,12 +550,12 @@ void STI::Monolithic::output_matrix_to_file(
       sparsematrix != nullptr ? sparsematrix->row_map() : blocksparsematrix->full_row_map();
 
   // safety check
-  if (!rowmap.UniqueGIDs()) FOUR_C_THROW("Row map of matrix must be non-overlapping!");
+  if (!rowmap.unique_gids()) FOUR_C_THROW("Row map of matrix must be non-overlapping!");
 
   // copy global IDs of matrix rows stored on current processor into vector
-  std::vector<int> myrowgids(rowmap.NumMyElements(), 0);
-  int* myglobalelements = rowmap.MyGlobalElements();
-  std::copy(myglobalelements, myglobalelements + rowmap.NumMyElements(), myrowgids.data());
+  std::vector<int> myrowgids(rowmap.num_my_elements(), 0);
+  int* myglobalelements = rowmap.my_global_elements();
+  std::copy(myglobalelements, myglobalelements + rowmap.num_my_elements(), myrowgids.data());
 
   // communicate global IDs
   std::vector<int> rowgids;
@@ -611,7 +611,7 @@ void STI::Monolithic::output_matrix_to_file(
     for (int rowlid = 0; rowlid < crsmatrix.num_my_rows(); ++rowlid)
     {
       // extract global ID of current matrix row
-      const int rowgid = fullrowmap.GID(rowlid);
+      const int rowgid = fullrowmap.gid(rowlid);
 
       // extract current matrix row
       int numentries;
@@ -660,14 +660,14 @@ void STI::Monolithic::output_vector_to_file(
   const Core::LinAlg::Map& map = vector.get_map();
 
   // safety check
-  if (!map.UniqueGIDs())
+  if (!map.unique_gids())
     FOUR_C_THROW(
         "Vector output to *.csv file currently only works for non-overlapping vector maps!");
 
   // copy global IDs of vector components stored on current processor into vector
-  std::vector<int> mygids(map.NumMyElements(), 0);
-  int* myglobalelements = map.MyGlobalElements();
-  std::copy(myglobalelements, myglobalelements + map.NumMyElements(), mygids.data());
+  std::vector<int> mygids(map.num_my_elements(), 0);
+  int* myglobalelements = map.my_global_elements();
+  std::copy(myglobalelements, myglobalelements + map.num_my_elements(), mygids.data());
 
   // communicate global IDs
   std::vector<int> gids;
@@ -712,7 +712,7 @@ void STI::Monolithic::output_vector_to_file(
       if (j < fullvector.NumVectors())
       {
         // write global ID of current vector component
-        file << fullmap.GID(lid);
+        file << fullmap.gid(lid);
 
         // loop over all subvectors
         for (j = 0; j < fullvector.NumVectors(); ++j)
@@ -1249,16 +1249,16 @@ void STI::Monolithic::compute_null_space_if_necessary(Teuchos::ParameterList& so
     const int dimns = numdofpernode_scatra + numdofpernode_thermo;
 
     // allocate vector for null space information
-    std::vector<double> ns(dimns * dof_row_map()->NumMyElements(), 0.);
+    std::vector<double> ns(dimns * dof_row_map()->num_my_elements(), 0.);
 
     // compute null space modes associated with scatra field
     const Core::FE::Discretization& scatradis = *scatra_field()->discretization();
     std::vector<double*> modes_scatra(numdofpernode_scatra);
     for (int i = 0; i < numdofpernode_scatra; ++i)
-      modes_scatra[i] = &((ns)[i * dof_row_map()->NumMyElements()]);
+      modes_scatra[i] = &((ns)[i * dof_row_map()->num_my_elements()]);
     for (int i = 0; i < scatradis.num_my_row_nodes(); ++i)
     {
-      const int lid = dof_row_map()->LID(scatradis.dof(0, scatradis.l_row_node(i), 0));
+      const int lid = dof_row_map()->lid(scatradis.dof(0, scatradis.l_row_node(i), 0));
       if (lid < 0) FOUR_C_THROW("Cannot find scatra degree of freedom!");
       for (int j = 0; j < numdofpernode_scatra; ++j) modes_scatra[j][lid + j] = 1.;
     }
@@ -1267,10 +1267,10 @@ void STI::Monolithic::compute_null_space_if_necessary(Teuchos::ParameterList& so
     const Core::FE::Discretization& thermodis = *thermo_field()->discretization();
     std::vector<double*> modes_thermo(numdofpernode_thermo);
     for (int i = 0; i < numdofpernode_thermo; ++i)
-      modes_thermo[i] = &((ns)[(numdofpernode_scatra + i) * dof_row_map()->NumMyElements()]);
+      modes_thermo[i] = &((ns)[(numdofpernode_scatra + i) * dof_row_map()->num_my_elements()]);
     for (int i = 0; i < thermodis.num_my_row_nodes(); ++i)
     {
-      const int lid = dof_row_map()->LID(thermodis.dof(0, thermodis.l_row_node(i), 0));
+      const int lid = dof_row_map()->lid(thermodis.dof(0, thermodis.l_row_node(i), 0));
       if (lid < 0) FOUR_C_THROW("Cannot find thermo degree of freedom!");
       for (int j = 0; j < numdofpernode_thermo; ++j) modes_thermo[j][lid + j] = 1.;
     }
@@ -1576,7 +1576,7 @@ void STI::Monolithic::solve()
     // output performance statistics associated with linear solver into text file if applicable
     if (fieldparameters_->get<bool>("OUTPUTLINSOLVERSTATS"))
       scatra_field()->output_lin_solver_stats(*solver_, dtsolve_, step(), static_cast<int>(iter_),
-          residual_->get_map().NumGlobalElements());
+          residual_->get_map().num_global_elements());
 
     // update scatra field
     scatra_field()->update_iter(*maps_->extract_vector(*increment_, 0));

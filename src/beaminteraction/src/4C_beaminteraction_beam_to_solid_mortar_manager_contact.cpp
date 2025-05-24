@@ -54,7 +54,7 @@ BeamInteraction::BeamToSolidMortarManagerContact::get_penalty_regularization(
   auto lambda = create_lambda_row_vector_with_zeros();
   auto lambda_lin_constraint = create_lambda_row_vector_with_zeros();
   auto lambda_lin_kappa = create_lambda_row_vector_with_zeros();
-  for (int lid = 0; lid < lambda_dof_rowmap_->NumMyElements(); lid++)
+  for (int lid = 0; lid < lambda_dof_rowmap_->num_my_elements(); lid++)
   {
     if (lambda_active_->Values()[lid] > 0.1)
     {

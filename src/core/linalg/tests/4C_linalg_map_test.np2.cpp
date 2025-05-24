@@ -59,7 +59,7 @@ namespace
     EXPECT_EQ(vector.get_ptr_of_epetra_vector()->ReplaceMap(new_map->get_epetra_map()), 0);
 
     // compare result with our map wrapper
-    EXPECT_TRUE(vector.get_map().SameAs(*new_map));
+    EXPECT_TRUE(vector.get_map().same_as(*new_map));
   }
 
   TEST(ExchangeMapTest, MultiVector)
@@ -85,7 +85,7 @@ namespace
     EXPECT_EQ(vector.ReplaceMap(*new_map), 0);
 
     // compare if the wrapper returns the correct map
-    EXPECT_TRUE(vector.get_map().SameAs(*new_map));
+    EXPECT_TRUE(vector.get_map().same_as(*new_map));
 
     // check that the epetra maps are same
     EXPECT_TRUE(vector.get_map().get_epetra_block_map().SameAs(new_map->get_epetra_block_map()));
@@ -98,7 +98,7 @@ namespace
         vector.get_ptr_of_Epetra_MultiVector()->ReplaceMap(new_map->get_epetra_block_map()), 0);
 
     // compare result with our map wrapper
-    EXPECT_TRUE(vector.get_map().SameAs(*new_map));
+    EXPECT_TRUE(vector.get_map().same_as(*new_map));
   }
 
 }  // namespace

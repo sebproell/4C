@@ -132,7 +132,7 @@ double XFEM::XFluidContactComm::get_fsi_traction(Mortar::Element* ele,
 
   if (parallel_)
   {
-    if (contact_ele_rowmap_fluidownerbased_->LID(ele->id()) == -1)
+    if (contact_ele_rowmap_fluidownerbased_->lid(ele->id()) == -1)
     {
       gp_on_this_proc = false;
       return 0.0;
@@ -557,34 +557,34 @@ void XFEM::XFluidContactComm::setup_surf_ele_ptrs(Core::FE::Discretization& cont
 
   int startgid = condition_manager_->get_mesh_coupling_start_gid(
       condition_manager_->get_coupling_index(mc_[0]->get_name()));
-  min_surf_id_ = mc_[0]->get_cutter_dis()->element_col_map()->MinAllGID() + startgid;
-  int max_surf_gid = mc_[0]->get_cutter_dis()->element_col_map()->MaxAllGID() + startgid;
+  min_surf_id_ = mc_[0]->get_cutter_dis()->element_col_map()->min_all_gid() + startgid;
+  int max_surf_gid = mc_[0]->get_cutter_dis()->element_col_map()->max_all_gid() + startgid;
   for (std::size_t mc = 1; mc < mc_.size(); ++mc)
   {
     int startgid = condition_manager_->get_mesh_coupling_start_gid(
         condition_manager_->get_coupling_index(mc_[mc]->get_name()));
-    if (min_surf_id_ > mc_[mc]->get_cutter_dis()->element_col_map()->MinAllGID() + startgid)
-      min_surf_id_ = mc_[mc]->get_cutter_dis()->element_col_map()->MinAllGID() + startgid;
-    if (max_surf_gid < mc_[mc]->get_cutter_dis()->element_col_map()->MaxAllGID() + startgid)
-      max_surf_gid = mc_[mc]->get_cutter_dis()->element_col_map()->MaxAllGID() + startgid;
+    if (min_surf_id_ > mc_[mc]->get_cutter_dis()->element_col_map()->min_all_gid() + startgid)
+      min_surf_id_ = mc_[mc]->get_cutter_dis()->element_col_map()->min_all_gid() + startgid;
+    if (max_surf_gid < mc_[mc]->get_cutter_dis()->element_col_map()->max_all_gid() + startgid)
+      max_surf_gid = mc_[mc]->get_cutter_dis()->element_col_map()->max_all_gid() + startgid;
   }
   if (mcfpi_ps_pf_ != nullptr)
   {
     int startgid = condition_manager_->get_mesh_coupling_start_gid(
         condition_manager_->get_coupling_index(mcfpi_ps_pf_->get_name()));
-    if (min_surf_id_ > mcfpi_ps_pf_->get_cutter_dis()->element_col_map()->MinAllGID() + startgid)
-      min_surf_id_ = mcfpi_ps_pf_->get_cutter_dis()->element_col_map()->MinAllGID() + startgid;
-    if (max_surf_gid < mcfpi_ps_pf_->get_cutter_dis()->element_col_map()->MaxAllGID() + startgid)
-      max_surf_gid = mcfpi_ps_pf_->get_cutter_dis()->element_col_map()->MaxAllGID() + startgid;
+    if (min_surf_id_ > mcfpi_ps_pf_->get_cutter_dis()->element_col_map()->min_all_gid() + startgid)
+      min_surf_id_ = mcfpi_ps_pf_->get_cutter_dis()->element_col_map()->min_all_gid() + startgid;
+    if (max_surf_gid < mcfpi_ps_pf_->get_cutter_dis()->element_col_map()->max_all_gid() + startgid)
+      max_surf_gid = mcfpi_ps_pf_->get_cutter_dis()->element_col_map()->max_all_gid() + startgid;
   }
   so_surf_id_to_mortar_ele_.resize(max_surf_gid - min_surf_id_ + 1, nullptr);
-  min_mortar_id_ = contact_interface_dis.element_col_map()->MinAllGID();
-  const int max_mortar_gid = contact_interface_dis.element_col_map()->MaxAllGID();
+  min_mortar_id_ = contact_interface_dis.element_col_map()->min_all_gid();
+  const int max_mortar_gid = contact_interface_dis.element_col_map()->max_all_gid();
   mortar_id_to_so_surf_ele_.resize(max_mortar_gid - min_mortar_id_ + 1, nullptr);
   mortar_id_to_somc_.resize(max_mortar_gid - min_mortar_id_ + 1, -1);
   mortar_id_to_sosid_.resize(max_mortar_gid - min_mortar_id_ + 1, -1);
 
-  for (int i = 0; i < contact_interface_dis.element_col_map()->NumMyElements(); ++i)
+  for (int i = 0; i < contact_interface_dis.element_col_map()->num_my_elements(); ++i)
   {
     CONTACT::Element* cele =
         dynamic_cast<CONTACT::Element*>(contact_interface_dis.l_col_element(i));
@@ -841,7 +841,7 @@ bool XFEM::XFluidContactComm::get_volumecell(Discret::Elements::SolidSurface*& s
         volumecell = facet->cells()[vc];
         if (parallel_)
         {
-          if (fluiddis_->element_row_map()->LID(volumecell->parent_element()->id()) ==
+          if (fluiddis_->element_row_map()->lid(volumecell->parent_element()->id()) ==
               -1)  // fluidele not owned by this proc
           {
             return false;
@@ -1088,7 +1088,7 @@ Cut::Element* XFEM::XFluidContactComm::get_next_element(
     while (!newele)
     {
       ++lastid;
-      if (lastid > 2 * fluiddis_->element_col_map()->NumGlobalElements())
+      if (lastid > 2 * fluiddis_->element_col_map()->num_global_elements())
       {
         return nullptr;
       }

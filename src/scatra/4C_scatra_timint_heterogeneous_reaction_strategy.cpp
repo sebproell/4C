@@ -234,9 +234,9 @@ void ScaTra::HeterogeneousReactionStrategy::heterogeneous_reaction_sanity_check(
   const Core::LinAlg::Map* element_row_map = scatratimint_->discretization()->element_row_map();
 
   // loop over row elements
-  for (int lid = 0; lid < element_row_map->NumMyElements(); lid++)
+  for (int lid = 0; lid < element_row_map->num_my_elements(); lid++)
   {
-    const int gid = element_row_map->GID(lid);
+    const int gid = element_row_map->gid(lid);
 
     Core::Elements::Element* ele = scatratimint_->discretization()->g_element(gid);
     Core::Nodes::Node** nodes = ele->nodes();

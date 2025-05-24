@@ -36,7 +36,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
     FOUR_C_THROW("action type for element is missing");
 
   // decide whether a dof or an element based map is given
-  FOUR_C_ASSERT(state.get_map().PointSameAs(dis.dof_row_map()->get_epetra_block_map()),
+  FOUR_C_ASSERT(state.get_map().point_same_as(dis.dof_row_map()->get_epetra_block_map()),
       "Only works for same maps.");
 
   // handle pbcs if existing
@@ -62,28 +62,28 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   const Core::LinAlg::Map* fullnodecolmap = dis.node_col_map();
 
   // a little more memory than necessary is possibly reserved here
-  reducednoderowmap.reserve(fullnoderowmap->NumMyElements());
-  reducednodecolmap.reserve(fullnodecolmap->NumMyElements());
+  reducednoderowmap.reserve(fullnoderowmap->num_my_elements());
+  reducednodecolmap.reserve(fullnodecolmap->num_my_elements());
 
-  for (int i = 0; i < fullnodecolmap->NumMyElements(); ++i)
+  for (int i = 0; i < fullnodecolmap->num_my_elements(); ++i)
   {
-    const int nodeid = fullnodecolmap->GID(i);
+    const int nodeid = fullnodecolmap->gid(i);
     // do not add slave pbc nodes to reduced node maps
     if (slavetomastercolnodesmap.count(nodeid) == 0)
     {
       // fill reduced node col map
       reducednodecolmap.push_back(nodeid);
       // fill reduced node row map
-      if (fullnoderowmap->MyGID(nodeid)) reducednoderowmap.push_back(nodeid);
+      if (fullnoderowmap->my_gid(nodeid)) reducednoderowmap.push_back(nodeid);
     }
   }
 
   // build node row map which does not include slave pbc nodes
   Core::LinAlg::Map noderowmap(
-      -1, (int)reducednoderowmap.size(), reducednoderowmap.data(), 0, fullnoderowmap->Comm());
+      -1, (int)reducednoderowmap.size(), reducednoderowmap.data(), 0, fullnoderowmap->get_comm());
   // build node col map which does not include slave pbc nodes
   Core::LinAlg::Map nodecolmap(
-      -1, (int)reducednodecolmap.size(), reducednodecolmap.data(), 0, fullnodecolmap->Comm());
+      -1, (int)reducednodecolmap.size(), reducednodecolmap.data(), 0, fullnodecolmap->get_comm());
 
 
   // step 1: get state to be reconstruced (e.g. velocity gradient) at element
@@ -167,9 +167,9 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
         "Neither periodic boundary conditions nor an SPRboundary is specified! Missing bc?");
 
   // loop all nodes
-  for (int i = 0; i < nodecolmap.NumMyElements(); ++i)
+  for (int i = 0; i < nodecolmap.num_my_elements(); ++i)
   {
-    const int nodegid = nodecolmap.GID(i);
+    const int nodegid = nodecolmap.gid(i);
     const Core::Nodes::Node* node = dis.g_node(nodegid);
     if (!node) FOUR_C_THROW("Cannot find with gid: {}", nodegid);
 
@@ -204,7 +204,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
           // loop over all surrounding elements
           for (int k = 0; k < numadjacent; ++k)
           {
-            const int elelid = elevec_toberecovered_col.get_map().LID(adjacentele[k]->id());
+            const int elelid = elevec_toberecovered_col.get_map().lid(adjacentele[k]->id());
             for (int d = 0; d < dim; ++d)
               p(d + 1) = centercoords_col(d)[elelid] - node->x()[d] /* + ALE_DISP*/;
 
@@ -273,7 +273,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
           {
             for (int k = 0; k < numadjacenteles[s]; ++k)
             {
-              const int elelid = elevec_toberecovered_col.get_map().LID(adjacenteles[s][k]->id());
+              const int elelid = elevec_toberecovered_col.get_map().lid(adjacenteles[s][k]->id());
               for (int d = 0; d < dim; ++d)
                 p(d + 1) =
                     (centercoords_col(d))[elelid] + eleoffsets[s][d] - node->x()[d] /* + ALE_DISP*/;
@@ -365,7 +365,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
           for (int k = 0; k < numadjacent; ++k)
           {
             const int elelid =
-                elevec_toberecovered_col.get_map().LID(closestnodeadjacentele[k]->id());
+                elevec_toberecovered_col.get_map().lid(closestnodeadjacentele[k]->id());
             for (int d = 0; d < dim; ++d)
               p(d + 1) = (centercoords_col(d))[elelid] - closestnode->x()[d]; /* + ALE_DISP*/
 
@@ -505,7 +505,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
             for (int k = 0; k < numadjacenteles[s]; ++k)
             {
               const int elelid =
-                  elevec_toberecovered_col.get_map().LID(closestnodeadjacenteles[s][k]->id());
+                  elevec_toberecovered_col.get_map().lid(closestnodeadjacenteles[s][k]->id());
               for (int d = 0; d < dim; ++d)
                 p(d + 1) = (centercoords_col(d))[elelid] + eleoffsets[s][d] -
                            closestnode->x()[d]; /* + ALE_DISP*/
@@ -542,7 +542,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   if (err < 0) FOUR_C_THROW("global assemble into nodevec failed");
 
   // if no pbc are involved leave here
-  if (noderowmap.PointSameAs(*fullnoderowmap))
+  if (noderowmap.point_same_as(*fullnoderowmap))
     return std::make_shared<Core::LinAlg::MultiVector<double>>(nodevec);
 
   // solution vector based on full row map in which the solution of the master node is inserted into
@@ -550,21 +550,21 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::compute_superconver
   std::shared_ptr<Core::LinAlg::MultiVector<double>> fullnodevec =
       std::make_shared<Core::LinAlg::MultiVector<double>>(*fullnoderowmap, numvec);
 
-  for (int i = 0; i < fullnoderowmap->NumMyElements(); ++i)
+  for (int i = 0; i < fullnoderowmap->num_my_elements(); ++i)
   {
-    const int nodeid = fullnoderowmap->GID(i);
+    const int nodeid = fullnoderowmap->gid(i);
 
     std::map<int, int>::iterator slavemasterpair = slavetomastercolnodesmap.find(nodeid);
     if (slavemasterpair != slavetomastercolnodesmap.end())
     {
       const int mastergid = slavemasterpair->second;
-      const int masterlid = noderowmap.LID(mastergid);
+      const int masterlid = noderowmap.lid(mastergid);
       for (int j = 0; j < numvec; ++j)
         fullnodevec->ReplaceMyValue(i, j, ((*(nodevec)(j))[masterlid]));
     }
     else
     {
-      const int lid = noderowmap.LID(nodeid);
+      const int lid = noderowmap.lid(nodeid);
       for (int j = 0; j < numvec; ++j) fullnodevec->ReplaceMyValue(i, j, ((*(nodevec)(j))[lid]));
     }
   }

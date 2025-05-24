@@ -51,7 +51,7 @@ namespace Core::Conditions
   {
     const Core::LinAlg::Map* emap_;
     MyGID(const Core::LinAlg::Map* emap) : emap_(emap) {}
-    bool operator()(int gid) const { return emap_->MyGID(gid); }
+    bool operator()(int gid) const { return emap_->my_gid(gid); }
   };
 
   /**

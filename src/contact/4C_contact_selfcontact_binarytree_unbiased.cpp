@@ -529,9 +529,9 @@ void CONTACT::UnbiasedSelfBinaryTree::search_contact()
  *-----------------------------------------------------------------------*/
 void CONTACT::UnbiasedSelfBinaryTree::communicate_search_elements_all_procs()
 {
-  for (int elelid = 0; elelid < discret().element_col_map()->NumMyElements(); ++elelid)
+  for (int elelid = 0; elelid < discret().element_col_map()->num_my_elements(); ++elelid)
   {
-    int elegid = discret().element_col_map()->GID(elelid);
+    int elegid = discret().element_col_map()->gid(elelid);
     std::vector<int> searchelements;
     std::vector<int> searchelements_all;
     if (contact_pairs().find(elegid) != contact_pairs().end())

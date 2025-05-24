@@ -100,7 +100,7 @@ namespace Core::IO
 
     // count number of nodes for each processor
     const unsigned int num_row_nodes =
-        (unsigned int)result_data_nodebased.get_map().NumMyElements();
+        (unsigned int)result_data_nodebased.get_map().num_my_elements();
 
     // safety check
     if ((unsigned int)result_data_nodebased.NumVectors() != result_num_components_per_node)

@@ -305,13 +305,13 @@ void FLD::Utils::FluidImpedanceBc::flow_rate_calculation(const int condid)
   discret_->evaluate_condition(eleparams, flowrates, "ImpedanceCond", condid);
 
   double local_flowrate = 0.0;
-  for (int i = 0; i < dofrowmap->NumMyElements(); i++)
+  for (int i = 0; i < dofrowmap->num_my_elements(); i++)
   {
     local_flowrate += ((*flowrates)[i]);
   }
 
   double flowrate = 0.0;
-  Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->Comm());
+  Core::Communication::sum_all(&local_flowrate, &flowrate, 1, dofrowmap->get_comm());
 
   q_np_ = flowrate;
 
@@ -425,13 +425,13 @@ void FLD::Utils::FluidImpedanceBc::calculate_impedance_tractions_and_update_resi
 
     for (int lid = 0; lid < dQdu->local_length(); lid++)
     {
-      const int gid = dofrowmap->GID(lid);
+      const int gid = dofrowmap->gid(lid);
       const double val = (*dQdu)[lid];
       if (abs(val) > 1e-15)
       {
         for (int lid2 = 0; lid2 < dQdu_full.local_length(); lid2++)
         {
-          const int gid2 = dofrowmapred->GID(lid2);
+          const int gid2 = dofrowmapred->gid(lid2);
           const double val2 = (dQdu_full)[lid2];
           const double actmatentry = tfaclhs * val * val2;
           if (abs(actmatentry) > 1e-15) impedancetbcsysmat_->assemble(actmatentry, gid, gid2);

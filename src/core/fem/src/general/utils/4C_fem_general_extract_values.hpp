@@ -33,7 +33,7 @@ namespace Core::FE
     {
       return [&](int global_id)
       {
-        const int local_id = global.get_map().LID(global_id);
+        const int local_id = global.get_map().lid(global_id);
         FOUR_C_ASSERT_ALWAYS(local_id >= 0,
             "Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
             Core::Communication::my_mpi_rank(global.get_comm()), global_id);
@@ -106,7 +106,7 @@ namespace Core::FE
     std::vector<T> local(ldim * numcol);
     for (size_t i = 0; i < ldim; ++i)
     {
-      const int lid = global.get_map().LID(global_ids[i]);
+      const int lid = global.get_map().lid(global_ids[i]);
       FOUR_C_ASSERT_ALWAYS(lid >= 0,
           "Proc {}: Cannot find gid={} in Core::LinAlg::MultiVector<double>",
           Core::Communication::my_mpi_rank(global.Comm()), global_ids[i]);
@@ -139,7 +139,7 @@ namespace Core::FE
       for (unsigned idof = 0; idof < local.size(); ++idof)
       {
         // extract local ID of current dof
-        const int lid = global.get_map().LID(lm[inode * local.size() + idof]);
+        const int lid = global.get_map().lid(lm[inode * local.size() + idof]);
 
         // safety check
         if (lid < 0)
@@ -170,7 +170,7 @@ namespace Core::FE
       {
         // extract local ID of current dof
         const unsigned index = icol * local.num_rows() + irow;
-        const int lid = global.get_map().LID(lm[index]);
+        const int lid = global.get_map().lid(lm[index]);
 
         // safety check
         if (lid < 0)
@@ -227,7 +227,7 @@ namespace Core::FE
       for (int j = 0; j < iel; j++)
       {
         const int nodegid = (ele->nodes()[j])->id();
-        const int lid = global.get_map().LID(nodegid);
+        const int lid = global.get_map().lid(nodegid);
         if (lid < 0)
           FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
               Core::Communication::my_mpi_rank((global).Comm()), nodegid);
@@ -255,7 +255,7 @@ namespace Core::FE
     for (int i = 0; i < numnode; ++i)
     {
       const int nodegid = (ele->nodes()[i])->id();
-      const int lid = global.get_map().LID(nodegid);
+      const int lid = global.get_map().lid(nodegid);
       if (lid < 0)
         FOUR_C_THROW("Proc {}: Cannot find gid={} in Core::LinAlg::Vector<double>",
             Core::Communication::my_mpi_rank(global.Comm()), nodegid);

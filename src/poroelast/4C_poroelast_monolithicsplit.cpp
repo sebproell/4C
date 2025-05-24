@@ -75,7 +75,7 @@ void PoroElast::MonolithicSplit::prepare_time_step()
     ddi_->update(1.0, *idispnp, -1.0, *idispn, 0.0);
     ddi_->update(-1.0, *ifveln, timescale);
 
-    if (fsibcmap_->NumGlobalElements())
+    if (fsibcmap_->num_global_elements())
     {
       // if there are DBCs on FSI conditioned nodes, they have to be treated separately
 
@@ -124,7 +124,7 @@ std::shared_ptr<Core::LinAlg::Map> PoroElast::MonolithicSplit::fsidbc_map()
   std::shared_ptr<Core::LinAlg::Map> fluidfsibcmap =
       Core::LinAlg::MultiMapExtractor::intersect_maps(fluidmaps);
 
-  if (fluidfsibcmap->NumMyElements())
+  if (fluidfsibcmap->num_my_elements())
     FOUR_C_THROW("Dirichlet boundary conditions on fluid and FSI interface not supported!!");
 
   // get interface map and DBC map of structure
@@ -141,8 +141,8 @@ std::shared_ptr<Core::LinAlg::Map> PoroElast::MonolithicSplit::fsidbc_map()
           *structure_field()->interface()->fsi_cond_map(), true);
 
   // Todo this is ugly, fix it!
-  const int mylength = structfsibcmap->NumMyElements();  // on each processor (lids)
-  const int* mygids = structfsibcmap->MyGlobalElements();
+  const int mylength = structfsibcmap->num_my_elements();  // on each processor (lids)
+  const int* mygids = structfsibcmap->my_global_elements();
 
   // mark gids with fsi and DBC Condition
   for (int i = 0; i < mylength; ++i)
@@ -160,7 +160,7 @@ std::shared_ptr<Core::LinAlg::Map> PoroElast::MonolithicSplit::fsidbc_map()
   std::vector<int> structfsidbcvector;
   const int numgids = gidmarker_fluid->local_length();  // on each processor (lids)
   double* mygids_fluid = gidmarker_fluid->get_values();
-  const int* fluidmap = gidmarker_fluid->get_map().MyGlobalElements();
+  const int* fluidmap = gidmarker_fluid->get_map().my_global_elements();
   for (int i = 0; i < numgids; ++i)
   {
     double val = mygids_fluid[i];
@@ -187,7 +187,7 @@ void PoroElast::MonolithicSplit::setup_coupling_and_matrices()
 
   if (evaluateinterface_)
   {
-    if (fsibcmap_->NumGlobalElements())
+    if (fsibcmap_->num_global_elements())
     {
       const std::shared_ptr<Adapter::FluidPoro>& fluidfield =
           std::dynamic_pointer_cast<Adapter::FluidPoro>(fluid_field());

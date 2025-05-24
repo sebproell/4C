@@ -128,7 +128,7 @@ void Solid::Integrator::set_initial_displacement(
         for (unsigned int d = 0; d < nodedofset.size(); ++d)
         {
           const int dofgid = nodedofset[d];
-          const int doflid = dofrowmap->LID(dofgid);
+          const int doflid = dofrowmap->lid(dofgid);
 
           // evaluate component k of spatial function
           const double initialval =

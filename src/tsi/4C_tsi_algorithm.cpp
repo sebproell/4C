@@ -252,7 +252,7 @@ void TSI::Algorithm::output(bool forced_writerestart)
         {
           // global and processor's local fluid dof ID
           const int sgid = thermnodedofs_1[index];
-          const int slid = thermo_field()->discretization()->dof_row_map(1)->LID(sgid);
+          const int slid = thermo_field()->discretization()->dof_row_map(1)->lid(sgid);
 
 
           // get value of corresponding displacement component
@@ -301,7 +301,7 @@ void TSI::Algorithm::output(bool forced_writerestart)
 
         // global and processor's local structure dof ID
         const int sgid = structdofs[0];
-        const int slid = structure_field()->discretization()->dof_row_map(1)->LID(sgid);
+        const int slid = structure_field()->discretization()->dof_row_map(1)->lid(sgid);
 
         // get value of corresponding displacement component
         double temp = (*dummy1)[slid];
@@ -355,7 +355,7 @@ void TSI::Algorithm::output_deformation_in_thermo(
     {
       // global and processor's local fluid dof ID
       const int sgid = structnodedofs[index];
-      const int slid = structdofrowmap->LID(sgid);
+      const int slid = structdofrowmap->lid(sgid);
 
       // get value of corresponding displacement component
       double disp = (*dispnp)[slid];

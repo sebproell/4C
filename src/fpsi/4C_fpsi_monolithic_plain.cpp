@@ -171,13 +171,13 @@ void FPSI::MonolithicPlain::setup_system()
   fluid_block_ = 2;
   ale_i_block_ = 3;
 
-  if (vecSpaces[structure_block_]->NumGlobalElements() == 0)
+  if (vecSpaces[structure_block_]->num_global_elements() == 0)
     FOUR_C_THROW("No inner poro structure equations. Splitting not possible.");
-  if (vecSpaces[porofluid_block_]->NumGlobalElements() == 0)
+  if (vecSpaces[porofluid_block_]->num_global_elements() == 0)
     FOUR_C_THROW("No inner poro fluid equations. Splitting not possible.");
-  if (vecSpaces[fluid_block_]->NumGlobalElements() == 0)
+  if (vecSpaces[fluid_block_]->num_global_elements() == 0)
     FOUR_C_THROW("No inner fluid equations. Splitting not possible.");
-  if (vecSpaces[ale_i_block_]->NumGlobalElements() == 0)
+  if (vecSpaces[ale_i_block_]->num_global_elements() == 0)
     FOUR_C_THROW("No inner ale equations. Splitting not possible.");
   // merge maps and create full monolithic FPSI-dof_row_map
   set_dof_row_maps(vecSpaces);
