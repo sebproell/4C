@@ -239,7 +239,7 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
     nn.multiply_nt(n_v, n_v);
 
     Core::LinAlg::Matrix<6, 6> cn;
-    Core::LinAlg::Tensor::add_symmetric_holzapfel_product(cn, rcg, nn, 0.25);
+    Core::LinAlg::FourTensorOperations::add_symmetric_holzapfel_product(cn, rcg, nn, 0.25);
 
     Core::LinAlg::Matrix<6, 6> tmp1, tmp2;
     tmp1.multiply(cmat, id4);

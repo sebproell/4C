@@ -385,11 +385,11 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_deriva
     // gradient)
     static Core::LinAlg::Matrix<6, 9> d_be_dFe(Core::LinAlg::Initialization::zero);
     d_be_dFe.clear();
-    Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product_strain_like(
+    Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product_strain_like(
         d_be_dFe, idM, FeM, 1.0);
     static Core::LinAlg::Matrix<9, 9> d_Fe_dF(Core::LinAlg::Initialization::zero);
     d_Fe_dF.clear();
-    Core::LinAlg::Tensor::add_non_symmetric_product(1.0, idM, iFinM, d_Fe_dF);
+    Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, idM, iFinM, d_Fe_dF);
     static Core::LinAlg::Matrix<6, 9> d_be_dF(Core::LinAlg::Initialization::zero);
     d_be_dF.multiply(1.0, d_be_dFe, d_Fe_dF, 0.0);
 
@@ -487,7 +487,7 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_linearization_od(
   // calculate the derivative of the deformation gradient w.r.t. the inelastic deformation gradient
   static Core::LinAlg::Matrix<9, 9> d_F_dFin(Core::LinAlg::Initialization::zero);
   d_F_dFin.clear();
-  Core::LinAlg::Tensor::add_non_symmetric_product(1.0, FeM, idM, d_F_dFin);
+  Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, FeM, idM, d_F_dFin);
 
   static Core::LinAlg::Matrix<9, 1> d_Fin_dx(Core::LinAlg::Initialization::zero);
 
@@ -538,8 +538,8 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_stress_cmat_iso(
   cmatiso.multiply_nt(delta(4), iCinCiCinV, iCV, 1.);
   cmatiso.multiply_nt(delta(4), iCV, iCinCiCinV, 1.);
   cmatiso.multiply_nt(delta(5), iCV, iCV, 1.);
-  Core::LinAlg::Tensor::add_holzapfel_product(cmatiso, iCV, delta(6));
-  Core::LinAlg::Tensor::add_holzapfel_product(cmatiso, iCinV, delta(7));
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmatiso, iCV, delta(6));
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmatiso, iCinV, delta(7));
   cmatiso.scale(detFin);
 }
 
@@ -670,8 +670,10 @@ Core::LinAlg::Matrix<6, 9> Mat::MultiplicativeSplitDefgradElastHyper::evaluated_
 
   // derivative of second Piola Kirchhoff stresses w.r.t. inverse growth deformation gradient
   // (contribution from iFin)
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(dSdiFin, id, iFinM, gamma(0));
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(dSdiFin, iCinCM, iFinM, gamma(1));
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
+      dSdiFin, id, iFinM, gamma(0));
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
+      dSdiFin, iCinCM, iFinM, gamma(1));
   dSdiFin.multiply_nt(delta(0), iCinV, CiFin9x1, 1.);
   dSdiFin.multiply_nt(delta(1), iCinV, CiFinCe9x1, 1.);
   dSdiFin.multiply_nt(delta(1), iCinCiCinV, CiFin9x1, 1.);
@@ -681,7 +683,8 @@ Core::LinAlg::Matrix<6, 9> Mat::MultiplicativeSplitDefgradElastHyper::evaluated_
   dSdiFin.multiply_nt(delta(4), iCinCiCinV, CiFiniCe9x1, 1.);
   dSdiFin.multiply_nt(delta(4), iCV, CiFinCe9x1, 1.);
   dSdiFin.multiply_nt(delta(5), iCV, CiFiniCe9x1, 1.);
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(dSdiFin, id, iFinCeM, gamma(1));
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
+      dSdiFin, id, iFinCeM, gamma(1));
   dSdiFin.scale(detFin);
 
   // derivative of second Piola Kirchhoff stresses w.r.t. inverse growth deformation gradient
@@ -788,14 +791,14 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_transv_iso_quantities(
 
   // F_{in}^{-1} \frac{\partial S_{e}}{\partial F^{-1}_{in}}
   Core::LinAlg::FourTensor<3> iFindSediFin_FourTensor(true);
-  Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+  Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
       iFindSediFin_FourTensor, iFinM, dSediFin_FourTensor, true);
   // (F_{in}^{-1} \frac{\partial S_{e}}{\partial F^{-1}_{in}})^{T_{12}}
   Core::LinAlg::FourTensor<3> iFindSediFin_FourTensor_T12(true);
   iFindSediFin_FourTensor_T12.transpose_12(iFindSediFin_FourTensor);
   // [F_{in}^{-1} (F_{in}^{-1} \frac{\partial S_{e}}{\partial F^{-1}_{in}})^T_{12}]
   Core::LinAlg::FourTensor<3> iFin_iFindSediFin_T12_FourTensor(true);
-  Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+  Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
       iFin_iFindSediFin_T12_FourTensor, iFinM, iFindSediFin_FourTensor_T12, true);
   Core::LinAlg::Matrix<6, 9> iFin_iFindSediFin_T12(
       Core::LinAlg::Initialization::zero);  // Voigt stress-form
@@ -805,12 +808,12 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_transv_iso_quantities(
 
   // [F_{in}^{-1} (F_{in}^{-1} \frac{\partial S_{e}}{\partial C})^T_{12}  ]^T_{12}
   Core::LinAlg::FourTensor<3> iFindSedC_FourTensor(true);
-  Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+  Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
       iFindSedC_FourTensor, iFinM, dSedC_FourTensor, true);
   Core::LinAlg::FourTensor<3> iFindSedC_FourTensor_T12(true);
   iFindSedC_FourTensor_T12.transpose_12(iFindSedC_FourTensor);
   Core::LinAlg::FourTensor<3> iFin_iFindSedC_T12_FourTensor(true);
-  Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+  Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
       iFin_iFindSedC_T12_FourTensor, iFinM, iFindSedC_FourTensor_T12, true);
   Core::LinAlg::Matrix<6, 6> iFin_iFindSedC_T12(
       Core::LinAlg::Initialization::zero);  // Voigt stress-stress-form
@@ -824,8 +827,8 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_transv_iso_quantities(
   // \frac{\partial S}{\partial F^{-1}_{in}}
   dSdiFin.update(1.0, iFin_iFindSediFin_T12, 1.0);
   temp9x9.clear();
-  Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id3x3, SeiFinTM, temp9x9);
-  Core::LinAlg::Tensor::add_adbc_tensor_product(1.0, iFinSeM, id3x3, temp9x9);
+  Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, id3x3, SeiFinTM, temp9x9);
+  Core::LinAlg::FourTensorOperations::add_adbc_tensor_product(1.0, iFinSeM, id3x3, temp9x9);
   Core::LinAlg::Voigt::setup_four_tensor_from_9x9_voigt_matrix(tempFourTensor, temp9x9);
   Core::LinAlg::Voigt::setup_6x9_voigt_matrix_from_four_tensor(temp6x9, tempFourTensor);
   dSdiFin.update(1.0, temp6x9, 1.0);
@@ -900,7 +903,8 @@ Core::LinAlg::Matrix<6, 6> Mat::MultiplicativeSplitDefgradElastHyper::evaluate_a
       }
 
       // evaluate additional contribution to C by applying chain rule
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, producta, productb, diFindiFinj);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
+          1.0, producta, productb, diFindiFinj);
       dSdiFinj.multiply(1.0, dSdiFin, diFindiFinj, 0.0);
       facdefgradin[i].second->evaluate_additional_cmat(
           defgrad, productb, iFinjM[i].second, iCV, dSdiFinj, cmatadd);
@@ -1018,7 +1022,8 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_od_stiff_mat(PAR::Inela
         }
 
         // evaluate additional contribution to OD block by applying chain rule
-        Core::LinAlg::Tensor::add_non_symmetric_product(1.0, producta, productb, diFindiFinj);
+        Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
+            1.0, producta, productb, diFindiFinj);
         dSdiFinj.multiply(1.0, dSdiFin, diFindiFinj, 0.0);
         facdefgradin[i].second->evaluate_od_stiff_mat(
             defgrad, iFinjM[i].second, dSdiFinj, dstressdx);

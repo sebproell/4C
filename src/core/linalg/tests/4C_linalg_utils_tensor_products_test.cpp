@@ -78,7 +78,7 @@ namespace
     a_kron_b_ref(5, 5) = 2.4500000000;
 
     Core::LinAlg::Matrix<6, 6> a_kron_b(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Tensor::add_kronecker_tensor_product(a_kron_b, 1.0, a, b, 0.0);
+    Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(a_kron_b, 1.0, a, b, 0.0);
 
     FOUR_C_EXPECT_NEAR(a_kron_b, a_kron_b_ref, 1.0e-10);
   }

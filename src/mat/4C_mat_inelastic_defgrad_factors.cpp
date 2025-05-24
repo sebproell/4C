@@ -67,7 +67,8 @@ namespace
           id3x3_, id6x1_);
 
       // symmetric identity four tensor
-      Core::LinAlg::Tensor::add_kronecker_tensor_product(id4_6x6_, 1.0, id3x3, id3x3, 0.0);
+      Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(
+          id4_6x6_, 1.0, id3x3, id3x3, 0.0);
 
       // deviatoric operator
       Core::LinAlg::FourTensor<3> dev_op_four_tensor =
@@ -77,7 +78,7 @@ namespace
 
       // identity four tensor
       id4_9x9_.clear();
-      Core::LinAlg::Tensor::add_non_symmetric_product(1.0, id3x3_, id3x3_, id4_9x9_);
+      Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, id3x3_, id3x3_, id4_9x9_);
 
       // 10x10 identity
       id10x10_.clear();
@@ -1828,8 +1829,9 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantities(
 
   // determine scalar quantities of invariants / pseudoinvariants needed to compute the equivalent
   // tensile stress
-  double Me_dev_sym_contract_Me_dev_sym = Core::LinAlg::Tensor::contract_matrix_matrix(
-      state_quantities.curr_Me_dev_sym_M_, state_quantities.curr_Me_dev_sym_M_);
+  double Me_dev_sym_contract_Me_dev_sym =
+      Core::LinAlg::FourTensorOperations::contract_matrix_matrix(
+          state_quantities.curr_Me_dev_sym_M_, state_quantities.curr_Me_dev_sym_M_);
   Core::LinAlg::Matrix<3, 3> Me_dev_sym_squared_M(Core::LinAlg::Initialization::zero);
   Me_dev_sym_squared_M.multiply_nn(
       1.0, state_quantities.curr_Me_dev_sym_M_, state_quantities.curr_Me_dev_sym_M_, 0.0);
@@ -2061,11 +2063,11 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
   // \boldsymbol{F}^{\text{in}^{-1}}_{}} \f$ (Voigt stress-form)
   Core::LinAlg::Matrix<6, 9> dMe_sym_diFin(Core::LinAlg::Initialization::zero);
   dMe_sym_diFin.clear();
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
       dMe_sym_diFin, iFinTCM, const_non_mat_tensors.id3x3_, gamma(0));
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
       dMe_sym_diFin, iFinTCM, CeM, gamma(1));
-  Core::LinAlg::Tensor::add_right_non_symmetric_holzapfel_product(
+  Core::LinAlg::FourTensorOperations::add_right_non_symmetric_holzapfel_product(
       dMe_sym_diFin, CeiFinTCM, const_non_mat_tensors.id3x3_, gamma(1));
   dMe_sym_diFin.multiply_nt(delta(0), CeV, CiFinV, 1.0);
   dMe_sym_diFin.multiply_nt(delta(1), CeV, CiFinCeV, 1.0);
@@ -2080,9 +2082,12 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
   // \f$ \frac{\partial \boldsymbol{M}^{\text{e}}_{\text{sym}} }{\partial
   // \boldsymbol{C}^{}_{}} \f$ (Voigt stress-stress form)
   Core::LinAlg::Matrix<6, 6> dMe_sym_dC(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Tensor::add_kronecker_tensor_product(dMe_sym_dC, gamma(0), iFinTM, iFinTM, 0.0);
-  Core::LinAlg::Tensor::add_kronecker_tensor_product(dMe_sym_dC, gamma(1), iFinTM, CeiFinTM, 1.0);
-  Core::LinAlg::Tensor::add_kronecker_tensor_product(dMe_sym_dC, gamma(1), CeiFinTM, iFinTM, 1.0);
+  Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(
+      dMe_sym_dC, gamma(0), iFinTM, iFinTM, 0.0);
+  Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(
+      dMe_sym_dC, gamma(1), iFinTM, CeiFinTM, 1.0);
+  Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(
+      dMe_sym_dC, gamma(1), CeiFinTM, iFinTM, 1.0);
   dMe_sym_dC.multiply_nt(delta(0) / 2.0, CeV, iCinV, 1.0);
   dMe_sym_dC.multiply_nt(delta(1) / 2.0, CeV, iCinCiCinV, 1.0);
   dMe_sym_dC.multiply_nt(delta(1) / 2.0, CeCeV, iCinV, 1.0);
@@ -2118,7 +2123,7 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
   if (parameter()->bool_transv_isotropy())
   {
     Core::LinAlg::FourTensor<3> CedSediFin_FourTensor(true);
-    Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+    Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
         CedSediFin_FourTensor, CeM, dSediFin_FourTensor, true);
     Core::LinAlg::FourTensor<3> CedSediFin_T12_FourTensor(true);
     CedSediFin_T12_FourTensor.transpose_12(CedSediFin_FourTensor);
@@ -2128,7 +2133,7 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
         temp6x9, CedSediFin_T12_FourTensor);
     dMe_sym_diFin.update(1.0 / 2.0, temp6x9, 1.0);
     Core::LinAlg::FourTensor<3> SedCediFin_FourTensor(true);
-    Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+    Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
         SedCediFin_FourTensor, SeM, dCediFin_FourTensor, true);
     Core::LinAlg::FourTensor<3> SedCediFin_T12_FourTensor(true);
     SedCediFin_T12_FourTensor.transpose_12(SedCediFin_FourTensor);
@@ -2139,7 +2144,7 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
     dMe_sym_diFin.update(1.0 / 2.0, temp6x9, 1.0);
 
     Core::LinAlg::FourTensor<3> CedSedC_FourTensor(true);
-    Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+    Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
         CedSedC_FourTensor, CeM, dSedC_FourTensor, true);
     Core::LinAlg::FourTensor<3> CedSedC_T12_FourTensor(true);
     CedSedC_T12_FourTensor.transpose_12(CedSedC_FourTensor);
@@ -2148,7 +2153,7 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
     Core::LinAlg::Voigt::setup_6x6_voigt_matrix_from_four_tensor(temp6x6, CedSedC_T12_FourTensor);
     dMe_sym_dC.update(1.0 / 2.0, temp6x6, 1.0);
     Core::LinAlg::FourTensor<3> SedCedC_FourTensor(true);
-    Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+    Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
         SedCedC_FourTensor, SeM, dCedC_FourTensor, true);
     Core::LinAlg::FourTensor<3> SedCedC_T12_FourTensor(true);
     SedCedC_T12_FourTensor.transpose_12(SedCedC_FourTensor);
@@ -2205,10 +2210,10 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
         const_mat_tensors_.id_dyad_mm_, 1.0);
     dNpdMe_sym_dev.update(
         1.0 / 1.0 * 1.0 / equiv_stress * (A + 2 * B), const_non_mat_tensors.id4_6x6_, 1.0);
-    Core::LinAlg::Tensor::add_kronecker_tensor_product(dNpdMe_sym_dev,
+    Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(dNpdMe_sym_dev,
         1.0 / equiv_stress * (F - A - 2 * B), const_mat_tensors_.mm_, const_non_mat_tensors.id3x3_,
         1.0);
-    Core::LinAlg::Tensor::add_kronecker_tensor_product(dNpdMe_sym_dev,
+    Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(dNpdMe_sym_dev,
         1.0 / equiv_stress * (F - A - 2 * B), const_non_mat_tensors.id3x3_, const_mat_tensors_.mm_,
         1.0);
     dNpdMe_sym_dev.update(
@@ -2263,13 +2268,13 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
   Core::LinAlg::Voigt::setup_four_tensor_from_6x9_voigt_matrix(
       ddpdiFin_FourTensor, state_quantity_derivatives.curr_ddpdiFin_);
   Core::LinAlg::FourTensor<3> id_plus_mm_ddpdiFin_FourTensor(true);
-  Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+  Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
       id_plus_mm_ddpdiFin_FourTensor, const_mat_tensors_.id_plus_mm_, ddpdiFin_FourTensor, true);
   Core::LinAlg::Voigt::setup_9x9_voigt_matrix_from_four_tensor(
       temp9x9, id_plus_mm_ddpdiFin_FourTensor);
   state_quantity_derivatives.curr_dlpdiFin_.update(1.0, temp9x9, 0.0);
   Core::LinAlg::FourTensor<3> mm_ddpdiFin_FourTensor(true);
-  Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+  Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
       mm_ddpdiFin_FourTensor, const_mat_tensors_.mm_, ddpdiFin_FourTensor, true);
   Core::LinAlg::FourTensor<3> mm_ddpdiFin_T12_FourTensor(true);
   mm_ddpdiFin_T12_FourTensor.transpose_12(mm_ddpdiFin_FourTensor);
@@ -2281,13 +2286,13 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
   Core::LinAlg::Voigt::setup_four_tensor_from_6x6_voigt_matrix(
       ddpdC_FourTensor, state_quantity_derivatives.curr_ddpdC_);
   Core::LinAlg::FourTensor<3> id_plus_mm_ddpdC_FourTensor(true);
-  Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+  Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
       id_plus_mm_ddpdC_FourTensor, const_mat_tensors_.id_plus_mm_, ddpdC_FourTensor, true);
   Core::LinAlg::Voigt::setup_9x6_voigt_matrix_from_four_tensor(
       temp9x6, id_plus_mm_ddpdC_FourTensor);
   state_quantity_derivatives.curr_dlpdC_.update(1.0, temp9x6, 0.0);
   Core::LinAlg::FourTensor<3> mm_ddpdC_FourTensor(true);
-  Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+  Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
       mm_ddpdC_FourTensor, const_mat_tensors_.mm_, ddpdC_FourTensor, true);
   Core::LinAlg::FourTensor<3> mm_ddpdC_T12_FourTensor(true);
   mm_ddpdC_T12_FourTensor.transpose_12(mm_ddpdC_FourTensor);
@@ -2406,7 +2411,7 @@ void Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_additional_cmat
       Core::LinAlg::FourTensor<3> dEpdC_FourTensor(true);
       Core::LinAlg::Voigt::setup_four_tensor_from_9x6_voigt_matrix(
           dEpdC_FourTensor, state_quantity_derivatives_.curr_dEpdC_);
-      Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(tempFourTensor,
+      Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(tempFourTensor,
           time_step_quantities_.last_plastic_defgrd_inverse_[gp_], dEpdC_FourTensor);
       Core::LinAlg::Voigt::setup_9x6_voigt_matrix_from_four_tensor(rhs_iFin_V, tempFourTensor);
 
@@ -2786,7 +2791,7 @@ Core::LinAlg::Matrix<10, 10> Mat::InelasticDefgradTransvIsotropElastViscoplast::
   {
     // compute 9x9 north-west component block of the Jacobian (derivative of residual for
     // inelastic deformation gradient w.r.t. inelastic deformation gradient)
-    Core::LinAlg::Tensor::multiply_matrix_four_tensor<3>(
+    Core::LinAlg::FourTensorOperations::multiply_matrix_four_tensor<3>(
         tempFourTensor, last_iFinM, dEpdiFin_FourTensor, true);
     Core::LinAlg::Voigt::setup_9x9_voigt_matrix_from_four_tensor(temp9x9, tempFourTensor);
     J_iFin_iFin.update(1.0, const_non_mat_tensors.id4_9x9_, -1.0, temp9x9, 0.0);
@@ -2825,7 +2830,7 @@ Core::LinAlg::Matrix<10, 10> Mat::InelasticDefgradTransvIsotropElastViscoplast::
     FOUR_C_ASSERT_ALWAYS(log_deriv_err_status == Core::LinAlg::MatrixFunctErrorType::no_errors,
         "Matrix logarithm derivative evaluation failed!");
     Core::LinAlg::Matrix<9, 9> dTdiFin(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Tensor::add_non_symmetric_product(
+    Core::LinAlg::FourTensorOperations::add_non_symmetric_product(
         1.0, last_FinM, const_non_mat_tensors.id3x3_, dTdiFin);
     Core::LinAlg::Matrix<9, 9> dlogTdiFin(Core::LinAlg::Initialization::zero);
     dlogTdiFin.multiply_nn(1.0, dlogTdT, dTdiFin, 0.0);

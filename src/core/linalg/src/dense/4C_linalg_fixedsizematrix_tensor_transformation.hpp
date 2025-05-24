@@ -14,7 +14,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Core::LinAlg::Tensor
+namespace Core::LinAlg::FourTensorOperations
 {
   /*!
    * @brief Rotation of all basis vectors of 2-Tensor Tin by the rotation Matrix Q
@@ -122,7 +122,7 @@ namespace Core::LinAlg::Tensor
     Tout.multiply_nn(1.0, temp, Qfourth);
   }
 
-}  // namespace Core::LinAlg::Tensor
+}  // namespace Core::LinAlg::FourTensorOperations
 
 
 FOUR_C_NAMESPACE_CLOSE

@@ -113,7 +113,7 @@ void Mat::volumetrify_and_isochorify(Core::LinAlg::Matrix<6, 1>* pk2vol,
     Core::LinAlg::Matrix<6, 6> cvol_tmp(Core::LinAlg::Initialization::uninitialized);
     if (cvol != nullptr) cvol_tmp.set_view(*cvol);
     cvol_tmp.multiply_nt(2.0 / 3.0, icg, pk2lin);
-    Core::LinAlg::Tensor::add_holzapfel_product(cvol_tmp, icg, -2.0 / 3.0 * pk2rcg);
+    Core::LinAlg::FourTensorOperations::add_holzapfel_product(cvol_tmp, icg, -2.0 / 3.0 * pk2rcg);
 
     // isochoric part of constitutive tensor
     // C^{ABCD}_iso = C^{ABCD} - C^{ABCD}_vol

@@ -243,7 +243,7 @@ void Mat::PlasticGTN::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // compute trial stress
   Core::LinAlg::Matrix<3, 3, double> stress_trial(stress_n_.at(gp));
-  Core::LinAlg::Tensor::add_contraction_matrix_four_tensor(
+  Core::LinAlg::FourTensorOperations::add_contraction_matrix_four_tensor(
       stress_trial, 1.0, Ce, incremental_strain);
 
   const double p_trial = 1.0 / 3 * (stress_trial(0, 0) + stress_trial(1, 1) + stress_trial(2, 2));
@@ -423,21 +423,21 @@ void Mat::PlasticGTN::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     // populate the consistent tangent operator
     Core::LinAlg::FourTensor<3> Cep = Core::LinAlg::setup_deviatoric_projection_tensor<3>(
         2 * G * (1.0 - 3 * G * dlambda / q_trial * (1.0 - f_n1) * dsigmastar_dq));
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(
         Cep, 6 * G * G * dlambda / q_trial * (1.0 - f_n1) * dsigmastar_dq, nhat, nhat);
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(
         Cep, sqrt(6.0) * G * dlambda * dsigmastar_dq, nhat, df_de);
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(
         Cep, -sqrt(6.0) * G * (1.0 - f_n1) * dlambda * d2sigmastar_dq2, nhat, dq_de);
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(
         Cep, -sqrt(6.0) * G * (1.0 - f_n1) * dlambda * d2sigmastar_dqdp, nhat, dp_de);
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(Cep,
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(Cep,
         -sqrt(6.0) * G * (1.0 - f_n1) * dlambda * d2sigmastar_dqdsigmastar, nhat, dsigmastar_de);
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(
         Cep, -sqrt(6.0) * G * (1.0 - f_n1) * dlambda * d2sigmastar_dqdf, nhat, df_de);
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(
         Cep, -sqrt(6.0) * G * (1.0 - f_n1) * dsigmastar_dq, nhat, ddlambda_de);
-    Core::LinAlg::Tensor::add_dyadic_product_matrix_matrix(Cep, 1.0, eye, dp_de);
+    Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(Cep, 1.0, eye, dp_de);
 
     // transform back to matrix
     Core::LinAlg::Voigt::setup_6x6_voigt_matrix_from_four_tensor(*cmat, Cep);

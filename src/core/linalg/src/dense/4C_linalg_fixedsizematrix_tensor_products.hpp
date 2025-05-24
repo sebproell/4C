@@ -22,7 +22,7 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Core::LinAlg::Tensor
+namespace Core::LinAlg::FourTensorOperations
 {
   /*!
    * @brief Multiply two 2nd order tensors A x B and add the result to a 4th order symmetric
@@ -401,7 +401,7 @@ namespace Core::LinAlg::Tensor
   double contract_matrix_matrix(
       const Core::LinAlg::Matrix<3, 3>& matrix_A, const Core::LinAlg::Matrix<3, 3>& matrix_B);
 
-}  // namespace Core::LinAlg::Tensor
+}  // namespace Core::LinAlg::FourTensorOperations
 
 
 FOUR_C_NAMESPACE_CLOSE

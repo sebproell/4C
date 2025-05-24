@@ -1231,7 +1231,7 @@ void Mat::Elastic::RemodelFiber::evaluated_evolution_equationd_c(Core::LinAlg::M
   static Core::LinAlg::Matrix<3, 3> iFrTFrdotTiFinTM(Core::LinAlg::Initialization::zero);
   iFinTM.update_t(1.0, iFinM, 0.0);
   iFrTFrdotTiFinTM.multiply_tt(1.0, FrdotiFrM, iFinM, 0.0);
-  Core::LinAlg::Tensor::add_left_non_symmetric_holzapfel_product(
+  Core::LinAlg::FourTensorOperations::add_left_non_symmetric_holzapfel_product(
       dYdC, iFinTM, iFrTFrdotTiFinTM, 0.5);
 
   fiberdat.remodel->evaluated_funcid_c(

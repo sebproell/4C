@@ -943,7 +943,7 @@ namespace Discret::Elements::Shell
     // map gl strains from curvilinear system to global cartesian system
     Core::LinAlg::Matrix<Internal::num_dim, Internal::num_dim> gl_strain_tensor_cartesian(
         Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Tensor::inverse_tensor_rotation<Internal::num_dim>(
+    Core::LinAlg::FourTensorOperations::inverse_tensor_rotation<Internal::num_dim>(
         g_reference.kontravariant_, gl_strain_tensor, gl_strain_tensor_cartesian);
     // GL strain vector glstrain for solid material E={E11,E22,E33,2*E12,2*E23,2*E31}
     Core::LinAlg::Voigt::Strains::matrix_to_vector(gl_strain_tensor_cartesian, strains.gl_strain_);
@@ -976,7 +976,8 @@ namespace Discret::Elements::Shell
     Core::LinAlg::Voigt::Stresses::vector_to_matrix(stress.pk2_, stress_tensor);
     Core::LinAlg::Matrix<Internal::num_dim, Internal::num_dim> tmp(
         Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Tensor::tensor_rotation(g_reference.kontravariant_, stress_tensor, tmp);
+    Core::LinAlg::FourTensorOperations::tensor_rotation(
+        g_reference.kontravariant_, stress_tensor, tmp);
 
     // re-arrange indices for shell element formulation:
     // PK Stress=[S_{11},S_{12}, S_{13}, S_{22}, S_{23}, S_{33}]^T
@@ -994,7 +995,8 @@ namespace Discret::Elements::Shell
     Core::LinAlg::Matrix<Internal::num_dim, Internal::num_dim> g_metrics_trans(
         Core::LinAlg::Initialization::zero);
     g_metrics_trans.update_t(g_reference.kontravariant_);
-    Core::LinAlg::Tensor::inverse_fourth_tensor_rotation(g_metrics_trans, stress.cmat_, Cmat);
+    Core::LinAlg::FourTensorOperations::inverse_fourth_tensor_rotation(
+        g_metrics_trans, stress.cmat_, Cmat);
 
     // re-arrange indices for shell element formulation
     static constexpr std::array voigt_inconsistent_ = {0, 3, 5, 1, 4, 2};
