@@ -95,7 +95,8 @@ double CONTACT::NoxInterface::get_constraint_rhs_norms(const Core::LinAlg::Vecto
 
 
       constrRhs_nox = Teuchos::make_rcp<::NOX::Epetra::Vector>(
-          Teuchos::rcp(nConstrRhs->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+          Teuchos::rcpFromRef(nConstrRhs->get_ref_of_epetra_vector()),
+          ::NOX::Epetra::Vector::CreateCopy);
       break;
     }
     case NOX::Nln::StatusTest::quantity_contact_friction:
@@ -105,7 +106,8 @@ double CONTACT::NoxInterface::get_constraint_rhs_norms(const Core::LinAlg::Vecto
           Core::LinAlg::extract_my_vector(*constrRhs_red, strategy().slave_t_dof_row_map(true));
 
       constrRhs_nox = Teuchos::make_rcp<::NOX::Epetra::Vector>(
-          Teuchos::rcp(tConstrRhs->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+          Teuchos::rcpFromRef(tConstrRhs->get_ref_of_epetra_vector()),
+          ::NOX::Epetra::Vector::CreateCopy);
       break;
     }
     default:
@@ -209,7 +211,7 @@ double CONTACT::NoxInterface::get_lagrange_multiplier_update_norms(
   }
 
   const ::NOX::Epetra::Vector zincr_nox_ptr(
-      Teuchos::rcpFromRef(*zincr_ptr->get_ptr_of_epetra_vector()),
+      Teuchos::rcpFromRef(zincr_ptr->get_ref_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   updatenorm = zincr_nox_ptr.norm(type);
@@ -247,7 +249,8 @@ double CONTACT::NoxInterface::get_previous_lagrange_multiplier_norms(
           Core::LinAlg::extract_my_vector(*zold_ptr, strategy().slave_n_dof_row_map(true));
 
       zold_nox_ptr = std::make_shared<::NOX::Epetra::Vector>(
-          Teuchos::rcp(znold_ptr->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+          Teuchos::rcpFromRef(znold_ptr->get_ref_of_epetra_vector()),
+          ::NOX::Epetra::Vector::CreateCopy);
       break;
     }
     case NOX::Nln::StatusTest::quantity_contact_friction:
@@ -256,7 +259,8 @@ double CONTACT::NoxInterface::get_previous_lagrange_multiplier_norms(
           Core::LinAlg::extract_my_vector(*zold_ptr, strategy().slave_t_dof_row_map(true));
 
       zold_nox_ptr = std::make_shared<::NOX::Epetra::Vector>(
-          Teuchos::rcp(ztold_ptr->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+          Teuchos::rcpFromRef(ztold_ptr->get_ref_of_epetra_vector()),
+          ::NOX::Epetra::Vector::CreateCopy);
       break;
     }
     default:

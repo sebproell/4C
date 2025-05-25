@@ -591,17 +591,17 @@ void FS3I::BiofilmFSI::inner_timeloop()
 
       if (avgrowth)
       {
-        (*((*normtempinflux_.get_ptr_of_epetra_vector())(0)))[lnodeid] += tempflux;
-        (*((*normtemptraction_.get_ptr_of_epetra_vector())(0)))[lnodeid] += abs(tempnormtrac);
-        (*((*tangtemptractionone_.get_ptr_of_epetra_vector())(0)))[lnodeid] += abs(temptangtracone);
-        (*((*tangtemptractiontwo_.get_ptr_of_epetra_vector())(0)))[lnodeid] += abs(temptangtractwo);
+        (*((normtempinflux_.get_ref_of_epetra_vector())(0)))[lnodeid] += tempflux;
+        (*((normtemptraction_.get_ref_of_epetra_vector())(0)))[lnodeid] += abs(tempnormtrac);
+        (*((tangtemptractionone_.get_ref_of_epetra_vector())(0)))[lnodeid] += abs(temptangtracone);
+        (*((tangtemptractiontwo_.get_ref_of_epetra_vector())(0)))[lnodeid] += abs(temptangtractwo);
       }
       else
       {
-        (*((*norminflux_->get_ptr_of_epetra_vector())(0)))[lnodeid] = tempflux;
-        (*((*normtraction_->get_ptr_of_epetra_vector())(0)))[lnodeid] = abs(tempnormtrac);
-        (*((*tangtractionone_->get_ptr_of_epetra_vector())(0)))[lnodeid] = abs(temptangtracone);
-        (*((*tangtractiontwo_->get_ptr_of_epetra_vector())(0)))[lnodeid] = abs(temptangtractwo);
+        (*((norminflux_->get_ref_of_epetra_vector())(0)))[lnodeid] = tempflux;
+        (*((normtraction_->get_ref_of_epetra_vector())(0)))[lnodeid] = abs(tempnormtrac);
+        (*((tangtractionone_->get_ref_of_epetra_vector())(0)))[lnodeid] = abs(temptangtracone);
+        (*((tangtractiontwo_->get_ref_of_epetra_vector())(0)))[lnodeid] = abs(temptangtractwo);
       }
     }
   }
@@ -622,14 +622,14 @@ void FS3I::BiofilmFSI::inner_timeloop()
       int lnodeid = strudis->node_row_map()->lid(gnodeid);
 
       // Fix this.
-      (*((*norminflux_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
-          (*((*normtempinflux_.get_ptr_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
-      (*((*normtraction_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
-          (*((*normtemptraction_.get_ptr_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
-      (*((*tangtractionone_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
-          (*((*tangtemptractionone_.get_ptr_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
-      (*((*tangtractiontwo_->get_ptr_of_epetra_vector())(0)))[lnodeid] =
-          (*((*tangtemptractiontwo_.get_ptr_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
+      (*((norminflux_->get_ref_of_epetra_vector())(0)))[lnodeid] =
+          (*((normtempinflux_.get_ref_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
+      (*((normtraction_->get_ref_of_epetra_vector())(0)))[lnodeid] =
+          (*((normtemptraction_.get_ref_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
+      (*((tangtractionone_->get_ref_of_epetra_vector())(0)))[lnodeid] =
+          (*((tangtemptractionone_.get_ref_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
+      (*((tangtractiontwo_->get_ref_of_epetra_vector())(0)))[lnodeid] =
+          (*((tangtemptractiontwo_.get_ref_of_epetra_vector())(0)))[lnodeid] / step_fsi_;
     }
   }
 

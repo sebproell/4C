@@ -255,7 +255,7 @@ void Solid::Integrator::compute_mass_matrix_and_init_acc()
   Core::LinAlg::Vector<double> soln_ptr(*global_state().dof_row_map_view(), true);
   // wrap the soln_ptr in a nox_epetra_Vector
   Teuchos::RCP<::NOX::Epetra::Vector> nox_soln_ptr = Teuchos::make_rcp<::NOX::Epetra::Vector>(
-      Teuchos::rcpFromRef(*soln_ptr.get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(soln_ptr.get_ref_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
 
   // Check if we are using a Newton direction
   std::string dir_str = p_nox.sublist("Direction").get<std::string>("Method");

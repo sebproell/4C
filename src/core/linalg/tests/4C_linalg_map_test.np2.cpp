@@ -56,7 +56,7 @@ namespace
     new_map = std::make_shared<Core::LinAlg::Map>(NumGlobalElements, 2, comm);
 
     // replace the map based on the map of epetra vector
-    EXPECT_EQ(vector.get_ptr_of_epetra_vector()->ReplaceMap(new_map->get_epetra_map()), 0);
+    EXPECT_EQ(vector.get_ref_of_epetra_vector().ReplaceMap(new_map->get_epetra_map()), 0);
 
     // compare result with our map wrapper
     EXPECT_TRUE(vector.get_map().same_as(*new_map));

@@ -358,7 +358,7 @@ int Solid::TimIntImpl::nox_solve()
 
   // create initial guess vector of predictor result
   ::NOX::Epetra::Vector noxSoln(
-      Teuchos::rcpFromRef(*disn_->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(disn_->get_ref_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
 
   // Linear system
   Teuchos::RCP<::NOX::Epetra::LinearSystem> linSys =

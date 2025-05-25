@@ -145,7 +145,7 @@ Solid::ModelEvaluator::PartitionedFSI::solve_relaxation_linear(
   interface_force_np_ptr_->scale(-(ti_impl->tim_int_param()));
   ti_impl->dbc_ptr()->apply_dirichlet_to_rhs(*interface_force_np_ptr_);
   Teuchos::RCP<::NOX::Epetra::Vector> nox_force = Teuchos::make_rcp<::NOX::Epetra::Vector>(
-      Teuchos::rcpFromRef(*interface_force_np_ptr_->get_ptr_of_epetra_vector()));
+      Teuchos::rcpFromRef(interface_force_np_ptr_->get_ref_of_epetra_vector()));
   grp_ptr->set_f(nox_force);
 
   // ---------------------------------------------------------------------------
