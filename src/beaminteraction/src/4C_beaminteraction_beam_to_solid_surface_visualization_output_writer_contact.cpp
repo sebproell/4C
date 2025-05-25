@@ -212,7 +212,7 @@ void BeamInteraction::BeamToSolidSurfaceVisualizationOutputWriterContact::
       output_writer_base_ptr_->get_visualization_writer("btss-contact-nodal-forces");
   if (nodal_force_visualization != nullptr)
     add_beam_interaction_nodal_forces(nodal_force_visualization, beam_contact->discret_ptr(),
-        beam_contact->beam_interaction_data_state().get_dis_np()->get_ptr_of_multi_vector(),
+        beam_contact->beam_interaction_data_state().get_dis_np()->as_multi_vector(),
         Core::LinAlg::MultiVector<double>(
             *beam_contact->beam_interaction_data_state().get_force_np()),
         output_params_ptr_->get_write_unique_ids_flag());

@@ -623,7 +623,9 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
               Inpar::S2I::side_master, imastermatrix_, Inpar::S2I::side_master,
               Inpar::S2I::side_slave, imastermatrix_, Inpar::S2I::side_master,
               Inpar::S2I::side_master,
-              islaveresidual_ != nullptr ? islaveresidual_->get_ptr_of_multi_vector() : nullptr,
+              islaveresidual_ != nullptr
+                  ? Core::Utils::shared_ptr_from_ref(islaveresidual_->as_multi_vector())
+                  : nullptr,
               Inpar::S2I::side_slave, imasterresidual_, Inpar::S2I::side_master);
         }
 
@@ -640,7 +642,9 @@ void ScaTra::MeshtyingStrategyS2I::evaluate_meshtying()
               Inpar::S2I::side_master, imastermatrix_, Inpar::S2I::side_master,
               Inpar::S2I::side_slave, imastermatrix_, Inpar::S2I::side_master,
               Inpar::S2I::side_master,
-              islaveresidual_ != nullptr ? islaveresidual_->get_ptr_of_multi_vector() : nullptr,
+              islaveresidual_ != nullptr
+                  ? Core::Utils::shared_ptr_from_ref(islaveresidual_->as_multi_vector())
+                  : nullptr,
               Inpar::S2I::side_slave, imasterresidual_, Inpar::S2I::side_master);
         }
       }
@@ -2474,7 +2478,8 @@ void ScaTra::MeshtyingStrategyS2I::setup_meshtying()
               Inpar::S2I::side_undefined, Inpar::S2I::side_undefined, nullptr,
               Inpar::S2I::side_undefined, Inpar::S2I::side_undefined,
               islavenodeslumpedareas_dofvector != nullptr
-                  ? islavenodeslumpedareas_dofvector->get_ptr_of_multi_vector()
+                  ? Core::Utils::shared_ptr_from_ref(
+                        islavenodeslumpedareas_dofvector->as_multi_vector())
                   : nullptr,
               Inpar::S2I::side_slave, nullptr, Inpar::S2I::side_undefined);
 

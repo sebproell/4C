@@ -1020,8 +1020,8 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
           solver_params.refactor = true;
           solver_params.reset = true;
           solver.solve_with_multi_vector(stiff_->epetra_operator(),
-              (*iterinc)(i).get_ptr_of_multi_vector(), (*rhs_)(i).get_ptr_of_multi_vector(),
-              solver_params);
+              Core::Utils::shared_ptr_from_ref((*iterinc)(i).as_multi_vector()),
+              Core::Utils::shared_ptr_from_ref((*rhs_)(i).as_multi_vector()), solver_params);
         }
         break;
       }

@@ -284,8 +284,8 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::FE::solve_nodal_l2_proj
         solver_params.refactor = true;
         solver_params.reset = true;
         solver.solve_with_multi_vector(massmatrix.epetra_operator(),
-            (*nodevec)(i).get_ptr_of_multi_vector(), rhs(i).get_ptr_of_multi_vector(),
-            solver_params);
+            Utils::shared_ptr_from_ref((*nodevec)(i).as_multi_vector()),
+            Utils::shared_ptr_from_ref(rhs(i).as_multi_vector()), solver_params);
       }
       break;
     }

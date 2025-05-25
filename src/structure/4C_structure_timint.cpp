@@ -2835,10 +2835,10 @@ Inpar::Solid::ConvergenceStatus Solid::TimInt::perform_error_action(
 /* Set forces due to interface with fluid,
  * the force is expected external-force-like */
 void Solid::TimInt::set_force_interface(
-    std::shared_ptr<Core::LinAlg::MultiVector<double>> iforce  ///< the force on interface
+    const Core::LinAlg::MultiVector<double>& iforce  ///< the force on interface
 )
 {
-  fifc_->update(1.0, *iforce, 0.0);
+  fifc_->update(1.0, iforce, 0.0);
 }
 
 std::string Solid::TimInt::method_title() const

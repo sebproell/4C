@@ -279,7 +279,7 @@ void EHL::Base::set_lubrication_solution(
   // Provide the structure field with the force vector
   // Note that the mid-point values (gen-alpha) of the interface forces are evaluated in
   // Solid::TimIntGenAlpha::evaluate_force_residual()
-  structure_->set_force_interface(evaluate_fluid_force(*pressure)->get_ptr_of_multi_vector());
+  structure_->set_force_interface(evaluate_fluid_force(*pressure)->as_multi_vector());
 }
 
 void EHL::Base::add_pressure_force(

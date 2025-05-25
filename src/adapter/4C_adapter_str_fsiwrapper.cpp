@@ -212,11 +212,9 @@ void Adapter::FSIStructureWrapper::apply_interface_forces_temporary_deprecated(
 
   interface_->add_fsi_cond_vector(*iforce, (*fifc)(0));
 
-  set_force_interface(fifc);
+  set_force_interface(*fifc);
 
   prepare_partition_step();
-
-  return;
 }
 
 /*----------------------------------------------------------------------*/
