@@ -27,54 +27,51 @@ FOUR_C_NAMESPACE_OPEN
 
 
 /*----------------------------------------------------------------------*
- | constructor                                (public) kremheller 04/18 |
  *----------------------------------------------------------------------*/
-PoroPressureBased::MeshtyingArtery::MeshtyingArtery(
-    PoroPressureBased::PorofluidAlgorithm* porofluid_algorithm,
-    const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& poroparams)
+PoroPressureBased::MeshtyingArtery::MeshtyingArtery(PorofluidAlgorithm* porofluid_algorithm,
+    const Teuchos::ParameterList& problem_params, const Teuchos::ParameterList& porofluid_params)
     : porofluid_algorithm_(porofluid_algorithm),
-      params_(probparams),
-      poroparams_(poroparams),
-      vectornormfres_(
-          Teuchos::getIntegralValue<PoroPressureBased::VectorNorm>(poroparams_, "VECTORNORM_RESF")),
-      vectornorminc_(
-          Teuchos::getIntegralValue<PoroPressureBased::VectorNorm>(poroparams_, "VECTORNORM_INC"))
+      params_(problem_params),
+      porofluid_params_(porofluid_params),
+      vector_norm_res_(Teuchos::getIntegralValue<VectorNorm>(porofluid_params_, "VECTORNORM_RESF")),
+      vector_norm_inc_(Teuchos::getIntegralValue<VectorNorm>(porofluid_params_, "VECTORNORM_INC"))
 {
-  const Teuchos::ParameterList& artdyn = Global::Problem::instance()->arterial_dynamic_params();
+  const Teuchos::ParameterList& artery_params =
+      Global::Problem::instance()->arterial_dynamic_params();
 
-  arterydis_ = Global::Problem::instance()->get_dis("artery");
+  artery_dis_ = Global::Problem::instance()->get_dis("artery");
 
-  if (!arterydis_->filled()) arterydis_->fill_complete();
+  if (!artery_dis_->filled()) artery_dis_->fill_complete();
 
-  auto timintscheme =
-      Teuchos::getIntegralValue<Inpar::ArtDyn::TimeIntegrationScheme>(artdyn, "DYNAMICTYPE");
+  const auto time_integration_scheme =
+      Teuchos::getIntegralValue<Inpar::ArtDyn::TimeIntegrationScheme>(artery_params, "DYNAMICTYPE");
 
-  std::shared_ptr<Core::IO::DiscretizationWriter> artery_output = arterydis_->writer();
+  std::shared_ptr<Core::IO::DiscretizationWriter> artery_output = artery_dis_->writer();
   artery_output->write_mesh(0, 0.0);
 
-  // build art net time integrator
-  artnettimint_ = Arteries::Utils::create_algorithm(timintscheme, arterydis_,
-      artdyn.get<int>("LINEAR_SOLVER"), probparams, artdyn, *artery_output);
+  // build artery network algorithm
+  artery_algorithm_ = Arteries::Utils::create_algorithm(time_integration_scheme, artery_dis_,
+      artery_params.get<int>("LINEAR_SOLVER"), problem_params, artery_params, *artery_output);
 
   // set to false
-  artnettimint_->set_solve_scatra(false);
+  artery_algorithm_->set_solve_scatra(false);
 
   // initialize
-  artnettimint_->init(probparams, artdyn, "artery_scatra");
+  artery_algorithm_->init(problem_params, artery_params, "artery_scatra");
 
   // print user info
   if (Core::Communication::my_mpi_rank(porofluid_algorithm->discretization()->get_comm()) == 0)
   {
     std::cout << "\n";
-    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-    std::cout << "<                                                  >" << std::endl;
-    std::cout << "<    Coupling with 1D Artery Network activated     >" << std::endl;
+    std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>" << '\n';
+    std::cout << "<                                                  >" << '\n';
+    std::cout << "<    Coupling with 1D Artery Network activated     >" << '\n';
   }
 
   const bool evaluate_on_lateral_surface =
-      poroparams.sublist("ARTERY COUPLING").get<bool>("LATERAL_SURFACE_COUPLING");
+      porofluid_params.sublist("ARTERY COUPLING").get<bool>("LATERAL_SURFACE_COUPLING");
 
-  const std::string couplingcondname = std::invoke(
+  const std::string coupling_condition_name = std::invoke(
       [&]()
       {
         if (Teuchos::getIntegralValue<
@@ -92,316 +89,273 @@ PoroPressureBased::MeshtyingArtery::MeshtyingArtery(
         }
       });
 
-  // initialize mesh tying object
-  arttoporofluidcoupling_ = PoroPressureBased::create_and_init_artery_coupling_strategy(arterydis_,
-      porofluid_algorithm->discretization(), poroparams.sublist("ARTERY COUPLING"),
-      couplingcondname, "COUPLEDDOFS_ART", "COUPLEDDOFS_PORO", evaluate_on_lateral_surface);
+  // initialize meshtying object
+  artery_porofluid_coupling_algorithm_ = create_and_init_artery_coupling_strategy(artery_dis_,
+      porofluid_algorithm->discretization(), porofluid_params.sublist("ARTERY COUPLING"),
+      coupling_condition_name, "COUPLEDDOFS_ART", "COUPLEDDOFS_PORO", evaluate_on_lateral_surface);
 
   // Initialize rhs vector
-  rhs_ = std::make_shared<Core::LinAlg::Vector<double>>(*arttoporofluidcoupling_->full_map(), true);
+  global_rhs_ = std::make_shared<Core::LinAlg::Vector<double>>(
+      *artery_porofluid_coupling_algorithm_->full_map(), true);
 
   // Initialize increment vector
-  comb_increment_ =
-      std::make_shared<Core::LinAlg::Vector<double>>(*arttoporofluidcoupling_->full_map(), true);
+  global_increment_ = std::make_shared<Core::LinAlg::Vector<double>>(
+      *artery_porofluid_coupling_algorithm_->full_map(), true);
   // Initialize phinp vector
-  comb_phinp_ =
-      std::make_shared<Core::LinAlg::Vector<double>>(*arttoporofluidcoupling_->full_map(), true);
+  global_phinp_ = std::make_shared<Core::LinAlg::Vector<double>>(
+      *artery_porofluid_coupling_algorithm_->full_map(), true);
 
-  // initialize Poromultiphase-elasticity-systemmatrix_
-  comb_systemmatrix_ =
+  // initialize porofluid-elasticity system matrix
+  global_sysmat_ =
       std::make_shared<Core::LinAlg::BlockSparseMatrix<Core::LinAlg::DefaultBlockMatrixStrategy>>(
-          *arttoporofluidcoupling_->global_extractor(),
-          *arttoporofluidcoupling_->global_extractor(), 81, false, true);
-
-  return;
+          *artery_porofluid_coupling_algorithm_->global_extractor(),
+          *artery_porofluid_coupling_algorithm_->global_extractor(), 81, false, true);
 }
 
 
 
 /*----------------------------------------------------------------------*
- | prepare time loop                                   kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::prepare_time_loop()
+void PoroPressureBased::MeshtyingArtery::prepare_time_loop() const
 {
-  artnettimint_->prepare_time_loop();
-  return;
+  artery_algorithm_->prepare_time_loop();
 }
 
 /*----------------------------------------------------------------------*
- | setup the variables to do a new time step  (public) kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::prepare_time_step()
+void PoroPressureBased::MeshtyingArtery::prepare_time_step() const
 {
-  artnettimint_->prepare_time_step();
-  return;
+  artery_algorithm_->prepare_time_step();
 }
 
 /*----------------------------------------------------------------------*
- | current solution becomes most recent solution of next timestep       |
- |                                                     kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::update()
-{
-  artnettimint_->time_update();
-  return;
-}
+void PoroPressureBased::MeshtyingArtery::update() const { artery_algorithm_->time_update(); }
 
 /*--------------------------------------------------------------------------*
- | initialize the linear solver                            kremheller 07/20 |
  *--------------------------------------------------------------------------*/
 void PoroPressureBased::MeshtyingArtery::initialize_linear_solver(
-    std::shared_ptr<Core::LinAlg::Solver> solver)
+    const std::shared_ptr<Core::LinAlg::Solver> solver) const
 {
-  const Teuchos::ParameterList& porofluidparams =
+  const Teuchos::ParameterList& porofluid_params =
       Global::Problem::instance()->poro_fluid_multi_phase_dynamic_params();
-  const int linsolvernumber = porofluidparams.get<int>("LINEAR_SOLVER");
-  const Teuchos::ParameterList& solverparams =
-      Global::Problem::instance()->solver_params(linsolvernumber);
-  const auto solvertype =
-      Teuchos::getIntegralValue<Core::LinearSolver::SolverType>(solverparams, "SOLVER");
+  const int linear_solver_num = porofluid_params.get<int>("LINEAR_SOLVER");
+  const Teuchos::ParameterList& solver_params =
+      Global::Problem::instance()->solver_params(linear_solver_num);
+  const auto solver_type =
+      Teuchos::getIntegralValue<Core::LinearSolver::SolverType>(solver_params, "SOLVER");
   // no need to do the rest for direct solvers
-  if (solvertype == Core::LinearSolver::SolverType::umfpack or
-      solvertype == Core::LinearSolver::SolverType::superlu)
+  if (solver_type == Core::LinearSolver::SolverType::umfpack or
+      solver_type == Core::LinearSolver::SolverType::superlu)
     return;
 
-  if (solvertype != Core::LinearSolver::SolverType::belos)
+  if (solver_type != Core::LinearSolver::SolverType::belos)
     FOUR_C_THROW("Iterative solver expected");
 
-  const auto azprectype =
-      Teuchos::getIntegralValue<Core::LinearSolver::PreconditionerType>(solverparams, "AZPREC");
+  const auto azprec_type =
+      Teuchos::getIntegralValue<Core::LinearSolver::PreconditionerType>(solver_params, "AZPREC");
 
   // plausibility check
-  switch (azprectype)
+  switch (azprec_type)
   {
     case Core::LinearSolver::PreconditionerType::block_teko:
     {
       // no plausibility checks here
-      // if you forget to declare an xml file you will get an error message anyway
+      // if you forget to declare an xml-file you will get an error message anyway
     }
     break;
     default:
       FOUR_C_THROW("Block Gauss-Seidel preconditioner expected.");
-      break;
   }
 
-  Teuchos::ParameterList& blocksmootherparams1 = solver->params().sublist("Inverse1");
+  Teuchos::ParameterList& block_smoother_params_1 = solver->params().sublist("Inverse1");
   Core::LinearSolver::Parameters::compute_solver_parameters(
-      *porofluid_algorithm_->discretization(), blocksmootherparams1);
+      *porofluid_algorithm_->discretization(), block_smoother_params_1);
 
-  Teuchos::ParameterList& blocksmootherparams2 = solver->params().sublist("Inverse2");
-  Core::LinearSolver::Parameters::compute_solver_parameters(*arterydis_, blocksmootherparams2);
+  Teuchos::ParameterList& block_smoother_params_2 = solver->params().sublist("Inverse2");
+  Core::LinearSolver::Parameters::compute_solver_parameters(*artery_dis_, block_smoother_params_2);
 }
 
 /*--------------------------------------------------------------------------*
- | solve linear system of equations                        kremheller 04/18 |
  *--------------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::linear_solve(std::shared_ptr<Core::LinAlg::Solver> solver,
-    std::shared_ptr<Core::LinAlg::SparseOperator> sysmat,
-    std::shared_ptr<Core::LinAlg::Vector<double>> increment,
-    std::shared_ptr<Core::LinAlg::Vector<double>> residual,
-    Core::LinAlg::SolverParams& solver_params)
+void PoroPressureBased::MeshtyingArtery::linear_solve(
+    const std::shared_ptr<Core::LinAlg::Solver> solver,
+    Core::LinAlg::SolverParams& solver_params) const
 {
-  comb_systemmatrix_->complete();
+  global_sysmat_->complete();
 
-  comb_increment_->put_scalar(0.0);
+  global_increment_->put_scalar(0.0);
 
   // standard solver call
   // system is ready to solve since Dirichlet Boundary conditions have been applied in
   // setup_system_matrix or Evaluate
   solver_params.refactor = true;
-  solver->solve(comb_systemmatrix_->epetra_operator(), comb_increment_, rhs_, solver_params);
-
-  return;
+  solver->solve(global_sysmat_->epetra_operator(), global_increment_, global_rhs_, solver_params);
 }
 
 /*----------------------------------------------------------------------*
- | Calculate problem specific norm                     kremheller 03/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::calculate_norms(std::vector<double>& preresnorm,
-    std::vector<double>& incprenorm, std::vector<double>& prenorm,
-    const std::shared_ptr<const Core::LinAlg::Vector<double>> increment)
+void PoroPressureBased::MeshtyingArtery::calculate_norms(
+    std::vector<double>& residual_pressure_norm, std::vector<double>& increment_pressure_norm,
+    std::vector<double>& pressure_norm) const
 {
-  preresnorm.resize(2);
-  incprenorm.resize(2);
-  prenorm.resize(2);
+  residual_pressure_norm.resize(2);
+  increment_pressure_norm.resize(2);
+  pressure_norm.resize(2);
 
-  prenorm[0] = calculate_vector_norm(vectornorminc_, *porofluid_algorithm_->phinp());
-  prenorm[1] = calculate_vector_norm(vectornorminc_, *artnettimint_->pressurenp());
+  pressure_norm[0] = calculate_vector_norm(vector_norm_inc_, *porofluid_algorithm_->phinp());
+  pressure_norm[1] = calculate_vector_norm(vector_norm_inc_, *artery_algorithm_->pressurenp());
 
-  std::shared_ptr<const Core::LinAlg::Vector<double>> arterypressinc;
-  std::shared_ptr<const Core::LinAlg::Vector<double>> porofluidinc;
+  std::shared_ptr<const Core::LinAlg::Vector<double>> artery_pressure_increment;
+  std::shared_ptr<const Core::LinAlg::Vector<double>> porofluid_increment;
 
-  arttoporofluidcoupling_->extract_single_field_vectors(
-      comb_increment_, porofluidinc, arterypressinc);
+  artery_porofluid_coupling_algorithm_->extract_single_field_vectors(
+      global_increment_, porofluid_increment, artery_pressure_increment);
 
-  incprenorm[0] = calculate_vector_norm(vectornorminc_, *porofluidinc);
-  incprenorm[1] = calculate_vector_norm(vectornorminc_, *arterypressinc);
+  increment_pressure_norm[0] = calculate_vector_norm(vector_norm_inc_, *porofluid_increment);
+  increment_pressure_norm[1] = calculate_vector_norm(vector_norm_inc_, *artery_pressure_increment);
 
-  std::shared_ptr<const Core::LinAlg::Vector<double>> arterypressrhs;
-  std::shared_ptr<const Core::LinAlg::Vector<double>> porofluidrhs;
+  std::shared_ptr<const Core::LinAlg::Vector<double>> artery_pressure_rhs;
+  std::shared_ptr<const Core::LinAlg::Vector<double>> porofluid_rhs;
 
-  arttoporofluidcoupling_->extract_single_field_vectors(rhs_, porofluidrhs, arterypressrhs);
+  artery_porofluid_coupling_algorithm_->extract_single_field_vectors(
+      global_rhs_, porofluid_rhs, artery_pressure_rhs);
 
-  preresnorm[0] = calculate_vector_norm(vectornormfres_, *porofluidrhs);
-  preresnorm[1] = calculate_vector_norm(vectornormfres_, *arterypressrhs);
-
-  return;
+  residual_pressure_norm[0] = calculate_vector_norm(vector_norm_res_, *porofluid_rhs);
+  residual_pressure_norm[1] = calculate_vector_norm(vector_norm_res_, *artery_pressure_rhs);
 }
 
 /*----------------------------------------------------------------------*
- | create result test for this field                   kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::create_field_test()
+void PoroPressureBased::MeshtyingArtery::create_result_test() const
 {
-  std::shared_ptr<Core::Utils::ResultTest> arteryresulttest = artnettimint_->create_field_test();
-  Global::Problem::instance()->add_field_test(arteryresulttest);
-  return;
+  const std::shared_ptr<Core::Utils::ResultTest> artery_result_test =
+      artery_algorithm_->create_field_test();
+  Global::Problem::instance()->add_field_test(artery_result_test);
 }
 
 /*----------------------------------------------------------------------*
- |  read restart data                                  kremheller 04/18 |
  -----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::read_restart(const int step)
+void PoroPressureBased::MeshtyingArtery::read_restart(const int step) const
 {
-  artnettimint_->read_restart(step);
-
-  return;
+  artery_algorithm_->read_restart(step);
 }
 
 /*----------------------------------------------------------------------*
- | output of solution vector to BINIO                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::output()
+void PoroPressureBased::MeshtyingArtery::output() const
 {
-  if (porofluid_algorithm_->step() != 0) artnettimint_->output(false, nullptr);
-
-  return;
+  if (porofluid_algorithm_->step() != 0) artery_algorithm_->output(false, nullptr);
 }
 
 /*----------------------------------------------------------------------*
- | evaluate matrix and rhs                             kremheller 04/18 |
  *----------------------------------------------------------------------*/
-void PoroPressureBased::MeshtyingArtery::evaluate()
+void PoroPressureBased::MeshtyingArtery::evaluate() const
 {
-  arttoporofluidcoupling_->set_solution_vectors(
-      porofluid_algorithm_->phinp(), porofluid_algorithm_->phin(), artnettimint_->pressurenp());
+  artery_porofluid_coupling_algorithm_->set_solution_vectors(
+      porofluid_algorithm_->phinp(), porofluid_algorithm_->phin(), artery_algorithm_->pressurenp());
 
   // evaluate the coupling
-  arttoporofluidcoupling_->evaluate(comb_systemmatrix_, rhs_);
+  artery_porofluid_coupling_algorithm_->evaluate(global_sysmat_, global_rhs_);
 
   // evaluate artery
-  artnettimint_->assemble_mat_and_rhs();
+  artery_algorithm_->assemble_mat_and_rhs();
   // apply DBC
-  artnettimint_->prepare_linear_solve();
+  artery_algorithm_->prepare_linear_solve();
 
   // SetupCoupledArteryPoroFluidSystem();
-  arttoporofluidcoupling_->setup_system(comb_systemmatrix_, rhs_,
-      porofluid_algorithm_->system_matrix(), artnettimint_->system_matrix(),
-      porofluid_algorithm_->rhs(), artnettimint_->rhs(),
-      porofluid_algorithm_->get_dbc_map_extractor(), artnettimint_->get_dbc_map_extractor());
-
-  return;
+  artery_porofluid_coupling_algorithm_->setup_system(global_sysmat_, global_rhs_,
+      porofluid_algorithm_->system_matrix(), artery_algorithm_->system_matrix(),
+      porofluid_algorithm_->rhs(), artery_algorithm_->rhs(),
+      porofluid_algorithm_->get_dbc_map_extractor(), artery_algorithm_->get_dbc_map_extractor());
 }
 
 /*----------------------------------------------------------------------*
- | extract and update                                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
 PoroPressureBased::MeshtyingArtery::extract_and_update_iter(
-    const std::shared_ptr<const Core::LinAlg::Vector<double>> inc)
+    const std::shared_ptr<const Core::LinAlg::Vector<double>> increment) const
 {
-  std::shared_ptr<const Core::LinAlg::Vector<double>> arterypressinc;
-  std::shared_ptr<const Core::LinAlg::Vector<double>> porofluidinc;
+  std::shared_ptr<const Core::LinAlg::Vector<double>> artery_pressure_increment;
+  std::shared_ptr<const Core::LinAlg::Vector<double>> porofluid_increment;
 
-  arttoporofluidcoupling_->extract_single_field_vectors(inc, porofluidinc, arterypressinc);
+  artery_porofluid_coupling_algorithm_->extract_single_field_vectors(
+      increment, porofluid_increment, artery_pressure_increment);
 
-  artnettimint_->update_iter(arterypressinc);
+  artery_algorithm_->update_iter(artery_pressure_increment);
 
-  return porofluidinc;
+  return porofluid_increment;
 }
 
 /*----------------------------------------------------------------------*
- | artery dof row map                                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map> PoroPressureBased::MeshtyingArtery::artery_dof_row_map()
     const
 {
-  return arttoporofluidcoupling_->artery_dof_row_map();
+  return artery_porofluid_coupling_algorithm_->artery_dof_row_map();
 }
 
 /*-----------------------------------------------------------------------*
- | access to block system matrix of artery poro problem kremheller 04/18 |
  *-----------------------------------------------------------------------*/
 std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase>
 PoroPressureBased::MeshtyingArtery::artery_porofluid_sysmat() const
 {
-  return comb_systemmatrix_;
+  return global_sysmat_;
 }
 
 /*----------------------------------------------------------------------*
- | return coupled residual                             kremheller 05/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
 PoroPressureBased::MeshtyingArtery::artery_porofluid_rhs() const
 {
-  return rhs_;
+  return global_rhs_;
 }
 
 /*----------------------------------------------------------------------*
- | extract and update                                  kremheller 04/18 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::MeshtyingArtery::combined_increment(
-    const std::shared_ptr<const Core::LinAlg::Vector<double>> inc) const
+PoroPressureBased::MeshtyingArtery::combined_increment() const
 {
-  return comb_increment_;
+  return global_increment_;
 }
 
 /*----------------------------------------------------------------------*
- | check initial fields                                kremheller 06/18 |
  *----------------------------------------------------------------------*/
 void PoroPressureBased::MeshtyingArtery::check_initial_fields(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont) const
+    const std::shared_ptr<const Core::LinAlg::Vector<double>> vector_homogenized) const
 {
-  arttoporofluidcoupling_->check_initial_fields(vec_cont, artnettimint_->pressurenp());
-  return;
+  artery_porofluid_coupling_algorithm_->check_initial_fields(
+      vector_homogenized, artery_algorithm_->pressurenp());
 }
 
 /*-------------------------------------------------------------------------*
- | set element pairs that are close                       kremheller 03/19 |
  *------------------------------------------------------------------------ */
-void PoroPressureBased::MeshtyingArtery::set_nearby_ele_pairs(
-    const std::map<int, std::set<int>>* nearbyelepairs)
+void PoroPressureBased::MeshtyingArtery::set_nearby_elepairs(
+    const std::map<int, std::set<int>>* nearby_elepairs) const
 {
-  arttoporofluidcoupling_->set_nearby_ele_pairs(nearbyelepairs);
-  return;
+  artery_porofluid_coupling_algorithm_->set_nearby_ele_pairs(nearby_elepairs);
 }
 
 /*-------------------------------------------------------------------------*
- | setup the strategy                                     kremheller 03/19 |
  *------------------------------------------------------------------------ */
-void PoroPressureBased::MeshtyingArtery::setup()
+void PoroPressureBased::MeshtyingArtery::setup() const
 {
-  arttoporofluidcoupling_->setup();
-  return;
+  artery_porofluid_coupling_algorithm_->setup();
 }
 
 /*----------------------------------------------------------------------*
- | apply mesh movement                                 kremheller 06/18 |
  *----------------------------------------------------------------------*/
 void PoroPressureBased::MeshtyingArtery::apply_mesh_movement() const
 {
-  arttoporofluidcoupling_->apply_mesh_movement();
-  return;
+  artery_porofluid_coupling_algorithm_->apply_mesh_movement();
 }
 
 /*----------------------------------------------------------------------*
- | access to blood vessel volume fraction              kremheller 10/19 |
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::MeshtyingArtery::blood_vessel_volume_fraction()
+PoroPressureBased::MeshtyingArtery::blood_vessel_volume_fraction() const
 {
-  return arttoporofluidcoupling_->blood_vessel_volume_fraction();
+  return artery_porofluid_coupling_algorithm_->blood_vessel_volume_fraction();
 }
 
 FOUR_C_NAMESPACE_CLOSE

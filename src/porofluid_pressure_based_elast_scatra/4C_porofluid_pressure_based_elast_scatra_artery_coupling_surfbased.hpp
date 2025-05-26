@@ -17,11 +17,13 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace PoroPressureBased
 {
-  //! Line based coupling between artery network and poromultiphasescatra algorithm
-  class PoroMultiPhaseScaTraArtCouplSurfBased : public PoroMultiPhaseScaTraArtCouplNonConforming
+  //! Surface-based coupling between artery network and porofluid-elasticity-scatra algorithm
+  class PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm
+      : public PorofluidElastScatraArteryCouplingNonConformingAlgorithm
   {
    public:
-    PoroMultiPhaseScaTraArtCouplSurfBased(std::shared_ptr<Core::FE::Discretization> arterydis,
+    PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm(
+        std::shared_ptr<Core::FE::Discretization> arterydis,
         std::shared_ptr<Core::FE::Discretization> contdis,
         const Teuchos::ParameterList& couplingparams, const std::string& condname,
         const std::string& artcoupleddofname, const std::string& contcoupleddofname);
@@ -58,20 +60,20 @@ namespace PoroPressureBased
 
     /*!
      * @brief et the artery diameter in material to be able to use it on 1D discretization
-     * \note nothing to do for surface-based formulation since varying diameter not yet possible
+     * \note nothing to do for surface-based formulation since variable diameter not yet possible
      */
-    void set_artery_diam_in_material() override {};
+    void set_artery_diameter_in_material() override {};
 
     /*!
      * @brief reset the integrated diameter vector to zero
-     * \note nothing to do for surface-based formulation since varying diameter not yet possible
+     * \note nothing to do for surface-based formulation since variable diameter not yet possible
      */
-    void reset_integrated_diam_to_zero() override {};
+    void reset_integrated_diameter_to_zero() override {};
 
     /*!
      * @brief evaluate additional linearization of (integrated) element diameter dependent terms
      * (Hagen-Poiseuille)
-     * \note nothing to do for surface-based formulation since varying diameter not yet possible
+     * \note nothing to do for surface-based formulation since variable diameter not yet possible
      */
     void evaluate_additional_linearizationof_integrated_diam() override {};
 
@@ -79,7 +81,7 @@ namespace PoroPressureBased
     std::vector<double> get_ele_segment_lengths(const int artelegid) override { return {2.0}; };
 
     //! print out the coupling method
-    void print_out_coupling_method() const override;
+    void print_coupling_method() const override;
   };
 }  // namespace PoroPressureBased
 

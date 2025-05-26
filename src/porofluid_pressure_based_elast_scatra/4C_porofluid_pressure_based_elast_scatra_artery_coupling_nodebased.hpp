@@ -25,11 +25,13 @@ namespace FSI
 
 namespace PoroPressureBased
 {
-  //! Node based coupling between artery network and poromultiphasescatra algorithm
-  class PoroMultiPhaseScaTraArtCouplNodeBased : public PoroMultiPhaseScaTraArtCouplBase
+  //! Node based coupling between artery network and porofluid-elasticity-scatra algorithm
+  class PorofluidElastScatraArteryCouplingNodebasedAlgorithm
+      : public PorofluidElastScatraArteryCouplingBaseAlgorithm
   {
    public:
-    PoroMultiPhaseScaTraArtCouplNodeBased(std::shared_ptr<Core::FE::Discretization> arterydis,
+    PorofluidElastScatraArteryCouplingNodebasedAlgorithm(
+        std::shared_ptr<Core::FE::Discretization> arterydis,
         std::shared_ptr<Core::FE::Discretization> contdis,
         const Teuchos::ParameterList& meshtyingparams, const std::string& condname,
         const std::string& artcoupleddofname, const std::string& contcoupleddofname);
@@ -58,7 +60,7 @@ namespace PoroPressureBased
      * @param[in]   vec_cont vector containing quantities from continuous field
      * @param[in]   vec_art vector containing quantities from artery field
      */
-    void setup_vector(std::shared_ptr<Core::LinAlg::Vector<double>> vec,
+    void setup_global_vector(std::shared_ptr<Core::LinAlg::Vector<double>> vec,
         std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont,
         std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art) override;
 
@@ -96,7 +98,7 @@ namespace PoroPressureBased
     std::shared_ptr<const Core::LinAlg::Vector<double>> blood_vessel_volume_fraction() override;
 
     //! print out the coupling method
-    void print_out_coupling_method() const override;
+    void print_coupling_method() const override;
 
    private:
     //! set-up of global rhs vector of coupled problem

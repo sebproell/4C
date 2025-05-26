@@ -31,30 +31,34 @@ namespace PoroPressureBased
   // forward declaration
   class PoroMultiPhaseScatraArteryCouplingPairBase;
 
-  //! Line based coupling between artery network and poromultiphasescatra algorithm
-  class PoroMultiPhaseScaTraArtCouplNonConforming : public PoroMultiPhaseScaTraArtCouplBase
+  //! Non-conforming coupling between artery network and porofluid-elasticity-scatra algorithm
+  class PorofluidElastScatraArteryCouplingNonConformingAlgorithm
+      : public PorofluidElastScatraArteryCouplingBaseAlgorithm
   {
    public:
-    PoroMultiPhaseScaTraArtCouplNonConforming(std::shared_ptr<Core::FE::Discretization> arterydis,
-        std::shared_ptr<Core::FE::Discretization> contdis,
-        const Teuchos::ParameterList& couplingparams, const std::string& condname,
-        const std::string& artcoupleddofname, const std::string& contcoupleddofname);
+    PorofluidElastScatraArteryCouplingNonConformingAlgorithm(
+        std::shared_ptr<Core::FE::Discretization> artery_dis,
+        std::shared_ptr<Core::FE::Discretization> homogenized_dis,
+        const Teuchos::ParameterList& coupling_params, const std::string& condition_name,
+        const std::string& artery_coupled_dof_name,
+        const std::string& homogenized_coupled_dof_name);
 
    protected:
     //! Evaluate the 1D-3D coupling
     void evaluate(std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
         std::shared_ptr<Core::LinAlg::Vector<double>> rhs) override;
 
-    //! set-up of linear system of equations of coupled problem
+    //! set up the global system of equations of the coupled problem
     void setup_system(Core::LinAlg::BlockSparseMatrixBase& sysmat,
-        std::shared_ptr<Core::LinAlg::Vector<double>> rhs, Core::LinAlg::SparseMatrix& sysmat_cont,
-        Core::LinAlg::SparseMatrix& sysmat_art,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_cont,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_art,
-        const Core::LinAlg::MapExtractor& dbcmap_cont, const Core::LinAlg::Map& dbcmap_art,
-        const Core::LinAlg::Map& dbcmap_art_with_collapsed);
+        std::shared_ptr<Core::LinAlg::Vector<double>> rhs,
+        Core::LinAlg::SparseMatrix& sysmat_homogenized, Core::LinAlg::SparseMatrix& sysmat_artery,
+        std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_homogenized,
+        std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_artery,
+        const Core::LinAlg::MapExtractor& dbcmap_homogenized,
+        const Core::LinAlg::Map& dbcmap_artery,
+        const Core::LinAlg::Map& dbcmap_artery_with_collapsed) const;
 
-    //! setup the strategy
+    //! set up the strategy
     void setup() override;
 
     //! evaluate additional linearization of (integrated) element diameter dependent terms
@@ -62,66 +66,66 @@ namespace PoroPressureBased
     virtual void evaluate_additional_linearizationof_integrated_diam() = 0;
 
     //! FE-assemble into global force and stiffness matrix
-    virtual void fe_assemble_ele_force_stiff_into_system_vector_matrix(const int& ele1gid,
-        const int& ele2gid, const double& integrated_diam,
-        std::vector<Core::LinAlg::SerialDenseVector> const& elevec,
-        std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> const& elemat,
+    virtual void assemble(const int& ele1_gid, const int& ele2_gid,
+        const double& integrated_diameter,
+        std::vector<Core::LinAlg::SerialDenseVector> const& ele_rhs,
+        std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> const& ele_matrix,
         std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
         std::shared_ptr<Core::LinAlg::Vector<double>> rhs);
 
-    //! set flag if varying diameter has to be calculated
-    virtual void set_varying_diam_flag();
+    //! set flag if variable diameter has to be calculated
+    virtual void set_flag_variable_diameter();
 
-    //! print out the coupling method
-    void print_out_coupling_method() const override;
+    //! print the coupling method
+    void print_coupling_method() const override;
 
-    //! the parameters
-    const Teuchos::ParameterList& couplingparams_;
+    //! coupling parameters
+    const Teuchos::ParameterList& coupling_params_;
 
     //! name of the condition
-    const std::string condname_;
+    const std::string condition_name_;
 
-    //! have the managers been set?
-    bool porofluidmanagersset_;
+    //! have the porofluid-managers been initialized?
+    bool porofluid_managers_initialized_;
 
     //! has setup() been called
-    bool issetup_;
+    bool is_setup_;
 
     //! is it a pure fluid problem
-    bool porofluidprob_;
+    bool pure_porofluid_problem_;
 
-    //! does it have a varying (by-function)-diameter
-    bool has_varying_diam_;
+    //! does it have a variable (by-function)-diameter
+    bool has_variable_diameter_;
 
     //! flag to determine if 'free-hanging' elements should be deleted
-    bool delete_free_hanging_eles_;
+    bool delete_free_hanging_elements_;
 
     //! small connected components whose size is smaller than this fraction of the overall network
     //! size are additionally deleted (even if they have a Dirichlet boundary condition)
-    double delete_free_hanging_eles_threshold_;
+    double threshold_delete_free_hanging_elements_;
 
     //! interacting pairs of artery and continuous-discretization elements
-    std::vector<std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>
-        coupl_elepairs_;
+    std::vector<std::shared_ptr<PoroMultiPhaseScatraArteryCouplingPairBase>> coupled_elepairs_;
 
-    //! vector with 1D coupling nodes for ntp coupling
-    std::vector<int> couplingnodes_ntp_;
+    //! vector with 1D coupling nodes for node-to-point coupling
+    std::vector<int> coupling_nodes_for_node_to_point_;
 
     //! type of coupling method
-    Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod coupling_method_;
+    Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod artery_coupling_method_;
 
-    //! phinp for artery dis
+    //! phinp for artery discretization
     std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_art_;
 
     //! coupling matrix (FE)
-    std::shared_ptr<Core::LinAlg::SparseMatrix> FEmat_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> coupling_matrix_;
 
    private:
     //! check if initial fields on coupled DOFs are equal
     //!  \note not performed here since penalty approach will force solution to be
     //!        equal anyway
-    void check_initial_fields(std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art) override {};
+    void check_initial_fields(
+        std::shared_ptr<const Core::LinAlg::Vector<double>> homogenized_vector,
+        std::shared_ptr<const Core::LinAlg::Vector<double>> artery_vector) override {};
 
     //! access artery (1D) dof row map
     std::shared_ptr<const Core::LinAlg::Map> artery_dof_row_map() const override;
@@ -130,69 +134,67 @@ namespace PoroPressureBased
     std::shared_ptr<const Core::LinAlg::Map> dof_row_map() const override;
 
     //! Setup global vector
-    void setup_vector(std::shared_ptr<Core::LinAlg::Vector<double>> vec,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art) override;
+    void setup_global_vector(std::shared_ptr<Core::LinAlg::Vector<double>> global_vector,
+        std::shared_ptr<const Core::LinAlg::Vector<double>> homogenized_vector,
+        std::shared_ptr<const Core::LinAlg::Vector<double>> artery_vector) override;
 
-    void extract_single_field_vectors(std::shared_ptr<const Core::LinAlg::Vector<double>> globalvec,
-        std::shared_ptr<const Core::LinAlg::Vector<double>>& vec_cont,
-        std::shared_ptr<const Core::LinAlg::Vector<double>>& vec_art) override;
+    void extract_single_field_vectors(
+        std::shared_ptr<const Core::LinAlg::Vector<double>> global_vector,
+        std::shared_ptr<const Core::LinAlg::Vector<double>>& homogenized_vector,
+        std::shared_ptr<const Core::LinAlg::Vector<double>>& artery_vector) override;
 
     //! set solution vector of single fields
-    void set_solution_vectors(std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_cont,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> phin_cont,
-        std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_art) override;
+    void set_solution_vectors(std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_homogenized,
+        std::shared_ptr<const Core::LinAlg::Vector<double>> phin_homogenized,
+        std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_artery) override;
 
     //! init the strategy
     void init() override;
 
     //! set the element pairs that are close as found by search algorithm
-    void set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearbyelepairs) override;
+    void set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearby_ele_pairs) override;
 
-    //! access to blood vessel volume fraction
+    //! access to the blood vessel volume fraction
     std::shared_ptr<const Core::LinAlg::Vector<double>> blood_vessel_volume_fraction() override;
 
-    //! create interaction pairs for line- or surfacebased coupling (GPTS and MP)
-    void create_coupling_pairs_line_surf_based();
+    //! create interaction pairs for line- or surface-based coupling (GPTS and MP)
+    void create_coupling_pairs_line_surface_based();
 
-    //! create interaction pairs for ntp coupling
-    void create_coupling_pairs_ntp();
+    //! create interaction pairs for node-to-point coupling
+    void create_coupling_pairs_node_to_point();
 
     //! calculate the volume fraction occupied by blood vessels
     void calculate_blood_vessel_volume_fraction();
 
-    //! get the Id from 1D nodes for coupling
-    void get_coupling_idsfrom_input();
+    //! get the node Id from 1D nodes from the input file for node-to-point coupling
+    void get_coupling_nodes_from_input_node_to_point();
 
     //! evaluate the pairs
     void evaluate_coupling_pairs(std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
         std::shared_ptr<Core::LinAlg::Vector<double>> rhs);
 
     //! FE-assemble into global D, M and kappa (MP case)
-    void fe_assemble_dm_kappa(const int& ele1gid, const int& ele2gid,
+    void assemble_mortar_matrices_and_vector(const int& ele1_gid, const int& ele2_gid,
         const Core::LinAlg::SerialDenseMatrix& D_ele, const Core::LinAlg::SerialDenseMatrix& M_ele,
-        const Core::LinAlg::SerialDenseVector& Kappa_ele);
+        const Core::LinAlg::SerialDenseVector& Kappa_ele) const;
 
     //! sum D and M into global force and stiffness matrix
-    void sum_dm_into_global_force_stiff(Core::LinAlg::BlockSparseMatrixBase& sysmat,
-        std::shared_ptr<Core::LinAlg::Vector<double>> rhs);
+    void sum_mortar_matrices_into_global_matrix(Core::LinAlg::BlockSparseMatrixBase& sysmat,
+        const std::shared_ptr<Core::LinAlg::Vector<double>> rhs) const;
 
-    //! invert kappa vector
-    void invert_kappa();
-
-    //! return appropriate internal implementation class (acts as a simple factory to create single
-    //! pairs)
-    static std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>
-    create_new_artery_coupling_pair(std::vector<Core::Elements::Element const*> const& ele_ptrs);
+    //! return appropriate internal implementation class
+    //! (acts as a simple factory to create single pairs)
+    static std::shared_ptr<PoroMultiPhaseScatraArteryCouplingPairBase>
+    create_new_artery_coupling_pair(std::vector<Core::Elements::Element const*> const& elements);
 
     //! set the artery diameter in material to be able to use it on 1D discretization
-    virtual void set_artery_diam_in_material() = 0;
+    virtual void set_artery_diameter_in_material() = 0;
 
-    //! get the segment lengths of element 'artelegid'
-    virtual std::vector<double> get_ele_segment_lengths(const int artelegid) = 0;
+    //! get the segment lengths of element 'artery_ele_gid'
+    virtual std::vector<double> get_ele_segment_lengths(int artery_ele_gid) = 0;
 
     //! reset the integrated diameter vector to zero
-    virtual void reset_integrated_diam_to_zero() = 0;
+    virtual void reset_integrated_diameter_to_zero() = 0;
 
     //! fill Function and Scale vectors as read from input file
     void fill_function_and_scale_vectors();
@@ -200,40 +202,41 @@ namespace PoroPressureBased
     //! set the right-hand side factor for time integration
     void set_time_fac_rhs();
 
-    //! right hand side factor for artery time integration
-    double timefacrhs_art_;
-    //! right hand side factor for time integration of 2D/3D discretization
-    double timefacrhs_cont_;
+    //! right-hand side factor for artery time integration
+    double timefacrhs_artery_;
+
+    //! right-hand side factor for time integration of 2D/3D discretization
+    double timefacrhs_homogenized_;
 
     //! result of brute force search
-    std::map<int, std::set<int>> nearbyelepairs_;
+    std::map<int, std::set<int>> nearby_elepairs_;
 
-    //! phinp for continuous dis
-    std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_cont_;
+    //! phinp for homogenized discretization
+    std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_homogenized_;
 
-    //! phin for continuous dis
-    std::shared_ptr<const Core::LinAlg::Vector<double>> phin_cont_;
+    //! phin for homogenized discretization
+    std::shared_ptr<const Core::LinAlg::Vector<double>> phin_homogenized_;
 
-    //! zeros for continuous dis
-    std::shared_ptr<const Core::LinAlg::Vector<double>> zeros_cont_;
+    //! zeros for homogenized discretization
+    std::shared_ptr<const Core::LinAlg::Vector<double>> zeros_homogenized_;
 
-    //! zeros for artery dis
-    std::shared_ptr<const Core::LinAlg::Vector<double>> zeros_art_;
+    //! zeros for artery discretization
+    std::shared_ptr<const Core::LinAlg::Vector<double>> zeros_artery_;
 
     //! scale and function-vector
-    std::vector<std::vector<int>> scale_vec_;
-    std::vector<std::vector<int>> funct_vec_;
+    std::vector<std::vector<int>> scale_vector_;
+    std::vector<std::vector<int>> function_vector_;
 
     //! mortar coupling matrices
-    std::shared_ptr<Core::LinAlg::SparseMatrix> d_;
-    std::shared_ptr<Core::LinAlg::SparseMatrix> m_;
-    std::shared_ptr<Epetra_FEVector> kappa_inv_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> mortar_matrix_d_;
+    std::shared_ptr<Core::LinAlg::SparseMatrix> mortar_matrix_m_;
+    std::shared_ptr<Epetra_FEVector> mortar_kappa_inv_;
 
     //! penalty parameter
-    double pp_;
+    double penalty_parameter_;
 
     //! coupling rhs-vector (FE)
-    std::shared_ptr<Epetra_FEVector> fe_rhs_;
+    std::shared_ptr<Epetra_FEVector> coupling_rhs_vector_;
   };
 }  // namespace PoroPressureBased
 

@@ -106,9 +106,9 @@ namespace PoroPressureBased
         Core::LinAlg::SerialDenseMatrix* stiffmat11,
         Core::LinAlg::SerialDenseMatrix* stiffmat12) = 0;
 
-    //! flag if diameter function is active, i.e., varying diameter linearization need to be
+    //! flag if diameter function is active, i.e., variable diameter linearization needs to be
     //! calculated
-    virtual bool diam_function_active() = 0;
+    virtual bool variable_diameter_active() = 0;
 
     //! reset state
     virtual void reset_state(std::shared_ptr<Core::FE::Discretization> contdis,
@@ -186,9 +186,9 @@ namespace PoroPressureBased
     void delete_unnecessary_gps(
         std::shared_ptr<Core::LinAlg::MultiVector<double>> gp_vector) override;
 
-    //! flag if diameter function is active, i.e., varying diameter linearization need to be
+    //! flag if diameter function is active, i.e., variable diameter linearization needs to be
     //! calculated
-    bool diam_function_active() override { return diam_funct_active_; }
+    bool variable_diameter_active() override { return variable_diameter_active_; }
 
     //! reset state
     void reset_state(std::shared_ptr<Core::FE::Discretization> contdis,
@@ -512,7 +512,7 @@ namespace PoroPressureBased
     bool funct_coupl_active_;
 
     //! indicates if diameter function is active, i.e, if diameter function is defined
-    bool diam_funct_active_;
+    bool variable_diameter_active_;
 
     //! so far, it is assumed that artery elements always follow the deformation of the
     //! underlying porous medium hence, we actually have to evaluate them in current

@@ -13,15 +13,14 @@
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
-#include "4C_linalg_utils_sparse_algebra_print.hpp"
 #include "4C_mat_cnst_1d_art.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_defines.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_pair.hpp"
 #include "4C_porofluid_pressure_based_ele_parameter.hpp"
 #include "4C_porofluid_pressure_based_utils.hpp"
-#include "4C_rebalance_binning_based.hpp"
 #include "4C_scatra_ele_parameter_timint.hpp"
 
+#include <boost/range/numeric.hpp>
 #include <Epetra_FEVector.h>
 
 FOUR_C_NAMESPACE_OPEN
@@ -30,141 +29,136 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::
-    PoroMultiPhaseScaTraArtCouplNonConforming(std::shared_ptr<Core::FE::Discretization> arterydis,
-        std::shared_ptr<Core::FE::Discretization> contdis,
-        const Teuchos::ParameterList& couplingparams, const std::string& condname,
-        const std::string& artcoupleddofname, const std::string& contcoupleddofname)
-    : PoroMultiPhaseScaTraArtCouplBase(
-          arterydis, contdis, couplingparams, condname, artcoupleddofname, contcoupleddofname),
-      couplingparams_(couplingparams),
-      condname_(condname),
-      porofluidmanagersset_(false),
-      issetup_(false),
-      porofluidprob_(false),
-      has_varying_diam_(false),
-      delete_free_hanging_eles_(Global::Problem::instance()
+PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    PorofluidElastScatraArteryCouplingNonConformingAlgorithm(
+        const std::shared_ptr<Core::FE::Discretization> artery_dis,
+        const std::shared_ptr<Core::FE::Discretization> homogenized_dis,
+        const Teuchos::ParameterList& coupling_params, const std::string& condition_name,
+        const std::string& artery_coupled_dof_name, const std::string& homogenized_coupled_dof_name)
+    : PorofluidElastScatraArteryCouplingBaseAlgorithm(artery_dis, homogenized_dis, coupling_params,
+          artery_coupled_dof_name, homogenized_coupled_dof_name),
+      coupling_params_(coupling_params),
+      condition_name_(condition_name),
+      porofluid_managers_initialized_(false),
+      is_setup_(false),
+      pure_porofluid_problem_(false),
+      has_variable_diameter_(false),
+      delete_free_hanging_elements_(Global::Problem::instance()
               ->poro_fluid_multi_phase_dynamic_params()
               .sublist("ARTERY COUPLING")
               .get<bool>("DELETE_FREE_HANGING_ELES")),
-      delete_free_hanging_eles_threshold_(Global::Problem::instance()
+      threshold_delete_free_hanging_elements_(Global::Problem::instance()
               ->poro_fluid_multi_phase_dynamic_params()
               .sublist("ARTERY COUPLING")
               .get<double>("DELETE_SMALL_FREE_HANGING_COMPS")),
-      coupling_method_(
+      artery_coupling_method_(
           Teuchos::getIntegralValue<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
-              couplingparams, "ARTERY_COUPLING_METHOD")),
-      timefacrhs_art_(0.0),
-      timefacrhs_cont_(0.0),
-      pp_(couplingparams_.get<double>("PENALTY"))
+              coupling_params, "ARTERY_COUPLING_METHOD")),
+      timefacrhs_artery_(0.0),
+      timefacrhs_homogenized_(0.0),
+      penalty_parameter_(coupling_params_.get<double>("PENALTY"))
 {
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::init()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::init()
 {
   // we do not have a moving mesh
   if (Global::Problem::instance()->get_problem_type() == Core::ProblemType::porofluidmultiphase)
   {
     evaluate_in_ref_config_ = true;
-    porofluidprob_ = true;
+    pure_porofluid_problem_ = true;
   }
 
   // fill the vectors
   fill_function_and_scale_vectors();
 
-  // initialize phinp for continuous dis
-  phinp_cont_ = std::make_shared<Core::LinAlg::Vector<double>>(*contdis_->dof_row_map(), true);
-  // initialize phin for continuous dis
-  phin_cont_ = std::make_shared<Core::LinAlg::Vector<double>>(*contdis_->dof_row_map(), true);
-  // initialize phinp for artery dis
-  phinp_art_ = std::make_shared<Core::LinAlg::Vector<double>>(*arterydis_->dof_row_map(), true);
+  // initialize phinp for the homogenized discretization
+  phinp_homogenized_ =
+      std::make_shared<Core::LinAlg::Vector<double>>(*homogenized_dis_->dof_row_map(), true);
+  // initialize phin for the homogenized discretization
+  phin_homogenized_ =
+      std::make_shared<Core::LinAlg::Vector<double>>(*homogenized_dis_->dof_row_map(), true);
+  // initialize phinp for the artery discretization
+  phinp_art_ = std::make_shared<Core::LinAlg::Vector<double>>(*artery_dis_->dof_row_map(), true);
 
-  // initialize phinp for continuous dis
-  zeros_cont_ = std::make_shared<Core::LinAlg::Vector<double>>(*contdis_->dof_row_map(), true);
-  // initialize phinp for artery dis
-  zeros_art_ = std::make_shared<Core::LinAlg::Vector<double>>(*arterydis_->dof_row_map(), true);
+  zeros_homogenized_ =
+      std::make_shared<Core::LinAlg::Vector<double>>(*homogenized_dis_->dof_row_map(), true);
+  zeros_artery_ = std::make_shared<Core::LinAlg::Vector<double>>(*artery_dis_->dof_row_map(), true);
 
-  // -------------------------------------------------------------------
-  // create empty D and M matrices (27 adjacent nodes as 'good' guess)
-  // -------------------------------------------------------------------
-  d_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-      *(arterydis_->dof_row_map()), 27, false, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  m_ = std::make_shared<Core::LinAlg::SparseMatrix>(
-      *(arterydis_->dof_row_map()), 27, false, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
-  kappa_inv_ =
-      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map()->get_epetra_block_map(), true);
+  // create empty mortar D and M matrices (27 adjacent nodes as 'good' guess)
+  mortar_matrix_d_ = std::make_shared<Core::LinAlg::SparseMatrix>(
+      *(artery_dis_->dof_row_map()), 27, false, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
+  mortar_matrix_m_ = std::make_shared<Core::LinAlg::SparseMatrix>(
+      *(artery_dis_->dof_row_map()), 27, false, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
+  mortar_kappa_inv_ =
+      std::make_shared<Epetra_FEVector>(artery_dis_->dof_row_map()->get_epetra_map(), true);
 
-  // full map of continuous and artery dofs
+  // full map of homogenized and artery dofs
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> maps;
-  maps.push_back(std::make_shared<Core::LinAlg::Map>(*contdis_->dof_row_map()));
-  maps.push_back(std::make_shared<Core::LinAlg::Map>(*arterydis_->dof_row_map()));
+  maps.push_back(std::make_shared<Core::LinAlg::Map>(*homogenized_dis_->dof_row_map()));
+  maps.push_back(std::make_shared<Core::LinAlg::Map>(*artery_dis_->dof_row_map()));
 
   fullmap_ = Core::LinAlg::MultiMapExtractor::merge_maps(maps);
   /// dof row map of coupled problem split in (field) blocks
-  globalex_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
-  globalex_->setup(*fullmap_, maps);
+  global_extractor_ = std::make_shared<Core::LinAlg::MultiMapExtractor>();
+  global_extractor_->setup(*fullmap_, maps);
 
-  FEmat_ = std::make_shared<Core::LinAlg::SparseMatrix>(
+  coupling_matrix_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *fullmap_, 81, true, true, Core::LinAlg::SparseMatrix::FE_MATRIX);
 
-  fe_rhs_ = std::make_shared<Epetra_FEVector>(fullmap_->get_epetra_block_map());
+  coupling_rhs_vector_ = std::make_shared<Epetra_FEVector>(fullmap_->get_epetra_map());
 
-  // check global map extractor
-  globalex_->check_for_valid_map_extractor();
+  global_extractor_->check_for_valid_map_extractor();
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::setup()
 {
-  // get the coupling method
-  auto arterycoupl =
-      Teuchos::getIntegralValue<Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod>(
-          Global::Problem::instance()->poro_fluid_multi_phase_dynamic_params().sublist(
-              "ARTERY COUPLING"),
-          "ARTERY_COUPLING_METHOD");
-
   // create the pairs
-  if (arterycoupl == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp)
+  if (artery_coupling_method_ ==
+      Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp)
   {
-    get_coupling_idsfrom_input();
-    if (couplingnodes_ntp_.size() == 0)
+    get_coupling_nodes_from_input_node_to_point();
+    if (coupling_nodes_for_node_to_point_.size() == 0)
       FOUR_C_THROW("No 1D Coupling Node Ids found for NTP Coupling");
-    create_coupling_pairs_ntp();
+    create_coupling_pairs_node_to_point();
   }
   else
   {
-    create_coupling_pairs_line_surf_based();
+    create_coupling_pairs_line_surface_based();
   }
 
-
-  // check if varying diameter is used
-  if (contdis_->name() == "porofluid") set_varying_diam_flag();
+  // check if variable diameter is used
+  if (homogenized_dis_->name() == "porofluid") set_flag_variable_diameter();
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::get_coupling_idsfrom_input()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    get_coupling_nodes_from_input_node_to_point()
 {
-  // get 1D coupling IDs from Input
-  std::vector<const Core::Conditions::Condition*> artCoupcond;
+  FOUR_C_ASSERT(artery_coupling_method_ ==
+                    Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp,
+      "This method should only be called for node-to-point coupling.");
 
-  arterydis_->get_condition(condname_, artCoupcond);
+  // get the node IDs of coupled 1D nodes from the input file
+  std::vector<const Core::Conditions::Condition*> artery_coupling_ids;
+  artery_dis_->get_condition(condition_name_, artery_coupling_ids);
+  coupling_nodes_for_node_to_point_.resize(artery_coupling_ids.size());
 
-  couplingnodes_ntp_.resize(artCoupcond.size());
-
-  for (unsigned iter = 0; iter < artCoupcond.size(); ++iter)
+  for (unsigned iter = 0; iter < artery_coupling_ids.size(); ++iter)
   {
-    const std::vector<int>* ArteryNodeIds = (artCoupcond[iter])->get_nodes();
-    for (auto couplingids : *ArteryNodeIds)
+    const std::vector<int>* ArteryNodeIds = (artery_coupling_ids[iter])->get_nodes();
+    for (const auto coupling_id : *ArteryNodeIds)
     {
-      couplingnodes_ntp_[iter] = couplingids;
-      if (myrank_ == 0)
+      coupling_nodes_for_node_to_point_[iter] = coupling_id;
+      if (my_mpi_rank_ == 0)
       {
         std::cout << "Artery Coupling Node Id " << iter + 1
-                  << " from Input = " << couplingnodes_ntp_[iter] << "\n";
+                  << " from Input = " << coupling_nodes_for_node_to_point_[iter] << "\n";
       }
     }
   }
@@ -172,20 +166,20 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::get_coupling_
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate(
-    std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
-    std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::evaluate(
+    const std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
+    const std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
-  if (!issetup_) FOUR_C_THROW("setup() has not been called");
+  if (!is_setup_) FOUR_C_THROW("setup() has not been called");
 
-  if (!porofluidmanagersset_)
+  if (!porofluid_managers_initialized_)
   {
     // set the right-hand side time factors (we assume constant time step size here)
     set_time_fac_rhs();
-    for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
-      coupl_elepairs_[i]->setup_fluid_managers_and_materials(
-          contdis_->name(), timefacrhs_art_, timefacrhs_cont_);
-    porofluidmanagersset_ = true;
+    for (const auto& coupled_elepair : coupled_elepairs_)
+      coupled_elepair->setup_fluid_managers_and_materials(
+          homogenized_dis_->name(), timefacrhs_artery_, timefacrhs_homogenized_);
+    porofluid_managers_initialized_ = true;
   }
 
   // evaluate and assemble the pairs
@@ -194,253 +188,252 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate(
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup_system(
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::setup_system(
     Core::LinAlg::BlockSparseMatrixBase& sysmat, std::shared_ptr<Core::LinAlg::Vector<double>> rhs,
-    Core::LinAlg::SparseMatrix& sysmat_cont, Core::LinAlg::SparseMatrix& sysmat_art,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_cont,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_art,
-    const Core::LinAlg::MapExtractor& dbcmap_cont, const Core::LinAlg::Map& dbcmap_art,
-    const Core::LinAlg::Map& dbcmap_art_with_collapsed)
+    Core::LinAlg::SparseMatrix& sysmat_homogenized, Core::LinAlg::SparseMatrix& sysmat_artery,
+    const std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_homogenized,
+    const std::shared_ptr<const Core::LinAlg::Vector<double>> rhs_artery,
+    const Core::LinAlg::MapExtractor& dbcmap_homogenized, const Core::LinAlg::Map& dbcmap_artery,
+    const Core::LinAlg::Map& dbcmap_artery_with_collapsed) const
 {
   // add normal part to rhs
-  rhs->update(1.0, *globalex_->insert_vector(*rhs_cont, 0), 1.0);
-  rhs->update(1.0, *globalex_->insert_vector(*rhs_art, 1), 1.0);
+  rhs->update(1.0, *global_extractor_->insert_vector(*rhs_homogenized, 0), 1.0);
+  rhs->update(1.0, *global_extractor_->insert_vector(*rhs_artery, 1), 1.0);
 
   // apply DBCs
   // 1) on vector
-  Core::LinAlg::apply_dirichlet_to_system(*rhs, *zeros_cont_, *(dbcmap_cont.cond_map()));
-  Core::LinAlg::apply_dirichlet_to_system(*rhs, *zeros_art_, (dbcmap_art));
+  Core::LinAlg::apply_dirichlet_to_system(
+      *rhs, *zeros_homogenized_, *(dbcmap_homogenized.cond_map()));
+  Core::LinAlg::apply_dirichlet_to_system(*rhs, *zeros_artery_, (dbcmap_artery));
   // 2) on OD-matrices
-  sysmat.matrix(0, 1).complete(sysmat_art.range_map(), sysmat_cont.range_map());
-  sysmat.matrix(1, 0).complete(sysmat_cont.range_map(), sysmat_art.range_map());
-  sysmat.matrix(0, 1).apply_dirichlet(*(dbcmap_cont.cond_map()), false);
-  sysmat.matrix(1, 0).apply_dirichlet((dbcmap_art_with_collapsed), false);
+  sysmat.matrix(0, 1).complete(sysmat_artery.range_map(), sysmat_homogenized.range_map());
+  sysmat.matrix(1, 0).complete(sysmat_homogenized.range_map(), sysmat_artery.range_map());
+  sysmat.matrix(0, 1).apply_dirichlet(*(dbcmap_homogenized.cond_map()), false);
+  sysmat.matrix(1, 0).apply_dirichlet((dbcmap_artery_with_collapsed), false);
 
-  // 3) get also the main-diag terms into the global sysmat
-  sysmat.matrix(0, 0).add(sysmat_cont, false, 1.0, 1.0);
-  sysmat.matrix(1, 1).add(sysmat_art, false, 1.0, 1.0);
+  // 3) add the main-diagonal terms into the global sysmat
+  sysmat.matrix(0, 0).add(sysmat_homogenized, false, 1.0, 1.0);
+  sysmat.matrix(1, 1).add(sysmat_artery, false, 1.0, 1.0);
   sysmat.matrix(0, 0).complete();
   sysmat.matrix(1, 1).complete();
   // and apply DBC
-  sysmat.matrix(0, 0).apply_dirichlet(*(dbcmap_cont.cond_map()), true);
-  sysmat.matrix(1, 1).apply_dirichlet((dbcmap_art_with_collapsed), true);
+  sysmat.matrix(0, 0).apply_dirichlet(*(dbcmap_homogenized.cond_map()), true);
+  sysmat.matrix(1, 1).apply_dirichlet((dbcmap_artery_with_collapsed), true);
   // Assign view to 3D system matrix (such that it now includes also contributions from coupling)
-  // this is important! Monolithic algorithms use this matrix
-  sysmat_cont.assign(Core::LinAlg::DataAccess::View, sysmat.matrix(0, 0));
+  // this is necessary for the monolithic solution schemes
+  sysmat_homogenized.assign(Core::LinAlg::DataAccess::View, sysmat.matrix(0, 0));
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::
-    create_coupling_pairs_line_surf_based()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    create_coupling_pairs_line_surface_based()
 {
-  const Teuchos::ParameterList& fluidcouplingparams =
+  const Teuchos::ParameterList& porofluid_coupling_params =
       Global::Problem::instance()->poro_fluid_multi_phase_dynamic_params().sublist(
           "ARTERY COUPLING");
+
   // loop over pairs found by search
-  std::map<int, std::set<int>>::const_iterator nearbyeleiter;
-  int numactive_pairs = 0;
-  for (nearbyeleiter = nearbyelepairs_.begin(); nearbyeleiter != nearbyelepairs_.end();
-      ++nearbyeleiter)
-    numactive_pairs += nearbyeleiter->second.size();
+  std::map<int, std::set<int>>::const_iterator nearby_ele_iter;
+  int num_active_pairs = 0;
+  for (nearby_ele_iter = nearby_elepairs_.begin(); nearby_ele_iter != nearby_elepairs_.end();
+      ++nearby_ele_iter)
+    num_active_pairs += nearby_ele_iter->second.size();
 
-  coupl_elepairs_.resize(numactive_pairs);
+  coupled_elepairs_.resize(num_active_pairs);
 
-  int mypair = 0;
-  for (nearbyeleiter = nearbyelepairs_.begin(); nearbyeleiter != nearbyelepairs_.end();
-      ++nearbyeleiter)
+  int coupled_ele_pair_idx = 0;
+  for (nearby_ele_iter = nearby_elepairs_.begin(); nearby_ele_iter != nearby_elepairs_.end();
+      ++nearby_ele_iter)
   {
-    const int artelegid = nearbyeleiter->first;
-    std::vector<Core::Elements::Element const*> ele_ptrs(2);
-    ele_ptrs[0] = arterydis_->g_element(artelegid);
+    const int artery_ele_gid = nearby_ele_iter->first;
+    std::vector<Core::Elements::Element const*> coupled_elements(2);
+    coupled_elements[0] = artery_dis_->g_element(artery_ele_gid);
 
-    std::set<int>::const_iterator secondeleiter;
-    for (secondeleiter = nearbyeleiter->second.begin();
-        secondeleiter != nearbyeleiter->second.end(); ++secondeleiter)
+    std::set<int>::const_iterator second_ele_iter;
+    for (second_ele_iter = nearby_ele_iter->second.begin();
+        second_ele_iter != nearby_ele_iter->second.end(); ++second_ele_iter)
     {
-      const int contelegid = *secondeleiter;
-      ele_ptrs[1] = contdis_->g_element(contelegid);
-      if (ele_ptrs[1]->owner() == myrank_)
+      const int homogenized_ele_gid = *second_ele_iter;
+      coupled_elements[1] = homogenized_dis_->g_element(homogenized_ele_gid);
+      if (coupled_elements[1]->owner() == my_mpi_rank_)
       {
         // construct, init and setup coupling pairs
-        std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase> newpair =
-            PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::
-                create_new_artery_coupling_pair(ele_ptrs);
-        newpair->init(ele_ptrs, couplingparams_, fluidcouplingparams, coupleddofs_cont_,
-            coupleddofs_art_, scale_vec_, funct_vec_, condname_,
-            couplingparams_.get<double>("PENALTY"));
+        const std::shared_ptr<PoroMultiPhaseScatraArteryCouplingPairBase> current_pair =
+            create_new_artery_coupling_pair(coupled_elements);
+        current_pair->init(coupled_elements, coupling_params_, porofluid_coupling_params,
+            coupled_dofs_homogenized_, coupled_dofs_artery_, scale_vector_, function_vector_,
+            condition_name_, penalty_parameter_);
 
-        // add to list of current contact pairs
-        coupl_elepairs_[mypair] = newpair;
-        mypair++;
+        // add to the list of current contact pairs
+        coupled_elepairs_[coupled_ele_pair_idx] = current_pair;
+        coupled_ele_pair_idx++;
       }
     }
   }
-  coupl_elepairs_.resize(mypair);
+  coupled_elepairs_.resize(coupled_ele_pair_idx);
 
   // output
   int total_numactive_pairs = 0;
-  numactive_pairs = static_cast<int>(coupl_elepairs_.size());
-  Core::Communication::sum_all(&numactive_pairs, &total_numactive_pairs, 1, get_comm());
-
-
-  if (myrank_ == 0)
+  num_active_pairs = static_cast<int>(coupled_elepairs_.size());
+  Core::Communication::sum_all(&num_active_pairs, &total_numactive_pairs, 1, get_comm());
+  if (my_mpi_rank_ == 0)
   {
     std::cout << "\nFound " << total_numactive_pairs
-              << " Artery-to-PoroMultiphaseScatra coupling pairs (segments)" << std::endl;
+              << " Artery-to-PoroMultiphaseScatra coupling pairs (segments)" << '\n';
   }
 
-  // not needed any more
-  nearbyelepairs_.clear();
+  nearby_elepairs_.clear();
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::create_coupling_pairs_ntp()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    create_coupling_pairs_node_to_point()
 {
-  const Teuchos::ParameterList& fluidcouplingparams =
+  FOUR_C_ASSERT(artery_coupling_method_ ==
+                    Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp,
+      "This method should only be called for node-to-point coupling.");
+
+  const Teuchos::ParameterList& porofluid_coupling_params =
       Global::Problem::instance()->poro_fluid_multi_phase_dynamic_params().sublist(
           "ARTERY COUPLING");
 
-  int numactive_pairs = std::accumulate(nearbyelepairs_.begin(), nearbyelepairs_.end(), 0,
-      [](int a, auto b) { return a + (static_cast<int>(b.second.size())); });
+  int num_active_pairs = boost::accumulate(nearby_elepairs_, 0,
+      [](const int a, const auto& b) { return a + (static_cast<int>(b.second.size())); });
 
-  coupl_elepairs_.resize(numactive_pairs);
+  coupled_elepairs_.resize(num_active_pairs);
 
   // loop over pairs found by search
-  int mypair = 0;
-  for (const auto& nearbyeleiter : nearbyelepairs_)
+  int coupled_ele_pair_idx = 0;
+  for (const auto& nearby_ele_iter : nearby_elepairs_)
   {
     // create vector of active coupling pairs
-    std::vector<Core::Elements::Element const*> ele_ptrs(2);
+    std::vector<Core::Elements::Element const*> coupled_elements(2);
     // assign artery element
-    ele_ptrs[0] = arterydis_->g_element(nearbyeleiter.first);
+    coupled_elements[0] = artery_dis_->g_element(nearby_ele_iter.first);
 
     // get nodes of artery element
-    const Core::Nodes::Node* const* artnodes = ele_ptrs[0]->nodes();
+    const Core::Nodes::Node* const* nodes_artery = coupled_elements[0]->nodes();
 
-    // loop over nodes of artery element
-    for (int i = 0; i < ele_ptrs[0]->num_node(); i++)
+    // loop over nodes of the artery element
+    for (int i = 0; i < coupled_elements[0]->num_node(); i++)
     {
       // loop over prescribed couplings nodes from input
-      for (unsigned int j = 0; j < couplingnodes_ntp_.size(); j++)
+      for (unsigned int j = 0; j < coupling_nodes_for_node_to_point_.size(); j++)
       {
         // check if artery node is prescribed coupling node
-        if (artnodes[i]->id() == couplingnodes_ntp_[j])
+        if (nodes_artery[i]->id() == coupling_nodes_for_node_to_point_[j])
         {
           // get coupling type (ARTERY or AIRWAY ?)
-          std::vector<const Core::Conditions::Condition*> coupcond;
-          arterydis_->get_condition(condname_, coupcond);
-          std::string coupling_element_type_ =
-              (coupcond[j])->parameters().get<std::string>("COUPLING_TYPE");
+          std::vector<const Core::Conditions::Condition*> coupling_condition;
+          artery_dis_->get_condition(condition_name_, coupling_condition);
+          const auto coupling_element_type_ =
+              (coupling_condition[j])->parameters().get<std::string>("COUPLING_TYPE");
 
           // recompute coupling dofs
-          recompute_coupled_do_fs_for_ntp(coupcond, j);
+          recompute_coupled_dofs_for_node_to_point_coupling(coupling_condition, j);
 
           // get penalty parameter
-          const auto penalty = coupcond[j]->parameters().get<double>("PENALTY");
+          const auto penalty = coupling_condition[j]->parameters().get<double>("PENALTY");
 
           // get eta (parameter coordinate of corresponding node)
           const int eta_ntp = (i == 0) ? -1 : 1;
 
           // loop over assigned 2D/3D elements
-          for (const auto continuouseleiter : nearbyeleiter.second)
+          for (const auto homogenized_ele_iter : nearby_ele_iter.second)
           {
             // assign 2D/3D element
-            ele_ptrs[1] = contdis_->g_element(continuouseleiter);
+            coupled_elements[1] = homogenized_dis_->g_element(homogenized_ele_iter);
 
             // only those pairs, where the 3D element is owned by this proc actually evaluated by
             // this proc
-            if (ele_ptrs[1]->owner() == myrank_)
+            if (coupled_elements[1]->owner() == my_mpi_rank_)
             {
               // construct, init and setup coupling pairs
-              std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>
-                  newpair = PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::
-                      create_new_artery_coupling_pair(ele_ptrs);
-              newpair->init(ele_ptrs, couplingparams_, fluidcouplingparams, coupleddofs_cont_,
-                  coupleddofs_art_, scale_vec_, funct_vec_, condname_, penalty,
-                  coupling_element_type_, eta_ntp);
-              // add to list of current contact pairs
-              coupl_elepairs_[mypair] = newpair;
-              mypair++;
+              const std::shared_ptr<PoroMultiPhaseScatraArteryCouplingPairBase> current_pair =
+                  create_new_artery_coupling_pair(coupled_elements);
+              current_pair->init(coupled_elements, coupling_params_, porofluid_coupling_params,
+                  coupled_dofs_homogenized_, coupled_dofs_artery_, scale_vector_, function_vector_,
+                  condition_name_, penalty, coupling_element_type_, eta_ntp);
+              // add to the list of current contact pairs
+              coupled_elepairs_[coupled_ele_pair_idx] = current_pair;
+              coupled_ele_pair_idx++;
             }
           }
         }
       }
     }
   }
-  coupl_elepairs_.resize(mypair);
+  coupled_elepairs_.resize(coupled_ele_pair_idx);
 
   // output
-  int total_numactive_pairs = 0;
-  numactive_pairs = static_cast<int>(coupl_elepairs_.size());
-  Core::Communication::sum_all(&numactive_pairs, &total_numactive_pairs, 1, get_comm());
-
-
-  if (myrank_ == 0)
+  int total_num_active_pairs = 0;
+  num_active_pairs = static_cast<int>(coupled_elepairs_.size());
+  Core::Communication::sum_all(&num_active_pairs, &total_num_active_pairs, 1, get_comm());
+  if (my_mpi_rank_ == 0)
   {
-    std::cout << "\nFound " << total_numactive_pairs
-              << " Artery-to-PoroMultiphaseScatra coupling pairs (segments)" << std::endl;
+    std::cout << "\nFound " << total_num_active_pairs
+              << " Artery-to-PoroMultiphaseScatra coupling pairs (segments)" << '\n';
   }
 
-  // not needed any more
-  nearbyelepairs_.clear();
+  nearby_elepairs_.clear();
 }
 
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::set_varying_diam_flag()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    set_flag_variable_diameter()
 {
-  int has_varying_diam = 0;
+  int has_variable_diameter = 0;
   // check all column elements if one of them uses the diameter law by function
-  for (int i = 0; i < arterydis_->num_my_col_elements(); ++i)
+  for (int i = 0; i < artery_dis_->num_my_col_elements(); ++i)
   {
     // pointer to current element
-    Core::Elements::Element* actele = arterydis_->l_col_element(i);
+    const Core::Elements::Element* current_element = artery_dis_->l_col_element(i);
 
     // get the artery-material
-    std::shared_ptr<Mat::Cnst1dArt> arterymat =
-        std::dynamic_pointer_cast<Mat::Cnst1dArt>(actele->material());
-    if (arterymat == nullptr) FOUR_C_THROW("cast to artery material failed");
+    std::shared_ptr<Mat::Cnst1dArt> artery_material =
+        std::dynamic_pointer_cast<Mat::Cnst1dArt>(current_element->material());
+    if (artery_material == nullptr) FOUR_C_THROW("cast to artery material failed");
 
-    if (arterymat->diameter_law() == Mat::PAR::ArteryDiameterLaw::diameterlaw_by_function)
+    if (artery_material->diameter_law() == Mat::PAR::ArteryDiameterLaw::diameterlaw_by_function)
     {
-      has_varying_diam = 1;
+      has_variable_diameter = 1;
       break;
     }
   }
 
   // sum over all procs.
-  int sum_has_varying_diam = 0;
-  Core::Communication::sum_all(&has_varying_diam, &sum_has_varying_diam, 1, get_comm());
-  // if one has a varying diameter set the flag to true
-  if (sum_has_varying_diam > 0) has_varying_diam_ = true;
+  int sum_has_variable_diameter = 0;
+  Core::Communication::sum_all(&has_variable_diameter, &sum_has_variable_diameter, 1, get_comm());
+  // if one has a variable diameter, set the flag to true
+  if (sum_has_variable_diameter > 0) has_variable_diameter_ = true;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate_coupling_pairs(
-    std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
-    std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    evaluate_coupling_pairs(const std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
+        const std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
   // reset
-  if (coupling_method_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp)
+  if (artery_coupling_method_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp)
   {
-    d_->zero();
-    m_->zero();
-    kappa_inv_->PutScalar(0.0);
+    mortar_matrix_d_->zero();
+    mortar_matrix_m_->zero();
+    mortar_kappa_inv_->PutScalar(0.0);
   }
 
-  FEmat_->zero();
-  fe_rhs_->PutScalar(0.0);
+  coupling_matrix_->zero();
+  coupling_rhs_vector_->PutScalar(0.0);
 
   // resulting discrete element force vectors of the two interacting elements
-  std::vector<Core::LinAlg::SerialDenseVector> eleforce(2);
+  std::vector<Core::LinAlg::SerialDenseVector> ele_rhs(2);
 
   // linearizations
-  std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> elestiff(
-      2, std::vector<Core::LinAlg::SerialDenseMatrix>(2));
+  std::vector ele_matrix(2, std::vector<Core::LinAlg::SerialDenseMatrix>(2));
 
   // element mortar coupling matrices
   Core::LinAlg::SerialDenseMatrix D_ele;
@@ -448,243 +441,254 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate_coup
   Core::LinAlg::SerialDenseVector Kappa_ele;
 
   // set states
-  if (contdis_->name() == "porofluid")
+  if (homogenized_dis_->name() == "porofluid")
   {
-    contdis_->set_state("phinp_fluid", *phinp_cont_);
-    contdis_->set_state("phin_fluid", *phin_cont_);
-    arterydis_->set_state("one_d_artery_pressure", *phinp_art_);
-    if (not evaluate_in_ref_config_ && not contdis_->has_state(1, "velocity field"))
+    homogenized_dis_->set_state("phinp_fluid", *phinp_homogenized_);
+    homogenized_dis_->set_state("phin_fluid", *phin_homogenized_);
+    artery_dis_->set_state("one_d_artery_pressure", *phinp_art_);
+    if (not evaluate_in_ref_config_ && not homogenized_dis_->has_state(1, "velocity field"))
       FOUR_C_THROW(
           "evaluation in current configuration wanted but solid phase velocity not available!");
-    if (has_varying_diam_) reset_integrated_diam_to_zero();
+    if (has_variable_diameter_) reset_integrated_diameter_to_zero();
   }
-  else if (contdis_->name() == "scatra")
+  else if (homogenized_dis_->name() == "scatra")
   {
-    contdis_->set_state("phinp", *phinp_cont_);
-    arterydis_->set_state("one_d_artery_phinp", *phinp_art_);
+    homogenized_dis_->set_state("phinp", *phinp_homogenized_);
+    artery_dis_->set_state("one_d_artery_phinp", *phinp_art_);
   }
   else
+  {
     FOUR_C_THROW(
         "Only porofluid and scatra-discretizations are supported for linebased-coupling so far");
-
-  // evaluate all pairs
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
-  {
-    // reset state on pairs
-    coupl_elepairs_[i]->reset_state(contdis_, arterydis_);
-
-    // get the segment lengths
-    const std::vector<double> seglengths = get_ele_segment_lengths(coupl_elepairs_[i]->ele1_gid());
-
-    // evaluate
-    const double integrated_diam = coupl_elepairs_[i]->evaluate(&(eleforce[0]), &(eleforce[1]),
-        &(elestiff[0][0]), &(elestiff[0][1]), &(elestiff[1][0]), &(elestiff[1][1]), &D_ele, &M_ele,
-        &Kappa_ele, seglengths);
-
-    // assemble
-    fe_assemble_ele_force_stiff_into_system_vector_matrix(coupl_elepairs_[i]->ele1_gid(),
-        coupl_elepairs_[i]->ele2_gid(), integrated_diam, eleforce, elestiff, sysmat, rhs);
-
-    // in case of MP, assemble D, M and Kappa
-    if (coupling_method_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp and
-        num_coupled_dofs_ > 0)
-      fe_assemble_dm_kappa(
-          coupl_elepairs_[i]->ele1_gid(), coupl_elepairs_[i]->ele2_gid(), D_ele, M_ele, Kappa_ele);
   }
 
-  // set artery diameter in material to be able to evaluate the 1D elements with varying diameter
-  // and evaluate additional linearization of (integrated) element diameters
-  if (contdis_->name() == "porofluid" && has_varying_diam_)
+  // evaluate all pairs
+  for (const auto& coupled_elepair : coupled_elepairs_)
   {
-    set_artery_diam_in_material();
+    // reset state on pairs
+    coupled_elepair->reset_state(homogenized_dis_, artery_dis_);
+
+    // get the segment lengths
+    const std::vector<double> segment_lengths =
+        get_ele_segment_lengths(coupled_elepair->ele1_gid());
+
+    // evaluate
+    const double integrated_diameter = coupled_elepair->evaluate(&(ele_rhs[0]), &(ele_rhs[1]),
+        &(ele_matrix[0][0]), &(ele_matrix[0][1]), &(ele_matrix[1][0]), &(ele_matrix[1][1]), &D_ele,
+        &M_ele, &Kappa_ele, segment_lengths);
+
+    // assemble
+    assemble(coupled_elepair->ele1_gid(), coupled_elepair->ele2_gid(), integrated_diameter, ele_rhs,
+        ele_matrix, sysmat, rhs);
+
+    // in the case of MP, assemble D, M and Kappa
+    if (artery_coupling_method_ ==
+            Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp and
+        num_coupled_dofs_ > 0)
+      assemble_mortar_matrices_and_vector(
+          coupled_elepair->ele1_gid(), coupled_elepair->ele2_gid(), D_ele, M_ele, Kappa_ele);
+  }
+
+  // set artery diameter in material to be able to evaluate the 1D elements with variable diameter
+  // and evaluate additional linearization of (integrated) element diameters
+  if (homogenized_dis_->name() == "porofluid" && has_variable_diameter_)
+  {
+    set_artery_diameter_in_material();
     evaluate_additional_linearizationof_integrated_diam();
   }
 
-  if (fe_rhs_->GlobalAssemble(Add, false) != 0)
+  if (coupling_rhs_vector_->GlobalAssemble(Add, false) != 0)
     FOUR_C_THROW("GlobalAssemble of right hand side failed");
-  rhs->update(1.0, *fe_rhs_, 0.0);
+  rhs->update(1.0, *coupling_rhs_vector_, 0.0);
 
-  FEmat_->complete();
-  std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> blockartery =
+  coupling_matrix_->complete();
+  const std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> artery_block =
       Core::LinAlg::split_matrix<Core::LinAlg::DefaultBlockMatrixStrategy>(
-          *FEmat_, *globalex_, *globalex_);
+          *coupling_matrix_, *global_extractor_, *global_extractor_);
 
-  blockartery->complete();
-  sysmat->matrix(1, 0).add(blockartery->matrix(1, 0), false, 1.0, 0.0);
-  sysmat->matrix(0, 1).add(blockartery->matrix(0, 1), false, 1.0, 0.0);
-  sysmat->matrix(0, 0).add(blockartery->matrix(0, 0), false, 1.0, 0.0);
-  sysmat->matrix(1, 1).add(blockartery->matrix(1, 1), false, 1.0, 0.0);
+  artery_block->complete();
+  sysmat->matrix(1, 0).add(artery_block->matrix(1, 0), false, 1.0, 0.0);
+  sysmat->matrix(0, 1).add(artery_block->matrix(0, 1), false, 1.0, 0.0);
+  sysmat->matrix(0, 0).add(artery_block->matrix(0, 0), false, 1.0, 0.0);
+  sysmat->matrix(1, 1).add(artery_block->matrix(1, 1), false, 1.0, 0.0);
 
   // assemble D and M contributions into global force and stiffness
-  if (coupling_method_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp and
+  if (artery_coupling_method_ ==
+          Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp and
       num_coupled_dofs_ > 0)
-    sum_dm_into_global_force_stiff(*sysmat, rhs);
+    sum_mortar_matrices_into_global_matrix(*sysmat, rhs);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::
-    fe_assemble_ele_force_stiff_into_system_vector_matrix(const int& ele1gid, const int& ele2gid,
-        const double& integrated_diam, std::vector<Core::LinAlg::SerialDenseVector> const& elevec,
-        std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> const& elemat,
-        std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
-        std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::assemble(
+    const int& ele1_gid, const int& ele2_gid, const double& integrated_diameter,
+    std::vector<Core::LinAlg::SerialDenseVector> const& ele_rhs,
+    std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> const& ele_matrix,
+    const std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
+    const std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
-  const Core::Elements::Element* ele1 = arterydis_->g_element(ele1gid);
-  const Core::Elements::Element* ele2 = contdis_->g_element(ele2gid);
+  const Core::Elements::Element* ele1 = artery_dis_->g_element(ele1_gid);
+  const Core::Elements::Element* ele2 = homogenized_dis_->g_element(ele2_gid);
 
   // get element location vector and ownerships
-  std::vector<int> lmrow1;
-  std::vector<int> lmrow2;
-  std::vector<int> lmrowowner1;
-  std::vector<int> lmrowowner2;
-  std::vector<int> lmstride;
+  std::vector<int> lm_row_1;
+  std::vector<int> lm_row_2;
+  std::vector<int> lm_row_owner_1;
+  std::vector<int> lm_row_owner_2;
+  std::vector<int> lm_stride;
 
-  ele1->location_vector(*arterydis_, lmrow1, lmrowowner1, lmstride);
-  ele2->location_vector(*contdis_, lmrow2, lmrowowner2, lmstride);
+  ele1->location_vector(*artery_dis_, lm_row_1, lm_row_owner_1, lm_stride);
+  ele2->location_vector(*homogenized_dis_, lm_row_2, lm_row_owner_2, lm_stride);
 
-  FEmat_->fe_assemble(elemat[0][0], lmrow1, lmrow1);
-  FEmat_->fe_assemble(elemat[0][1], lmrow1, lmrow2);
-  FEmat_->fe_assemble(elemat[1][0], lmrow2, lmrow1);
-  FEmat_->fe_assemble(elemat[1][1], lmrow2, lmrow2);
+  coupling_matrix_->fe_assemble(ele_matrix[0][0], lm_row_1, lm_row_1);
+  coupling_matrix_->fe_assemble(ele_matrix[0][1], lm_row_1, lm_row_2);
+  coupling_matrix_->fe_assemble(ele_matrix[1][0], lm_row_2, lm_row_1);
+  coupling_matrix_->fe_assemble(ele_matrix[1][1], lm_row_2, lm_row_2);
 
-  fe_rhs_->SumIntoGlobalValues(elevec[0].length(), lmrow1.data(), elevec[0].values());
-  fe_rhs_->SumIntoGlobalValues(elevec[1].length(), lmrow2.data(), elevec[1].values());
+  coupling_rhs_vector_->SumIntoGlobalValues(
+      ele_rhs[0].length(), lm_row_1.data(), ele_rhs[0].values());
+  coupling_rhs_vector_->SumIntoGlobalValues(
+      ele_rhs[1].length(), lm_row_2.data(), ele_rhs[1].values());
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::fe_assemble_dm_kappa(
-    const int& ele1gid, const int& ele2gid, const Core::LinAlg::SerialDenseMatrix& D_ele,
-    const Core::LinAlg::SerialDenseMatrix& M_ele, const Core::LinAlg::SerialDenseVector& Kappa_ele)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    assemble_mortar_matrices_and_vector(const int& ele1_gid, const int& ele2_gid,
+        const Core::LinAlg::SerialDenseMatrix& D_ele, const Core::LinAlg::SerialDenseMatrix& M_ele,
+        const Core::LinAlg::SerialDenseVector& Kappa_ele) const
 {
-  const Core::Elements::Element* ele1 = arterydis_->g_element(ele1gid);
-  const Core::Elements::Element* ele2 = contdis_->g_element(ele2gid);
+  const Core::Elements::Element* ele1 = artery_dis_->g_element(ele1_gid);
+  const Core::Elements::Element* ele2 = homogenized_dis_->g_element(ele2_gid);
 
   // get element location vector and ownerships
-  std::vector<int> lmrow1;
-  std::vector<int> lmrow2;
-  std::vector<int> lmrowowner1;
-  std::vector<int> lmrowowner2;
-  std::vector<int> lmstride;
+  std::vector<int> lm_row_1;
+  std::vector<int> lm_row_2;
+  std::vector<int> lm_row_owner_1;
+  std::vector<int> lm_row_owner_2;
+  std::vector<int> lm_stride;
 
-  ele1->location_vector(*arterydis_, lmrow1, lmrowowner1, lmstride);
-  ele2->location_vector(*contdis_, lmrow2, lmrowowner2, lmstride);
+  ele1->location_vector(*artery_dis_, lm_row_1, lm_row_owner_1, lm_stride);
+  ele2->location_vector(*homogenized_dis_, lm_row_2, lm_row_owner_2, lm_stride);
 
-  d_->fe_assemble(D_ele, lmrow1, lmrow1);
-  m_->fe_assemble(M_ele, lmrow1, lmrow2);
-  kappa_inv_->SumIntoGlobalValues(Kappa_ele.length(), lmrow1.data(), Kappa_ele.values());
+  mortar_matrix_d_->fe_assemble(D_ele, lm_row_1, lm_row_1);
+  mortar_matrix_m_->fe_assemble(M_ele, lm_row_1, lm_row_2);
+  mortar_kappa_inv_->SumIntoGlobalValues(Kappa_ele.length(), lm_row_1.data(), Kappa_ele.values());
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::sum_dm_into_global_force_stiff(
-    Core::LinAlg::BlockSparseMatrixBase& sysmat, std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    sum_mortar_matrices_into_global_matrix(Core::LinAlg::BlockSparseMatrixBase& sysmat,
+        const std::shared_ptr<Core::LinAlg::Vector<double>> rhs) const
 {
-  // invert
-  invert_kappa();
-
-  // complete
-  d_->complete();
-  m_->complete(*contdis_->dof_row_map(), *arterydis_->dof_row_map());
-
-  // get kappa matrix
-  Core::LinAlg::SparseMatrix kappaInvMat(*new Core::LinAlg::Vector<double>(*kappa_inv_));
-  kappaInvMat.complete();
-
-  // kappa^{-1}*M
-  std::shared_ptr<Core::LinAlg::SparseMatrix> km =
-      Core::LinAlg::matrix_multiply(kappaInvMat, false, *m_, false, false, false, true);
-  // kappa^{-1}*D
-  std::shared_ptr<Core::LinAlg::SparseMatrix> kd =
-      Core::LinAlg::matrix_multiply(kappaInvMat, false, *d_, false, false, false, true);
-
-  // D^T*kappa^{-1}*D
-  std::shared_ptr<Core::LinAlg::SparseMatrix> dtkd =
-      Core::LinAlg::matrix_multiply(*d_, true, *kd, false, false, false, true);
-  // D^T*kappa^{-1}*M
-  std::shared_ptr<Core::LinAlg::SparseMatrix> dtkm =
-      Core::LinAlg::matrix_multiply(*d_, true, *km, false, false, false, true);
-  // M^T*kappa^{-1}*M
-  std::shared_ptr<Core::LinAlg::SparseMatrix> mtkm =
-      Core::LinAlg::matrix_multiply(*m_, true, *km, false, false, false, true);
-
-  // add matrices
-  sysmat.matrix(0, 0).add(*mtkm, false, pp_ * timefacrhs_cont_, 1.0);
-  sysmat.matrix(1, 1).add(*dtkd, false, pp_ * timefacrhs_art_, 1.0);
-  sysmat.matrix(1, 0).add(*dtkm, false, -pp_ * timefacrhs_art_, 1.0);
-  sysmat.matrix(0, 1).add(*dtkm, true, -pp_ * timefacrhs_cont_, 1.0);
-
-  // add vector
-  std::shared_ptr<Core::LinAlg::Vector<double>> art_contribution =
-      std::make_shared<Core::LinAlg::Vector<double>>(*arterydis_->dof_row_map());
-  std::shared_ptr<Core::LinAlg::Vector<double>> cont_contribution =
-      std::make_shared<Core::LinAlg::Vector<double>>(*contdis_->dof_row_map());
-
-  // Note: all terms are negative since rhs
-  // pp*D^T*kappa^{-1}*D*phi_np^art
-  dtkd->multiply(false, *phinp_art_, *art_contribution);
-  rhs->update(-pp_ * timefacrhs_art_, *globalex_->insert_vector(*art_contribution, 1), 1.0);
-
-  // -pp*D^T*kappa^{-1}*M*phi_np^cont
-  dtkm->multiply(false, *phinp_cont_, *art_contribution);
-  rhs->update(pp_ * timefacrhs_art_, *globalex_->insert_vector(*art_contribution, 1), 1.0);
-
-  // pp*M^T*kappa^{-1}*M*phi_np^cont
-  mtkm->multiply(false, *phinp_cont_, *cont_contribution);
-  rhs->update(-pp_ * timefacrhs_cont_, *globalex_->insert_vector(*cont_contribution, 0), 1.0);
-
-  // -pp*M^T*kappa^{-1}*D*phi_np^art = -pp*(D^T*kappa^{-1}*M)^T*phi_np^art
-  dtkm->multiply(true, *phinp_art_, *cont_contribution);
-  rhs->update(pp_ * timefacrhs_cont_, *globalex_->insert_vector(*cont_contribution, 0), 1.0);
-}
-
-/*----------------------------------------------------------------------*
- *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::invert_kappa()
-{
-  // global assemble
-  if (kappa_inv_->GlobalAssemble(Add, false) != 0)
+  // invert kappa
+  if (mortar_kappa_inv_->GlobalAssemble(Add, false) != 0)
     FOUR_C_THROW("GlobalAssemble of kappaInv_ failed");
 
   // invert (pay attention to protruding elements)
-  for (int i = 0; i < arterydis_->dof_row_map()->num_my_elements(); ++i)
+  for (int i = 0; i < artery_dis_->dof_row_map()->num_my_elements(); ++i)
   {
-    const int artdofgid = arterydis_->dof_row_map()->gid(i);
-    const double kappaVal = (*kappa_inv_)[0][kappa_inv_->Map().LID(artdofgid)];
-    if (fabs(kappaVal) > KAPPAINVTOL)
-      kappa_inv_->ReplaceGlobalValue(artdofgid, 0, 1.0 / kappaVal);
+    const int artery_dof_gid = artery_dis_->dof_row_map()->gid(i);
+    const double kappa_value =
+        (*mortar_kappa_inv_)[0][mortar_kappa_inv_->Map().LID(artery_dof_gid)];
+    if (fabs(kappa_value) > KAPPAINVTOL)
+      mortar_kappa_inv_->ReplaceGlobalValue(artery_dof_gid, 0, 1.0 / kappa_value);
     else
-      kappa_inv_->ReplaceGlobalValue(artdofgid, 0, 0.0);
+      mortar_kappa_inv_->ReplaceGlobalValue(artery_dof_gid, 0, 0.0);
   }
+
+  // complete
+  mortar_matrix_d_->complete();
+  mortar_matrix_m_->complete(*homogenized_dis_->dof_row_map(), *artery_dis_->dof_row_map());
+
+  // get kappa matrix
+  Core::LinAlg::SparseMatrix kappa_inverse(*new Core::LinAlg::Vector<double>(*mortar_kappa_inv_));
+  kappa_inverse.complete();
+
+  // kappa^{-1}*M
+  const std::shared_ptr kappa_inv_M = Core::LinAlg::matrix_multiply(
+      kappa_inverse, false, *mortar_matrix_m_, false, false, false, true);
+  // kappa^{-1}*D
+  const std::shared_ptr kappa_inv_D = Core::LinAlg::matrix_multiply(
+      kappa_inverse, false, *mortar_matrix_d_, false, false, false, true);
+
+  // D^T*kappa^{-1}*D
+  const std::shared_ptr D_transpose_kappa_inv_D = Core::LinAlg::matrix_multiply(
+      *mortar_matrix_d_, true, *kappa_inv_D, false, false, false, true);
+  // D^T*kappa^{-1}*M
+  const std::shared_ptr D_transpose_kappa_inv_M = Core::LinAlg::matrix_multiply(
+      *mortar_matrix_d_, true, *kappa_inv_M, false, false, false, true);
+  // M^T*kappa^{-1}*M
+  const std::shared_ptr M_transpose_kappa_inv_M = Core::LinAlg::matrix_multiply(
+      *mortar_matrix_m_, true, *kappa_inv_M, false, false, false, true);
+
+  // add matrices
+  sysmat.matrix(0, 0).add(
+      *M_transpose_kappa_inv_M, false, penalty_parameter_ * timefacrhs_homogenized_, 1.0);
+  sysmat.matrix(1, 1).add(
+      *D_transpose_kappa_inv_D, false, penalty_parameter_ * timefacrhs_artery_, 1.0);
+  sysmat.matrix(1, 0).add(
+      *D_transpose_kappa_inv_M, false, -penalty_parameter_ * timefacrhs_artery_, 1.0);
+  sysmat.matrix(0, 1).add(
+      *D_transpose_kappa_inv_M, true, -penalty_parameter_ * timefacrhs_homogenized_, 1.0);
+
+  // add vector
+  const auto artery_contribution =
+      std::make_shared<Core::LinAlg::Vector<double>>(*artery_dis_->dof_row_map());
+  const auto homogenized_contribution =
+      std::make_shared<Core::LinAlg::Vector<double>>(*homogenized_dis_->dof_row_map());
+
+  // Note: all terms are negative since rhs
+  // penalty parameter * D^T * kappa^{-1} * D * phi_np^artery
+  D_transpose_kappa_inv_D->multiply(false, *phinp_art_, *artery_contribution);
+  rhs->update(-penalty_parameter_ * timefacrhs_artery_,
+      *global_extractor_->insert_vector(*artery_contribution, 1), 1.0);
+
+  // -penalty parameter * D^T * kappa^{-1} * M * phi_np^homogenized
+  D_transpose_kappa_inv_M->multiply(false, *phinp_homogenized_, *artery_contribution);
+  rhs->update(penalty_parameter_ * timefacrhs_artery_,
+      *global_extractor_->insert_vector(*artery_contribution, 1), 1.0);
+
+  // penalty parameter * M^T * kappa^{-1} * M * phi_np^homogenized
+  M_transpose_kappa_inv_M->multiply(false, *phinp_homogenized_, *homogenized_contribution);
+  rhs->update(-penalty_parameter_ * timefacrhs_homogenized_,
+      *global_extractor_->insert_vector(*homogenized_contribution, 0), 1.0);
+
+  // -penalty parameter * M^T * kappa^{-1} * D * phi_np^artery
+  // = -penalty parameter * (D^T * kappa^{-1} * M)^T * phi_np^artery
+  D_transpose_kappa_inv_M->multiply(true, *phinp_art_, *homogenized_contribution);
+  rhs->update(penalty_parameter_ * timefacrhs_homogenized_,
+      *global_extractor_->insert_vector(*homogenized_contribution, 0), 1.0);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_artery_coupling_pair(
-    std::vector<Core::Elements::Element const*> const& ele_ptrs)
+std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase> PoroPressureBased::
+    PorofluidElastScatraArteryCouplingNonConformingAlgorithm::create_new_artery_coupling_pair(
+        std::vector<Core::Elements::Element const*> const& elements)
 {
-  const Core::FE::CellType distypeart = ele_ptrs[0]->shape();
-  switch (distypeart)
+  const Core::FE::CellType dis_type_artery = elements[0]->shape();
+  switch (dis_type_artery)
   {
     case Core::FE::CellType::line2:
     {
-      const Core::FE::CellType distypecont = ele_ptrs[1]->shape();
-      switch (distypecont)
+      const Core::FE::CellType dis_type_homogenized = elements[1]->shape();
+      switch (dis_type_homogenized)
       {
         case Core::FE::CellType::quad4:
         {
           switch (Global::Problem::instance()->n_dim())
           {
             case 1:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::quad4, 1>>();
             case 2:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::quad4, 2>>();
             case 3:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::quad4, 3>>();
             default:
               FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
@@ -695,13 +699,13 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_artery_
           switch (Global::Problem::instance()->n_dim())
           {
             case 1:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::hex8, 1>>();
             case 2:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::hex8, 2>>();
             case 3:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::hex8, 3>>();
             default:
               FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
@@ -712,13 +716,13 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_artery_
           switch (Global::Problem::instance()->n_dim())
           {
             case 1:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::tet4, 1>>();
             case 2:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::tet4, 2>>();
             case 3:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::tet4, 3>>();
             default:
               FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
@@ -729,13 +733,13 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_artery_
           switch (Global::Problem::instance()->n_dim())
           {
             case 1:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::tet10, 1>>();
             case 2:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::tet10, 2>>();
             case 3:
-              return std::make_shared<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<
+              return std::make_shared<PoroMultiPhaseScatraArteryCouplingPair<
                   Core::FE::CellType::line2, Core::FE::CellType::tet10, 3>>();
             default:
               FOUR_C_THROW("Unsupported dimension {}.", Global::Problem::instance()->n_dim());
@@ -743,167 +747,165 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::create_new_artery_
         }
         default:
           FOUR_C_THROW(
-              "only quad4, hex8, tet4 and tet10 elements supported for continuous elements so far");
+              "Only quad4, hex8, tet4 and tet10 elements supported for homogenized elements.");
       }
     }
     default:
-      FOUR_C_THROW("only line 2 elements supported for artery elements so far");
+      FOUR_C_THROW("Only line2 elements supported for artery elements.");
   }
-
-  return nullptr;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup_vector(
-    std::shared_ptr<Core::LinAlg::Vector<double>> vec,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> vec_cont,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> vec_art)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    setup_global_vector(const std::shared_ptr<Core::LinAlg::Vector<double>> global_vector,
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> homogenized_vector,
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> artery_vector)
 {
   // zero out
-  vec->put_scalar(0.0);
+  global_vector->put_scalar(0.0);
   // set up global vector
-  globalex_->insert_vector(*vec_cont, 0, *vec);
-  globalex_->insert_vector(*vec_art, 1, *vec);
+  global_extractor_->insert_vector(*homogenized_vector, 0, *global_vector);
+  global_extractor_->insert_vector(*artery_vector, 1, *global_vector);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::extract_single_field_vectors(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> globalvec,
-    std::shared_ptr<const Core::LinAlg::Vector<double>>& vec_cont,
-    std::shared_ptr<const Core::LinAlg::Vector<double>>& vec_art)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    extract_single_field_vectors(
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> global_vector,
+        std::shared_ptr<const Core::LinAlg::Vector<double>>& homogenized_vector,
+        std::shared_ptr<const Core::LinAlg::Vector<double>>& artery_vector)
 {
-  // process first field (continuous)
-  vec_cont = globalex_->extract_vector(*globalvec, 0);
+  // process first field (homogenized)
+  homogenized_vector = global_extractor_->extract_vector(*global_vector, 0);
   // process second field (artery)
-  vec_art = globalex_->extract_vector(*globalvec, 1);
+  artery_vector = global_extractor_->extract_vector(*global_vector, 1);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map>
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::artery_dof_row_map() const
+PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::artery_dof_row_map()
+    const
 {
-  return globalex_->map(1);
+  return global_extractor_->map(1);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::shared_ptr<const Core::LinAlg::Map>
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::dof_row_map() const
+PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::dof_row_map() const
 {
   return fullmap_;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::set_solution_vectors(
-    std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_cont,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> phin_cont,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_art)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    set_solution_vectors(
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_homogenized,
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> phin_homogenized,
+        const std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_artery)
 {
-  phinp_cont_ = phinp_cont;
-  if (phin_cont != nullptr) phin_cont_ = phin_cont;
-  phinp_art_ = phinp_art;
+  phinp_homogenized_ = phinp_homogenized;
+  if (phin_homogenized != nullptr) phin_homogenized_ = phin_homogenized;
+  phinp_art_ = phinp_artery;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::blood_vessel_volume_fraction()
+std::shared_ptr<const Core::LinAlg::Vector<double>> PoroPressureBased::
+    PorofluidElastScatraArteryCouplingNonConformingAlgorithm::blood_vessel_volume_fraction()
 {
-  FOUR_C_THROW("Not implemented in base class");
-  return nullptr;
+  FOUR_C_THROW("blood_vessel_volume_fraction not implemented in for non-conforming coupling.");
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::print_out_coupling_method() const
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    print_coupling_method() const
 {
-  std::string name;
-  if (coupling_method_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp)
-    name = "Mortar Penalty";
-  else if (coupling_method_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::gpts)
-    name = "Gauss-Point-To-Segment";
+  std::string coupling_method;
+  if (artery_coupling_method_ == Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp)
+    coupling_method = "Mortar Penalty";
+  else if (artery_coupling_method_ ==
+           Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::gpts)
+    coupling_method = "Gauss-Point-To-Segment";
   else
     FOUR_C_THROW("unknown coupling method");
 
-  std::cout << "<   Coupling-Method : " << std::left << std::setw(22) << name << "       >"
-            << std::endl;
-  std::cout << "<   Penalty         : " << std::left << std::setw(6) << pp_
-            << "                       >" << std::endl;
+  std::cout << "<   Coupling-Method : " << std::left << std::setw(22) << coupling_method
+            << "       >" << '\n';
+  std::cout << "<   Penalty parameter : " << std::left << std::setw(6) << penalty_parameter_
+            << "                     >" << '\n';
   if (evaluate_in_ref_config_)
-    std::cout << "<   Moving arteries : No                           >" << std::endl;
+    std::cout << "<   Moving arteries : No                           >" << '\n';
   else
-    std::cout << "<   Moving arteries : Yes                          >" << std::endl;
+    std::cout << "<   Moving arteries : Yes                          >" << '\n';
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::fill_function_and_scale_vectors()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    fill_function_and_scale_vectors()
 {
-  scale_vec_.resize(2);
-  funct_vec_.resize(2);
+  scale_vector_.resize(2);
+  function_vector_.resize(2);
 
   // get the actual coupled DOFs  ----------------------------------------------------
   // 1) 1D artery discretization
-  int word1;
-  std::istringstream scale_art_stream(
-      Teuchos::getNumericStringParameter(couplingparams_, "SCALEREAC_ART"));
-  while (scale_art_stream >> word1) scale_vec_[0].push_back((int)(word1));
+  int value;
+  std::istringstream scale_artery_stream(
+      Teuchos::getNumericStringParameter(coupling_params_, "SCALEREAC_ART"));
+  while (scale_artery_stream >> value) scale_vector_[0].push_back(value);
 
-  std::istringstream funct_art_stream(
-      Teuchos::getNumericStringParameter(couplingparams_, "REACFUNCT_ART"));
-  while (funct_art_stream >> word1) funct_vec_[0].push_back((int)(word1));
+  std::istringstream function_artery_stream(
+      Teuchos::getNumericStringParameter(coupling_params_, "REACFUNCT_ART"));
+  while (function_artery_stream >> value) function_vector_[0].push_back(value);
 
-  // 2) 2D, 3D continuous field discretization
-  std::istringstream scale_cont_stream(
-      Teuchos::getNumericStringParameter(couplingparams_, "SCALEREAC_CONT"));
-  while (scale_cont_stream >> word1) scale_vec_[1].push_back((int)(word1));
+  // 2) 2D, 3D homogenized field discretization
+  std::istringstream scale_homogenized_stream(
+      Teuchos::getNumericStringParameter(coupling_params_, "SCALEREAC_CONT"));
+  while (scale_homogenized_stream >> value) scale_vector_[1].push_back(value);
 
-  std::istringstream funct_cont_stream(
-      Teuchos::getNumericStringParameter(couplingparams_, "REACFUNCT_CONT"));
-  while (funct_cont_stream >> word1) funct_vec_[1].push_back((int)(word1));
+  std::istringstream function_homogenized_stream(
+      Teuchos::getNumericStringParameter(coupling_params_, "REACFUNCT_CONT"));
+  while (function_homogenized_stream >> value) function_vector_[1].push_back(value);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::set_time_fac_rhs()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::set_time_fac_rhs()
 {
-  // set the right hand side factor
-  if (contdis_->name() == "porofluid")
+  // set the right-hand side factor
+  if (homogenized_dis_->name() == "porofluid")
   {
-    Discret::Elements::PoroFluidMultiPhaseEleParameter* eleparams =
+    const Discret::Elements::PoroFluidMultiPhaseEleParameter* ele_params =
         Discret::Elements::PoroFluidMultiPhaseEleParameter::instance("porofluid");
-    // artery
-    timefacrhs_art_ = 1.0;
-    // continuous
-    timefacrhs_cont_ = eleparams->time_fac_rhs();
+    timefacrhs_artery_ = 1.0;
+    timefacrhs_homogenized_ = ele_params->time_fac_rhs();
   }
-  else if (contdis_->name() == "scatra")
+  else if (homogenized_dis_->name() == "scatra")
   {
-    Discret::Elements::ScaTraEleParameterTimInt* eleparams =
+    const Discret::Elements::ScaTraEleParameterTimInt* ele_params =
         Discret::Elements::ScaTraEleParameterTimInt::instance("scatra");
-    // artery
-    timefacrhs_art_ = eleparams->time_fac_rhs();
-    // continuous
-    timefacrhs_cont_ = eleparams->time_fac_rhs();
+    timefacrhs_artery_ = ele_params->time_fac_rhs();
+    timefacrhs_homogenized_ = ele_params->time_fac_rhs();
   }
   else
   {
     FOUR_C_THROW(
-        "Only porofluid and scatra-discretizations are supported for non-conforming coupling so "
-        "far");
+        "Only porofluid and scatra-discretizations are supported for non-conforming coupling.");
   }
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::set_nearby_ele_pairs(
-    const std::map<int, std::set<int>>* nearbyelepairs)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
+    set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearby_ele_pairs)
 {
-  nearbyelepairs_ = *nearbyelepairs;
+  nearby_elepairs_ = *nearby_ele_pairs;
 }
 
 FOUR_C_NAMESPACE_CLOSE

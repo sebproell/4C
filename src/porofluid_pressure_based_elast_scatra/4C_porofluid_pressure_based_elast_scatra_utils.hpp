@@ -34,7 +34,7 @@ namespace Core::FE
 namespace PoroPressureBased
 {
   class PorofluidElastScatraBaseAlgorithm;
-  class PoroMultiPhaseScaTraArtCouplBase;
+  class PorofluidElastScatraArteryCouplingBaseAlgorithm;
 
   //! setup discretizations and dofsets
   std::map<int, std::set<int>> setup_discretizations_and_field_coupling_porofluid_elast_scatra(
@@ -54,8 +54,8 @@ namespace PoroPressureBased
   );
 
   //! create coupling strategy for coupling with 1D network depending on input file
-  std::shared_ptr<PoroMultiPhaseScaTraArtCouplBase> create_and_init_artery_coupling_strategy(
-      std::shared_ptr<Core::FE::Discretization> arterydis,
+  std::shared_ptr<PorofluidElastScatraArteryCouplingBaseAlgorithm>
+  create_and_init_artery_coupling_strategy(std::shared_ptr<Core::FE::Discretization> arterydis,
       std::shared_ptr<Core::FE::Discretization> contdis,
       const Teuchos::ParameterList& meshtyingparams, const std::string& condname,
       const std::string& artcoupleddofname, const std::string& contcoupleddofname,

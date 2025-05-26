@@ -40,7 +40,7 @@ PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_c
       ispreevaluated_(false),
       isactive_(false),
       funct_coupl_active_(false),
-      diam_funct_active_(false),
+      variable_diameter_active_(false),
       evaluate_in_ref_config_(true),
       evaluate_on_lateral_surface_(true),
       element1_(nullptr),
@@ -428,9 +428,9 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
     if (not funct_coupl_active_)
       FOUR_C_THROW(
           "Diameter function has been defined but no exchange function has been set, this is "
-          "currently not possible, if you still want a varying diameter without any exchange "
+          "currently not possible, if you still want a variable diameter without any exchange "
           "terms, you can still define a zero exchange term");
-    diam_funct_active_ = true;
+    variable_diameter_active_ = true;
     artdiam_funct_ = &Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfAnything>(
         diam_funct_num);
     if (coupltype_ == CouplingType::porofluid)
@@ -449,9 +449,9 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
       FOUR_C_THROW(
           "Evaluation in current configuration is not yet possible in combination with lateral "
           "surface coupling");
-    if (diam_funct_active_)
+    if (variable_diameter_active_)
       FOUR_C_THROW(
-          "Setting a varying diameter is not yet possible in combination with lateral "
+          "Setting a variable diameter is not yet possible in combination with lateral "
           "surface coupling");
     if (not(distype_cont == Core::FE::CellType::hex8 or distype_cont == Core::FE::CellType::tet4))
       FOUR_C_THROW("Only TET4 and HEX8 elements possible for lateral surface coupling");
@@ -486,7 +486,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
   for (int i = 0; i < 2; i++)
     for (unsigned int idof = 0; idof < funct_vec_[i].size(); idof++)
       if (funct_vec_[i][idof] != nullptr) initialize_function(*funct_vec_[i][idof]);
-  if (diam_funct_active_) initialize_function(*artdiam_funct_);
+  if (variable_diameter_active_) initialize_function(*artdiam_funct_);
 
   // set time fac for right hand side evaluation of coupling
   set_time_fac_rhs(arterydens, *contscatramat, timefacrhs_art, timefacrhs_cont);
@@ -971,7 +971,7 @@ PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, distype_c
       break;
   }
 
-  // evaluate the function coupling (with possibly varying diameter)
+  // evaluate the function coupling (with possibly variable diameter)
   if (funct_coupl_active_)
     evaluate_function_coupling(myEta, myXi, segmentlengths, forcevec1, forcevec2, stiffmat11,
         stiffmat12, stiffmat21, stiffmat22, integrated_diam);
@@ -1483,9 +1483,9 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
   const double curr_seg_length = segmentlengths[segmentid_];
 
-  // case with varying diameter and type porofluid: (integral and linearizations have to be
+  // case with variable diameter and type porofluid: (integral and linearizations have to be
   // calculated) --> reset
-  if (diam_funct_active_ && coupltype_ == CouplingType::porofluid)
+  if (variable_diameter_active_ && coupltype_ == CouplingType::porofluid)
   {
     integrated_diam = 0.0;
     diam_stiffmat11_.shape(dim1_, dim1_);
@@ -1906,7 +1906,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
   get_cont_scalar_values_at_gp(N2, contscalarnpAtGP);
   // NOTE: values of fluid held by managers
 
-  if (diam_funct_active_)
+  if (variable_diameter_active_)
   {
     evaluate_diam_function_and_deriv(artpressAtGP, w_gp, N1, N2, jacobi);
     // integral is only calculated in this case
@@ -2600,7 +2600,7 @@ void PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPair<distype_art, dist
 
   // second part
   // derivatives w.r.t. to fluid diameter: df/dD*dD/dp
-  if (diam_funct_active_)
+  if (variable_diameter_active_)
   {
     // df/dD
     const double functderivdiam =

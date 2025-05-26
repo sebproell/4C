@@ -17,19 +17,20 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::PoroMultiPhaseScaTraArtCouplSurfBased(
-    std::shared_ptr<Core::FE::Discretization> arterydis,
-    std::shared_ptr<Core::FE::Discretization> contdis, const Teuchos::ParameterList& couplingparams,
-    const std::string& condname, const std::string& artcoupleddofname,
-    const std::string& contcoupleddofname)
-    : PoroMultiPhaseScaTraArtCouplNonConforming(
+PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm::
+    PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm(
+        std::shared_ptr<Core::FE::Discretization> arterydis,
+        std::shared_ptr<Core::FE::Discretization> contdis,
+        const Teuchos::ParameterList& couplingparams, const std::string& condname,
+        const std::string& artcoupleddofname, const std::string& contcoupleddofname)
+    : PorofluidElastScatraArteryCouplingNonConformingAlgorithm(
           arterydis, contdis, couplingparams, condname, artcoupleddofname, contcoupleddofname)
 {
   // user info
-  if (myrank_ == 0)
+  if (my_mpi_rank_ == 0)
   {
     std::cout << "<                                                  >" << std::endl;
-    print_out_coupling_method();
+    print_coupling_method();
     std::cout << "<                                                  >" << std::endl;
     std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     std::cout << "\n";
@@ -38,7 +39,8 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::PoroMultiPhaseScaTraAr
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_coupling_pairs()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm::
+    pre_evaluate_coupling_pairs()
 {
   const int numpatch_axi = Global::Problem::instance()
                                ->poro_fluid_multi_phase_dynamic_params()
@@ -48,22 +50,23 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_coup
                                ->poro_fluid_multi_phase_dynamic_params()
                                .sublist("ARTERY COUPLING")
                                .get<int>("NUMPATCH_RAD");
-  const int numartele = arterydis_->num_global_elements();
+  const int numartele = artery_dis_->num_global_elements();
   const int numgp_per_artele = numpatch_axi * numpatch_rad * 25;
   const int numgp_desired = numgp_per_artele * numartele;
 
   // this vector keeps track of evaluation of GPs
   std::shared_ptr<Core::LinAlg::MultiVector<double>> gp_vector =
       std::make_shared<Core::LinAlg::MultiVector<double>>(
-          *arterydis_->element_col_map(), numgp_per_artele);
+          *artery_dis_->element_col_map(), numgp_per_artele);
 
   // pre-evaluate
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++) coupl_elepairs_[i]->pre_evaluate(gp_vector);
+  for (unsigned i = 0; i < coupled_elepairs_.size(); i++)
+    coupled_elepairs_[i]->pre_evaluate(gp_vector);
 
   // delete the inactive pairs
-  coupl_elepairs_.erase(std::remove_if(coupl_elepairs_.begin(), coupl_elepairs_.end(),
-                            [](auto& pair) { return !pair->is_active(); }),
-      coupl_elepairs_.end());
+  coupled_elepairs_.erase(std::remove_if(coupled_elepairs_.begin(), coupled_elepairs_.end(),
+                              [](auto& pair) { return !pair->is_active(); }),
+      coupled_elepairs_.end());
 
   // the following takes care of a very special case, namely, if a GP on the lateral surface lies
   // exactly in between two or more 3D elements owned by different procs.
@@ -126,17 +129,17 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_coup
     }
   }
 
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
-    coupl_elepairs_[i]->delete_unnecessary_gps(gp_vector);
+  for (unsigned i = 0; i < coupled_elepairs_.size(); i++)
+    coupled_elepairs_[i]->delete_unnecessary_gps(gp_vector);
 
   int total_num_gp = 0;
   int numgp = 0;
 
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
+  for (unsigned i = 0; i < coupled_elepairs_.size(); i++)
   {
     // segment ID not needed in this case, just set to zero
-    coupl_elepairs_[i]->set_segment_id(0);
-    numgp = numgp + coupl_elepairs_[i]->num_gp();
+    coupled_elepairs_[i]->set_segment_id(0);
+    numgp = numgp + coupled_elepairs_[i]->num_gp();
   }
   // safety check
   Core::Communication::sum_all(&numgp, &total_num_gp, 1, get_comm());
@@ -145,61 +148,62 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::pre_evaluate_coup
 
   // output
   int total_numactive_pairs = 0;
-  int numactive_pairs = static_cast<int>(coupl_elepairs_.size());
+  int numactive_pairs = static_cast<int>(coupled_elepairs_.size());
   Core::Communication::sum_all(&numactive_pairs, &total_numactive_pairs, 1, get_comm());
-  if (contdis_->name() == "porofluid" && myrank_ == 0)
+  if (homogenized_dis_->name() == "porofluid" && my_mpi_rank_ == 0)
     std::cout << "Only " << total_numactive_pairs
               << " Artery-to-PoroMultiphaseScatra coupling pairs are active" << std::endl;
 
   // print out summary of pairs
-  if (contdis_->name() == "porofluid" && couplingparams_.get<bool>("PRINT_OUT_SUMMARY_PAIRS"))
+  if (homogenized_dis_->name() == "porofluid" &&
+      coupling_params_.get<bool>("PRINT_OUT_SUMMARY_PAIRS"))
   {
-    if (myrank_ == 0)
+    if (my_mpi_rank_ == 0)
       std::cout << "In total " << numgp_desired << " GPs (" << numgp_per_artele
                 << " per artery element) required for lateral surface coupling" << std::endl;
-    std::cout << "Proc. " << myrank_ << " evaluates " << numgp << " GPs "
-              << "(" << (double)(numgp) / (double)(total_num_gp) * 100.0 << "% of all GPs)"
-              << std::endl;
+    std::cout << "Proc. " << my_mpi_rank_ << " evaluates " << numgp << " GPs " << "("
+              << (double)(numgp) / (double)(total_num_gp) * 100.0 << "% of all GPs)" << std::endl;
   }
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::setup()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm::setup()
 {
   // call base class
-  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup();
+  PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::setup();
 
   // error-checks
-  if (has_varying_diam_)
+  if (has_variable_diameter_)
     FOUR_C_THROW("Varying diameter not yet possible for surface-based coupling");
   if (!evaluate_in_ref_config_)
     FOUR_C_THROW("Evaluation in current configuration not yet possible for surface-based coupling");
 
-  issetup_ = true;
+  is_setup_ = true;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::evaluate(
+void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm::evaluate(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
-  if (!issetup_) FOUR_C_THROW("setup() has not been called");
+  if (!is_setup_) FOUR_C_THROW("setup() has not been called");
 
-  if (!porofluidmanagersset_)
+  if (!porofluid_managers_initialized_)
   {
-    // pre-evaluate the pairs --> has to be done here since radius inside the material is required
+    // pre-evaluate the pairs
+    // --> has to be done here since the radius inside the material is required
     pre_evaluate_coupling_pairs();
   }
 
   // call base class
-  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::evaluate(sysmat, rhs);
+  PorofluidElastScatraArteryCouplingNonConformingAlgorithm::evaluate(sysmat, rhs);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::setup_system(
+void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm::setup_system(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs,
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_cont,
@@ -210,14 +214,15 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::setup_system(
     std::shared_ptr<const Core::LinAlg::MapExtractor> dbcmap_art)
 {
   // call base class
-  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup_system(*sysmat, rhs,
-      *sysmat_cont, *sysmat_art, rhs_cont, rhs_art, *dbcmap_cont, *dbcmap_art->cond_map(),
+  PorofluidElastScatraArteryCouplingNonConformingAlgorithm::setup_system(*sysmat, rhs, *sysmat_cont,
+      *sysmat_art, rhs_cont, rhs_art, *dbcmap_cont, *dbcmap_art->cond_map(),
       *dbcmap_art->cond_map());
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::apply_mesh_movement()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm::
+    apply_mesh_movement()
 {
   if (!evaluate_in_ref_config_)
     FOUR_C_THROW("Evaluation in current configuration not possible for surface-based coupling");
@@ -225,21 +230,20 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::apply_mesh_moveme
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::blood_vessel_volume_fraction()
+std::shared_ptr<const Core::LinAlg::Vector<double>> PoroPressureBased::
+    PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm::blood_vessel_volume_fraction()
 {
   FOUR_C_THROW("Output of vessel volume fraction not possible for surface-based coupling");
-
-  return nullptr;
 }
 
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplSurfBased::print_out_coupling_method() const
+void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm::
+    print_coupling_method() const
 {
-  std::cout << "<   surface-based formulation                      >" << std::endl;
-  PoroMultiPhaseScaTraArtCouplNonConforming::print_out_coupling_method();
+  std::cout << "<   surface-based formulation                      >" << '\n';
+  PorofluidElastScatraArteryCouplingNonConformingAlgorithm::print_coupling_method();
 }
 
 FOUR_C_NAMESPACE_CLOSE
