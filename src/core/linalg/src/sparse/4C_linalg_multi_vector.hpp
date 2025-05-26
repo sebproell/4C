@@ -53,18 +53,14 @@ namespace Core::LinAlg
 
     ~MultiVector() = default;
 
-    // (Implicit) conversions: they all return references or RCPs, never copies
+    // (Implicit) conversions: they all return references, never copies
     operator Epetra_MultiVector&() { return *vector_; }
 
     operator const Epetra_MultiVector&() const { return *vector_; }
 
-    //! get pointer of epetra multi vector
-    std::shared_ptr<Epetra_MultiVector> get_ptr_of_Epetra_MultiVector() { return vector_; }
+    const Epetra_MultiVector& get_epetra_multi_vector() const { return *vector_; }
 
-    std::shared_ptr<const Epetra_MultiVector> get_ptr_of_Epetra_MultiVector() const
-    {
-      return vector_;
-    }
+    Epetra_MultiVector& get_epetra_multi_vector() { return *vector_; }
 
     //! Compute 1-norm of each vector
     int Norm1(double* Result) const;

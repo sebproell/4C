@@ -72,9 +72,9 @@ std::shared_ptr<Core::LinAlg::Graph> Core::Rebalance::rebalance_graph(
   Teuchos::RCP<Isorropia::Epetra::Partitioner> partitioner;
   if (initialNodeCoordinates)
   {
-    partitioner = Teuchos::make_rcp<Isorropia::Epetra::Partitioner>(
-        &initialGraph.get_epetra_crs_graph(), &costs,
-        initialNodeCoordinates->get_ptr_of_Epetra_MultiVector().get(), nullptr, rebalanceParams);
+    partitioner =
+        Teuchos::make_rcp<Isorropia::Epetra::Partitioner>(&initialGraph.get_epetra_crs_graph(),
+            &costs, &initialNodeCoordinates->get_epetra_multi_vector(), nullptr, rebalanceParams);
   }
   else
   {
@@ -104,8 +104,8 @@ Core::Rebalance::rebalance_coordinates(const Core::LinAlg::MultiVector<double>& 
 
   Teuchos::RCP<Isorropia::Epetra::Partitioner> part =
       Teuchos::make_rcp<Isorropia::Epetra::Partitioner>(
-          Teuchos::rcpFromRef(*initialCoordinates.get_ptr_of_Epetra_MultiVector()),
-          Teuchos::rcpFromRef(*initialWeights.get_ptr_of_Epetra_MultiVector()), rebalanceParams);
+          Teuchos::rcpFromRef(initialCoordinates.get_epetra_multi_vector()),
+          Teuchos::rcpFromRef(initialWeights.get_epetra_multi_vector()), rebalanceParams);
 
   Isorropia::Epetra::Redistributor rd(part);
 

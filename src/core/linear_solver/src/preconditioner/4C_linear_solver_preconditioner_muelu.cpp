@@ -86,8 +86,8 @@ void Core::LinearSolver::MueLuPreconditioner::setup(Epetra_Operator* matrix,
 
     Teuchos::RCP<Xpetra::MultiVector<SC, LO, GO, NO>> coordinates =
         Teuchos::make_rcp<EpetraMultiVector>(Teuchos::rcpFromRef(
-            *inverseList.get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("Coordinates")
-                ->get_ptr_of_Epetra_MultiVector()));
+            inverseList.get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("Coordinates")
+                ->get_epetra_multi_vector()));
 
     muelu_params->set("number of equations", number_of_equations);
     Teuchos::ParameterList& user_param_list = muelu_params->sublist("user data");

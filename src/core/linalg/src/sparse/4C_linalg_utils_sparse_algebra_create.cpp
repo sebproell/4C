@@ -69,7 +69,7 @@ Core::LinAlg::SparseMatrix Core::LinAlg::create_interpolation_matrix(const Spars
 
   const Teuchos::RCP<Xpetra::MultiVector<SC, LO, GO, NO>> xpetra_nullspace =
       Teuchos::rcp(new EpetraMultiVector(
-          Teuchos::rcp(new Epetra_MultiVector(*nullspace.get_ptr_of_Epetra_MultiVector()))));
+          Teuchos::rcp(new Epetra_MultiVector(nullspace.get_epetra_multi_vector()))));
   const int number_of_equations = params.get<int>("PDE equations");
 
   Teuchos::RCP<Xpetra::CrsMatrix<SC, LO, GO, NO>> mueluA =

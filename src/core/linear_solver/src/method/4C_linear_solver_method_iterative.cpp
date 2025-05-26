@@ -73,8 +73,8 @@ int Core::LinearSolver::IterativeSolver<MatrixType, VectorType>::solve()
   Teuchos::ParameterList& belist = params().sublist("Belos Parameters");
 
   auto problem = Teuchos::make_rcp<Belos::LinearProblem<double, BelosVectorType, MatrixType>>(
-      Teuchos::rcp(a_), Teuchos::rcp(x_->get_ptr_of_Epetra_MultiVector()),
-      Teuchos::rcp(b_->get_ptr_of_Epetra_MultiVector()));
+      Teuchos::rcp(a_), Teuchos::rcpFromRef(x_->get_epetra_multi_vector()),
+      Teuchos::rcpFromRef(b_->get_epetra_multi_vector()));
 
   if (preconditioner_ != nullptr)
   {
