@@ -33,6 +33,30 @@ function(enable_linker_flag_if_supported _flag)
   four_c_check_compiles(FOUR_C_LINKER_HAS_FLAG_${_flag_var} LINK_OPTIONS ${_flag} APPEND_ON_SUCCESS)
 endfunction()
 
+# Backwards compatibility: if BUILD_SHARED_LIBS is set but not FOUR_C_BUILD_SHARED_LIBS, set the latter to the former.
+if(NOT DEFINED FOUR_C_BUILD_SHARED_LIBS AND DEFINED BUILD_SHARED_LIBS)
+  set(FOUR_C_BUILD_SHARED_LIBS
+      ${BUILD_SHARED_LIBS}
+      CACHE BOOL "Build shared libraries instead of static ones" FORCE
+      )
+  message(
+    WARNING
+      "Set FOUR_C_BUILD_SHARED_LIBS instead of BUILD_SHARED_LIBS. "
+      "Setting FOUR_C_BUILD_SHARED_LIBS based on BUILD_SHARED_LIBS to ${FOUR_C_BUILD_SHARED_LIBS}."
+    )
+endif()
+
+four_c_process_global_option(
+  FOUR_C_BUILD_SHARED_LIBS "Build shared libraries instead of static ones" OFF
+  )
+set(BUILD_SHARED_LIBS
+    ${FOUR_C_BUILD_SHARED_LIBS}
+    CACHE
+      BOOL
+      "Build shared libraries instead of static ones. Forces to be in sync with FOUR_C_BUILD_SHARED_LIBS."
+      FORCE
+    )
+
 four_c_process_global_option(
   FOUR_C_ENABLE_DEVELOPER_MODE
   "Enable developer mode (tries to optimize setup for iterative development cycles)"
@@ -54,7 +78,7 @@ enable_linker_flag_if_supported("-rdynamic")
 
 # Enable position-independent code. This flag is necessary to build shared libraries. Since our internal targets are not
 # real libraries but object libraries, this property needs to be set explicitly.
-if(BUILD_SHARED_LIBS)
+if(FOUR_C_BUILD_SHARED_LIBS)
   message(VERBOSE "Enabling POSITION_INDEPENDENT_CODE on internal targets.")
   set_target_properties(
     four_c_private_compile_interface PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE TRUE
