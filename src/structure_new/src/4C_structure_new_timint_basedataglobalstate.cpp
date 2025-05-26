@@ -639,9 +639,10 @@ std::shared_ptr<::NOX::Epetra::Vector> Solid::TimeInt::BaseDataGlobalState::crea
     }
   }  // end of the switch-case statement
 
-  // wrap and return
+  // Copy the content of our vector into a vector that NOX can use
   return std::make_shared<::NOX::Epetra::Vector>(
-      Teuchos::rcp(xvec_ptr.get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::make_rcp<Epetra_Vector>(xvec_ptr.get_ref_of_epetra_vector()),
+      ::NOX::Epetra::Vector::CreateView);
 }
 
 /*----------------------------------------------------------------------------*
@@ -1161,7 +1162,7 @@ void NOX::Nln::GROUP::PrePostOp::TimeInt::RotVecUpdater::run_pre_compute_x(
 
   // now replace the rotvec entries by the correct value computed before
   Core::LinAlg::assemble_my_vector(0.0, *xnew, 1.0, x_rotvec);
-  curr_grp_mutable.setX(Teuchos::rcpFromRef(*xnew->get_ptr_of_epetra_vector()));
+  curr_grp_mutable.setX(Teuchos::rcpFromRef(xnew->get_ref_of_epetra_vector()));
 
   /* tell the NOX::Nln::Group that the x vector has already been updated in
    * this preComputeX operator call */

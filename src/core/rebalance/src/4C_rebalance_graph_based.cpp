@@ -65,7 +65,7 @@ std::shared_ptr<Core::LinAlg::Graph> Core::Rebalance::rebalance_graph(
 
   Isorropia::Epetra::CostDescriber costs = Isorropia::Epetra::CostDescriber();
   if (initialNodeWeights != nullptr)
-    costs.setVertexWeights(Teuchos::rcpFromRef(*initialNodeWeights->get_ptr_of_epetra_vector()));
+    costs.setVertexWeights(Teuchos::rcpFromRef(initialNodeWeights->get_ref_of_epetra_vector()));
   if (initialEdgeWeights != nullptr)
     costs.setGraphEdgeWeights(Teuchos::rcpFromRef(*initialEdgeWeights->epetra_matrix()));
 

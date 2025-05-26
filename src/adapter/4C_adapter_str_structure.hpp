@@ -487,7 +487,7 @@ namespace Adapter
     ///
     /// \note This method will be deprecated as soon as new structural time integration is
     ///       completely engulfed by all algorithms using this method.
-    virtual void set_force_interface(std::shared_ptr<Core::LinAlg::MultiVector<double>> iforce) = 0;
+    virtual void set_force_interface(const Core::LinAlg::MultiVector<double>& iforce) = 0;
 
     //! specific method for iterative staggered partitioned TSI
 

@@ -263,11 +263,9 @@ void Adapter::StructureConstrMerged::apply_interface_forces_temporary_deprecated
   conmerger_->extract_cond_vector(*fifc, (*fifcdisp)(0));
 
   // set interface forces within the structural time integrator
-  set_force_interface(fifcdisp);
+  set_force_interface(*fifcdisp);
 
   prepare_partition_step();
-
-  return;
 }
 
 FOUR_C_NAMESPACE_CLOSE

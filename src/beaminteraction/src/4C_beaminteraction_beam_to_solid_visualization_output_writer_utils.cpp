@@ -24,12 +24,12 @@ FOUR_C_NAMESPACE_OPEN
 void BeamInteraction::add_beam_interaction_nodal_forces(
     const std::shared_ptr<BeamInteraction::BeamToSolidOutputWriterVisualization>& visualization,
     const std::shared_ptr<const Core::FE::Discretization>& discret_ptr,
-    const std::shared_ptr<const Core::LinAlg::MultiVector<double>>& displacement,
+    const Core::LinAlg::MultiVector<double>& displacement,
     const Core::LinAlg::MultiVector<double>& force, const bool write_unique_ids)
 {
   // Add the reference geometry and displacement to the visualization.
   visualization->add_discretization_nodal_reference_position(discret_ptr);
-  visualization->add_discretization_nodal_data_from_multivector("displacement", *displacement);
+  visualization->add_discretization_nodal_data_from_multivector("displacement", displacement);
 
   // Create maps with the GIDs of beam and solid nodes.
   std::vector<int> gid_beam_dof;

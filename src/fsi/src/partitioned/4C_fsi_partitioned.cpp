@@ -444,7 +444,7 @@ void FSI::Partitioned::timeloop(const Teuchos::RCP<::NOX::Epetra::Interface::Req
     std::shared_ptr<Core::LinAlg::Vector<double>> soln = initial_guess();
 
     ::NOX::Epetra::Vector noxSoln(
-        Teuchos::rcpFromRef(*soln->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+        Teuchos::rcpFromRef(soln->get_ref_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
 
     // Create the linear system
     Teuchos::RCP<::NOX::Epetra::LinearSystem> linSys =

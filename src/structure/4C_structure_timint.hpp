@@ -538,7 +538,7 @@ namespace Solid
 
     //! Set forces due to interface with fluid, the force is expected external-force-like
     void set_force_interface(
-        std::shared_ptr<Core::LinAlg::MultiVector<double>> iforce  ///< the force on interface
+        const Core::LinAlg::MultiVector<double>& iforce  ///< the force on interface
         ) override;
 
     //! @name Attributes

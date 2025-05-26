@@ -152,12 +152,11 @@ double Solid::IMPLICIT::Statics::calc_ref_norm_force(
 
   // switch from Core::LinAlg::Vector<double> to ::NOX::Epetra::Vector (view but read-only)
   const ::NOX::Epetra::Vector fintnp_nox_ptr(
-      Teuchos::rcpFromRef(*fintnp->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(fintnp->get_ref_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
   const ::NOX::Epetra::Vector fextnp_nox_ptr(
-      Teuchos::rcpFromRef(*fextnp->get_ptr_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(fextnp->get_ref_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
   const ::NOX::Epetra::Vector freactnp_nox_ptr(
-      Teuchos::rcpFromRef(*freactnp->get_ptr_of_epetra_vector()),
-      ::NOX::Epetra::Vector::CreateView);
+      Teuchos::rcpFromRef(freactnp->get_ref_of_epetra_vector()), ::NOX::Epetra::Vector::CreateView);
 
   // norm of the internal forces
   double fintnorm = fintnp_nox_ptr.norm(type);

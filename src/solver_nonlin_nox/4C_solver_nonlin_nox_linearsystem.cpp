@@ -223,7 +223,7 @@ bool NOX::Nln::LinearSystem::apply_jacobian_block(const ::NOX::Epetra::Vector& i
   int status = block.Apply(*input_apply, *result_apply);
 
   result = Teuchos::make_rcp<::NOX::Epetra::Vector>(
-      Teuchos::rcpFromRef(*result_apply->get_ptr_of_epetra_vector()),
+      Teuchos::rcpFromRef(result_apply->get_ref_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateCopy);
 
   return (status == 0);
@@ -259,8 +259,8 @@ void NOX::Nln::LinearSystem::set_linear_problem_for_solve(Epetra_LinearProblem& 
     Core::LinAlg::Vector<double>& rhs) const
 {
   linear_problem.SetOperator(jac.epetra_operator().get());
-  linear_problem.SetLHS(lhs.get_ptr_of_epetra_multi_vector().get());
-  linear_problem.SetRHS(rhs.get_ptr_of_epetra_multi_vector().get());
+  linear_problem.SetLHS(&lhs.get_ref_of_epetra_vector());
+  linear_problem.SetRHS(&rhs.get_ref_of_epetra_vector());
 }
 
 /*----------------------------------------------------------------------*

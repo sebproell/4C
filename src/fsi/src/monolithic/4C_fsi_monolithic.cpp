@@ -626,7 +626,7 @@ void FSI::Monolithic::time_step(
       std::make_shared<Core::LinAlg::Vector<double>>(*dof_row_map(), true);
   initial_guess(initial_guess_v);
 
-  ::NOX::Epetra::Vector noxSoln(Teuchos::rcpFromRef(*initial_guess_v->get_ptr_of_epetra_vector()),
+  ::NOX::Epetra::Vector noxSoln(Teuchos::rcpFromRef(initial_guess_v->get_ref_of_epetra_vector()),
       ::NOX::Epetra::Vector::CreateView);
 
   // Create the linear system

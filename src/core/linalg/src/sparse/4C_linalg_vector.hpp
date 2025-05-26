@@ -15,7 +15,6 @@
 #include "4C_linalg_multi_vector.hpp"
 #include "4C_linalg_view.hpp"
 
-#include <Epetra_FEVector.h>
 #include <Epetra_IntVector.h>
 #include <Epetra_Vector.h>
 
@@ -57,12 +56,15 @@ namespace Core::LinAlg
     operator const MultiVector<T>&() const;
     operator MultiVector<T>&();
 
+    // Explicit conversion to MultiVector: the MultiVector will view the same content and only have
+    // a single column.
+    const MultiVector<T>& as_multi_vector() const;
+    MultiVector<T>& as_multi_vector();
+
     // (Implicit) conversions: they all return references or RCPs, never copies
     const Epetra_Vector& get_ref_of_epetra_vector() const { return *vector_; }
 
     Epetra_Vector& get_ref_of_epetra_vector() { return *vector_; }
-
-    std::shared_ptr<Epetra_Vector> get_ptr_of_epetra_vector() { return vector_; }
 
     operator Epetra_MultiVector&() { return *vector_; }
 
@@ -71,16 +73,6 @@ namespace Core::LinAlg
     operator Epetra_Vector&() { return *vector_; }
 
     operator const Epetra_Vector&() const { return *vector_; }
-
-    //! get pointer of epetra multi vector
-    std::shared_ptr<Epetra_MultiVector> get_ptr_of_epetra_multi_vector() { return vector_; }
-
-    //! Temporary helper to ease transition from Epetra and simplify interfacing with RCP-laden code
-    std::shared_ptr<MultiVector<T>> get_ptr_of_multi_vector() const
-    {
-      sync_view();
-      return multi_vector_view_;
-    }
 
     //! Computes dot product of each corresponding pair of vectors.
     int dot(const Epetra_MultiVector& A, double* Result) const;

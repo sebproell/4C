@@ -170,8 +170,8 @@ namespace Solid
           std::vector<Inpar::Solid::ModelType>& constraint_models) const;
 
       //! calculate norm in Get*Norms functions
-      double calculate_norm(std::shared_ptr<Epetra_Vector> quantity,
-          const ::NOX::Abstract::Vector::NormType type, const bool isscaled) const;
+      double calculate_norm(Epetra_Vector& quantity, const ::NOX::Abstract::Vector::NormType type,
+          const bool isscaled) const;
 
      protected:
       //! init flag

@@ -53,7 +53,7 @@ namespace BeamInteraction
   void add_beam_interaction_nodal_forces(
       const std::shared_ptr<BeamInteraction::BeamToSolidOutputWriterVisualization>& visualization,
       const std::shared_ptr<const Core::FE::Discretization>& discret_ptr,
-      const std::shared_ptr<const Core::LinAlg::MultiVector<double>>& displacement,
+      const Core::LinAlg::MultiVector<double>& displacement,
       const Core::LinAlg::MultiVector<double>& force, const bool write_unique_ids = false);
 
   /**

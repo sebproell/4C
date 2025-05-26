@@ -77,6 +77,20 @@ Core::LinAlg::Vector<T>::operator Core::LinAlg::MultiVector<T>&()
 
 
 template <typename T>
+const Core::LinAlg::MultiVector<T>& Core::LinAlg::Vector<T>::as_multi_vector() const
+{
+  return static_cast<const Core::LinAlg::MultiVector<T>&>(*this);
+}
+
+
+template <typename T>
+Core::LinAlg::MultiVector<T>& Core::LinAlg::Vector<T>::as_multi_vector()
+{
+  return static_cast<Core::LinAlg::MultiVector<T>&>(*this);
+}
+
+
+template <typename T>
 int Core::LinAlg::Vector<T>::norm_1(double* Result) const
 {
   return vector_->Norm1(Result);

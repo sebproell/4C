@@ -390,7 +390,7 @@ namespace Adapter
     //@{
 
     /// Set forces due to interface with fluid, the force is expected external-force-like
-    void set_force_interface(std::shared_ptr<Core::LinAlg::MultiVector<double>> iforce) override
+    void set_force_interface(const Core::LinAlg::MultiVector<double>& iforce) override
     {
       FOUR_C_THROW(
           "This method is deprecated. In the new structural time integration"

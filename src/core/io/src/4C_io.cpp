@@ -70,7 +70,7 @@ std::shared_ptr<Core::LinAlg::MultiVector<double>> Core::IO::DiscretizationReade
 void Core::IO::DiscretizationReader::read_vector(
     std::shared_ptr<Core::LinAlg::Vector<double>> vec, std::string name)
 {
-  read_vector(vec->get_ptr_of_multi_vector(), name);
+  read_vector(Utils::shared_ptr_from_ref(vec->as_multi_vector()), name);
 }
 
 
