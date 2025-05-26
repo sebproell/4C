@@ -131,7 +131,7 @@ function(four_c_auto_define_module)
       EXPORT 4CTargets
       FILE_SET HEADERS
       )
-    if(NOT BUILD_SHARED_LIBS)
+    if(NOT FOUR_C_BUILD_SHARED_LIBS)
       install(
         TARGETS ${_target}_objs
         EXPORT 4CTargets
