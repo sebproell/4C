@@ -95,7 +95,7 @@ namespace
 
     // replace the map based on the epetra vector
     EXPECT_EQ(
-        vector.get_ptr_of_Epetra_MultiVector()->ReplaceMap(new_map->get_epetra_block_map()), 0);
+        static_cast<Epetra_MultiVector&>(vector).ReplaceMap(new_map->get_epetra_block_map()), 0);
 
     // compare result with our map wrapper
     EXPECT_TRUE(vector.get_map().same_as(*new_map));

@@ -74,8 +74,8 @@ void Core::LinearSolver::DirectSolver<MatrixType, VectorType>::setup(
 
 #if FOUR_C_TRILINOS_INTERNAL_VERSION_GE(2025, 3)
 #else
-  linear_problem_->SetRHS(b_->get_ptr_of_Epetra_MultiVector().get());
-  linear_problem_->SetLHS(x_->get_ptr_of_Epetra_MultiVector().get());
+  linear_problem_->SetRHS(&b_->get_epetra_multi_vector());
+  linear_problem_->SetLHS(&x_->get_epetra_multi_vector());
   linear_problem_->SetOperator(a_.get());
 
   if (reindexer_ and not(reset or refactor)) reindexer_->fwd();
@@ -128,8 +128,8 @@ void Core::LinearSolver::DirectSolver<MatrixType, VectorType>::setup(
 #if FOUR_C_TRILINOS_INTERNAL_VERSION_GE(2025, 3)
     solver_ = Amesos2::create<Epetra_CrsMatrix, Epetra_MultiVector>(solver_type,
         Teuchos::rcp_dynamic_cast<Epetra_CrsMatrix>(Teuchos::rcpFromRef(*a_)),
-        Teuchos::rcpFromRef(*x_->get_ptr_of_Epetra_MultiVector()),
-        Teuchos::rcpFromRef(*b_->get_ptr_of_Epetra_MultiVector()));
+        Teuchos::rcpFromRef(x_->get_epetra_multi_vector()),
+        Teuchos::rcpFromRef(b_->get_epetra_multi_vector()));
 
     solver_->setParameters(Teuchos::rcpFromRef(params));
 #endif

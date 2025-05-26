@@ -178,7 +178,7 @@ Core::LinearSolver::Parameters::extract_nullspace_from_parameterlist(
 
   Teuchos::RCP<Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>> nullspace =
       Teuchos::make_rcp<Xpetra::EpetraMultiVectorT<GlobalOrdinal, Node>>(
-          Teuchos::rcpFromRef(*nullspace_data->get_ptr_of_Epetra_MultiVector()));
+          Teuchos::rcpFromRef(nullspace_data->get_epetra_multi_vector()));
 
   nullspace->replaceMap(Teuchos::rcpFromRef(row_map));
 

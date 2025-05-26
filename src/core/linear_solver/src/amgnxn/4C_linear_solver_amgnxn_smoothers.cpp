@@ -375,7 +375,7 @@ void Core::LinearSolver::AMGNxN::MueluSmootherWrapper::apply(
 
   Teuchos::RCP<Xpetra::EpetraMultiVectorT<GlobalOrdinal, Node>> Xex =
       Teuchos::make_rcp<Xpetra::EpetraMultiVectorT<GlobalOrdinal, Node>>(
-          Teuchos::rcpFromRef(*X_rcp.get_ptr_of_Epetra_MultiVector()));
+          Teuchos::rcpFromRef(X_rcp.get_epetra_multi_vector()));
 
   Teuchos::RCP<Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>> Xx =
       Teuchos::rcp_dynamic_cast<Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>>(
@@ -384,7 +384,7 @@ void Core::LinearSolver::AMGNxN::MueluSmootherWrapper::apply(
 
   Teuchos::RCP<Xpetra::EpetraMultiVectorT<GlobalOrdinal, Node>> Yex =
       Teuchos::make_rcp<Xpetra::EpetraMultiVectorT<GlobalOrdinal, Node>>(
-          Teuchos::rcpFromRef(*Y_rcp.get_ptr_of_Epetra_MultiVector()));
+          Teuchos::rcpFromRef(Y_rcp.get_epetra_multi_vector()));
 
   Teuchos::RCP<Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>> Yx =
       Teuchos::rcp_dynamic_cast<Xpetra::MultiVector<Scalar, LocalOrdinal, GlobalOrdinal, Node>>(
