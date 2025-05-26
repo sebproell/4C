@@ -1806,6 +1806,48 @@ v:
     }
   }
 
+  TEST(InputSpecTest, SizedOptionalVector)
+  {
+    // This was a bug where an optional vector was not parsed correctly.
+    auto spec = all_of({
+        parameter<int>("num", {.default_value = 2}),
+        parameter<std::optional<std::vector<double>>>("v", {.size = from_parameter<int>("num")}),
+    });
+
+    {
+      SCOPED_TRACE("Optional has value");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_arena(R"(num: 2
+v: [1.0, 2.0])",
+          &tree);
+      ConstYamlNodeRef node(tree.rootref(), "");
+
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("num"), 2);
+      const auto& v = container.get<std::optional<std::vector<double>>>("v");
+      EXPECT_TRUE(v.has_value());
+      EXPECT_EQ(v->size(), 2);
+      EXPECT_EQ((*v)[0], 1.0);
+      EXPECT_EQ((*v)[1], 2.0);
+    }
+
+    {
+      SCOPED_TRACE("Empty optional");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_arena(R"(num: 2
+v: null)",
+          &tree);
+      ConstYamlNodeRef node(tree.rootref(), "");
+
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("num"), 2);
+      const auto& v = container.get<std::optional<std::vector<double>>>("v");
+      EXPECT_FALSE(v.has_value());
+    }
+  }
+
   TEST(InputSpecTest, DatToYaml)
   {
     auto spec = all_of({
