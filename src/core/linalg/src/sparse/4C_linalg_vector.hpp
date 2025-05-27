@@ -185,8 +185,12 @@ namespace Core::LinAlg
 
     double* get_values() const { return vector_->Values(); }
 
-    /** Replace map, only if new map has same point-structure as current map.
-        return 0 if map is replaced, -1 if not.
+    /**
+     * Replace map, only if new map has same point-structure as current map.
+     *
+     * @warning This call may invalidate any views of this vector.
+     *
+     * @returns 0 if map is replaced, -1 if not.
      */
     int replace_map(const Map& map);
 
@@ -300,41 +304,22 @@ namespace Core::LinAlg
     /**
      * View a given Epetra_Vector object under our own Vector wrapper.
      */
-    [[nodiscard]] static std::unique_ptr<Vector<T>> create_view(Epetra_Vector& view)
-    {
-      std::unique_ptr<Vector<T>> ret(new Vector<T>);
-      ret->vector_ = std::make_unique<Epetra_Vector>(Epetra_DataAccess::View, view, 0);
-      return ret;
-    }
+    [[nodiscard]] static std::unique_ptr<Vector<T>> create_view(Epetra_Vector& view);
 
-    [[nodiscard]] static std::unique_ptr<const Vector<T>> create_view(const Epetra_Vector& view)
-    {
-      std::unique_ptr<Vector<T>> ret(new Vector<T>);
-      ret->vector_ = std::make_unique<Epetra_Vector>(Epetra_DataAccess::View, view, 0);
-      return ret;
-    }
+    [[nodiscard]] static std::unique_ptr<const Vector<T>> create_view(const Epetra_Vector& view);
 
 
    private:
     Vector() = default;
 
-    /**
-     * This function ensures the view necessary to obtain MultiVector object is in sync.
-     * Internally, it will be only called once. However, it is important that this call is delayed
-     * until a view is actually required. If views were constructed ahead of time, we could run into
-     * an infinite recursion between Vector and MultiVector.
-     */
-    void sync_view() const;
-
-
     //! The actual Epetra_Vector object.
-    std::shared_ptr<Epetra_Vector> vector_;
+    Utils::OwnerOrView<Epetra_Vector> vector_;
 
     //! Map from Epetra_Vector
     mutable View<const Map> map_;
 
     //! MultiVector view of the Vector. This is used to allow implicit conversion to MultiVector.
-    mutable std::shared_ptr<MultiVector<T>> multi_vector_view_;
+    mutable View<MultiVector<T>> multi_vector_view_;
 
     friend class MultiVector<T>;
   };

@@ -174,6 +174,19 @@ namespace Core::LinAlg
       return *view_;
     }
 
+    /**
+     * Invalidate the view, so that it no longer views any object. You need to call sync()  or
+     * assign a new object to the view before using it again.
+     *
+     * @note This is useful in the implementation of wrappers where we want to trigger a re-sync of
+     * the view.
+     */
+    void invalidate()
+    {
+      view_.reset();
+      viewed_object_ = nullptr;
+    }
+
    private:
     //! Source content wrapped in our own type.
     //! We need to share ownership so we can make copies of the view (which refer to the same

@@ -20,26 +20,26 @@
 FOUR_C_NAMESPACE_OPEN
 template <typename T>
 Core::LinAlg::MultiVector<T>::MultiVector(const Epetra_BlockMap& Map, int num_columns, bool zeroOut)
-    : vector_(std::make_shared<Epetra_MultiVector>(Map, num_columns, zeroOut))
+    : vector_(Utils::make_owner<Epetra_MultiVector>(Map, num_columns, zeroOut))
 {
 }
 template <typename T>
 Core::LinAlg::MultiVector<T>::MultiVector(
     const Core::LinAlg::Map& Map, int num_columns, bool zeroOut)
     : vector_(
-          std::make_shared<Epetra_MultiVector>(Map.get_epetra_block_map(), num_columns, zeroOut))
+          Utils::make_owner<Epetra_MultiVector>(Map.get_epetra_block_map(), num_columns, zeroOut))
 {
 }
 
 template <typename T>
 Core::LinAlg::MultiVector<T>::MultiVector(const Epetra_MultiVector& source)
-    : vector_(std::make_shared<Epetra_MultiVector>(source))
+    : vector_(Utils::make_owner<Epetra_MultiVector>(source))
 {
 }
 
 template <typename T>
 Core::LinAlg::MultiVector<T>::MultiVector(const MultiVector& other)
-    : vector_(std::make_shared<Epetra_MultiVector>(*other.vector_))
+    : vector_(Utils::make_owner<Epetra_MultiVector>(*other.vector_))
 {
 }
 
@@ -127,7 +127,7 @@ int Core::LinAlg::MultiVector<T>::PutScalar(double ScalarConstant)
 template <typename T>
 int Core::LinAlg::MultiVector<T>::ReplaceMap(const Core::LinAlg::Map& map)
 {
-  for (auto& view : column_vector_view_) view->replace_map(map);
+  column_vector_view_.clear();
   return vector_->ReplaceMap(map.get_epetra_block_map());
 }
 
@@ -140,33 +140,40 @@ MPI_Comm Core::LinAlg::MultiVector<T>::Comm() const
 template <typename T>
 Core::LinAlg::Vector<double>& Core::LinAlg::MultiVector<T>::operator()(int i)
 {
-  sync_view();
-  FOUR_C_ASSERT(
-      column_vector_view_.size() == static_cast<std::size_t>(NumVectors()), "Internal error.");
-  return *column_vector_view_[i];
+  FOUR_C_ASSERT_ALWAYS(
+      i < vector_->NumVectors(), "Index {} out of bounds [0,{}).", i, vector_->NumVectors());
+  column_vector_view_.resize(vector_->NumVectors());
+  return column_vector_view_[i].sync(*(*vector_)(i));
 }
 
 template <typename T>
 const Core::LinAlg::Vector<double>& Core::LinAlg::MultiVector<T>::operator()(int i) const
 {
-  sync_view();
-  FOUR_C_ASSERT(
-      column_vector_view_.size() == static_cast<std::size_t>(NumVectors()), "Internal error.");
-  return *column_vector_view_[i];
+  FOUR_C_ASSERT_ALWAYS(
+      i < vector_->NumVectors(), "Index {} out of bounds [0,{}).", i, vector_->NumVectors());
+  column_vector_view_.resize(vector_->NumVectors());
+  // We may safely const_cast here, since constness is restored by the returned const reference.
+  return column_vector_view_[i].sync(const_cast<Epetra_Vector&>(*(*vector_)(i)));
 }
 
 template <typename T>
-void Core::LinAlg::MultiVector<T>::sync_view() const
+std::unique_ptr<Core::LinAlg::MultiVector<T>> Core::LinAlg::MultiVector<T>::create_view(
+    Epetra_MultiVector& view)
 {
-  // Ensure that this only runs once.
-  if (column_vector_view_.empty())
-  {
-    column_vector_view_.reserve(NumVectors());
-    for (int i = 0; i < NumVectors(); ++i)
-      column_vector_view_.emplace_back(Vector<T>::create_view(*(*vector_)(i)));
-  }
+  std::unique_ptr<MultiVector<T>> ret(new MultiVector<T>);
+  ret->vector_ = Utils::make_view<Epetra_MultiVector>(&view);
+  return ret;
 }
 
+template <typename T>
+std::unique_ptr<const Core::LinAlg::MultiVector<T>> Core::LinAlg::MultiVector<T>::create_view(
+    const Epetra_MultiVector& view)
+{
+  std::unique_ptr<MultiVector<T>> ret(new MultiVector<T>);
+  // We may safely const_cast here, since constness is restored inside the returned unique_ptr.
+  ret->vector_ = Utils::make_view<Epetra_MultiVector>(const_cast<Epetra_MultiVector*>(&view));
+  return ret;
+}
 
 // explicit instantiation
 template class Core::LinAlg::MultiVector<double>;
