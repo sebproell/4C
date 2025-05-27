@@ -512,7 +512,6 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
   int glob_numnonzero = 0;
   Core::Communication::sum_all(&numnonzero, &glob_numnonzero, 1, prod.get_comm());
 
-  // do stupid conversion into Epetra map
   Core::LinAlg::Map mv1map(mv1->get_map().num_global_elements(), mv1->get_map().num_my_elements(),
       mv1->get_map().my_global_elements(), 0, mv1->get_map().get_comm());
   // initialization of mat with map of mv1
@@ -526,7 +525,6 @@ Core::LinAlg::KrylovProjector::multiply_multi_vector_multi_vector(
   const int nummyrows = mv1->MyLength();
   const int numvals = mv2->GlobalLength();
 
-  // do stupid conversion into Epetra map
   Core::LinAlg::Map mv2map(mv2->get_map().num_global_elements(), mv2->get_map().num_my_elements(),
       mv2->get_map().my_global_elements(), 0, mv2->get_map().get_comm());
 
