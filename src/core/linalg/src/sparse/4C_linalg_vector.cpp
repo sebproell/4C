@@ -20,32 +20,32 @@ FOUR_C_NAMESPACE_OPEN
 
 template <typename T>
 Core::LinAlg::Vector<T>::Vector(const Map& Map, bool zeroOut)
-    : vector_(std::make_shared<Epetra_Vector>(Map.get_epetra_block_map(), zeroOut))
+    : vector_(Utils::make_owner<Epetra_Vector>(Map.get_epetra_block_map(), zeroOut))
 {
 }
 
 template <typename T>
 Core::LinAlg::Vector<T>::Vector(const Epetra_BlockMap& Map, bool zeroOut)
-    : vector_(std::make_shared<Epetra_Vector>(Map, zeroOut))
+    : vector_(Utils::make_owner<Epetra_Vector>(Map, zeroOut))
 {
 }
 
 template <typename T>
 Core::LinAlg::Vector<T>::Vector(const Epetra_Vector& Source)
-    : vector_(std::make_shared<Epetra_Vector>(Source))
+    : vector_(Utils::make_owner<Epetra_Vector>(Source))
 {
 }
 
 template <typename T>
 Core::LinAlg::Vector<T>::Vector(const Epetra_FEVector& Source)
-    : vector_(std::make_shared<Epetra_Vector>(Epetra_DataAccess::Copy, Source, 0))
+    : vector_(Utils::make_owner<Epetra_Vector>(Epetra_DataAccess::Copy, Source, 0))
 {
   FOUR_C_ASSERT(Source.NumVectors() == 1, "Can only convert a FE vector with a single column.");
 }
 
 template <typename T>
 Core::LinAlg::Vector<T>::Vector(const Vector& other)
-    : vector_(std::make_shared<Epetra_Vector>(other.get_ref_of_epetra_vector()))
+    : vector_(Utils::make_owner<Epetra_Vector>(other.get_ref_of_epetra_vector()))
 {
 }
 
@@ -61,18 +61,15 @@ Core::LinAlg::Vector<T>& Core::LinAlg::Vector<T>::operator=(const Vector& other)
 template <typename T>
 Core::LinAlg::Vector<T>::operator const Core::LinAlg::MultiVector<T>&() const
 {
-  sync_view();
-  FOUR_C_ASSERT(multi_vector_view_ != nullptr, "Internal error.");
-  return *multi_vector_view_;
+  // We may safely const-cast here, since constness is restored by the returned const reference.
+  return multi_vector_view_.sync(const_cast<Epetra_Vector&>(*vector_));
 }
 
 
 template <typename T>
 Core::LinAlg::Vector<T>::operator Core::LinAlg::MultiVector<T>&()
 {
-  sync_view();
-  FOUR_C_ASSERT(multi_vector_view_ != nullptr, "Internal error.");
-  return *multi_vector_view_;
+  return multi_vector_view_.sync(*vector_);
 }
 
 
@@ -200,9 +197,28 @@ int Core::LinAlg::Vector<T>::put_scalar(double ScalarConstant)
 template <typename T>
 int Core::LinAlg::Vector<T>::replace_map(const Map& map)
 {
-  if (multi_vector_view_) multi_vector_view_->ReplaceMap(map);
+  multi_vector_view_.invalidate();
+  map_.invalidate();
   auto rv = vector_->ReplaceMap(map.get_epetra_block_map());
   return rv;
+}
+
+template <typename T>
+std::unique_ptr<Core::LinAlg::Vector<T>> Core::LinAlg::Vector<T>::create_view(Epetra_Vector& view)
+{
+  std::unique_ptr<Vector<T>> ret(new Vector<T>);
+  ret->vector_ = Utils::make_view(&view);
+  return ret;
+}
+
+template <typename T>
+std::unique_ptr<const Core::LinAlg::Vector<T>> Core::LinAlg::Vector<T>::create_view(
+    const Epetra_Vector& view)
+{
+  std::unique_ptr<Vector<T>> ret(new Vector<T>);
+  // We may const-cast here, since constness is restored inside the returned unique_ptr.
+  ret->vector_ = Utils::make_view(const_cast<Epetra_Vector*>(&view));
+  return ret;
 }
 
 template <typename T>
@@ -217,12 +233,6 @@ const Core::LinAlg::Map& Core::LinAlg::Vector<T>::get_map() const
   return map_.sync(vector_->Map());
 }
 
-template <typename T>
-void Core::LinAlg::Vector<T>::sync_view() const
-{
-  // Only do this once.
-  if (!multi_vector_view_) multi_vector_view_ = MultiVector<T>::create_view(*vector_);
-}
 
 // explicit instantiation
 template class Core::LinAlg::Vector<double>;

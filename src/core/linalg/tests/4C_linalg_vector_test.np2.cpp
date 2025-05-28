@@ -281,6 +281,10 @@ namespace
     Core::LinAlg::Vector<double> a(*map_, true);
     a.put_scalar(1.0);
 
+    const Core::LinAlg::MultiVector<double>& b = a;
+    ASSERT_EQ(b.NumVectors(), 1);
+    const Core::LinAlg::Vector<double>& c = b(0);
+
     // New map where elements are distributed differently
     std::array<int, 5> my_elements;
     if (Core::Communication::my_mpi_rank(comm_) == 0)
@@ -289,14 +293,25 @@ namespace
       my_elements = {1, 3, 5, 7, 9};
     Core::LinAlg::Map new_map(10, my_elements.size(), my_elements.data(), 0, comm_);
 
-    const Core::LinAlg::MultiVector<double>& b = a;
-    const Core::LinAlg::Vector<double>& c = b(0);
-
-    // A change of the map is reflected to all views
-    a.replace_map(new_map);
-
+    // Before replacement, all maps are the same.
     EXPECT_TRUE(a.get_map().same_as(b.get_map()));
     EXPECT_TRUE(a.get_map().same_as(c.get_map()));
+
+    EXPECT_EQ(&a.get_ref_of_epetra_vector(), &b.get_epetra_multi_vector());
+    // A change of the map invalidates views, so we need to be careful.
+    a.replace_map(new_map);
+    EXPECT_NE(&a.get_ref_of_epetra_vector(), &b.get_epetra_multi_vector());
+
+    {
+      // This highlights a bug in Trilinos: the Epetra_Vector views into a MultiVector are only
+      // set once and never updated, although a map replacement would require an update.
+      const Core::LinAlg::MultiVector<double>& b_new = a;
+      const Core::LinAlg::Vector<double>& c_new = b_new(0);
+      // This is correct.
+      EXPECT_TRUE(b_new.get_map().same_as(new_map));
+      // This is the bug: c_new still has the old map although we just took a new view into b_new.
+      EXPECT_TRUE(c_new.get_map().same_as(*map_));
+    }
   }
 
 }  // namespace

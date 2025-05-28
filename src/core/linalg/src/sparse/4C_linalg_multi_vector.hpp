@@ -13,13 +13,13 @@
 
 #include "4C_linalg_map.hpp"
 #include "4C_linalg_view.hpp"
+#include "4C_utils_owner_or_view.hpp"
 
 #include <Epetra_FEVector.h>
 #include <Epetra_MultiVector.h>
 #include <mpi.h>
 
 #include <memory>
-#include <optional>
 
 // Do not lint the file for identifier names, since the naming of the Wrapper functions follow the
 // naming of the Core::LinAlg::MultiVector<double>
@@ -132,8 +132,12 @@ namespace Core::LinAlg
 
     double* Values() const { return vector_->Values(); }
 
-    /** Replace map, only if new map has same point-structure as current map.
-        return 0 if map is replaced, -1 if not.
+    /**
+     * Replace map, only if new map has same point-structure as current map.
+     *
+     * @warning This call may invalidate any views of this vector.
+     *
+     * @returns 0 if map is replaced, -1 if not.
      */
     int ReplaceMap(const Map& map);
 
@@ -231,40 +235,20 @@ namespace Core::LinAlg
     /**
      * View a given Epetra_MultiVector under our own MultiVector wrapper.
      */
-    [[nodiscard]] static std::unique_ptr<MultiVector<T>> create_view(Epetra_MultiVector& view)
-    {
-      std::unique_ptr<MultiVector<T>> ret(new MultiVector<T>);
-      ret->vector_ =
-          std::make_unique<Epetra_MultiVector>(Epetra_DataAccess::View, view, 0, view.NumVectors());
-      return ret;
-    }
+    [[nodiscard]] static std::unique_ptr<MultiVector<T>> create_view(Epetra_MultiVector& view);
 
     [[nodiscard]] static std::unique_ptr<const MultiVector<T>> create_view(
-        const Epetra_MultiVector& view)
-    {
-      std::unique_ptr<MultiVector<T>> ret(new MultiVector<T>);
-      ret->vector_ =
-          std::make_unique<Epetra_MultiVector>(Epetra_DataAccess::View, view, 0, view.NumVectors());
-      return ret;
-    }
+        const Epetra_MultiVector& view);
 
    private:
     MultiVector() = default;
 
-    /**
-     * This function ensures the views necessary to obtain Vector objects are in sync.
-     * Internally, it will be only called once. However, it is important that this call is delayed
-     * until a view is actually required. If views were constructed ahead of time, we could run into
-     * an infinite recursion between Vector and MultiVector.
-     */
-    void sync_view() const;
-
     //! The actual vector.
-    std::shared_ptr<Epetra_MultiVector> vector_;
+    Utils::OwnerOrView<Epetra_MultiVector> vector_;
 
     //! Vector view of the single columns stored inside the vector. This is used to allow
     //! access to the single columns of the MultiVector.
-    mutable std::vector<std::unique_ptr<Vector<T>>> column_vector_view_;
+    mutable std::vector<View<Vector<T>>> column_vector_view_;
 
     mutable View<const Map> map_;
 
