@@ -156,7 +156,7 @@ PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast_scat
   // If artery coupling is present:
   // artery_scatra discretization is cloned from artery discretization
 
-  std::map<int, std::set<int>> nearbyelepairs =
+  std::map<int, std::set<int>> nearby_ele_pairs =
       PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(
           comm, struct_disname, fluid_disname, ndsporo_disp, ndsporo_vel, ndsporo_solidpressure);
 
@@ -235,7 +235,7 @@ PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast_scat
     artscatradis->fill_complete(true, false, false);
   }
 
-  return nearbyelepairs;
+  return nearby_ele_pairs;
 }
 
 /*----------------------------------------------------------------------*

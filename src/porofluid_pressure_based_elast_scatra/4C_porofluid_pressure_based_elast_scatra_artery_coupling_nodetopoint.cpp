@@ -68,18 +68,18 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNodeToPointAlgorithm::
     pre_evaluate_coupling_pairs()
 {
   // pre-evaluate
-  for (const auto& coupled_elepair : coupled_elepairs_) coupled_elepair->pre_evaluate(nullptr);
+  for (const auto& coupled_ele_pair : coupled_ele_pairs_) coupled_ele_pair->pre_evaluate(nullptr);
 
   // delete the inactive pairs
-  coupled_elepairs_.erase(
-      std::remove_if(coupled_elepairs_.begin(), coupled_elepairs_.end(),
+  coupled_ele_pairs_.erase(
+      std::remove_if(coupled_ele_pairs_.begin(), coupled_ele_pairs_.end(),
           [](const std::shared_ptr<PoroMultiPhaseScatraArteryCouplingPairBase>& coupling_pair)
           { return not coupling_pair->is_active(); }),
-      coupled_elepairs_.end());
+      coupled_ele_pairs_.end());
 
   // output
   int total_num_active_pairs = 0;
-  int num_active_pairs = static_cast<int>(coupled_elepairs_.size());
+  int num_active_pairs = static_cast<int>(coupled_ele_pairs_.size());
   Core::Communication::sum_all(&num_active_pairs, &total_num_active_pairs, 1, get_comm());
   if (my_mpi_rank_ == 0)
   {
@@ -154,12 +154,12 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNodeToPointAlgorithm::
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << '\n';
   }
   Core::Communication::barrier(get_comm());
-  for (const auto& coupled_elepair : coupled_elepairs_)
+  for (const auto& coupled_ele_pair : coupled_ele_pairs_)
   {
     std::cout << "Proc " << std::right << std::setw(2) << my_mpi_rank_ << ": Artery-ele "
-              << std::right << std::setw(5) << coupled_elepair->ele1_gid()
+              << std::right << std::setw(5) << coupled_ele_pair->ele1_gid()
               << ": <---> continuous-ele " << std::right << std::setw(7)
-              << coupled_elepair->ele2_gid() << std::endl;
+              << coupled_ele_pair->ele2_gid() << std::endl;
   }
   Core::Communication::barrier(get_comm());
   if (my_mpi_rank_ == 0) std::cout << "\n";

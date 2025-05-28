@@ -119,7 +119,7 @@ namespace ScaTra
     void set_artery_time_integrator(std::shared_ptr<Adapter::ArtNet> arttimint);
 
     //! set the element pairs that are close as found by search algorithm
-    void set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearbyelepairs);
+    void set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearby_ele_pairs);
 
     //! prepare a time step
     void prepare_time_step() const;

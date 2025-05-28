@@ -60,13 +60,13 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm:
           *artery_dis_->element_col_map(), numgp_per_artele);
 
   // pre-evaluate
-  for (unsigned i = 0; i < coupled_elepairs_.size(); i++)
-    coupled_elepairs_[i]->pre_evaluate(gp_vector);
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
+    coupled_ele_pairs_[i]->pre_evaluate(gp_vector);
 
   // delete the inactive pairs
-  coupled_elepairs_.erase(std::remove_if(coupled_elepairs_.begin(), coupled_elepairs_.end(),
-                              [](auto& pair) { return !pair->is_active(); }),
-      coupled_elepairs_.end());
+  coupled_ele_pairs_.erase(std::remove_if(coupled_ele_pairs_.begin(), coupled_ele_pairs_.end(),
+                               [](auto& pair) { return !pair->is_active(); }),
+      coupled_ele_pairs_.end());
 
   // the following takes care of a very special case, namely, if a GP on the lateral surface lies
   // exactly in between two or more 3D elements owned by different procs.
@@ -129,17 +129,17 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm:
     }
   }
 
-  for (unsigned i = 0; i < coupled_elepairs_.size(); i++)
-    coupled_elepairs_[i]->delete_unnecessary_gps(gp_vector);
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
+    coupled_ele_pairs_[i]->delete_unnecessary_gps(gp_vector);
 
   int total_num_gp = 0;
   int numgp = 0;
 
-  for (unsigned i = 0; i < coupled_elepairs_.size(); i++)
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
   {
     // segment ID not needed in this case, just set to zero
-    coupled_elepairs_[i]->set_segment_id(0);
-    numgp = numgp + coupled_elepairs_[i]->num_gp();
+    coupled_ele_pairs_[i]->set_segment_id(0);
+    numgp = numgp + coupled_ele_pairs_[i]->num_gp();
   }
   // safety check
   Core::Communication::sum_all(&numgp, &total_num_gp, 1, get_comm());
@@ -148,7 +148,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingSurfaceBasedAlgorithm:
 
   // output
   int total_numactive_pairs = 0;
-  int numactive_pairs = static_cast<int>(coupled_elepairs_.size());
+  int numactive_pairs = static_cast<int>(coupled_ele_pairs_.size());
   Core::Communication::sum_all(&numactive_pairs, &total_numactive_pairs, 1, get_comm());
   if (homogenized_dis_->name() == "porofluid" && my_mpi_rank_ == 0)
     std::cout << "Only " << total_numactive_pairs

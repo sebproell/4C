@@ -30,7 +30,7 @@ namespace PoroPressureBased
         const Teuchos::ParameterList& fluidparams, const std::string& struct_disname,
         const std::string& fluid_disname, bool isale, int nds_disp, int nds_vel,
         int nds_solidpressure, int ndsporofluid_scatra,
-        const std::map<int, std::set<int>>* nearbyelepairs) override;
+        const std::map<int, std::set<int>>* nearby_ele_pairs) override;
 
     /// setup
     void setup_system() override;

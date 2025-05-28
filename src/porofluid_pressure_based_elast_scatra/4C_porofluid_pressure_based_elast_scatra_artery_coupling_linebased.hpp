@@ -69,7 +69,7 @@ namespace PoroPressureBased
     //! fill the GID to segment vector
     void fill_gid_to_segment_vector(
         const std::vector<std::shared_ptr<
-            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
         std::map<int, std::vector<double>>& gid_to_seglength);
 
     //! set the artery diameter in column based vector
@@ -144,14 +144,14 @@ namespace PoroPressureBased
     //! check for duplicate segment
     bool is_duplicate_segment(
         const std::vector<std::shared_ptr<
-            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
         PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase& possible_duplicate);
 
     //! check for identical segment
     bool is_identical_segment(
         const std::vector<std::shared_ptr<
-            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
-        const int& ele1gid, const double& etaA, const double& etaB, int& elepairID);
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
+        const int& ele1gid, const double& etaA, const double& etaB, int& ele_pair_id);
 
     //! set flag if variable diameter has to be calculated
     void set_flag_variable_diameter() override;

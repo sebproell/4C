@@ -34,13 +34,13 @@ void Adapter::PoroFluidMultiphaseWrapper::init(const bool isale,  ///< ALE flag
     const int nds_solidpressure,  ///< number of dofset associated with solid pressure
     const int
         ndsporofluid_scatra,  ///< number of dofset associated with scalar on fluid discretization
-    const std::map<int, std::set<int>>* nearbyelepairs  ///< possible interaction partners between
-                                                        ///< porofluid and artery discretization
+    const std::map<int, std::set<int>>* nearby_ele_pairs  ///< possible interaction partners between
+                                                          ///< porofluid and artery discretization
 )
 {
   // initialize algorithm for specific time-integration scheme
   porofluid_->init(
-      isale, nds_disp, nds_vel, nds_solidpressure, ndsporofluid_scatra, nearbyelepairs);
+      isale, nds_disp, nds_vel, nds_solidpressure, ndsporofluid_scatra, nearby_ele_pairs);
 
   return;
 }

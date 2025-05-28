@@ -176,8 +176,8 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
   {
     // set the right-hand side time factors (we assume constant time step size here)
     set_time_fac_rhs();
-    for (const auto& coupled_elepair : coupled_elepairs_)
-      coupled_elepair->setup_fluid_managers_and_materials(
+    for (const auto& coupled_ele_pair : coupled_ele_pairs_)
+      coupled_ele_pair->setup_fluid_managers_and_materials(
           homogenized_dis_->name(), timefacrhs_artery_, timefacrhs_homogenized_);
     porofluid_managers_initialized_ = true;
   }
@@ -236,14 +236,14 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
   // loop over pairs found by search
   std::map<int, std::set<int>>::const_iterator nearby_ele_iter;
   int num_active_pairs = 0;
-  for (nearby_ele_iter = nearby_elepairs_.begin(); nearby_ele_iter != nearby_elepairs_.end();
+  for (nearby_ele_iter = nearby_ele_pairs_.begin(); nearby_ele_iter != nearby_ele_pairs_.end();
       ++nearby_ele_iter)
     num_active_pairs += nearby_ele_iter->second.size();
 
-  coupled_elepairs_.resize(num_active_pairs);
+  coupled_ele_pairs_.resize(num_active_pairs);
 
   int coupled_ele_pair_idx = 0;
-  for (nearby_ele_iter = nearby_elepairs_.begin(); nearby_ele_iter != nearby_elepairs_.end();
+  for (nearby_ele_iter = nearby_ele_pairs_.begin(); nearby_ele_iter != nearby_ele_pairs_.end();
       ++nearby_ele_iter)
   {
     const int artery_ele_gid = nearby_ele_iter->first;
@@ -266,16 +266,16 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
             condition_name_, penalty_parameter_);
 
         // add to the list of current contact pairs
-        coupled_elepairs_[coupled_ele_pair_idx] = current_pair;
+        coupled_ele_pairs_[coupled_ele_pair_idx] = current_pair;
         coupled_ele_pair_idx++;
       }
     }
   }
-  coupled_elepairs_.resize(coupled_ele_pair_idx);
+  coupled_ele_pairs_.resize(coupled_ele_pair_idx);
 
   // output
   int total_numactive_pairs = 0;
-  num_active_pairs = static_cast<int>(coupled_elepairs_.size());
+  num_active_pairs = static_cast<int>(coupled_ele_pairs_.size());
   Core::Communication::sum_all(&num_active_pairs, &total_numactive_pairs, 1, get_comm());
   if (my_mpi_rank_ == 0)
   {
@@ -283,7 +283,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
               << " Artery-to-PoroMultiphaseScatra coupling pairs (segments)" << '\n';
   }
 
-  nearby_elepairs_.clear();
+  nearby_ele_pairs_.clear();
 }
 
 /*----------------------------------------------------------------------*
@@ -299,14 +299,14 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
       Global::Problem::instance()->poro_fluid_multi_phase_dynamic_params().sublist(
           "ARTERY COUPLING");
 
-  int num_active_pairs = boost::accumulate(nearby_elepairs_, 0,
+  int num_active_pairs = boost::accumulate(nearby_ele_pairs_, 0,
       [](const int a, const auto& b) { return a + (static_cast<int>(b.second.size())); });
 
-  coupled_elepairs_.resize(num_active_pairs);
+  coupled_ele_pairs_.resize(num_active_pairs);
 
   // loop over pairs found by search
   int coupled_ele_pair_idx = 0;
-  for (const auto& nearby_ele_iter : nearby_elepairs_)
+  for (const auto& nearby_ele_iter : nearby_ele_pairs_)
   {
     // create vector of active coupling pairs
     std::vector<Core::Elements::Element const*> coupled_elements(2);
@@ -357,7 +357,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
                   coupled_dofs_homogenized_, coupled_dofs_artery_, scale_vector_, function_vector_,
                   condition_name_, penalty, coupling_element_type_, eta_ntp);
               // add to the list of current contact pairs
-              coupled_elepairs_[coupled_ele_pair_idx] = current_pair;
+              coupled_ele_pairs_[coupled_ele_pair_idx] = current_pair;
               coupled_ele_pair_idx++;
             }
           }
@@ -365,11 +365,11 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
       }
     }
   }
-  coupled_elepairs_.resize(coupled_ele_pair_idx);
+  coupled_ele_pairs_.resize(coupled_ele_pair_idx);
 
   // output
   int total_num_active_pairs = 0;
-  num_active_pairs = static_cast<int>(coupled_elepairs_.size());
+  num_active_pairs = static_cast<int>(coupled_ele_pairs_.size());
   Core::Communication::sum_all(&num_active_pairs, &total_num_active_pairs, 1, get_comm());
   if (my_mpi_rank_ == 0)
   {
@@ -377,7 +377,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
               << " Artery-to-PoroMultiphaseScatra coupling pairs (segments)" << '\n';
   }
 
-  nearby_elepairs_.clear();
+  nearby_ele_pairs_.clear();
 }
 
 
@@ -463,30 +463,30 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
   }
 
   // evaluate all pairs
-  for (const auto& coupled_elepair : coupled_elepairs_)
+  for (const auto& coupled_ele_pair : coupled_ele_pairs_)
   {
     // reset state on pairs
-    coupled_elepair->reset_state(homogenized_dis_, artery_dis_);
+    coupled_ele_pair->reset_state(homogenized_dis_, artery_dis_);
 
     // get the segment lengths
     const std::vector<double> segment_lengths =
-        get_ele_segment_lengths(coupled_elepair->ele1_gid());
+        get_ele_segment_lengths(coupled_ele_pair->ele1_gid());
 
     // evaluate
-    const double integrated_diameter = coupled_elepair->evaluate(&(ele_rhs[0]), &(ele_rhs[1]),
+    const double integrated_diameter = coupled_ele_pair->evaluate(&(ele_rhs[0]), &(ele_rhs[1]),
         &(ele_matrix[0][0]), &(ele_matrix[0][1]), &(ele_matrix[1][0]), &(ele_matrix[1][1]), &D_ele,
         &M_ele, &Kappa_ele, segment_lengths);
 
     // assemble
-    assemble(coupled_elepair->ele1_gid(), coupled_elepair->ele2_gid(), integrated_diameter, ele_rhs,
-        ele_matrix, sysmat, rhs);
+    assemble(coupled_ele_pair->ele1_gid(), coupled_ele_pair->ele2_gid(), integrated_diameter,
+        ele_rhs, ele_matrix, sysmat, rhs);
 
     // in the case of MP, assemble D, M and Kappa
     if (artery_coupling_method_ ==
             Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::mp and
         num_coupled_dofs_ > 0)
       assemble_mortar_matrices_and_vector(
-          coupled_elepair->ele1_gid(), coupled_elepair->ele2_gid(), D_ele, M_ele, Kappa_ele);
+          coupled_ele_pair->ele1_gid(), coupled_ele_pair->ele2_gid(), D_ele, M_ele, Kappa_ele);
   }
 
   // set artery diameter in material to be able to evaluate the 1D elements with variable diameter
@@ -905,7 +905,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
 void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
     set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearby_ele_pairs)
 {
-  nearby_elepairs_ = *nearby_ele_pairs;
+  nearby_ele_pairs_ = *nearby_ele_pairs;
 }
 
 FOUR_C_NAMESPACE_CLOSE

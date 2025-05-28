@@ -336,9 +336,9 @@ void ScaTra::MeshtyingStrategyArtery::set_artery_time_integrator(
  | set element pairs that are close                       kremheller 03/19 |
  *------------------------------------------------------------------------ */
 void ScaTra::MeshtyingStrategyArtery::set_nearby_ele_pairs(
-    const std::map<int, std::set<int>>* nearbyelepairs)
+    const std::map<int, std::set<int>>* nearby_ele_pairs)
 {
-  arttoscatracoupling_->set_nearby_ele_pairs(nearbyelepairs);
+  arttoscatracoupling_->set_nearby_ele_pairs(nearby_ele_pairs);
 
   return;
 }

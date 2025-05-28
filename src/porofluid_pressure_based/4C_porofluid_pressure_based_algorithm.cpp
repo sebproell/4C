@@ -133,7 +133,7 @@ PoroPressureBased::PorofluidAlgorithm::PorofluidAlgorithm(
 
 
 void PoroPressureBased::PorofluidAlgorithm::init(bool isale, int nds_disp, int nds_vel,
-    int nds_solidpressure, int nds_scalar, const std::map<int, std::set<int>>* nearbyelepairs)
+    int nds_solidpressure, int nds_scalar, const std::map<int, std::set<int>>* nearby_ele_pairs)
 {
   // set flags
   isale_ = isale;
@@ -278,7 +278,7 @@ void PoroPressureBased::PorofluidAlgorithm::init(bool isale, int nds_disp, int n
   {
     meshtying_ = std::make_shared<PoroPressureBased::MeshtyingArtery>(this, params_, poroparams_);
     meshtying_->check_initial_fields(phinp_);
-    meshtying_->set_nearby_elepairs(nearbyelepairs);
+    meshtying_->set_nearby_ele_pairs(nearby_ele_pairs);
     meshtying_->setup();
   }
 

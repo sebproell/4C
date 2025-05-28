@@ -105,7 +105,7 @@ namespace PoroPressureBased
     double threshold_delete_free_hanging_elements_;
 
     //! interacting pairs of artery and continuous-discretization elements
-    std::vector<std::shared_ptr<PoroMultiPhaseScatraArteryCouplingPairBase>> coupled_elepairs_;
+    std::vector<std::shared_ptr<PoroMultiPhaseScatraArteryCouplingPairBase>> coupled_ele_pairs_;
 
     //! vector with 1D coupling nodes for node-to-point coupling
     std::vector<int> coupling_nodes_for_node_to_point_;
@@ -209,7 +209,7 @@ namespace PoroPressureBased
     double timefacrhs_homogenized_;
 
     //! result of brute force search
-    std::map<int, std::set<int>> nearby_elepairs_;
+    std::map<int, std::set<int>> nearby_ele_pairs_;
 
     //! phinp for homogenized discretization
     std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_homogenized_;

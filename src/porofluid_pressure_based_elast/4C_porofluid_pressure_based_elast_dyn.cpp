@@ -47,7 +47,7 @@ void porofluid_elast_dyn(int restart)
   int nds_solidpressure(-1);
 
   // Setup discretizations and coupling. Assign the dof sets and return the numbers
-  std::map<int, std::set<int>> nearbyelepairs =
+  std::map<int, std::set<int>> nearby_ele_pairs =
       PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(
           comm, struct_disname, fluid_disname, nds_disp, nds_vel, nds_solidpressure);
 
@@ -72,7 +72,7 @@ void porofluid_elast_dyn(int restart)
   algo->init(poroparams, poroparams, structdyn, fluiddyn, struct_disname, fluid_disname, true,
       nds_disp, nds_vel, nds_solidpressure,
       -1,  // no scalar field
-      &nearbyelepairs);
+      &nearby_ele_pairs);
 
   // read the restart information, set vectors and variables
   if (restart)

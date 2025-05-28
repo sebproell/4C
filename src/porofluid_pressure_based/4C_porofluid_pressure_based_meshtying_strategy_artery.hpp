@@ -88,7 +88,7 @@ namespace PoroPressureBased
         std::shared_ptr<const Core::LinAlg::Vector<double>> vector_homogenized) const;
 
     //! set the element pairs that are close as found by search algorithm
-    void set_nearby_elepairs(const std::map<int, std::set<int>>* nearby_elepairs) const;
+    void set_nearby_ele_pairs(const std::map<int, std::set<int>>* nearby_ele_pairs) const;
 
     //! set up the strategy
     void setup() const;

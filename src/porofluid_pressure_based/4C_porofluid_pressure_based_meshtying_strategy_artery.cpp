@@ -330,10 +330,10 @@ void PoroPressureBased::MeshtyingArtery::check_initial_fields(
 
 /*-------------------------------------------------------------------------*
  *------------------------------------------------------------------------ */
-void PoroPressureBased::MeshtyingArtery::set_nearby_elepairs(
-    const std::map<int, std::set<int>>* nearby_elepairs) const
+void PoroPressureBased::MeshtyingArtery::set_nearby_ele_pairs(
+    const std::map<int, std::set<int>>* nearby_ele_pairs) const
 {
-  artery_porofluid_coupling_algorithm_->set_nearby_ele_pairs(nearby_elepairs);
+  artery_porofluid_coupling_algorithm_->set_nearby_ele_pairs(nearby_ele_pairs);
 }
 
 /*-------------------------------------------------------------------------*
