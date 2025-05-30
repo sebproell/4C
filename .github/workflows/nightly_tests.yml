@@ -75,7 +75,7 @@ jobs:
           name: gcc13_assertions_test_report-${{ matrix.test-chunk }}.xml
           path: |
             ${{ github.workspace }}/gcc13_assertions_test_report-${{ matrix.test-chunk }}.xml
-          retention-days: 1
+          retention-days: 7
 
   gcc13_assertions_test_report:
     needs: gcc13_assertions_test
