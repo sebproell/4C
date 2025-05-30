@@ -442,7 +442,10 @@ def schema_from_all_of(all_of):
     # One_ofs
     if one_ofs:
         if len(one_ofs) == 1:
-            raise TypeError("A single one_of had to be returned previously")
+            if named_specs:
+                raise TypeError("May not have named specs next to a one_of.")
+
+            return schema_from_one_of(one_ofs[0])
         else:
             raise NotImplementedError(
                 f"Multiple parallel one_ofs not supported found {len(one_ofs)}. If this should become required anyOf in JSON schema files have to be introduced."
