@@ -17,10 +17,8 @@
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_defines.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_pair.hpp"
 #include "4C_porofluid_pressure_based_ele_parameter.hpp"
-#include "4C_porofluid_pressure_based_utils.hpp"
 #include "4C_scatra_ele_parameter_timint.hpp"
 
-#include <boost/range/numeric.hpp>
 #include <Epetra_FEVector.h>
 
 FOUR_C_NAMESPACE_OPEN
@@ -299,8 +297,8 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
       Global::Problem::instance()->poro_fluid_multi_phase_dynamic_params().sublist(
           "ARTERY COUPLING");
 
-  int num_active_pairs = boost::accumulate(nearby_ele_pairs_, 0,
-      [](const int a, const auto& b) { return a + (static_cast<int>(b.second.size())); });
+  int num_active_pairs = std::accumulate(nearby_ele_pairs_.begin(), nearby_ele_pairs_.end(), 0,
+      [](int a, auto b) { return a + (static_cast<int>(b.second.size())); });
 
   coupled_ele_pairs_.resize(num_active_pairs);
 
@@ -379,7 +377,6 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
 
   nearby_ele_pairs_.clear();
 }
-
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
@@ -470,7 +467,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
 
     // get the segment lengths
     const std::vector<double> segment_lengths =
-        get_ele_segment_lengths(coupled_ele_pair->ele1_gid());
+        get_ele_segment_length(coupled_ele_pair->ele1_gid());
 
     // evaluate
     const double integrated_diameter = coupled_ele_pair->evaluate(&(ele_rhs[0]), &(ele_rhs[1]),
@@ -494,7 +491,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
   if (homogenized_dis_->name() == "porofluid" && has_variable_diameter_)
   {
     set_artery_diameter_in_material();
-    evaluate_additional_linearizationof_integrated_diam();
+    evaluate_additional_linearization_of_integrated_diameter();
   }
 
   if (coupling_rhs_vector_->GlobalAssemble(Add, false) != 0)
