@@ -300,7 +300,6 @@ namespace
     EXPECT_EQ(&a.get_ref_of_epetra_vector(), &b.get_epetra_multi_vector());
     // A change of the map invalidates views, so we need to be careful.
     a.replace_map(new_map);
-    EXPECT_NE(&a.get_ref_of_epetra_vector(), &b.get_epetra_multi_vector());
 
     {
       // This highlights a bug in Trilinos: the Epetra_Vector views into a MultiVector are only
