@@ -12,6 +12,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_vector.hpp"
 
@@ -41,7 +42,7 @@ namespace Mat
     /// construct an instance of MicroMaterial for a given Gauss point
     /// and microscale discretization
     MicroMaterialGP(const int gp, const int ele_ID, const bool eleowner, const int microdisnum,
-        const double V0);
+        const double V0, const bool initialize_runtime_output_writer);
 
     /// destructor
     ~MicroMaterialGP();
@@ -50,7 +51,8 @@ namespace Mat
     void read_restart();
 
     /// New result file
-    void new_result_file(bool eleowner, std::string& newfilename);
+    void new_result_file(
+        bool eleowner, std::string& newfilename, bool initialize_runtime_output_writer);
 
     //! create path of new result file
     std::string new_result_file_path(const std::string& newprefix);
@@ -65,16 +67,14 @@ namespace Mat
     void update();
 
     /// Calculate stresses and strains on the micro-scale
-    void prepare_output();
+    void runtime_pre_output_step_state();
 
-    /// Calculate stresses and strains on the micro-scale
-    void output_step_state_microscale();
+    /// write runtime output on the micro-scale
+    void runtime_output_step_state_microscale(
+        const std::pair<double, int>& output_time_and_step, const std::string& section_name);
 
     /// write restart on the micro-scale
     void write_restart();
-
-    /// Create and initialize "empty" EAS history map
-    void eas_init();
 
     /// get ele id
     int ele_id() { return ele_id_; }
@@ -93,8 +93,11 @@ namespace Mat
     /// corresponding microstructure discretization number
     const int microdisnum_;
 
-    /// microstructure discretization writer
+    /// microstructure discretization writer (for restart output)
     std::shared_ptr<Core::IO::DiscretizationWriter> micro_output_;
+
+    /// microstructure runtime output writer
+    std::shared_ptr<Core::IO::DiscretizationVisualizationWriterMesh> micro_visualization_writer_;
 
     /// homogenized density
     double density_;
@@ -105,17 +108,15 @@ namespace Mat
     /// my vector of new displacements
     std::shared_ptr<Core::LinAlg::Vector<double>> disn_;
 
-    // my EAS history data -> note that microstructure is not parallel
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> lastalpha_;
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldalpha_;
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldfeas_;
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> old_kaainv_;
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> old_kda_;
-
     /// my stresses and strains
-    std::shared_ptr<std::vector<char>> stress_;
-    std::shared_ptr<std::vector<char>> strain_;
     std::shared_ptr<std::vector<char>> plstrain_;
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> stress_data_node_postprocessed_;
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> stress_data_element_postprocessed_;
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> strain_data_node_postprocessed_;
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> strain_data_element_postprocessed_;
+
+    /// Averaged tangent stiffness tensor
+    std::shared_ptr<Core::LinAlg::Matrix<6, 6>> macro_cmat_output_;
 
     /// old absolute time
     double time_;

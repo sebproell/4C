@@ -10,6 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
+#include "4C_io_visualization_parameters.hpp"
 #include "4C_structure_new_model_evaluator_generic.hpp"
 
 #include <memory>
@@ -90,9 +92,13 @@ namespace Solid
 
       void determine_energy() override {};
 
-      void determine_optional_quantity() override;
+      void determine_optional_quantity() override {};
 
-      void output_step_state(Core::IO::DiscretizationWriter& iowriter) const override;
+      void runtime_pre_output_step_state() override;
+
+      void runtime_output_step_state() const override;
+
+      void output_step_state(Core::IO::DiscretizationWriter& iowriter) const override {};
 
       void reset_step_state() override {};
 
@@ -117,8 +123,9 @@ namespace Solid
       void post_output() override {};
 
      private:
+      //! visualization parameters
+      Core::IO::VisualizationParameters macro_visualization_params_;
     };
-
   }  // namespace ModelEvaluator
 }  // namespace Solid
 

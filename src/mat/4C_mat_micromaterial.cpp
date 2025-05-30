@@ -30,6 +30,8 @@ Mat::PAR::MicroMaterial::MicroMaterial(const Core::Mat::PAR::Parameter::Data& ma
       microdisnum_(matdata.parameters.get<int>("MICRODIS_NUM")),
       initvol_(matdata.parameters.get<double>("INITVOL"))
 {
+  runtime_output_option_ =
+      matdata.parameters.get<Mat::PAR::MicroMaterial::RuntimeOutputOption>("RUNTIMEOUTPUT_GP");
 }
 
 

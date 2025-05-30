@@ -133,49 +133,49 @@ void MultiScale::MicroStatic::set_up_homogenization()
     }
   }
 
-  Xp_ = Core::LinAlg::create_vector(*pdof_, true);
-  *Xp_ = Xp_temp;
+  material_coords_boundary_nodes_ = Core::LinAlg::create_vector(*pdof_, true);
+  *material_coords_boundary_nodes_ = Xp_temp;
 
   // now create D and its transpose DT (following Miehe et al., 2002)
-  // NOTE: D_ has the same row GIDs (0-8), but different col IDs on different procs (corresponding
-  // to pdof_).
-  D_ = std::make_shared<Core::LinAlg::MultiVector<double>>(*pdof_, 9);
+  // NOTE: d_matrix_ has the same row GIDs (0-8), but different col IDs on different procs
+  // (corresponding to pdof_).
+  d_matrix_ = std::make_shared<Core::LinAlg::MultiVector<double>>(*pdof_, 9);
 
   for (int n = 0; n < np_ / 3; ++n)
   {
-    ((*D_)(0))[3 * n] = (*Xp_)[3 * n];
-    ((*D_)(3))[3 * n] = (*Xp_)[3 * n + 1];
-    ((*D_)(6))[3 * n] = (*Xp_)[3 * n + 2];
+    ((*d_matrix_)(0))[3 * n] = (*material_coords_boundary_nodes_)[3 * n];
+    ((*d_matrix_)(3))[3 * n] = (*material_coords_boundary_nodes_)[3 * n + 1];
+    ((*d_matrix_)(6))[3 * n] = (*material_coords_boundary_nodes_)[3 * n + 2];
 
-    ((*D_)(1))[3 * n + 1] = (*Xp_)[3 * n + 1];
-    ((*D_)(4))[3 * n + 1] = (*Xp_)[3 * n + 2];
-    ((*D_)(7))[3 * n + 1] = (*Xp_)[3 * n];
+    ((*d_matrix_)(1))[3 * n + 1] = (*material_coords_boundary_nodes_)[3 * n + 1];
+    ((*d_matrix_)(4))[3 * n + 1] = (*material_coords_boundary_nodes_)[3 * n + 2];
+    ((*d_matrix_)(7))[3 * n + 1] = (*material_coords_boundary_nodes_)[3 * n];
 
-    ((*D_)(2))[3 * n + 2] = (*Xp_)[3 * n + 2];
-    ((*D_)(5))[3 * n + 2] = (*Xp_)[3 * n];
-    ((*D_)(8))[3 * n + 2] = (*Xp_)[3 * n + 1];
+    ((*d_matrix_)(2))[3 * n + 2] = (*material_coords_boundary_nodes_)[3 * n + 2];
+    ((*d_matrix_)(5))[3 * n + 2] = (*material_coords_boundary_nodes_)[3 * n];
+    ((*d_matrix_)(8))[3 * n + 2] = (*material_coords_boundary_nodes_)[3 * n + 1];
   }
 
-  Core::LinAlg::MultiVector<double> DT(*pdof_, 9);
+  Core::LinAlg::MultiVector<double> d_matrix_transposed(*pdof_, 9);
 
   for (int n = 0; n < np_ / 3; ++n)
   {
-    ((DT(0)))[3 * n] = (*Xp_)[3 * n];
-    ((DT(1)))[3 * n + 1] = (*Xp_)[3 * n + 1];
-    ((DT(2)))[3 * n + 2] = (*Xp_)[3 * n + 2];
-    ((DT(3)))[3 * n] = (*Xp_)[3 * n + 1];
-    ((DT(4)))[3 * n + 1] = (*Xp_)[3 * n + 2];
-    ((DT(5)))[3 * n + 2] = (*Xp_)[3 * n];
-    ((DT(6)))[3 * n] = (*Xp_)[3 * n + 2];
-    ((DT(7)))[3 * n + 1] = (*Xp_)[3 * n];
-    ((DT(8)))[3 * n + 2] = (*Xp_)[3 * n + 1];
+    ((d_matrix_transposed(0)))[3 * n] = (*material_coords_boundary_nodes_)[3 * n];
+    ((d_matrix_transposed(1)))[3 * n + 1] = (*material_coords_boundary_nodes_)[3 * n + 1];
+    ((d_matrix_transposed(2)))[3 * n + 2] = (*material_coords_boundary_nodes_)[3 * n + 2];
+    ((d_matrix_transposed(3)))[3 * n] = (*material_coords_boundary_nodes_)[3 * n + 1];
+    ((d_matrix_transposed(4)))[3 * n + 1] = (*material_coords_boundary_nodes_)[3 * n + 2];
+    ((d_matrix_transposed(5)))[3 * n + 2] = (*material_coords_boundary_nodes_)[3 * n];
+    ((d_matrix_transposed(6)))[3 * n] = (*material_coords_boundary_nodes_)[3 * n + 2];
+    ((d_matrix_transposed(7)))[3 * n + 1] = (*material_coords_boundary_nodes_)[3 * n];
+    ((d_matrix_transposed(8)))[3 * n + 2] = (*material_coords_boundary_nodes_)[3 * n + 1];
   }
 
   rhs_ = std::make_shared<Core::LinAlg::MultiVector<double>>(*(discret_->dof_row_map()), 9);
 
   for (int i = 0; i < 9; ++i)
   {
-    ((*rhs_)(i)).export_to((DT(i)), *importp_, Insert);
+    ((*rhs_)(i)).export_to((d_matrix_transposed(i)), *importp_, Insert);
   }
 }
 

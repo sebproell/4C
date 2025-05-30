@@ -19,6 +19,7 @@
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
 #include <filesystem>
+#include <utility>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -48,19 +49,14 @@ namespace
 /// construct an instance of MicroMaterial for a given Gauss point and
 /// microscale discretization
 
-Mat::MicroMaterialGP::MicroMaterialGP(
-    const int gp, const int ele_ID, const bool eleowner, const int microdisnum, const double V0)
+Mat::MicroMaterialGP::MicroMaterialGP(const int gp, const int ele_ID, const bool eleowner,
+    const int microdisnum, const double V0, const bool initialize_runtime_output_writer)
     : gp_(gp), ele_id_(ele_ID), microdisnum_(microdisnum)
 {
   Global::Problem* microproblem = Global::Problem::instance(microdisnum_);
   std::shared_ptr<Core::FE::Discretization> microdis = microproblem->get_dis("structure");
   dis_ = Core::LinAlg::create_vector(*microdis->dof_row_map(), true);
   disn_ = Core::LinAlg::create_vector(*microdis->dof_row_map(), true);
-  lastalpha_ = std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-  oldalpha_ = std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-  oldfeas_ = std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-  old_kaainv_ = std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-  old_kda_ = std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
 
   // data must be consistent between micro and macro input file
   const Teuchos::ParameterList& sdyn_macro =
@@ -92,11 +88,8 @@ Mat::MicroMaterialGP::MicroMaterialGP(
   global_micro_state().microstaticcounter_[microdisnum] += 1;
   density_ = (global_micro_state().microstaticmap_[microdisnum_])->density();
 
-  // create and initialize "empty" EAS history map (if necessary)
-  eas_init();
-
   std::string newfilename;
-  new_result_file(eleowner, newfilename);
+  new_result_file(eleowner, newfilename, initialize_runtime_output_writer);
 
   // check whether we are using modified Newton as a nonlinear solver
   // on the macroscale or not
@@ -124,10 +117,7 @@ Mat::MicroMaterialGP::~MicroMaterialGP()
 void Mat::MicroMaterialGP::read_restart()
 {
   step_ = Global::Problem::instance()->restart();
-  global_micro_state().microstaticmap_[microdisnum_]->read_restart(
-      step_, dis_, lastalpha_, restartname_);
-
-  *oldalpha_ = *lastalpha_;
+  global_micro_state().microstaticmap_[microdisnum_]->read_restart(step_, dis_, restartname_);
 
   disn_->update(1.0, *dis_, 0.0);
 }
@@ -135,7 +125,8 @@ void Mat::MicroMaterialGP::read_restart()
 
 /// New resultfile
 
-void Mat::MicroMaterialGP::new_result_file(bool eleowner, std::string& newfilename)
+void Mat::MicroMaterialGP::new_result_file(
+    bool eleowner, std::string& newfilename, bool initialize_runtime_output_writer)
 {
   // set up micro output
   //
@@ -199,11 +190,20 @@ void Mat::MicroMaterialGP::new_result_file(bool eleowner, std::string& newfilena
             newfilename, ndim, restart, macrocontrol->file_steps(),
             Global::Problem::instance()->io_params().get<bool>("OUTPUT_BIN"), adaptname);
 
+    // initialize writer for restart output
     micro_output_ = std::make_shared<Core::IO::DiscretizationWriter>(
         microdis, microcontrol, microproblem->spatial_approximation_type());
     micro_output_->set_output(microcontrol);
-
     micro_output_->write_mesh(step_, time_);
+
+    if (initialize_runtime_output_writer)
+    {
+      micro_visualization_writer_ =
+          std::make_shared<Core::IO::DiscretizationVisualizationWriterMesh>(
+              microdis, Core::IO::visualization_parameters_factory(
+                            Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT"),
+                            *microcontrol, time_));
+    }
   }
 }
 
@@ -227,19 +227,18 @@ std::string Mat::MicroMaterialGP::new_result_file_path(const std::string& newpre
     const std::filesystem::path recombined_path = parent_path / filen_name;
 
     std::ostringstream s;
-    s << recombined_path.string() << "_el" << ele_id_ << "_gp" << gp_ << "-" << number;
+    s << recombined_path.string() << "_microdis" << microdisnum_ << "_el" << ele_id_ << "_gp" << gp_
+      << "-" << number;
     newfilename = s.str();
   }
   else
   {
     std::ostringstream s;
-    s << newprefix << "_el" << ele_id_ << "_gp" << gp_;
+    s << newprefix << "_microdis" << microdisnum_ << "_el" << ele_id_ << "_gp" << gp_;
     newfilename = s.str();
   }
   return newfilename;
 }
-
-void Mat::MicroMaterialGP::eas_init() {}
 
 /// Post setup routine which will be called after the end of the setup
 void Mat::MicroMaterialGP::post_setup()
@@ -278,8 +277,9 @@ void Mat::MicroMaterialGP::perform_micro_simulation(Core::LinAlg::Matrix<3, 3>* 
       global_micro_state().microstaticmap_[microdisnum_];
 
   // set displacements and EAS data of last step
-  microstatic->set_state(dis_, disn_, stress_, strain_, plstrain_, lastalpha_, oldalpha_, oldfeas_,
-      old_kaainv_, old_kda_);
+  microstatic->set_state(dis_, disn_, stress_data_node_postprocessed_,
+      stress_data_element_postprocessed_, strain_data_node_postprocessed_,
+      strain_data_element_postprocessed_, plstrain_, nullptr);
 
   // set current time, time step size and step number
   microstatic->set_time(time_, timen_, dt_, step_, stepn_);
@@ -288,10 +288,8 @@ void Mat::MicroMaterialGP::perform_micro_simulation(Core::LinAlg::Matrix<3, 3>* 
   microstatic->full_newton();
   microstatic->static_homogenization(stress, cmat, defgrd, mod_newton_, build_stiff_);
 
-  // note that it is not necessary to save displacements and EAS data
-  // explicitly since we dealt with std::shared_ptr's -> any update in class
-  // microstatic and the elements, respectively, inherently updates the
-  // micromaterialgp_static data!
+  // store matrix for output
+  macro_cmat_output_ = std::make_shared<Core::LinAlg::Matrix<6, 6>>(*cmat);
 
   // clear displacements in MicroStruGenAlpha for next usage
   microstatic->clear_state();
@@ -310,50 +308,44 @@ void Mat::MicroMaterialGP::update()
 
   dis_->update(1.0, *disn_, 0.0);
 
-  Global::Problem* microproblem = Global::Problem::instance(microdisnum_);
-  std::shared_ptr<Core::FE::Discretization> microdis = microproblem->get_dis("structure");
-  const Core::LinAlg::Map* elemap = microdis->element_row_map();
-
-  for (int i = 0; i < elemap->num_my_elements(); ++i) (*lastalpha_)[i] = (*oldalpha_)[i];
-
   // in case of modified Newton, the stiffness matrix needs to be rebuilt at
   // the beginning of the new time step
   build_stiff_ = true;
 }
 
-
-void Mat::MicroMaterialGP::prepare_output()
+void Mat::MicroMaterialGP::runtime_pre_output_step_state()
 {
   // select corresponding "time integration class" for this microstructure
   std::shared_ptr<MultiScale::MicroStatic> microstatic =
       global_micro_state().microstaticmap_[microdisnum_];
 
-  stress_ = std::make_shared<std::vector<char>>();
-  strain_ = std::make_shared<std::vector<char>>();
-  plstrain_ = std::make_shared<std::vector<char>>();
-
-  microstatic->set_state(dis_, disn_, stress_, strain_, plstrain_, lastalpha_, oldalpha_, oldfeas_,
-      old_kaainv_, old_kda_);
+  microstatic->set_state(dis_, disn_, stress_data_node_postprocessed_,
+      stress_data_element_postprocessed_, strain_data_node_postprocessed_,
+      strain_data_element_postprocessed_, plstrain_, nullptr);
   microstatic->set_time(time_, timen_, dt_, step_, stepn_);
-  microstatic->prepare_output();
+  microstatic->runtime_pre_output_step_state();
 }
 
-
-void Mat::MicroMaterialGP::output_step_state_microscale()
+void Mat::MicroMaterialGP::runtime_output_step_state_microscale(
+    const std::pair<double, int>& output_time_and_step, const std::string& section_name)
 {
   // select corresponding "time integration class" for this microstructure
-  std::shared_ptr<MultiScale::MicroStatic> microstatic =
+  const std::shared_ptr<MultiScale::MicroStatic> microstatic =
       global_micro_state().microstaticmap_[microdisnum_];
 
   // set displacements and EAS data of last step
-  microstatic->set_state(dis_, disn_, stress_, strain_, plstrain_, lastalpha_, oldalpha_, oldfeas_,
-      old_kaainv_, old_kda_);
-  microstatic->output(*micro_output_, time_, step_, dt_);
+  microstatic->set_state(dis_, disn_, stress_data_node_postprocessed_,
+      stress_data_element_postprocessed_, strain_data_node_postprocessed_,
+      strain_data_element_postprocessed_, plstrain_, macro_cmat_output_);
+  microstatic->runtime_output_step_state_microscale(
+      micro_visualization_writer_, output_time_and_step, section_name);
 
-  // we don't need these containers anymore
-  stress_ = nullptr;
-  strain_ = nullptr;
+  stress_data_node_postprocessed_ = nullptr;
+  stress_data_element_postprocessed_ = nullptr;
+  strain_data_node_postprocessed_ = nullptr;
+  strain_data_element_postprocessed_ = nullptr;
   plstrain_ = nullptr;
+  macro_cmat_output_ = nullptr;
 }
 
 void Mat::MicroMaterialGP::write_restart()
@@ -363,13 +355,16 @@ void Mat::MicroMaterialGP::write_restart()
       global_micro_state().microstaticmap_[microdisnum_];
 
   // set displacements and EAS data of last step
-  microstatic->set_state(dis_, disn_, stress_, strain_, plstrain_, lastalpha_, oldalpha_, oldfeas_,
-      old_kaainv_, old_kda_);
+  microstatic->set_state(dis_, disn_, stress_data_node_postprocessed_,
+      stress_data_element_postprocessed_, strain_data_node_postprocessed_,
+      strain_data_element_postprocessed_, plstrain_, nullptr);
   microstatic->write_restart(micro_output_, time_, step_, dt_);
 
   // we don't need these containers anymore
-  stress_ = nullptr;
-  strain_ = nullptr;
+  stress_data_node_postprocessed_ = nullptr;
+  stress_data_element_postprocessed_ = nullptr;
+  strain_data_node_postprocessed_ = nullptr;
+  strain_data_element_postprocessed_ = nullptr;
   plstrain_ = nullptr;
 }
 

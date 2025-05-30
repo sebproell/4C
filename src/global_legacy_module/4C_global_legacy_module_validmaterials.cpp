@@ -13,6 +13,7 @@
 #include "4C_io_file_reader.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_electrode.hpp"
+#include "4C_mat_micromaterial.hpp"
 
 #include <filesystem>
 #include <string>
@@ -1473,6 +1474,10 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
             parameter<int>("MICRODIS_NUM", {.description = "Number of microscale discretization"}),
             parameter<double>(
                 "INITVOL", {.description = "Initial volume of RVE", .default_value = 0.0}),
+            parameter<Mat::PAR::MicroMaterial::RuntimeOutputOption>("RUNTIMEOUTPUT_GP",
+                {.description = "Specify the Gauss Points of this element for "
+                                "which runtime output is generated",
+                    .default_value = Mat::PAR::MicroMaterial::RuntimeOutputOption::all}),
         },
         {.description = "Structural micro-scale approach: material parameters are calculated from "
                         "microscale simulation"});
