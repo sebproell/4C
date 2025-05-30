@@ -51,12 +51,12 @@ void PoroPressureBased::PorofluidElastPartitionedAlgorithm::init(
     const Teuchos::ParameterList& structparams, const Teuchos::ParameterList& fluidparams,
     const std::string& struct_disname, const std::string& fluid_disname, bool isale, int nds_disp,
     int nds_vel, int nds_solidpressure, int ndsporofluid_scatra,
-    const std::map<int, std::set<int>>* nearbyelepairs)
+    const std::map<int, std::set<int>>* nearby_ele_pairs)
 {
   // call base class
   PorofluidElastAlgorithm::init(globaltimeparams, algoparams, structparams, fluidparams,
       struct_disname, fluid_disname, isale, nds_disp, nds_vel, nds_solidpressure,
-      ndsporofluid_scatra, nearbyelepairs);
+      ndsporofluid_scatra, nearby_ele_pairs);
 
   artery_coupling_active_ = fluidparams.get<bool>("ARTERY_COUPLING");
 

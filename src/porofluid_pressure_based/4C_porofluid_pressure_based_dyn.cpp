@@ -62,7 +62,7 @@ void porofluid_pressure_based_dyn(int restart)
 
   // possible interaction partners as seen from the artery elements
   // [artelegid; contelegid_1, ...contelegid_n]
-  std::map<int, std::set<int>> nearbyelepairs;
+  std::map<int, std::set<int>> nearby_ele_pairs;
 
   if (Global::Problem::instance()->does_exist_dis(artery_disname))
   {
@@ -84,7 +84,7 @@ void porofluid_pressure_based_dyn(int restart)
       case Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp:
       {
         actdis->fill_complete();
-        nearbyelepairs = PoroPressureBased::extended_ghosting_artery_discretization(
+        nearby_ele_pairs = PoroPressureBased::extended_ghosting_artery_discretization(
             *actdis, arterydis, evaluate_on_lateral_surface, arterycoupl);
         break;
       }
@@ -125,12 +125,12 @@ void porofluid_pressure_based_dyn(int restart)
       timintscheme, actdis, linsolvernumber, porodyn, porodyn, output);
 
   // initialize
-  algo->init(false,       // eulerian formulation
-      -1,                 //  no displacements
-      -1,                 // no velocities
-      nds_solidpressure,  // dof set for post processing solid pressure
-      -1,                 // no scalar field
-      &nearbyelepairs);   // possible interaction pairs
+  algo->init(false,        // eulerian formulation
+      -1,                  //  no displacements
+      -1,                  // no velocities
+      nds_solidpressure,   // dof set for post processing solid pressure
+      -1,                  // no scalar field
+      &nearby_ele_pairs);  // possible interaction pairs
 
   // read the restart information, set vectors and variables
   if (restart) algo->read_restart(restart);

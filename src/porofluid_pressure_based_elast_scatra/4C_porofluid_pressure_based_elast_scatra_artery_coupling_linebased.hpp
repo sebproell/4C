@@ -18,14 +18,15 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace PoroPressureBased
 {
-  // forward declaration
   class PoroMultiPhaseScatraArteryCouplingPairBase;
 
-  //! Line based coupling between artery network and poromultiphasescatra algorithm
-  class PoroMultiPhaseScaTraArtCouplLineBased : public PoroMultiPhaseScaTraArtCouplNonConforming
+  //! Line-based coupling between artery network and porofluid-elasticity-scatra algorithm
+  class PorofluidElastScatraArteryCouplingLineBasedAlgorithm
+      : public PorofluidElastScatraArteryCouplingNonConformingAlgorithm
   {
    public:
-    PoroMultiPhaseScaTraArtCouplLineBased(std::shared_ptr<Core::FE::Discretization> arterydis,
+    PorofluidElastScatraArteryCouplingLineBasedAlgorithm(
+        std::shared_ptr<Core::FE::Discretization> arterydis,
         std::shared_ptr<Core::FE::Discretization> contdis,
         const Teuchos::ParameterList& couplingparams, const std::string& condname,
         const std::string& artcoupleddofname, const std::string& contcoupleddofname);
@@ -68,17 +69,17 @@ namespace PoroPressureBased
     //! fill the GID to segment vector
     void fill_gid_to_segment_vector(
         const std::vector<std::shared_ptr<
-            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
         std::map<int, std::vector<double>>& gid_to_seglength);
 
     //! set the artery diameter in column based vector
     void fill_artery_ele_diam_col();
 
     //! (re-)set the artery diameter in material to be able to use it on 1D discretization
-    void set_artery_diam_in_material() override;
+    void set_artery_diameter_in_material() override;
 
     //! reset the integrated diameter vector to zero
-    void reset_integrated_diam_to_zero() override;
+    void reset_integrated_diameter_to_zero() override;
 
     /*!
      * @brief Utility function for depth-first search for the connected components of the 1D artery
@@ -131,10 +132,9 @@ namespace PoroPressureBased
         Core::LinAlg::Vector<double>& rhs_art_with_collapsed);
 
     //! FE-assemble into global force and stiffness
-    void fe_assemble_ele_force_stiff_into_system_vector_matrix(const int& ele1gid,
-        const int& ele2gid, const double& integrated_diam,
-        std::vector<Core::LinAlg::SerialDenseVector> const& elevec,
-        std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> const& elemat,
+    void assemble(const int& ele1_gid, const int& ele2_gid, const double& integrated_diameter,
+        std::vector<Core::LinAlg::SerialDenseVector> const& ele_rhs,
+        std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> const& ele_matrix,
         std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
         std::shared_ptr<Core::LinAlg::Vector<double>> rhs) override;
 
@@ -144,23 +144,23 @@ namespace PoroPressureBased
     //! check for duplicate segment
     bool is_duplicate_segment(
         const std::vector<std::shared_ptr<
-            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
         PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase& possible_duplicate);
 
     //! check for identical segment
     bool is_identical_segment(
         const std::vector<std::shared_ptr<
-            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
-        const int& ele1gid, const double& etaA, const double& etaB, int& elepairID);
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
+        const int& ele1gid, const double& etaA, const double& etaB, int& ele_pair_id);
 
-    //! set flag if varying diameter has to be calculated
-    void set_varying_diam_flag() override;
+    //! set flag if variable diameter has to be calculated
+    void set_flag_variable_diameter() override;
 
     //! print output of mesh tying pairs
     void output_summary() const;
 
     //! print out the coupling method
-    void print_out_coupling_method() const override;
+    void print_coupling_method() const override;
 
     //! maximum number of segments per artery element
     int maxnumsegperartele_;

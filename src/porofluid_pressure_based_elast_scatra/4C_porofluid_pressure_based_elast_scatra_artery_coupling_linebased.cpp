@@ -24,12 +24,13 @@ FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::PoroMultiPhaseScaTraArtCouplLineBased(
-    std::shared_ptr<Core::FE::Discretization> arterydis,
-    std::shared_ptr<Core::FE::Discretization> contdis, const Teuchos::ParameterList& couplingparams,
-    const std::string& condname, const std::string& artcoupleddofname,
-    const std::string& contcoupleddofname)
-    : PoroMultiPhaseScaTraArtCouplNonConforming(
+PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    PorofluidElastScatraArteryCouplingLineBasedAlgorithm(
+        std::shared_ptr<Core::FE::Discretization> arterydis,
+        std::shared_ptr<Core::FE::Discretization> contdis,
+        const Teuchos::ParameterList& couplingparams, const std::string& condname,
+        const std::string& artcoupleddofname, const std::string& contcoupleddofname)
+    : PorofluidElastScatraArteryCouplingNonConformingAlgorithm(
           arterydis, contdis, couplingparams, condname, artcoupleddofname, contcoupleddofname),
       maxnumsegperartele_(Global::Problem::instance()
               ->poro_fluid_multi_phase_dynamic_params()
@@ -37,10 +38,10 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::PoroMultiPhaseScaTraAr
               .get<int>("MAXNUMSEGPERARTELE"))
 {
   // user info
-  if (myrank_ == 0)
+  if (my_mpi_rank_ == 0)
   {
     std::cout << "<                                                  >" << std::endl;
-    print_out_coupling_method();
+    print_coupling_method();
     std::cout << "<                                                  >" << std::endl;
     std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     std::cout << "\n";
@@ -49,10 +50,10 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::PoroMultiPhaseScaTraAr
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::setup()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::setup()
 {
   // call base class
-  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup();
+  PorofluidElastScatraArteryCouplingNonConformingAlgorithm::setup();
 
   // pre-evaluate the pairs
   pre_evaluate_coupling_pairs();
@@ -65,22 +66,25 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::setup()
   fill_unaffected_artery_length();
 
   // fill unaffected integrated diam (basically protruding artery elements or segments)
-  if (contdis_->name() == "porofluid" && has_varying_diam_) fill_unaffected_integrated_diam();
+  if (homogenized_dis_->name() == "porofluid" && has_variable_diameter_)
+    fill_unaffected_integrated_diam();
 
   // calculate blood vessel volume fraction (only porofluid needs to do this)
-  if (contdis_->name() == "porofluid" && couplingparams_.get<bool>("OUTPUT_BLOODVESSELVOLFRAC"))
+  if (homogenized_dis_->name() == "porofluid" &&
+      coupling_params_.get<bool>("OUTPUT_BLOODVESSELVOLFRAC"))
     calculate_blood_vessel_volume_fraction();
 
   // print out summary of pairs
-  if (contdis_->name() == "porofluid" && couplingparams_.get<bool>("PRINT_OUT_SUMMARY_PAIRS"))
+  if (homogenized_dis_->name() == "porofluid" &&
+      coupling_params_.get<bool>("PRINT_OUT_SUMMARY_PAIRS"))
     output_summary();
 
-  issetup_ = true;
+  is_setup_ = true;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::setup_system(
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::setup_system(
     std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
     std::shared_ptr<Core::LinAlg::Vector<double>> rhs,
     std::shared_ptr<Core::LinAlg::SparseMatrix> sysmat_cont,
@@ -97,15 +101,15 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::setup_system(
       get_additional_dbc_for_collapsed_eles(*dbcmap_art, *rhs_art_with_collapsed);
 
   // call base class
-  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::setup_system(*sysmat, rhs,
-      *sysmat_cont, *sysmat_art, rhs_cont, rhs_art_with_collapsed, *dbcmap_cont,
+  PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::setup_system(*sysmat,
+      rhs, *sysmat_cont, *sysmat_art, rhs_cont, rhs_art_with_collapsed, *dbcmap_cont,
       *dbcmap_art->cond_map(), *dbcmap_art_with_collapsed);
 }
 
-std::shared_ptr<Core::LinAlg::Map>
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_for_collapsed_eles(
-    const Core::LinAlg::MapExtractor& dbcmap_art,
-    Core::LinAlg::Vector<double>& rhs_art_with_collapsed)
+std::shared_ptr<Core::LinAlg::Map> PoroPressureBased::
+    PorofluidElastScatraArteryCouplingLineBasedAlgorithm::get_additional_dbc_for_collapsed_eles(
+        const Core::LinAlg::MapExtractor& dbcmap_art,
+        Core::LinAlg::Vector<double>& rhs_art_with_collapsed)
 {
   // Zero flux is automatically assumed for nodes which border a collapsed element
   // since the respective collapsed element is not evaluated
@@ -115,15 +119,15 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_for
   // Note that this procedure is equivalent to taking collapsed elements out of the simulation
   // entirely
 
-  int artelematerial = contdis_->name() == "scatra" ? 1 : 0;
+  int artelematerial = homogenized_dis_->name() == "scatra" ? 1 : 0;
   std::vector<int> mydirichdofs;
 
-  const int numrownodes = arterydis_->num_my_row_nodes();
-  const Core::LinAlg::Map* dofrowmap = arterydis_->dof_row_map();
+  const int numrownodes = artery_dis_->num_my_row_nodes();
+  const Core::LinAlg::Map* dofrowmap = artery_dis_->dof_row_map();
 
   for (int inode = 0; inode < numrownodes; ++inode)
   {
-    Core::Nodes::Node* actnode = arterydis_->l_row_node(inode);
+    Core::Nodes::Node* actnode = artery_dis_->l_row_node(inode);
     Core::Elements::Element** eles = actnode->elements();
     bool all_eles_collapsed = true;
     for (int iele = 0; iele < (actnode->num_element()); iele++)
@@ -142,7 +146,7 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_for
     if (all_eles_collapsed)
     {
       // 1) insert all dofs of this node into dirichlet dof vector
-      std::vector<int> dofs = arterydis_->dof(0, actnode);
+      std::vector<int> dofs = artery_dis_->dof(0, actnode);
       mydirichdofs.insert(mydirichdofs.end(), dofs.begin(), dofs.end());
       // 2) insert the negative value of all dofs of this node into the rhs, with the employed
       // incremental form this will force the value to zero
@@ -155,7 +159,7 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_for
   // build map
   int nummydirichvals = mydirichdofs.size();
   std::shared_ptr<Core::LinAlg::Map> dirichmap = std::make_shared<Core::LinAlg::Map>(
-      -1, nummydirichvals, mydirichdofs.data(), 0, arterydis_->get_comm());
+      -1, nummydirichvals, mydirichdofs.data(), 0, artery_dis_->get_comm());
 
   // build vector of maps
   std::vector<std::shared_ptr<const Core::LinAlg::Map>> condmaps;
@@ -171,23 +175,25 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::get_additional_dbc_for
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::pre_evaluate_coupling_pairs()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    pre_evaluate_coupling_pairs()
 {
   // pre-evaluate
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++) coupl_elepairs_[i]->pre_evaluate(nullptr);
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
+    coupled_ele_pairs_[i]->pre_evaluate(nullptr);
 
   // delete the inactive and duplicate pairs
   std::vector<std::shared_ptr<PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>
-      active_coupl_elepairs;
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
+      active_coupl_ele_pairs;
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
   {
-    const int contelegid = coupl_elepairs_[i]->ele2_gid();
-    Core::Elements::Element* contele = contdis_->g_element(contelegid);
+    const int contelegid = coupled_ele_pairs_[i]->ele2_gid();
+    Core::Elements::Element* contele = homogenized_dis_->g_element(contelegid);
 
-    if (coupl_elepairs_[i]->is_active() &&
-        !is_duplicate_segment(active_coupl_elepairs, *coupl_elepairs_[i]) &&
-        contele->owner() == myrank_)
-      active_coupl_elepairs.push_back(coupl_elepairs_[i]);
+    if (coupled_ele_pairs_[i]->is_active() &&
+        !is_duplicate_segment(active_coupl_ele_pairs, *coupled_ele_pairs_[i]) &&
+        contele->owner() == my_mpi_rank_)
+      active_coupl_ele_pairs.push_back(coupled_ele_pairs_[i]);
   }
 
   // the following case takes care of the special occurrence where the 1D element lies exactly in
@@ -195,15 +201,15 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::pre_evaluate_coup
 
   // fill the GID-to-segment vector
   std::map<int, std::vector<double>> gid_to_seglength;
-  fill_gid_to_segment_vector(active_coupl_elepairs, gid_to_seglength);
+  fill_gid_to_segment_vector(active_coupl_ele_pairs, gid_to_seglength);
 
   // dummy map to collect duplicates in form [ele2gid, eta_a, eta_b, ... ];
   std::map<int, std::vector<double>> duplicates;
 
   // loop over all artery elements
-  for (int i = 0; i < arterydis_->element_col_map()->num_my_elements(); ++i)
+  for (int i = 0; i < artery_dis_->element_col_map()->num_my_elements(); ++i)
   {
-    const int artelegid = arterydis_->element_col_map()->gid(i);
+    const int artelegid = artery_dis_->element_col_map()->gid(i);
     if (gid_to_seglength[artelegid].size() > 0)  // check if element projects
     {
       // compare all segment with each other if it might be identical
@@ -220,9 +226,9 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::pre_evaluate_coup
           {
             // we need this to get the ele2gid
             int id = -1;
-            if (is_identical_segment(active_coupl_elepairs, artelegid, eta_a, eta_b, id))
+            if (is_identical_segment(active_coupl_ele_pairs, artelegid, eta_a, eta_b, id))
             {
-              const int ele2gid = active_coupl_elepairs[id]->ele2_gid();
+              const int ele2gid = active_coupl_ele_pairs[id]->ele2_gid();
               duplicates[artelegid].push_back((double)(ele2gid));
               duplicates[artelegid].push_back(eta_a);
               duplicates[artelegid].push_back(eta_b);
@@ -267,11 +273,11 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::pre_evaluate_coup
           const int ele_to_be_erased = std::max(ele_i, ele_j);
           int id = -1;
           // delete the duplicate with the larger ele2gid
-          if (is_identical_segment(active_coupl_elepairs, artelegid, eta_a, eta_b, id))
+          if (is_identical_segment(active_coupl_ele_pairs, artelegid, eta_a, eta_b, id))
           {
-            if (active_coupl_elepairs[id]->ele2_gid() == ele_to_be_erased)
+            if (active_coupl_ele_pairs[id]->ele2_gid() == ele_to_be_erased)
             {
-              active_coupl_elepairs.erase(active_coupl_elepairs.begin() + id);
+              active_coupl_ele_pairs.erase(active_coupl_ele_pairs.begin() + id);
             }
           }
         }
@@ -280,13 +286,13 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::pre_evaluate_coup
   }
 
   // overwrite the coupling pairs
-  coupl_elepairs_ = active_coupl_elepairs;
+  coupled_ele_pairs_ = active_coupl_ele_pairs;
 
   // output
   int total_numactive_pairs = 0;
-  int numactive_pairs = static_cast<int>(coupl_elepairs_.size());
+  int numactive_pairs = static_cast<int>(coupled_ele_pairs_.size());
   Core::Communication::sum_all(&numactive_pairs, &total_numactive_pairs, 1, get_comm());
-  if (myrank_ == 0)
+  if (my_mpi_rank_ == 0)
   {
     std::cout << "Only " << total_numactive_pairs
               << " Artery-to-PoroMultiphaseScatra coupling pairs (segments) are active"
@@ -296,18 +302,19 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::pre_evaluate_coup
 
 /*------------------------------------------------------------------------*
  *------------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_artery_length()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    fill_unaffected_artery_length()
 {
   // no need to do this
-  if (porofluidprob_)
+  if (pure_porofluid_problem_)
   {
-    for (int i = 0; i < arterydis_->element_col_map()->num_my_elements(); ++i)
+    for (int i = 0; i < artery_dis_->element_col_map()->num_my_elements(); ++i)
     {
-      const int artelegid = arterydis_->element_col_map()->gid(i);
-      Core::Elements::Element* artele = arterydis_->g_element(artelegid);
+      const int artelegid = artery_dis_->element_col_map()->gid(i);
+      Core::Elements::Element* artele = artery_dis_->g_element(artelegid);
 
       // TODO: this will not work for higher order artery eles
-      const double initlength = PoroPressureBased::get_max_nodal_distance(artele, *arterydis_);
+      const double initlength = get_max_nodal_distance(artele, *artery_dis_);
       const int numseg = (int)(gid_to_segment_[artelegid].size() / 2);
       gid_to_seglength_[artelegid].resize(numseg);
       for (int iseg = 0; iseg < numseg; iseg++)
@@ -317,10 +324,10 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
         gid_to_seglength_[artelegid][iseg] = initlength * (etaB - etaA) / 2.0;
 
         int id = -1;
-        // return also id -> index in coupl_elepairs_ of this segment
+        // return also id -> index in coupled_ele_pairs_ of this segment
         // and set iseg as segment id of the coupling pairs
-        if (is_identical_segment(coupl_elepairs_, artelegid, etaA, etaB, id))
-          coupl_elepairs_[id]->set_segment_id(iseg);
+        if (is_identical_segment(coupled_ele_pairs_, artelegid, etaA, etaB, id))
+          coupled_ele_pairs_[id]->set_segment_id(iseg);
       }
     }
 
@@ -334,18 +341,18 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
 
   // initialize the unaffected and current lengths
   unaffected_seg_lengths_artery_ =
-      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_block_map(), true);
+      std::make_shared<Epetra_FEVector>(artery_dis_->dof_row_map(1)->get_epetra_map(), true);
   current_seg_lengths_artery_ =
-      std::make_shared<Epetra_FEVector>(arterydis_->dof_row_map(1)->get_epetra_block_map());
+      std::make_shared<Epetra_FEVector>(artery_dis_->dof_row_map(1)->get_epetra_map());
 
   // set segment ID on coupling pairs and fill the unaffected artery length
-  for (int iele = 0; iele < arterydis_->element_col_map()->num_my_elements(); ++iele)
+  for (int iele = 0; iele < artery_dis_->element_col_map()->num_my_elements(); ++iele)
   {
-    const int artelegid = arterydis_->element_col_map()->gid(iele);
-    Core::Elements::Element* thisele = arterydis_->g_element(artelegid);
+    const int artelegid = artery_dis_->element_col_map()->gid(iele);
+    Core::Elements::Element* thisele = artery_dis_->g_element(artelegid);
 
     // TODO: this will not work for higher order artery eles
-    const double initlength = PoroPressureBased::get_max_nodal_distance(thisele, *arterydis_);
+    const double initlength = PoroPressureBased::get_max_nodal_distance(thisele, *artery_dis_);
 
     std::vector<double> segmentboundaries = gid_to_segment_[artelegid];
     for (unsigned int iseg = 0; iseg < segmentboundaries.size() / 2; iseg++)
@@ -357,17 +364,17 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
       const double seglength = initlength * (etaB - etaA) / 2.0;
 
       // since we use an FE-vector
-      if (thisele->owner() == myrank_)
+      if (thisele->owner() == my_mpi_rank_)
       {
         // build the location array
-        std::vector<int> seglengthdofs = arterydis_->dof(1, thisele);
+        std::vector<int> seglengthdofs = artery_dis_->dof(1, thisele);
         unaffected_seg_lengths_artery_->SumIntoGlobalValues(1, &seglengthdofs[iseg], &seglength);
       }
 
-      // return also id -> index in coupl_elepairs_ of this segment
+      // return also id -> index in coupled_ele_pairs_ of this segment
       // and set iseg as segment id of the coupling pairs
-      if (is_identical_segment(coupl_elepairs_, artelegid, etaA, etaB, id))
-        coupl_elepairs_[id]->set_segment_id(iseg);
+      if (is_identical_segment(coupled_ele_pairs_, artelegid, etaA, etaB, id))
+        coupled_ele_pairs_[id]->set_segment_id(iseg);
     }
   }
 
@@ -377,17 +384,18 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
   // subtract the segment lengths only if we evaluate in current configuration
   if (!evaluate_in_ref_config_)
   {
-    for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
+    for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
     {
       // get the initial lengths
-      double init_segment_length = coupl_elepairs_[i]->apply_mesh_movement(true, contdis_);
+      double init_segment_length =
+          coupled_ele_pairs_[i]->apply_mesh_movement(true, homogenized_dis_);
       init_segment_length *= -1.0;
 
-      const int artelegid = coupl_elepairs_[i]->ele1_gid();
-      Core::Elements::Element* artele = arterydis_->g_element(artelegid);
+      const int artelegid = coupled_ele_pairs_[i]->ele1_gid();
+      Core::Elements::Element* artele = artery_dis_->g_element(artelegid);
 
-      std::vector<int> seglengthdofs = arterydis_->dof(1, artele);
-      const int segid = coupl_elepairs_[i]->get_segment_id();
+      std::vector<int> seglengthdofs = artery_dis_->dof(1, artele);
+      const int segid = coupled_ele_pairs_[i]->get_segment_id();
 
       unaffected_seg_lengths_artery_->SumIntoGlobalValues(
           1, &seglengthdofs[segid], &(init_segment_length));
@@ -402,18 +410,19 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_a
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_integrated_diam()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    fill_unaffected_integrated_diam()
 {
   Epetra_FEVector unaffected_diams_artery_row(
-      arterydis_->element_row_map()->get_epetra_block_map(), true);
+      artery_dis_->element_row_map()->get_epetra_map(), true);
 
-  for (int i = 0; i < arterydis_->element_row_map()->num_my_elements(); ++i)
+  for (int i = 0; i < artery_dis_->element_row_map()->num_my_elements(); ++i)
   {
-    const int artelegid = arterydis_->element_row_map()->gid(i);
-    Core::Elements::Element* artele = arterydis_->g_element(artelegid);
+    const int artelegid = artery_dis_->element_row_map()->gid(i);
+    Core::Elements::Element* artele = artery_dis_->g_element(artelegid);
 
     // TODO: this will not work for higher order artery eles
-    const double initlength = PoroPressureBased::get_max_nodal_distance(artele, *arterydis_);
+    const double initlength = PoroPressureBased::get_max_nodal_distance(artele, *artery_dis_);
 
     // first add all contributions int unaffected_diams_artery_row-vector
     std::shared_ptr<Mat::Cnst1dArt> arterymat =
@@ -423,14 +432,14 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_i
     unaffected_diams_artery_row.SumIntoGlobalValues(1, &artelegid, &length_diam);
   }
   // then subtract the coupling pairs to detect protruding parts
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
   {
     // get the initial lengths
-    double init_segment_length = coupl_elepairs_[i]->apply_mesh_movement(true, contdis_);
+    double init_segment_length = coupled_ele_pairs_[i]->apply_mesh_movement(true, homogenized_dis_);
     init_segment_length *= -1.0;
 
-    const int artelegid = coupl_elepairs_[i]->ele1_gid();
-    Core::Elements::Element* artele = arterydis_->g_element(artelegid);
+    const int artelegid = coupled_ele_pairs_[i]->ele1_gid();
+    Core::Elements::Element* artele = artery_dis_->g_element(artelegid);
 
     std::shared_ptr<Mat::Cnst1dArt> arterymat =
         std::dynamic_pointer_cast<Mat::Cnst1dArt>(artele->material());
@@ -448,31 +457,31 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_unaffected_i
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
     calculate_blood_vessel_volume_fraction()
 {
   bloodvesselvolfrac_ =
-      std::make_shared<Core::LinAlg::Vector<double>>(*contdis_->element_row_map(), true);
+      std::make_shared<Core::LinAlg::Vector<double>>(*homogenized_dis_->element_row_map(), true);
 
   double totalvolblood = 0.0;
   // evaluate all pairs
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
   {
-    const int artelegid = coupl_elepairs_[i]->ele1_gid();
-    const int contelegid = coupl_elepairs_[i]->ele2_gid();
+    const int artelegid = coupled_ele_pairs_[i]->ele1_gid();
+    const int contelegid = coupled_ele_pairs_[i]->ele2_gid();
 
-    Core::Elements::Element* artele = arterydis_->g_element(artelegid);
+    Core::Elements::Element* artele = artery_dis_->g_element(artelegid);
 
     std::shared_ptr<Mat::Cnst1dArt> arterymat =
         std::dynamic_pointer_cast<Mat::Cnst1dArt>(artele->material());
     if (arterymat == nullptr) FOUR_C_THROW("cast to artery material failed");
 
     // TODO: this will not work for higher order artery eles
-    const double etaA = coupl_elepairs_[i]->etadata();
-    const double etaB = coupl_elepairs_[i]->eta_b();
-    const double length = PoroPressureBased::get_max_nodal_distance(artele, *arterydis_);
+    const double etaA = coupled_ele_pairs_[i]->etadata();
+    const double etaB = coupled_ele_pairs_[i]->eta_b();
+    const double length = PoroPressureBased::get_max_nodal_distance(artele, *artery_dis_);
 
-    const double vol_cont = coupl_elepairs_[i]->calculate_vol_2d_3d();
+    const double vol_cont = coupled_ele_pairs_[i]->calculate_vol_2d_3d();
     const double vol_art =
         (etaB - etaA) / 2.0 * length * arterymat->diam() * arterymat->diam() * M_PI / 4.0;
 
@@ -488,7 +497,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::
   // user output
   double vol_sumall = 0.0;
   Core::Communication::sum_all(&totalvolblood, &vol_sumall, 1, get_comm());
-  if (myrank_ == 0)
+  if (my_mpi_rank_ == 0)
   {
     std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
     std::cout << "<    Calculating blood vessel volume fraction      >" << std::endl;
@@ -500,35 +509,37 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::set_varying_diam_flag()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    set_flag_variable_diameter()
 {
-  PoroMultiPhaseScaTraArtCouplNonConforming::set_varying_diam_flag();
+  PorofluidElastScatraArteryCouplingNonConformingAlgorithm::set_flag_variable_diameter();
 
   // set up the required vectors
-  if (has_varying_diam_)
+  if (has_variable_diameter_)
   {
-    integrated_diams_artery_row_ = std::make_shared<Epetra_FEVector>(
-        arterydis_->element_row_map()->get_epetra_block_map(), true);
+    integrated_diams_artery_row_ =
+        std::make_shared<Epetra_FEVector>(artery_dis_->element_row_map()->get_epetra_map(), true);
     unaffected_integrated_diams_artery_col_ =
-        std::make_shared<Core::LinAlg::Vector<double>>(*arterydis_->element_col_map(), true);
+        std::make_shared<Core::LinAlg::Vector<double>>(*artery_dis_->element_col_map(), true);
     integrated_diams_artery_col_ =
-        std::make_shared<Core::LinAlg::Vector<double>>(*arterydis_->element_col_map(), true);
+        std::make_shared<Core::LinAlg::Vector<double>>(*artery_dis_->element_col_map(), true);
     ele_diams_artery_col_ =
-        std::make_shared<Core::LinAlg::Vector<double>>(*arterydis_->element_col_map(), true);
+        std::make_shared<Core::LinAlg::Vector<double>>(*artery_dis_->element_col_map(), true);
   }
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::create_gid_to_segment_vector()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    create_gid_to_segment_vector()
 {
   // fill the GID-to-segment vector
-  fill_gid_to_segment_vector(coupl_elepairs_, gid_to_segment_);
+  fill_gid_to_segment_vector(coupled_ele_pairs_, gid_to_segment_);
 
   // sort and take care of special cases
-  for (int i = 0; i < arterydis_->element_col_map()->num_my_elements(); ++i)
+  for (int i = 0; i < artery_dis_->element_col_map()->num_my_elements(); ++i)
   {
-    const int artelegid = arterydis_->element_col_map()->gid(i);
+    const int artelegid = artery_dis_->element_col_map()->gid(i);
     if (gid_to_segment_[artelegid].size() > 0)  // check if element projects
     {
       // sort
@@ -558,10 +569,10 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::create_gid_to_seg
   }
 
   // safety checks
-  for (int i = 0; i < arterydis_->element_col_map()->num_my_elements(); ++i)
+  for (int i = 0; i < artery_dis_->element_col_map()->num_my_elements(); ++i)
   {
     // 1) check if artery element has more than MAXNUMSEGPERARTELE segments
-    const int artelegid = arterydis_->element_col_map()->gid(i);
+    const int artelegid = artery_dis_->element_col_map()->gid(i);
     if ((int)gid_to_segment_[artelegid].size() > 2 * maxnumsegperartele_)
     {
       FOUR_C_THROW(
@@ -589,23 +600,24 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::create_gid_to_seg
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_gid_to_segment_vector(
-    const std::vector<std::shared_ptr<
-        PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
-    std::map<int, std::vector<double>>& gid_to_seglength)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    fill_gid_to_segment_vector(
+        const std::vector<std::shared_ptr<
+            PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
+        std::map<int, std::vector<double>>& gid_to_seglength)
 {
   // fill the GID-to-segment vector
-  for (unsigned i = 0; i < coupl_elepairs.size(); i++)
+  for (unsigned i = 0; i < coupled_ele_pairs.size(); i++)
   {
-    const int artelegid = coupl_elepairs[i]->ele1_gid();
-    const int contelegid = coupl_elepairs[i]->ele2_gid();
+    const int artelegid = coupled_ele_pairs[i]->ele1_gid();
+    const int contelegid = coupled_ele_pairs[i]->ele2_gid();
 
-    const Core::Elements::Element* contele = contdis_->g_element(contelegid);
+    const Core::Elements::Element* contele = homogenized_dis_->g_element(contelegid);
 
-    const double etaA = coupl_elepairs[i]->etadata();
-    const double etaB = coupl_elepairs[i]->eta_b();
+    const double etaA = coupled_ele_pairs[i]->etadata();
+    const double etaB = coupled_ele_pairs[i]->eta_b();
 
-    if (contele->owner() == myrank_)
+    if (contele->owner() == my_mpi_rank_)
     {
       gid_to_seglength[artelegid].push_back(etaA);
       gid_to_seglength[artelegid].push_back(etaB);
@@ -625,26 +637,26 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_gid_to_segme
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::
-    fe_assemble_ele_force_stiff_into_system_vector_matrix(const int& ele1gid, const int& ele2gid,
-        const double& integrated_diam, std::vector<Core::LinAlg::SerialDenseVector> const& elevec,
-        std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> const& elemat,
-        std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
-        std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::assemble(
+    const int& ele1_gid, const int& ele2_gid, const double& integrated_diameter,
+    std::vector<Core::LinAlg::SerialDenseVector> const& ele_rhs,
+    std::vector<std::vector<Core::LinAlg::SerialDenseMatrix>> const& ele_matrix,
+    const std::shared_ptr<Core::LinAlg::BlockSparseMatrixBase> sysmat,
+    const std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
   // call base class
-  PoroPressureBased::PoroMultiPhaseScaTraArtCouplNonConforming::
-      fe_assemble_ele_force_stiff_into_system_vector_matrix(
-          ele1gid, ele2gid, integrated_diam, elevec, elemat, sysmat, rhs);
+  PorofluidElastScatraArteryCouplingNonConformingAlgorithm::assemble(
+      ele1_gid, ele2_gid, integrated_diameter, ele_rhs, ele_matrix, sysmat, rhs);
 
   // also assemble the diameter if necessary
-  if (contdis_->name() == "porofluid" && has_varying_diam_)
-    integrated_diams_artery_row_->SumIntoGlobalValues(1, &ele1gid, &(integrated_diam));
+  if (homogenized_dis_->name() == "porofluid" && has_variable_diameter_)
+    integrated_diams_artery_row_->SumIntoGlobalValues(1, &ele1_gid, &(integrated_diameter));
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::set_artery_diam_in_material()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    set_artery_diameter_in_material()
 {
   // assemble
   if (integrated_diams_artery_row_->GlobalAssemble(Add, false) != 0)
@@ -659,19 +671,19 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::set_artery_diam_i
 
   // find the free-hanging elements which will be deleted
   std::vector<int> eles_to_be_deleted;
-  if (delete_free_hanging_eles_) find_free_hanging_1d_elements(eles_to_be_deleted);
+  if (delete_free_hanging_elements_) find_free_hanging_1d_elements(eles_to_be_deleted);
 
   // set the diameter in material
-  for (int i = 0; i < arterydis_->num_my_col_elements(); ++i)
+  for (int i = 0; i < artery_dis_->num_my_col_elements(); ++i)
   {
     // pointer to current element
-    Core::Elements::Element* actele = arterydis_->l_col_element(i);
+    Core::Elements::Element* actele = artery_dis_->l_col_element(i);
     const int elegid = actele->id();
 
     double diam = (*ele_diams_artery_col_)[i];
 
     // set to zero for free-hanging elements
-    if (delete_free_hanging_eles_)
+    if (delete_free_hanging_elements_)
     {
       if (std::find(eles_to_be_deleted.begin(), eles_to_be_deleted.end(), elegid) !=
           eles_to_be_deleted.end())
@@ -687,7 +699,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::set_artery_diam_i
     if (diam < arterymat->collapse_threshold())
     {
       // Collapse happens for first time --> inform user
-      if (arterymat->diam() >= arterymat->collapse_threshold() && actele->owner() == myrank_)
+      if (arterymat->diam() >= arterymat->collapse_threshold() && actele->owner() == my_mpi_rank_)
         std::cout << ">>>>>> Artery element " << actele->id() << " just collapsed <<<<<<"
                   << std::endl;
       arterymat->set_diam(0.0);
@@ -699,22 +711,24 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::set_artery_diam_i
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::reset_integrated_diam_to_zero()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    reset_integrated_diameter_to_zero()
 {
   integrated_diams_artery_row_->PutScalar(0.0);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_artery_ele_diam_col()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    fill_artery_ele_diam_col()
 {
   // reset
   ele_diams_artery_col_->put_scalar(0.0);
   // set the diameter in the vector
-  for (int i = 0; i < arterydis_->num_my_col_elements(); ++i)
+  for (int i = 0; i < artery_dis_->num_my_col_elements(); ++i)
   {
     // pointer to current element
-    Core::Elements::Element* actele = arterydis_->l_col_element(i);
+    Core::Elements::Element* actele = artery_dis_->l_col_element(i);
     const int elegid = actele->id();
 
     const std::vector<double> seglengths = get_ele_segment_lengths(elegid);
@@ -731,11 +745,11 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::fill_artery_ele_d
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging_1d_elements(
-    std::vector<int>& eles_to_be_deleted)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    find_free_hanging_1d_elements(std::vector<int>& eles_to_be_deleted)
 {
   // user info
-  if (myrank_ == 0)
+  if (my_mpi_rank_ == 0)
   {
     std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<"
                  "<<<<<<<<<<<<<<<<<<<<<<<"
@@ -747,7 +761,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
   // get fully-overlapping discretization
   std::shared_ptr<Core::FE::Discretization> artconncompdis =
       PoroPressureBased::create_fully_overlapping_artery_discretization(
-          *arterydis_, "conn_comp_dis", true);
+          *artery_dis_, "conn_comp_dis", true);
 
   // vector to mark visited nodes
   std::shared_ptr<Core::LinAlg::Vector<int>> visited =
@@ -756,7 +770,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
   // get fully-overlapping diams vector
   std::shared_ptr<Core::LinAlg::Vector<double>> ele_diams_artery_full_overlap =
       std::make_shared<Core::LinAlg::Vector<double>>(*artconncompdis->element_col_map(), true);
-  Core::LinAlg::Vector<double> ele_diams_artery_row(*arterydis_->element_row_map(), true);
+  Core::LinAlg::Vector<double> ele_diams_artery_row(*artery_dis_->element_row_map(), true);
   Core::LinAlg::export_to(*ele_diams_artery_col_, ele_diams_artery_row);
   Core::LinAlg::export_to(ele_diams_artery_row, *ele_diams_artery_full_overlap);
 
@@ -786,7 +800,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
   }
 
   // user info
-  if (myrank_ == 0 && num_conn_components_wo_single_nodes > 1)
+  if (my_mpi_rank_ == 0 && num_conn_components_wo_single_nodes > 1)
   {
     std::cout << "found " << num_conn_components_wo_single_nodes << " connected components"
               << std::endl;
@@ -802,7 +816,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
     if (conn_comp_size > 1)
     {
       // user info
-      if (myrank_ == 0)
+      if (my_mpi_rank_ == 0)
         std::cout << "connected_component with ID " << i << " of size: " << conn_comp_size
                   << std::endl;
 
@@ -814,7 +828,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
             dirichlet_node_ids.contains(artconncompdis->g_node((connected_components[i])[j])->id());
         if (has_dirichlet)
         {
-          if (myrank_ == 0)
+          if (my_mpi_rank_ == 0)
             std::cout << "   ---> has at least one Dirichlet boundary condition" << std::endl;
           break;
         }
@@ -822,7 +836,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
 
       // if no node of this connected component has a DBC or if it is smaller than the
       // user-specified threshold, all its elements are taken out
-      if (!has_dirichlet or conn_comp_size < (int)(delete_free_hanging_eles_threshold_ *
+      if (!has_dirichlet or conn_comp_size < (int)(threshold_delete_free_hanging_elements_ *
                                                    artconncompdis->num_global_nodes()))
       {
         // get the elements which have to be deleted
@@ -834,16 +848,16 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
             eles_to_be_deleted.push_back(myeles[i_element]->id());
         }
         // user info
-        if (myrank_ == 0)
+        if (my_mpi_rank_ == 0)
         {
           if (!has_dirichlet)
             std::cout
                 << "   ---> has no Dirichlet boundary condition --> its elements will be taken out"
                 << std::endl;
-          if (has_dirichlet and conn_comp_size < (int)(delete_free_hanging_eles_threshold_ *
+          if (has_dirichlet and conn_comp_size < (int)(threshold_delete_free_hanging_elements_ *
                                                        artconncompdis->num_global_nodes()))
             std::cout << "   ---> smaller than threshold size of "
-                      << (int)(delete_free_hanging_eles_threshold_ *
+                      << (int)(threshold_delete_free_hanging_elements_ *
                                artconncompdis->num_global_nodes())
                       << " --> its elements will be taken out" << std::endl;
         }
@@ -852,7 +866,7 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
   }
 
   // user info
-  if (myrank_ == 0)
+  if (my_mpi_rank_ == 0)
   {
     std::cout << "\n>>>>>>                           End of Find free-hanging 1D elements          "
                  "                 <<<<<<"
@@ -865,11 +879,12 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::find_free_hanging
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::depth_first_search_util(
-    Core::Nodes::Node* actnode, std::shared_ptr<Core::LinAlg::Vector<int>> visited,
-    std::shared_ptr<Core::FE::Discretization> artconncompdis,
-    std::shared_ptr<const Core::LinAlg::Vector<double>> ele_diams_artery_full_overlap,
-    std::vector<int>& this_connected_comp)
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    depth_first_search_util(Core::Nodes::Node* actnode,
+        std::shared_ptr<Core::LinAlg::Vector<int>> visited,
+        std::shared_ptr<Core::FE::Discretization> artconncompdis,
+        std::shared_ptr<const Core::LinAlg::Vector<double>> ele_diams_artery_full_overlap,
+        std::vector<int>& this_connected_comp)
 {
   // mark this node visited and add it to this connected component
   const int lid = visited->get_map().lid(actnode->id());
@@ -906,27 +921,27 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::depth_first_searc
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
     evaluate_additional_linearizationof_integrated_diam()
 {
   // linearizations
   std::vector<Core::LinAlg::SerialDenseMatrix> elestiff(2);
 
   // evaluate all pairs
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
   {
-    // only needed if varying diameter is set for this pair
-    if (coupl_elepairs_[i]->diam_function_active())
+    // only needed if variable diameter is set for this pair
+    if (coupled_ele_pairs_[i]->variable_diameter_active())
     {
       // evaluate
-      coupl_elepairs_[i]->evaluate_additional_linearizationof_integrated_diam(
+      coupled_ele_pairs_[i]->evaluate_additional_linearizationof_integrated_diam(
           &(elestiff[0]), &(elestiff[1]));
 
       // and FE-Assemble
-      const int ele1gid = coupl_elepairs_[i]->ele1_gid();
-      const int ele2gid = coupl_elepairs_[i]->ele2_gid();
-      const Core::Elements::Element* ele1 = arterydis_->g_element(ele1gid);
-      const Core::Elements::Element* ele2 = contdis_->g_element(ele2gid);
+      const int ele1gid = coupled_ele_pairs_[i]->ele1_gid();
+      const int ele2gid = coupled_ele_pairs_[i]->ele2_gid();
+      const Core::Elements::Element* ele1 = artery_dis_->g_element(ele1gid);
+      const Core::Elements::Element* ele2 = homogenized_dis_->g_element(ele2gid);
       // get element location vector and ownerships
       std::vector<int> lmrow1;
       std::vector<int> lmrow2;
@@ -934,11 +949,11 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::
       std::vector<int> lmrowowner2;
       std::vector<int> lmstride;
 
-      ele1->location_vector(*arterydis_, lmrow1, lmrowowner1, lmstride);
-      ele2->location_vector(*contdis_, lmrow2, lmrowowner2, lmstride);
+      ele1->location_vector(*artery_dis_, lmrow1, lmrowowner1, lmstride);
+      ele2->location_vector(*homogenized_dis_, lmrow2, lmrowowner2, lmstride);
 
-      FEmat_->fe_assemble(elestiff[0], lmrow1, lmrow1);
-      FEmat_->fe_assemble(elestiff[1], lmrow1, lmrow2);
+      coupling_matrix_->fe_assemble(elestiff[0], lmrow1, lmrow1);
+      coupling_matrix_->fe_assemble(elestiff[1], lmrow1, lmrow2);
     }
   }
 }
@@ -946,21 +961,21 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 std::vector<double>
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::get_ele_segment_lengths(
+PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::get_ele_segment_lengths(
     const int artelegid)
 {
-  if (porofluidprob_) return gid_to_seglength_[artelegid];
+  if (pure_porofluid_problem_) return gid_to_seglength_[artelegid];
 
   // safety checks
-  if (!arterydis_->has_state(1, "curr_seg_lengths"))
+  if (!artery_dis_->has_state(1, "curr_seg_lengths"))
     FOUR_C_THROW("cannot get state curr_seg_lengths");
 
   // build the location array
-  Core::Elements::Element* artele = arterydis_->g_element(artelegid);
-  std::vector<int> seglengthdofs = arterydis_->dof(1, artele);
+  Core::Elements::Element* artele = artery_dis_->g_element(artelegid);
+  std::vector<int> seglengthdofs = artery_dis_->dof(1, artele);
 
   std::shared_ptr<const Core::LinAlg::Vector<double>> curr_seg_lengths =
-      arterydis_->get_state(1, "curr_seg_lengths");
+      artery_dis_->get_state(1, "curr_seg_lengths");
 
   std::vector<double> seglengths = Core::FE::extract_values(*curr_seg_lengths, seglengthdofs);
 
@@ -969,9 +984,9 @@ PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::get_ele_segment_length
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::is_duplicate_segment(
+bool PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::is_duplicate_segment(
     const std::vector<std::shared_ptr<
-        PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
+        PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
     PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase& possible_duplicate)
 {
   // we have to sort out duplicate segments, these might occur if the artery element
@@ -980,62 +995,63 @@ bool PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::is_duplicate_segm
   const double eta_a = possible_duplicate.etadata();
   const double eta_b = possible_duplicate.eta_b();
   const int ele1gid = possible_duplicate.ele1_gid();
-  int elepairID = -1;
+  int ele_pair_id = -1;
 
-  return is_identical_segment(coupl_elepairs, ele1gid, eta_a, eta_b, elepairID);
+  return is_identical_segment(coupled_ele_pairs, ele1gid, eta_a, eta_b, ele_pair_id);
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-bool PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::is_identical_segment(
+bool PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::is_identical_segment(
     const std::vector<std::shared_ptr<
-        PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupl_elepairs,
-    const int& ele1gid, const double& etaA, const double& etaB, int& elepairID)
+        PoroPressureBased::PoroMultiPhaseScatraArteryCouplingPairBase>>& coupled_ele_pairs,
+    const int& ele1gid, const double& etaA, const double& etaB, int& ele_pair_id)
 {
-  for (unsigned i = 0; i < coupl_elepairs.size(); i++)
+  for (unsigned i = 0; i < coupled_ele_pairs.size(); i++)
   {
     // first check if ele1-Gid is identical
-    if (ele1gid == coupl_elepairs[i]->ele1_gid())
+    if (ele1gid == coupled_ele_pairs[i]->ele1_gid())
       // check if integration segment is the same
-      if (fabs(etaA - coupl_elepairs[i]->etadata()) < XIETATOL &&
-          fabs(etaB - coupl_elepairs[i]->eta_b()) < XIETATOL)
+      if (fabs(etaA - coupled_ele_pairs[i]->etadata()) < XIETATOL &&
+          fabs(etaB - coupled_ele_pairs[i]->eta_b()) < XIETATOL)
       {
         if (PROJOUTPUT) std::cout << "found duplicate integration segment" << std::endl;
-        elepairID = i;
+        ele_pair_id = i;
         return true;
       }
   }
 
-  elepairID = -1;
+  ele_pair_id = -1;
   return false;
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::apply_mesh_movement()
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::apply_mesh_movement()
 {
   // no need to do this
-  if (porofluidprob_) return;
+  if (pure_porofluid_problem_) return;
 
   // only if we evaluate in current configuration
   if (!evaluate_in_ref_config_)
   {
     // safety
-    if (!contdis_->has_state(1, "dispnp")) FOUR_C_THROW("cannot get displacement state");
+    if (!homogenized_dis_->has_state(1, "dispnp")) FOUR_C_THROW("cannot get displacement state");
 
     // update with unaffected length
     current_seg_lengths_artery_->Update(1.0, *unaffected_seg_lengths_artery_, 0.0);
 
     // apply movement on pairs and fill gid-to-seglength and current_seg_lengths_artery_
-    for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
+    for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
     {
-      const double newsegmentlength = coupl_elepairs_[i]->apply_mesh_movement(false, contdis_);
-      const int artelegid = coupl_elepairs_[i]->ele1_gid();
-      const int segid = coupl_elepairs_[i]->get_segment_id();
+      const double newsegmentlength =
+          coupled_ele_pairs_[i]->apply_mesh_movement(false, homogenized_dis_);
+      const int artelegid = coupled_ele_pairs_[i]->ele1_gid();
+      const int segid = coupled_ele_pairs_[i]->get_segment_id();
 
-      Core::Elements::Element* artele = arterydis_->g_element(artelegid);
+      Core::Elements::Element* artele = artery_dis_->g_element(artelegid);
       // build the location array
-      std::vector<int> seglengthdofs = arterydis_->dof(1, artele);
+      std::vector<int> seglengthdofs = artery_dis_->dof(1, artele);
 
       current_seg_lengths_artery_->SumIntoGlobalValues(
           1, &seglengthdofs[segid], &(newsegmentlength));
@@ -1046,44 +1062,45 @@ void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::apply_mesh_moveme
   }
 
   // set state on artery dis
-  arterydis_->set_state(
+  artery_dis_->set_state(
       1, "curr_seg_lengths", Core::LinAlg::Vector<double>(*current_seg_lengths_artery_));
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::print_out_coupling_method() const
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::
+    print_coupling_method() const
 {
   std::cout << "<   Line-based formulation                         >" << std::endl;
-  PoroMultiPhaseScaTraArtCouplNonConforming::print_out_coupling_method();
+  PorofluidElastScatraArteryCouplingNonConformingAlgorithm::print_coupling_method();
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::output_summary() const
+void PoroPressureBased::PorofluidElastScatraArteryCouplingLineBasedAlgorithm::output_summary() const
 {
-  if (myrank_ == 0)
+  if (my_mpi_rank_ == 0)
   {
     std::cout << "\nSummary of coupling pairs (segments):" << std::endl;
     std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
   }
   Core::Communication::barrier(get_comm());
-  for (unsigned i = 0; i < coupl_elepairs_.size(); i++)
+  for (unsigned i = 0; i < coupled_ele_pairs_.size(); i++)
   {
-    std::cout << "Proc " << std::right << std::setw(2) << myrank_ << ": Artery-ele " << std::right
-              << std::setw(5) << coupl_elepairs_[i]->ele1_gid() << ":   [" << std::left
-              << std::setw(11) << coupl_elepairs_[i]->etadata() << "," << std::right
-              << std::setw(11) << coupl_elepairs_[i]->eta_b() << "] <---> continuous-ele "
-              << std::right << std::setw(7) << coupl_elepairs_[i]->ele2_gid() << std::endl;
+    std::cout << "Proc " << std::right << std::setw(2) << my_mpi_rank_ << ": Artery-ele "
+              << std::right << std::setw(5) << coupled_ele_pairs_[i]->ele1_gid() << ":   ["
+              << std::left << std::setw(11) << coupled_ele_pairs_[i]->etadata() << "," << std::right
+              << std::setw(11) << coupled_ele_pairs_[i]->eta_b() << "] <---> continuous-ele "
+              << std::right << std::setw(7) << coupled_ele_pairs_[i]->ele2_gid() << std::endl;
   }
   Core::Communication::barrier(get_comm());
-  if (myrank_ == 0) std::cout << "\n";
+  if (my_mpi_rank_ == 0) std::cout << "\n";
 }
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-std::shared_ptr<const Core::LinAlg::Vector<double>>
-PoroPressureBased::PoroMultiPhaseScaTraArtCouplLineBased::blood_vessel_volume_fraction()
+std::shared_ptr<const Core::LinAlg::Vector<double>> PoroPressureBased::
+    PorofluidElastScatraArteryCouplingLineBasedAlgorithm::blood_vessel_volume_fraction()
 {
   return bloodvesselvolfrac_;
 }

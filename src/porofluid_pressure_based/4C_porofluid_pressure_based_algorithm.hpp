@@ -84,7 +84,7 @@ namespace PoroPressureBased
 
     //! initialize time integration
     void init(bool isale, int nds_disp, int nds_vel, int nds_solidpressure, int nds_scalar,
-        const std::map<int, std::set<int>>* nearbyelepairs) override;
+        const std::map<int, std::set<int>>* nearby_ele_pairs) override;
 
     /*========================================================================*/
     //! @name general framework

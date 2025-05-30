@@ -44,8 +44,8 @@ namespace Adapter
         const int ndsporofluid_scatra,  ///< number of dofset associated with scalar on fluid
                                         ///< discretization
         const std::map<int, std::set<int>>*
-            nearbyelepairs  ///< possible interaction partners between porofluid and artery
-                            ///< discretization
+            nearby_ele_pairs  ///< possible interaction partners between porofluid and artery
+                              ///< discretization
         ) override;
 
     /// create result test for multiphase porous fluid field

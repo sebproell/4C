@@ -251,7 +251,7 @@ std::map<int, std::set<int>> PoroPressureBased::extended_ghosting_artery_discret
       });
 
   // search with the fully overlapping discretization
-  std::map<int, std::set<int>> nearbyelepairs = oct_tree_search(contdis, *artdis, *artsearchdis,
+  std::map<int, std::set<int>> nearby_ele_pairs = oct_tree_search(contdis, *artdis, *artsearchdis,
       evaluate_on_lateral_surface, artEleGIDs, elecolset, nodecolset);
 
   // extended ghosting for elements
@@ -280,7 +280,7 @@ std::map<int, std::set<int>> PoroPressureBased::extended_ghosting_artery_discret
               << std::endl;
   }
 
-  return nearbyelepairs;
+  return nearby_ele_pairs;
 }
 
 /*--------------------------------------------------------------------------*
@@ -311,7 +311,7 @@ std::map<int, std::set<int>> PoroPressureBased::oct_tree_search(Core::FE::Discre
     std::set<int>& elecolset, std::set<int>& nodecolset)
 {
   // this map will be filled
-  std::map<int, std::set<int>> nearbyelepairs;
+  std::map<int, std::set<int>> nearby_ele_pairs;
 
   // search tree
   Core::Geo::SearchTree searchTree(5);
@@ -364,7 +364,7 @@ std::map<int, std::set<int>> PoroPressureBased::oct_tree_search(Core::FE::Discre
     // nearby elements found
     if (closeeles.size() > 0)
     {
-      nearbyelepairs[artelegid] = closeeles;
+      nearby_ele_pairs[artelegid] = closeeles;
 
       // add elements and nodes for extended ghosting of artery discretization
       if (not artdis.have_global_element(artelegid))
@@ -395,7 +395,7 @@ std::map<int, std::set<int>> PoroPressureBased::oct_tree_search(Core::FE::Discre
   if (Core::Communication::my_mpi_rank(contdis.get_comm()) == 0)
     std::cout << "Completed in " << maxdtsearch << "s" << std::endl;
 
-  return nearbyelepairs;
+  return nearby_ele_pairs;
 }
 
 /*----------------------------------------------------------------------*

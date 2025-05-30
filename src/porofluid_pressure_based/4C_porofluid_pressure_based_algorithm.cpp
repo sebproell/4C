@@ -133,7 +133,7 @@ PoroPressureBased::PorofluidAlgorithm::PorofluidAlgorithm(
 
 
 void PoroPressureBased::PorofluidAlgorithm::init(bool isale, int nds_disp, int nds_vel,
-    int nds_solidpressure, int nds_scalar, const std::map<int, std::set<int>>* nearbyelepairs)
+    int nds_solidpressure, int nds_scalar, const std::map<int, std::set<int>>* nearby_ele_pairs)
 {
   // set flags
   isale_ = isale;
@@ -278,7 +278,7 @@ void PoroPressureBased::PorofluidAlgorithm::init(bool isale, int nds_disp, int n
   {
     meshtying_ = std::make_shared<PoroPressureBased::MeshtyingArtery>(this, params_, poroparams_);
     meshtying_->check_initial_fields(phinp_);
-    meshtying_->set_nearby_ele_pairs(nearbyelepairs);
+    meshtying_->set_nearby_ele_pairs(nearby_ele_pairs);
     meshtying_->setup();
   }
 
@@ -1180,7 +1180,7 @@ void PoroPressureBased::PorofluidAlgorithm::nonlinear_solve()
     //------------------------------------------------ update solution vector
     if (artery_coupling_active_)
     {
-      update_iter(meshtying_->combined_increment(increment_));
+      update_iter(meshtying_->combined_increment());
     }
     else
     {
@@ -1210,7 +1210,7 @@ void PoroPressureBased::PorofluidAlgorithm::linear_solve(
 
   if (artery_coupling_active_)
   {
-    meshtying_->linear_solve(solver_, sysmat_, increment_, residual_, solver_params);
+    meshtying_->linear_solve(solver_, solver_params);
   }
   else
   {
@@ -1236,7 +1236,7 @@ bool PoroPressureBased::PorofluidAlgorithm::abort_nonlin_iter(
   std::vector<double> prenorm;
   if (artery_coupling_active_)
   {
-    meshtying_->calculate_norms(preresnorm, incprenorm, prenorm, increment_);
+    meshtying_->calculate_norms(preresnorm, incprenorm, prenorm);
   }
   else
   {
@@ -1985,7 +1985,7 @@ std::shared_ptr<Core::Utils::ResultTest> PoroPressureBased::PorofluidAlgorithm::
 {
   if (artery_coupling_active_)
   {
-    meshtying_->create_field_test();
+    meshtying_->create_result_test();
   }
   return std::make_shared<PoroPressureBased::ResultTest>(*this);
 }
@@ -2301,7 +2301,7 @@ std::shared_ptr<Adapter::ArtNet> PoroPressureBased::PorofluidAlgorithm::art_net_
 {
   FOUR_C_ASSERT(artery_coupling_active_,
       "art_net_tim_int can only be called when artery coupling is active.");
-  return meshtying_->art_net_tim_int();
+  return meshtying_->artery_algorithm();
 }
 
 FOUR_C_NAMESPACE_CLOSE

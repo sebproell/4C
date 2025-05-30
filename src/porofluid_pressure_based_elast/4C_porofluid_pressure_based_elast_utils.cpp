@@ -43,7 +43,7 @@ PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(MPI_
   std::shared_ptr<Core::FE::Discretization> structdis = problem->get_dis(struct_disname);
 
   // possible interaction partners [artelegid; contelegid_1, ... contelegid_n]
-  std::map<int, std::set<int>> nearbyelepairs;
+  std::map<int, std::set<int>> nearby_ele_pairs;
 
   if (Global::Problem::instance()->does_exist_dis("artery"))
   {
@@ -80,7 +80,7 @@ PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(MPI_
       case Inpar::ArteryNetwork::ArteryPoroMultiphaseScatraCouplingMethod::ntp:
       {
         // perform extended ghosting on artery discretization
-        nearbyelepairs = PoroPressureBased::extended_ghosting_artery_discretization(
+        nearby_ele_pairs = PoroPressureBased::extended_ghosting_artery_discretization(
             *structdis, arterydis, evaluate_on_lateral_surface, arterycoupl);
         break;
       }
@@ -134,7 +134,7 @@ PoroPressureBased::setup_discretizations_and_field_coupling_porofluid_elast(MPI_
   structdis->fill_complete();
   fluiddis->fill_complete();
 
-  return nearbyelepairs;
+  return nearby_ele_pairs;
 }
 
 /*----------------------------------------------------------------------*

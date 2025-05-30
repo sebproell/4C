@@ -17,12 +17,14 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace PoroPressureBased
 {
-  //! Line based coupling between artery network and poromultiphasescatra algorithm
-  class PoroMultiPhaseScaTraArtCouplNodeToPoint : public PoroMultiPhaseScaTraArtCouplNonConforming
+  //! Node-to-point coupling between artery network and porofluid-elasticity-scatra algorithm
+  class PorofluidElastScatraArteryCouplingNodeToPointAlgorithm
+      : public PorofluidElastScatraArteryCouplingNonConformingAlgorithm
   {
    public:
     //! constructor
-    PoroMultiPhaseScaTraArtCouplNodeToPoint(std::shared_ptr<Core::FE::Discretization> arterydis,
+    PorofluidElastScatraArteryCouplingNodeToPointAlgorithm(
+        std::shared_ptr<Core::FE::Discretization> arterydis,
         std::shared_ptr<Core::FE::Discretization> contdis,
         const Teuchos::ParameterList& couplingparams, const std::string& condname,
         const std::string& artcoupleddofname, const std::string& contcoupleddofname);
@@ -52,9 +54,9 @@ namespace PoroPressureBased
 
     /*!
      * @brief set the artery diameter in material to be able to use it on 1D discretization
-     * \note not possible for node-to-point formulation since varying diameter not yet possible
+     * \note not possible for node-to-point formulation since variable diameter not yet possible
      */
-    void set_artery_diam_in_material() override
+    void set_artery_diameter_in_material() override
     {
       FOUR_C_THROW(
           "Function 'set_artery_diam_in_material()' not possible for node-to-point coupling");
@@ -62,9 +64,9 @@ namespace PoroPressureBased
 
     /*!
      * @brief reset the integrated diameter vector to zero
-     * \note not possible for node-to-point formulation since varying diameter not yet possible
+     * \note not possible for node-to-point formulation since variable diameter not yet possible
      */
-    void reset_integrated_diam_to_zero() override
+    void reset_integrated_diameter_to_zero() override
     {
       FOUR_C_THROW(
           "Function 'reset_integrated_diam_to_zero()' not possible for node-to-point coupling");
@@ -73,7 +75,7 @@ namespace PoroPressureBased
     /*!
      * @brief evaluate additional linearization of (integrated) element diameter dependent terms
      * (Hagen-Poiseuille)
-     * \note not possible for node-to-point formulation since varying diameter not yet possible
+     * \note not possible for node-to-point formulation since variable diameter not yet possible
      */
     void evaluate_additional_linearizationof_integrated_diam() override
     {
@@ -90,7 +92,7 @@ namespace PoroPressureBased
 
    private:
     //! print out the coupling method
-    void print_out_coupling_method() const override;
+    void print_coupling_method() const override;
 
     //! preevaluate the coupling pairs
     void pre_evaluate_coupling_pairs();

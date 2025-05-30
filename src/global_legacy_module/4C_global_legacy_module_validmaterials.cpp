@@ -2384,10 +2384,10 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
                                 "this parameter to 1.0e3",
                     .default_value = 1.0}),
             parameter<std::string>("VARYING_DIAMETERLAW",
-                {.description = "type of varying diameter law, CONSTANT (default) or BY_FUNCTION",
+                {.description = "type of variable diameter law, CONSTANT (default) or BY_FUNCTION",
                     .default_value = "CONSTANT"}),
             parameter<int>("VARYING_DIAMETER_FUNCTION",
-                {.description = "function for varying diameter law", .default_value = -1}),
+                {.description = "function for variable diameter law", .default_value = -1}),
             parameter<double>("COLLAPSE_THRESHOLD",
                 {.description = "Collapse threshold for diameter (below this diameter element is "
                                 "assumed to be collapsed with zero diameter and is not evaluated)",

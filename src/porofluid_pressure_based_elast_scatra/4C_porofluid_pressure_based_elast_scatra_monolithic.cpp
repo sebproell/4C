@@ -89,13 +89,13 @@ void PoroPressureBased::PorofluidElastScatraMonolithicAlgorithm::init(
     const Teuchos::ParameterList& fluidparams, const Teuchos::ParameterList& scatraparams,
     const std::string& struct_disname, const std::string& fluid_disname,
     const std::string& scatra_disname, bool isale, int nds_disp, int nds_vel, int nds_solidpressure,
-    int ndsporofluid_scatra, const std::map<int, std::set<int>>* nearbyelepairs)
+    int ndsporofluid_scatra, const std::map<int, std::set<int>>* nearby_ele_pairs)
 {
   // call base class
   PoroPressureBased::PorofluidElastScatraBaseAlgorithm::init(globaltimeparams, algoparams,
       poroparams, structparams, fluidparams, scatraparams, struct_disname, fluid_disname,
       scatra_disname, isale, nds_disp, nds_vel, nds_solidpressure, ndsporofluid_scatra,
-      nearbyelepairs);
+      nearby_ele_pairs);
 
   // read input variables
   iter_max_ = algoparams.get<int>("ITEMAX");
