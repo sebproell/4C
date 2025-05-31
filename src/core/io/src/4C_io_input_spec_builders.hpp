@@ -916,6 +916,13 @@ namespace Core::IO
                    m, [&](const auto& val) { return this->operator()(val.second, size_info + 1); });
       }
     };
+
+    /**
+     * If the given @p spec is not already an all_of spec, this function wraps it into an
+     * all_of spec. This is useful for the match function of InputSpec to ensure a consistent
+     * starting point.
+     */
+    Core::IO::InputSpec wrap_with_all_of(Core::IO::InputSpec spec);
   }  // namespace Internal
 
   namespace InputSpecBuilders

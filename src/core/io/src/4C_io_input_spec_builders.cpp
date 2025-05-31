@@ -1200,10 +1200,10 @@ bool Internal::ListSpec::emit(YamlNodeRef node, const InputParameterContainer& c
 namespace
 {
   // Nesting all_of or one_of within another spec of that same type is the same as pulling the
-  // nested specs up into the parent spec. An additional predicate can be used to filter the nested
-  // specs that may be flattened.
+  // nested specs up into the parent spec. This function achieves that. An additional predicate can
+  // be used to filter the specs that may be pulled up.
   template <typename InputSpecType>
-  std::vector<Core::IO::InputSpec> flatten_nested(std::vector<Core::IO::InputSpec> specs,
+  std::vector<Core::IO::InputSpec> pull_up_internals(std::vector<Core::IO::InputSpec> specs,
       std::function<bool(const InputSpecType&)> predicate = nullptr)
   {
     std::vector<Core::IO::InputSpec> flattened_specs;
@@ -1278,13 +1278,57 @@ namespace
     return std::accumulate(specs.begin(), specs.end(), 0u,
         [](std::size_t acc, const auto& spec) { return acc + spec.impl().data.n_specs; });
   }
+
+
+  Core::IO::InputSpec make_all_of(std::vector<InputSpec> specs)
+  {
+    specs = pull_up_internals<Internal::AllOfSpec>(std::move(specs));
+    specs = push_all_of_into_one_of(std::move(specs));
+
+    if (specs.size() == 1)
+    {
+      // Special case: a single logical_spec can be returned directly since it expresses the same
+      // semantics as an additional all_of wrapped around it would.
+      if (InputSpecType type = specs[0].impl().data.type;
+          type == InputSpecType::all_of || type == InputSpecType::one_of)
+        return std::move(specs[0]);
+    }
+
+    assert_unique_or_empty_names(specs);
+
+    const bool any_required =
+        std::ranges::any_of(specs, [](const auto& spec) { return spec.impl().required(); });
+
+    // Generate a description of the form "group {a, b, c}".
+    std::string description = "all_of " + describe(specs);
+
+    InputSpecImpl::CommonData common_data{
+        .name = "",
+        .description = description,
+        .required = any_required,
+        .has_default_value = all_have_default_values(specs),
+        .n_specs = count_contained_specs(specs) + 1,
+        .type = InputSpecType::all_of,
+    };
+
+    return Internal::make_spec(
+        Internal::AllOfSpec{
+            .data = {.description = description, .required = any_required},
+            .specs = std::move(specs),
+        },
+        common_data);
+  }
 }  // namespace
 
+Core::IO::InputSpec Internal::wrap_with_all_of(Core::IO::InputSpec spec)
+{
+  return make_all_of({std::move(spec)});
+}
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
     std::string name, std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupData data)
 {
-  auto flattened_specs = flatten_nested<Internal::AllOfSpec>(std::move(specs));
+  auto flattened_specs = pull_up_internals<Internal::AllOfSpec>(std::move(specs));
 
   assert_unique_or_empty_names(flattened_specs);
 
@@ -1322,37 +1366,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> specs)
 {
-  auto flattened_specs = flatten_nested<Internal::AllOfSpec>(std::move(specs));
-  flattened_specs = push_all_of_into_one_of(std::move(flattened_specs));
-
-  if (flattened_specs.size() == 1)
-  {
-    return flattened_specs[0];
-  }
-
-  assert_unique_or_empty_names(flattened_specs);
-
-  const bool any_required =
-      std::ranges::any_of(flattened_specs, [](const auto& spec) { return spec.impl().required(); });
-
-  // Generate a description of the form "group {a, b, c}".
-  std::string description = "all_of " + describe(flattened_specs);
-
-  InputSpecImpl::CommonData common_data{
-      .name = "",
-      .description = description,
-      .required = any_required,
-      .has_default_value = all_have_default_values(flattened_specs),
-      .n_specs = count_contained_specs(flattened_specs) + 1,
-      .type = InputSpecType::all_of,
-  };
-
-  return IO::Internal::make_spec(
-      Internal::AllOfSpec{
-          .data = {.description = description, .required = any_required},
-          .specs = std::move(flattened_specs),
-      },
-      common_data);
+  return make_all_of(std::move(specs));
 }
 
 
@@ -1361,10 +1375,11 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
 {
   // We can only flatten the specs if there is no custom on_parse_callback, either for this
   // one_of or any nested one_of.
-  auto flattened_specs = on_parse_callback ? specs
-                                           : flatten_nested<Internal::OneOfSpec>(std::move(specs),
-                                                 [](const Internal::OneOfSpec& one_of_spec)
-                                                 { return !one_of_spec.on_parse_callback; });
+  auto flattened_specs = on_parse_callback
+                             ? specs
+                             : pull_up_internals<Internal::OneOfSpec>(std::move(specs),
+                                   [](const Internal::OneOfSpec& one_of_spec)
+                                   { return !one_of_spec.on_parse_callback; });
 
   FOUR_C_ASSERT_ALWAYS(!flattened_specs.empty(), "A `one_of` must contain entries.");
 
