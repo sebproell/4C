@@ -387,12 +387,12 @@ namespace
       MPI_Comm comm = communicators->global_comm();
 
       std::string csv_template_file_name = "4C_electrode_test.csv";
-      std::string dat_file_name = "4C_electrode_test.dat";
+      std::string file_name = "4C_electrode_test.4C.yaml";
       setup_template_csv_file(csv_template_file_name);
-      setup_dummy_dat_file(dat_file_name, csv_template_file_name);
+      setup_dummy_input_file(file_name, csv_template_file_name);
 
       Core::IO::InputFile input_file = Global::set_up_input_file(comm);
-      input_file.read(dat_file_name);
+      input_file.read(file_name);
 
       Global::read_parameter(*problem, input_file);
 
@@ -431,22 +431,27 @@ namespace
 
 
 
-    void setup_dummy_dat_file(
-        const std::string& dat_file_name, const std::string& csv_template_file_name) const
+    void setup_dummy_input_file(
+        const std::string& file_name, const std::string& csv_template_file_name) const
     {
-      std::ofstream dat_file{dat_file_name};
+      std::ofstream file{file_name};
 
-      // This is just a dummy dat file filled with the data necessary for the unit tests
-      dat_file << "------------------------------------------------------PROBLEM TYPE" << '\n';
-      dat_file << "PROBLEMTYPE Electrochemistry" << '\n';
-      dat_file << "------------------------------------------------------ELCH CONTROL" << '\n';
-      dat_file << "GAS_CONSTANT                    " << std::to_string(gasconstant_) << '\n';
-      dat_file << "------------------------------------------------------------FUNCT1" << '\n';
-      dat_file << "CUBIC_SPLINE_FROM_CSV CSV " << csv_template_file_name << '\n';
-      dat_file << "------------------------------------------------------------FUNCT2" << '\n';
-      dat_file << "FASTPOLYNOMIAL NUMCOEFF 1 COEFF 0.0" << '\n';
-      dat_file << "------------------------------------------------------------FUNCT3" << '\n';
-      dat_file << "FASTPOLYNOMIAL NUMCOEFF 5 COEFF 4.563 2.595 -16.77 23.88 -10.72" << '\n';
+      file << std::format(R"(PROBLEM TYPE:
+  PROBLEMTYPE: Electrochemistry
+ELCH CONTROL:
+  GAS_CONSTANT: {}
+FUNCT1:
+  - CUBIC_SPLINE_FROM_CSV:
+      CSV: {}
+FUNCT2:
+  - FASTPOLYNOMIAL:
+      NUMCOEFF: 1
+      COEFF: [0.0]
+FUNCT3:
+  - FASTPOLYNOMIAL:
+      NUMCOEFF: 5
+      COEFF: [4.563, 2.595, -16.77, 23.88, -10.72])",
+          gasconstant_, csv_template_file_name);
     }
 
     //! cathode material based on half cell open circuit potential obtained from cubic spline
