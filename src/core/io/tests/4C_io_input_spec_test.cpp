@@ -502,7 +502,7 @@ required: true
       // The result is that the parts of the group remain unparsed.
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.fully_parse(parser, container), Core::Exception,
-          "Required 'one_of {all_of {a, b}, all_of {a, group}}' not found in input line");
+          "Required 'one_of' not found in input line");
     }
 
     {
@@ -510,7 +510,7 @@ required: true
       std::string stream("a 1");
       ValueParser parser(stream);
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.fully_parse(parser, container), Core::Exception,
-          "Required 'one_of {all_of {a, b}, all_of {a, group}}' not found in input line");
+          "Required 'one_of' not found in input line");
     }
   }
 
@@ -554,16 +554,16 @@ required: true
       InputParameterContainer container;
       std::string stream("a 1 b 2 c string d 2.0");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.fully_parse(parser, container), Core::Exception,
-          "both 'all_of {a, b}' and 'all_of {c, d}'");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.fully_parse(parser, container), Core::Exception, "Ambiguous input in one_of.");
     }
 
     {
       InputParameterContainer container;
       std::string stream("a 1 c string");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.fully_parse(parser, container), Core::Exception,
-          "one_of {all_of {a, b}, all_of {c, d}}");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.fully_parse(parser, container), Core::Exception, "None of the specs fit the input");
     }
   }
 
@@ -632,7 +632,6 @@ required: true
     out << tree;
 
     std::string expected = R"(type: one_of
-description: 'one_of {a, b, one_of {c, one_of {d, e, f}}}'
 specs:
   - name: a
     type: int
@@ -641,13 +640,11 @@ specs:
     type: double
     required: true
   - type: one_of
-    description: 'one_of {c, one_of {d, e, f}}'
     specs:
       - name: c
         type: string
         required: true
       - type: one_of
-        description: 'one_of {d, e, f}'
         specs:
           - name: d
             type: double
@@ -683,9 +680,9 @@ specs:
       std::ostringstream out;
       spec.print_as_dat(out);
       EXPECT_EQ(out.str(), R"(// g:
-//   a <int> "An integer"
-//   c <Options> (default: c1) "Selection"
-//   d <int> (default: 42) "Another integer"
+// a <int> "An integer"
+// c <Options> (default: c1) "Selection"
+// d <int> (default: 42) "Another integer"
 )");
     }
   }
@@ -751,11 +748,8 @@ specs:
       out << tree;
 
       std::string expected = R"(type: one_of
-description: 'one_of {all_of {a, b, string to string, c, e, eo, group2, list, selection_group}, all_of {a, b, triple_vector, e, eo, group2, list, selection_group}, all_of {a, b, group, e, eo, group2, list, selection_group}}'
 specs:
   - type: all_of
-    description: 'all_of {a, b, string to string, c, e, eo, group2, list, selection_group}'
-    required: true
     specs:
       - name: a
         type: int
@@ -811,8 +805,6 @@ specs:
         size: 2
         spec:
           type: all_of
-          description: 'all_of {l1, l2}'
-          required: true
           specs:
             - name: l1
               type: int
@@ -841,8 +833,6 @@ specs:
               type: int
               required: true
   - type: all_of
-    description: 'all_of {a, b, triple_vector, e, eo, group2, list, selection_group}'
-    required: true
     specs:
       - name: a
         type: int
@@ -897,8 +887,6 @@ specs:
         size: 2
         spec:
           type: all_of
-          description: 'all_of {l1, l2}'
-          required: true
           specs:
             - name: l1
               type: int
@@ -927,8 +915,6 @@ specs:
               type: int
               required: true
   - type: all_of
-    description: 'all_of {a, b, group, e, eo, group2, list, selection_group}'
-    required: true
     specs:
       - name: a
         type: int
@@ -986,8 +972,6 @@ specs:
         size: 2
         spec:
           type: all_of
-          description: 'all_of {l1, l2}'
-          required: true
           specs:
             - name: l1
               type: int
@@ -1967,16 +1951,28 @@ v: [1,2,3]
 
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, R"([!] Candidate group 'parameters'
-  [ ] Matched parameter 'start'
-  [ ] Defaulted parameter 'write_output'
-  [!] Candidate group 'TimeIntegration'
-    [X] Expected exactly one of a few choices but matched:
-      [!] Candidate group 'OST'
-        [!] Candidate parameter 'theta' (wrong type, expected type: double)
-      [!] Candidate group 'Special'
-        [!] Candidate parameter 'type' (wrong value, possible values: user|gemm))");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
+          R"([!] Candidate group 'parameters'
+  {
+    [ ] Matched parameter 'start'
+    [ ] Defaulted parameter 'write_output'
+    [!] Candidate group 'TimeIntegration'
+      {
+        [X] Expected one of the following:
+          {
+            [!] Candidate group 'OST'
+              {
+                [!] Candidate parameter 'theta' (wrong type, expected type: double)
+              }
+          }
+          {
+            [!] Candidate group 'Special'
+              {
+                [!] Candidate parameter 'type' (wrong value, possible values: user|gemm)
+              }
+          }
+      }
+  })");
     }
     {
       SCOPED_TRACE("Unused parts.");

@@ -812,11 +812,26 @@ namespace Core::IO
       void set_default_value(InputParameterContainer& container) const;
     };
 
+    struct AllOfSpec
+    {
+      std::vector<InputSpec> specs;
+
+      void parse(ValueParser& parser, InputParameterContainer& container) const;
+      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+          IO::Internal::MatchEntry& match_entry) const;
+      void set_default_value(InputParameterContainer& container) const;
+      void print(std::ostream& stream, std::size_t indent) const;
+      void emit_metadata(YamlNodeRef node) const;
+      bool emit(YamlNodeRef node, const InputParameterContainer& container,
+          const InputSpecEmitOptions& options) const;
+    };
+
     struct GroupSpec
     {
       std::string name;
       InputSpecBuilders::GroupData data;
-      std::vector<InputSpec> specs;
+      //! A logical spec with the content of the group.
+      InputSpec spec;
 
       void parse(ValueParser& parser, InputParameterContainer& container) const;
       bool match(ConstYamlNodeRef node, InputParameterContainer& container,
@@ -826,28 +841,13 @@ namespace Core::IO
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
+
+      const AllOfSpec& content() const;
     };
 
-    struct AllOfSpec
-    {
-      InputSpecBuilders::GroupData data;
-      std::vector<InputSpec> specs;
-
-      void parse(ValueParser& parser, InputParameterContainer& container) const;
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
-          IO::Internal::MatchEntry& match_entry) const;
-      void set_default_value(InputParameterContainer& container) const;
-      void print(std::ostream& stream, std::size_t indent) const;
-      void emit_metadata(YamlNodeRef node) const;
-      bool emit(YamlNodeRef node, const InputParameterContainer& container,
-          const InputSpecEmitOptions& options) const;
-    };
 
     struct OneOfSpec
     {
-      // A one_of spec is essentially an unnamed group with additional logic to ensure that
-      // exactly one of the contained specs is present.
-      InputSpecBuilders::GroupData data;
       std::vector<InputSpec> specs;
 
       //! This callback may be used to perform additional actions after parsing one of the specs.
