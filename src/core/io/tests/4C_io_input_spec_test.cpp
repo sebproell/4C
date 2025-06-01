@@ -2007,4 +2007,68 @@ parameters:
     [!] Special: )");
     }
   }
+
+  TEST(InputSpecTest, ParameterValidation)
+  {
+    auto spec = all_of({
+        parameter<int>("a", {.default_value = 42, .validator = Validators::in_range(0, 50)}),
+        parameter<std::optional<double>>("b", {.validator = Validators::positive<double>()}),
+    });
+
+    {
+      SCOPED_TRACE("Valid input");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(a: 1
+b: 2.0)",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("a"), 1);
+      EXPECT_EQ(*container.get<std::optional<double>>("b"), 2.0);
+    }
+
+    {
+      SCOPED_TRACE("Valid input with defaulted parameter");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(a: 1)", root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("a"), 1);
+      EXPECT_FALSE(container.get<std::optional<double>>("b").has_value());
+    }
+
+    {
+      SCOPED_TRACE("Validation failure");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(a: -1
+b: 0.0)",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception, R"({
+  [!] Candidate parameter 'a' (does not pass validation: in_range[0,50])
+  [!] Candidate parameter 'b' (does not pass validation: in_range(0,1.7976931348623157e+308])
+})");
+    }
+  }
+
+  TEST(InputSpecTest, DefaultedParameterValidation)
+  {
+    using namespace Core::IO::InputSpecBuilders::Validators;
+    const auto construct = []()
+    {
+      [[maybe_unused]] auto spec =
+          parameter<int>("a", {.default_value = 42, .validator = in_range(excl(0), 10)});
+    };
+    FOUR_C_EXPECT_THROW_WITH_MESSAGE(construct(), Core::Exception,
+        "Default value '42' does not pass validation: in_range(0,10]");
+  }
 }  // namespace

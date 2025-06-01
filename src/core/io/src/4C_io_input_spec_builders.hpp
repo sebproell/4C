@@ -12,6 +12,7 @@
 
 #include "4C_io_input_parameter_container.templates.hpp"
 #include "4C_io_input_spec.hpp"
+#include "4C_io_input_spec_validators.hpp"
 #include "4C_io_input_types.hpp"
 #include "4C_io_value_parser.hpp"
 #include "4C_io_yaml.hpp"
@@ -538,6 +539,22 @@ namespace Core::IO
       return InputSpec(std::make_unique<InputSpecTypeErasedImplementation<std::decay_t<T>>>(
           std::forward<T>(wrapped), std::move(data)));
     }
+
+    //! Validate if possible. Returns false only if validation was attempted and failed.
+    template <typename T>
+    [[nodiscard]] bool validate_helper(
+        const T& val, const std::optional<InputSpecBuilders::Validators::Validator<T>>& validator)
+    {
+      return !validator.has_value() || (*validator)(val);
+    }
+
+    //! Validate if possible. Returns false only if validation was attempted and failed.
+    template <typename T>
+    [[nodiscard]] bool validate_helper(const std::optional<T>& val,
+        const std::optional<InputSpecBuilders::Validators::Validator<T>>& validator)
+    {
+      return !val.has_value() || validate_helper(*val, validator);
+    }
   }  // namespace Internal
 
   /**
@@ -625,6 +642,14 @@ namespace Core::IO
        * set additional values in the container.
        */
       ParameterCallback on_parse_callback{nullptr};
+
+      /**
+       * An optional validator that is called after the value has been parsed and is guaranteed to
+       * be of the correct type. This validator can then check the value for more specific
+       * conditions such as assuring that a value is within a certain range of values. See the
+       * Validators namespace for some available validators.
+       */
+      std::optional<Validators::Validator<RemoveOptional<T>>> validator{std::nullopt};
     };
 
     template <typename T>
@@ -638,6 +663,8 @@ namespace Core::IO
       DefaultType<T> default_value{};
 
       ParameterCallback on_parse_callback{nullptr};
+
+      std::optional<Validators::Validator<RemoveOptional<T>>> validator{std::nullopt};
 
       /**
        * The size of the vector. This can be a fixed size, #dynamic_size, or a callback that
@@ -657,6 +684,8 @@ namespace Core::IO
       DefaultType<T> default_value{};
 
       ParameterCallback on_parse_callback{nullptr};
+
+      std::optional<Validators::Validator<RemoveOptional<T>>> validator{std::nullopt};
 
       std::array<Size, rank<T>()> size;
     };
@@ -726,6 +755,9 @@ namespace Core::IO
       std::variant<std::monostate, StoredType> default_value{};
 
       InputSpecBuilders::ParameterCallback on_parse_callback{nullptr};
+
+      std::optional<InputSpecBuilders::Validators::Validator<RemoveOptional<T>>> validator{
+          std::nullopt};
 
       std::array<InputSpecBuilders::Size, rank<T>()> size{};
     };
@@ -1434,6 +1466,14 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
         return false;
       }
     }
+    if (!validate_helper(value, data.validator))
+    {
+      std::ostringstream ss;
+      ss << "does not pass validation: ";
+      ss << *data.validator;
+      match_entry.additional_info = ss.str();
+      return false;
+    }
     container.add(name, value);
     match_entry.state = IO::Internal::MatchEntry::State::matched;
     match_entry.matched_node = entry_node.node.id();
@@ -1955,6 +1995,21 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
     internal_data.size = data.size;
   }
   internal_data.on_parse_callback = data.on_parse_callback;
+  internal_data.validator = data.validator;
+
+  if (internal_data.default_value.index() == 1 &&
+      !Internal::validate_helper(std::get<1>(internal_data.default_value), data.validator))
+  {
+    std::stringstream validation_error_stream;
+    validation_error_stream << "Default value '";
+    Core::IO::Internal::DatPrinter{}(
+        validation_error_stream, std::get<1>(internal_data.default_value));
+    validation_error_stream << "' does not pass validation: ";
+    validation_error_stream << *data.validator;
+
+    FOUR_C_THROW("{}", validation_error_stream.str());
+  }
+
 
   return IO::Internal::make_spec(Internal::ParameterSpec<T>{.name = name, .data = internal_data},
       {
