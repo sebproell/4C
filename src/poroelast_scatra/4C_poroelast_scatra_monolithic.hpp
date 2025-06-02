@@ -230,26 +230,34 @@ namespace PoroElastScaTra
     double tolinc_scalar_;   //!< tolerance residual increment for scalar field
     double tolfres_scalar_;  //!< tolerance force residual for scalar field
 
-    int itermax_;     //!< maximally permitted iterations
-    int itermin_;     //!< minimally requested iteration
-    double normrhs_;  //!< norm of residual forces
-    double norminc_;  //!< norm of residual unknowns
+    int itermax_;  //!< maximally permitted iterations
+    int itermin_;  //!< minimally requested iteration
 
-    double normrhsfluidvel_;   //!< norm of residual forces (fluid velocity)
-    double normincfluidvel_;   //!< norm of residual unknowns (fluid velocity)
-    double normrhsfluidpres_;  //!< norm of residual forces (fluid pressure)
-    double normincfluidpres_;  //!< norm of residual unknowns (fluid pressure)
-    double normrhsfluid_;      //!< norm of residual forces (fluid )
-    double normincfluid_;      //!< norm of residual unknowns (fluid )
+    //! norm of residual forces
+    double normrhs_{std::numeric_limits<double>::infinity()};
+    //! norm of residual unknowns
+    double norminc_{std::numeric_limits<double>::infinity()};
 
-    double normrhsstruct_;  //!< norm of residual forces (structure)
-    double normincstruct_;  //!< norm of residual unknowns (structure)
-
-    double normrhsscalar_;  //!< norm of residual forces (scatra)
-    double normincscalar_;  //!< norm of residual unknowns (scatra)
-
-    //    double normrhsporo_;    //!< norm of residual forces (porosity)
-    //    double normincporo_;    //!< norm of residual unknowns (porosity)
+    //! norm of residual forces (fluid velocity)
+    double normrhsfluidvel_{std::numeric_limits<double>::infinity()};
+    //! norm of residual unknowns (fluid velocity)
+    double normincfluidvel_{std::numeric_limits<double>::infinity()};
+    //! norm of residual forces (fluid pressure)
+    double normrhsfluidpres_{std::numeric_limits<double>::infinity()};
+    //! norm of residual unknowns (fluid pressure)
+    double normincfluidpres_{std::numeric_limits<double>::infinity()};
+    //! norm of residual forces (fluid )
+    double normrhsfluid_{std::numeric_limits<double>::infinity()};
+    //! norm of residual unknowns (fluid )
+    double normincfluid_{std::numeric_limits<double>::infinity()};
+    //!< norm of residual forces (structure)
+    double normrhsstruct_{std::numeric_limits<double>::infinity()};
+    //!< norm of residual unknowns (structure)
+    double normincstruct_{std::numeric_limits<double>::infinity()};
+    //!< norm of residual forces (scatra)
+    double normrhsscalar_{std::numeric_limits<double>::infinity()};
+    //!< norm of residual unknowns (scatra)
+    double normincscalar_{std::numeric_limits<double>::infinity()};
 
     Teuchos::Time timer_;  //!< timer for solution technique
 
