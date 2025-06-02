@@ -137,6 +137,45 @@ namespace
     EXPECT_DOUBLE_EQ(m(1, 1), 1.1);
   }
 
+  TEST(TensorTest, PrintTensor)
+  {
+    {
+      Core::LinAlg::Tensor<double, 2> t1 = {{0.0, 0.1}};
+      std::stringstream ss;
+      ss << t1;
+      EXPECT_EQ(ss.str(), "Tensor<double, 2>[0, 0.1]");
+    }
+
+    {
+      Core::LinAlg::Tensor<double, 2, 3> t2 = {{{0.0, 0.1, 0.2}, {1.0, 1.1, 1.2}}};
+      std::stringstream ss;
+      ss << t2;
+      EXPECT_EQ(ss.str(), R"(Tensor<double, 2, 3>[
+ [0, 0.1, 0.2],
+ [1, 1.1, 1.2]
+])");
+    }
+
+    {
+      Core::LinAlg::Tensor<double, 2, 3, 2> t3 = {
+          {{{0.0, 0.01}, {0.1, 0.11}, {0.2, 0.21}}, {{1.0, 1.01}, {1.1, 1.11}, {1.2, 1.21}}}};
+      std::stringstream ss;
+      ss << t3;
+      EXPECT_EQ(ss.str(), R"(Tensor<double, 2, 3, 2>[
+ [
+  [0, 0.01],
+  [0.1, 0.11],
+  [0.2, 0.21]
+ ],
+ [
+  [1, 1.01],
+  [1.1, 1.11],
+  [1.2, 1.21]
+ ]
+])");
+    }
+  }
+
 
   TEST(TensorViewTest, TestConstructability)
   {
@@ -196,6 +235,52 @@ namespace
 
     // this is the actual ultimate test whether they work on the same data
     EXPECT_EQ(t_view.data(), t.data());
+  }
+
+
+  TEST(TensorViewTest, PrintTensor)
+  {
+    {
+      Core::LinAlg::Tensor<double, 2> t1 = {{0.0, 0.1}};
+      Core::LinAlg::TensorView<double, 2> t1_view(t1);
+      std::stringstream ss;
+      ss << t1_view;
+      EXPECT_EQ(ss.str(), "TensorView<double, 2>[0, 0.1]");
+    }
+
+    {
+      Core::LinAlg::Tensor<double, 2, 3> t2 = {{{0.0, 0.1, 0.2}, {1.0, 1.1, 1.2}}};
+      Core::LinAlg::TensorView<double, 2, 3> t2_view(t2);
+      std::stringstream ss;
+      ss << t2_view;
+
+      EXPECT_EQ(ss.str(), R"(TensorView<double, 2, 3>[
+ [0, 0.1, 0.2],
+ [1, 1.1, 1.2]
+])");
+    }
+
+
+
+    {
+      Core::LinAlg::Tensor<double, 2, 3, 2> t3 = {
+          {{{0.0, 0.01}, {0.1, 0.11}, {0.2, 0.21}}, {{1.0, 1.01}, {1.1, 1.11}, {1.2, 1.21}}}};
+      Core::LinAlg::TensorView<double, 2, 3, 2> t3_view(t3);
+      std::stringstream ss;
+      ss << t3_view;
+      EXPECT_EQ(ss.str(), R"(TensorView<double, 2, 3, 2>[
+ [
+  [0, 0.01],
+  [0.1, 0.11],
+  [0.2, 0.21]
+ ],
+ [
+  [1, 1.01],
+  [1.1, 1.11],
+  [1.2, 1.21]
+ ]
+])");
+    }
   }
 
 }  // namespace
