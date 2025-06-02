@@ -181,6 +181,8 @@ namespace Core::LinAlg
       std::ranges::copy(other.container(), data_.begin());
     }
 
+    TensorInternal(ContainerType&& data) : data_(std::move(data)) {}
+
     /*!
      * @brief Access to the underlying raw data of the tensor
      *
