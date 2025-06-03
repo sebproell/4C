@@ -77,6 +77,7 @@ FOUR_C_NAMESPACE_OPEN namespace
 void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_manager)
 {
   using namespace Core::IO::InputSpecBuilders;
+  using namespace Core::IO::InputSpecBuilders::Validators;
 
   auto spec =
       group("SCATRA_FUNCTION",
@@ -85,27 +86,35 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
               group("parameters",
                   {
                       parameter<double>(
-                          "magnet_radius", {.description = "Radius of the cylinder magnet"}),
+                          "magnet_radius", {.description = "Radius of the cylinder magnet",
+                                               .validator = positive<double>()}),
                       parameter<double>(
-                          "magnet_length", {.description = "Length of the cylinder magnet"}),
+                          "magnet_length", {.description = "Length of the cylinder magnet",
+                                               .validator = positive<double>()}),
                       parameter<double>(
-                          "magnetic_permeability", {.description = "Magnetic permeability"}),
+                          "magnetic_permeability", {.description = "Magnetic permeability",
+                                                       .validator = positive<double>()}),
                       parameter<double>("magnet_magnetization",
-                          {.description = "Magnetization of the cylinder magnet"}),
+                          {.description = "Magnetization of the cylinder magnet",
+                              .validator = positive<double>()}),
                       parameter<std::vector<double>>("magnet_position",
                           {.description = "Position of the center of the cylinder magnet in the "
                                           "global coordinate system (X,Y,Z)",
                               .size = 3}),
                       parameter<double>("dynamic_viscosity_fluid",
-                          {.description = "Dynamic viscosity of the fluid"}),
+                          {.description = "Dynamic viscosity of the fluid",
+                              .validator = positive<double>()}),
                       parameter<double>("rotation_around_x_axis",
                           {.description = "Rotation of the magnet around the x-axis in degrees",
-                              .default_value = 0.0}),
+                              .default_value = 0.0,
+                              .validator = in_range(0., 360.)}),
                       parameter<double>("rotation_around_y_axis",
                           {.description = "Rotation of the magnet around the y-axis in degrees",
-                              .default_value = 0.0}),
+                              .default_value = 0.0,
+                              .validator = in_range(0., 360.)}),
                       parameter<double>(
-                          "particle_radius", {.description = "Radius of the magnetic particle"}),
+                          "particle_radius", {.description = "Radius of the magnetic particle",
+                                                 .validator = positive<double>()}),
                   }),
               selection<ParticleMagnetizationModelType>("particle_magnetization_model",
                   {
@@ -114,23 +123,27 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
                           {
                               {
                                   ParticleMagnetizationModelType::linear,
-                                  parameter<double>(
-                                      "susceptibility", {.description = "Magnetic susceptibility"}),
+                                  parameter<double>("susceptibility",
+                                      {.description = "Magnetic susceptibility",
+                                          .validator = positive<double>()}),
                               },
                               {
                                   ParticleMagnetizationModelType::linear_with_saturation,
                                   all_of(
                                       {
                                           parameter<double>("saturation_magnetization",
-                                              {.description = "Saturation magnetization"}),
+                                              {.description = "Saturation magnetization",
+                                                  .validator = positive<double>()}),
                                           parameter<double>("susceptibility",
-                                              {.description = "Magnetic susceptibility"}),
+                                              {.description = "Magnetic susceptibility",
+                                                  .validator = positive<double>()}),
                                       }),
                               },
                               {
                                   ParticleMagnetizationModelType::superparamagnetic,
                                   parameter<double>("saturation_magnetization",
-                                      {.description = "Saturation magnetization"}),
+                                      {.description = "Saturation magnetization",
+                                          .validator = positive<double>()}),
                               },
                           },
                   },
