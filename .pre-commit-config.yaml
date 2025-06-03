@@ -1,3 +1,6 @@
+default_stages:
+  # This setting means that our own hooks are run in the pre-commit stage unless specified otherwise.
+  - pre-commit
 default_install_hook_types:
   - pre-commit
   - commit-msg
