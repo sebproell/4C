@@ -12,6 +12,7 @@
 #include "4C_linalg_tensor.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_unittest_utils_assertions_test.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -49,6 +50,14 @@ namespace
     EXPECT_DOUBLE_EQ(t(0), 0.0);
     EXPECT_DOUBLE_EQ(t(1), 1.0);
     EXPECT_DOUBLE_EQ(t(2), 2.0);
+  }
+
+  TEST(TensorTest, TensorComparison)
+  {
+    Core::LinAlg::Tensor<double, 3> t1 = {{0.0, 1.0, 2.0}};
+    Core::LinAlg::Tensor<double, 3> t2 = {{0.000000001, 1.0, 2.0}};
+
+    FOUR_C_EXPECT_NEAR(t1, t2, 1e-6);
   }
 
   TEST(TensorTest, InitializationAndIndexing2Tensor)

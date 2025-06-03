@@ -206,6 +206,23 @@ namespace Core::LinAlg::Internal
 
     return order_type_mapping;
   }
+
+  template <std::size_t... n>
+  consteval std::array<std::tuple<decltype(n)...>, (n * ...)> get_array_of_indices()
+  {
+    std::array<std::tuple<decltype(n)...>, (n * ...)> index_list{};
+
+    std::size_t i = 0;
+    MultiDimensionalForRowMajor<sizeof...(n), n...>::multi_for(
+        [&](const auto& index)
+        {
+          index_list[i] = index;
+          ++i;
+        },
+        std::make_tuple());
+
+    return index_list;
+  }
 }  // namespace Core::LinAlg::Internal
 
 FOUR_C_NAMESPACE_CLOSE

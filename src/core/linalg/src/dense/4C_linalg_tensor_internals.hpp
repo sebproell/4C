@@ -275,6 +275,9 @@ namespace Core::LinAlg
     constexpr void fill(const Number& value) { std::ranges::fill(data_, value); }
   };
 
+  template <std::size_t... n>
+  constexpr auto array_of_tensor_indices = Internal::get_array_of_indices<n...>();
+
   // actual implementations
 
   template <typename Number, TensorStorageType storage_type, std::size_t... n>
