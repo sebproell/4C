@@ -13,6 +13,7 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_tensor_internals.hpp"
 #include "4C_linalg_tensor_meta_utils.hpp"
+#include "4C_utils_demangle.hpp"
 
 #include <algorithm>
 #include <array>
@@ -329,6 +330,19 @@ namespace Core::LinAlg
   constexpr auto reorder_axis(auto tensor)
     requires(TensorConcept<decltype(tensor)> && sizeof...(new_order) == decltype(tensor)::rank());
 
+  /*!
+   * @brief Write tensor values to an output stream
+   */
+  template <typename Number, TensorStorageType storage_type, std::size_t... n>
+  void print_values(std::ostream& os, const TensorInternal<Number, storage_type, n...>& tensor);
+
+  /*!
+   * @brief Write tensor to an output stream
+   */
+  template <typename Number, TensorStorageType storage_type, std::size_t... n>
+  std::ostream& operator<<(
+      std::ostream& os, const TensorInternal<Number, storage_type, n...>& tensor);
+
 
   /*!
    * @brief Add another tensor onto this tensor
@@ -629,6 +643,69 @@ namespace Core::LinAlg
         [&tensor](const auto& i) { return tensor.container()[i]; });
 
     return result;
+  }
+
+  namespace Internal
+  {
+    template <typename Number, TensorStorageType storage_type, std::size_t... n>
+    void print_sub_values_helper(std::ostream& os,
+        const TensorInternal<Number, storage_type, n...>& tensor, auto index_to_print)
+    {
+      constexpr auto shape = std::array{n...};
+      constexpr std::size_t num_indices_to_print = std::tuple_size_v<decltype(index_to_print)>;
+      if constexpr (num_indices_to_print == sizeof...(n) - 1)
+      {
+        os << std::string(num_indices_to_print, ' ') << "[";
+        for (std::size_t i = 0; i < shape[num_indices_to_print]; ++i)
+        {
+          if (i > 0) os << ", ";
+          std::apply([&os, &tensor](auto... idx) { os << tensor(idx...); },
+              std::tuple_cat(index_to_print, std::make_tuple(i)));
+        }
+        os << "]";
+      }
+      else
+      {
+        os << std::string(num_indices_to_print, ' ') << "[\n";
+        for (std::size_t i = 0; i < shape[num_indices_to_print]; ++i)
+        {
+          if (i > 0) os << ",\n";
+          print_sub_values_helper(os, tensor, std::tuple_cat(index_to_print, std::make_tuple(i)));
+        }
+        os << "\n" << std::string(num_indices_to_print, ' ') << "]";
+      }
+    }
+  }  // namespace Internal
+
+  template <typename Number, TensorStorageType storage_type, std::size_t... n>
+  void print_values(std::ostream& os, const TensorInternal<Number, storage_type, n...>& tensor)
+  {
+    Internal::print_sub_values_helper(os, tensor, std::make_tuple());
+  }
+
+  template <typename Number, TensorStorageType storage_type, std::size_t... n>
+  std::ostream& operator<<(
+      std::ostream& os, const TensorInternal<Number, storage_type, n...>& tensor)
+  {
+    constexpr auto tensor_type = []() consteval
+    {
+      if constexpr (storage_type == TensorStorageType::owning)
+        return "Tensor";
+      else if constexpr (storage_type == TensorStorageType::view)
+        return "TensorView";
+      else
+        FOUR_C_THROW("Unknown tensor type!");
+    }();
+    constexpr std::array shape = {n...};
+    const std::string shape_str =
+        std::accumulate(std::next(shape.begin()), shape.end(), std::to_string(shape[0]),
+            [](const std::string& a, const std::size_t b) { return a + ", " + std::to_string(b); });
+
+    os << tensor_type << "<" << Core::Utils::try_demangle(typeid(Number).name()) << ", "
+       << shape_str << ">";
+    print_values(os, tensor);
+
+    return os;
   }
 
   template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
