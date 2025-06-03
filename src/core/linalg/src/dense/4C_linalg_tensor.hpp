@@ -62,8 +62,54 @@ namespace Core::LinAlg
   using TensorView = TensorInternal<T, TensorStorageType::view, n...>;  // view onto's other
                                                                         // memory
 
-  // Implementation of tensor operations
+  /*!
+   * @brief Creates a TensorView from a pointer to data and the tensor shape
+   *
+   * This function creates a TensorView from a pointer to data and the tensor shape specified by the
+   * template parameters. The data is expected to be stored in a contiguous memory block of size
+   * @p (n*...) with column-major layout.
+   *
+   * @tparam n The dimensions of the tensor.
+   * @param data Pointer to the data.
+   * @return A TensorView of type TensorView<ValueType, n...>.
+   */
+  template <std::size_t... n>
+  constexpr auto make_tensor_view(auto* data)
+  {
+    using ValueType = std::remove_pointer_t<decltype(data)>;
+    constexpr std::size_t size = (n * ...);
+    std::span<ValueType, size> data_span(data, size);
 
+    return TensorView<ValueType, n...>(std::move(data_span));
+  }
+
+  namespace Internal
+  {
+    template <typename T>
+    struct MakeTensorViewFromIntegerSequenceHelper
+    {
+    };
+
+
+    template <std::size_t... n>
+    struct MakeTensorViewFromIntegerSequenceHelper<std::integer_sequence<std::size_t, n...>>
+    {
+      static constexpr auto make_tensor_view_from_sequence(auto* data)
+      {
+        return make_tensor_view<n...>(data);
+      }
+    };
+  }  // namespace Internal
+
+
+  template <typename IntegerSequence>
+  constexpr auto make_tensor_view(auto* data)
+  {
+    return Internal::MakeTensorViewFromIntegerSequenceHelper<
+        IntegerSequence>::make_tensor_view_from_sequence(data);
+  }
+
+  // Implementation of tensor operations
   namespace Internal
   {
     template <typename T, typename S1>
@@ -175,89 +221,40 @@ namespace Core::LinAlg
   constexpr auto transpose(const Rank2TensorConcept auto& A);
 
   /*!
-   * @brief Computes the dot product of two rank-1 tensors
+   * @brief Computes the dot product of two tensors
    *
-   * This function performs the inner product between two vectors a * b. Both sizes need to match.
+   * This function performs the dot product of two tensors @p a and @p b with arbitrary rank. The
+   * last dimension of @p a must match the first dimension of @p b. Returns a scalar value if @p a
+   * and @p b are rank-1 tensors, otherwise returns a tensor.
    *
-   * @tparam TensorLeft The type of the rank-1 tensor (vector).
-   * @tparam TensorRight The type of the rank-1 tensor (vector).
-   * @param a The rank-1 tensor (vector).
-   * @param b The rank-1 tensor (vector).
-   * @return scalar resulting from the dot product.
+   * @tparam TensorLeft
+   * @tparam TensorRight
+   * @return scalar or tensur resulting from the dot product.
    */
   template <typename TensorLeft, typename TensorRight>
-    requires(Rank1TensorConcept<TensorLeft> && Rank1TensorConcept<TensorRight> &&
-             TensorLeft::template extent<0>() == TensorRight::template extent<0>())
+    requires(
+        TensorLeft::rank() >= 1 && TensorRight::rank() >= 1 &&
+        TensorLeft::template extent<TensorLeft::rank() - 1>() == TensorRight::template extent<0>())
   constexpr auto dot(const TensorLeft& a, const TensorRight& b);
 
   /*!
-   * @brief Computes the dot product of a rank-2 tensor and a rank-1 tensor.
+   * @brief Computes the double dot product of two tensors.
    *
-   * This function performs the matrix-vector multiplication A * b, where A is a rank-2 tensor
-   * (matrix) and b is a rank-1 tensor (vector). The number of columns in A must match the size of
-   * b.
+   * This function computes the double dot product of two tensors @p A and @p B. If @p A and @p B
+   * are rank-2 tensors (matrices), the result is a scalar value, otherwise, the result is a tensor.
    *
-   * @tparam TensorLeft The type of the rank-2 tensor (matrix).
-   * @tparam TensorRight The type of the rank-1 tensor (vector).
-   * @param A The rank-2 tensor (matrix).
-   * @param b The rank-1 tensor (vector).
-   * @return A rank-1 tensor (vector) resulting from the dot product.
+   * @tparam TensorLeft The type of the first tensor.
+   * @tparam TensorRight The type of the second tensor.
+   * @param A The first tensor.
+   * @param B The second tensor.
+   * @return Scalar or tensor depending on the ranks of @p A and @p B.
    */
   template <typename TensorLeft, typename TensorRight>
-    requires(Rank2TensorConcept<TensorLeft> && Rank1TensorConcept<TensorRight> &&
-             TensorLeft::template extent<1>() == TensorRight::template extent<0>())
-  constexpr auto dot(const TensorLeft& A, const TensorRight& b);
-
-  /*!
-   * @brief Computes the dot product of a rank-1 tensor and a rank-2 tensor.
-   *
-   * This function performs the vector-matrix multiplication a * B, where a is a rank-1 tensor
-   * (vector) and B is a rank-2 tensor (matrix). The size of a must match the number of rows in B.
-   *
-   * @tparam TensorLeft The type of the rank-1 tensor (vector).
-   * @tparam TensorRight The type of the rank-2 tensor (matrix).
-   * @param a The rank-1 tensor (vector).
-   * @param B The rank-2 tensor (matrix).
-   * @return A rank-1 tensor (vector) resulting from the dot product.
-   */
-  template <typename TensorLeft, typename TensorRight>
-    requires(Rank1TensorConcept<TensorLeft> && Rank2TensorConcept<TensorRight> &&
-             TensorLeft::template extent<0>() == TensorRight::template extent<0>())
-  constexpr auto dot(const TensorLeft& a, const TensorRight& B);
-
-  /*!
-   * @brief Computes the dot product of two rank-2 tensors.
-   *
-   * This function performs the matrix-matrix multiplication A * B, where A and B are rank-2 tensors
-   * (matrices). The number of columns in A must match the number of rows in B.
-   *
-   * @tparam TensorLeft The type of the first rank-2 tensor (matrix).
-   * @tparam TensorRight The type of the second rank-2 tensor (matrix).
-   * @param A The first rank-2 tensor (matrix).
-   * @param B The second rank-2 tensor (matrix).
-   * @return A rank-2 tensor (matrix) resulting from the dot product.
-   */
-  template <typename TensorLeft, typename TensorRight>
-    requires(Rank2TensorConcept<TensorLeft> && Rank2TensorConcept<TensorRight> &&
-             TensorLeft::template extent<1>() == TensorRight::template extent<0>())
-  constexpr auto dot(const TensorLeft& A, const TensorRight& B);
-
-  /*!
-   * @brief Computes the double dot product of two rank-2 tensors.
-   *
-   * This function computes the double dot product of two rank-2 tensors (matrices) A and B, which
-   * is defined as the sum of the element-wise products of the corresponding elements in A and B.
-   *
-   * @tparam TensorLeft The type of the first rank-2 tensor (matrix).
-   * @tparam TensorRight The type of the second rank-2 tensor (matrix).
-   * @param A The first rank-2 tensor (matrix).
-   * @param B The second rank-2 tensor (matrix).
-   * @return A scalar value representing the double dot product.
-   */
-  template <typename TensorLeft, typename TensorRight>
-    requires(Rank2TensorConcept<TensorLeft> && Rank2TensorConcept<TensorRight> &&
-             TensorLeft::template extent<0>() == TensorRight::template extent<0>() &&
-             TensorLeft::template extent<1>() == TensorRight::template extent<1>())
+    requires(
+        TensorLeft::rank() >= 2 && TensorRight::rank() >= 2 &&
+        TensorLeft::template extent<TensorLeft::rank() - 2>() ==
+            TensorRight::template extent<0>() &&
+        TensorLeft::template extent<TensorLeft::rank() - 1>() == TensorRight::template extent<1>())
   constexpr auto ddot(const TensorLeft& A, const TensorRight& B);
 
   /*!
@@ -482,76 +479,172 @@ namespace Core::LinAlg
 
   constexpr auto transpose(const Rank2TensorConcept auto& A) { return reorder_axis<1, 0>(A); }
 
+  namespace Internal
+  {
+    template <typename ValueType, typename Shape>
+    struct TensorTypeFromIntegerSequence;
+
+    template <typename ValueType, std::size_t... n>
+    struct TensorTypeFromIntegerSequence<ValueType, std::integer_sequence<std::size_t, n...>>
+    {
+      using type = Tensor<ValueType, n...>;
+    };
+
+    template <typename Tuple>
+    consteval auto make_array_from_tuple(Tuple&& tuple)
+    {
+      constexpr auto get_array = [](auto&&... x)
+      { return std::array{std::forward<decltype(x)>(x)...}; };
+      return std::apply(get_array, std::forward<Tuple>(tuple));
+    }
+
+    template <std::array array>
+    consteval auto make_integer_sequence()
+    {
+      constexpr auto array_to_integer_sequence = []<std::size_t... n>(
+                                                     std::index_sequence<n...>) consteval
+      { return std::integer_sequence<std::size_t, array[n]...>{}; };
+
+      return array_to_integer_sequence(std::make_index_sequence<array.size()>{});
+    }
+
+    template <typename TupleTypeLeft, typename TupleTypeRight>
+    consteval auto get_dot_product_result_shape(
+        const TupleTypeLeft& left_shape, const TupleTypeRight& right_shape)
+    {
+      const std::array left_shape_array = make_array_from_tuple(left_shape);
+      const std::array right_shape_array = make_array_from_tuple(right_shape);
+      constexpr std::size_t left_size = std::tuple_size_v<TupleTypeLeft>;
+      constexpr std::size_t right_size = std::tuple_size_v<TupleTypeRight>;
+
+
+      std::array<std::size_t, left_size + right_size - 2> result_shape{};
+
+      std::copy(left_shape_array.begin(), left_shape_array.end() - 1, result_shape.begin());
+      std::copy(right_shape_array.begin() + 1, right_shape_array.end(),
+          result_shape.begin() + (left_size - 1));
+
+      return result_shape;
+    }
+
+    template <typename TensorLeft, typename TensorRight>
+    using DotProductResultType =
+        TensorTypeFromIntegerSequence<decltype(std::declval<typename TensorLeft::value_type>() *
+                                               std::declval<typename TensorRight::value_type>()),
+            decltype(make_integer_sequence<get_dot_product_result_shape(
+                    TensorLeft::shape(), TensorRight::shape())>())>::type;
+
+    template <typename TupleType>
+    consteval std::size_t get_dot_product_left_matrix_size(const TupleType& left_shape)
+    {
+      const std::array left_shape_array = make_array_from_tuple(left_shape);
+      return std::accumulate(
+          left_shape_array.begin(), left_shape_array.end() - 1, 1, std::multiplies<std::size_t>());
+    }
+
+    template <typename TupleType>
+    consteval std::size_t get_dot_product_right_matrix_size(const TupleType& right_shape)
+    {
+      const std::array right_shape_array = make_array_from_tuple(right_shape);
+      return std::accumulate(right_shape_array.begin() + 1, right_shape_array.end(), 1,
+          std::multiplies<std::size_t>());
+    }
+  }  // namespace Internal
+
   template <typename TensorLeft, typename TensorRight>
-    requires(Rank1TensorConcept<TensorLeft> && Rank1TensorConcept<TensorRight> &&
-             TensorLeft::template extent<0>() == TensorRight::template extent<0>())
+    requires(
+        TensorLeft::rank() >= 1 && TensorRight::rank() >= 1 &&
+        TensorLeft::template extent<TensorLeft::rank() - 1>() == TensorRight::template extent<0>())
   constexpr auto dot(const TensorLeft& a, const TensorRight& b)
   {
     using value_type = decltype(std::declval<typename TensorLeft::value_type>() *
                                 std::declval<typename TensorRight::value_type>());
-    constexpr std::size_t m = TensorLeft::template extent<0>();
+    constexpr std::size_t k = TensorLeft::template extent<TensorLeft::rank() - 1>();
 
-    return DenseFunctions::dot<value_type, m, 1>(a.data(), b.data());
+    if constexpr (TensorLeft::rank() == 1 && TensorRight::rank() == 1)
+    {
+      // Special case for rank-1 tensors: Result is a scalar
+      return DenseFunctions::dot<value_type, k, 1>(a.data(), b.data());
+    }
+    else
+    {
+      constexpr std::size_t m = Internal::get_dot_product_left_matrix_size(TensorLeft::shape());
+      constexpr std::size_t n = Internal::get_dot_product_right_matrix_size(TensorRight::shape());
+
+      Internal::DotProductResultType<TensorLeft, TensorRight> dest;
+      DenseFunctions::multiply<value_type, m, k, n>(dest.data(), a.data(), b.data());
+      return dest;
+    }
   }
 
-  template <typename TensorLeft, typename TensorRight>
-    requires(Rank2TensorConcept<TensorLeft> && Rank1TensorConcept<TensorRight> &&
-             TensorLeft::template extent<1>() == TensorRight::template extent<0>())
-  constexpr auto dot(const TensorLeft& A, const TensorRight& b)
+  namespace Internal
   {
-    using value_type = decltype(std::declval<typename TensorLeft::value_type>() *
-                                std::declval<typename TensorRight::value_type>());
-    constexpr std::size_t m = TensorLeft::template extent<0>();
-    constexpr std::size_t n = TensorLeft::template extent<1>();
+    template <typename T, T... n>
+    consteval auto to_integer_sequence(std::integer_sequence<T, n...>)
+    {
+      return std::integer_sequence<T, n...>{};
+    }
 
-    Tensor<value_type, m> dest;
-    DenseFunctions::multiply<value_type, m, n, 1>(dest.data(), A.data(), b.data());
-    return dest;
-  }
+    template <typename Array>
+    constexpr auto make_tuple_from_array(Array&& array)
+    {
+      return std::tuple_cat(array);
+    }
 
-  template <typename TensorLeft, typename TensorRight>
-    requires(Rank1TensorConcept<TensorLeft> && Rank2TensorConcept<TensorRight> &&
-             TensorLeft::template extent<0>() == TensorRight::template extent<0>())
-  constexpr auto dot(const TensorLeft& a, const TensorRight& B)
-  {
-    using value_type = decltype(std::declval<typename TensorLeft::value_type>() *
-                                std::declval<typename TensorRight::value_type>());
-    constexpr std::size_t m = TensorRight::template extent<0>();
-    constexpr std::size_t n = TensorRight::template extent<1>();
+    consteval auto ddot_product_right_tensor_reduced_shape(auto tuple)
+    {
+      return std::apply([](auto first, auto second, auto... args) constexpr
+          { return std::array{first * second, args...}; }, tuple);
+    }
 
-    Tensor<value_type, n> dest;
-    DenseFunctions::multiply<value_type, 1, m, n>(dest.data(), a.data(), B.data());
-    return dest;
-  }
+    consteval auto ddot_product_left_tensor_reduced_shape(auto tuple)
+    {
+      std::array input_array = make_array_from_tuple(tuple);
+      std::ranges::reverse(input_array);
 
-  template <typename TensorLeft, typename TensorRight>
-    requires(Rank2TensorConcept<TensorLeft> && Rank2TensorConcept<TensorRight> &&
-             TensorLeft::template extent<1>() == TensorRight::template extent<0>())
-  constexpr auto dot(const TensorLeft& A, const TensorRight& B)
-  {
-    using value_type = decltype(std::declval<typename TensorLeft::value_type>() *
-                                std::declval<typename TensorRight::value_type>());
-    constexpr std::size_t m = TensorLeft::template extent<0>();
-    constexpr std::size_t k = TensorLeft::template extent<1>();
-    constexpr std::size_t n = TensorRight::template extent<1>();
+      std::tuple reversed_resulting_shape =
+          ddot_product_right_tensor_reduced_shape(make_tuple_from_array(input_array));
 
-    Core::LinAlg::Tensor<value_type, n, m> dest;
-    DenseFunctions::multiply<value_type, m, k, n>(dest.data(), A.data(), B.data());
-    return dest;
-  }
+      std::array output_array = make_array_from_tuple(reversed_resulting_shape);
+      std::ranges::reverse(output_array);
+      return output_array;
+    }
+  }  // namespace Internal
 
   template <typename TensorLeft, typename TensorRight>
-    requires(Rank2TensorConcept<TensorLeft> && Rank2TensorConcept<TensorRight> &&
-             TensorLeft::template extent<0>() == TensorRight::template extent<0>() &&
-             TensorLeft::template extent<1>() == TensorRight::template extent<1>())
+    requires(
+        TensorLeft::rank() >= 2 && TensorRight::rank() >= 2 &&
+        TensorLeft::template extent<TensorLeft::rank() - 2>() ==
+            TensorRight::template extent<0>() &&
+        TensorLeft::template extent<TensorLeft::rank() - 1>() == TensorRight::template extent<1>())
   constexpr auto ddot(const TensorLeft& A, const TensorRight& B)
   {
     using value_type = decltype(std::declval<typename TensorLeft::value_type>() *
                                 std::declval<typename TensorRight::value_type>());
-    constexpr std::size_t m = TensorLeft::template extent<0>();
-    constexpr std::size_t n = TensorLeft::template extent<1>();
 
-    return DenseFunctions::dot<value_type, m, n>(A.data(), B.data());
+    if constexpr (TensorLeft::rank() == 2 && TensorRight::rank() == 2)
+    {
+      // this is a special case since the result is a scalar
+      constexpr std::size_t m = TensorLeft::template extent<0>();
+      constexpr std::size_t n = TensorLeft::template extent<1>();
+
+      return DenseFunctions::dot<value_type, m, n>(A.data(), B.data());
+    }
+    else
+    {
+      // in this case, result is again a tensor
+      constexpr std::array reduced_shape_left =
+          Internal::ddot_product_left_tensor_reduced_shape(TensorLeft::shape());
+      constexpr std::array reduced_shape_right =
+          Internal::ddot_product_right_tensor_reduced_shape(TensorRight::shape());
+
+      // combine the two axis of the double-dot product and do a normal dot product
+      return dot(
+          make_tensor_view<
+              decltype(Internal::template make_integer_sequence<reduced_shape_left>())>(A.data()),
+          make_tensor_view<
+              decltype(Internal::template make_integer_sequence<reduced_shape_right>())>(B.data()));
+    }
   }
 
   template <typename TensorLeft, typename TensorRight>
