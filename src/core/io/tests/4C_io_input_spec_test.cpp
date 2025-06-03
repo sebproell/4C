@@ -501,16 +501,16 @@ required: true
       // Note: we start to parse the group, but the entries are not complete, so we backtrack.
       // The result is that the parts of the group remain unparsed.
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.fully_parse(parser, container), Core::Exception, "None of the specs fit the input.");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.fully_parse(parser, container), Core::Exception,
+          "Required 'one_of {all_of {a, b}, all_of {a, group}}' not found in input line");
     }
 
     {
       InputParameterContainer container;
       std::string stream("a 1");
       ValueParser parser(stream);
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.fully_parse(parser, container), Core::Exception, "None of the specs fit the input.");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.fully_parse(parser, container), Core::Exception,
+          "Required 'one_of {all_of {a, b}, all_of {a, group}}' not found in input line");
     }
   }
 

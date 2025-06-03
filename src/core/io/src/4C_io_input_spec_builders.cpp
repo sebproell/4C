@@ -81,6 +81,7 @@ namespace
           {
             // Try the next component.
             parser.backtrack();
+            continue;
           }
 
           // Drop the entry from the set: we do not want to parse the same value twice.
