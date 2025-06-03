@@ -91,7 +91,7 @@ namespace
     Core::LinAlg::Matrix<6, 1> id6x1_{Core::LinAlg::Initialization::zero};
     // symmetric identity four tensor of dimension 3 \f$ \mathbb{I}_\text{S} \f$
     Core::LinAlg::Matrix<6, 6> id4_6x6_{Core::LinAlg::Initialization::zero};
-    // deviatoric operator \f$ \mathbb{P}_{\texŧ{dev}}  =  \mathbb{I}_\text{S} -
+    // deviatoric operator \f$ \mathbb{P}_{\text{dev}}  =  \mathbb{I}_\text{S} -
     // \frac{1}{3} \boldsymbol{I} \otimes \boldsymbol{I} \f$
     Core::LinAlg::Matrix<6, 6> dev_op_{Core::LinAlg::Initialization::zero};
     // identity fourth-order tensor in Voigt notation: delta_AC delta_BD in index notation

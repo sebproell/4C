@@ -1709,7 +1709,7 @@ void Solid::ModelEvaluator::Structure::determine_energy(const Core::LinAlg::Vect
   }
 }
 
-/*----------------------------------------------------------------------------*ö
+/*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 void Solid::ModelEvaluator::Structure::output_step_state(
     Core::IO::DiscretizationWriter& iowriter) const

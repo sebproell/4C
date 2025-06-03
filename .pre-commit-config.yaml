@@ -157,7 +157,7 @@ repos:
       - id: non-ascii-chars
         name: Non-ASCII characters
         language: system
-        exclude_types: [markdown, rst]
+        types_or: [c++, c, python, cmake, shell]
         entry: ./utilities/code_checks/check_non_ascii_chars
 
       - id: check-commit-msg
