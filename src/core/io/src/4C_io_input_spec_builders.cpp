@@ -81,6 +81,7 @@ namespace
           {
             // Try the next component.
             parser.backtrack();
+            continue;
           }
 
           // Drop the entry from the set: we do not want to parse the same value twice.
@@ -105,9 +106,10 @@ namespace
 
     for (const auto& entry : unnamed_entries)
     {
-      // Unnamed entries contain a useful description, which indicates what is missing.
+      // Unnamed entries are one_ofs or all_ofs.
       FOUR_C_ASSERT_ALWAYS(!entry->impl().required(), "Required '{}' not found in input line",
-          entry->impl().description());
+          entry->impl().data.type == Core::IO::Internal::InputSpecType::one_of ? "one_of"
+                                                                               : "all_of");
     }
 
     // Check if all required values have been parsed, i.e., any remaining component must be optional
@@ -144,25 +146,6 @@ namespace
   [[nodiscard]] const std::string& describe(const Core::IO::InputSpec& spec)
   {
     return (spec.impl().name().empty()) ? spec.impl().description() : spec.impl().name();
-  }
-
-  [[nodiscard]] std::string describe(const std::vector<Core::IO::InputSpec>& specs)
-  {
-    if (specs.empty()) return "{}";
-
-    std::string description = "{";
-    for (const auto& spec : specs)
-    {
-      // Unnamed InputSpecs are created internally and will have a description that is useful for
-      // error messages.
-      description += describe(spec);
-      description += ", ";
-    }
-    description.pop_back();
-    description.pop_back();
-    description += "}";
-
-    return description;
   }
 
   // Match a vector of specs against a node. Returns true when all specs could be matched.
@@ -676,10 +659,9 @@ void Core::IO::Internal::GroupSpec::parse(
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
 
   parser.consume(name);
-
   // Parse into a separate container to avoid side effects if parsing fails.
   Core::IO::InputParameterContainer subcontainer;
-  parse_in_arbitrary_order(parser, specs, subcontainer);
+  spec.impl().parse(parser, subcontainer);
 
   container.group(name) = subcontainer;
 }
@@ -712,7 +694,7 @@ bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
 
   // Parse into a separate container to avoid side effects if parsing fails.
   InputParameterContainer subcontainer;
-  bool all_matched = match_vector_of_specs(specs, group_node, subcontainer, match_entry);
+  bool all_matched = spec.impl().match(group_node, subcontainer, match_entry.append_child(&spec));
 
   if (!all_matched)
   {
@@ -732,22 +714,14 @@ void Core::IO::Internal::GroupSpec::set_default_value(
     Core::IO::InputParameterContainer& container) const
 {
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
-  for (const auto& spec : specs)
-  {
-    if (spec.impl().has_default_value()) spec.impl().set_default_value(container.group(name));
-  }
+  if (spec.impl().has_default_value()) spec.impl().set_default_value(container.group(name));
 }
 
 
 void Core::IO::Internal::GroupSpec::print(std::ostream& stream, std::size_t indent) const
 {
   stream << "// " << std::string(indent, ' ') << name << ":\n";
-  indent += 2;
-
-  for (const auto& spec : specs)
-  {
-    spec.impl().print(stream, indent);
-  }
+  spec.impl().print(stream, indent);
 }
 
 void Core::IO::Internal::GroupSpec::emit_metadata(YamlNodeRef node) const
@@ -764,12 +738,13 @@ void Core::IO::Internal::GroupSpec::emit_metadata(YamlNodeRef node) const
   emit_value_as_yaml(node.wrap(node.node["defaultable"]), data.defaultable);
   node.node["specs"] |= ryml::SEQ;
   {
-    for (const auto& spec : specs)
+    // Do not emit the internally used all_of but the specs that it contains.
+    for (const auto& spec : content().specs)
     {
       auto child = node.node["specs"].append_child();
       child |= ryml::MAP;
       spec.impl().emit_metadata(node.wrap(child));
-    };
+    }
   }
 }
 
@@ -784,13 +759,10 @@ bool Internal::GroupSpec::emit(YamlNodeRef node, const InputParameterContainer& 
     auto group_node = node.node.append_child();
     group_node << ryml::key(name);
     group_node |= ryml::MAP;
-    for (const auto& spec : specs)
+    if (!spec.impl().emit(node.wrap(group_node), container.group(name), options))
     {
-      if (!spec.impl().emit(node.wrap(group_node), container.group(name), options))
-      {
-        checkpoint.restore();
-        return false;
-      }
+      checkpoint.restore();
+      return false;
     }
     // If no children were added, remove the group node as well, unless it is required.
     if (!data.required.value() && group_node.num_children() == 0)
@@ -801,6 +773,16 @@ bool Internal::GroupSpec::emit(YamlNodeRef node, const InputParameterContainer& 
   }
   // If group is not present, success depends on whether it is required.
   return !data.required.value();
+}
+
+const AllOfSpec& Core::IO::Internal::GroupSpec::content() const
+{
+  auto all_of_spec =
+      dynamic_cast<const Internal::InputSpecTypeErasedImplementation<AllOfSpec>*>(&spec.impl());
+  FOUR_C_ASSERT_ALWAYS(all_of_spec != nullptr,
+      "Internal error: GroupSpec must contain an AllOfSpec as its content.");
+
+  return all_of_spec->wrapped;
 }
 
 
@@ -828,8 +810,6 @@ bool Core::IO::Internal::AllOfSpec::match(ConstYamlNodeRef node,
     return false;
   }
 
-  // N.B. an all_of does not constitute a full yaml object, so we cannot say anything about the
-  // match state of the node.
   match_entry.state = IO::Internal::MatchEntry::State::matched;
 
   container.merge(subcontainer);
@@ -851,7 +831,8 @@ void Core::IO::Internal::AllOfSpec::set_default_value(
 void Core::IO::Internal::AllOfSpec::print(std::ostream& stream, std::size_t indent) const
 {
   // Only print an "<all_of>" header if it is not present at the top-level.
-  if (indent > 0)
+  // Also do not print it if there is only one spec, as this would be redundant.
+  if (indent > 0 && specs.size() > 1)
   {
     stream << "// " << std::string(indent, ' ') << "<all_of>:\n";
     indent += 2;
@@ -865,14 +846,16 @@ void Core::IO::Internal::AllOfSpec::print(std::ostream& stream, std::size_t inde
 
 void Core::IO::Internal::AllOfSpec::emit_metadata(YamlNodeRef node) const
 {
+  // Do not emit the all_of if it only contains one spec, as this is redundant.
+  if (specs.size() == 1)
+  {
+    specs.front().impl().emit_metadata(node);
+    return;
+  }
+
   node.node |= ryml::MAP;
 
   node.node["type"] = "all_of";
-  if (!data.description.empty())
-  {
-    node.node["description"] << data.description;
-  }
-  emit_value_as_yaml(node.wrap(node.node["required"]), data.required.value());
   node.node["specs"] |= ryml::SEQ;
   {
     for (const auto& spec : specs)
@@ -939,9 +922,7 @@ void Core::IO::Internal::OneOfSpec::parse(
           // Backtrack to the original position.
           parser.backtrack();
           FOUR_C_THROW(
-              "Ambiguous input: both '{}' and '{}' could be parsed, but only one of them is "
-              "expected.",
-              describe(*component).c_str(), describe(*other).c_str());
+              "Ambiguous input in one_of.", describe(*component).c_str(), describe(*other).c_str());
         }
       }
 
@@ -955,8 +936,7 @@ void Core::IO::Internal::OneOfSpec::parse(
 
   // Convert remainder into a null-terminated string for the error message.
   std::string remainder(parser.get_unparsed_remainder());
-  FOUR_C_THROW("While parsing '{}'.\nNone of the specs fit the input. Expected {}", remainder,
-      data.description);
+  FOUR_C_THROW("While parsing '{}'.\nNone of the specs fit the input.", remainder);
 }
 
 
@@ -1025,10 +1005,6 @@ void Core::IO::Internal::OneOfSpec::emit_metadata(YamlNodeRef node) const
   node.node |= ryml::MAP;
 
   node.node["type"] << "one_of";
-  if (!data.description.empty())
-  {
-    node.node["description"] << data.description;
-  }
   node.node["specs"] |= ryml::SEQ;
   for (const auto& spec : specs)
   {
@@ -1200,10 +1176,10 @@ bool Internal::ListSpec::emit(YamlNodeRef node, const InputParameterContainer& c
 namespace
 {
   // Nesting all_of or one_of within another spec of that same type is the same as pulling the
-  // nested specs up into the parent spec. An additional predicate can be used to filter the nested
-  // specs that may be flattened.
+  // nested specs up into the parent spec. This function achieves that. An additional predicate can
+  // be used to filter the specs that may be pulled up.
   template <typename InputSpecType>
-  std::vector<Core::IO::InputSpec> flatten_nested(std::vector<Core::IO::InputSpec> specs,
+  std::vector<Core::IO::InputSpec> pull_up_internals(std::vector<Core::IO::InputSpec> specs,
       std::function<bool(const InputSpecType&)> predicate = nullptr)
   {
     std::vector<Core::IO::InputSpec> flattened_specs;
@@ -1278,15 +1254,52 @@ namespace
     return std::accumulate(specs.begin(), specs.end(), 0u,
         [](std::size_t acc, const auto& spec) { return acc + spec.impl().data.n_specs; });
   }
+
+
+  [[nodiscard]] Core::IO::InputSpec make_all_of(std::vector<InputSpec> specs)
+  {
+    specs = pull_up_internals<Internal::AllOfSpec>(std::move(specs));
+    specs = push_all_of_into_one_of(std::move(specs));
+
+    if (specs.size() == 1)
+    {
+      if (specs[0].impl().data.type == InputSpecType::all_of) return std::move(specs[0]);
+    }
+
+    assert_unique_or_empty_names(specs);
+
+    const bool any_required =
+        std::ranges::any_of(specs, [](const auto& spec) { return spec.impl().required(); });
+
+    InputSpecImpl::CommonData common_data{
+        .name = "",
+        .description = "",
+        .required = any_required,
+        .has_default_value = all_have_default_values(specs),
+        .n_specs = count_contained_specs(specs) + 1,
+        .type = InputSpecType::all_of,
+    };
+
+    return Internal::make_spec(
+        Internal::AllOfSpec{
+            .specs = std::move(specs),
+        },
+        common_data);
+  }
 }  // namespace
 
+Core::IO::InputSpec Internal::wrap_with_all_of(Core::IO::InputSpec spec)
+{
+  if (spec.impl().data.type == InputSpecType::all_of)
+    return spec;
+  else
+    return make_all_of({std::move(spec)});
+}
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
     std::string name, std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupData data)
 {
-  auto flattened_specs = flatten_nested<Internal::AllOfSpec>(std::move(specs));
-
-  assert_unique_or_empty_names(flattened_specs);
+  auto internal_all_of = make_all_of(std::move(specs));
 
   if (!data.required.has_value())
   {
@@ -1296,7 +1309,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
   {
     FOUR_C_THROW("Group '{}': a group cannot be both required and defaultable.", name);
   }
-  if (data.defaultable && !all_have_default_values(flattened_specs))
+  if (data.defaultable && !internal_all_of.impl().has_default_value())
   {
     FOUR_C_THROW(
         "Group '{}': a group cannot be defaultable if not all of its child specs have default "
@@ -1309,50 +1322,20 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
       .description = data.description,
       .required = data.required.value(),
       .has_default_value = data.defaultable,
-      .n_specs = count_contained_specs(flattened_specs) + 1,
+      .n_specs = internal_all_of.impl().data.n_specs + 1,
       .type = InputSpecType::group,
   };
 
   return IO::Internal::make_spec(
       Internal::GroupSpec{
-          .name = name, .data = std::move(data), .specs = std::move(flattened_specs)},
+          .name = name, .data = std::move(data), .spec = std::move(internal_all_of)},
       common_data);
 }
 
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> specs)
 {
-  auto flattened_specs = flatten_nested<Internal::AllOfSpec>(std::move(specs));
-  flattened_specs = push_all_of_into_one_of(std::move(flattened_specs));
-
-  if (flattened_specs.size() == 1)
-  {
-    return flattened_specs[0];
-  }
-
-  assert_unique_or_empty_names(flattened_specs);
-
-  const bool any_required =
-      std::ranges::any_of(flattened_specs, [](const auto& spec) { return spec.impl().required(); });
-
-  // Generate a description of the form "group {a, b, c}".
-  std::string description = "all_of " + describe(flattened_specs);
-
-  InputSpecImpl::CommonData common_data{
-      .name = "",
-      .description = description,
-      .required = any_required,
-      .has_default_value = all_have_default_values(flattened_specs),
-      .n_specs = count_contained_specs(flattened_specs) + 1,
-      .type = InputSpecType::all_of,
-  };
-
-  return IO::Internal::make_spec(
-      Internal::AllOfSpec{
-          .data = {.description = description, .required = any_required},
-          .specs = std::move(flattened_specs),
-      },
-      common_data);
+  return make_all_of(std::move(specs));
 }
 
 
@@ -1361,10 +1344,11 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
 {
   // We can only flatten the specs if there is no custom on_parse_callback, either for this
   // one_of or any nested one_of.
-  auto flattened_specs = on_parse_callback ? specs
-                                           : flatten_nested<Internal::OneOfSpec>(std::move(specs),
-                                                 [](const Internal::OneOfSpec& one_of_spec)
-                                                 { return !one_of_spec.on_parse_callback; });
+  auto flattened_specs = on_parse_callback
+                             ? specs
+                             : pull_up_internals<Internal::OneOfSpec>(std::move(specs),
+                                   [](const Internal::OneOfSpec& one_of_spec)
+                                   { return !one_of_spec.on_parse_callback; });
 
   FOUR_C_ASSERT_ALWAYS(!flattened_specs.empty(), "A `one_of` must contain entries.");
 
@@ -1392,24 +1376,22 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
         non_required.c_str());
   }
 
-  std::string description = "one_of " + describe(flattened_specs);
+  for (auto& spec : flattened_specs)
+  {
+    spec = wrap_with_all_of(std::move(spec));
+  }
+
   InputSpecImpl::CommonData common_data{
       .name = "",
-      .description = description,
+      .description = "",
       .required = true,
       .has_default_value = false,
       .n_specs = count_contained_specs(flattened_specs) + 1,
       .type = InputSpecType::one_of,
   };
 
-  GroupData group_data{
-      .description = description,
-      .required = true,
-  };
 
-
-  return IO::Internal::make_spec(Internal::OneOfSpec{.data = std::move(group_data),
-                                     .specs = std::move(flattened_specs),
+  return IO::Internal::make_spec(Internal::OneOfSpec{.specs = std::move(flattened_specs),
                                      .on_parse_callback = std::move(on_parse_callback)},
       std::move(common_data));
 }
