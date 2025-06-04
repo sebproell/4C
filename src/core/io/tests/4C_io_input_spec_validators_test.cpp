@@ -1,0 +1,66 @@
+// This file is part of 4C multiphysics licensed under the
+// GNU Lesser General Public License v3.0 or later.
+//
+// See the LICENSE.md file in the top-level for license information.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
+#include <gtest/gtest.h>
+
+#include "4C_io_input_spec_validators.hpp"
+
+
+namespace
+{
+  using namespace FourC::Core::IO::InputSpecBuilders::Validators;
+  TEST(InputSpecValidators, InRangeInt)
+  {
+    const auto validator = in_range(incl(0), excl(2));
+    EXPECT_TRUE(validator(0));
+    EXPECT_TRUE(validator(1));
+    EXPECT_FALSE(validator(-1));
+    EXPECT_FALSE(validator(2));
+  }
+
+  TEST(InputSpecValidators, InRangeDouble)
+  {
+    const auto validator = in_range(excl(0.), 1.);
+    EXPECT_FALSE(validator(0.0));
+    EXPECT_TRUE(validator(1.0));
+    EXPECT_FALSE(validator(-0.1));
+    EXPECT_FALSE(validator(1.1));
+
+    std::stringstream ss;
+    ss << validator;
+    EXPECT_EQ(ss.str(), "in_range(0,1]");
+  }
+
+  TEST(InputSpecValidators, PositiveInt)
+  {
+    const auto validator = positive<int>();
+    EXPECT_TRUE(validator(1));
+    EXPECT_FALSE(validator(0));
+    EXPECT_FALSE(validator(-1));
+    EXPECT_FALSE(std::numeric_limits<int>::infinity());
+  }
+
+
+  TEST(InputSpecValidators, EnumSet)
+  {
+    enum class MyEnum
+    {
+      A,
+      B,
+      C
+    };
+    const auto validator = in_set({MyEnum::A, MyEnum::B});
+    EXPECT_TRUE(validator(MyEnum::A));
+    EXPECT_TRUE(validator(MyEnum::B));
+    EXPECT_FALSE(validator(MyEnum::C));
+
+    std::stringstream ss;
+    ss << validator;
+    EXPECT_EQ(ss.str(), "in_set{A,B}");
+  }
+
+}  // namespace
