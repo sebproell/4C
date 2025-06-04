@@ -51,6 +51,9 @@ repos:
         name: Trim trailing whitespace
         # Do not modify reference vtu files, since we generate these and do not hand-edit them.
         exclude: 'vtu$'
+        # Do not trim trailing whitespace in C++ files. It is not trivial to trim whitespace
+        # correctly, e.g., when inside a string literal. Clang-format will do this correctly.
+        exclude_types: [c, c++]
       - id: no-commit-to-branch
         name: Don't commit to main
 
