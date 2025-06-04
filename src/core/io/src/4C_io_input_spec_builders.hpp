@@ -258,17 +258,37 @@ namespace Core::IO
       std::string additional_info;
 
       /**
-       * A MatchEntry can only match a single node. Logical specs like all_of and one_of are not
-       * considered to match nodes themselves, as this is done by their children.
+       * A MatchEntry can only match a single node. For parameters and groups, this is the node
+       * that contains the key. For logical specs (all_of, one_of), this is the parent node that
+       * contains the content of the spec as children. This is always set to a valid node, even
+       * if the spec is not matched. In that case, the node ID refers to the node that the match
+       * was attempted on.
        */
       ryml::id_type matched_node{ryml::npos};
 
       enum class State : std::uint8_t
       {
+        /**
+         * Not a match at all.
+         */
         unmatched,
+        /**
+         * A perfect match.
+         */
         matched,
+        /**
+         * At least something matched. Depending on the type of spec, this can e.g. mean that
+         * the key of a group matched.
+         */
         partial,
+        /**
+         * The match was successfully defaulted.
+         */
         defaulted,
+        /**
+         * The spec was not required and was not matched. This is OK.
+         */
+        not_required,
       };
 
       State state{State::unmatched};
@@ -1457,6 +1477,7 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
   // A child with the name of the spec exists, so this is at least a partial match.
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   auto entry_node = node.wrap(node.node[spec_name]);
+  match_entry.matched_node = entry_node.node.id();
 
   FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
 
@@ -1483,7 +1504,6 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     }
     container.add(name, value);
     match_entry.state = IO::Internal::MatchEntry::State::matched;
-    match_entry.matched_node = entry_node.node.id();
     if (data.on_parse_callback) data.on_parse_callback(container);
     return true;
   }
@@ -1676,6 +1696,7 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
   // A child with the name of the spec exists, so this is at least a partial match.
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   auto entry_node = node.wrap(node.node[spec_name]);
+  match_entry.matched_node = entry_node.node.id();
 
   FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
 

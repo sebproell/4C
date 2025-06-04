@@ -436,15 +436,12 @@ def schema_from_all_of(all_of):
         raise TypeError("All_ofs in All_ofs are not possible anymore.")
 
     # One_ofs and named_specs are not possible after condensing
-    if bool(one_ofs) == bool(named_specs):
+    if bool(one_ofs) and bool(named_specs):
         raise TypeError("One_ofs and named specs together are not possible.")
 
     # One_ofs
     if one_ofs:
         if len(one_ofs) == 1:
-            if named_specs:
-                raise TypeError("May not have named specs next to a one_of.")
-
             return schema_from_one_of(one_ofs[0])
         else:
             raise NotImplementedError(
