@@ -219,8 +219,8 @@ if(${FOUR_C_BUILD_TYPE_UPPER} MATCHES RELEASE)
 endif()
 
 if(${FOUR_C_BUILD_TYPE_UPPER} MATCHES RELWITHDEBINFO)
-  target_compile_options(four_c_private_compile_interface INTERFACE "-O2")
-  target_link_options(four_c_private_compile_interface INTERFACE "-O2")
+  target_compile_options(four_c_private_compile_interface INTERFACE "-O3")
+  target_link_options(four_c_private_compile_interface INTERFACE "-O3")
 
   target_compile_options(four_c_private_compile_interface INTERFACE "-g")
   enable_compiler_flag_if_supported("-funroll-loops")
