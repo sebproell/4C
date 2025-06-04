@@ -853,6 +853,8 @@ namespace Core::IO
       BasedOn<T> based_on;
       InputSpecBuilders::SelectionData data;
       InputSpec selector_spec;
+      //! The choices of the selection enhanced by the selector spec to allow full matching.
+      std::map<T, InputSpec> choices_for_matching;
 
       void parse(ValueParser& parser, InputParameterContainer& container) const;
       bool match(ConstYamlNodeRef node, InputParameterContainer& container,
@@ -1886,16 +1888,20 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
   match_entry.matched_node = group_node.node.id();
 
   // Parse into a separate container to avoid side effects if parsing fails.
-  InputParameterContainer subcontainer;
+  // First, only get the selector value.
+  InputParameterContainer selector_container;
   bool selector_found = selector_spec.impl().match(
-      group_node, subcontainer, match_entry.append_child(&selector_spec));
+      group_node, selector_container, match_entry.append_child(&selector_spec));
   if (!selector_found) return false;
 
-  auto selector_value = subcontainer.get<T>(based_on.selector);
-  FOUR_C_ASSERT(
-      based_on.choices.contains(selector_value), "Internal error: selector not found in choices.");
-  const auto& selected_spec = based_on.choices.at(selector_value);
+  auto selector_value = selector_container.get<T>(based_on.selector);
+  FOUR_C_ASSERT(choices_for_matching.contains(selector_value),
+      "Internal error: selector not found in choices.");
+  const auto& selected_spec = choices_for_matching.at(selector_value);
 
+  // The selected match will match the selector again (to ensure a full match of the node). Thus,
+  // we will also parse the selector value again.
+  InputParameterContainer subcontainer;
   auto choice_matched = selected_spec.impl().match(
       group_node, subcontainer, match_entry.append_child(&selected_spec));
   if (!choice_matched) return false;
@@ -2064,22 +2070,33 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
         EnumTools::enum_type_name<T>(), EnumTools::enum_name(e));
   }
 
-  std::size_t max_specs_for_choices = std::ranges::max_element(
-      based_on.choices, {}, [](const auto& spec) { return spec.second.impl().data.n_specs; })
-                                          ->second.impl()
-                                          .data.n_specs;
+  auto selector_spec = parameter<T>(based_on.selector, {});
+  std::map<T, Core::IO::InputSpec> choices_for_matching;
+  for (const auto& [choice, spec] : based_on.choices)
+  {
+    choices_for_matching.emplace(choice, all_of({selector_spec, spec}));
+  }
 
-  return IO::Internal::make_spec(Internal::SelectionSpec<T>{.group_name = name,
-                                     .based_on = based_on,
-                                     .data = data,
-                                     .selector_spec = parameter<T>(based_on.selector, {})},
+  std::size_t max_specs_for_choices_matching = std::ranges::max_element(
+      choices_for_matching, {}, [](const auto& spec) { return spec.second.impl().data.n_specs; })
+                                                   ->second.impl()
+                                                   .data.n_specs;
+
+  return IO::Internal::make_spec(
+      Internal::SelectionSpec<T>{
+          .group_name = name,
+          .based_on = based_on,
+          .data = data,
+          .selector_spec = std::move(selector_spec),
+          .choices_for_matching = std::move(choices_for_matching),
+      },
       {
           .name = name,
           .description = data.description,
           .required = data.required,
           .has_default_value = false,
           // one for the group, one for the selector, plus the number of specs for the choices.
-          .n_specs = 2 + max_specs_for_choices,
+          .n_specs = 2 + max_specs_for_choices_matching,
           .type = Internal::InputSpecType::selection,
       });
 }
