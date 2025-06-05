@@ -293,7 +293,7 @@ namespace
         print_match_state();
         if (entry.state == MatchEntry::State::partial && !entry.additional_info.empty())
         {
-          out << " (" << entry.additional_info << ")";
+          out << " " << entry.additional_info;
         }
         out << '\n';
         break;

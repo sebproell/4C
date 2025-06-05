@@ -1086,7 +1086,7 @@ specs:
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          "Candidate parameter 'a' (wrong type, expected type: int)");
+          "Candidate parameter 'a' has wrong type, expected type: int");
     }
   }
 
@@ -1279,7 +1279,7 @@ specs:
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          "Candidate deprecated_selection 'enum' (wrong value, possible values: A|B)");
+          "Candidate deprecated_selection 'enum' has wrong value, possible values: A|B");
     }
   }
 
@@ -1975,7 +1975,7 @@ v: [1,2,3]
             {
               [!] Candidate group 'OST'
                 {
-                  [!] Candidate parameter 'theta' (wrong type, expected type: double)
+                  [!] Candidate parameter 'theta' has wrong type, expected type: double
                 }
               [!] The following data remains unused:
                 Special:
@@ -1984,7 +1984,7 @@ v: [1,2,3]
             {
               [!] Candidate group 'Special'
                 {
-                  [!] Candidate parameter 'type' (wrong value, possible values: user|gemm)
+                  [!] Candidate parameter 'type' has wrong value, possible values: user|gemm
                 }
               [!] The following data remains unused:
                 OST:
@@ -2094,8 +2094,8 @@ b: 0.0)",
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception, R"({
-  [!] Candidate parameter 'a' (does not pass validation: in_range[0,50])
-  [!] Candidate parameter 'b' (does not pass validation: in_range(0,1.7976931348623157e+308])
+  [!] Candidate parameter 'a' does not pass validation: in_range[0,50]
+  [!] Candidate parameter 'b' does not pass validation: in_range(0,1.7976931348623157e+308]
 })");
     }
   }

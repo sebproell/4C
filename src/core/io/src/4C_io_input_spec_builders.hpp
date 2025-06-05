@@ -1520,11 +1520,11 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
       }
       choices_string.pop_back();
 
-      match_entry.additional_info = "wrong value, possible values: " + choices_string;
+      match_entry.additional_info = "has wrong value, possible values: " + choices_string;
     }
     else
     {
-      match_entry.additional_info = "wrong type, expected type: " + get_pretty_type_name<T>();
+      match_entry.additional_info = "has wrong type, expected type: " + get_pretty_type_name<T>();
     }
     return false;
   }
@@ -1724,7 +1724,7 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
     // catch all and error out below
   }
 
-  match_entry.additional_info = "wrong value, possible values: " + choices_string;
+  match_entry.additional_info = "has wrong value, possible values: " + choices_string;
   return false;
 }
 
