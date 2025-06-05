@@ -23,23 +23,24 @@ namespace Core::LinAlg
     /// enum class for the interpolation type
     enum class ScalarInterpolationType
     {
-      LOG,     ///< logarithmic weighted average,
-      MLS,     ///< moving least squares,
-      LOGMLS,  ///< logarithmic moving least squares,
+      logarithmic_weighted_average,      ///< logarithmic weighted average,
+      moving_least_squares,              ///< moving least squares,
+      logarithmic_moving_least_squares,  ///< logarithmic moving least squares,
     };
 
     /// enum class for the interpolation weighting function
     enum class WeightingFunction
     {
-      inversedistance,  ///< inverse distance weighting
-      exponential,      ///< exponential weighting
-      unity,            ///< equal weighting
+      inverse_distance,  ///< inverse distance weighting
+      exponential,       ///< exponential weighting
+      unity,             ///< equal weighting
     };
 
     /// struct containing parameters used for the scalar interpolation
     struct InterpParams
     {
-      /// exponential decay factor of the
+      /// exponential decay factor of the weighting functions, as shown in Satheesh,
+      /// 2024, 10.1002/nme.7373, Eq. (21)
       double exponential_decay_c = 10.0;
 
       /// inverse distance power
@@ -58,16 +59,38 @@ namespace Core::LinAlg
      *
      * @tparam loc_dim Dimension of the local coordinate system.
      * @tparam poly_order Order of the polynomial shape function.
-     * @tparam num_cofeffcients Number of coefficients (basis functions) in the polynomial, this
-     * important in the contest of a incomplete polynomial basis. Example: An incomplete quadratic
+     * @tparam num_coefficients Number of coefficients (basis functions) in the polynomial, this is
+     * important in the context of an incomplete polynomial basis. Example: An incomplete quadratic
      * basis: [1,x,y,x^2], missing xy and y^2
      * @param location The local coordinates where the shape function is to be evaluated.
      * @return A column vector containing the values of the shape function basis at the given
      * location.
      */
-    template <unsigned int loc_dim, unsigned int poly_order, unsigned int num_cofeffcients>
-    Core::LinAlg::Matrix<num_cofeffcients, 1> polynomialshapefunction(
+    template <unsigned int loc_dim, unsigned int poly_order, unsigned int num_coefficients>
+    Core::LinAlg::Matrix<num_coefficients, 1> polynomial_shape_function(
         const Core::LinAlg::Matrix<loc_dim, 1>& location);
+
+    /**
+     * @brief Calculates normalized interpolation weights for a given interpolation location.
+     *
+     * This function computes the weights for each reference location based on the provided
+     * weighting function and interpolation parameters, and normalizes them so that their sum
+     * is 1.
+     *
+     * @param ref_locs A vector of reference locations
+     * @param interp_loc The interpolation location
+     * @param weight_func The weighting function used to compute the weights based on distance or
+     * other criteria.
+     * @param interp_params Additional parameters required by the weighting function.
+     * @return std::vector<double> A vector of normalized weights corresponding to each reference
+     * location.
+     */
+    template <unsigned int loc_dim>
+    std::vector<double> calculate_normalized_weights(
+        const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
+        const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc, const WeightingFunction weight_func,
+        const InterpParams& interp_params);
+
 
     /**
      * @class ScalarInterpolator
@@ -81,7 +104,7 @@ namespace Core::LinAlg
      *
      * @tparam loc_dim The spatial dimension of the interpolation (e.g., 2 for 2D, 3 for 3D).
      * @tparam poly_order The polynomial order used in the interpolation basis (MLS &LOGMLS).
-     * @tparam num_cofeffcients The number of coefficients in the interpolation basis, applying to
+     * @tparam num_coefficients The number of coefficients in the interpolation basis, applying to
      * the polynomial shape function (MLS & LOGMLS).
      *
      * Usage:
@@ -102,7 +125,7 @@ namespace Core::LinAlg
      * Private helper methods implement the core interpolation algorithms, including MLS,
      * logarithmic variants, and log MLS.
      */
-    template <unsigned int loc_dim, unsigned int poly_order = 1, unsigned int num_cofeffcients = 1>
+    template <unsigned int loc_dim, unsigned int poly_order = 1, unsigned int num_coefficients = 1>
     class ScalarInterpolator
     {
      public:
@@ -122,7 +145,7 @@ namespace Core::LinAlg
        * reference locations.
        *
        * This function computes the interpolated scalar values at the specified interpolation
-       * location (`interp_loc`) based on the input scalar data and their corresponding reference
+       * location @p interp_loc based on the input scalar data and their corresponding reference
        * locations.
        *
        * @param scalar_data A vector of vectors containing scalar values at each reference location.
@@ -135,26 +158,6 @@ namespace Core::LinAlg
           const std::vector<std::vector<double>>& scalar_data,
           const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
           const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc);
-
-      /**
-       * @brief Calculates normalized interpolation weights for a given interpolation location.
-       *
-       * This function computes the weights for each reference location based on the provided
-       * weighting function and interpolation parameters, and normalizes them so that their sum
-       * is 1.
-       *
-       * @param ref_locs A vector of reference locations
-       * @param interp_loc The interpolation location
-       * @param weight_func The weighting function used to compute the weights based on distance or
-       * other criteria.
-       * @param interp_params Additional parameters required by the weighting function.
-       * @return std::vector<double> A vector of normalized weights corresponding to each reference
-       * location.
-       */
-      static std::vector<double> calculate_normalized_weights(
-          const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
-          const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc, const WeightingFunction& weight_func,
-          const InterpParams& interp_params);
 
      private:
       /**
@@ -187,7 +190,7 @@ namespace Core::LinAlg
        * @param weights A vector of weights corresponding to the scalar values for interpolation.
        * @return A vector of doubles representing the logarithmic interpolation results.
        */
-      std::vector<double> logarthmic(
+      std::vector<double> logarithmic_weighted_average(
           const std::vector<std::vector<double>>& scalar_data, const std::vector<double>& weights);
 
       /**
@@ -205,7 +208,7 @@ namespace Core::LinAlg
        * @return std::vector<double> The interpolated scalar values at the specified interpolation
        * location.
        */
-      std::vector<double> log_moving_least_square(
+      std::vector<double> logarithmic_moving_least_squares(
           const std::vector<std::vector<double>>& scalar_data,
           const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
           const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc, const std::vector<double>& weights);

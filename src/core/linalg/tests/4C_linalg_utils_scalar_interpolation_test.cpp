@@ -13,9 +13,6 @@
 #include "4C_unittest_utils_assertions_test.hpp"
 #include "4C_utils_exceptions.hpp"
 
-#include <Sacado_tradvec.hpp>
-#include <Teuchos_ParameterList.hpp>
-
 #include <array>
 #include <cmath>
 #include <iomanip>
@@ -43,24 +40,21 @@ namespace
     ref_locs.push_back(loc1);
     ref_locs.push_back(loc2);
 
-    // Interpolation location: 0.0
+    // Interpolation location: 0.5
     Core::LinAlg::Matrix<loc_dim, 1> interp_loc(Core::LinAlg::Initialization::zero);
     interp_loc(0, 0) = 0.5;
 
     // Weighting function: inverse distance
-    WeightingFunction weight_func = WeightingFunction::inversedistance;
+    WeightingFunction weight_func = WeightingFunction::inverse_distance;
 
     // Interpolation parameters
     InterpParams interp_params;
     interp_params.distance_threshold = 1e-12;
     interp_params.inverse_distance_power = 1.0;  // Use power of 1 for inverse distance
 
-    ScalarInterpolator<loc_dim> interpolator(
-        ScalarInterpolationType::LOG, weight_func, interp_params);
-
     // Call the function
-    std::vector<double> weights =
-        interpolator.calculate_normalized_weights(ref_locs, interp_loc, weight_func, interp_params);
+    std::vector<double> weights = Core::LinAlg::ScalarInterpolation::calculate_normalized_weights(
+        ref_locs, interp_loc, weight_func, interp_params);
 
     // So weights should be [0.25, 0.75]
     std::vector<double> weights_ref = {0.25, 0.75};
@@ -97,12 +91,9 @@ namespace
     interp_params.distance_threshold = 1e-12;
     interp_params.exponential_decay_c = 1.0;  // decay parameter
 
-    ScalarInterpolator<loc_dim> interpolator(
-        ScalarInterpolationType::LOG, weight_func, interp_params);
-
     // Call the function
-    std::vector<double> weights =
-        interpolator.calculate_normalized_weights(ref_locs, interp_loc, weight_func, interp_params);
+    std::vector<double> weights = Core::LinAlg::ScalarInterpolation::calculate_normalized_weights(
+        ref_locs, interp_loc, weight_func, interp_params);
 
     // Calculate expected weights manually
     // distances: |0.5 - (-1.0)| = 1.5, |0.5 - 1.0| = 0.5
@@ -149,7 +140,7 @@ namespace
     interp_params.exponential_decay_c = 10.0;
 
     ScalarInterpolator<loc_dim> interpolator(
-        ScalarInterpolationType::LOG, weight_func, interp_params);
+        ScalarInterpolationType::logarithmic_weighted_average, weight_func, interp_params);
 
     // Interpolate at several points in [1, 3]
     std::vector<double> interp_points = {
@@ -203,7 +194,7 @@ namespace
     interp_params.exponential_decay_c = 1.0;
 
     ScalarInterpolator<loc_dim, poly_order, num_cofeffcients> interpolator(
-        ScalarInterpolationType::MLS, weight_func, interp_params);
+        ScalarInterpolationType::moving_least_squares, weight_func, interp_params);
 
     // Interpolate at several points in [1, 3]
     std::vector<double> interp_points = {
@@ -229,20 +220,20 @@ namespace
     // HEX8 Linear Element Analogy
     // The 8 input nodes represent the corners of a reference hexahedral (HEX8) element,
     // positioned in the natural coordinate system:
-    //      (ξ, η, ζ) ∈ { -1, +1 }^3
+    //      $ (\xi, \eta, \zeta) \in \{ -1, +1 \}^3 $
     //
     // Each node is assigned a scalar value (e.g., 1 through 8)
     // The interpolation is performed at the centroid of the element:
-    //      ξ = 0, η = 0, ζ = 0
+    //      \xi = 0, \eta = 0, \zeta = 0
     // For a HEX8 element with trilinear shape functions, this is the center of the cube.
     // All shape functions evaluate to 1/8 at the center:
-    //      N_i(0, 0, 0) = 1/8, for i = 1 to 8
+    //      N_i(0, 0, 0) = \frac{1}{8}, \quad \text{for } i = 1 \ldots 8
     // Use FEM interpolation formula:
-    //      u_centroid = ∑ N_i * u_i
+    //      u_\text{centroid} = \sum_{i=1}^8 N_i u_i
     // Since all N_i = 1/8:
-    //      u_centroid = (1/8) * sum(u_1 to u_8)
-    //                 = (1/8) * (1 + 2 + ... + 8)
-    //                 = 4.5
+    //      u_\text{centroid} = \frac{1}{8} \sum_{i=1}^8 u_i
+    //                       = \frac{1}{8} (1 + 2 + \ldots + 8)
+    //                       = 4.5
     // -----------------------------------------------------------------------------
 
     using namespace Core::LinAlg::ScalarInterpolation;
@@ -276,7 +267,7 @@ namespace
     interp_params.exponential_decay_c = 1.0;
 
     ScalarInterpolator<loc_dim, poly_order, num_cofeffcients> interpolator(
-        ScalarInterpolationType::MLS, weight_func, interp_params);
+        ScalarInterpolationType::moving_least_squares, weight_func, interp_params);
 
     // Interpolate at the center of the cube (0,0,0)
     Core::LinAlg::Matrix<loc_dim, 1> interp_loc(Core::LinAlg::Initialization::zero);
@@ -298,28 +289,28 @@ namespace
     // The 20 input nodes represent the corners and mid-edge nodes of a reference
     // hexahedral (HEX20) element, positioned in the natural coordinate system:
     //
-    //      Corner nodes at (ξ, η, ζ) ∈ { -1, +1 }^3
+    //      Corner nodes at $(\xi, \eta, \zeta) \in \{ -1, +1 \}^3$
     //      Mid-edge nodes lie at the midpoint of edges where one coordinate is zero
-    //      and the other two are ±1.
+    //      and the other two are $\pm1$.
     //
     // Each node is assigned a scalar value (e.g., 1 through 20).
     // The interpolation is performed at the centroid of the element:
     //
-    //      ξ = 0, η = 0, ζ = 0
+    //      $\xi = 0, \eta = 0, \zeta = 0$
     //
     // At the centroid, the HEX20 shape functions evaluate as:
-    //      - Corner nodes: N_i(0, 0, 0) = -0.25 (for i = 1 to 8)
-    //      - Mid-edge nodes: N_i(0, 0, 0) = 0.25 (for i = 9 to 20)
+    //      - Corner nodes: $N_i(0, 0, 0) = -0.25$ (for $i = 1 \ldots 8$)
+    //      - Mid-edge nodes: $N_i(0, 0, 0) = 0.25$ (for $i = 9 \ldots 20$)
     //
     // Using the FEM interpolation formula:
-    //      u_centroid = ∑ N_i * u_i
+    //      $u_\text{centroid} = \sum N_i u_i$
     //
-    // For nodal values u_i = 1 to 20, this evaluates to:
-    //      u_centroid = (-0.25) * sum(u_1 to u_8) + 0.25 * sum(u_9 to u_20)
-    //                 = (-0.25) * 36 + 0.25 * 174
-    //                 = -9 + 43.5
-    //                 = 34.5
-    // Thus, the displacement at the centroid is 34.5.
+    // For nodal values $u_i = 1 \ldots 20$, this evaluates to:
+    //      $u_\text{centroid} = (-0.25) \sum_{i=1}^8 u_i + 0.25 \sum_{i=9}^{20} u_i$
+    //                        $= (-0.25) \times 36 + 0.25 \times 174$
+    //                        $= -9 + 43.5$
+    //                        $= 34.5$
+    // Thus, the displacement at the centroid is $34.5$.
     // -----------------------------------------------------------------------------
 
     using namespace Core::LinAlg::ScalarInterpolation;
@@ -371,13 +362,10 @@ namespace
     interp_params.exponential_decay_c = 1.0;
 
     ScalarInterpolator<loc_dim, poly_order, num_cofeffcients> interpolator(
-        ScalarInterpolationType::MLS, weight_func, interp_params);
+        ScalarInterpolationType::moving_least_squares, weight_func, interp_params);
 
     // Interpolate at the center of the cube (0,0,0)
     Core::LinAlg::Matrix<loc_dim, 1> interp_loc(Core::LinAlg::Initialization::zero);
-    interp_loc(0, 0) = 0.0;
-    interp_loc(1, 0) = 0.0;
-    interp_loc(2, 0) = 0.0;
 
     std::vector<double> result =
         interpolator.get_interpolated_scalar(scalar_data, ref_locs, interp_loc);
@@ -421,7 +409,7 @@ namespace
     interp_params.exponential_decay_c = 1.0;
 
     ScalarInterpolator<loc_dim, poly_order, num_cofeffcients> interpolator(
-        ScalarInterpolationType::LOGMLS, weight_func, interp_params);
+        ScalarInterpolationType::logarithmic_moving_least_squares, weight_func, interp_params);
 
     // Interpolate at several points in [1, 3]
     std::vector<double> interp_points = {
