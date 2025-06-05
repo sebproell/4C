@@ -27,6 +27,38 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::Communication
 {
+  namespace Internal
+  {
+    template <typename T, typename... Others>
+    constexpr bool is_same_as_any_of()
+    {
+      return (std::is_same_v<T, Others> || ...);
+    }
+
+    template <typename T>
+    constexpr bool is_mpi_type()
+    {
+      return is_same_as_any_of<T, int, unsigned, long, unsigned long, long long, unsigned long long,
+          float, double, long double, char, unsigned char, short, unsigned short>();
+    }
+  }  // namespace Internal
+
+  /**
+   * Concept to check whether a type is a natively supported MPI type.
+   */
+  template <typename T>
+  concept IsNativeMpiType = Internal::is_mpi_type<T>();
+
+  /**
+   * Concept to check whether we know of a way to communicate a type over MPI. This is obviously
+   * true for all native MPI types. It is also true for enums, as they can be communicated as
+   * their underlying type. For user-defined types, we require that they can be packed and unpacked.
+   */
+  template <typename T>
+  concept IsCommunicatable =
+      IsNativeMpiType<T> || std::is_enum_v<T> || (Packable<T> && Unpackable<T>);
+
+
   /**
    * Helper function during migration away from Epetra_Comm. Returns the MPI communicator from an
    * Epetra_Comm object.
@@ -70,7 +102,7 @@ namespace Core::Communication
    *
    * @note Prefer the overload of this function that takes a reference to a single value.
    */
-  template <typename T>
+  template <IsNativeMpiType T>
   void broadcast(T* value, int count, int root, MPI_Comm comm);
 
   /**
@@ -78,7 +110,7 @@ namespace Core::Communication
    * On rank @p root, the value must be initialized. On all other ranks in @p comm, the value is
    * overwritten with the broadcast value from rank @p root.
    */
-  template <typename T>
+  template <IsCommunicatable T>
   void broadcast(T& value, int root, MPI_Comm comm);
 
   /**
@@ -86,7 +118,7 @@ namespace Core::Communication
    * @p global. The arrays @p partial and @p global are assumed to have @p count elements. The
    * result is distributed to all ranks.
    */
-  template <typename T>
+  template <IsNativeMpiType T>
   void sum_all(T* partial, T* global, int count, MPI_Comm comm);
 
   /**
@@ -94,7 +126,7 @@ namespace Core::Communication
    * in @p global. The arrays @p partial and @p global are assumed to have @p count elements. The
    * result is distributed to all ranks.
    */
-  template <typename T>
+  template <IsNativeMpiType T>
   void max_all(T* partial, T* global, int count, MPI_Comm comm);
 
   /**
@@ -102,7 +134,7 @@ namespace Core::Communication
    * in @p global. The arrays @p partial and @p global are assumed to have @p count elements. The
    * result is distributed to all ranks.
    */
-  template <typename T>
+  template <IsNativeMpiType T>
   void min_all(T* partial, T* global, int count, MPI_Comm comm);
 
   /**
@@ -110,57 +142,58 @@ namespace Core::Communication
    * @p count elements. The array @p all_values must have @p count * num_mpi_ranks(comm) elements.
    * The result is distributed to all procs.
    */
-  template <typename T>
+  template <IsNativeMpiType T>
   void gather_all(T* my_values, T* all_values, int count, MPI_Comm comm);
 
   //! Merge map @p map_in (key of type @p T and value of type @p U) from all procs to a merged
   //! map (key of type @p T and value of type @p U). It is distributed to all procs.
-  template <typename T, typename U>
+  template <IsCommunicatable T, IsCommunicatable U>
   std::map<T, U> all_reduce(const std::map<T, U>& map_in, MPI_Comm comm);
 
   //! Merge map @p unordered map_in (key of type @p T and value of type @p U) from all procs to a
   //! merged unordered map (key of type @p T and value of type @p U). It is distributed to all
   //! procs.
-  template <typename T, typename U>
+  template <IsCommunicatable T, IsCommunicatable U>
   std::unordered_map<T, U> all_reduce(const std::unordered_map<T, U>& map_in, MPI_Comm comm);
 
   //! Merge unordered multimap @p map_in (key of type @p T and value of type @p U) from all procs
   //! to a merged unordered multimap (key of type @p T and value of type @p U). It is distributed
   //! to all procs.
-  template <typename T, typename U>
+  template <IsCommunicatable T, IsCommunicatable U>
   std::unordered_multimap<T, U> all_reduce(
       const std::unordered_multimap<T, U>& map_in, MPI_Comm comm);
 
   //! Merge vector of pairs @p pairs_in (items of type @p T and @p U) from all procs to a merged
   //! vector (items of type @p T and @p U). The merged items are in an unspecified order. It is
   //! distributed to all procs.
-  template <typename T, typename U>
+  template <IsCommunicatable T, IsCommunicatable U>
   std::vector<std::pair<T, U>> all_reduce(
       const std::vector<std::pair<T, U>>& pairs_in, MPI_Comm comm);
 
   //! Merge @p set_in (items of type @p T) from all procs to a merged set (items of type @p T). It
   //! is distributed to all procs.
-  template <typename T>
+  template <IsCommunicatable T>
   std::set<T> all_reduce(const std::set<T>& set_in, MPI_Comm comm);
 
   //! Merge vector @p vec_in (items of type @p T) from all procs to a merged vector (items of type
   //! @p T). The items of are in an unspecified order. The result is distributed to all procs.
-  template <typename T>
+  template <IsCommunicatable T>
   std::vector<T> all_reduce(const std::vector<T>& vec_in, MPI_Comm comm);
 
   /**
    * Perform an all-reduce operation on a value @p value using the reduction operation @p
    * reduction_op. The result is distributed to all procs.
    */
-  template <typename T>
-  T all_reduce(
-      const T& value, const std::function<T(const T&, const T&)>& reduction_op, MPI_Comm comm);
+  template <IsCommunicatable T, typename ReductionOp>
+    requires(std::invocable<ReductionOp, const T&, const T&> &&
+             std::convertible_to<std::invoke_result_t<ReductionOp, const T&, const T&>, T>)
+  T all_reduce(const T& value, ReductionOp reduction_op, MPI_Comm comm);
 
   /**
    * Gather a value @p value from all procs to a vector of values. The result is distributed to all
    * procs.
    */
-  template <typename T>
+  template <IsCommunicatable T>
   std::vector<T> all_gather(const T& value, MPI_Comm comm);
 
 }  // namespace Core::Communication
@@ -169,8 +202,7 @@ namespace Core::Communication
 /*----------------------------------------------------------------------*/
 namespace Core::Communication::Internal
 {
-  //! Broadcast a map or vector<pair>
-  template <typename T, typename U, typename M>
+  template <IsCommunicatable T, IsCommunicatable U, typename M>
   void all_reduce_map_like_to_vectors(
       const M& map_in, std::vector<T>& vec_out1, std::vector<U>& vec_out2, MPI_Comm comm)
   {
@@ -195,22 +227,9 @@ namespace Core::Communication::Internal
     }
   }
 
-  template <typename T, typename... Others>
-  constexpr bool is_same_as_any_of()
-  {
-    return (std::is_same_v<T, Others> || ...);
-  }
-
-  template <typename T>
-  constexpr bool is_mpi_type()
-  {
-    return is_same_as_any_of<T, int, unsigned, long, unsigned long, long long, unsigned long long,
-        float, double, long double, char, unsigned char, short, unsigned short>();
-  }
-
   //! MPI datatype for type T
-  template <typename T>
-  MPI_Datatype to_mpi_type()
+  template <IsNativeMpiType T>
+  constexpr MPI_Datatype to_mpi_type()
   {
     if constexpr (std::is_same_v<T, int>)
       return MPI_INT;
@@ -238,22 +257,29 @@ namespace Core::Communication::Internal
       return MPI_SHORT;
     else if constexpr (std::is_same_v<T, unsigned short>)
       return MPI_UNSIGNED_SHORT;
-    else
-      return MPI_DATATYPE_NULL;
+
+    return MPI_DATATYPE_NULL;
   }
 }  // namespace Core::Communication::Internal
 
-template <typename T>
+template <Core::Communication::IsNativeMpiType T>
 void Core::Communication::broadcast(T* value, int count, int root, MPI_Comm comm)
 {
   MPI_Bcast(value, count, Internal::to_mpi_type<T>(), root, comm);
 }
 
-template <typename T>
+template <Core::Communication::IsCommunicatable T>
 void Core::Communication::broadcast(T& value, int root, MPI_Comm comm)
 {
+  // If T is an enum, we can broadcast a value of the underlying type.
+  if constexpr (std::is_enum_v<T>)
+  {
+    std::underlying_type_t<T> underlying = static_cast<std::underlying_type_t<T>>(value);
+    broadcast(&underlying, 1, root, comm);
+    value = static_cast<T>(underlying);
+  }
   // Shortcut when T is natively supported by MPI.
-  if constexpr (Internal::is_mpi_type<T>())
+  else if constexpr (Internal::is_mpi_type<T>())
   {
     broadcast(&value, 1, root, comm);
   }
@@ -288,25 +314,25 @@ void Core::Communication::broadcast(T& value, int root, MPI_Comm comm)
   }
 }
 
-template <typename T>
+template <Core::Communication::IsNativeMpiType T>
 void Core::Communication::sum_all(T* partial, T* global, int count, MPI_Comm comm)
 {
   MPI_Allreduce(partial, global, count, Internal::to_mpi_type<T>(), MPI_SUM, comm);
 }
 
-template <typename T>
+template <Core::Communication::IsNativeMpiType T>
 void Core::Communication::max_all(T* partial, T* global, int count, MPI_Comm comm)
 {
   MPI_Allreduce(partial, global, count, Internal::to_mpi_type<T>(), MPI_MAX, comm);
 }
 
-template <typename T>
+template <Core::Communication::IsNativeMpiType T>
 void Core::Communication::min_all(T* partial, T* global, int count, MPI_Comm comm)
 {
   MPI_Allreduce(partial, global, count, Internal::to_mpi_type<T>(), MPI_MIN, comm);
 }
 
-template <typename T>
+template <Core::Communication::IsNativeMpiType T>
 void Core::Communication::gather_all(T* my_values, T* all_values, int count, MPI_Comm comm)
 {
   MPI_Allgather(my_values, count, Internal::to_mpi_type<T>(), all_values, count,
@@ -315,7 +341,7 @@ void Core::Communication::gather_all(T* my_values, T* all_values, int count, MPI
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-template <typename T, typename U>
+template <Core::Communication::IsCommunicatable T, Core::Communication::IsCommunicatable U>
 std::map<T, U> Core::Communication::all_reduce(const std::map<T, U>& map_in, MPI_Comm comm)
 {
   std::vector<T> vec1;
@@ -328,7 +354,7 @@ std::map<T, U> Core::Communication::all_reduce(const std::map<T, U>& map_in, MPI
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-template <typename T, typename U>
+template <Core::Communication::IsCommunicatable T, Core::Communication::IsCommunicatable U>
 std::unordered_map<T, U> Core::Communication::all_reduce(
     const std::unordered_map<T, U>& map_in, MPI_Comm comm)
 {
@@ -342,7 +368,7 @@ std::unordered_map<T, U> Core::Communication::all_reduce(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-template <typename T, typename U>
+template <Core::Communication::IsCommunicatable T, Core::Communication::IsCommunicatable U>
 std::unordered_multimap<T, U> Core::Communication::all_reduce(
     const std::unordered_multimap<T, U>& map_in, MPI_Comm comm)
 {
@@ -356,7 +382,7 @@ std::unordered_multimap<T, U> Core::Communication::all_reduce(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-template <typename T, typename U>
+template <Core::Communication::IsCommunicatable T, Core::Communication::IsCommunicatable U>
 std::vector<std::pair<T, U>> Core::Communication::all_reduce(
     const std::vector<std::pair<T, U>>& pairs_in, MPI_Comm comm)
 {
@@ -371,7 +397,7 @@ std::vector<std::pair<T, U>> Core::Communication::all_reduce(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-template <typename T>
+template <Core::Communication::IsCommunicatable T>
 std::set<T> Core::Communication::all_reduce(const std::set<T>& set_in, MPI_Comm comm)
 {
   std::vector<T> vec_in, vec_out;
@@ -384,7 +410,7 @@ std::set<T> Core::Communication::all_reduce(const std::set<T>& set_in, MPI_Comm 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-template <typename T>
+template <Core::Communication::IsCommunicatable T>
 std::vector<T> Core::Communication::all_reduce(const std::vector<T>& vec_in, MPI_Comm comm)
 {
   std::vector<std::vector<T>> gathered = all_gather(vec_in, comm);
@@ -400,16 +426,17 @@ std::vector<T> Core::Communication::all_reduce(const std::vector<T>& vec_in, MPI
 }
 
 
-template <typename T>
-T Core::Communication::all_reduce(
-    const T& value, const std::function<T(const T&, const T&)>& reduction_op, MPI_Comm comm)
+template <Core::Communication::IsCommunicatable T, typename ReductionOp>
+  requires(std::invocable<ReductionOp, const T&, const T&> &&
+           std::convertible_to<std::invoke_result_t<ReductionOp, const T&, const T&>, T>)
+T Core::Communication::all_reduce(const T& value, ReductionOp reduction_op, MPI_Comm comm)
 {
   std::vector<T> all_values = all_gather(value, comm);
   return std::accumulate(all_values.cbegin() + 1, all_values.cend(), all_values[0], reduction_op);
 }
 
 
-template <typename T>
+template <Core::Communication::IsCommunicatable T>
 std::vector<T> Core::Communication::all_gather(const T& value, MPI_Comm comm)
 {
   const int n_procs = num_mpi_ranks(comm);

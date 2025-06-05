@@ -39,17 +39,6 @@ namespace Core::Communication
 
   }
 
-  /**
-   * A concept to check whether a type T supports the pack(PackBuffer&) method.
-   */
-  template <typename T>
-  concept Packable = requires(T t, PackBuffer& buffer) { t.pack(buffer); };
-
-  /**
-   * A concept to check whether a type T supports the unpack(UnpackBuffer&) method.
-   */
-  template <typename T>
-  concept Unpackable = requires(T t, UnpackBuffer& buffer) { t.unpack(buffer); };
 
   //! @name Routines to help pack stuff into a char vector
 
@@ -84,7 +73,7 @@ namespace Core::Communication
   /**
    * Add an object that implements a `pack()` method to the buffer.
    */
-  void add_to_pack(PackBuffer& data, const Packable auto& obj) { obj.pack(data); }
+  void add_to_pack(PackBuffer& data, const HasPack auto& obj) { obj.pack(data); }
 
   /*!
    * \brief Add stuff to the end of a char vector data
@@ -345,7 +334,7 @@ namespace Core::Communication
   /**
    * Extract an object that implements an `unpack()` method from the buffer.
    */
-  void extract_from_pack(UnpackBuffer& data, Unpackable auto& obj) { obj.unpack(data); }
+  void extract_from_pack(UnpackBuffer& data, HasUnpack auto& obj) { obj.unpack(data); }
 
   /*!
    * \brief Extract stuff from a char vector data and increment position
@@ -679,6 +668,21 @@ namespace Core::Communication
    * \param[in] desired_type_id Id of the desired type
    */
   int extract_and_assert_id(UnpackBuffer& buffer, const int desired_type_id);
+
+  /**
+   * A concept to check whether a type T supports add_to_pack(). Note that any type satisfying
+   * HasPack will also satisfy this concept, but the reverse is not true.
+   */
+  template <typename T>
+  concept Packable = requires(T t, PackBuffer& buffer) { add_to_pack(buffer, t); };
+
+  /**
+   * A concept to check whether a type T supports extract_from_pack(). Note that any type satisfying
+   * HasUnpack will also satisfy this concept, but the reverse is not true.
+   */
+  template <typename T>
+  concept Unpackable = requires(T t, UnpackBuffer& buffer) { extract_from_pack(buffer, t); };
+
 }  // namespace Core::Communication
 
 FOUR_C_NAMESPACE_CLOSE
