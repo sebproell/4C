@@ -234,6 +234,19 @@ namespace Core::Communication
     std::size_t offset_;
   };
 
+
+  /**
+   * A concept to check whether a type T supports the pack(PackBuffer&) method.
+   */
+  template <typename T>
+  concept HasPack = requires(T t, PackBuffer& buffer) { t.pack(buffer); };
+
+  /**
+   * A concept to check whether a type T supports the unpack(UnpackBuffer&) method.
+   */
+  template <typename T>
+  concept HasUnpack = requires(T t, UnpackBuffer& buffer) { t.unpack(buffer); };
+
 }  // namespace Core::Communication
 
 FOUR_C_NAMESPACE_CLOSE

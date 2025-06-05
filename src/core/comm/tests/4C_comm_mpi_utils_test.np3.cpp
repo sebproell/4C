@@ -267,5 +267,27 @@ namespace
     EXPECT_EQ(vec, std::vector<double>({1.0, 2.0, 3.0}));
   }
 
+  TEST(Broadcast, Enum)
+  {
+    MPI_Comm comm(MPI_COMM_WORLD);
+    ASSERT_GT(Core::Communication::num_mpi_ranks(comm), 1);
+
+    enum class MyEnum : int
+    {
+      Value1,
+      Value2,
+      Value3
+    };
+
+    MyEnum val;
+
+    if (Core::Communication::my_mpi_rank(comm) == 0)
+    {
+      val = MyEnum::Value3;
+    }
+    Core::Communication::broadcast(val, 0, comm);
+    EXPECT_EQ(val, MyEnum::Value3);
+  }
+
 
 }  // namespace
