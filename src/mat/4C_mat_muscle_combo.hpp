@@ -12,6 +12,7 @@
 
 #include "4C_comm_parobjectfactory.hpp"
 #include "4C_inpar_material.hpp"
+#include "4C_io_input_field.hpp"
 #include "4C_mat_anisotropy.hpp"
 #include "4C_mat_anisotropy_extension_default.hpp"
 #include "4C_mat_so3_material.hpp"
@@ -73,7 +74,7 @@ namespace Mat
        *   The integer key refers to the element ids, the vector bundles time-activation pairs.
        */
       using ActivationParameterVariant = std::variant<std::monostate, const int,
-          const std::unordered_map<int, std::vector<std::pair<double, double>>>>;
+          const Core::IO::InputField<std::vector<std::pair<double, double>>>>;
       ActivationParameterVariant activationParams_;
       //! @}
 
@@ -176,7 +177,7 @@ namespace Mat
 
     using ActivationEvaluatorVariant =
         std::variant<std::monostate, const Core::Utils::FunctionOfSpaceTime*,
-            const std::unordered_map<int, std::vector<std::pair<double, double>>>*>;
+            const Core::IO::InputField<std::vector<std::pair<double, double>>>*>;
 
    private:
     /*!

@@ -11,6 +11,7 @@
 #include "4C_inpar_material.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io_file_reader.hpp"
+#include "4C_io_input_field.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_electrode.hpp"
 
@@ -474,8 +475,9 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
         return acc;
       };
 
-      container.add("MAPFILE_CONTENT",
-          Core::IO::convert_lines<actMapType, actMapType>(file_stream, map_reduction_operation));
+      container.add(
+          "MAPFILE_CONTENT", Core::IO::InputField(Core::IO::convert_lines<actMapType, actMapType>(
+                                 file_stream, map_reduction_operation)));
     };
 
     known_materials[Core::Materials::m_muscle_combo] = group("MAT_Muscle_Combo",
@@ -4139,7 +4141,7 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
   // Map mixture rule for solid mixtures
   {
     // definition of operation and print string for post processed component "MASSFRACMAPFILE"
-    using mapType = std::unordered_map<int, std::vector<double>>;
+    using MapType = std::unordered_map<int, std::vector<double>>;
 
     auto on_parse = [](Core::IO::InputParameterContainer& container)
     {
@@ -4148,7 +4150,7 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
 
       if (file_stream.fail()) FOUR_C_THROW("Invalid file {}!", map_file.string());
 
-      auto map_reduction_operation = [](mapType acc, const mapType& next)
+      auto map_reduction_operation = [](MapType acc, const MapType& next)
       {
         for (const auto& [key, value] : next)
         {
@@ -4158,7 +4160,8 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
       };
 
       container.add("MASSFRACMAPFILE_CONTENT",
-          Core::IO::convert_lines<mapType, mapType>(file_stream, map_reduction_operation));
+          Core::IO::InputField(
+              Core::IO::convert_lines<MapType, MapType>(file_stream, map_reduction_operation)));
     };
 
     known_materials[Core::Materials::mix_rule_map] = group("MIX_Rule_Map",

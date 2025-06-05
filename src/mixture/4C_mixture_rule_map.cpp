@@ -25,24 +25,17 @@ FOUR_C_NAMESPACE_OPEN
 namespace
 {
   std::vector<double> get_validate_mass_fractions(
-      const std::unordered_map<int, std::vector<double>>& mass_fractions_map, const int ele_id_key,
+      const Core::IO::InputField<std::vector<double>>& mass_fractions_field, const int ele_id_key,
       const std::size_t num_constituents)
   {
-    auto it = mass_fractions_map.find(ele_id_key);
-    if (it == mass_fractions_map.end())
-    {
-      FOUR_C_THROW(
-          "Element id {} not found in the mass fraction map supplied by csv file.", ele_id_key);
-    }
-
-    if (it->second.size() != num_constituents)
+    const std::vector<double> massfracs = mass_fractions_field.at(ele_id_key);
+    if (massfracs.size() != num_constituents)
     {
       FOUR_C_THROW(
           "Number of mass fractions for element id {} does not match the number of constituents "
           "{}.",
           ele_id_key, num_constituents);
     }
-    const std::vector<double> massfracs = it->second;
 
     // check, whether the mass frac sums up to 1
     const double sum = std::accumulate(massfracs.begin(), massfracs.end(), 0.0);
@@ -58,7 +51,7 @@ Mixture::PAR::MapMixtureRule::MapMixtureRule(const Core::Mat::PAR::Parameter::Da
     : MixtureRule(matdata),
       initial_reference_density_(matdata.parameters.get<double>("DENS")),
       num_constituents_(matdata.parameters.get<int>("NUMCONST")),
-      mass_fractions_map_(matdata.parameters.get<std::unordered_map<int, std::vector<double>>>(
+      mass_fractions_field_(matdata.parameters.get<Core::IO::InputField<std::vector<double>>>(
           "MASSFRACMAPFILE_CONTENT")) {};
 
 std::unique_ptr<Mixture::MixtureRule> Mixture::PAR::MapMixtureRule::create_rule()
@@ -91,8 +84,8 @@ void Mixture::MapMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
   Core::LinAlg::Matrix<6, 6> ccmat;
 
   // evaluate the mass fractions at the given element id (one based entries in the csv file)
-  auto massfracs =
-      get_validate_mass_fractions(params_->mass_fractions_map_, eleGID + 1, constituents().size());
+  auto massfracs = get_validate_mass_fractions(
+      params_->mass_fractions_field_, eleGID + 1, constituents().size());
 
   // Iterate over all constituents and add all stress/cmat contributions
   for (std::size_t i = 0; i < constituents().size(); ++i)

@@ -8,6 +8,7 @@
 #include "4C_mat_muscle_utils.hpp"
 
 #include "4C_comm_pack_helpers.hpp"
+#include "4C_io_input_field.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
@@ -381,17 +382,13 @@ double Mat::Utils::Muscle::evaluate_time_space_dependent_active_stress_by_funct(
 
 double Mat::Utils::Muscle::evaluate_time_space_dependent_active_stress_by_map(
     const double sigma_max,
-    const std::unordered_map<int, std::vector<std::pair<double, double>>>& activation_map,
-    const double t_current, const int activation_map_key)
+    const Core::IO::InputField<std::vector<std::pair<double, double>>>& activation_field,
+    const double t_current, const int element_id)
 {
   // compute time-dependency ft
-  auto it = activation_map.find(activation_map_key);
 
-  if (it == activation_map.end())
-  {
-    FOUR_C_THROW("Key (element id) {} not found in activation map.", activation_map_key);
-  }
-  const double ft = lineraly_interpolate_between_times(it->second, t_current);
+  const auto& time_activation_values = activation_field.at(element_id);
+  const double ft = lineraly_interpolate_between_times(time_activation_values, t_current);
 
   // ft needs to be in interval [0, 1]
   if (ft < 0.00 || ft > 1.00)
