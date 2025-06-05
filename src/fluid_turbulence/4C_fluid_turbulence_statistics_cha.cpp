@@ -8,6 +8,7 @@
 #include "4C_fluid_turbulence_statistics_cha.hpp"
 
 #include "4C_comm_exporter.hpp"
+#include "4C_fem_condition_utils.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_fluid_ele_action.hpp"
@@ -2502,6 +2503,12 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
     //----------------------------------------------------------------------
     // activate toggles for in plane dofs
 
+    std::vector<const Core::Conditions::Condition*> surface_pbc;
+    discret_->get_condition("SurfacePeriodic", surface_pbc);
+    const auto surface_pbc_node_ids_conditions =
+        Core::Conditions::find_conditioned_node_ids_and_conditions(
+            *discret_, surface_pbc, Core::Conditions::LookFor::locally_owned);
+
     for (int nn = 0; nn < discret_->num_my_row_nodes(); ++nn)
     {
       Core::Nodes::Node* node = discret_->l_row_node(nn);
@@ -2526,29 +2533,18 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
           togglew_->replace_global_values(1, &one, &(dof[2]));
           togglep_->replace_global_values(1, &one, &(dof[3]));
 
-          // now check whether we have a pbc condition on this node
-          std::vector<Core::Conditions::Condition*> mypbc;
-
-          node->get_condition("SurfacePeriodic", mypbc);
-
           // yes, we have a pbc
-          if (mypbc.size() > 0)
+          if (surface_pbc_node_ids_conditions.contains(node->id()))
           {
             // loop them and check, whether this is a pbc pure master node
             // for all previous conditions
-            unsigned ntimesmaster = 0;
-            for (auto& numcond : mypbc)
-            {
-              const auto mymasterslavetoggle =
-                  numcond->parameters().get<std::string>("MASTER_OR_SLAVE");
+            auto mypbc = surface_pbc_node_ids_conditions.equal_range(node->id());
+            const std::size_t n_master_conditions = std::ranges::count_if(
+                std::ranges::subrange(mypbc.first, mypbc.second) | std::views::values,
+                [](const Core::Conditions::Condition* cond)
+                { return cond->parameters().get<std::string>("MASTER_OR_SLAVE") == "Master"; });
 
-              if (mymasterslavetoggle == "Master")
-              {
-                ++ntimesmaster;
-              }  // end is slave?
-            }  // end loop this conditions
-
-            if (ntimesmaster != mypbc.size())
+            if (n_master_conditions != surface_pbc_node_ids_conditions.count(node->id()))
             {
               continue;
             }
