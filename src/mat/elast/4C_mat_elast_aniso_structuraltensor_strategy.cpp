@@ -15,6 +15,11 @@
 
 FOUR_C_NAMESPACE_OPEN
 
+namespace
+{
+  constexpr int numbgp = 50;
+  constexpr int twice = 100;
+}  // namespace
 
 Mat::Elastic::PAR::StructuralTensorParameter::StructuralTensorParameter(
     const Core::Mat::PAR::Parameter::Data& matdata)
