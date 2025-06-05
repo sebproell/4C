@@ -15,10 +15,10 @@
 #include "4C_comm_parobject.hpp"
 #include "4C_comm_parobjectfactory.hpp"
 #include "4C_inpar_structure.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
-#include "4C_linalg_vector.hpp"
 
 #include <Teuchos_Time.hpp>
 
@@ -41,8 +41,9 @@ namespace Core::LinAlg
 
 namespace Core::IO
 {
+  class DiscretizationVisualizationWriterMesh;
   class DiscretizationWriter;
-}
+}  // namespace Core::IO
 
 namespace MultiScale
 {
@@ -83,9 +84,8 @@ namespace MultiScale
     \brief Read restart
 
     */
-    void read_restart(int step, std::shared_ptr<Core::LinAlg::Vector<double>> dis,
-        std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> lastalpha,
-        std::string name);
+    void read_restart(
+        int step, std::shared_ptr<Core::LinAlg::Vector<double>> dis, std::string name);
 
     /// get corresponding time to step
     double get_time_to_step(int step, std::string name);
@@ -124,21 +124,22 @@ namespace MultiScale
     \brief Calculate stresses and strains
 
     */
-    void prepare_output();
+    void runtime_pre_output_step_state();
 
     /*!
-    \brief Write output and (possibly) restart
-
-    */
-    void output(Core::IO::DiscretizationWriter& output, const double time, const int istep,
-        const double dt);
+     * @brief Write runtime output
+     *
+     */
+    void runtime_output_step_state_microscale(
+        std::shared_ptr<Core::IO::DiscretizationVisualizationWriterMesh> micro_visualization_writer,
+        const std::pair<double, int>& output_time_and_step, const std::string& section_name) const;
 
     /*!
     \brief Write restart
 
     */
     void write_restart(std::shared_ptr<Core::IO::DiscretizationWriter> output, const double time,
-        const int step, const double dt);
+        const int step, const double dt) const;
 
     /*!
     \brief Determine toggle vector identifying prescribed boundary dofs
@@ -159,13 +160,12 @@ namespace MultiScale
     */
     void set_state(std::shared_ptr<Core::LinAlg::Vector<double>> dis,
         std::shared_ptr<Core::LinAlg::Vector<double>> disn,
-        std::shared_ptr<std::vector<char>> stress, std::shared_ptr<std::vector<char>> strain,
+        std::shared_ptr<Core::LinAlg::MultiVector<double>> stress_data_node_postprocessed,
+        std::shared_ptr<Core::LinAlg::MultiVector<double>> stress_data_element_postprocessed,
+        std::shared_ptr<Core::LinAlg::MultiVector<double>> strain_data_node_postprocessed,
+        std::shared_ptr<Core::LinAlg::MultiVector<double>> strain_data_element_postprocessed,
         std::shared_ptr<std::vector<char>> plstrain,
-        std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> lastalpha,
-        std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldalpha,
-        std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldfeas,
-        std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldKaainv,
-        std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldKda);
+        std::shared_ptr<Core::LinAlg::Matrix<6, 6>> macro_cmat_output);
 
     /*!
     \brief Set time and step
@@ -236,15 +236,9 @@ namespace MultiScale
     */
     void print_predictor();
 
-    /*!
-    \brief Set EAS internal data if necessary
-
-    */
-    void set_eas_data();
-
     double density() const { return density_; };
 
-   protected:
+   private:
     // don't want = operator and cctor
     MicroStatic operator=(const MicroStatic& old);
     MicroStatic(const MicroStatic& old);
@@ -269,21 +263,35 @@ namespace MultiScale
     int step_;
     int stepn_;
 
-    bool iodisp_;
-    int resevrydisp_;
+    /// @name variables controlling output
+    /// @{
+
+    /// whether to write displacement output
+    bool output_displacement_state_;
+
+    /// whether to write the owner of elements
+    bool output_element_owner_;
+
+    /// whether to write the element material IDs
+    bool output_element_material_id_;
+
+    /// whether to write stress and / or strain data
+    bool output_stress_strain_;
+
+    /// Output type of Gauss point data
+    Inpar::Solid::GaussPointDataOutputType gauss_point_data_output_type_;
+    //@}
+    int results_every_;
     Inpar::Solid::StressType iostress_;
-    int resevrystrs_;
     Inpar::Solid::StrainType iostrain_;
     Inpar::Solid::StrainType ioplstrain_;
-    bool iosurfactant_;
     int restart_;
-    int restartevry_;
+    int restart_every_;
     int printscreen_;
 
     Inpar::Solid::VectorNorm iternorm_;
     double tolfres_;
     double toldisi_;
-
 
     enum Inpar::Solid::BinaryOp combdisifres_;  //!< binary operator to
                                                 // combine displacement and forces
@@ -308,33 +316,31 @@ namespace MultiScale
     std::shared_ptr<Core::LinAlg::Vector<double>> fresn_;
     std::shared_ptr<Core::LinAlg::Vector<double>> freactn_;
 
-    std::shared_ptr<std::vector<char>> stress_;
-    std::shared_ptr<std::vector<char>> strain_;
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> stress_data_node_postprocessed_;
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> stress_data_element_postprocessed_;
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> strain_data_node_postprocessed_;
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> strain_data_element_postprocessed_;
     std::shared_ptr<std::vector<char>> plstrain_;
-
-    // EAS history data
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> lastalpha_;
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldalpha_;
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldfeas_;
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldKaainv_;
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldKda_;
+    std::shared_ptr<Core::LinAlg::Matrix<6, 6>>
+        macro_cmat_output_;  //!< Averaged tangent stiffness tensor
 
     std::shared_ptr<Core::LinAlg::MultiVector<double>>
-        D_;  //!< D Matrix following Miehe et al., 2002
+        d_matrix_;  //!< D Matrix following Miehe et al., 2002
     std::shared_ptr<Core::LinAlg::MultiVector<double>>
         rhs_;  //!< exported transpose of D (pdof -> dofrowmap)
 
     int microdisnum_;  //!< number of RVE
 
-    double V0_;       //!< initial volume of RVE
-    double density_;  //!< initial density of RVE
+    double initial_volume_;  //!< initial volume of RVE
+    double density_;         //!< initial density of RVE
 
-    int ndof_;                                          //!< number of dofs overall
-    int np_;                                            //!< number of boundary dofs
-    std::shared_ptr<Core::LinAlg::Vector<double>> Xp_;  //!< vector containing material
-                                                        //!< coordinates of boundary nodes
-    std::shared_ptr<Core::LinAlg::Map> pdof_;           //!< prescribed dofs
-    std::shared_ptr<Core::LinAlg::Map> fdof_;           //!< free dofs
+    int ndof_;  //!< number of dofs overall
+    int np_;    //!< number of boundary dofs
+    std::shared_ptr<Core::LinAlg::Vector<double>>
+        material_coords_boundary_nodes_;       //!< vector containing material
+                                               //!< coordinates of boundary nodes
+    std::shared_ptr<Core::LinAlg::Map> pdof_;  //!< prescribed dofs
+    std::shared_ptr<Core::LinAlg::Map> fdof_;  //!< free dofs
     std::shared_ptr<Core::LinAlg::Import> importp_;
     std::shared_ptr<Core::LinAlg::Import> importf_;
   };
@@ -370,7 +376,7 @@ namespace MultiScale
       int gp_{};
       int microdisnum_{};
       int eleowner_{};
-      double V0_{};
+      double initial_volume_{};
       Core::LinAlg::SerialDenseMatrix defgrd_;
       Core::LinAlg::SerialDenseMatrix stress_;
       Core::LinAlg::SerialDenseMatrix cmat_;

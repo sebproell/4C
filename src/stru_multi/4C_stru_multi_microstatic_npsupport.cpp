@@ -11,7 +11,6 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_utils.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_material.hpp"
 #include "4C_mat_micromaterial.hpp"
 #include "4C_stru_multi_microstatic.hpp"
 #include "4C_utils_enum.hpp"
@@ -50,6 +49,7 @@ void MultiScale::np_support_drt()
   // by HDF5; the macro procs call output->write_mesh(0, 0.0) in Adapter::Structure
   const int someUniqueNumber = Core::Communication::my_mpi_rank(
       Global::Problem::instance(0)->get_communicators()->global_comm());
+
   std::string uniqueDummyName = &"dummyHDF5file_p"[someUniqueNumber];
   H5Fcreate(uniqueDummyName.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
@@ -97,8 +97,8 @@ void MultiScale::np_support_drt()
             *(const_cast<Core::LinAlg::SerialDenseMatrix*>(stresscopy)), true);
         int gp = micro_data->gp_;
         int microdisnum = micro_data->microdisnum_;
-        double V0 = micro_data->V0_;
-        bool eleowner = (bool)micro_data->eleowner_;
+        double V0 = micro_data->initial_volume_;
+        bool eleowner = static_cast<bool>(micro_data->eleowner_);
 
         // dummy material is used to evaluate the micro material
         dummymaterials[eleID]->evaluate(
@@ -108,7 +108,7 @@ void MultiScale::np_support_drt()
       case MultiScale::MicromaterialNestedParallelismAction::prepare_output:
       {
         // dummy material is used to prepare the output of the micro material
-        dummymaterials[eleID]->prepare_output();
+        dummymaterials[eleID]->runtime_pre_output_step_state();
         break;
       }
       case MultiScale::MicromaterialNestedParallelismAction::update:
@@ -120,7 +120,8 @@ void MultiScale::np_support_drt()
       case MultiScale::MicromaterialNestedParallelismAction::output_step_state:
       {
         // dummy material is used to output the micro material
-        dummymaterials[eleID]->output_step_state();
+        std::pair<double, int> dummy_output_time_and_step;
+        dummymaterials[eleID]->runtime_output_step_state(dummy_output_time_and_step);
         break;
       }
       case MultiScale::MicromaterialNestedParallelismAction::write_restart:
@@ -144,7 +145,7 @@ void MultiScale::np_support_drt()
         // extract received data from the container
         int gp = micro_data->gp_;
         int microdisnum = micro_data->microdisnum_;
-        double V0 = micro_data->V0_;
+        double V0 = micro_data->initial_volume_;
         bool eleowner = micro_data->eleowner_;
 
         // new dummy material is created if necessary

@@ -86,7 +86,7 @@ void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // activate microscale material
 
   int microdisnum = micro_dis_num();
-  double V0 = init_vol();
+  double initial_volume = init_vol();
   Global::Problem::instance()->materials()->set_read_from_problem(microdisnum);
 
   // avoid writing output also for ghosted elements
@@ -122,7 +122,7 @@ void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   microdata.stress_ = convert_to_serial_dense_matrix(*stress);
   microdata.gp_ = gp;
   microdata.microdisnum_ = microdisnum;
-  microdata.V0_ = V0;
+  microdata.initial_volume_ = initial_volume;
   microdata.eleowner_ = eleowner;
   condnamemap[0]->set_micro_static_data(microdata);
 
@@ -134,9 +134,12 @@ void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   exporter.do_export<MultiScale::MicroStaticParObject>(condnamemap);
 
   // standard evaluation of the micro material
-  if (matgp_.find(gp) == matgp_.end())
+  if (not matgp_.contains(gp))
   {
-    matgp_[gp] = std::make_shared<MicroMaterialGP>(gp, eleGID, eleowner, microdisnum, V0);
+    bool initialize_runtime_output_writer = is_runtime_output_writer_necessary(gp);
+
+    matgp_[gp] = std::make_shared<MicroMaterialGP>(
+        gp, eleGID, eleowner, microdisnum, initial_volume, initialize_runtime_output_writer);
     initialize_density(gp);
   }
 
@@ -179,9 +182,12 @@ void Mat::MicroMaterial::evaluate(Core::LinAlg::Matrix<3, 3>* defgrd,
 {
   Global::Problem::instance()->materials()->set_read_from_problem(microdisnum);
 
-  if (matgp_.find(gp) == matgp_.end())
+  if (not matgp_.contains(gp))
   {
-    matgp_[gp] = std::make_shared<MicroMaterialGP>(gp, ele_ID, eleowner, microdisnum, V0);
+    bool initialize_runtime_output_writer = is_runtime_output_writer_necessary(gp);
+
+    matgp_[gp] = std::make_shared<MicroMaterialGP>(
+        gp, ele_ID, eleowner, microdisnum, V0, initialize_runtime_output_writer);
   }
 
   std::shared_ptr<MicroMaterialGP> actmicromatgp = matgp_[gp];
@@ -217,8 +223,10 @@ void Mat::MicroMaterial::update()
 }
 
 // prepare output for all procs
-void Mat::MicroMaterial::prepare_output()
+void Mat::MicroMaterial::runtime_pre_output_step_state() const
 {
+  PAR::MicroMaterial::RuntimeOutputOption output_action_type;
+
   // get sub communicator including the supporting procs
   MPI_Comm subcomm = Global::Problem::instance(0)->get_communicators()->sub_comm();
   if (Core::Communication::my_mpi_rank(subcomm) == 0)
@@ -228,12 +236,66 @@ void Mat::MicroMaterial::prepare_output()
     int task[2] = {
         static_cast<int>(MultiScale::MicromaterialNestedParallelismAction::prepare_output), eleID};
     Core::Communication::broadcast(task, 2, 0, subcomm);
+
+    // proc 0 in subcomm fills the variable ...
+    output_action_type = params_->runtime_output_option_;
   }
+  // ... and it is broadcast to the supporting procs
+  Core::Communication::broadcast(output_action_type, 0, subcomm);
+
+  if (output_action_type == PAR::MicroMaterial::RuntimeOutputOption::none) return;
 
   for (const auto& micromatgp : matgp_)
   {
     std::shared_ptr<MicroMaterialGP> actmicromatgp = micromatgp.second;
-    actmicromatgp->prepare_output();
+    actmicromatgp->runtime_pre_output_step_state();
+
+    if (output_action_type == PAR::MicroMaterial::RuntimeOutputOption::first_gp_only) break;
+  }
+}
+
+void Mat::MicroMaterial::runtime_output_step_state(
+    std::pair<double, int> output_time_and_step) const
+{
+  PAR::MicroMaterial::RuntimeOutputOption output_action_type;
+  double output_time;
+  int output_step;
+
+  // get sub communicator including the supporting procs
+  MPI_Comm subcomm = Global::Problem::instance(0)->get_communicators()->sub_comm();
+  if (Core::Communication::my_mpi_rank(subcomm) == 0)
+  {
+    // tell the supporting procs that the micro material will be output
+    int eleID = matgp_.begin()->second->ele_id();
+    int task[2] = {
+        static_cast<int>(MultiScale::MicromaterialNestedParallelismAction::output_step_state),
+        eleID};
+    Core::Communication::broadcast(task, 2, 0, subcomm);
+
+    // proc 0 in subcomm fills the variable ...
+    output_action_type = params_->runtime_output_option_;
+    output_time = output_time_and_step.first;
+    output_step = output_time_and_step.second;
+  }
+  // ... and it is broadcast to the supporting procs
+  Core::Communication::broadcast(output_action_type, 0, subcomm);
+
+  if (output_action_type == PAR::MicroMaterial::RuntimeOutputOption::none) return;
+
+  // broadcast time and step to supporting procs
+  Core::Communication::broadcast(&output_time, 1, 0, subcomm);
+  Core::Communication::broadcast(&output_step, 1, 0, subcomm);
+  output_time_and_step.first = output_time;
+  output_time_and_step.second = output_step;
+
+  for (const auto& micromatgp : matgp_)
+  {
+    std::string section_name = "rve_elem_" + std::to_string(micromatgp.second->ele_id()) + "_gp_" +
+                               std::to_string(micromatgp.first);
+    std::shared_ptr<MicroMaterialGP> actmicromatgp = micromatgp.second;
+    actmicromatgp->runtime_output_step_state_microscale(output_time_and_step, section_name);
+
+    if (output_action_type == PAR::MicroMaterial::RuntimeOutputOption::first_gp_only) break;
   }
 }
 
@@ -246,29 +308,7 @@ void Mat::MicroMaterial::initialize_density(const int gp)
 }
 
 // output for all procs
-void Mat::MicroMaterial::output_step_state()
-{
-  // get sub communicator including the supporting procs
-  MPI_Comm subcomm = Global::Problem::instance(0)->get_communicators()->sub_comm();
-  if (Core::Communication::my_mpi_rank(subcomm) == 0)
-  {
-    // tell the supporting procs that the micro material will be output
-    int eleID = matgp_.begin()->second->ele_id();
-    int task[2] = {
-        static_cast<int>(MultiScale::MicromaterialNestedParallelismAction::output_step_state),
-        eleID};
-    Core::Communication::broadcast(task, 2, 0, subcomm);
-  }
-
-  for (const auto& micromatgp : matgp_)
-  {
-    std::shared_ptr<MicroMaterialGP> actmicromatgp = micromatgp.second;
-    actmicromatgp->output_step_state_microscale();
-  }
-}
-
-// output for all procs
-void Mat::MicroMaterial::write_restart()
+void Mat::MicroMaterial::write_restart() const
 {
   // get sub communicator including the supporting procs
   MPI_Comm subcomm = Global::Problem::instance(0)->get_communicators()->sub_comm();
@@ -309,7 +349,7 @@ void Mat::MicroMaterial::read_restart(const int gp, const int eleID, const bool 
   MultiScale::MicroStaticParObject::MicroStaticData microdata{};
   microdata.gp_ = gp;
   microdata.microdisnum_ = microdisnum;
-  microdata.V0_ = V0;
+  microdata.initial_volume_ = V0;
   microdata.eleowner_ = eleowner;
   condnamemap[0]->set_micro_static_data(microdata);
 
@@ -320,9 +360,12 @@ void Mat::MicroMaterial::read_restart(const int gp, const int eleID, const bool 
   Core::Communication::Exporter exporter(oldmap, newmap, subcomm);
   exporter.do_export<MultiScale::MicroStaticParObject>(condnamemap);
 
-  if (matgp_.find(gp) == matgp_.end())
+  if (not matgp_.contains(gp))
   {
-    matgp_[gp] = std::make_shared<MicroMaterialGP>(gp, eleID, eleowner, microdisnum, V0);
+    bool initialize_runtime_output_writer = is_runtime_output_writer_necessary(gp);
+
+    matgp_[gp] = std::make_shared<MicroMaterialGP>(
+        gp, eleID, eleowner, microdisnum, V0, initialize_runtime_output_writer);
     initialize_density(gp);
   }
 
@@ -330,19 +373,50 @@ void Mat::MicroMaterial::read_restart(const int gp, const int eleID, const bool 
   actmicromatgp->read_restart();
 }
 
-
 // read restart for supporting procs
 void Mat::MicroMaterial::read_restart(
     const int gp, const int eleID, const bool eleowner, int microdisnum, double V0)
 {
-  if (matgp_.find(gp) == matgp_.end())
+  if (not matgp_.contains(gp))
   {
-    matgp_[gp] = std::make_shared<MicroMaterialGP>(gp, eleID, eleowner, microdisnum, V0);
+    bool initialize_runtime_output_writer = is_runtime_output_writer_necessary(gp);
+
+    matgp_[gp] = std::make_shared<MicroMaterialGP>(
+        gp, eleID, eleowner, microdisnum, V0, initialize_runtime_output_writer);
     initialize_density(gp);
   }
 
   std::shared_ptr<MicroMaterialGP> actmicromatgp = matgp_[gp];
   actmicromatgp->read_restart();
+}
+
+bool Mat::MicroMaterial::is_runtime_output_writer_necessary(int gp) const
+{
+  MPI_Comm subcomm = Global::Problem::instance(0)->get_communicators()->sub_comm();
+  PAR::MicroMaterial::RuntimeOutputOption output_action_type;
+  if (Core::Communication::my_mpi_rank(subcomm) == 0)
+    output_action_type = params_->runtime_output_option_;
+
+  // tell supporting procs the desired output granularity
+  Core::Communication::broadcast(output_action_type, 0, subcomm);
+
+  switch (output_action_type)
+  {
+    case PAR::MicroMaterial::RuntimeOutputOption::none:
+      return false;
+    case PAR::MicroMaterial::RuntimeOutputOption::all:
+      return true;
+    case PAR::MicroMaterial::RuntimeOutputOption::first_gp_only:
+    {
+      if (gp == 0) return true;
+      return false;
+    }
+    default:
+      FOUR_C_THROW("unknown micro scale runtime output granularity");
+      break;
+  }
+
+  return true;
 }
 
 FOUR_C_NAMESPACE_CLOSE

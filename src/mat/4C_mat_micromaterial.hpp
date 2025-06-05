@@ -12,6 +12,7 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_material_parameter_base.hpp"
 
@@ -33,6 +34,13 @@ namespace Mat
       /// standard constructor
       MicroMaterial(const Core::Mat::PAR::Parameter::Data& matdata);
 
+      //! runtime output granularity
+      enum class RuntimeOutputOption
+      {
+        none,          ///< no output of micromodel
+        all,           ///< output micromodel of every gausspoint
+        first_gp_only  ///< output micromodel of the first gausspoint
+      };
       /// @name material parameters
       //@{
 
@@ -43,7 +51,9 @@ namespace Mat
       ///
       const double initvol_;
 
-      //@}
+      //// runtime output option
+      RuntimeOutputOption runtime_output_option_;
+      //! @}
 
       /// create material instance of matching type with my parameters
       std::shared_ptr<Core::Mat::Material> create_material() override;
@@ -55,7 +65,7 @@ namespace Mat
   class MicroMaterialType : public Core::Communication::ParObjectType
   {
    public:
-    std::string name() const override { return "MicroMaterialType"; }
+    [[nodiscard]] std::string name() const override { return "MicroMaterialType"; }
 
     static MicroMaterialType& instance() { return instance_; };
 
@@ -122,7 +132,7 @@ namespace Mat
     //@}
 
     /// material type
-    Core::Materials::MaterialType material_type() const override
+    [[nodiscard]] Core::Materials::MaterialType material_type() const override
     {
       return Core::Materials::m_struct_multiscale;
     }
@@ -135,7 +145,7 @@ namespace Mat
     }
 
     /// return copy of this material object
-    std::shared_ptr<Core::Mat::Material> clone() const override
+    [[nodiscard]] std::shared_ptr<Core::Mat::Material> clone() const override
     {
       return std::make_shared<MicroMaterial>(*this);
     }
@@ -165,10 +175,10 @@ namespace Mat
     void initialize_density(int gp);
 
     /// Calculate stresses and strains on the micro-scale
-    void prepare_output();
+    void runtime_pre_output_step_state() const;
 
     /// Write output on micro-scale
-    void output_step_state();
+    void runtime_output_step_state(std::pair<double, int> output_time_and_step) const;
 
     /// Update state vectors
     void update() override;
@@ -177,10 +187,13 @@ namespace Mat
     virtual void post_setup();
 
     /// Write restart on micro-scale
-    void write_restart();
+    void write_restart() const;
 
     /// Read restart of micro scale on a processor with macro scale
     void read_restart(const int gp, const int eleID, const bool eleowner);
+
+    /// check whether runtime output is requested for this gp of this micro material
+    bool is_runtime_output_writer_necessary(int gp) const;
 
     /// restart micro material on a processor which only knows about the micro scale (supporting
     /// proc)

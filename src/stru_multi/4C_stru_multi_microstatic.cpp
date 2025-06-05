@@ -7,10 +7,10 @@
 
 #include "4C_stru_multi_microstatic.hpp"
 
+#include "4C_beam3_base.hpp"
 #include "4C_comm_utils.hpp"
 #include "4C_fem_condition.hpp"
 #include "4C_fem_discretization.hpp"
-#include "4C_fem_general_elementtype.hpp"
 #include "4C_global_data.hpp"
 #include "4C_inpar_material.hpp"
 #include "4C_io.hpp"
@@ -19,6 +19,7 @@
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
+#include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_solid_3D_ele.hpp"
@@ -32,8 +33,11 @@ FOUR_C_NAMESPACE_OPEN
  |  ctor (public)|
  *----------------------------------------------------------------------*/
 MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
-    : microdisnum_(microdisnum), V0_(V0)
+    : microdisnum_(microdisnum), initial_volume_(V0)
 {
+  FOUR_C_ASSERT_ALWAYS(Global::Problem::instance(microdisnum_)->n_dim() == 3,
+      "ONLY 3 dimensional problem allowed on solid microscale");
+
   // -------------------------------------------------------------------
   // access the discretization
   // -------------------------------------------------------------------
@@ -54,19 +58,15 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
   const Teuchos::ParameterList& sdyn_macro =
       Global::Problem::instance()->structural_dynamic_params();
 
-  // i/o options should be read from the corresponding micro-file
-  const Teuchos::ParameterList& ioflags = Global::Problem::instance(microdisnum_)->io_params();
-
   // -------------------------------------------------------------------
   // create a solver
   // -------------------------------------------------------------------
   // get the solver number used for structural solver
   const int linsolvernumber = sdyn_micro.get<int>("LINEAR_SOLVER");
   // check if the structural solver has a valid solver number
-  if (linsolvernumber == (-1))
-    FOUR_C_THROW(
-        "no linear solver defined for structural field. Please set LINEAR_SOLVER in STRUCTURAL "
-        "DYNAMIC to a valid number!");
+  FOUR_C_ASSERT_ALWAYS(linsolvernumber != (-1),
+      "No linear solver defined for structural field. Please set LINEAR_SOLVER in STRUCTURAL "
+      "DYNAMIC to a valid number!");
 
   solver_ = std::make_shared<Core::LinAlg::Solver>(
       Global::Problem::instance(microdisnum_)->solver_params(linsolvernumber), discret_->get_comm(),
@@ -98,22 +98,55 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
 
   tolfres_ = sdyn_micro.get<double>("TOLRES");
   toldisi_ = sdyn_micro.get<double>("TOLDISP");
-  printscreen_ = (ioflags.get<int>("STDOUTEVERY"));
-
 
   restart_ = Global::Problem::instance()->restart();
-  restartevry_ = sdyn_macro.get<int>("RESTARTEVERY");
-  iodisp_ = ioflags.get<bool>("STRUCT_DISP");
-  resevrydisp_ = sdyn_micro.get<int>("RESULTSEVERY");
-  auto iostress = Teuchos::getIntegralValue<Inpar::Solid::StressType>(ioflags, "STRUCT_STRESS");
-  iostress_ = iostress;
-  resevrystrs_ = sdyn_micro.get<int>("RESULTSEVERY");
-  auto iostrain = Teuchos::getIntegralValue<Inpar::Solid::StrainType>(ioflags, "STRUCT_STRAIN");
-  iostrain_ = iostrain;
-  auto ioplstrain =
-      Teuchos::getIntegralValue<Inpar::Solid::StrainType>(ioflags, "STRUCT_PLASTIC_STRAIN");
-  ioplstrain_ = ioplstrain;
-  iosurfactant_ = ioflags.get<bool>("STRUCT_SURFACTANT");
+  restart_every_ = sdyn_macro.get<int>("RESTARTEVERY");
+
+  // i/o options should be read from the corresponding micro-file
+  results_every_ = sdyn_micro.get<int>("RESULTSEVERY");
+
+  const Teuchos::ParameterList& ioflags = Global::Problem::instance(microdisnum_)->io_params();
+  printscreen_ = (ioflags.get<int>("STDOUTEVERY"));
+
+  const Teuchos::ParameterList& visualization_output_paramslist =
+      Global::Problem::instance(microdisnum_)
+          ->io_params()
+          .sublist("RUNTIME VTK OUTPUT")
+          .sublist("STRUCTURE");
+  output_displacement_state_ = visualization_output_paramslist.get<bool>("DISPLACEMENT");
+  output_element_owner_ = visualization_output_paramslist.get<bool>("ELEMENT_OWNER");
+  output_element_material_id_ = visualization_output_paramslist.get<bool>("ELEMENT_MAT_ID");
+  output_stress_strain_ = visualization_output_paramslist.get<bool>("STRESS_STRAIN");
+  gauss_point_data_output_type_ = Teuchos::getIntegralValue<Inpar::Solid::GaussPointDataOutputType>(
+      visualization_output_paramslist, "GAUSS_POINT_DATA_OUTPUT_TYPE");
+
+  FOUR_C_ASSERT_ALWAYS(
+      gauss_point_data_output_type_ == Inpar::Solid::GaussPointDataOutputType::none,
+      "Gauss point output not yet implemented on micro scale.");
+
+  if (output_stress_strain_)
+  {
+    // If stress / strain data should be output, check that the relevant parameters in the --IO
+    // section are set.
+    const Teuchos::ParameterList& io_parameter_list = Global::Problem::instance()->io_params();
+    iostress_ =
+        Teuchos::getIntegralValue<Inpar::Solid::StressType>(io_parameter_list, "STRUCT_STRESS");
+    iostrain_ =
+        Teuchos::getIntegralValue<Inpar::Solid::StrainType>(io_parameter_list, "STRUCT_STRAIN");
+    ioplstrain_ =
+        Teuchos::getIntegralValue<Inpar::Solid::StrainType>(ioflags, "STRUCT_PLASTIC_STRAIN");
+
+    FOUR_C_ASSERT_ALWAYS(
+        iostress_ != Inpar::Solid::stress_none or iostrain_ != Inpar::Solid::strain_none,
+        "If stress / strain runtime output is required, one or two of the flags STRUCT_STRAIN / "
+        "STRUCT_STRESS in the --IO section has to be activated.");
+  }
+  else
+  {
+    iostress_ = Inpar::Solid::StressType::stress_none;
+    iostrain_ = Inpar::Solid::StrainType::strain_none;
+    ioplstrain_ = Inpar::Solid::StrainType::strain_none;
+  }
 
   isadapttol_ = (sdyn_micro.get<bool>("ADAPTCONV"));
   adaptolbetter_ = sdyn_micro.get<double>("ADAPTCONV_BETTER");
@@ -122,7 +155,7 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
   // supporting procs)
   Core::Communication::broadcast(&numstep_, 1, 0, discret_->get_comm());
   Core::Communication::broadcast(&restart_, 1, 0, discret_->get_comm());
-  Core::Communication::broadcast(&restartevry_, 1, 0, discret_->get_comm());
+  Core::Communication::broadcast(&restart_every_, 1, 0, discret_->get_comm());
 
   // -------------------------------------------------------------------
   // get a vector layout from the discretization to construct matching
@@ -169,20 +202,6 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
   // dynamic force residual
   // also known as out-of-balance-force
   fresn_ = Core::LinAlg::create_vector(*dofrowmap, false);
-
-  // -------------------------------------------------------------------
-  // create "empty" EAS history map
-  //
-  // -------------------------------------------------------------------
-  {
-    lastalpha_ =
-        std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-    oldalpha_ = std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-    oldfeas_ = std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-    oldKaainv_ =
-        std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-    oldKda_ = std::make_shared<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>>();
-  }
 
   // -------------------------------------------------------------------
   // call elements to calculate stiffness and mass
@@ -250,17 +269,19 @@ MultiScale::MicroStatic::MicroStatic(const int microdisnum, const double V0)
   discret_->clear_state();
 
   // compute volume of all elements
-  Core::Communication::sum_all(&my_micro_discretization_volume, &V0_, 1, discret_->get_comm());
+  Core::Communication::sum_all(
+      &my_micro_discretization_volume, &initial_volume_, 1, discret_->get_comm());
 
   // compute density of all elements
   double micro_discretization_density_integration = 0.0;
   Core::Communication::sum_all(&my_micro_discretization_density_integration,
       &micro_discretization_density_integration, 1, discret_->get_comm());
 
-  density_ = micro_discretization_density_integration / V0_;
+  density_ = micro_discretization_density_integration / initial_volume_;
 
   FOUR_C_ASSERT_ALWAYS(
       density_ > 0, "Density determined from homogenization procedure must be larger than zero!");
+
 }  // MultiScale::MicroStatic::MicroStatic
 
 
@@ -272,7 +293,6 @@ void MultiScale::MicroStatic::predictor(Core::LinAlg::Matrix<3, 3>* defgrd)
     predict_tang_dis(defgrd);
   else
     FOUR_C_THROW("requested predictor not implemented on the micro-scale");
-  return;
 }
 
 
@@ -289,13 +309,6 @@ void MultiScale::MicroStatic::predict_const_dis(Core::LinAlg::Matrix<3, 3>* defg
     evaluate_micro_bc(defgrd, *disn_);
     discret_->clear_state();
   }
-
-  //--------------------------------- set EAS internal data if necessary
-
-  // this has to be done only once since the elements will remember
-  // their EAS data until the end of the microscale simulation
-  // (end of macroscopic iteration step)
-  set_eas_data();
 
   //------------- eval fint at interpolated state, eval stiffness matrix
   {
@@ -371,13 +384,6 @@ void MultiScale::MicroStatic::predict_tang_dis(Core::LinAlg::Matrix<3, 3>* defgr
   // DBC-DOFs hold increments of current step
   // free-DOFs hold zeros
   dbcinc->update(-1.0, *disn_, 1.0);
-
-  //--------------------------------- set EAS internal data if necessary
-
-  // this has to be done only once since the elements will remember
-  // their EAS data until the end of the microscale simulation
-  // (end of macroscopic iteration step)
-  set_eas_data();
 
   //------------- eval fint at interpolated state, eval stiffness matrix
   {
@@ -613,14 +619,19 @@ void MultiScale::MicroStatic::full_newton()
   return;
 }  // MultiScale::MicroStatic::FullNewton()
 
-
 /*----------------------------------------------------------------------*
  |  "prepare" output (public)                                   ly 09/11|
  *----------------------------------------------------------------------*/
-void MultiScale::MicroStatic::prepare_output()
+void MultiScale::MicroStatic::runtime_pre_output_step_state()
 {
-  if (resevrystrs_ and !(stepn_ % resevrystrs_) and iostress_ != Inpar::Solid::stress_none)
+  if (results_every_ and !(stepn_ % results_every_) and
+      (iostress_ != Inpar::Solid::stress_none or iostrain_ != Inpar::Solid::strain_none))
   {
+    // initialize data container for element evaluation
+    auto stress_data = std::make_shared<std::vector<char>>();
+    auto strain_data = std::make_shared<std::vector<char>>();
+    auto plastic_strain_data = std::make_shared<std::vector<char>>();
+
     // create the parameters for the discretization
     Teuchos::ParameterList p;
     // action for elements
@@ -628,9 +639,9 @@ void MultiScale::MicroStatic::prepare_output()
     // other parameters that might be needed by the elements
     p.set("total time", timen_);
     p.set("delta time", dt_);
-    p.set("stress", stress_);
-    p.set("strain", strain_);
-    p.set("plstrain", plstrain_);
+    p.set("stress", stress_data);
+    p.set("strain", strain_data);
+    p.set("plstrain", plastic_strain_data);
     p.set<Inpar::Solid::StressType>("iostress", iostress_);
     p.set<Inpar::Solid::StrainType>("iostrain", iostrain_);
     p.set<Inpar::Solid::StrainType>("ioplstrain", ioplstrain_);
@@ -640,114 +651,215 @@ void MultiScale::MicroStatic::prepare_output()
     discret_->set_state("displacement", *disn_);
     discret_->evaluate(p, nullptr, nullptr, nullptr, nullptr, nullptr);
     discret_->clear_state();
+
+    auto DoPostprocessingOnElement = [](const Core::Elements::Element& ele)
+    {
+      // If it is not a beam element, we post-process it.
+      return dynamic_cast<const Discret::Elements::Beam3Base*>(&ele) == nullptr;
+    };
+
+    auto EvaluateGaussPointData = [&](const std::vector<char>& raw_data)
+    {
+      // Get the values at the Gauss-points.
+      std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>> mapdata{};
+
+      Core::Communication::UnpackBuffer buffer(raw_data);
+      for (int i = 0; i < discret_->element_row_map()->num_my_elements(); ++i)
+      {
+        if (DoPostprocessingOnElement(*(discret_->l_row_element(i))))
+        {
+          std::shared_ptr<Core::LinAlg::SerialDenseMatrix> gpstress =
+              std::make_shared<Core::LinAlg::SerialDenseMatrix>();
+          extract_from_pack(buffer, *gpstress);
+          mapdata[discret_->element_row_map()->gid(i)] = gpstress;
+        }
+      }
+      return mapdata;
+    };
+
+    auto PostprocessGaussPointDataToNodes =
+        [&](const std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>& map_data,
+            Core::LinAlg::MultiVector<double>& assembled_data)
+    {
+      discret_->evaluate(
+          [&](Core::Elements::Element& ele)
+          {
+            if (DoPostprocessingOnElement(ele))
+              Core::FE::extrapolate_gauss_point_quantity_to_nodes(
+                  ele, *map_data.at(ele.id()), *discret_, assembled_data);
+          });
+    };
+
+    auto PostprocessGaussPointDataToElementCenter =
+        [&](const std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>& map_data,
+            Core::LinAlg::MultiVector<double>& assembled_data)
+    {
+      discret_->evaluate(
+          [&](Core::Elements::Element& ele)
+          {
+            if (DoPostprocessingOnElement(ele))
+              Core::FE::evaluate_gauss_point_quantity_at_element_center(
+                  ele, *map_data.at(ele.id()), assembled_data);
+          });
+    };
+
+    if (iostress_ != Inpar::Solid::stress_none)
+    {
+      std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>> gp_stress_data =
+          EvaluateGaussPointData(*stress_data);
+
+      Core::Communication::Exporter ex(
+          *(discret_->element_row_map()), *(discret_->element_col_map()), discret_->get_comm());
+      ex.do_export(gp_stress_data);
+
+      stress_data_node_postprocessed_ =
+          std::make_shared<Core::LinAlg::MultiVector<double>>(*discret_->node_col_map(), 6, true);
+      stress_data_element_postprocessed_ = std::make_shared<Core::LinAlg::MultiVector<double>>(
+          *discret_->element_row_map(), 6, true);
+
+      Core::LinAlg::MultiVector<double> row_nodal_data(*discret_->node_row_map(), 6, true);
+      PostprocessGaussPointDataToNodes(gp_stress_data, row_nodal_data);
+      Core::LinAlg::export_to(row_nodal_data, *stress_data_node_postprocessed_);
+
+      PostprocessGaussPointDataToElementCenter(gp_stress_data, *stress_data_element_postprocessed_);
+    }
+    if (iostrain_ != Inpar::Solid::strain_none)
+    {
+      std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>> gp_strain_data =
+          EvaluateGaussPointData(*strain_data);
+
+      Core::Communication::Exporter ex(
+          *(discret_->element_row_map()), *(discret_->element_col_map()), discret_->get_comm());
+      ex.do_export(gp_strain_data);
+
+      strain_data_node_postprocessed_ =
+          std::make_shared<Core::LinAlg::MultiVector<double>>(*discret_->node_col_map(), 6, true);
+      strain_data_element_postprocessed_ = std::make_shared<Core::LinAlg::MultiVector<double>>(
+          *discret_->element_row_map(), 6, true);
+
+      Core::LinAlg::MultiVector<double> row_nodal_data(*discret_->node_row_map(), 6, true);
+      PostprocessGaussPointDataToNodes(gp_strain_data, row_nodal_data);
+      Core::LinAlg::export_to(row_nodal_data, *strain_data_node_postprocessed_);
+
+      PostprocessGaussPointDataToElementCenter(gp_strain_data, *strain_data_element_postprocessed_);
+    }
   }
 }
 
-
 /*----------------------------------------------------------------------*
- |  write output (public)                                       lw 02/08|
+ |  write runtime output (public)
  *----------------------------------------------------------------------*/
-void MultiScale::MicroStatic::output(
-    Core::IO::DiscretizationWriter& output, const double time, const int step, const double dt)
+void MultiScale::MicroStatic::runtime_output_step_state_microscale(
+    std::shared_ptr<Core::IO::DiscretizationVisualizationWriterMesh> micro_visualization_writer,
+    const std::pair<double, int>& output_time_and_step, const std::string& section_name) const
 {
-  bool isdatawritten = false;
+  const std::vector<double> out_cmat(
+      macro_cmat_output_->values(), macro_cmat_output_->values() + 36);
+
+  micro_visualization_writer->reset();
 
   //----------------------------------------------------- output results
-  if (iodisp_ && resevrydisp_ && step % resevrydisp_ == 0 && !isdatawritten)
+  micro_visualization_writer->append_element_material_id();
+  micro_visualization_writer->append_field_data_vector(out_cmat, "tangent_stiffness_tensor_cmat");
+
+  if (results_every_ && output_time_and_step.second % results_every_ == 0)
   {
-    output.new_step(step, time);
-    output.write_vector("displacement", dis_);
-    isdatawritten = true;
+    if (output_displacement_state_)
+    {
+      std::vector<std::optional<std::string>> context(3, section_name + "_displacement");
+      micro_visualization_writer->append_result_data_vector_with_context(
+          *dis_, Core::IO::OutputEntity::dof, context);
+    }
+
+    // append element owner if desired
+    if (output_element_owner_) micro_visualization_writer->append_element_owner("element_owner");
+
+    // append element material IDs if desired
+    if (output_element_material_id_) micro_visualization_writer->append_element_material_id();
+
+    // append stress if desired
+    if (output_stress_strain_ and iostress_ != Inpar::Solid::stress_none)
+    {
+      std::string name_nodal = "";
+      std::string name_element = "";
+
+      if (iostress_ == Inpar::Solid::stress_2pk)
+      {
+        name_nodal = "nodal_2PK_stresses_xyz";
+        name_element = "element_2PK_stresses_xyz";
+      }
+      else if (iostress_ == Inpar::Solid::stress_cauchy)
+      {
+        name_nodal = "nodal_cauchy_stresses_xyz";
+        name_element = "element_cauchy_stresses_xyz";
+      }
+
+      // Write nodal stress data.
+      std::vector<std::optional<std::string>> context(6, name_nodal);
+      micro_visualization_writer->append_result_data_vector_with_context(
+          *stress_data_node_postprocessed_, Core::IO::OutputEntity::node, context);
+
+      // Write element stress data.
+      context.assign(6, name_element);
+      micro_visualization_writer->append_result_data_vector_with_context(
+          *stress_data_element_postprocessed_, Core::IO::OutputEntity::element, context);
+    }
+
+    // append strain if desired.
+    if (output_stress_strain_ and iostrain_ != Inpar::Solid::strain_none)
+    {
+      std::string name_nodal = "";
+      std::string name_element = "";
+
+      if (iostrain_ == Inpar::Solid::strain_gl)
+      {
+        name_nodal = "nodal_GL_strains_xyz";
+        name_element = "element_GL_strains_xyz";
+      }
+      else if (iostrain_ == Inpar::Solid::strain_ea)
+      {
+        name_nodal = "nodal_EA_strains_xyz";
+        name_element = "element_EA_strains_xyz";
+      }
+      else if (iostrain_ == Inpar::Solid::strain_log)
+      {
+        name_nodal = "nodal_LOG_strains_xyz";
+        name_element = "element_LOG_strains_xyz";
+      }
+
+      // Write nodal strain data.
+      std::vector<std::optional<std::string>> context(6, name_nodal);
+      micro_visualization_writer->append_result_data_vector_with_context(
+          *strain_data_node_postprocessed_, Core::IO::OutputEntity::node, context);
+
+      // Write element strain data.
+      context.assign(6, name_element);
+      micro_visualization_writer->append_result_data_vector_with_context(
+          *strain_data_element_postprocessed_, Core::IO::OutputEntity::element, context);
+    }
+
+    // TODO Add Gauss point output for e.g. plastic internal variables here
+
+    micro_visualization_writer->write_to_disk(
+        output_time_and_step.first, output_time_and_step.second);
   }
-
-  //------------------------------------- stress/strain output
-  if (resevrystrs_ and !(step % resevrystrs_) and iostress_ != Inpar::Solid::stress_none)
-  {
-    if (!isdatawritten) output.new_step(step, time);
-    isdatawritten = true;
-
-    if (stress_ == nullptr or strain_ == nullptr or plstrain_ == nullptr)
-      FOUR_C_THROW("Missing stresses and strains in micro-structural time integrator");
-
-    switch (iostress_)
-    {
-      case Inpar::Solid::stress_cauchy:
-        output.write_vector("gauss_cauchy_stresses_xyz", *stress_, *discret_->element_row_map());
-        break;
-      case Inpar::Solid::stress_2pk:
-        output.write_vector("gauss_2PK_stresses_xyz", *stress_, *discret_->element_row_map());
-        break;
-      case Inpar::Solid::stress_none:
-        break;
-      default:
-        FOUR_C_THROW("requested stress type not supported");
-    }
-
-    switch (iostrain_)
-    {
-      case Inpar::Solid::strain_ea:
-        output.write_vector("gauss_EA_strains_xyz", *strain_, *discret_->element_row_map());
-        break;
-      case Inpar::Solid::strain_gl:
-        output.write_vector("gauss_GL_strains_xyz", *strain_, *discret_->element_row_map());
-        break;
-      case Inpar::Solid::strain_none:
-        break;
-      default:
-        FOUR_C_THROW("requested strain type not supported");
-    }
-
-    switch (ioplstrain_)
-    {
-      case Inpar::Solid::strain_ea:
-        output.write_vector("gauss_pl_EA_strains_xyz", *plstrain_, *discret_->element_row_map());
-        break;
-      case Inpar::Solid::strain_gl:
-        output.write_vector("gauss_pl_GL_strains_xyz", *plstrain_, *discret_->element_row_map());
-        break;
-      case Inpar::Solid::strain_none:
-        break;
-      default:
-        FOUR_C_THROW("requested plastic strain type not supported");
-    }
-  }
-}  // MultiScale::MicroStatic::output()
+}
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void MultiScale::MicroStatic::write_restart(std::shared_ptr<Core::IO::DiscretizationWriter> output,
-    const double time, const int step, const double dt)
+    const double time, const int step, const double dt) const
 {
   output->write_mesh(step, time);
   output->new_step(step, time);
   output->write_vector("displacement", dis_);
-
-  std::shared_ptr<Core::LinAlg::SerialDenseMatrix> emptyalpha(
-      new Core::LinAlg::SerialDenseMatrix(1, 1));
-
-  Core::Communication::PackBuffer data;
-
-  for (int i = 0; i < discret_->element_col_map()->num_my_elements(); ++i)
-  {
-    if ((*lastalpha_)[i] != nullptr)
-    {
-      add_to_pack(data, *(*lastalpha_)[i]);
-    }
-    else
-    {
-      add_to_pack(data, *emptyalpha);
-    }
-  }
-  output->write_vector("alpha", data(), *discret_->element_col_map());
 }
 
 /*----------------------------------------------------------------------*
  |  read restart (public)                                       lw 03/08|
  *----------------------------------------------------------------------*/
-void MultiScale::MicroStatic::read_restart(int step,
-    std::shared_ptr<Core::LinAlg::Vector<double>> dis,
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> lastalpha,
-    std::string name)
+void MultiScale::MicroStatic::read_restart(
+    int step, std::shared_ptr<Core::LinAlg::Vector<double>> dis, std::string name)
 {
   std::shared_ptr<Core::IO::InputControl> inputcontrol =
       std::make_shared<Core::IO::InputControl>(name, true);
@@ -767,8 +879,6 @@ void MultiScale::MicroStatic::read_restart(int step,
   timen_ = time_ + dt_;
   step_ = rstep;
   stepn_ = step_ + 1;
-
-  reader.read_serial_dense_matrix(*lastalpha, "alpha");
 }
 
 /*----------------------------------------------------------------------*
@@ -836,27 +946,23 @@ void MultiScale::MicroStatic::evaluate_micro_bc(
 }
 
 void MultiScale::MicroStatic::set_state(std::shared_ptr<Core::LinAlg::Vector<double>> dis,
-    std::shared_ptr<Core::LinAlg::Vector<double>> disn, std::shared_ptr<std::vector<char>> stress,
-    std::shared_ptr<std::vector<char>> strain, std::shared_ptr<std::vector<char>> plstrain,
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> lastalpha,
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldalpha,
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldfeas,
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldKaainv,
-    std::shared_ptr<std::map<int, std::shared_ptr<Core::LinAlg::SerialDenseMatrix>>> oldKda)
+    std::shared_ptr<Core::LinAlg::Vector<double>> disn,
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> stress_data_node_postprocessed,
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> stress_data_element_postprocessed,
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> strain_data_node_postprocessed,
+    std::shared_ptr<Core::LinAlg::MultiVector<double>> strain_data_element_postprocessed,
+    std::shared_ptr<std::vector<char>> plstrain,
+    std::shared_ptr<Core::LinAlg::Matrix<6, 6>> macro_cmat_output)
 {
   dis_ = dis;
   disn_ = disn;
 
-  stress_ = stress;
-  strain_ = strain;
+  stress_data_node_postprocessed_ = stress_data_node_postprocessed;
+  stress_data_element_postprocessed_ = stress_data_element_postprocessed;
+  strain_data_node_postprocessed_ = strain_data_node_postprocessed;
+  strain_data_element_postprocessed_ = strain_data_element_postprocessed;
   plstrain_ = plstrain;
-
-  // using std::shared_ptr's here means we do not need to return EAS data explicitly
-  lastalpha_ = lastalpha;
-  oldalpha_ = oldalpha;
-  oldfeas_ = oldfeas;
-  oldKaainv_ = oldKaainv;
-  oldKda_ = oldKda;
+  macro_cmat_output_ = macro_cmat_output;
 }
 
 void MultiScale::MicroStatic::set_time(
@@ -869,18 +975,11 @@ void MultiScale::MicroStatic::set_time(
   stepn_ = stepn;
 }
 
-// std::shared_ptr<Core::LinAlg::Vector<double>> MultiScale::MicroStatic::ReturnNewDism() { return
-// Teuchos::rcp(new Core::LinAlg::Vector<double>(*dism_)); }
-
 void MultiScale::MicroStatic::clear_state()
 {
   dis_ = nullptr;
   disn_ = nullptr;
 }
-
-void MultiScale::MicroStatic::set_eas_data() {}
-
-
 
 void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* stress,
     Core::LinAlg::Matrix<6, 6>* cmat, Core::LinAlg::Matrix<3, 3>* defgrd, const bool mod_newton,
@@ -924,9 +1023,9 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
     {
       for (int n = 0; n < np_ / 3; ++n)
       {
-        P(i, j) += (*freactn_)[n * 3 + i] * (*Xp_)[n * 3 + j];
+        P(i, j) += (*freactn_)[n * 3 + i] * (*material_coords_boundary_nodes_)[n * 3 + j];
       }
-      P(i, j) /= V0_;
+      P(i, j) /= initial_volume_;
       // sum P(i,j) over the microdis
       double sum = 0.0;
       Core::Communication::sum_all(&(P(i, j)), &sum, 1, discret_->get_comm());
@@ -966,7 +1065,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
     // Computer Methods in Applied Mechanics and Engineering 192: 559-591, 2003.
 
     const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
-    Core::LinAlg::MultiVector<double> cmatpf(D_->get_map(), 9);
+    Core::LinAlg::MultiVector<double> cmatpf(d_matrix_->get_map(), 9);
 
     // make a copy
     stiff_dirich_ = std::make_shared<Core::LinAlg::SparseMatrix>(*stiff_);
@@ -1038,20 +1137,20 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
     int err = fexp.Import(temp, importp_->get_epetra_import(), Insert);
     if (err) FOUR_C_THROW("Export of boundary 'forces' failed with err={}", err);
 
-    // multiply manually D_ and fexp because D_ is not distributed as usual
+    // multiply manually d_matrix_ and fexp because d_matrix_ is not distributed as usual
     // Core::LinAlg::MultiVector<double>s and, hence, standard Multiply functions do not apply.
-    // NOTE: D_ has the same row GIDs (0-8), but different col IDs on different procs (corresponding
-    // to pdof_). fexp is distributed normally with 9 vectors (=cols) and np_ rows. result is saved
-    // as a std::vector<double> to ease subsequent communication
+    // NOTE: d_matrix_ has the same row GIDs (0-8), but different col IDs on different procs
+    // (corresponding to pdof_). fexp is distributed normally with 9 vectors (=cols) and np_ rows.
+    // result is saved as a std::vector<double> to ease subsequent communication
     std::vector<double> val(81, 0.0);
-    int D_rows = D_->NumVectors();
-    for (int i = 0; i < D_rows; i++)
+    int d_matrix_rows = d_matrix_->NumVectors();
+    for (int i = 0; i < d_matrix_rows; i++)
     {
       for (int j = 0; j < fexp.NumVectors(); j++)
       {
-        for (int k = 0; k < D_->MyLength(); k++)
+        for (int k = 0; k < d_matrix_->MyLength(); k++)
         {
-          val[i * D_rows + j] += (((*D_)(i))[k]) * ((fexp(j))[k]);
+          val[i * d_matrix_rows + j] += (((*d_matrix_)(i))[k]) * ((fexp(j))[k]);
         }
       }
     }
@@ -1067,7 +1166,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
         for (int j = 0; j < 9; j++) ((cmatpf(j)))[i] = sum[i * 9 + j];
 
       // scale with inverse of RVE volume
-      cmatpf.Scale(1.0 / V0_);
+      cmatpf.Scale(1.0 / initial_volume_);
 
       // We now have to transform the calculated constitutive tensor
       // relating first Piola-Kirchhoff stresses to the deformation
@@ -1104,7 +1203,7 @@ void MultiScale::MicroStaticParObject::pack(Core::Communication::PackBuffer& dat
   add_to_pack(data, micro_data->gp_);
   add_to_pack(data, micro_data->eleowner_);
   add_to_pack(data, micro_data->microdisnum_);
-  add_to_pack(data, micro_data->V0_);
+  add_to_pack(data, micro_data->initial_volume_);
   add_to_pack(data, micro_data->defgrd_);
   add_to_pack(data, micro_data->stress_);
   add_to_pack(data, micro_data->cmat_);
@@ -1118,7 +1217,7 @@ void MultiScale::MicroStaticParObject::unpack(Core::Communication::UnpackBuffer&
   extract_from_pack(buffer, micro_data.gp_);
   extract_from_pack(buffer, micro_data.eleowner_);
   extract_from_pack(buffer, micro_data.microdisnum_);
-  extract_from_pack(buffer, micro_data.V0_);
+  extract_from_pack(buffer, micro_data.initial_volume_);
   extract_from_pack(buffer, micro_data.defgrd_);
   extract_from_pack(buffer, micro_data.stress_);
   extract_from_pack(buffer, micro_data.cmat_);
