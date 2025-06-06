@@ -116,12 +116,13 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
   float exoversion;               /* version of exodus */
   CPU_word_size = sizeof(double); /* size of a double */
   IO_word_size = 0;               /* use what is stored in file */
+  exodus_filename_ = exodus_file.string();
 
 
   // open EXODUS II file
   int exo_handle =
       ex_open(exodus_file.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &exoversion);
-  if (exo_handle <= 0) FOUR_C_THROW("Error while opening EXODUS II file {}", exodus_file.string());
+  if (exo_handle <= 0) FOUR_C_THROW("Error while opening EXODUS II file {}.", exodus_file.string());
 
   // read database parameters
   int num_elem_blk, num_node_sets, num_side_sets, num_nodes;
@@ -129,11 +130,6 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
   error = ex_get_init(exo_handle, title, &spatial_dimension_, &num_nodes, &num_elem_, &num_elem_blk,
       &num_node_sets, &num_side_sets);
   title_ = std::string(title);
-  std::cout << "Start reading exodus file " << exodus_file.string() << " entitled <<" << title_
-            << ">>,\nmodelled in " << spatial_dimension_ << " dimensions with \n"
-            << num_nodes << " nodes, " << num_elem_ << " elements, " << num_elem_blk
-            << " element blocks, \n"
-            << num_node_sets << " node sets, " << num_side_sets << " side sets" << std::endl;
 
   // get nodal coordinates
   {
@@ -141,7 +137,7 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
     std::vector<double> y(num_nodes);
     std::vector<double> z(num_nodes);
     error = ex_get_coord(exo_handle, x.data(), y.data(), z.data());
-    if (error != 0) FOUR_C_THROW("error reading exodus node coordinates");
+    if (error != 0) FOUR_C_THROW("Error reading exodus node coordinates.");
 
     FOUR_C_ASSERT_ALWAYS(
         mesh_parameters_.node_start_id >= 0, "Node start id must be greater than or equal to 0");
@@ -157,7 +153,7 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
     std::vector<int> epropID(num_elem_blk);
     std::vector<int> ebids(num_elem_blk);
     error = ex_get_ids(exo_handle, EX_ELEM_BLOCK, ebids.data());
-    if (error != 0) FOUR_C_THROW("Error reading exodus element block IDs");
+    if (error != 0) FOUR_C_THROW("Error reading exodus element block IDs.");
     // error = ex_get_prop_array(exo_handle, EX_ELEM_BLOCK, "ID", epropID.data());
     // if (error != 0) FOUR_C_THROW("Error reading element block properties");
     for (int i = 0; i < num_elem_blk; ++i)
@@ -167,20 +163,20 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
       int num_el_in_blk, num_nod_per_elem, num_attr;
       error = ex_get_block(exo_handle, EX_ELEM_BLOCK, ebids[i], mychar, &num_el_in_blk,
           &num_nod_per_elem, nullptr, nullptr, &num_attr);
-      if (error != 0) FOUR_C_THROW("Error reading exodus element block information");
+      if (error != 0) FOUR_C_THROW("Error reading exodus element block information.");
       // prefer std::string to store element type
       std::string ele_type(mychar);
 
       // get ElementBlock name
       error = ex_get_name(exo_handle, EX_ELEM_BLOCK, ebids[i], mychar);
-      if (error != 0) FOUR_C_THROW("Error reading exodus element block name");
+      if (error != 0) FOUR_C_THROW("Error reading exodus element block name.");
       // prefer std::string to store name
       std::string blockname(mychar);
 
       // get element elements
       std::vector<int> allconn(num_nod_per_elem * num_el_in_blk);
       error = ex_get_conn(exo_handle, EX_ELEM_BLOCK, ebids[i], allconn.data(), nullptr, nullptr);
-      if (error != 0) FOUR_C_THROW("Error reading exodus element connection ");
+      if (error != 0) FOUR_C_THROW("Error reading exodus element connection.");
       std::map<int, std::vector<int>> eleconn;
 
       // Compare the desired start ID to Exodus' one-based indexing to get the offset.
@@ -220,8 +216,6 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
       error = ex_get_name(exo_handle, EX_NODE_SET, npropID[i], mychar);
       // prefer std::string to store name
       std::string nodesetname(mychar);
-      std::cout << "NodeSet " << i << ": name=" << nodesetname << "," << num_nodes_in_set
-                << " nodes" << std::endl;
 
       // get nodes in node set
       std::vector<int> node_set_node_list(num_nodes_in_set);
@@ -230,7 +224,7 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
         std::cout << "'ex_get_set' for EX_NODE_SET returned warning while reading node set "
                   << npropID[i] << std::endl;
       else if (error < 0)
-        FOUR_C_THROW("Error reading exodus node set ID {}", npropID[i]);
+        FOUR_C_THROW("Error reading exodus node set ID {}.", npropID[i]);
       std::set<int> nodes_in_set;
       // Compare the desired start ID to Exodus' one-based indexing to get the offset.
       const int node_offset = mesh_parameters_.node_start_id - 1;
@@ -285,43 +279,61 @@ Core::IO::Exodus::Mesh::Mesh(std::filesystem::path exodus_file, MeshParameters m
   }  // end of sideset section
 
   error = ex_close(exo_handle);
-  if (error < 0) FOUR_C_THROW("error while closing exodus II file");
+  if (error < 0) FOUR_C_THROW("Error while closing exodus II file.");
 }
 
 
 /*----------------------------------------------------------------------*
  |  Print method (public)                                      maf 12/07|
  *----------------------------------------------------------------------*/
-void Core::IO::Exodus::Mesh::print(std::ostream& os, bool verbose) const
+void Core::IO::Exodus::Mesh::print(std::ostream& os, VerbosityLevel verbose) const
 {
-  os << "Mesh consists of ";
-  os << get_num_nodes() << " Nodes, ";
-  os << num_elem_ << " Elements, organized in " << std::endl;
-  os << get_num_element_blocks() << " ElementBlocks, ";
-  os << node_sets_.size() << " NodeSets, ";
-  os << side_sets_.size() << " SideSets ";
-  os << std::endl << std::endl;
-  if (verbose)
+  os << "Mesh read in from " << exodus_filename_ << "\n";
+  if (verbose >= VerbosityLevel::summary)
   {
+    os << "  consists of " << get_num_nodes() << " Nodes and " << num_elem_ << " Elements; \n"
+       << "  organized in " << get_num_element_blocks() << " ElementBlocks, ";
+    os << node_sets_.size() << " NodeSets and ";
+    os << side_sets_.size() << " SideSets. ";
+    os << std::endl << std::endl;
+  }
+  if (verbose >= VerbosityLevel::detailed_summary)
+  {
+    if (verbose == VerbosityLevel::full)
+    {
+      for (const auto& [node_id, coords] : get_nodes())
+      {
+        os << "Node " << node_id << ": ";
+        for (const auto& coord : coords)
+        {
+          os << std::format("{:10.6g},", coord);
+        }
+        os << "\n";
+      }
+      os << std::endl;
+    }
     os << "ElementBlocks\n";
+    os << "-------------\n";
     for (const auto& [eb_id, eb] : get_element_blocks())
     {
-      os << eb_id << ": ";
-      eb.print(os);
+      os << "Block " << eb_id << ": ";
+      eb.print(os, verbose);
     }
 
     os << "\nNodeSets\n";
+    os << "--------\n";
     for (const auto& [ns_id, ns] : get_node_sets())
     {
       os << "NodeSet " << ns_id << ": ";
-      ns.print(os);
+      ns.print(os, verbose);
     }
 
     os << "\nSideSets\n";
+    os << "--------\n";
     for (const auto& [ss_id, ss] : get_side_sets())
     {
       os << "SideSet " << ss_id << ": ";
-      ss.print(os);
+      ss.print(os, verbose);
     }
   }
 }
@@ -365,39 +377,36 @@ const std::vector<double>& Core::IO::Exodus::Mesh::get_node(const int node_id) c
 
 
 
-void Core::IO::Exodus::ElementBlock::print(std::ostream& os, bool verbose) const
+void Core::IO::Exodus::ElementBlock::print(std::ostream& os, VerbosityLevel verbose) const
 {
   using EnumTools::operator<<;
 
-  os << "Element Block, named: " << name << std::endl
-     << "of Shape: " << cell_type << std::endl
-     << "has " << elements.size() << " Elements" << std::endl;
-  if (verbose)
+  os << elements.size() << " Elements of Shape " << cell_type;
+  if (not name.empty()) os << " (block name: " << name << ")";
+  os << std::endl;
+
+  if (verbose == VerbosityLevel::detailed)
+  {
+    int nline = 0;
+    os << "Element numbers:";
+    for (const auto& element : elements)
+    {
+      if (nline++ % 12 == 0) os << "\n  ";
+      os << element.first << ",";
+    }
+    if (nline % 12 != 0) os << std::endl;
+    os << std::endl;
+  }
+  else if (verbose == VerbosityLevel::full)
   {
     for (const auto& [id, conn] : elements)
     {
-      os << "Ele " << id << ": ";
-      for (const int i : conn)
+      os << "  Element " << id << ": ";
+      for (const auto& node : conn)
       {
-        os << i << ",";
+        os << node << ",";
       }
       os << std::endl;
-    }
-  }
-}
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void Core::IO::Exodus::NodeSet::print(std::ostream& os, bool verbose) const
-{
-  os << "Node Set, named: " << name << '\n' << "has " << node_ids.size() << " Nodes" << std::endl;
-  if (verbose)
-  {
-    os << "Contains Nodes:" << std::endl;
-    for (const int id : node_ids)
-    {
-      os << id << ",";
     }
     os << std::endl;
   }
@@ -406,15 +415,40 @@ void Core::IO::Exodus::NodeSet::print(std::ostream& os, bool verbose) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Core::IO::Exodus::SideSet::print(std::ostream& os, bool verbose) const
+void Core::IO::Exodus::NodeSet::print(std::ostream& os, VerbosityLevel verbose) const
 {
-  os << "SideSet, named: " << name << std::endl << "has " << sides.size() << " Sides" << std::endl;
-  if (verbose)
+  if (not name.empty()) os << "(" << name << ")";
+  os << " contains " << node_ids.size() << " Nodes";
+  if (verbose == VerbosityLevel::full)
+  {
+    os << ": ";
+    int nline = 0;
+    int nodelength = std::to_string(*std::max_element(node_ids.begin(), node_ids.end())).size();
+    for (const int id : node_ids)
+    {
+      if (nline++ % 12 == 0) os << "\n  ";
+      os << std::setw(nodelength) << id << ",";
+    }
+    if (nline % 12 != 0) os << std::endl;
+  }
+  else
+    os << "\n";
+}
+
+
+/*----------------------------------------------------------------------*/
+/*----------------------------------------------------------------------*/
+void Core::IO::Exodus::SideSet::print(std::ostream& os, VerbosityLevel verbose) const
+{
+  if (not name.empty()) os << ", named: " << name << ",";
+  os << " contains " << sides.size() << " sides" << std::endl;
+
+  if (verbose == VerbosityLevel::full)
   {
     for (const auto& [side, ele_side] : sides)
     {
       os << "Side " << side << ": ";
-      os << "Ele: " << ele_side.at(0) << ", Side: " << ele_side.at(1) << std::endl;
+      os << "  Ele: " << ele_side.at(0) << ", Side: " << ele_side.at(1) << std::endl;
     }
   }
 }
