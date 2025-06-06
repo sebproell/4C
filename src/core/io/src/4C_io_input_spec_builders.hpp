@@ -258,17 +258,37 @@ namespace Core::IO
       std::string additional_info;
 
       /**
-       * A MatchEntry can only match a single node. Logical specs like all_of and one_of are not
-       * considered to match nodes themselves, as this is done by their children.
+       * A MatchEntry can only match a single node. For parameters and groups, this is the node
+       * that contains the key. For logical specs (all_of, one_of), this is the parent node that
+       * contains the content of the spec as children. This is always set to a valid node, even
+       * if the spec is not matched. In that case, the node ID refers to the node that the match
+       * was attempted on.
        */
       ryml::id_type matched_node{ryml::npos};
 
       enum class State : std::uint8_t
       {
+        /**
+         * Not a match at all.
+         */
         unmatched,
+        /**
+         * A perfect match.
+         */
         matched,
+        /**
+         * At least something matched. Depending on the type of spec, this can e.g. mean that
+         * the key of a group matched.
+         */
         partial,
+        /**
+         * The match was successfully defaulted.
+         */
         defaulted,
+        /**
+         * The spec was not required and was not matched. This is OK.
+         */
+        not_required,
       };
 
       State state{State::unmatched};
@@ -833,6 +853,8 @@ namespace Core::IO
       BasedOn<T> based_on;
       InputSpecBuilders::SelectionData data;
       InputSpec selector_spec;
+      //! The choices of the selection enhanced by the selector spec to allow full matching.
+      std::map<T, InputSpec> choices_for_matching;
 
       void parse(ValueParser& parser, InputParameterContainer& container) const;
       bool match(ConstYamlNodeRef node, InputParameterContainer& container,
@@ -1457,6 +1479,7 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
   // A child with the name of the spec exists, so this is at least a partial match.
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   auto entry_node = node.wrap(node.node[spec_name]);
+  match_entry.matched_node = entry_node.node.id();
 
   FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
 
@@ -1483,7 +1506,6 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     }
     container.add(name, value);
     match_entry.state = IO::Internal::MatchEntry::State::matched;
-    match_entry.matched_node = entry_node.node.id();
     if (data.on_parse_callback) data.on_parse_callback(container);
     return true;
   }
@@ -1498,11 +1520,11 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
       }
       choices_string.pop_back();
 
-      match_entry.additional_info = "wrong value, possible values: " + choices_string;
+      match_entry.additional_info = "has wrong value, possible values: " + choices_string;
     }
     else
     {
-      match_entry.additional_info = "wrong type, expected type: " + get_pretty_type_name<T>();
+      match_entry.additional_info = "has wrong type, expected type: " + get_pretty_type_name<T>();
     }
     return false;
   }
@@ -1676,6 +1698,7 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
   // A child with the name of the spec exists, so this is at least a partial match.
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   auto entry_node = node.wrap(node.node[spec_name]);
+  match_entry.matched_node = entry_node.node.id();
 
   FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
 
@@ -1701,7 +1724,7 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
     // catch all and error out below
   }
 
-  match_entry.additional_info = "wrong value, possible values: " + choices_string;
+  match_entry.additional_info = "has wrong value, possible values: " + choices_string;
   return false;
 }
 
@@ -1865,16 +1888,20 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
   match_entry.matched_node = group_node.node.id();
 
   // Parse into a separate container to avoid side effects if parsing fails.
-  InputParameterContainer subcontainer;
+  // First, only get the selector value.
+  InputParameterContainer selector_container;
   bool selector_found = selector_spec.impl().match(
-      group_node, subcontainer, match_entry.append_child(&selector_spec));
+      group_node, selector_container, match_entry.append_child(&selector_spec));
   if (!selector_found) return false;
 
-  auto selector_value = subcontainer.get<T>(based_on.selector);
-  FOUR_C_ASSERT(
-      based_on.choices.contains(selector_value), "Internal error: selector not found in choices.");
-  const auto& selected_spec = based_on.choices.at(selector_value);
+  auto selector_value = selector_container.get<T>(based_on.selector);
+  FOUR_C_ASSERT(choices_for_matching.contains(selector_value),
+      "Internal error: selector not found in choices.");
+  const auto& selected_spec = choices_for_matching.at(selector_value);
 
+  // The selected match will match the selector again (to ensure a full match of the node). Thus,
+  // we will also parse the selector value again.
+  InputParameterContainer subcontainer;
   auto choice_matched = selected_spec.impl().match(
       group_node, subcontainer, match_entry.append_child(&selected_spec));
   if (!choice_matched) return false;
@@ -2043,22 +2070,33 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
         EnumTools::enum_type_name<T>(), EnumTools::enum_name(e));
   }
 
-  std::size_t max_specs_for_choices = std::ranges::max_element(
-      based_on.choices, {}, [](const auto& spec) { return spec.second.impl().data.n_specs; })
-                                          ->second.impl()
-                                          .data.n_specs;
+  auto selector_spec = parameter<T>(based_on.selector, {});
+  std::map<T, Core::IO::InputSpec> choices_for_matching;
+  for (const auto& [choice, spec] : based_on.choices)
+  {
+    choices_for_matching.emplace(choice, all_of({selector_spec, spec}));
+  }
 
-  return IO::Internal::make_spec(Internal::SelectionSpec<T>{.group_name = name,
-                                     .based_on = based_on,
-                                     .data = data,
-                                     .selector_spec = parameter<T>(based_on.selector, {})},
+  std::size_t max_specs_for_choices_matching = std::ranges::max_element(
+      choices_for_matching, {}, [](const auto& spec) { return spec.second.impl().data.n_specs; })
+                                                   ->second.impl()
+                                                   .data.n_specs;
+
+  return IO::Internal::make_spec(
+      Internal::SelectionSpec<T>{
+          .group_name = name,
+          .based_on = based_on,
+          .data = data,
+          .selector_spec = std::move(selector_spec),
+          .choices_for_matching = std::move(choices_for_matching),
+      },
       {
           .name = name,
           .description = data.description,
           .required = data.required,
           .has_default_value = false,
           // one for the group, one for the selector, plus the number of specs for the choices.
-          .n_specs = 2 + max_specs_for_choices,
+          .n_specs = 2 + max_specs_for_choices_matching,
           .type = Internal::InputSpecType::selection,
       });
 }

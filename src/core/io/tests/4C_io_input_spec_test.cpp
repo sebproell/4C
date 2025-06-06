@@ -1086,7 +1086,7 @@ specs:
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          "Candidate parameter 'a' (wrong type, expected type: int)");
+          "Candidate parameter 'a' has wrong type, expected type: int");
     }
   }
 
@@ -1279,7 +1279,7 @@ specs:
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          "Candidate deprecated_selection 'enum' (wrong value, possible values: A|B)");
+          "Candidate deprecated_selection 'enum' has wrong value, possible values: A|B");
     }
   }
 
@@ -1384,24 +1384,33 @@ group:
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
 
-      root |= ryml::MAP;
-      root["a"] << 1;
-      root["b"] |= ryml::SEQ;
-      root["b"].append_child() << "b1";
-      root["b"].append_child() << "b2";
-      root["c"] << 2;
-      root["d"] << 42;
+      ryml::parse_in_arena(R"(a: 1
+b:
+    - b1
+    - b2
+c: 2
+d:
+  d1: 42
+  d2:
+    d3: 43
+)",
+          root);
+
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          "Matched the following input but the highlighted parts remain unused:\n\n"
-          "a: 1\n"
-          "b:\n"
-          "  - b1\n"
-          "  - b2\n"
-          "c: 2\n"
-          "[!] d: 42");
+          R"({
+  [ ] Matched parameter 'a'
+  [ ] Matched parameter 'b'
+  [ ] Matched parameter 'c'
+  [ ] Skipped optional group 'group'
+  [!] The following data remains unused:
+    d:
+      d1: 42
+      d2:
+        d3: 43
+})");
     }
   }
 
@@ -1449,6 +1458,7 @@ group:
     };
 
     {
+      SCOPED_TRACE("Multiple possible matches.");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
 
@@ -1459,18 +1469,20 @@ group:
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          "[X] Expected exactly one but matched multiple:\n"
-          "  [!] Candidate:\n"
-          "    {\n"
-          "      [ ] Matched parameter 'a'\n"
-          "      [ ] Matched parameter 'b'\n"
-          "    }\n"
-          "  [!] Candidate:\n"
-          "    {\n"
-          "      [ ] Matched parameter 'a'\n"
-          "      [ ] Matched parameter 'd'\n"
-          "    }");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, R"([X] Expected one of:
+    {
+      [ ] Matched parameter 'a'
+      [ ] Matched parameter 'b'
+      [!] The following data remains unused:
+        d: 2
+    }
+    {
+      [ ] Matched parameter 'a'
+      [ ] Matched parameter 'd'
+      [!] The following data remains unused:
+        b: b
+    })");
     }
   }
 
@@ -1952,27 +1964,40 @@ v: [1,2,3]
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          R"([!] Candidate group 'parameters'
-  {
-    [ ] Matched parameter 'start'
-    [ ] Defaulted parameter 'write_output'
-    [!] Candidate group 'TimeIntegration'
-      {
-        [X] Expected one of the following:
-          {
-            [!] Candidate group 'OST'
-              {
-                [!] Candidate parameter 'theta' (wrong type, expected type: double)
-              }
-          }
-          {
-            [!] Candidate group 'Special'
-              {
-                [!] Candidate parameter 'type' (wrong value, possible values: user|gemm)
-              }
-          }
-      }
-  })");
+          R"({
+  [!] Candidate group 'parameters'
+    {
+      [ ] Matched parameter 'start'
+      [ ] Defaulted parameter 'write_output'
+      [!] Candidate group 'TimeIntegration'
+        {
+          [X] Expected one of:
+            {
+              [!] Candidate group 'OST'
+                {
+                  [!] Candidate parameter 'theta' has wrong type, expected type: double
+                }
+              [!] The following data remains unused:
+                Special:
+                  type: invalid
+            }
+            {
+              [!] Candidate group 'Special'
+                {
+                  [!] Candidate parameter 'type' has wrong value, possible values: user|gemm
+                }
+              [!] The following data remains unused:
+                OST:
+                  theta: true
+            }
+          [!] The following data remains unused:
+            Special:
+              type: invalid
+            OST:
+              theta: true
+        }
+    }
+})");
     }
     {
       SCOPED_TRACE("Unused parts.");
@@ -1982,6 +2007,7 @@ v: [1,2,3]
   a: 1
 parameters:
   start: 0.0
+  unused: "abc"
   TimeIntegration:
     OST:
       theta: 0.5
@@ -1991,16 +2017,34 @@ parameters:
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          R"(Matched the following input but the highlighted parts remain unused:
-
-[!] data:
-  a: 1
-parameters:
-  start: 0.0
-  TimeIntegration:
-    OST:
-      theta: 0.5
-    [!] Special: )");
+          R"({
+  [!] Candidate group 'parameters'
+    {
+      [ ] Matched parameter 'start'
+      [ ] Defaulted parameter 'write_output'
+      [!] Candidate group 'TimeIntegration'
+        {
+          [X] Expected one of:
+            {
+              [!] Candidate group 'OST'
+                {
+                  [ ] Matched parameter 'theta'
+                }
+              [!] The following data remains unused:
+                Special: 
+            }
+          [!] The following data remains unused:
+            Special: 
+            OST:
+              theta: 0.5
+        }
+      [!] The following data remains unused:
+        unused: "abc"
+    }
+  [!] The following data remains unused:
+    data:
+      a: 1
+})");
     }
   }
 
@@ -2050,8 +2094,8 @@ b: 0.0)",
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception, R"({
-  [!] Candidate parameter 'a' (does not pass validation: in_range[0,50])
-  [!] Candidate parameter 'b' (does not pass validation: in_range(0,1.7976931348623157e+308])
+  [!] Candidate parameter 'a' does not pass validation: in_range[0,50]
+  [!] Candidate parameter 'b' does not pass validation: in_range(0,1.7976931348623157e+308]
 })");
     }
   }
@@ -2066,5 +2110,55 @@ b: 0.0)",
     };
     FOUR_C_EXPECT_THROW_WITH_MESSAGE(construct(), Core::Exception,
         "Default value '42' does not pass validation: in_range(0,10]");
+  }
+
+  TEST(InputSpecTest, OneOfOverlappingOptionsSingleParameter)
+  {
+    // This is a tricky case, where one_of the choices is a single parameter
+    const auto spec = one_of({parameter<int>("a"), all_of({
+                                                       parameter<int>("a"),
+                                                       parameter<int>("b"),
+                                                   })});
+
+    {
+      SCOPED_TRACE("Overlapping values.");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::parse_in_arena(R"(a: 1
+b: 2)",
+          &tree);
+      const ConstYamlNodeRef node(tree.rootref(), "");
+
+      InputParameterContainer container;
+      spec.match(node, container);
+      EXPECT_EQ(container.get<int>("a"), 1);
+      EXPECT_EQ(container.get<int>("b"), 2);
+    }
+  }
+
+  TEST(InputSpecTest, OneOfOverlappingOptionsSafeAllOf)
+  {
+    // This case is similar to the previous one, but already uses all_ofs.
+    const auto spec = one_of({
+        all_of({
+            parameter<int>("a"),
+            parameter<int>("b"),
+        }),
+        all_of({
+            parameter<int>("a"),
+            parameter<int>("b"),
+            parameter<int>("c"),
+        }),
+    });
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::parse_in_arena(R"(a: 1
+b: 2
+c: 3)",
+        &tree);
+    const ConstYamlNodeRef node(tree.rootref(), "");
+    InputParameterContainer container;
+    spec.match(node, container);
+    EXPECT_EQ(container.get<int>("a"), 1);
+    EXPECT_EQ(container.get<int>("b"), 2);
+    EXPECT_EQ(container.get<int>("c"), 3);
   }
 }  // namespace
