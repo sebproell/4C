@@ -7,6 +7,7 @@
 
 #include "4C_fluid_turbulence_boxfilter.hpp"
 
+#include "4C_fem_condition_utils.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_fluid_ele_action.hpp"
@@ -1334,7 +1335,9 @@ void FLD::Boxfilter::apply_box_filter_scatra(
     if (not scatradiscret_->node_row_map()->same_as(*(discret_->node_row_map())))
       FOUR_C_THROW("Fluid and ScaTra noderowmaps are NOT identical.");
 
-    // loop all nodes on the processor
+    auto fluid_node_ids_with_dirichlet = Core::Conditions::find_conditioned_node_ids(
+        *discret_, "Dirichlet", Core::Conditions::LookFor::locally_owned);
+
     for (int lnodeid = 0; lnodeid < scatradiscret_->num_my_row_nodes(); ++lnodeid)
     {
       // get the processor local node
@@ -1343,12 +1346,7 @@ void FLD::Boxfilter::apply_box_filter_scatra(
       // get the corresponding processor local fluid node
       Core::Nodes::Node* fluidlnode = discret_->l_row_node(lnodeid);
 
-      // do we have a dirichlet boundary conditions in the fluid
-      std::vector<Core::Conditions::Condition*> dbccond;
-      fluidlnode->get_condition("Dirichlet", dbccond);
-
-      // yes, we have a dirichlet boundary condition
-      if (dbccond.size() > 0)
+      if (fluid_node_ids_with_dirichlet.contains(fluidlnode->id()))
       {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
         if ((lnode->x()[0] != fluidlnode->x()[0]) or (lnode->x()[1] != fluidlnode->x()[1]) or
