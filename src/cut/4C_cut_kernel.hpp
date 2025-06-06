@@ -1209,7 +1209,7 @@ namespace Cut::Kernel
     static bool custom_allocator_run_;
 
    protected:
-    static size_t cln_byte_size_[CLN_LIMIT_ITER];
+    static size_t cln_byte_size_[Core::CLN::limit_iter];
 
     static std::unordered_map<size_t, int> memory_allocations_;
 
@@ -1393,7 +1393,7 @@ namespace Cut::Kernel
 
       bool conv;
       int iter = 0;
-      int prec = CLN_START_PRECISION;  // standard initial precision
+      int prec = Core::CLN::start_precision;  // standard initial precision
       Core::CLN::ClnWrapper err;
       Core::CLN::ClnWrapper cond_number;
       cond_infinity_ = false;  // test check if condition number is equal to infinity
@@ -1464,7 +1464,8 @@ namespace Cut::Kernel
           cond_infinity_ = true;
         }
 
-        err = compute_error(xyze, px, this->local_coordinates(), CLN_REFERENCE_PREC) * cond_number;
+        err = compute_error(xyze, px, this->local_coordinates(), Core::CLN::reference_precision) *
+              cond_number;
         // get location taking error into account
         //  NOTE: Here one might need to get tolerance in the local coordinates, similarly as
         //  done
@@ -1475,11 +1476,11 @@ namespace Cut::Kernel
         update_memory_usage(prec, iter);
 #endif
 
-        prec += CLN_INCREMENT_STEP;
+        prec += Core::CLN::increment_step;
         iter++;
 
       } while (((!conv) || (err > CLN_LIMIT_ERROR) || (cond_infinity_)) &&
-               (iter < CLN_LIMIT_ITER) && (prec < CLN_LIMIT_PREC));
+               (iter < Core::CLN::limit_iter) && (prec < Core::CLN::limit_precision));
 
 
       // safely convert the values back
@@ -1621,7 +1622,7 @@ namespace Cut::Kernel
     static bool first_run_;
 
     // sizes of cln variables with different preciion
-    static size_t cln_sizes_[CLN_LIMIT_ITER];
+    static size_t cln_sizes_[Core::CLN::limit_iter];
   };
 
 #endif
@@ -2448,7 +2449,7 @@ namespace Cut::Kernel
             Core::FE::cell_type_to_string(side_type).c_str());
       }
 
-      int prec = CLN_START_PRECISION;  // standard initial precision
+      int prec = Core::CLN::start_precision;  // standard initial precision
       bool conv;
       Core::CLN::ClnWrapper err;
       Core::CLN::ClnWrapper cond_number;
@@ -2548,16 +2549,16 @@ namespace Cut::Kernel
         zero_area = this->zero_area();
         if (not zero_area)
           err = compute_error(xyze_side, px, this->local_coordinates(), this->get_normal_vector(),
-                    this->signed_distance(), CLN_REFERENCE_PREC) *
+                    this->signed_distance(), Core::CLN::reference_precision) *
                 cond_number;
 #if DEBUG_MEMORY_ALLOCATION
         update_memory_usage(prec, iter);
 #endif
-        prec += CLN_INCREMENT_STEP;
+        prec += Core::CLN::increment_step;
         iter++;
 
       } while (((!conv) || (err > CLN_LIMIT_ERROR) || (cond_infinity_) || zero_area) &&
-               (prec < CLN_LIMIT_PREC) && (iter < CLN_LIMIT_ITER));
+               (prec < Core::CLN::limit_precision) && (iter < Core::CLN::limit_iter));
 
       // now since we converged or went over maximum allowed number of loops  we convert the
       // values back if we did not converge, by newton tolerance, but the error is small enough
@@ -2875,7 +2876,7 @@ namespace Cut::Kernel
     static bool first_run_;
 
     // sizes of cln variables with different preciion
-    static size_t cln_sizes_[CLN_LIMIT_ITER];
+    static size_t cln_sizes_[Core::CLN::limit_iter];
   };  // class ComputeDistanceAdaptivePrecision
 
 #endif
@@ -3843,7 +3844,7 @@ namespace Cut::Kernel
       }
 
       // Converting values for the calculation on the CLN
-      int prec = CLN_START_PRECISION;
+      int prec = Core::CLN::start_precision;
       int iter = 0;
       bool conv;
       Core::CLN::ClnWrapper err;
@@ -3922,18 +3923,18 @@ namespace Cut::Kernel
           cond_infinity_ = true;
         }
 
-        err = cond_number *
-              compute_error(xyze_side, xyze_edge, this->local_coordinates(), CLN_REFERENCE_PREC);
+        err = cond_number * compute_error(xyze_side, xyze_edge, this->local_coordinates(),
+                                Core::CLN::reference_precision);
 
         // compute scaled value of the error with respect to global coordinate
 #if DEBUG_MEMORY_ALLOCATION
         update_memory_usage(prec, iter);
 #endif
-        prec += CLN_INCREMENT_STEP;
+        prec += Core::CLN::increment_step;
         iter++;
         // increase the precision
       } while (((!conv) || (err > CLN_LIMIT_ERROR) || (cond_infinity_)) &&
-               (prec < CLN_LIMIT_PREC) && (iter < CLN_LIMIT_ITER));
+               (prec < Core::CLN::limit_precision) && (iter < Core::CLN::limit_iter));
 
 
       if ((not conv) && (err < CLN_LIMIT_ERROR) && (err > 0.0) &&
@@ -4232,7 +4233,7 @@ namespace Cut::Kernel
     PointOnSurfaceLoc edge_location_;
 
     // sizes of cln variables with different preciion
-    static size_t cln_sizes_[CLN_LIMIT_ITER];
+    static size_t cln_sizes_[Core::CLN::limit_iter];
   };  // class ComputeIntersectionAdaptivePrecision
 
 #endif

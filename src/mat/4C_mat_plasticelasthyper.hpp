@@ -18,8 +18,6 @@
 #include "4C_material_parameter_base.hpp"
 #include "4C_tsi_input.hpp"
 
-#define AS_CONVERGENCE_TOL 1.e-12
-
 FOUR_C_NAMESPACE_OPEN
 
 // forward declaration due to avoid header definition

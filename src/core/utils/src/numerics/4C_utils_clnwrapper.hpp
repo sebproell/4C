@@ -7,36 +7,36 @@
 
 #ifndef FOUR_C_UTILS_CLNWRAPPER_HPP
 #define FOUR_C_UTILS_CLNWRAPPER_HPP
+
 #include "4C_config.hpp"
 
 #include "4C_utils_exceptions.hpp"
 
 #include <cln/cln.h>
 
-#include <cstddef>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-
-// starting precision
-#define CLN_START_PRECISION 17
-
-// number of decimal points, that after (numerical)  failure of previous calculation
-#define CLN_INCREMENT_STEP 10
-
-// limiting maximum cln precision
-#define CLN_LIMIT_PREC 50
-
-// limiting number of increasing precision in the cut_kernel.H
-#define CLN_LIMIT_ITER 7
-
-// maximum achievable CLN precision value, error is computed with respect to it
-#define CLN_REFERENCE_PREC (CLN_START_PRECISION + CLN_LIMIT_ITER * CLN_INCREMENT_STEP)
 
 FOUR_C_NAMESPACE_OPEN
 
 namespace Core::CLN
 {
+  /// starting precision
+  constexpr int start_precision = 17;
+
+  /// number of decimal points, that after (numerical)  failure of previous calculation
+  constexpr int increment_step = 10;
+
+  /// limiting maximum cln precision
+  constexpr int limit_precision = 50;
+
+  /// limiting number of increasing precision in the cut_kernel.H
+  constexpr int limit_iter = 7;
+
+  /// maximum achievable CLN precision value, error is computed with respect to it
+  constexpr int reference_precision = start_precision + limit_iter * increment_step;
+
   /// Wrapper around CLN long floating point type, that gives better conversion operators,
   /// maintains precision across instances, caches converted double values and
   /// supports running in a custom memory manager
@@ -52,10 +52,8 @@ namespace Core::CLN
     ClnWrapper(const char* istring) : value_(istring) {}
     /// Initialization from the constant double
     ClnWrapper(double a) : value_(cached_convert(a, precision_)) {};
-    ClnWrapper(double& a)
-    {
-      FOUR_C_THROW("Constructor for not compile time double to cln::cl_F is not allowed");
-    }
+
+    ClnWrapper(double& a) = delete;
 
 
     inline ClnWrapper& operator+=(const ClnWrapper& other)
@@ -138,7 +136,7 @@ namespace Core::CLN
       precision_ = precision;
     }
 
-    static void reset_precision() { precision_ = CLN_START_PRECISION; }
+    static void reset_precision() { precision_ = start_precision; }
 
     static unsigned int get_precision() { return precision_; }
 
@@ -149,11 +147,12 @@ namespace Core::CLN
       cln::cl_inhibit_floating_point_underflow = true;
       static std::ios_base::Init StreamInitializer;
       // id in the cache containers
-      int prec_id = (Core::CLN::ClnWrapper::precision_ - CLN_START_PRECISION) / CLN_INCREMENT_STEP;
+      int prec_id =
+          (Core::CLN::ClnWrapper::precision_ - Core::CLN::start_precision) / increment_step;
       // we create special vector for zeroes, for faster lookup in the table, since they are
       // needed more often
       static std::vector<std::pair<cln::cl_F, bool>> zeros_cache(
-          static_cast<int>(double(CLN_REFERENCE_PREC) / double(CLN_INCREMENT_STEP)));
+          static_cast<int>(double(reference_precision) / double(increment_step)));
       // for some reason, native conversion from double 0.0 to CLN loses precision, so we convert
       // explicitly
       if (a == 0.0)
@@ -173,7 +172,7 @@ namespace Core::CLN
       using maptype = std::unordered_map<double, cln::cl_F>;
       // initialize look-up vector  with maximum number of different precisions
       static std::vector<maptype> clnval_cache(
-          static_cast<int>(double(CLN_REFERENCE_PREC) / double(CLN_INCREMENT_STEP)));
+          static_cast<int>(double(reference_precision) / double(increment_step)));
       auto it = clnval_cache[prec_id].find(a);
       if (it != clnval_cache[prec_id].end())
       {

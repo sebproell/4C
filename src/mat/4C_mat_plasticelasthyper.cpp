@@ -22,6 +22,11 @@
 
 FOUR_C_NAMESPACE_OPEN
 
+namespace
+{
+  constexpr double as_convergence_tol = 1e-12;
+}
+
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 Mat::PAR::PlasticElastHyper::PlasticElastHyper(const Core::Mat::PAR::Parameter::Data& matdata)
@@ -978,8 +983,8 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
   {
     if (activity_state_[gp] == false)  // gp switches state
     {
-      if (abs(ypl - absetatr_H) > AS_CONVERGENCE_TOL * inityield() ||
-          deltaDp->norm_inf() > AS_CONVERGENCE_TOL * inityield() / cpl())
+      if (abs(ypl - absetatr_H) > as_convergence_tol * inityield() ||
+          deltaDp->norm_inf() > as_convergence_tol * inityield() / cpl())
         *as_converged = false;
     }
     activity_state_[gp] = true;
@@ -989,8 +994,8 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
   {
     if (activity_state_[gp] == true)  // gp switches state
     {
-      if (abs(ypl - absetatr_H) > AS_CONVERGENCE_TOL * inityield() ||
-          deltaDp->norm_inf() > AS_CONVERGENCE_TOL * inityield() / cpl())
+      if (abs(ypl - absetatr_H) > as_convergence_tol * inityield() ||
+          deltaDp->norm_inf() > as_convergence_tol * inityield() / cpl())
         *as_converged = false;
     }
     activity_state_[gp] = false;
@@ -998,8 +1003,8 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
   }
 
   // check, if gp is at the corner of the root of the NCP function
-  if (abs(ypl - absetatr_H) > AS_CONVERGENCE_TOL * inityield() ||
-      deltaDp->norm_inf() > AS_CONVERGENCE_TOL * inityield() / cpl())
+  if (abs(ypl - absetatr_H) > as_convergence_tol * inityield() ||
+      deltaDp->norm_inf() > as_convergence_tol * inityield() / cpl())
   { /* gp not at the corner point */
   }
   else
@@ -1483,8 +1488,8 @@ void Mat::PlasticElastHyper::evaluate_nc_pand_spin(const Core::LinAlg::Matrix<3,
   {
     if (activity_state_[gp] == false)  // gp switches state
     {
-      if (abs(ypl - absetatr_H) > AS_CONVERGENCE_TOL * inityield() ||
-          deltaLp->norm_inf() > AS_CONVERGENCE_TOL * inityield() / cpl())
+      if (abs(ypl - absetatr_H) > as_convergence_tol * inityield() ||
+          deltaLp->norm_inf() > as_convergence_tol * inityield() / cpl())
         *as_converged = false;
     }
     activity_state_[gp] = true;
@@ -1494,8 +1499,8 @@ void Mat::PlasticElastHyper::evaluate_nc_pand_spin(const Core::LinAlg::Matrix<3,
   {
     if (activity_state_[gp] == true)  // gp switches state
     {
-      if (abs(ypl - absetatr_H) > AS_CONVERGENCE_TOL * inityield() ||
-          deltaLp->norm_inf() > AS_CONVERGENCE_TOL * inityield() / cpl())
+      if (abs(ypl - absetatr_H) > as_convergence_tol * inityield() ||
+          deltaLp->norm_inf() > as_convergence_tol * inityield() / cpl())
         *as_converged = false;
     }
     activity_state_[gp] = false;
@@ -1503,8 +1508,8 @@ void Mat::PlasticElastHyper::evaluate_nc_pand_spin(const Core::LinAlg::Matrix<3,
   }
 
   // check, if gp is at the corner of the root of the NCP function
-  if (abs(ypl - absetatr_H) > AS_CONVERGENCE_TOL * inityield() ||
-      deltaLp->norm_inf() > AS_CONVERGENCE_TOL * inityield() / cpl())
+  if (abs(ypl - absetatr_H) > as_convergence_tol * inityield() ||
+      deltaLp->norm_inf() > as_convergence_tol * inityield() / cpl())
   { /* gp not at the corner point */
   }
   else

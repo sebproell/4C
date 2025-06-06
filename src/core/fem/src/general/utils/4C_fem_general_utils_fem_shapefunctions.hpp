@@ -15,8 +15,6 @@
 #include <cmath>
 #include <type_traits>
 
-#define PY5TOL 1.0e-14
-
 FOUR_C_NAMESPACE_OPEN
 
 namespace Core::FE
@@ -324,7 +322,7 @@ namespace Core::FE
         NumberType ration;
 
         const NumberType check = t - 1.0;
-        if (Core::MathOperations<NumberType>::abs(check) > PY5TOL)
+        if (Core::MathOperations<NumberType>::abs(check) > 1e-14)
         {
           ration = (r * s * t) / (1.0 - t);
         }
@@ -957,7 +955,7 @@ namespace Core::FE
         NumberType rationdt;
 
         const NumberType check = t - 1.0;
-        if (Core::MathOperations<NumberType>::abs(check) > PY5TOL)
+        if (Core::MathOperations<NumberType>::abs(check) > 1e-14)
         {
           rationdr = s * t / (1.0 - t);
           rationds = r * t / (1.0 - t);

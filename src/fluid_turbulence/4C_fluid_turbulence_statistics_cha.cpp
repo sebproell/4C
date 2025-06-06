@@ -24,7 +24,10 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-#define NODETOL 1e-9
+namespace
+{
+  constexpr double node_tolerance = 1e-9;
+}
 
 /*----------------------------------------------------------------------
 
@@ -263,7 +266,7 @@ FLD::TurbulenceStatisticsCha::TurbulenceStatisticsCha(
     {
       Core::Nodes::Node* node = discret_->l_row_node(i);
 
-      if (inflowchannel_ and node->x()[0] > inflowmax_ + NODETOL) continue;
+      if (inflowchannel_ and node->x()[0] > inflowmax_ + node_tolerance) continue;
 
       availablecoords.insert(node->x()[dim_]);
 
@@ -1408,12 +1411,12 @@ void FLD::TurbulenceStatisticsCha::do_time_sample(
 
         // if we have an inflow channel problem, the nodes outside the inflow discretization are
         // not in the bounding box -> we don't consider them for averaging
-        if (node->x()[0] < (*boundingbox_)(1, 0) + NODETOL and
-            node->x()[1] < (*boundingbox_)(1, 1) + NODETOL and
-            node->x()[2] < (*boundingbox_)(1, 2) + NODETOL and
-            node->x()[0] > (*boundingbox_)(0, 0) - NODETOL and
-            node->x()[1] > (*boundingbox_)(0, 1) - NODETOL and
-            node->x()[2] > (*boundingbox_)(0, 2) - NODETOL)
+        if (node->x()[0] < (*boundingbox_)(1, 0) + node_tolerance and
+            node->x()[1] < (*boundingbox_)(1, 1) + node_tolerance and
+            node->x()[2] < (*boundingbox_)(1, 2) + node_tolerance and
+            node->x()[0] > (*boundingbox_)(0, 0) - node_tolerance and
+            node->x()[1] > (*boundingbox_)(0, 1) - node_tolerance and
+            node->x()[2] > (*boundingbox_)(0, 2) - node_tolerance)
         {
           // this node belongs to the plane under consideration
           if (node->x()[dim_] < *plane + 2e-9 && node->x()[dim_] > *plane - 2e-9)
@@ -1540,12 +1543,12 @@ void FLD::TurbulenceStatisticsCha::do_loma_time_sample(const Core::LinAlg::Vecto
 
         // if we have an inflow channel problem, the nodes outside the inflow discretization are
         // not in the bounding box -> we don't consider them for averaging
-        if (node->x()[0] < (*boundingbox_)(1, 0) + NODETOL and
-            node->x()[1] < (*boundingbox_)(1, 1) + NODETOL and
-            node->x()[2] < (*boundingbox_)(1, 2) + NODETOL and
-            node->x()[0] > (*boundingbox_)(0, 0) - NODETOL and
-            node->x()[1] > (*boundingbox_)(0, 1) - NODETOL and
-            node->x()[2] > (*boundingbox_)(0, 2) - NODETOL)
+        if (node->x()[0] < (*boundingbox_)(1, 0) + node_tolerance and
+            node->x()[1] < (*boundingbox_)(1, 1) + node_tolerance and
+            node->x()[2] < (*boundingbox_)(1, 2) + node_tolerance and
+            node->x()[0] > (*boundingbox_)(0, 0) - node_tolerance and
+            node->x()[1] > (*boundingbox_)(0, 1) - node_tolerance and
+            node->x()[2] > (*boundingbox_)(0, 2) - node_tolerance)
         {
           // this node belongs to the plane under consideration
           if (node->x()[dim_] < *plane + 2e-9 && node->x()[dim_] > *plane - 2e-9)
@@ -1593,12 +1596,12 @@ void FLD::TurbulenceStatisticsCha::do_loma_time_sample(const Core::LinAlg::Vecto
 
         // if we have an inflow channel problem, the nodes outside the inflow discretization are
         // not in the bounding box -> we don't consider them for averaging
-        if (node->x()[0] < (*boundingbox_)(1, 0) + NODETOL and
-            node->x()[1] < (*boundingbox_)(1, 1) + NODETOL and
-            node->x()[2] < (*boundingbox_)(1, 2) + NODETOL and
-            node->x()[0] > (*boundingbox_)(0, 0) - NODETOL and
-            node->x()[1] > (*boundingbox_)(0, 1) - NODETOL and
-            node->x()[2] > (*boundingbox_)(0, 2) - NODETOL)
+        if (node->x()[0] < (*boundingbox_)(1, 0) + node_tolerance and
+            node->x()[1] < (*boundingbox_)(1, 1) + node_tolerance and
+            node->x()[2] < (*boundingbox_)(1, 2) + node_tolerance and
+            node->x()[0] > (*boundingbox_)(0, 0) - node_tolerance and
+            node->x()[1] > (*boundingbox_)(0, 1) - node_tolerance and
+            node->x()[2] > (*boundingbox_)(0, 2) - node_tolerance)
         {
           // this node belongs to the plane under consideration
           if (node->x()[dim_] < *plane + 2e-9 && node->x()[dim_] > *plane - 2e-9)
@@ -1698,12 +1701,12 @@ void FLD::TurbulenceStatisticsCha::do_scatra_time_sample(const Core::LinAlg::Vec
 
         // if we have an inflow channel problem, the nodes outside the inflow discretization are
         // not in the bounding box -> we don't consider them for averaging
-        if (node->x()[0] < (*boundingbox_)(1, 0) + NODETOL and
-            node->x()[1] < (*boundingbox_)(1, 1) + NODETOL and
-            node->x()[2] < (*boundingbox_)(1, 2) + NODETOL and
-            node->x()[0] > (*boundingbox_)(0, 0) - NODETOL and
-            node->x()[1] > (*boundingbox_)(0, 1) - NODETOL and
-            node->x()[2] > (*boundingbox_)(0, 2) - NODETOL)
+        if (node->x()[0] < (*boundingbox_)(1, 0) + node_tolerance and
+            node->x()[1] < (*boundingbox_)(1, 1) + node_tolerance and
+            node->x()[2] < (*boundingbox_)(1, 2) + node_tolerance and
+            node->x()[0] > (*boundingbox_)(0, 0) - node_tolerance and
+            node->x()[1] > (*boundingbox_)(0, 1) - node_tolerance and
+            node->x()[2] > (*boundingbox_)(0, 2) - node_tolerance)
         {
           // this node belongs to the plane under consideration
           if (node->x()[dim_] < *plane + 2e-9 && node->x()[dim_] > *plane - 2e-9)
@@ -1751,12 +1754,12 @@ void FLD::TurbulenceStatisticsCha::do_scatra_time_sample(const Core::LinAlg::Vec
 
         // if we have an inflow channel problem, the nodes outside the inflow discretization are
         // not in the bounding box -> we don't consider them for averaging
-        if (node->x()[0] < (*boundingbox_)(1, 0) + NODETOL and
-            node->x()[1] < (*boundingbox_)(1, 1) + NODETOL and
-            node->x()[2] < (*boundingbox_)(1, 2) + NODETOL and
-            node->x()[0] > (*boundingbox_)(0, 0) - NODETOL and
-            node->x()[1] > (*boundingbox_)(0, 1) - NODETOL and
-            node->x()[2] > (*boundingbox_)(0, 2) - NODETOL)
+        if (node->x()[0] < (*boundingbox_)(1, 0) + node_tolerance and
+            node->x()[1] < (*boundingbox_)(1, 1) + node_tolerance and
+            node->x()[2] < (*boundingbox_)(1, 2) + node_tolerance and
+            node->x()[0] > (*boundingbox_)(0, 0) - node_tolerance and
+            node->x()[1] > (*boundingbox_)(0, 1) - node_tolerance and
+            node->x()[2] > (*boundingbox_)(0, 2) - node_tolerance)
         {
           // this node belongs to the plane under consideration
           if (node->x()[dim_] < *plane + 2e-9 && node->x()[dim_] > *plane - 2e-9)
@@ -2515,12 +2518,12 @@ void FLD::TurbulenceStatisticsCha::evaluate_pointwise_mean_values_in_planes()
 
       // if we have an inflow channel problem, the nodes outside the inflow discretization are
       // not in the bounding box -> we don't consider them for averaging
-      if (node->x()[0] < (*boundingbox_)(1, 0) + NODETOL and
-          node->x()[1] < (*boundingbox_)(1, 1) + NODETOL and
-          node->x()[2] < (*boundingbox_)(1, 2) + NODETOL and
-          node->x()[0] > (*boundingbox_)(0, 0) - NODETOL and
-          node->x()[1] > (*boundingbox_)(0, 1) - NODETOL and
-          node->x()[2] > (*boundingbox_)(0, 2) - NODETOL)
+      if (node->x()[0] < (*boundingbox_)(1, 0) + node_tolerance and
+          node->x()[1] < (*boundingbox_)(1, 1) + node_tolerance and
+          node->x()[2] < (*boundingbox_)(1, 2) + node_tolerance and
+          node->x()[0] > (*boundingbox_)(0, 0) - node_tolerance and
+          node->x()[1] > (*boundingbox_)(0, 1) - node_tolerance and
+          node->x()[2] > (*boundingbox_)(0, 2) - node_tolerance)
       {
         // this node belongs to the plane under consideration
         if (node->x()[dim_] < *plane + 2e-9 && node->x()[dim_] > *plane - 2e-9)

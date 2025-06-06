@@ -8,9 +8,6 @@
 #ifndef FOUR_C_MAT_ELAST_ANISO_STRUCTURALTENSOR_STRATEGY_HPP
 #define FOUR_C_MAT_ELAST_ANISO_STRUCTURALTENSOR_STRATEGY_HPP
 
-#define numbgp 50
-#define twice 100
-
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
