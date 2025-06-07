@@ -781,7 +781,7 @@ void ScaTra::TimIntHDG::fd_check()
       // impose perturbation and update interior variables
       if (phinp_->get_map().my_gid(colgid))
       {
-        if (phinp_->sum_into_global_value(colgid, 0, eps))
+        if (phinp_->sum_into_global_value(colgid, eps))
           FOUR_C_THROW(
               "Perturbation could not be imposed on state vector for finite difference check!");
       }
