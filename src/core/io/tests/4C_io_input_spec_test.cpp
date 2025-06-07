@@ -2302,4 +2302,34 @@ c: 3)",
           "InputParameterContainer type");
     }
   }
+
+  TEST(InputSpecTest, StoreStructWithDefaulted)
+  {
+    struct S
+    {
+      int a;
+      int b;
+      std::string s;
+    };
+
+    auto spec = group_struct<S>("s",
+        {
+            parameter<int>("a", {.default_value = 1, .store = in_struct(&S::a)}),
+            parameter<int>("b", {.default_value = 2, .store = in_struct(&S::b)}),
+            parameter<std::string>("s", {.default_value = "default", .store = in_struct(&S::s)}),
+        },
+        {.defaultable = true});
+
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+
+    ConstYamlNodeRef node(root, "");
+    InputParameterContainer container;
+    spec.match(node, container);
+
+    const auto& s = container.get<S>("s");
+    EXPECT_EQ(s.a, 1);
+    EXPECT_EQ(s.b, 2);
+    EXPECT_EQ(s.s, "default");
+  }
 }  // namespace

@@ -122,7 +122,10 @@ namespace
       }
       else if (entry->impl().has_default_value())
       {
-        entry->impl().set_default_value(container);
+        Core::IO::InputSpecBuilders::Storage storage;
+        Core::IO::Internal::init_storage_with_container(storage);
+        entry->impl().set_default_value(storage);
+        container.merge(std::any_cast<Core::IO::InputParameterContainer&&>(std::move(storage)));
       }
     }
   }
@@ -663,10 +666,8 @@ bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
   {
     if (data.defaultable)
     {
-      FOUR_C_ASSERT_ALWAYS(Internal::holds<InputParameterContainer>(container),
-          "Not implemented: cannot default a group into a non-container storage type.");
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
-      set_default_value(std::any_cast<InputParameterContainer&>(container));
+      set_default_value(container);
       return true;
     }
 
@@ -700,11 +701,16 @@ bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
 }
 
 
-void Core::IO::Internal::GroupSpec::set_default_value(
-    Core::IO::InputParameterContainer& container) const
+void Core::IO::Internal::GroupSpec::set_default_value(InputSpecBuilders::Storage& container) const
 {
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
-  if (spec.impl().has_default_value()) spec.impl().set_default_value(container.group(name));
+  if (spec.impl().has_default_value())
+  {
+    InputSpecBuilders::Storage subcontainer;
+    init_my_storage(subcontainer);
+    spec.impl().set_default_value(subcontainer);
+    move_my_storage(container, std::move(subcontainer));
+  }
 }
 
 
@@ -802,8 +808,7 @@ bool Core::IO::Internal::AllOfSpec::match(ConstYamlNodeRef node,
 }
 
 
-void Core::IO::Internal::AllOfSpec::set_default_value(
-    Core::IO::InputParameterContainer& container) const
+void Core::IO::Internal::AllOfSpec::set_default_value(InputSpecBuilders::Storage& container) const
 {
   for (const auto& spec : specs)
   {
@@ -972,8 +977,7 @@ bool Core::IO::Internal::OneOfSpec::match(ConstYamlNodeRef node,
 }
 
 
-void Core::IO::Internal::OneOfSpec::set_default_value(
-    Core::IO::InputParameterContainer& container) const
+void Core::IO::Internal::OneOfSpec::set_default_value(InputSpecBuilders::Storage& container) const
 {
   FOUR_C_THROW("Implementation error: OneOfSpec cannot have a default value.");
 }
@@ -1097,17 +1101,22 @@ bool Core::IO::Internal::ListSpec::match(ConstYamlNodeRef node,
 }
 
 
-void Core::IO::Internal::ListSpec::set_default_value(
-    Core::IO::InputParameterContainer& container) const
+void Core::IO::Internal::ListSpec::set_default_value(InputSpecBuilders::Storage& container) const
 {
+  FOUR_C_ASSERT_ALWAYS(Internal::holds<InputParameterContainer>(container),
+      "Internal error: ListSpec can only set default values for InputParameterContainer.");
   std::vector<InputParameterContainer> default_list(data.size);
 
-  for (auto& subcontainer : default_list)
+  for (auto& list_entry : default_list)
   {
+    InputSpecBuilders::Storage subcontainer;
+    Internal::init_storage_with_container(subcontainer);
     spec.impl().set_default_value(subcontainer);
+    // Move the subcontainer into the list entry.
+    list_entry = std::any_cast<InputParameterContainer&&>(std::move(subcontainer));
   }
 
-  container.add_list(name, std::move(default_list));
+  std::any_cast<InputParameterContainer>(container).add_list(name, std::move(default_list));
 }
 
 

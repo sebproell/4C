@@ -424,7 +424,7 @@ namespace Core::IO
       virtual bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           MatchEntry& match_entry) const = 0;
 
-      virtual void set_default_value(InputParameterContainer& container) const = 0;
+      virtual void set_default_value(InputSpecBuilders::Storage& container) const = 0;
 
       //! Emit metadata. This function always emits into a map, i.e., the implementation must
       //! insert keys and values into the yaml emitter.
@@ -485,20 +485,9 @@ namespace Core::IO
         return wrapped.match(node, container, match_entry);
       }
 
-      void set_default_value(InputParameterContainer& container) const override
+      void set_default_value(InputSpecBuilders::Storage& container) const override
       {
-        if constexpr (Internal::has_set_default_value<T>)
-        {
-          wrapped.set_default_value(container);
-        }
-        else
-        {
-          FOUR_C_ASSERT(has_default_value(),
-              "Implementation error: this function should only be called if the wrapped type has "
-              "an optional default value.");
-
-          container.add(wrapped.name, std::get<1>(wrapped.data.default_value));
-        }
+        wrapped.set_default_value(container);
       }
 
       void emit_metadata(YamlNodeRef node) const override { wrapped.emit_metadata(node); }
@@ -853,6 +842,7 @@ namespace Core::IO
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
       [[nodiscard]] bool has_correct_size(
           const T& val, const InputSpecBuilders::Storage& container) const;
     };
@@ -881,6 +871,7 @@ namespace Core::IO
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
     };
 
     //! Helper for selection().
@@ -910,7 +901,7 @@ namespace Core::IO
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
     };
 
     struct AllOfSpec
@@ -920,7 +911,7 @@ namespace Core::IO
       void parse(ValueParser& parser, InputParameterContainer& container) const;
       bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
@@ -940,7 +931,7 @@ namespace Core::IO
       void parse(ValueParser& parser, InputParameterContainer& container) const;
       bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
@@ -963,7 +954,7 @@ namespace Core::IO
       bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
 
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
 
       void print(std::ostream& stream, std::size_t indent) const;
 
@@ -984,7 +975,7 @@ namespace Core::IO
       void parse(ValueParser& parser, InputParameterContainer& container) const;
       bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
@@ -1565,7 +1556,7 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     // It is OK to not encounter an optional parameter
     if (data.default_value.index() == 1)
     {
-      data.store(container, T{std::get<1>(data.default_value)});
+      set_default_value(container);
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
@@ -1703,6 +1694,13 @@ bool Core::IO::Internal::ParameterSpec<T>::emit(YamlNodeRef node,
   {
     return false;
   }
+}
+
+template <Core::IO::SupportedType T>
+void Core::IO::Internal::ParameterSpec<T>::set_default_value(
+    InputSpecBuilders::Storage& container) const
+{
+  data.store(container, T{std::get<1>(data.default_value)});
 }
 
 
@@ -1943,6 +1941,13 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::emit(YamlNodeRef node,
 }
 
 template <typename T>
+void Core::IO::Internal::DeprecatedSelectionSpec<T>::set_default_value(
+    InputSpecBuilders::Storage& container) const
+{
+  data.store(container, T{std::get<1>(data.default_value)});
+}
+
+template <typename T>
   requires(std::is_enum_v<T>)
 void Core::IO::Internal::SelectionSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
@@ -2095,7 +2100,7 @@ bool Core::IO::Internal::SelectionSpec<T>::emit(YamlNodeRef node,
 template <typename T>
   requires(std::is_enum_v<T>)
 void Core::IO::Internal::SelectionSpec<T>::set_default_value(
-    InputParameterContainer& container) const
+    InputSpecBuilders::Storage& container) const
 {
   FOUR_C_THROW("Internal error: set_default_value() called on a SelectionSpec.");
 }
