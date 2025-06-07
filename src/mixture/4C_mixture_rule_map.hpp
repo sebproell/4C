@@ -10,11 +10,11 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_field.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_mixture_rule.hpp"
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 FOUR_C_NAMESPACE_OPEN
@@ -41,7 +41,7 @@ namespace Mixture
       /// @{
       const double initial_reference_density_;
       const int num_constituents_;
-      const std::unordered_map<int, std::vector<double>> mass_fractions_map_;
+      const Core::IO::InputField<std::vector<double>> mass_fractions_field_;
       /// @}
     };
 

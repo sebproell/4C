@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_field.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_utils_function.hpp"
 
@@ -276,23 +277,22 @@ namespace Mat::Utils::Muscle
    * pattern: global element id: time_0, activation_0; time_1, activation_1; ....
    *
    * The time- and space-dependent activation function ft is computed by accessing the
-   * activation_map for a given element id and time. Evaluating the activation_map at the element id
-   * (key) returns a vector of pairs (value). Those vector entries correspond to a time-"activation
-   * value"-pair. The activation at the current time t_current is found via linear interpolation
-   * between the prescribed time-"activation value"-pairs.
+   * activation_field for a given element id and time. Evaluating the activation_field at the
+   * element id (key) returns a vector of pairs (value). Those vector entries correspond to a
+   * time-"activation value"-pair. The activation at the current time t_current is found via linear
+   * interpolation between the prescribed time-"activation value"-pairs.
    *
    * The time-dependent optimal active stress is obtained by sigma_opt = sigma_max * ft
    *
    * @param[in]     sigma_max Optimal (i.e. maximal) active stress
-   * @param[in]     activation_map Map to be evaluated
+   * @param[in]     activation_field field containing a vector of time-activation pairs for each
+   *                                 element id
    * @param[in]     t_current Current time
-   * @param[in]     activation_map_key Global element id serving as key for the defined mapping
-   * @param[out]    sigma_max_ft Time-/space-dependent optimal active stress for the given element
-   *                             id and t_current
+   * @param[in]     element_id Global element id serving as key for the defined mapping
    */
   double evaluate_time_space_dependent_active_stress_by_map(const double sigma_max,
-      const std::unordered_map<int, std::vector<std::pair<double, double>>>& activation_map,
-      const double t_current, const int activation_map_key);
+      const Core::IO::InputField<std::vector<std::pair<double, double>>>& activation_field,
+      const double t_current, const int element_id);
 
   /*!
    *  @brief Returns the fiber stretch in the current configuration

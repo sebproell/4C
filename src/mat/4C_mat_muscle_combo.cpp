@@ -9,6 +9,7 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
+#include "4C_io_input_field.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_derivatives.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
@@ -24,7 +25,7 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace
 {
-  using ActivationMapType = std::unordered_map<int, std::vector<std::pair<double, double>>>;
+  using ActivationFieldType = Core::IO::InputField<std::vector<std::pair<double, double>>>;
 
   Mat::PAR::MuscleCombo::ActivationParameterVariant get_activation_params(
       const Core::Mat::PAR::Parameter::Data& matdata,
@@ -38,7 +39,7 @@ namespace
     }
     else if (activation_type == Inpar::Mat::ActivationType::map)
     {
-      return matdata.parameters.get<const ActivationMapType>("MAPFILE_CONTENT");
+      return matdata.parameters.get<ActivationFieldType>("MAPFILE_CONTENT");
     }
     else
       return std::monostate{};
@@ -52,7 +53,7 @@ namespace
           function_id);
     }
 
-    Mat::MuscleCombo::ActivationEvaluatorVariant operator()(const ActivationMapType& map) const
+    Mat::MuscleCombo::ActivationEvaluatorVariant operator()(const ActivationFieldType& map) const
     {
       return &map;
     }
@@ -67,7 +68,7 @@ namespace
 
   struct ActivationEvalVisitor
   {
-    double operator()(const ActivationMapType*& map) const
+    double operator()(const ActivationFieldType* map) const
     {
       // use one-based element ids in the pattern file (corresponding to the ones in the input file)
       return Mat::Utils::Muscle::evaluate_time_space_dependent_active_stress_by_map(
