@@ -23,6 +23,7 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_rebalance_binning_based.hpp"
+#include "4C_structure_new_timint_base.hpp"
 #include "4C_xfem_condition_manager.hpp"
 #include "4C_xfem_dofset.hpp"
 #include "4C_xfem_edgestab.hpp"
@@ -534,8 +535,7 @@ void FLD::XFluidFluid::add_eos_pres_stab_to_emb_layer()
   // need to export residual_col to embedded fluid residual
   {
     Core::LinAlg::Vector<double> res_tmp(embedded_fluid_->residual()->get_map(), true);
-    Epetra_Export exporter(
-        residual_col->get_map().get_epetra_block_map(), res_tmp.get_map().get_epetra_block_map());
+    Core::LinAlg::Export exporter(residual_col->get_map(), res_tmp.get_map());
     int err = res_tmp.export_to(*residual_col, exporter, Add);
     if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     embedded_fluid_->residual()->update(1.0, res_tmp, 1.0);

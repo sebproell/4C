@@ -80,7 +80,7 @@ namespace Constraints
    protected:
     std::map<int, double> penalties_;  ///< map containing penalty values
     std::map<int, double> rho_;        ///< map containing rhos for augmented Lagrange
-    std::shared_ptr<Epetra_Export>
+    std::shared_ptr<Core::LinAlg::Export>
         errorexport_;  ///< exporter for redundant and non-overlapping maps
     std::shared_ptr<Core::LinAlg::Import>
         errorimport_;  ///< importer for redundant and non-overlapping maps

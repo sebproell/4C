@@ -15,8 +15,6 @@
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_utils_function_of_time.hpp"
 
-#include <Epetra_Export.h>
-
 #include <iostream>
 
 FOUR_C_NAMESPACE_OPEN
@@ -47,8 +45,7 @@ Constraints::ConstraintPenalty::ConstraintPenalty(
     // initialize maps and importer
     errormap_ = std::make_shared<Core::LinAlg::Map>(numele, nummyele, 0, actdisc_->get_comm());
     rederrormap_ = Core::LinAlg::allreduce_e_map(*errormap_);
-    errorexport_ = std::make_shared<Epetra_Export>(
-        rederrormap_->get_epetra_block_map(), errormap_->get_epetra_block_map());
+    errorexport_ = std::make_shared<Core::LinAlg::Export>(*rederrormap_, *errormap_);
     errorimport_ = std::make_shared<Core::LinAlg::Import>(*rederrormap_, *errormap_);
     acterror_ = std::make_shared<Core::LinAlg::Vector<double>>(*rederrormap_);
     initerror_ = std::make_shared<Core::LinAlg::Vector<double>>(*rederrormap_);

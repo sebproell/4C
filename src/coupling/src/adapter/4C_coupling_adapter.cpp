@@ -13,8 +13,6 @@
 #include "4C_geometric_search_matchingoctree.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 
-#include <Epetra_Export.h>
-
 #include <algorithm>
 #include <numeric>
 
@@ -95,12 +93,10 @@ void Coupling::Adapter::Coupling::setup_condition_coupling(
   }
 
   masterdofmap_ = mastercondmap;
-  masterexport_ = std::make_shared<Epetra_Export>(
-      permmasterdofmap_->get_epetra_block_map(), masterdofmap_->get_epetra_block_map());
+  masterexport_ = std::make_shared<Core::LinAlg::Export>(*permmasterdofmap_, *masterdofmap_);
 
   slavedofmap_ = slavecondmap;
-  slaveexport_ = std::make_shared<Epetra_Export>(
-      permslavedofmap_->get_epetra_block_map(), slavedofmap_->get_epetra_block_map());
+  slaveexport_ = std::make_shared<Core::LinAlg::Export>(*permslavedofmap_, *slavedofmap_);
 }
 
 /*----------------------------------------------------------------------*/
@@ -170,10 +166,8 @@ void Coupling::Adapter::Coupling::setup_coupling(
   permmasterdofmap_ = permmasterdofmap;
   permslavedofmap_ = permslavedofmap;
 
-  masterexport_ = std::make_shared<Epetra_Export>(
-      permmasterdofmap_->get_epetra_block_map(), masterdofmap_->get_epetra_block_map());
-  slaveexport_ = std::make_shared<Epetra_Export>(
-      permslavedofmap_->get_epetra_block_map(), slavedofmap_->get_epetra_block_map());
+  masterexport_ = std::make_shared<Core::LinAlg::Export>(*permmasterdofmap_, *masterdofmap_);
+  slaveexport_ = std::make_shared<Core::LinAlg::Export>(*permslavedofmap_, *slavedofmap_);
 }
 
 
@@ -254,14 +248,12 @@ void Coupling::Adapter::Coupling::setup_coupling(
   // get master dof maps and build exporter
   permmasterdofmap_ = std::make_shared<Core::LinAlg::Map>(*slavedis.dof_row_map());
   masterdofmap_ = std::make_shared<Core::LinAlg::Map>(*masterdis.dof_row_map());
-  masterexport_ = std::make_shared<Epetra_Export>(
-      permmasterdofmap_->get_epetra_block_map(), masterdofmap_->get_epetra_block_map());
+  masterexport_ = std::make_shared<Core::LinAlg::Export>(*permmasterdofmap_, *masterdofmap_);
 
   // get slave dof maps and build exporter
   permslavedofmap_ = std::make_shared<Core::LinAlg::Map>(*masterdis.dof_row_map());
   slavedofmap_ = std::make_shared<Core::LinAlg::Map>(*slavedis.dof_row_map());
-  slaveexport_ = std::make_shared<Epetra_Export>(
-      permslavedofmap_->get_epetra_block_map(), slavedofmap_->get_epetra_block_map());
+  slaveexport_ = std::make_shared<Core::LinAlg::Export>(*permslavedofmap_, *slavedofmap_);
 }
 
 /*----------------------------------------------------------------------*/
@@ -374,8 +366,7 @@ void Coupling::Adapter::Coupling::finish_coupling(const Core::FE::Discretization
   std::shared_ptr<Core::LinAlg::Vector<int>> permmasternodevec =
       std::make_shared<Core::LinAlg::Vector<int>>(*slavenodemap);
 
-  Epetra_Export masternodeexport(
-      permslavenodemap->get_epetra_block_map(), slavenodemap->get_epetra_block_map());
+  Core::LinAlg::Export masternodeexport(*permslavenodemap, *slavenodemap);
   const int err = permmasternodevec->export_to(*masternodevec, masternodeexport, Insert);
   if (err) FOUR_C_THROW("failed to export master nodes");
 
@@ -432,8 +423,9 @@ std::vector<int> Coupling::Adapter::Coupling::build_dof_vector_from_num_dof(cons
 void Coupling::Adapter::Coupling::build_dof_maps(const Core::FE::Discretization& dis,
     const Core::LinAlg::Map& nodemap, const Core::LinAlg::Map& permnodemap,
     std::shared_ptr<const Core::LinAlg::Map>& dofmap,
-    std::shared_ptr<const Core::LinAlg::Map>& permdofmap, std::shared_ptr<Epetra_Export>& exporter,
-    const std::vector<int>& coupled_dofs, const int nds) const
+    std::shared_ptr<const Core::LinAlg::Map>& permdofmap,
+    std::shared_ptr<Core::LinAlg::Export>& exporter, const std::vector<int>& coupled_dofs,
+    const int nds) const
 {
   // communicate dofs
 
@@ -524,8 +516,7 @@ void Coupling::Adapter::Coupling::build_dof_maps(const Core::FE::Discretization&
 
   // prepare communication plan to create a dofmap out of a permuted
   // dof map
-  exporter = std::make_shared<Epetra_Export>(
-      permdofmap->get_epetra_block_map(), dofmap->get_epetra_block_map());
+  exporter = std::make_shared<Core::LinAlg::Export>(*permdofmap, *dofmap);
 }
 
 
@@ -769,9 +760,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::master_
 
   // OK. You cannot use the same exporter for different matrices. So we
   // recreate one all the time... This has to be optimized later on.
-  Epetra_Export exporter(
-      permmasterdofmap_->get_epetra_block_map(), masterdofmap_->get_epetra_block_map());
-  int err = permsm->import(sm, exporter, Insert);
+  Core::LinAlg::Export exporter(*permmasterdofmap_, *masterdofmap_);
+  int err = permsm->import(sm, exporter.get_epetra_export(), Insert);
 
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
@@ -796,9 +786,8 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Coupling::Adapter::Coupling::slave_t
 
   // OK. You cannot use the same exporter for different matrices. So we
   // recreate one all the time... This has to be optimized later on.
-  Epetra_Export exporter(
-      permslavedofmap_->get_epetra_block_map(), slavedofmap_->get_epetra_block_map());
-  int err = permsm->import(sm, exporter, Insert);
+  Core::LinAlg::Export exporter(*permslavedofmap_, *slavedofmap_);
+  int err = permsm->import(sm, exporter.get_epetra_export(), Insert);
 
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
@@ -926,14 +915,14 @@ const Core::LinAlg::Map& Coupling::Adapter::Coupling::permuted_sl_dof_map() cons
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Export>& Coupling::Adapter::Coupling::ma_exporter_ptr()
+std::shared_ptr<Core::LinAlg::Export>& Coupling::Adapter::Coupling::ma_exporter_ptr()
 {
   return masterexport_;
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-const Epetra_Export& Coupling::Adapter::Coupling::ma_exporter() const
+const Core::LinAlg::Export& Coupling::Adapter::Coupling::ma_exporter() const
 {
   if (!masterexport_) FOUR_C_THROW("The masterexport_ has not been initialized correctly!");
   return *masterexport_;
@@ -941,14 +930,14 @@ const Epetra_Export& Coupling::Adapter::Coupling::ma_exporter() const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-std::shared_ptr<Epetra_Export>& Coupling::Adapter::Coupling::sl_exporter_ptr()
+std::shared_ptr<Core::LinAlg::Export>& Coupling::Adapter::Coupling::sl_exporter_ptr()
 {
   return slaveexport_;
 }
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-const Epetra_Export& Coupling::Adapter::Coupling::sl_exporter() const
+const Core::LinAlg::Export& Coupling::Adapter::Coupling::sl_exporter() const
 {
   if (!slaveexport_) FOUR_C_THROW("The slaveexport_ has not been initialized correctly!");
   return *slaveexport_;

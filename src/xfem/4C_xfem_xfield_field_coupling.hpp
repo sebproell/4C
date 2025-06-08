@@ -208,14 +208,14 @@ namespace XFEM
           const Core::LinAlg::Map& min_nodemap, const Core::LinAlg::Map& min_permnodemap,
           std::shared_ptr<const Core::LinAlg::Map>& min_dofmap,
           std::shared_ptr<const Core::LinAlg::Map>& min_permdofmap,
-          std::shared_ptr<Epetra_Export>& min_exporter, const Core::LinAlg::Map& max_nodemap,
+          std::shared_ptr<Core::LinAlg::Export>& min_exporter, const Core::LinAlg::Map& max_nodemap,
           std::map<int, unsigned>& my_mindofpernode) const;
 
       void build_max_dof_maps(const Core::FE::Discretization& max_dis,
           const Core::LinAlg::Map& max_nodemap, const Core::LinAlg::Map& max_permnodemap,
           std::shared_ptr<const Core::LinAlg::Map>& max_dofmap,
           std::shared_ptr<const Core::LinAlg::Map>& max_permdofmap,
-          std::shared_ptr<Epetra_Export>& max_exporter,
+          std::shared_ptr<Core::LinAlg::Export>& max_exporter,
           const std::map<int, unsigned>& my_mindofpernode) const;
 
       inline const enum MinDofDiscretization& min_dof_dis() const { return min_dof_dis_; }
@@ -237,10 +237,10 @@ namespace XFEM
       //@{
 
       //! permuted master dof map to master dof map exporter
-      std::shared_ptr<Epetra_Export> nodal_masterexport_;
+      std::shared_ptr<Core::LinAlg::Export> nodal_masterexport_;
 
       //! permuted slave dof map to slave dof map exporter
-      std::shared_ptr<Epetra_Export> nodal_slaveexport_;
+      std::shared_ptr<Core::LinAlg::Export> nodal_slaveexport_;
 
       //@}
     };  // class Coupling

@@ -13,8 +13,6 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linalg_vector.hpp"
 
-#include <Epetra_Export.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -137,13 +135,12 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
     {
       if (exporter_ == nullptr)
       {
-        exporter_ = std::make_shared<Epetra_Export>(
-            permsrcmap.get_epetra_block_map(), src.row_map().get_epetra_block_map());
+        exporter_ = std::make_shared<Core::LinAlg::Export>(permsrcmap, src.row_map());
       }
 
       std::shared_ptr<Epetra_CrsMatrix> permsrc =
           std::make_shared<Epetra_CrsMatrix>(::Copy, permsrcmap.get_epetra_map(), 0);
-      int err = permsrc->Import(*src.epetra_matrix(), *exporter_, Insert);
+      int err = permsrc->Import(*src.epetra_matrix(), exporter_->get_epetra_export(), Insert);
       if (err) FOUR_C_THROW("Import failed with err={}", err);
 
       permsrc->FillComplete(src.domain_map().get_epetra_map(), permsrcmap.get_epetra_map());

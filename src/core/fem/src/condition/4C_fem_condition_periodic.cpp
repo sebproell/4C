@@ -1125,8 +1125,7 @@ void Core::Conditions::PeriodicBoundaryConditions::redistribute_and_create_dof_c
     Core::LinAlg::Graph nodegraph(Copy, *newrownodemap, 108, false);
 
     {
-      Epetra_Export exporter(
-          discret_->node_row_map()->get_epetra_block_map(), newrownodemap->get_epetra_block_map());
+      Core::LinAlg::Export exporter(*discret_->node_row_map(), *newrownodemap);
       int err = nodegraph.export_to(oldnodegraph->get_epetra_crs_graph(), exporter, Add);
       if (err < 0) FOUR_C_THROW("Graph export returned err={}", err);
     }

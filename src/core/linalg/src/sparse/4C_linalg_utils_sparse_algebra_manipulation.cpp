@@ -47,8 +47,7 @@ void Core::LinAlg::export_to(
     }
     else if (sourceunique && targetunique)
     {
-      Epetra_Export exporter(
-          source.get_map().get_epetra_block_map(), target.get_map().get_epetra_block_map());
+      Core::LinAlg::Export exporter(source.get_map(), target.get_map());
       int err = target.Export(source, exporter, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
@@ -124,8 +123,7 @@ void Core::LinAlg::export_to(
     }
     else if (sourceunique && targetunique)
     {
-      Epetra_Export exporter(
-          source.get_map().get_epetra_block_map(), target.get_map().get_epetra_block_map());
+      Core::LinAlg::Export exporter(source.get_map(), target.get_map());
       int err = target.export_to(source, exporter, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;
@@ -139,8 +137,7 @@ void Core::LinAlg::export_to(
     }
     else if (!sourceunique && targetunique)
     {
-      Epetra_Export exporter(
-          source.get_map().get_epetra_block_map(), target.get_map().get_epetra_block_map());
+      Core::LinAlg::Export exporter(source.get_map(), target.get_map());
       int err = target.export_to(source, exporter, Insert);
       if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
       return;

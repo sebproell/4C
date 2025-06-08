@@ -11,9 +11,10 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_map.hpp"
+#include "4C_utils_owner_or_view.hpp"
 
+#include <Epetra_Export.h>
 #include <Epetra_Import.h>
-
 FOUR_C_NAMESPACE_OPEN
 
 namespace Core::LinAlg
@@ -26,9 +27,18 @@ namespace Core::LinAlg
     const Epetra_Import& get_epetra_import() const;
 
 
-
    private:
     Utils::OwnerOrView<Epetra_Import> import_;
+  };
+  class Export
+  {
+   public:
+    Export(const Map& targetMap, const Map& sourceMap);
+
+    const Epetra_Export& get_epetra_export() const;
+
+   private:
+    Utils::OwnerOrView<Epetra_Export> export_;
   };
 }  // namespace Core::LinAlg
 

@@ -218,7 +218,7 @@ namespace Coupling::Adapter
     std::vector<int> lidvector_;
 
     /// exporter to communicate matrix to new row map
-    std::shared_ptr<Epetra_Export> exporter_;
+    std::shared_ptr<Core::LinAlg::Export> exporter_;
   };
 
 

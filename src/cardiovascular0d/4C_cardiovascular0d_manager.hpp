@@ -349,7 +349,7 @@ namespace Utils
         cardiovascular0dmap_;  ///< unique map of (reduced) Cardiovascular0D values
     std::shared_ptr<Core::LinAlg::Map>
         redcardiovascular0dmap_;  ///< fully redundant map of Cardiovascular0D values
-    std::shared_ptr<Epetra_Export>
+    std::shared_ptr<Core::LinAlg::Export>
         cardvasc0dimpo_;  ///< importer for fully redundant Cardiovascular0D
                           ///< vector into distributed one
     std::shared_ptr<Core::LinAlg::Vector<double>> cv0ddofincrement_;  ///< increment of cvdof
