@@ -21,6 +21,7 @@ Core::LinAlg::Import::Import::Import(const Map& targetMap, const Map& sourceMap)
           targetMap.get_epetra_block_map(), sourceMap.get_epetra_block_map()))
 {
 }
+
 //! Getter for raw Epetra_Import reference
 const Epetra_Import& Core::LinAlg::Import::Import::get_epetra_import() const { return *import_; }
 
@@ -30,6 +31,13 @@ Core::LinAlg::Export::Export::Export(const Map& targetMap, const Map& sourceMap)
           targetMap.get_epetra_block_map(), sourceMap.get_epetra_block_map()))
 {
 }
+
+//! Copy constructor
+Core::LinAlg::Export::Export(const Export& exporter)
+    : export_(Utils::make_owner<Epetra_Export>(exporter.get_epetra_export()))
+{
+}
+
 //! Getter for raw Epetra_Import reference
 const Epetra_Export& Core::LinAlg::Export::Export::get_epetra_export() const { return *export_; }
 

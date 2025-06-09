@@ -35,6 +35,8 @@ namespace Core::LinAlg
    public:
     Export(const Map& targetMap, const Map& sourceMap);
 
+    Export(const Export& exprter);
+
     const Epetra_Export& get_epetra_export() const;
 
    private:

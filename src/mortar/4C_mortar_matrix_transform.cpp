@@ -164,7 +164,7 @@ void Mortar::MatrixRowColTransformer::unredistributed_to_redistributed(
 }
 
 /*----------------------------------------------------------------------------*
- *------------------------------------------------------------------------- ---*/
+ *----------------------------------------------------------------------------*/
 void Mortar::MatrixRowColTransformer::reset_exporter(
     std::shared_ptr<Core::LinAlg::Export>& exporter) const
 {
