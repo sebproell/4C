@@ -122,7 +122,7 @@ void Mortar::MatrixRowColTransformer::redistributed_to_unredistributed(
 {
   throw_if_not_init_and_setup();
 
-  const int err = dst_mat.import(src_mat, *slave_to_master_[bt], Insert);
+  const int err = dst_mat.import(src_mat, slave_to_master_[bt]->get_epetra_export(), Insert);
 
   // reset the distributor of the exporter after use
   reset_exporter(slave_to_master_[bt]);
@@ -155,7 +155,7 @@ void Mortar::MatrixRowColTransformer::unredistributed_to_redistributed(
 {
   throw_if_not_init_and_setup();
 
-  const int err = dst_mat.import(src_mat, *master_to_slave_[bt], Insert);
+  const int err = dst_mat.import(src_mat, master_to_slave_[bt]->get_epetra_export(), Insert);
 
   // reset the distributor of the exporter after use
   reset_exporter(master_to_slave_[bt]);
@@ -164,7 +164,7 @@ void Mortar::MatrixRowColTransformer::unredistributed_to_redistributed(
 }
 
 /*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
+ *------------------------------------------------------------------------- ---*/
 void Mortar::MatrixRowColTransformer::reset_exporter(
     std::shared_ptr<Core::LinAlg::Export>& exporter) const
 {
