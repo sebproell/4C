@@ -23,7 +23,6 @@
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_rebalance_binning_based.hpp"
-#include "4C_structure_new_timint_base.hpp"
 #include "4C_xfem_condition_manager.hpp"
 #include "4C_xfem_dofset.hpp"
 #include "4C_xfem_edgestab.hpp"

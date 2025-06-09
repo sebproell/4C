@@ -33,7 +33,7 @@ namespace Core::LinAlg
   class Export
   {
    public:
-    Export(const Map& targetMap, const Map& sourceMap);
+    Export(const Map& target_map, const Map& source_map);
 
     Export(const Export& exprter);
 
