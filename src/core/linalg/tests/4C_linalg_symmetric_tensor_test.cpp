@@ -388,6 +388,21 @@ namespace
 ])");
   }
 
+  TEST(SymmetricTensorViewTest, MakeSymmetricTensorView)
+  {
+    std::array<double, 6> data = {1.1, 2.2, 3.3, 1.2, 2.3, 1.3};
+
+    Core::LinAlg::SymmetricTensorView<double, 3, 3> t2_view =
+        Core::LinAlg::make_symmetric_tensor_view<3, 3>(data.data());
+
+    EXPECT_DOUBLE_EQ(t2_view(0, 0), 1.1);
+    EXPECT_DOUBLE_EQ(t2_view(1, 1), 2.2);
+    EXPECT_DOUBLE_EQ(t2_view(2, 2), 3.3);
+    EXPECT_DOUBLE_EQ(t2_view(0, 1), 1.2);
+    EXPECT_DOUBLE_EQ(t2_view(1, 2), 2.3);
+    EXPECT_DOUBLE_EQ(t2_view(0, 2), 1.3);
+  }
+
 }  // namespace
 
 FOUR_C_NAMESPACE_CLOSE
