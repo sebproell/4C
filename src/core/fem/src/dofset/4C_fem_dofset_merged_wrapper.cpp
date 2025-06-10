@@ -11,7 +11,6 @@
 #include "4C_geometric_search_matchingoctree.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 
-#include <Epetra_Export.h>
 
 FOUR_C_NAMESPACE_OPEN
 

@@ -123,8 +123,7 @@ void Constraints::ConstrManager::setup(
     // have to know all values of the constraints and Lagrange multipliers
     redconstrmap_ = Core::LinAlg::allreduce_e_map(*constrmap_);
     // importer
-    conimpo_ = std::make_shared<Epetra_Export>(
-        redconstrmap_->get_epetra_block_map(), constrmap_->get_epetra_block_map());
+    conimpo_ = std::make_shared<Core::LinAlg::Export>(*redconstrmap_, *constrmap_);
     // sum up initial values
     refbasevalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*constrmap_);
     std::shared_ptr<Core::LinAlg::Vector<double>> refbaseredundant =
@@ -191,8 +190,7 @@ void Constraints::ConstrManager::setup(
     monitormap_ =
         std::make_shared<Core::LinAlg::Map>(num_monitor_id_, nummyele, 0, actdisc_->get_comm());
     redmonmap_ = Core::LinAlg::allreduce_e_map(*monitormap_);
-    monimpo_ = std::make_shared<Epetra_Export>(
-        redmonmap_->get_epetra_block_map(), monitormap_->get_epetra_block_map());
+    monimpo_ = std::make_shared<Core::LinAlg::Export>(*redmonmap_, *monitormap_);
     monitorvalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*monitormap_);
     initialmonvalues_ = std::make_shared<Core::LinAlg::Vector<double>>(*monitormap_);
 

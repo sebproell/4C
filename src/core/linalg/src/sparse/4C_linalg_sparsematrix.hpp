@@ -615,6 +615,12 @@ namespace Core::LinAlg
       return sysmat_->Import(*A.epetra_matrix(), importer, combine_mode);
     }
 
+    int import(
+        const SparseMatrix& A, const Epetra_Export& exporter, Epetra_CombineMode combine_mode)
+    {
+      return sysmat_->Import(*A.epetra_matrix(), exporter, combine_mode);
+    }
+
     //@}
 
     /// Add one operator to another

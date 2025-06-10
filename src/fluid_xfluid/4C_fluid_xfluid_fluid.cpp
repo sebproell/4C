@@ -534,8 +534,7 @@ void FLD::XFluidFluid::add_eos_pres_stab_to_emb_layer()
   // need to export residual_col to embedded fluid residual
   {
     Core::LinAlg::Vector<double> res_tmp(embedded_fluid_->residual()->get_map(), true);
-    Epetra_Export exporter(
-        residual_col->get_map().get_epetra_block_map(), res_tmp.get_map().get_epetra_block_map());
+    Core::LinAlg::Export exporter(residual_col->get_map(), res_tmp.get_map());
     int err = res_tmp.export_to(*residual_col, exporter, Add);
     if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     embedded_fluid_->residual()->update(1.0, res_tmp, 1.0);

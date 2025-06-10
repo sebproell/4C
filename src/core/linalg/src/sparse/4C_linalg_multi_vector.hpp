@@ -176,11 +176,11 @@ namespace Core::LinAlg
       return vector_->Import(A, Importer.get_epetra_import(), CombineMode, Indexor);
     }
 
-    //! Imports an Epetra_DistObject using the Epetra_Export object.
-    int Import(const Epetra_SrcDistObject& A, const Epetra_Export& Exporter,
+    //! Imports an Epetra_DistObject using the Core::LinAlg::Export object.
+    int Import(const Epetra_SrcDistObject& A, const Core::LinAlg::Export& Exporter,
         Epetra_CombineMode CombineMode, const Epetra_OffsetIndex* Indexor = nullptr)
     {
-      return vector_->Import(A, Exporter, CombineMode, Indexor);
+      return vector_->Import(A, Exporter.get_epetra_export(), CombineMode, Indexor);
     }
 
     int Export(const Epetra_SrcDistObject& A, const Core::LinAlg::Import& Importer,
@@ -189,10 +189,10 @@ namespace Core::LinAlg
       return vector_->Export(A, Importer.get_epetra_import(), CombineMode, Indexor);
     }
 
-    int Export(const Epetra_SrcDistObject& A, const Epetra_Export& Exporter,
+    int Export(const Epetra_SrcDistObject& A, const Core::LinAlg::Export& Exporter,
         Epetra_CombineMode CombineMode, const Epetra_OffsetIndex* Indexor = nullptr)
     {
-      return vector_->Export(A, Exporter, CombineMode, Indexor);
+      return vector_->Export(A, Exporter.get_epetra_export(), CombineMode, Indexor);
     }
 
     int SumIntoGlobalValue(int GlobalRow, int VectorIndex, double ScalarValue)

@@ -12,7 +12,6 @@
 #include "4C_coupling_adapter.hpp"
 #include "4C_fem_discretization.hpp"
 
-#include <Epetra_Export.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -250,10 +249,8 @@ void XFEM::XFieldField::Coupling::save_node_maps(
   permmasternodemap_ = permmasternodemap;
   permslavenodemap_ = permslavenodemap;
 
-  nodal_masterexport_ = std::make_shared<Epetra_Export>(
-      permmasternodemap->get_epetra_block_map(), masternodemap->get_epetra_block_map());
-  nodal_slaveexport_ = std::make_shared<Epetra_Export>(
-      permslavenodemap->get_epetra_block_map(), slavenodemap->get_epetra_block_map());
+  nodal_masterexport_ = std::make_shared<Core::LinAlg::Export>(*permmasternodemap, *masternodemap);
+  nodal_slaveexport_ = std::make_shared<Core::LinAlg::Export>(*permslavenodemap, *slavenodemap);
 }
 
 /*----------------------------------------------------------------------------*
@@ -262,7 +259,7 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
     const Core::LinAlg::Map& min_nodemap, const Core::LinAlg::Map& min_permnodemap,
     std::shared_ptr<const Core::LinAlg::Map>& min_dofmap,
     std::shared_ptr<const Core::LinAlg::Map>& min_permdofmap,
-    std::shared_ptr<Epetra_Export>& min_exporter, const Core::LinAlg::Map& max_nodemap,
+    std::shared_ptr<Core::LinAlg::Export>& min_exporter, const Core::LinAlg::Map& max_nodemap,
     std::map<int, unsigned>& my_mindofpernode) const
 {
   std::vector<int> dofmapvec;
@@ -321,8 +318,7 @@ void XFEM::XFieldField::Coupling::build_min_dof_maps(const Core::FE::Discretizat
 
   /* prepare communication plan to create a dofmap out of a permuted
    * dof map */
-  min_exporter = std::make_shared<Epetra_Export>(
-      min_permdofmap->get_epetra_block_map(), min_dofmap->get_epetra_block_map());
+  min_exporter = std::make_shared<Core::LinAlg::Export>(*min_permdofmap, *min_dofmap);
 }
 
 /*----------------------------------------------------------------------------*
@@ -331,7 +327,7 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
     const Core::LinAlg::Map& max_nodemap, const Core::LinAlg::Map& max_permnodemap,
     std::shared_ptr<const Core::LinAlg::Map>& max_dofmap,
     std::shared_ptr<const Core::LinAlg::Map>& max_permdofmap,
-    std::shared_ptr<Epetra_Export>& max_exporter,
+    std::shared_ptr<Core::LinAlg::Export>& max_exporter,
     const std::map<int, unsigned>& my_mindofpernode) const
 {
   std::vector<int> dofmapvec;
@@ -390,8 +386,7 @@ void XFEM::XFieldField::Coupling::build_max_dof_maps(const Core::FE::Discretizat
 
   /* prepare communication plan to create a dofmap out of a permuted
    * dof map */
-  max_exporter = std::make_shared<Epetra_Export>(
-      max_permdofmap->get_epetra_block_map(), max_dofmap->get_epetra_block_map());
+  max_exporter = std::make_shared<Core::LinAlg::Export>(*max_permdofmap, *max_dofmap);
 }
 
 FOUR_C_NAMESPACE_CLOSE

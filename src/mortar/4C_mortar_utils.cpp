@@ -383,10 +383,10 @@ std::shared_ptr<Core::LinAlg::SparseMatrix> Mortar::redistribute(
     const Core::LinAlg::SparseMatrix& src, const Core::LinAlg::Map& permrowmap,
     const Core::LinAlg::Map& permdomainmap)
 {
-  Epetra_Export exporter(permrowmap.get_epetra_block_map(), src.row_map().get_epetra_block_map());
+  Core::LinAlg::Export exporter(permrowmap, src.row_map());
 
   auto permsrc = std::make_shared<Core::LinAlg::SparseMatrix>(permrowmap, src.max_num_entries());
-  int err = permsrc->import(src, exporter, Insert);
+  int err = permsrc->import(src, exporter.get_epetra_export(), Insert);
   if (err) FOUR_C_THROW("Import failed with err={}", err);
 
   permsrc->complete(permdomainmap, permrowmap);

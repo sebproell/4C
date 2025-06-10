@@ -3595,8 +3595,8 @@ void Wear::WearInterface::assemble_inactive_wear_rhs_master(Epetra_FEVector& ina
     }
   }
 
-  Epetra_Export exp(allredi->get_epetra_block_map(), inactivedofs->get_epetra_block_map());
-  inactiverhs.Export(*rhs, exp, Add);
+  Core::LinAlg::Export exp(*allredi, *inactivedofs);
+  inactiverhs.Export(*rhs, exp.get_epetra_export(), Add);
 
 
   return;
@@ -3794,8 +3794,8 @@ void Wear::WearInterface::assemble_wear_cond_rhs_master(Epetra_FEVector& RHS)
     }
   }
 
-  Epetra_Export exp(slmastern->get_epetra_block_map(), slipmn_->get_epetra_block_map());
-  RHS.Export(*rhs, exp, Add);
+  Core::LinAlg::Export exp(*slmastern, *slipmn_);
+  RHS.Export(*rhs, exp.get_epetra_export(), Add);
 
   return;
 }

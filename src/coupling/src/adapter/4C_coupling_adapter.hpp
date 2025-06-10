@@ -454,7 +454,7 @@ namespace Coupling::Adapter
     void build_dof_maps(const Core::FE::Discretization& dis, const Core::LinAlg::Map& nodemap,
         const Core::LinAlg::Map& permnodemap, std::shared_ptr<const Core::LinAlg::Map>& dofmap,
         std::shared_ptr<const Core::LinAlg::Map>& permdofmap,
-        std::shared_ptr<Epetra_Export>& exporter, const std::vector<int>& coupled_dofs,
+        std::shared_ptr<Core::LinAlg::Export>& exporter, const std::vector<int>& coupled_dofs,
         const int nds = 0) const;
 
    protected:
@@ -478,12 +478,12 @@ namespace Coupling::Adapter
     const Core::LinAlg::Map& permuted_sl_dof_map() const;
 
     /// access the permuted master dof map to master dof map exporter
-    std::shared_ptr<Epetra_Export>& ma_exporter_ptr();
-    const Epetra_Export& ma_exporter() const;
+    std::shared_ptr<Core::LinAlg::Export>& ma_exporter_ptr();
+    const Core::LinAlg::Export& ma_exporter() const;
 
     /// access the permuted slave dof map to slave dof map exporter
-    std::shared_ptr<Epetra_Export>& sl_exporter_ptr();
-    const Epetra_Export& sl_exporter() const;
+    std::shared_ptr<Core::LinAlg::Export>& sl_exporter_ptr();
+    const Core::LinAlg::Export& sl_exporter() const;
 
     /// @}
 
@@ -514,10 +514,10 @@ namespace Coupling::Adapter
     //@{
 
     //! permuted master dof map to master dof map exporter
-    std::shared_ptr<Epetra_Export> masterexport_;
+    std::shared_ptr<Core::LinAlg::Export> masterexport_;
 
     //! permuted slave dof map to slave dof map exporter
-    std::shared_ptr<Epetra_Export> slaveexport_;
+    std::shared_ptr<Core::LinAlg::Export> slaveexport_;
 
     //@}
 

@@ -15,7 +15,6 @@
 #include "4C_linalg_transfer.hpp"
 
 #include <Epetra_CrsGraph.h>
-#include <Epetra_Export.h>
 #include <Epetra_FECrsGraph.h>
 
 #include <memory>
@@ -89,12 +88,10 @@ namespace Core::LinAlg
       return graph_->ExtractMyRowView(LocalRow, NumIndices, Indices);
     }
 
-    const Epetra_Export* get_epetra_exporter() { return graph_->Exporter(); };
-
-    int export_to(const Epetra_SrcDistObject& A, const Epetra_Export& Exporter,
+    int export_to(const Epetra_SrcDistObject& A, const Core::LinAlg::Export& Exporter,
         Epetra_CombineMode CombineMode, const Epetra_OffsetIndex* Indexor = nullptr)
     {
-      return graph_->Export(A, Exporter, CombineMode, Indexor);
+      return graph_->Export(A, Exporter.get_epetra_export(), CombineMode, Indexor);
     }
 
     //! Transform to local index space. Perform other operations to allow optimal matrix operations.

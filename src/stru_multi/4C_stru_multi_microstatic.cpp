@@ -1134,7 +1134,7 @@ void MultiScale::MicroStatic::static_homogenization(Core::LinAlg::Matrix<6, 1>* 
     stiff_dirich_->multiply(false, *iterinc, temp);
 
     Core::LinAlg::MultiVector<double> fexp(*pdof_, 9);
-    int err = fexp.Import(temp, importp_->get_epetra_import(), Insert);
+    int err = fexp.Import(temp, *importp_, Insert);
     if (err) FOUR_C_THROW("Export of boundary 'forces' failed with err={}", err);
 
     // multiply manually d_matrix_ and fexp because d_matrix_ is not distributed as usual

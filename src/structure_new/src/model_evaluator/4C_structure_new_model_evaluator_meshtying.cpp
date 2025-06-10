@@ -129,8 +129,8 @@ void Solid::ModelEvaluator::Meshtying::setup()
               std::make_shared<Core::LinAlg::Vector<double>>(
                   *(strategy_ptr_->non_redist_slave_row_dofs()), true);
 
-          Epetra_Export exporter(Xslavemod->get_map().get_epetra_block_map(),
-              strategy_ptr_->non_redist_slave_row_dofs()->get_epetra_block_map());
+          Core::LinAlg::Export exporter(
+              Xslavemod->get_map(), *strategy_ptr_->non_redist_slave_row_dofs());
 
           int err = original_vec->export_to(*Xslavemod, exporter, Insert);
           if (err) FOUR_C_THROW("Import failed with err={}", err);

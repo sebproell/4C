@@ -293,11 +293,11 @@ namespace Constraints
         constrdofset_;                              ///< degrees of freedom of lagrange multipliers
     std::shared_ptr<Core::LinAlg::Map> constrmap_;  ///< unique map of constraint values
     std::shared_ptr<Core::LinAlg::Map> redconstrmap_;  ///< fully redundant map of constraint values
-    std::shared_ptr<Epetra_Export>
+    std::shared_ptr<Core::LinAlg::Export>
         conimpo_;  ///< importer for fully redundant constraint vector into distributed one
     std::shared_ptr<Core::LinAlg::Map> monitormap_;  ///< unique map of monitor values
     std::shared_ptr<Core::LinAlg::Map> redmonmap_;   ///< fully redundant map of monitor values
-    std::shared_ptr<Epetra_Export>
+    std::shared_ptr<Core::LinAlg::Export>
         monimpo_;  ///< importer for fully redundant monitor vector into distributed one
     std::shared_ptr<Core::LinAlg::Vector<double>>
         referencevalues_;  ///< reference at current time step to constrain values to

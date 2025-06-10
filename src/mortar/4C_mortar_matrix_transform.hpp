@@ -15,8 +15,6 @@
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_pairedvector.hpp"
 
-#include <Epetra_Export.h>
-
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -24,13 +22,14 @@ FOUR_C_NAMESPACE_OPEN
 namespace Core::LinAlg
 {
   class SparseMatrix;
+  class Export;
 }  // namespace Core::LinAlg
 namespace Mortar
 {
   class MatrixRowColTransformer
   {
     using plain_block_export_pairs =
-        Core::Gen::Pairedvector<CONTACT::MatBlockType, std::shared_ptr<Epetra_Export>>;
+        Core::Gen::Pairedvector<CONTACT::MatBlockType, std::shared_ptr<Core::LinAlg::Export>>;
 
    public:
     using plain_block_map_pairs =
@@ -81,7 +80,7 @@ namespace Mortar
       if (not issetup_) FOUR_C_THROW("Call setup() first!");
     }
 
-    void reset_exporter(std::shared_ptr<Epetra_Export>& exporter) const;
+    void reset_exporter(std::shared_ptr<Core::LinAlg::Export>& exporter) const;
 
    private:
     bool isinit_;

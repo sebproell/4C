@@ -1188,8 +1188,7 @@ void FLD::FluidImplicitTimeInt::evaluate_mat_and_rhs(Teuchos::ParameterList& ele
     std::shared_ptr<Core::LinAlg::Vector<double>> tmp =
         Core::LinAlg::create_vector(*discret_->dof_row_map(), true);
 
-    Epetra_Export exporter(
-        residual_col->get_map().get_epetra_block_map(), tmp->get_map().get_epetra_block_map());
+    Core::LinAlg::Export exporter(residual_col->get_map(), tmp->get_map());
     int err = tmp->export_to(*residual_col, exporter, Add);
     if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
     residual_->update(1.0, *tmp, 1.0);
@@ -2011,8 +2010,7 @@ void FLD::FluidImplicitTimeInt::evaluate_fluid_edge_based(
   //------------------------------------------------------------
   // need to export residual_col to systemvector1 (residual_)
   Core::LinAlg::Vector<double> res_tmp(systemvector1.get_map(), false);
-  Epetra_Export exporter(
-      residual_col->get_map().get_epetra_block_map(), res_tmp.get_map().get_epetra_block_map());
+  Core::LinAlg::Export exporter(residual_col->get_map(), res_tmp.get_map());
   int err2 = res_tmp.export_to(*residual_col, exporter, Add);
   if (err2) FOUR_C_THROW("Export using exporter returned err={}", err2);
   systemvector1.update(1.0, res_tmp, 1.0);

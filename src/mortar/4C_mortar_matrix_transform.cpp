@@ -8,8 +8,8 @@
 #include "4C_mortar_matrix_transform.hpp"
 
 #include "4C_linalg_sparsematrix.hpp"
+#include "4C_linalg_transfer.hpp"
 
-#include <Epetra_Export.h>
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -84,15 +84,15 @@ void Mortar::MatrixRowColTransformer::setup()
   {
     const CONTACT::MatBlockType bt = cit->first;
 
-    std::shared_ptr<Epetra_Export>& slave_to_master = slave_to_master_[bt];
+    std::shared_ptr<Core::LinAlg::Export>& slave_to_master = slave_to_master_[bt];
     slave_to_master = nullptr;
-    slave_to_master = std::make_shared<Epetra_Export>(
-        (**master_row_[bt]).get_epetra_block_map(), (**slave_row_[bt]).get_epetra_block_map());
+    slave_to_master =
+        std::make_shared<Core::LinAlg::Export>((**master_row_[bt]), (**slave_row_[bt]));
 
-    std::shared_ptr<Epetra_Export>& master_to_slave = master_to_slave_[bt];
+    std::shared_ptr<Core::LinAlg::Export>& master_to_slave = master_to_slave_[bt];
     master_to_slave = nullptr;
-    master_to_slave = std::make_shared<Epetra_Export>(
-        (**slave_row_[bt]).get_epetra_block_map(), (**master_row_[bt]).get_epetra_block_map());
+    master_to_slave =
+        std::make_shared<Core::LinAlg::Export>((**slave_row_[bt]), (**master_row_[bt]));
   }
 
   issetup_ = true;
@@ -123,7 +123,7 @@ void Mortar::MatrixRowColTransformer::redistributed_to_unredistributed(
 {
   throw_if_not_init_and_setup();
 
-  const int err = dst_mat.import(src_mat, *slave_to_master_[bt], Insert);
+  const int err = dst_mat.import(src_mat, slave_to_master_[bt]->get_epetra_export(), Insert);
 
   // reset the distributor of the exporter after use
   reset_exporter(slave_to_master_[bt]);
@@ -156,7 +156,7 @@ void Mortar::MatrixRowColTransformer::unredistributed_to_redistributed(
 {
   throw_if_not_init_and_setup();
 
-  const int err = dst_mat.import(src_mat, *master_to_slave_[bt], Insert);
+  const int err = dst_mat.import(src_mat, master_to_slave_[bt]->get_epetra_export(), Insert);
 
   // reset the distributor of the exporter after use
   reset_exporter(master_to_slave_[bt]);
@@ -166,9 +166,10 @@ void Mortar::MatrixRowColTransformer::unredistributed_to_redistributed(
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-void Mortar::MatrixRowColTransformer::reset_exporter(std::shared_ptr<Epetra_Export>& exporter) const
+void Mortar::MatrixRowColTransformer::reset_exporter(
+    std::shared_ptr<Core::LinAlg::Export>& exporter) const
 {
-  exporter = std::make_shared<Epetra_Export>(*exporter);
+  exporter = std::make_shared<Core::LinAlg::Export>(*exporter);
 }
 
 FOUR_C_NAMESPACE_CLOSE

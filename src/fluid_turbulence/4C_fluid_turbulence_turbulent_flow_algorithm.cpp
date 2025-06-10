@@ -141,8 +141,7 @@ void FLD::TurbulentFlowAlgorithm::transfer_inflow_velocity()
   velnp_ = Core::LinAlg::create_vector(*fluiddis_->dof_row_map(), true);
 
   // get exporter for transfer of dofs from inflow discretization to complete fluid discretization
-  Epetra_Export exporter(
-      inflowvelnp->get_map().get_epetra_block_map(), velnp_->get_map().get_epetra_block_map());
+  Core::LinAlg::Export exporter(inflowvelnp->get_map(), velnp_->get_map());
   // export inflow velocity
   int err = velnp_->export_to(*inflowvelnp, exporter, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
@@ -201,24 +200,19 @@ void FLD::TurbulentFlowAlgorithm::read_restart(const int restart)
 
   // export vectors to inflow discretization
   int err = 0;
-  Epetra_Export exportvelnp(
-      fluidvelnp->get_map().get_epetra_block_map(), velnp->get_map().get_epetra_block_map());
+  Core::LinAlg::Export exportvelnp(fluidvelnp->get_map(), velnp->get_map());
   err = velnp->export_to(*fluidvelnp, exportvelnp, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
-  Epetra_Export exportveln(
-      fluidveln->get_map().get_epetra_block_map(), veln->get_map().get_epetra_block_map());
+  Core::LinAlg::Export exportveln(fluidveln->get_map(), veln->get_map());
   err = veln->export_to(*fluidveln, exportveln, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
-  Epetra_Export exportvelnm(
-      fluidvelnm->get_map().get_epetra_block_map(), velnm->get_map().get_epetra_block_map());
+  Core::LinAlg::Export exportvelnm(fluidvelnm->get_map(), velnm->get_map());
   err = velnm->export_to(*fluidvelnm, exportvelnm, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
-  Epetra_Export exportaccnp(
-      fluidaccnp->get_map().get_epetra_block_map(), accnp->get_map().get_epetra_block_map());
+  Core::LinAlg::Export exportaccnp(fluidaccnp->get_map(), accnp->get_map());
   err = accnp->export_to(*fluidaccnp, exportaccnp, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
-  Epetra_Export exportaccn(
-      fluidaccn->get_map().get_epetra_block_map(), accn->get_map().get_epetra_block_map());
+  Core::LinAlg::Export exportaccn(fluidaccn->get_map(), accn->get_map());
   err = accn->export_to(*fluidaccn, exportaccn, Insert);
   if (err != 0) FOUR_C_THROW("Export using exporter returned err={}", err);
 

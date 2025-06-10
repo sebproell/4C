@@ -12,7 +12,6 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
-#include "4C_io_control.hpp"
 #include "4C_linalg_sparsematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_xfem_condition_manager.hpp"
@@ -90,8 +89,7 @@ void FLD::XFluidState::CouplingState::complete_coupling_matrices_and_rhs(
   //-------------------------------------------------------------------------------
   // export the rhs coupling vector to a row vector
   Core::LinAlg::Vector<double> rhC_s_tmp(rhC_s_->get_map(), true);
-  Epetra_Export exporter_rhC_s_col(
-      rhC_s_col_->get_map().get_epetra_block_map(), rhC_s_tmp.get_map().get_epetra_block_map());
+  Core::LinAlg::Export exporter_rhC_s_col(rhC_s_col_->get_map(), rhC_s_tmp.get_map());
   int err = rhC_s_tmp.export_to(*rhC_s_col_, exporter_rhC_s_col, Add);
   if (err) FOUR_C_THROW("Export using exporter returned err={}", err);
 
