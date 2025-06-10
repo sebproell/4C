@@ -11,7 +11,6 @@
 #include "4C_fem_general_node.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
-#include "4C_structure_new_timint_base.hpp"
 #include "4C_utils_function.hpp"
 #include "4C_utils_function_of_time.hpp"
 

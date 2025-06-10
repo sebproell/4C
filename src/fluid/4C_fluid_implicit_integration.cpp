@@ -48,7 +48,6 @@
 #include "4C_linear_solver_method_parameters.hpp"
 #include "4C_mat_newtonianfluid.hpp"
 #include "4C_mat_par_bundle.hpp"
-#include "4C_structure_new_timint_base.hpp"
 #include "4C_utils_function.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>

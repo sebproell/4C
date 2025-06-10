@@ -12,7 +12,6 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_io_control.hpp"
-#include "4C_linalg_mapextractor.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
@@ -23,10 +22,8 @@
 #include "4C_red_airways_evaluation_data.hpp"
 #include "4C_red_airways_input.hpp"
 #include "4C_red_airways_resulttest.hpp"
-#include "4C_structure_new_timint_base.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
-#include "4C_utils_function.hpp"
 
 #include <stdio.h>
 #include <Teuchos_StandardParameterEntryValidators.hpp>
