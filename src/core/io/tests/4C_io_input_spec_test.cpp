@@ -2332,4 +2332,70 @@ c: 3)",
     EXPECT_EQ(s.b, 2);
     EXPECT_EQ(s.s, "default");
   }
+
+  TEST(InputSpecTest, StoreSelectionStructsInContainer)
+  {
+    enum class Options
+    {
+      a,
+      b,
+    };
+
+    struct A
+    {
+      int a;
+      std::string s;
+    };
+
+    struct B
+    {
+      double b;
+      bool flag;
+    };
+
+    auto
+        spec =
+            selection<Options>("model",
+                {
+                    .selector = "type",
+                    .choices =
+                        {
+                            {Options::a,
+                                group_struct<A>("a",
+                                    {
+                                        parameter<int>("a", {.store = in_struct(&A::a)}),
+                                        parameter<std::string>("s", {.store = in_struct(&A::s)}),
+                                    })},
+                            {Options::b, group_struct<B>(
+                                             "b", {
+                                                 parameter<double>("b",
+                                                     {.store = in_struct(&B::b)}),
+                                                 parameter<bool>(
+                                                     "flag", {.store = in_struct(&B::flag)}),
+                                             })},
+                        },
+               } 
+                );
+
+    auto tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    ryml::parse_in_arena(R"(model:
+  type: a
+  a:
+    a: 1
+    s: abc)",
+        root);
+
+    ConstYamlNodeRef node(root, "");
+    InputParameterContainer container;
+    spec.match(node, container);
+
+    const auto& model = container.group("model");
+    EXPECT_EQ(model.get<Options>("type"), Options::a);
+    const auto& a = model.get<A>("a");
+    EXPECT_EQ(a.a, 1);
+    EXPECT_EQ(a.s, "abc");
+    EXPECT_FALSE(model.has_group("b"));
+    EXPECT_FALSE(model.get_if<B>("b"));
+  }
 }  // namespace
