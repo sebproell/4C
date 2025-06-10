@@ -12,7 +12,6 @@
 
 #include "4C_contact_utils.hpp"
 #include "4C_linalg_map.hpp"
-#include "4C_linalg_transfer.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_pairedvector.hpp"
 
@@ -23,6 +22,7 @@ FOUR_C_NAMESPACE_OPEN
 namespace Core::LinAlg
 {
   class SparseMatrix;
+  class Export;
 }  // namespace Core::LinAlg
 namespace Mortar
 {

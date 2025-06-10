@@ -8,6 +8,7 @@
 #include "4C_mortar_matrix_transform.hpp"
 
 #include "4C_linalg_sparsematrix.hpp"
+#include "4C_linalg_transfer.hpp"
 
 
 FOUR_C_NAMESPACE_OPEN
