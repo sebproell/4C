@@ -2398,4 +2398,85 @@ c: 3)",
     EXPECT_FALSE(model.has_group("b"));
     EXPECT_FALSE(model.get_if<B>("b"));
   }
+
+  TEST(InputSpecTest, StoreSelectionStructsInStruct)
+  {
+    enum class Options
+    {
+      a,
+      b,
+    };
+
+    struct A
+    {
+      int a;
+      std::string s;
+    };
+
+    struct B
+    {
+      double b;
+      bool flag;
+    };
+
+    struct Model
+    {
+      Options type;
+      std::variant<A, B> model;
+    };
+
+    struct Parameters
+    {
+      Model model;
+    };
+
+    auto model_a = group_struct<A>("a",
+        {
+            parameter<int>("a", {.store = in_struct(&A::a)}),
+            parameter<std::string>("s", {.store = in_struct(&A::s)}),
+        },
+        {.store = as_variant<A>(&Model::model)});
+
+    auto model_b = group_struct<B>("b",
+        {
+            parameter<double>("b", {.store = in_struct(&B::b)}),
+            parameter<bool>("flag", {.store = in_struct(&B::flag)}),
+        },
+        {.store = as_variant<B>(&Model::model)});
+
+    auto spec = group_struct<Parameters>(
+        "parameters", {
+                          selection<Options, Model>("model",
+                              {
+                                  .selector = "type",
+                                  .choices =
+                                      {
+                                          {Options::a, model_a},
+                                          {Options::b, model_b},
+                                      },
+                                  .store_selector = in_struct(&Model::type),
+                              },
+                              {.store = in_struct(&Parameters::model)}),
+                      });
+
+    auto tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    ryml::parse_in_arena(R"(parameters:
+  model:
+    type: a
+    a:
+      a: 1
+      s: abc)",
+        root);
+
+    ConstYamlNodeRef node(root, "");
+    InputParameterContainer container;
+    spec.match(node, container);
+
+    const auto& model = container.get<Parameters>("parameters").model;
+    EXPECT_EQ(model.type, Options::a);
+    const auto& a = std::get<A>(model.model);
+    EXPECT_EQ(a.a, 1);
+    EXPECT_EQ(a.s, "abc");
+  }
 }  // namespace
