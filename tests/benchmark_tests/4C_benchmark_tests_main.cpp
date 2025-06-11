@@ -22,6 +22,7 @@ int main(int argc, char** argv)
   } cleanup;
   // Kokkos should be initialized right after MPI.
   Kokkos::ScopeGuard kokkos_guard{};
+  Core::Utils::SingletonOwnerRegistry::ScopeGuard guard;
 
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();

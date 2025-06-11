@@ -28,7 +28,12 @@ function(_set_up_benchmark_test_target _module_under_test _target)
 
   target_link_libraries(${_target} PRIVATE benchmark::benchmark)
 
-  add_test(NAME ${_target} COMMAND $<TARGET_FILE:${_target}> --benchmark_dry_run)
+  add_test(
+    NAME ${_target}
+    COMMAND
+      bash -c
+      ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS}\ $<TARGET_FILE:${_target}>\ --benchmark_dry_run
+    )
   set_tests_properties(${_target} PROPERTIES TIMEOUT ${UNITTEST_TIMEOUT})
   set_tests_properties(${_target} PROPERTIES PROCESSORS 1)
   set_tests_properties(${_target} PROPERTIES ENVIRONMENT "OMP_NUM_THREADS=1")
