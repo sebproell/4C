@@ -15,19 +15,24 @@ namespace
 
   TEST(ScatraFunctionsMagnet, TestEvaluateMagneticForceCylindricalMagnetLinearSaturation)
   {
-    constexpr auto parameters = ScaTra::CylinderMagnetParameters{
+    const auto parameters = ScaTra::CylinderMagnetParameters{
         .magnet_radius = 1.2,
         .magnet_length = 2.0,
         .magnetic_permeability = 12.234,
         .magnet_magnetization = 0.234,
-        .magnet_position = {.x = -1.0, .y = 0.0, .z = 2.3},
+        .magnet_position = {-1.0, 0.0, 2.3},
         .dynamic_viscosity_fluid = 2.0,
         .magnet_rotation = {.x_axis = 0.0, .y_axis = 0.0},
         .particle_radius = 1.0,
-        .particle_magnetization_model_type =
-            ScaTra::ParticleMagnetizationModelType::linear_with_saturation,
-        .particle_magnetization_parameters = {.saturation_magnetization = 10,
-            .susceptibility = 3.0},
+        .particle_magnetization =
+            {
+                .model_type = ScaTra::ParticleMagnetizationModelType::linear_with_saturation,
+                .particle_magnetization_parameters =
+                    {
+                        .saturation_magnetization = 10.0,
+                        .susceptibility = 3.0,
+                    },
+            },
     };
     const auto cylindrical_magnet = ScaTra::CylinderMagnetFunction(parameters);
 
@@ -53,17 +58,23 @@ namespace
 
   TEST(ScatraFunctionsMagnet, TestEvaluateMagneticForceCylindricalMagnetLinear)
   {
-    constexpr auto parameters = ScaTra::CylinderMagnetParameters{
+    const auto parameters = ScaTra::CylinderMagnetParameters{
         .magnet_radius = 1.2,
         .magnet_length = 2.0,
         .magnetic_permeability = 12.234,
         .magnet_magnetization = 0.234,
-        .magnet_position = {.x = -1.0, .y = 0.0, .z = 2.3},
+        .magnet_position = {-1.0, 0.0, 2.3},
         .dynamic_viscosity_fluid = 2.0,
         .magnet_rotation = {.x_axis = 0.0, .y_axis = 0.0},
         .particle_radius = 1.0,
-        .particle_magnetization_model_type = ScaTra::ParticleMagnetizationModelType::linear,
-        .particle_magnetization_parameters = {.susceptibility = 10.0},
+        .particle_magnetization =
+            {
+                .model_type = ScaTra::ParticleMagnetizationModelType::linear,
+                .particle_magnetization_parameters =
+                    {
+                        .susceptibility = 10.0,
+                    },
+            },
     };
     const auto cylindrical_magnet = ScaTra::CylinderMagnetFunction(parameters);
 
@@ -89,20 +100,22 @@ namespace
 
   TEST(ScatraFunctionsMagnet, TestEvaluateMagneticForceCylindricalMagnetSuperparamagnetic)
   {
-    constexpr auto parameters = ScaTra::CylinderMagnetParameters{
+    const auto parameters = ScaTra::CylinderMagnetParameters{
         .magnet_radius = 1.2,
         .magnet_length = 2.0,
         .magnetic_permeability = 12.234,
         .magnet_magnetization = 0.234,
-        .magnet_position = {.x = -1.0, .y = 0.0, .z = 2.3},
+        .magnet_position = {-1.0, 0.0, 2.3},
         .dynamic_viscosity_fluid = 2.0,
         .magnet_rotation = {.x_axis = 0.0, .y_axis = 0.0},
         .particle_radius = 1.0,
-        .particle_magnetization_model_type =
-            ScaTra::ParticleMagnetizationModelType::superparamagnetic,
-        .particle_magnetization_parameters =
+        .particle_magnetization =
             {
-                .saturation_magnetization = 10,
+                .model_type = ScaTra::ParticleMagnetizationModelType::superparamagnetic,
+                .particle_magnetization_parameters =
+                    {
+                        .saturation_magnetization = 10.0,
+                    },
             },
     };
     const auto cylindrical_magnet = ScaTra::CylinderMagnetFunction(parameters);
@@ -129,19 +142,24 @@ namespace
 
   TEST(ScatraFunctionsMagnet, TestRealValues)
   {
-    constexpr auto parameters = ScaTra::CylinderMagnetParameters{
+    const auto parameters = ScaTra::CylinderMagnetParameters{
         .magnet_radius = 2.5,
         .magnet_length = 5.0,
         .magnetic_permeability = 1.25663706212,
         .magnet_magnetization = 1e3,
-        .magnet_position = {.x = 0.0, .y = 0.0, .z = -4.5},
+        .magnet_position = {0.0, 0.0, -4.5},
         .dynamic_viscosity_fluid = 0.001,
         .magnet_rotation = {.x_axis = 0.0, .y_axis = 0.0},
         .particle_radius = 100e-6,
-        .particle_magnetization_model_type =
-            ScaTra::ParticleMagnetizationModelType::linear_with_saturation,
-        .particle_magnetization_parameters = {.saturation_magnetization = 4.78e2,
-            .susceptibility = 3.0},
+        .particle_magnetization =
+            {
+                .model_type = ScaTra::ParticleMagnetizationModelType::linear_with_saturation,
+                .particle_magnetization_parameters =
+                    {
+                        .saturation_magnetization = 4.78e2,
+                        .susceptibility = 3.0,
+                    },
+            },
 
     };
     const auto cylindrical_magnet = ScaTra::CylinderMagnetFunction(parameters);

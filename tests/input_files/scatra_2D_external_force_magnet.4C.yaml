@@ -84,13 +84,15 @@ FUNCT7:
         magnet_position: [0.5, -0.2, 0.0]
         magnet_magnetization: 5e3
         dynamic_viscosity_fluid: 1.0e-3
-        rotation_around_x_axis: 90
-        rotation_around_y_axis: 45
+        rotation:
+          around_x_axis: 90
+          around_y_axis: 45
         particle_radius: 100e-6
-      particle_magnetization_model:
-        type: linear_with_saturation
-        saturation_magnetization: 4.78e2
-        susceptibility: 100.0
+        particle_magnetization_model:
+          type: linear_with_saturation
+          linear_with_saturation:
+            saturation_magnetization: 4.78e2
+            susceptibility: 100.0
 FUNCT8:
   - COMPONENT: 0
     SYMBOLIC_FUNCTION_OF_SPACE_TIME: "1"
