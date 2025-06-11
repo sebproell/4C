@@ -231,7 +231,14 @@ class Collection(Parameter):
         Returns:
             bool: True for no entries
         """
-        return not bool(self.specs)
+        if not self.specs:
+            return True
+
+        if len(self.specs) == 1:
+            if isinstance(ao := self.specs[0], All_Of):
+                return ao.is_empty()
+
+        return False
 
 
 @dataclass
