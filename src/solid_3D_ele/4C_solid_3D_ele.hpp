@@ -110,6 +110,13 @@ namespace Discret::Elements
 
     [[nodiscard]] const Core::FE::GaussIntegration& get_gauss_rule() const;
 
+    [[nodiscard]] const SolidCalcVariant& get_solid_element_evaluator() const
+    {
+      return solid_calc_variant_;
+    }
+
+    [[nodiscard]] SolidCalcVariant& get_solid_element_evaluator() { return solid_calc_variant_; }
+
     [[nodiscard]] int num_dof_per_node(const Core::Nodes::Node& node) const override { return 3; }
 
     [[nodiscard]] int num_dof_per_element() const override { return 0; }
