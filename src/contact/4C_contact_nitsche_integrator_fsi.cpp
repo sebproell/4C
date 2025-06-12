@@ -10,6 +10,7 @@
 #include "4C_contact_element.hpp"
 #include "4C_contact_node.hpp"
 #include "4C_fem_general_utils_boundary_integration.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_solid_3D_ele.hpp"
 #include "4C_solid_3D_ele_calc_lib_nitsche.hpp"
 #include "4C_solid_poro_3D_ele_calc_lib_nitsche.hpp"
@@ -239,8 +240,9 @@ double CONTACT::Utils::solid_cauchy_at_xi(CONTACT::Element* cele,
         solid_ele != nullptr)
     {
       Discret::Elements::CauchyNDirLinearizations<3> cauchy_linearizations{};
-      sigma_nt = solid_ele->get_normal_cauchy_stress_at_xi(
-          cele->mo_data().parent_disp(), pxsi, n, dir, cauchy_linearizations);
+      sigma_nt = solid_ele->get_normal_cauchy_stress_at_xi(cele->mo_data().parent_disp(),
+          Core::LinAlg::reinterpret_as_tensor<3>(pxsi), Core::LinAlg::reinterpret_as_tensor<3>(n),
+          Core::LinAlg::reinterpret_as_tensor<3>(dir), cauchy_linearizations);
     }
     else
     {
@@ -256,7 +258,9 @@ double CONTACT::Utils::solid_cauchy_at_xi(CONTACT::Element* cele,
       Discret::Elements::SolidPoroCauchyNDirLinearizations<3> cauchy_linearizations{};
 
       sigma_nt = solid_ele->get_normal_cauchy_stress_at_xi(cele->mo_data().parent_disp(),
-          cele->mo_data().parent_pf_pres(), pxsi, n, dir, cauchy_linearizations);
+          cele->mo_data().parent_pf_pres(), Core::LinAlg::reinterpret_as_tensor<3>(pxsi),
+          Core::LinAlg::reinterpret_as_tensor<3>(n), Core::LinAlg::reinterpret_as_tensor<3>(dir),
+          cauchy_linearizations);
     }
     else
     {

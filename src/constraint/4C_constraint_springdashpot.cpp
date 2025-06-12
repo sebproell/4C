@@ -20,7 +20,7 @@
 #include "4C_fem_general_utils_gausspoints.hpp"
 #include "4C_global_data.hpp"
 #include "4C_io.hpp"
-#include "4C_io_pstream.hpp"  // has to go before io.hpp
+#include "4C_io_pstream.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
@@ -72,7 +72,7 @@ namespace
           dim * Core::FE::num_nodes(celltype)>>& stiffness_matrix)
   {
     Core::Elements::for_each_gauss_point<celltype>(element_nodes, gauss_integration,
-        [&](const Core::LinAlg::Matrix<Core::FE::dim<celltype>, 1>& xi,
+        [&](const Core::LinAlg::Tensor<double, Core::FE::dim<celltype>>& xi,
             const Core::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
             const Core::Elements::JacobianMapping<celltype, dim>& jacobian_mapping,
             double integration_factor, int gp)
@@ -158,7 +158,7 @@ namespace
   {
     // compute nodal normals of the element
     Core::Elements::for_each_gauss_point<celltype>(element_nodes, gauss_integration,
-        [&](const Core::LinAlg::Matrix<Core::FE::dim<celltype>, 1>& xi,
+        [&](const Core::LinAlg::Tensor<double, Core::FE::dim<celltype>>& xi,
             const Core::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
             const Core::Elements::JacobianMapping<celltype, dim>& jacobian_mapping,
             double integration_factor, int gp)
@@ -1124,7 +1124,7 @@ void Constraints::SpringDashpot::get_area(
               Core::FE::create_gauss_integration<celltype>(
                   Discret::Elements::DisTypeToOptGaussRule<celltype>::rule);
           Core::Elements::for_each_gauss_point<celltype>(element_nodes, gauss_integration,
-              [&](const Core::LinAlg::Matrix<Core::FE::dim<celltype>, 1>& xi,
+              [&](const Core::LinAlg::Tensor<double, Core::FE::dim<celltype>>& xi,
                   const Core::Elements::ShapeFunctionsAndDerivatives<celltype>& shape_functions,
                   const Core::Elements::JacobianMapping<celltype, 3>& jacobian_mapping,
                   double integration_factor, int gp) { area += integration_factor; });
