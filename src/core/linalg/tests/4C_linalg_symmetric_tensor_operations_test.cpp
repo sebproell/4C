@@ -246,6 +246,25 @@ namespace
     }
   }
 
+  TEST(SymmetricTensorOperationsTest, ddotView)
+  {
+    {
+      const Core::LinAlg::SymmetricTensor<double, 2, 2, 2, 2> t4_sym =
+          create_symmetric_four_tensor<2>();
+      const Core::LinAlg::SymmetricTensorView<const double, 2, 2, 2, 2> t4_sym_view = t4_sym;
+      const Core::LinAlg::SymmetricTensor<double, 2, 2> t2_sym = create_symmetric_tensor<2>();
+      const Core::LinAlg::SymmetricTensorView<const double, 2, 2> t2_sym_view = t2_sym;
+
+
+      Core::LinAlg::SymmetricTensor<double, 2, 2> t4_sym_ddot_t2_sym =
+          Core::LinAlg::ddot(t4_sym_view, t2_sym_view);
+      EXPECT_NEAR(t4_sym_ddot_t2_sym(0, 0), 9.824, 1e-10);
+      EXPECT_NEAR(t4_sym_ddot_t2_sym(0, 1), 19.614, 1e-10);
+      EXPECT_NEAR(t4_sym_ddot_t2_sym(1, 0), 19.614, 1e-10);
+      EXPECT_NEAR(t4_sym_ddot_t2_sym(1, 1), 30.383, 1e-10);
+    }
+  }
+
   TEST(SymmetricTensorOperationsTest, scale)
   {
     Core::LinAlg::SymmetricTensor<double, 2, 2> t2_sym = create_symmetric_tensor<2>();
@@ -335,12 +354,10 @@ namespace
     EXPECT_NEAR(t2_sym_dyad(1, 1, 1, 1), 13.26, 1e-10);
   }
 
-  TEST(SymmetricTensorOperationsTest, self_dyadic)
+  TEST(SymmetricTensorOperationsTest, selfDyadic)
   {
     Core::LinAlg::Tensor<double, 2> t1 = create_tensor<2>();
     Core::LinAlg::SymmetricTensor<double, 2, 2> t1_self_dyad = Core::LinAlg::self_dyadic(t1);
-
-    std::cout << t1 << std::endl;
 
     EXPECT_NEAR(t1_self_dyad(0, 0), 1, 1e-10);
     EXPECT_NEAR(t1_self_dyad(0, 1), 2, 1e-10);
@@ -375,6 +392,83 @@ namespace
 
     EXPECT_NEAR(t1_self_dyad4(1, 1, 1, 0), 8, 1e-10);
     EXPECT_NEAR(t1_self_dyad4(1, 1, 1, 1), 16, 1e-10);
+  }
+
+  TEST(SymmetricTensorOperationsTest, addInplace)
+  {
+    Core::LinAlg::SymmetricTensor<double, 2, 2> t1 = create_symmetric_tensor<2>(1.1);
+    Core::LinAlg::SymmetricTensor<double, 2, 2> t2 = create_symmetric_tensor<2>(0.1);
+
+    t1 += t2;
+
+    EXPECT_NEAR(t1(0, 0), 1.4, 1e-10);
+    EXPECT_NEAR(t1(0, 1), 3.6, 1e-10);
+
+    EXPECT_NEAR(t1(1, 0), 3.6, 1e-10);
+    EXPECT_NEAR(t1(1, 1), 6.0, 1e-10);
+  }
+
+  TEST(SymmetricTensorOperationsTest, subtractInplace)
+  {
+    Core::LinAlg::SymmetricTensor<double, 2, 2> t1 = create_symmetric_tensor<2>(1.1);
+    Core::LinAlg::SymmetricTensor<double, 2, 2> t2 = create_symmetric_tensor<2>(0.2, 0.2);
+
+    t1 -= t2;
+
+    EXPECT_NEAR(t1(0, 0), 0.8, 1e-10);
+    EXPECT_NEAR(t1(0, 1), 0.7, 1e-10);
+
+    EXPECT_NEAR(t1(1, 0), 0.7, 1e-10);
+    EXPECT_NEAR(t1(1, 1), 0.5, 1e-10);
+  }
+
+
+  TEST(SymmetricTensorOperationsTest, scaleInplace)
+  {
+    Core::LinAlg::SymmetricTensor<double, 2, 2> t1 = create_symmetric_tensor<2>(1.1);
+
+    t1 *= 2;
+
+    EXPECT_NEAR(t1(0, 0), 2.4, 1e-10);
+    EXPECT_NEAR(t1(0, 1), 4.6, 1e-10);
+
+    EXPECT_NEAR(t1(1, 0), 4.6, 1e-10);
+    EXPECT_NEAR(t1(1, 1), 7.0, 1e-10);
+  }
+
+
+  TEST(SymmetricTensorOperationsTest, divideInplace)
+  {
+    Core::LinAlg::SymmetricTensor<double, 2, 2> t1 = create_symmetric_tensor<2>(1.1);
+
+    t1 /= 2;
+    EXPECT_NEAR(t1(0, 0), 0.6, 1e-10);
+    EXPECT_NEAR(t1(0, 1), 1.15, 1e-10);
+
+    EXPECT_NEAR(t1(1, 0), 1.15, 1e-10);
+    EXPECT_NEAR(t1(1, 1), 1.75, 1e-10);
+
+
+    t1 /= 1.2;
+    EXPECT_NEAR(t1(0, 0), 0.5, 1e-10);
+    EXPECT_NEAR(t1(0, 1), 0.95833333333333333, 1e-10);
+
+    EXPECT_NEAR(t1(1, 0), 0.95833333333333333, 1e-10);
+    EXPECT_NEAR(t1(1, 1), 1.45833333333333333, 1e-10);
+  }
+
+
+  TEST(SymmetricTensorOperationsTest, multiplyInplace)
+  {
+    Core::LinAlg::SymmetricTensor<double, 2, 2> t1 = create_symmetric_tensor<2>(1.1);
+
+    t1 *= 2;
+
+    EXPECT_NEAR(t1(0, 0), 2.4, 1e-10);
+    EXPECT_NEAR(t1(0, 1), 4.6, 1e-10);
+
+    EXPECT_NEAR(t1(1, 0), 4.6, 1e-10);
+    EXPECT_NEAR(t1(1, 1), 7.0, 1e-10);
   }
 }  // namespace
 
