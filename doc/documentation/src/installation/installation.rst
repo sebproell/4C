@@ -28,7 +28,7 @@ The following list shows the most important ones:
 
 External solver and linear algebra:
 
-- :ref:`Trilinos <trilinos>` (supported versions are listed in `dependencies/supported_version/Trilinos.txt`)
+- :ref:`Trilinos <trilinos>` (supported versions are listed in ``dependencies/supported_version/Trilinos.txt``)
 - :ref:`SuiteSparse <suitesparse>` including Umfpack (recommended version: 5.4)
 - :ref:`SuperLUDist <superludist>` (recommended version: 7.2.0)
 - BLAS
@@ -54,7 +54,7 @@ Post processing:
 Build information
 ~~~~~~~~~~~~~~~~~
 
-For many external dependencies, you'll find an installation file for the recommended version in the ``<4C_source>/dependencies/current`` directory.
+For many external dependencies, you'll find an installation file for the recommended version in the ``<4C_sourceDir>/dependencies/current`` directory.
 Additionally, some dependencies are accepted in multiple versions. During configuration, |FOURC| will check the version of the installed dependency
 and warn you if it is not a supported version.
 
@@ -85,8 +85,8 @@ See the `ArborX repository <https://github.com/arborx/ArborX>`_ for details and 
 
 **Trilinos**
 
-This external dependency can be downloaded from the `Trilinos Github repository <https://github.com/trilinos/Trilinos>`__.
-Currently supported versions are listed in `dependencies/supported_version/Trilinos.txt`.
+This external dependency can be downloaded from the `Trilinos Github repository <https://github.com/trilinos/Trilinos>`_ .
+Currently supported versions are listed in ``<4C_sourceDir>/dependencies/supported_version/Trilinos.txt``.
 
 .. _4Cinstallation:
 
@@ -103,17 +103,17 @@ Access the repository
 ::
 
     cd <someBaseDir>
-    mkdir <sourceDir>
-    git clone git@github.com:4C-multiphysics/4C.git <sourceDir>
-    cd <sourceDir>
+    mkdir <4C_sourceDir>
+    git clone git@github.com:4C-multiphysics/4C.git <4C_sourceDir>
+    cd <4C_sourceDir>
 
-where `<someBaseDir>` is some directory on your machine and `<sourceDir>` will contain the |FOURC| source code.
+where ``<someBaseDir>`` is some directory on your machine and ``<4C_sourceDir>`` will contain the |FOURC| source code.
 You can choose names and locations of these directories freely.
 
 Your directory tree should look like the following::
 
     <someBaseDir>/
-        <sourceDir>
+        <4C_sourceDir>
 
 **If you want to contribute to the project via pull requests,** you should fork the repository.
 We recommend setting your forked repository as ``origin`` and the `4C-multiphysics/4C  <https://github.com/4C-multiphysics/4C>`_ repository as ``upstream``.
@@ -141,6 +141,8 @@ This script installs `pre-commit <https://pre-commit.com/>`_ and sets up the pre
     However, when changes in the virtual python environment have been made, you **must** generate a new environment locally as well.
     You will be reminded of this when you try to commit with an outdated virtual environment.
 
+.. _installation_configure:
+
 Configure
 ~~~~~~~~~
 
@@ -149,11 +151,13 @@ This is a good practice to keep your source directory clean. Instead, create a b
 Many development tools work well when the build directory is a subdirectory of the source directory.
 A possible directory structure could look like this::
 
-    <4C_home>/
+    <4C_sourceDir>/
        build/
          debug/
          release/
          other_configuration
+
+Note that the directory name ``build`` is automatically excluded from the git repository (the name is included in the file ``.gitignore``).
 
 That said, you can create a build directory wherever you want. This is just a suggestion we find useful in daily work.
 
@@ -162,14 +166,14 @@ The command to run is
 
 ::
 
-    cmake --preset=<name-of-preset> <sourceDir> | tee config$(date +%y%m%d%H%M%N).log
+    cmake --preset=<name-of-preset> <4C_sourceDir> | tee config$(date +%y%m%d%H%M%N).log
 
 Thus, a preset name needs to be passed to cmake via the command line argument ``--preset``.
 Use
 
 ::
 
-    cmake <4C_home> --list-presets
+    cmake <4C_sourceDir> --list-presets
 
 to get a list of all available presets.
 
@@ -182,11 +186,12 @@ In a preset within this file, you should define a few options that are important
   ``"binaryDir": "<4C-basedir>/builds/release-build"`` (the folder name is completely up to you).
 
 More information about the cmake presets can be found :ref:`here <developer_cmake>`.
+This section also contains an up-to-date :ref:`reference list<reference_cmake_variables>` of all variables used to configure |FOURC|.
 
 
 .. note::
 
-    When you see `command |& tee something$(date +%y%m%d%H%M%N).log`,
+    When you see ``command |& tee something$(date +%y%m%d%H%M%N).log``,
     that is just a means of running a command and sending the output both to the screen and to a timestamped log file.
     This is by no means necessary, but if you run into problems, having these timestamped log files can be quite useful in debugging what's gone wrong.
 
@@ -197,15 +202,17 @@ Now you may run the compile command within the build folder.
 
 ::
 
-    ninja -j <numProcs> full |& tee build$(date +%y%m%d%H%M%N).log
+    ninja -j <numProcs> [full] |& tee build$(date +%y%m%d%H%M%N).log
 
 
-where `<numProcs>` is the number of processors you want to use.
+where ``<numProcs>`` is the number of processors you want to use.
+The optional parameter ``full`` also provides some utility executables, see :ref:`below<custom_target_specifiers>`.
+The |FOURC| executable and unittests are also created, if this parameter is omitted.
 
 .. note::
 
-    After the first build, it is rarely necessary to reconfigure |FOURC| &mdash; only the build-command is required.
-    `cmake` is invoked *automatically* during the build process if something changed within `CMakeLists.txt`.
+    After the first build, it is rarely necessary to reconfigure |FOURC| ; only the build-command is required.
+    `cmake` is invoked *automatically* during the build process if something changed within ``CMakeLists.txt``.
 
 To verify that the build was successful, it is highly recommended to run the test suite,
 at least the minimal version of it.
@@ -233,6 +240,7 @@ CLion
 Let's assume that you already have cloned the repository and created a build directory as outlined above.
 Open CLion and open the 4C source directory. CLion understands CMake preset files, so configuration is easy.
 Consult the CLion documentation for more information on how to set up a project.
+If you want to include a YAML schema for easier writing of input files within the project directory tree, see :ref:`below<clion_yaml_schema>`.
 
 **Enable debugging with CLion**
 
@@ -264,6 +272,23 @@ Make sure you have enabled a debug profile in your cmake settings.
 
 The program will run until it reaches the end, a breakpoint, or a segmentation fault.
 
+.. _clion_yaml_schema:
+
+**Adding yaml Schema to CLion**
+
+In order to use the Yaml schema in CLion, which simplifies editing |FOURC| input files significantly,
+add a JSON schema file, which is automatically created during the build process, to your configuration.
+
+1. In File :math:`\to` Settings, search for "JSON schema", which will bring you to **JSON Schema Mappings**.
+2. Add a new entry by clicking on the "+" sign.
+3. Give it a descriptive name.
+4. Select the Schema file ``4C_schema.json`` from your local build directory.
+5. Select Schema version *JSON Schema v4*.
+6. Add the file name pattern ``\*.4C.yaml``, to which this schema is applied.
+
+Note that this Schema is only valid for the current project, that is, only files in this directory tree are recognized.
+
+
 .. _visualstudiocode:
 
 Visual Studio Code
@@ -272,6 +297,8 @@ Visual Studio Code
 `Visual Studio Code <https://code.visualstudio.com/>`_ is a code editor optimized for building and debugging modern web and cloud applications.
 It can also be used for developing |FOURC|.
 Visual Studio Code can connect to a remote computer so you can work on your home computer via SSH, see `here <https://code.visualstudio.com/docs/remote/remote-overview>`_.
+If you want to include a YAML schema for easier writing of input files within the project directory tree, see :ref:`below<vscode_yaml_schema>`.
+
 
 **Setting up VS Code**
 
@@ -455,6 +482,33 @@ Now you can attach gdb to each process with the following configuration:
 Start it two times and choose in the prompt the respective process id.
 Wait until both instances are connected and then start the computation by pressing any key in the 4C terminal.
 
+.. _vscode_yaml_schema:
+
+**Adding yaml Schema to VS Code**
+
+In order to use the Yaml schema in VS Code, which simplifies editing |FOURC|  input files significantly, is done in two steps.configure
+
+1. Install the official YAML by Red Hat extension within VS Code
+
+2. Goto file :math:`\to` Preferences :math:`\to` Settings
+
+   Search for "schemas".
+   You'll find the entry **JSON: Schemas** containing the link *Edit in settings.json*; click on it.
+
+   In the ``setting.json`` file, you might have entries already; add the following entry to the main dictionary
+   (adjust the directory of the json file to your build directory, where this file is located):
+
+   ::
+
+       "yaml.schemas": {
+         "<path_to>/4C_schema.json": "*.4C.yaml",
+       },
+
+The schema is now automatically applied on Yaml files that end with ``.4C.yaml``.
+
+Since the ``settings.json`` file is by default stored in ``$HOME/.config/Code/User``,
+it affects all files with the respective suffix that you open with VS Code, not only those in the |FOURC| project directory.
+
 .. _build4Cwithcustomtargets:
 
 Build |FOURC| with custom targets
@@ -485,12 +539,10 @@ Executables:
 - ``post_monitor`` build a nodal data extraction application
 - ``full`` generate all executable targets of |FOURC|
 
-Documentation:
+Documentation (for the documentation to be generated, you have to set the respective cmake variables in the presets file described :ref:`above<installation_configure>`):
 
-- ``documentation`` create the main documentation
-- ``doxygen`` create the (developer-oriented) Doxygen documentation
-
-Refer to ``CMakeLists.txt`` for a definition of all other target specifiers.
+- ``documentation`` create the main documentation (set ``FOUR_C_BUILD_DOCUMENTATION=ON`` in the presets)
+- ``doxygen`` create the (developer-oriented) Doxygen documentation (set ``FOUR_C_BUILD_DOXYGEN=ON`` in the presets)
 
 .. note::
 
