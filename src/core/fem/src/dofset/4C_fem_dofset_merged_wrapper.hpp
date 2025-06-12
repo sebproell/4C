@@ -104,7 +104,7 @@ namespace Core::DOFSets
      \note convention: First the slave dofs and then the master dofs are inserted into full dof
      vector! Thus all definitions in the input file concerning dof numbering have to be set
      accordingly (e.g. for reactions in MAT_scatra_reaction and MAT_scatra_reaction, see test case
-     'ssi_3D_tet4_tet4_tri3.dat')  */
+     'ssi_3D_tet4_tet4_tri3.4C.yaml')  */
     std::vector<int> dof(const Core::Nodes::Node* node) const override
     {
       const Core::Nodes::Node* slavenode = get_slave_node(node->lid());

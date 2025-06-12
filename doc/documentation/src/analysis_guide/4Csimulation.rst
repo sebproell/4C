@@ -9,7 +9,7 @@ The basic command to execute 4C is (relative to the build directory)
 
     ./4C <input_file> <output_basename>
 
-The input file is commonly a file with the suffix ``.dat``, and it is commonly created by a preprocessing step,
+The input file is commonly a file with the suffix ``.4C.yaml``, and it is commonly created by a preprocessing step,
 which is explained in detail in :ref:`preprocessing`.
 
 The ``<output_basename>`` should not have any suffix.
@@ -33,14 +33,14 @@ In ``tests/input_files`` a huge number of test examples are available. For examp
 
 .. code-block:: bash
 
-   ./4C tests/input_files/f2_drivencavity20x20_drt.dat xxx
+   ./4C tests/input_files/f2_drivencavity20x20_drt.4C.yaml xxx
 
 runs the 2d fluid driven cavity example and writes the output to files beginning with ``xxx``.
 You can also run the code in parallel with the ``mpirun`` command like this:
 
 .. code-block:: bash
 
-   mpirun -np 1 ./4C tests/input_files/f2_drivencavity20x20_drt.dat xxx
+   mpirun -np 1 ./4C tests/input_files/f2_drivencavity20x20_drt.4C.yaml xxx
 
 
 Restarting an analysis

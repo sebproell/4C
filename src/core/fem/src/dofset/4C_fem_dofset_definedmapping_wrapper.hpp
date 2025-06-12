@@ -108,18 +108,22 @@ namespace Core::DOFSets
           not necessarily need to have the same number of nodes, as long as the mapping
           is still unique. We give an example to show what this means:
 
-          Imagine, we have given the following conditions in our .dat-file:
+          Imagine, we have given the following conditions in an input file:
 
-          -----DESIGN SSI COUPLING SOLIDTOSCATRA VOL CONDITIONS
-          // scatra volume matching to struct volume
-          E 2 - coupling_id 1
-          // struct volume matching to scatra volume
-          E 1 - coupling_id 1
-          ----DESIGN SSI COUPLING SOLIDTOSCATRA SURF CONDITIONS
-         // separate surface discretization matching struct volume boundary
-         E 1 - coupling_id 2
-         // struct volume boundary
-         E 2 - coupling_id 2
+          DESIGN SSI COUPLING SOLIDTOSCATRA VOL CONDITIONS:
+            # struct volume matching to scatra volume
+            - E: 1
+              coupling_id: 1
+            # scatra volume matching to struct volume
+            - E: 2
+              coupling_id: 1
+          DESIGN SSI COUPLING SOLIDTOSCATRA SURF CONDITIONS:
+            # separate surface discretization matching struct volume boundary
+            - E: 1
+              coupling_id: 2
+            # struct volume boundary
+            - E: 2
+              coupling_id: 2
 
          We have two matching volume discretizations for structure and scatra, and
          we have a scatra surface discretization matching the boundary of the struct

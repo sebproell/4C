@@ -39,20 +39,17 @@ the EXODUS file format.
 
 Note that
 
-- it is not necessary to define boundary conditions in Cubit, since they are not converted
-  to the dat file later on.
+- it is not necessary to define boundary conditions in Cubit. This can be done directly in the |FOURC| input file.
 
-- you should only define node sets, but not sidesets (surface sets). The node sets are
-  converted into surface sets if the surface definition is given in the boundary condition
-  control file (<problem>.bc) anyway.
+- you should only define node sets, but not sidesets (surface sets). Side sets are not yet
+  supported in |FOURC|.
 
 
 **Other Software**
 
 Geometry as well as element and node sets can be created in any finite element preprocessor.
 However, the preprocessor should be capable of exporting a file format, which can be converted
-by the python toolset meshio (see <https://pypi.org/project/meshio/>) into an exodus file, with
-which the input can be converted into a |FOURC| .dat file.
+by the python toolset meshio (see <https://pypi.org/project/meshio/>) into an exodus file.
 
 Also, the exported input file can probably be imported in Cubit, then further edited and
 eventually exported as an exodus (.e) file.

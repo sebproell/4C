@@ -184,7 +184,6 @@ namespace RTD
    *  \param[in] list: vector containing all parameters in the current section
    *  \param[in] parentname: name of the parent section (initially empty string)
    */
-  /// print flag sections of dat file with given list
   void write_header_reference(
       std::ostream& stream, const Teuchos::ParameterList& list, std::string parentname = "");
 
