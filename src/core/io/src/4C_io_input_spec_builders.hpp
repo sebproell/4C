@@ -716,6 +716,7 @@ namespace Core::IO
       std::array<Size, rank<T>()> size;
     };
 
+    template <typename StorageType>
     struct SelectionData
     {
       /**
@@ -727,6 +728,11 @@ namespace Core::IO
        * Whether the selection is required or optional.
        */
       bool required{true};
+
+      /**
+       * An optional function to store the selection group.
+       */
+      StoreFunction<StorageType> store{nullptr};
     };
 
     //! Additional parameters for a group().
@@ -881,6 +887,7 @@ namespace Core::IO
     {
       std::string selector{"type"};
       std::map<T, InputSpec> choices;
+      InputSpecBuilders::StoreFunction<T> store_selector{nullptr};
     };
 
     template <typename T>
@@ -888,11 +895,23 @@ namespace Core::IO
     struct SelectionSpec
     {
       std::string group_name;
-      BasedOn<T> based_on;
-      InputSpecBuilders::SelectionData data;
+      struct
+      {
+        std::string selector;
+        std::map<T, InputSpec> choices;
+      } based_on;
+
+      struct
+      {
+        std::string description;
+        bool required;
+      } data;
       InputSpec selector_spec;
       //! The choices of the selection enhanced by the selector spec to allow full matching.
       std::map<T, InputSpec> choices_for_matching;
+
+      std::function<void(InputSpecBuilders::Storage& my_storage)> init_my_storage{};
+      InputSpecBuilders::StoreFunction<InputSpecBuilders::Storage> move_my_storage{};
 
       void parse(ValueParser& parser, InputParameterContainer& container) const;
       bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
@@ -1284,17 +1303,18 @@ namespace Core::IO
      *   GenAlpha,
      * };
      *
-     * auto spec = selection<TimeIntegration>("Time integration",
-     *    {
-     *     .selector = "scheme",
-     *     .choices = {
-     *         {"OST", parameter<double>("theta")},
-     *         {"GenAlpha", all_of({
-     *                               parameter<double>("alpha_f"),
-     *                               parameter<double>("alpha_m"),
-     *                           }),
-     *      },
-     *    }));
+     * auto spec = selection<TimeIntegration>(
+     *     "Time integration", {.selector = "scheme",
+     *                             .choices = {
+     *                                 {TimeIntegration::OST, parameter<double>("theta")},
+     *                                 {
+     *                                     TimeIntegration::GenAlpha,
+     *                                     all_of({
+     *                                         parameter<double>("alpha_f"),
+     *                                         parameter<double>("alpha_m"),
+     *                                     }),
+     *                                 },
+     *                             }});
      * @endcode
      *
      * will match the following input:
@@ -1316,11 +1336,61 @@ namespace Core::IO
      *
      * Note that the @p selector parameter is automatically added inside the group @p name by this
      * function.
+     *
+     * Since this function is a clever combination of the functionalities of group() and
+     * parameter(), it also provides support for storing the parsed values in a struct. Enhancing
+     * the example above, you can use the following code:
+     *
+     * @code
+     * struct Ost
+     * {
+     *   double theta;
+     * };
+     *
+     * struct GenAlpha
+     * {
+     *   double alpha_f;
+     *   double alpha_m;
+     * };
+     *
+     * struct TimeIntegrationParameters
+     * {
+     *   TimeIntegration scheme;
+     *   std::variant<Ost, GenAlpha> parameters;
+     * };
+     *
+     * auto ost = group_struct<Ost>("ost",
+     *     {
+     *         parameter<double>("theta", {.store = in_struct(&Ost::theta)}),
+     *     },
+     *     {.store = as_variant<Ost>(&TimeIntegrationParameters::parameters)});
+     *
+     * auto gen_alpha = group_struct<GenAlpha>("gen_alpha",
+     *     {
+     *         parameter<double>("alpha_f", {.store = in_struct(&GenAlpha::alpha_f)}),
+     *         parameter<double>("alpha_m", {.store = in_struct(&GenAlpha::alpha_m)}),
+     *     },
+     *     {.store = as_variant<GenAlpha>(&TimeIntegrationParameters::parameters)});
+     *
+     * auto spec = selection<TimeIntegration, TimeIntegrationParameters>(
+     *     "Time integration", {.selector = "scheme",
+     *                             .choices =
+     *                                 {
+     *                                     {TimeIntegration::OST, ost},
+     *                                     {TimeIntegration::GenAlpha, gen_alpha},
+     *                                 },
+     *                             .store_selector =
+     *                               in_struct(&TimeIntegrationParameters::scheme)});
+     * @endcode
+     *
+     * Note that you need to enhance every choice of the selection to be a group_struct(), so that
+     * there is a clear type for the parsed value. Every group_struct() can store to the variant
+     * that encodes the selection in a type.
      */
-    template <typename T>
-      requires(std::is_enum_v<T>)
-    [[nodiscard]] InputSpec selection(
-        std::string name, Internal::BasedOn<T> based_on, SelectionData data = {});
+    template <typename Selector, typename StorageType = DefaultStorage>
+      requires(std::is_enum_v<Selector>)
+    [[nodiscard]] InputSpec selection(std::string name, Internal::BasedOn<Selector> based_on,
+        SelectionData<StorageType> data = {});
 
     /**
      * All of the given InputSpecs are expected, e.g.,
@@ -2013,8 +2083,8 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
 
   // The selected match will match the selector again (to ensure a full match of the node). Thus,
   // we will also parse the selector value again.
-  std::any subcontainer;
-  init_storage_with_container(subcontainer);
+  InputSpecBuilders::Storage subcontainer;
+  init_my_storage(subcontainer);
   auto choice_matched = selected_spec.impl().match(
       group_node, subcontainer, match_entry.append_child(&selected_spec));
   if (!choice_matched) return false;
@@ -2022,7 +2092,7 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
   // Everything was correctly matched, so mark the whole node as matched.
   match_entry.state = IO::Internal::MatchEntry::State::matched;
 
-  store_container_in_container(group_name)(container, std::move(subcontainer));
+  move_my_storage(container, std::move(subcontainer));
   return true;
 }
 
@@ -2171,22 +2241,22 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
       });
 }
 
-template <typename T>
-  requires(std::is_enum_v<T>)
+template <typename Selector, typename StorageType>
+  requires(std::is_enum_v<Selector>)
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, Internal::BasedOn<T> based_on, SelectionData data)
+    std::string name, Internal::BasedOn<Selector> based_on, SelectionData<StorageType> data)
 {
   // Ensure that every enum constant is mapped to a spec.
-  for (const auto& e : EnumTools::enum_values<T>())
+  for (const auto& e : EnumTools::enum_values<Selector>())
   {
     FOUR_C_ASSERT_ALWAYS(based_on.choices.contains(e),
         "You need to give an InputSpec for every possible value of enum '{}'. Missing "
         "choice for enum constant '{}'.",
-        EnumTools::enum_type_name<T>(), EnumTools::enum_name(e));
+        EnumTools::enum_type_name<Selector>(), EnumTools::enum_name(e));
   }
 
-  auto selector_spec = parameter<T>(based_on.selector, {});
-  std::map<T, Core::IO::InputSpec> choices_for_matching;
+  auto selector_spec = parameter<Selector>(based_on.selector, {.store = based_on.store_selector});
+  std::map<Selector, Core::IO::InputSpec> choices_for_matching;
   for (const auto& [choice, spec] : based_on.choices)
   {
     choices_for_matching.emplace(choice, all_of({selector_spec, spec}));
@@ -2197,24 +2267,50 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
                                                    ->second.impl()
                                                    .data.n_specs;
 
+  // Create a selector spec that stores to a container, so that we can easily get the value.
+  selector_spec = parameter<Selector>(based_on.selector, {});
+
+  StoreFunction<Storage> move_my_storage;
+  if constexpr (std::is_same_v<StorageType, InputParameterContainer>)
+  {
+    move_my_storage = Internal::store_container_in_container(name);
+  }
+  else
+  {
+    move_my_storage = Internal::wrap_group_in_container<StorageType>(
+        data.store ? data.store : Internal::store_value_in_container<StorageType>(name));
+  }
+
+  Internal::InputSpecImpl::CommonData common_data{
+      .name = name,
+      .description = data.description,
+      .required = data.required,
+      .has_default_value = false,
+      // one for the group, one for the selector, plus the number of specs for the choices.
+      .n_specs = 2 + max_specs_for_choices_matching,
+      .type = Internal::InputSpecType::selection,
+      .stores_to = &move_my_storage.stores_to(),
+  };
+
   return IO::Internal::make_spec(
-      Internal::SelectionSpec<T>{
+      Internal::SelectionSpec<Selector>{
           .group_name = name,
-          .based_on = based_on,
-          .data = data,
+          .based_on =
+              {
+                  .selector = based_on.selector,
+                  .choices = std::move(based_on.choices),
+              },
+          .data =
+              {
+                  .description = data.description,
+                  .required = data.required,
+              },
           .selector_spec = std::move(selector_spec),
           .choices_for_matching = std::move(choices_for_matching),
+          .init_my_storage = [](Storage& storage) { storage.emplace<StorageType>(); },
+          .move_my_storage = std::move(move_my_storage),
       },
-      {
-          .name = name,
-          .description = data.description,
-          .required = data.required,
-          .has_default_value = false,
-          // one for the group, one for the selector, plus the number of specs for the choices.
-          .n_specs = 2 + max_specs_for_choices_matching,
-          .type = Internal::InputSpecType::selection,
-          .stores_to = &typeid(InputParameterContainer),
-      });
+      common_data);
 }
 
 

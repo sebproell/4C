@@ -32,6 +32,11 @@ namespace Core::IO
     using Storage = std::any;
 
     /**
+     * By default, parsed values are stored in an InputParameterContainer.
+     */
+    using DefaultStorage = InputParameterContainer;
+
+    /**
      * A function type to store a value of type T in a Storage.
      */
     template <typename T>
@@ -81,6 +86,40 @@ namespace Core::IO
      */
     template <typename StructType, typename MemberType>
     auto in_struct(MemberType StructType::* p);
+
+
+    /**
+     * Create a StoreFunction which stores a value to a specific std::variant member of a struct.
+     * Example:
+     *
+     * @code
+     *   struct A
+     *   {
+     *     int a;
+     *   };
+     *
+     *   struct B
+     *   {
+     *     double b;
+     *   };
+     *
+     *   struct MyStruct
+     *   {
+     *     std::variant<A, B> model;
+     *   };
+     *
+     *   // A store function that stores a value of type A in the model member of MyStruct.
+     *   auto store_model_a = as_variant<A>(&MyStruct::model);
+     *   // A store function that stores a value of type B in the model member of MyStruct.
+     *   auto store_model_b = as_variant<B>(&MyStruct::model);
+     * @endcode
+     *
+     * You probably want to use this function in the context of an InputSpec, where you can pass the
+     * result of this function to the `.store` field.
+     *
+     */
+    template <typename VariantType, typename StructType, typename... Ts>
+    auto as_variant(std::variant<Ts...> StructType::* p);
   }  // namespace InputSpecBuilders
 
   namespace Internal
@@ -101,6 +140,7 @@ namespace Core::IO
      * internally as the default if a storage function is not user-provided.
      */
     template <typename T>
+      requires(!std::is_same_v<T, InputParameterContainer>)
     auto store_value_in_container(std::string name)
     {
       return InputSpecBuilders::StoreFunction<T>(
@@ -155,6 +195,20 @@ namespace Core::IO
   {
     return InputSpecBuilders::StoreFunction<MemberType>(
         [p](Storage& obj, MemberType&& val)
+        {
+          FOUR_C_ASSERT(Internal::holds<StructType>(obj),
+              "Implementation error: expected an object of type {}, but got {}",
+              typeid(StructType).name(), obj.type().name());
+          std::any_cast<StructType&>(obj).*p = std::move(val);
+        },
+        typeid(StructType));
+  }
+
+  template <typename VariantType, typename StructType, typename... Ts>
+  auto InputSpecBuilders::as_variant(std::variant<Ts...> StructType::* p)
+  {
+    return InputSpecBuilders::StoreFunction<VariantType>(
+        [p](Storage& obj, VariantType&& val)
         {
           FOUR_C_ASSERT(Internal::holds<StructType>(obj),
               "Implementation error: expected an object of type {}, but got {}",

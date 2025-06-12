@@ -19,40 +19,10 @@ FOUR_C_NAMESPACE_OPEN namespace
   {
     const auto input_container = container.group("SCATRA_FUNCTION");
     const auto type = input_container.get<ScaTra::ScatraFunctionType>("type");
-    const auto& parameters = input_container.group("parameters");
-    const auto& magnetization_model_parameters =
-        input_container.group("particle_magnetization_model");
-
+    const auto& parameters = input_container.get<ScaTra::CylinderMagnetParameters>("parameters");
     if (type == ScaTra::ScatraFunctionType::cylinder_magnet)
     {
-      return std::make_shared<ScaTra::CylinderMagnetFunction>(ScaTra::CylinderMagnetParameters{
-          .magnet_radius = parameters.get<double>("magnet_radius"),
-          .magnet_length = parameters.get<double>("magnet_length"),
-          .magnetic_permeability = parameters.get<double>("magnetic_permeability"),
-          .magnet_magnetization = parameters.get<double>("magnet_magnetization"),
-          .magnet_position =
-              ScaTra::Position{
-                  .x = parameters.get<std::vector<double>>("magnet_position")[0],
-                  .y = parameters.get<std::vector<double>>("magnet_position")[1],
-                  .z = parameters.get<std::vector<double>>("magnet_position")[2],
-              },
-          .dynamic_viscosity_fluid = parameters.get<double>("dynamic_viscosity_fluid"),
-          .magnet_rotation =
-              ScaTra::Rotation{
-                  .x_axis = parameters.get<double>("rotation_around_x_axis"),
-                  .y_axis = parameters.get<double>("rotation_around_y_axis"),
-              },
-          .particle_radius = parameters.get<double>("particle_radius"),
-          .particle_magnetization_model_type =
-              magnetization_model_parameters.get<ScaTra::ParticleMagnetizationModelType>("type"),
-          .particle_magnetization_parameters =
-              ScaTra::ParticleMagnetizationModelParameters{
-                  .saturation_magnetization = magnetization_model_parameters.get_or<double>(
-                      "saturation_magnetization", -1.0),
-                  .susceptibility =
-                      magnetization_model_parameters.get_or<double>("susceptibility", -1.0),
-              },
-      });
+      return std::make_shared<ScaTra::CylinderMagnetFunction>(parameters);
     }
 
     FOUR_C_THROW("Wrong type of SCATRA_FUNCTION");
@@ -79,76 +49,111 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
   using namespace Core::IO::InputSpecBuilders;
   using namespace Core::IO::InputSpecBuilders::Validators;
 
-  auto spec =
-      group("SCATRA_FUNCTION",
+  auto linear = group_struct<ParticleMagnetization::ModelParameters>("linear",
+      {
+          parameter<double>("susceptibility",
+              {.description = "Magnetic susceptibility",
+                  .validator = positive<double>(),
+                  .store = in_struct(&ParticleMagnetization::ModelParameters::susceptibility)}),
+      },
+      {.store = in_struct(&ParticleMagnetization::particle_magnetization_parameters)});
+
+  auto linear_with_saturation =
+      group_struct<ParticleMagnetization::ModelParameters>("linear_with_saturation",
           {
-              parameter<ScatraFunctionType>("type"),
-              group("parameters",
-                  {
-                      parameter<double>(
-                          "magnet_radius", {.description = "Radius of the cylinder magnet",
-                                               .validator = positive<double>()}),
-                      parameter<double>(
-                          "magnet_length", {.description = "Length of the cylinder magnet",
-                                               .validator = positive<double>()}),
-                      parameter<double>(
-                          "magnetic_permeability", {.description = "Magnetic permeability",
-                                                       .validator = positive<double>()}),
-                      parameter<double>("magnet_magnetization",
-                          {.description = "Magnetization of the cylinder magnet",
-                              .validator = positive<double>()}),
-                      parameter<std::vector<double>>("magnet_position",
-                          {.description = "Position of the center of the cylinder magnet in the "
-                                          "global coordinate system (X,Y,Z)",
-                              .size = 3}),
-                      parameter<double>("dynamic_viscosity_fluid",
-                          {.description = "Dynamic viscosity of the fluid",
-                              .validator = positive<double>()}),
-                      parameter<double>("rotation_around_x_axis",
-                          {.description = "Rotation of the magnet around the x-axis in degrees",
-                              .default_value = 0.0,
-                              .validator = in_range(0., 360.)}),
-                      parameter<double>("rotation_around_y_axis",
-                          {.description = "Rotation of the magnet around the y-axis in degrees",
-                              .default_value = 0.0,
-                              .validator = in_range(0., 360.)}),
-                      parameter<double>(
-                          "particle_radius", {.description = "Radius of the magnetic particle",
-                                                 .validator = positive<double>()}),
-                  }),
-              selection<ParticleMagnetizationModelType>("particle_magnetization_model",
-                  {
-                      .selector = "type",
-                      .choices =
-                          {
-                              {
-                                  ParticleMagnetizationModelType::linear,
-                                  parameter<double>("susceptibility",
-                                      {.description = "Magnetic susceptibility",
-                                          .validator = positive<double>()}),
-                              },
-                              {
-                                  ParticleMagnetizationModelType::linear_with_saturation,
-                                  all_of(
-                                      {
-                                          parameter<double>("saturation_magnetization",
-                                              {.description = "Saturation magnetization",
-                                                  .validator = positive<double>()}),
-                                          parameter<double>("susceptibility",
-                                              {.description = "Magnetic susceptibility",
-                                                  .validator = positive<double>()}),
-                                      }),
-                              },
-                              {
-                                  ParticleMagnetizationModelType::superparamagnetic,
-                                  parameter<double>("saturation_magnetization",
-                                      {.description = "Saturation magnetization",
-                                          .validator = positive<double>()}),
-                              },
-                          },
-                  },
-                  {.description = "Magnetization model for the demagnetization factor f(|H|)"}),
-          });
+              parameter<double>("saturation_magnetization",
+                  {.description = "Saturation magnetization",
+                      .validator = positive<double>(),
+                      .store = in_struct(
+                          &ParticleMagnetization::ModelParameters::saturation_magnetization)}),
+              parameter<double>("susceptibility",
+                  {.description = "Magnetic susceptibility",
+                      .validator = positive<double>(),
+                      .store = in_struct(&ParticleMagnetization::ModelParameters::susceptibility)}),
+          },
+          {.store = in_struct(&ParticleMagnetization::particle_magnetization_parameters)});
+
+  auto superparamagnetic = group_struct<ParticleMagnetization::ModelParameters>("superparamagnetic",
+      {
+          parameter<double>("saturation_magnetization",
+              {.description = "Saturation magnetization",
+                  .validator = positive<double>(),
+                  .store = in_struct(
+                      &ParticleMagnetization::ModelParameters::saturation_magnetization)}),
+      },
+      {.store = in_struct(&ParticleMagnetization::particle_magnetization_parameters)});
+
+  auto particle_magnetization = selection<ParticleMagnetizationModelType, ParticleMagnetization>(
+      "particle_magnetization_model",
+      {
+          .selector = "type",
+          .choices =
+              {
+                  {ParticleMagnetizationModelType::linear, std::move(linear)},
+                  {ParticleMagnetizationModelType::linear_with_saturation,
+                      std::move(linear_with_saturation)},
+                  {ParticleMagnetizationModelType::superparamagnetic, std::move(superparamagnetic)},
+              },
+          .store_selector = in_struct(&ParticleMagnetization::model_type),
+      },
+      {.description = "Magnetization model for the demagnetization factor f(|H|)",
+          .store = in_struct(&CylinderMagnetParameters::particle_magnetization)});
+
+  auto spec = group("SCATRA_FUNCTION",
+      {
+          parameter<ScatraFunctionType>("type"),
+          group_struct<CylinderMagnetParameters>("parameters",
+              {
+                  parameter<double>("magnet_radius",
+                      {.description = "Radius of the cylinder magnet",
+                          .validator = positive<double>(),
+                          .store = in_struct(&CylinderMagnetParameters::magnet_radius)}),
+                  parameter<double>("magnet_length",
+                      {.description = "Length of the cylinder magnet",
+                          .validator = positive<double>(),
+                          .store = in_struct(&CylinderMagnetParameters::magnet_length)}),
+                  parameter<double>("magnetic_permeability",
+                      {.description = "Magnetic permeability",
+                          .validator = positive<double>(),
+                          .store = in_struct(&CylinderMagnetParameters::magnetic_permeability)}),
+                  parameter<double>("magnet_magnetization",
+                      {.description = "Magnetization of the cylinder magnet",
+                          .validator = positive<double>(),
+                          .store = in_struct(&CylinderMagnetParameters::magnet_magnetization)}),
+                  parameter<std::vector<double>>("magnet_position",
+                      {
+                          .description = "Position of the center of the cylinder magnet in the "
+                                         "global coordinate system (X,Y,Z)",
+                          .store = in_struct(&CylinderMagnetParameters::magnet_position),
+                          .size = 3,
+                      }),
+                  parameter<double>("dynamic_viscosity_fluid",
+                      {.description = "Dynamic viscosity of the fluid",
+                          .validator = positive<double>(),
+                          .store = in_struct(&CylinderMagnetParameters::dynamic_viscosity_fluid)}),
+                  group_struct<Rotation>("rotation",
+                      {
+                          parameter<double>("around_x_axis",
+                              {.description = "Rotation of the magnet around the x-axis in degrees",
+                                  .default_value = 0.0,
+                                  .validator = in_range(0., 360.),
+                                  .store = in_struct(&Rotation::x_axis)}),
+                          parameter<double>("around_y_axis",
+                              {.description = "Rotation of the magnet around the y-axis in degrees",
+                                  .default_value = 0.0,
+                                  .validator = in_range(0., 360.),
+                                  .store = in_struct(&Rotation::y_axis)}),
+                      },
+                      {.description = "Rotation of the magnet around different axes",
+                          .defaultable = true,
+                          .store = in_struct(&CylinderMagnetParameters::magnet_rotation)}),
+                  parameter<double>("particle_radius",
+                      {.description = "Radius of the magnetic particle",
+                          .validator = positive<double>(),
+                          .store = in_struct(&CylinderMagnetParameters::particle_radius)}),
+                  std::move(particle_magnetization),
+              }),
+      });
 
   function_manager.add_function_definition(std::move(spec), try_create_scatra_function);
 }
@@ -186,9 +191,9 @@ std::array<double, 3> ScaTra::CylinderMagnetFunction::global_to_cylinder_coordin
   const double beta = parameters_.magnet_rotation.y_axis * M_PI / 180;
 
   // translate coordinates to the magnet's coordinate system
-  const double x_translated = x[0] - parameters_.magnet_position.x;
-  const double y_translated = x[1] - parameters_.magnet_position.y;
-  const double z_translated = x[2] - parameters_.magnet_position.z;
+  const double x_translated = x[0] - parameters_.magnet_position[0];
+  const double y_translated = x[1] - parameters_.magnet_position[1];
+  const double z_translated = x[2] - parameters_.magnet_position[2];
 
   // rotate coordinates to the magnet's coordinate system
   const double xi = x_translated * std::cos(beta) +
@@ -326,16 +331,17 @@ double ScaTra::CylinderMagnetFunction::evaluate_magnetization_model(
       std::sqrt(std::pow(magnetic_field[0], 2.0) + std::pow(magnetic_field[1], 2.0) +
                 std::pow(magnetic_field[2], 2.0));
 
-  const auto magnetization_parameters = parameters_.particle_magnetization_parameters;
+  const auto magnetization_parameters =
+      parameters_.particle_magnetization.particle_magnetization_parameters;
 
   // linear without saturation
-  if (parameters_.particle_magnetization_model_type == ParticleMagnetizationModelType::linear)
+  if (parameters_.particle_magnetization.model_type == ParticleMagnetizationModelType::linear)
   {
     return 3.0 * magnetization_parameters.susceptibility /
            (3.0 + magnetization_parameters.susceptibility);
   }
   // linear with saturation (see Eq. (13) in Wirthl et al. (2024))
-  if (parameters_.particle_magnetization_model_type ==
+  if (parameters_.particle_magnetization.model_type ==
       ParticleMagnetizationModelType::linear_with_saturation)
   {
     const double magnetization_factor_linear =
@@ -349,7 +355,7 @@ double ScaTra::CylinderMagnetFunction::evaluate_magnetization_model(
       return 3.0 * magnetization_factor_saturated;
   }
   // superparamagnetic (see Eq. (17) in Wirthl et al. (2024))
-  if (parameters_.particle_magnetization_model_type ==
+  if (parameters_.particle_magnetization.model_type ==
       ParticleMagnetizationModelType::superparamagnetic)
   {
     // case of superparamagnetic particles: chi >> 1

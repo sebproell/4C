@@ -58,13 +58,14 @@ namespace ScaTra
     double y_axis{};
   };
 
-  /**
-   * Parameters of the particle magnetization model
-   */
-  struct ParticleMagnetizationModelParameters
+  struct ParticleMagnetization
   {
-    double saturation_magnetization{};
-    double susceptibility{};
+    ParticleMagnetizationModelType model_type{};
+    struct ModelParameters
+    {
+      double saturation_magnetization{-1.};
+      double susceptibility{-1.};
+    } particle_magnetization_parameters{};
   };
 
   /**
@@ -76,12 +77,12 @@ namespace ScaTra
     double magnet_length{};
     double magnetic_permeability{};
     double magnet_magnetization{};
-    Position magnet_position{};
+    std::vector<double> magnet_position{};
     double dynamic_viscosity_fluid{};
     Rotation magnet_rotation{};
     double particle_radius{};
-    ParticleMagnetizationModelType particle_magnetization_model_type{};
-    ParticleMagnetizationModelParameters particle_magnetization_parameters{};
+
+    ParticleMagnetization particle_magnetization;
   };
 
   /// Attach functions to the @p function_manager.
