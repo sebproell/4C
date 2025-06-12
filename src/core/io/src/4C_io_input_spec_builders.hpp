@@ -12,6 +12,7 @@
 
 #include "4C_io_input_parameter_container.templates.hpp"
 #include "4C_io_input_spec.hpp"
+#include "4C_io_input_spec_storage.hpp"
 #include "4C_io_input_spec_validators.hpp"
 #include "4C_io_input_types.hpp"
 #include "4C_io_value_parser.hpp"
@@ -394,6 +395,12 @@ namespace Core::IO
          * The type of the spec.
          */
         InputSpecType type;
+
+        /**
+         * The type_info for the type that this spec will write to. Providing this here allows
+         * consistency checks when combining specs.
+         */
+        const std::type_info* stores_to;
       };
 
 
@@ -414,10 +421,10 @@ namespace Core::IO
        * spec that is being matched. When matching more specs internally, the spec needs to append
        * children to the match_entry.
        */
-      virtual bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      virtual bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           MatchEntry& match_entry) const = 0;
 
-      virtual void set_default_value(InputParameterContainer& container) const = 0;
+      virtual void set_default_value(InputSpecBuilders::Storage& container) const = 0;
 
       //! Emit metadata. This function always emits into a map, i.e., the implementation must
       //! insert keys and values into the yaml emitter.
@@ -472,26 +479,15 @@ namespace Core::IO
         wrapped.parse(parser, container);
       }
 
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           MatchEntry& match_entry) const override
       {
         return wrapped.match(node, container, match_entry);
       }
 
-      void set_default_value(InputParameterContainer& container) const override
+      void set_default_value(InputSpecBuilders::Storage& container) const override
       {
-        if constexpr (Internal::has_set_default_value<T>)
-        {
-          wrapped.set_default_value(container);
-        }
-        else
-        {
-          FOUR_C_ASSERT(has_default_value(),
-              "Implementation error: this function should only be called if the wrapped type has "
-              "an optional default value.");
-
-          container.add(wrapped.name, std::get<1>(wrapped.data.default_value));
-        }
+        wrapped.set_default_value(container);
       }
 
       void emit_metadata(YamlNodeRef node) const override { wrapped.emit_metadata(node); }
@@ -670,6 +666,12 @@ namespace Core::IO
        * Validators namespace for some available validators.
        */
       std::optional<Validators::Validator<RemoveOptional<T>>> validator{std::nullopt};
+
+      /**
+       * An optional function to store a parsed value. See the in_struct() function for more
+       * details.
+       */
+      StoreFunction<T> store{nullptr};
     };
 
     template <typename T>
@@ -685,6 +687,8 @@ namespace Core::IO
       ParameterCallback on_parse_callback{nullptr};
 
       std::optional<Validators::Validator<RemoveOptional<T>>> validator{std::nullopt};
+
+      StoreFunction<T> store{nullptr};
 
       /**
        * The size of the vector. This can be a fixed size, #dynamic_size, or a callback that
@@ -706,6 +710,8 @@ namespace Core::IO
       ParameterCallback on_parse_callback{nullptr};
 
       std::optional<Validators::Validator<RemoveOptional<T>>> validator{std::nullopt};
+
+      StoreFunction<T> store{nullptr};
 
       std::array<Size, rank<T>()> size;
     };
@@ -741,6 +747,32 @@ namespace Core::IO
        * is not encountered in the input. This only works if all children have default values.
        */
       bool defaultable{};
+    };
+
+    template <typename T>
+    struct GroupStructData
+    {
+      /**
+       * An optional description of the Group.
+       */
+      std::string description{};
+
+      /**
+       * Whether the Group is required or optional.
+       */
+      std::optional<bool> required{};
+
+      /**
+       * Whether the Group will store itself and its children with defaulted values, if the Group
+       * is not encountered in the input. This only works if all children have default values.
+       */
+      bool defaultable{};
+
+      /**
+       * An optional function to store a parsed value. See the in_struct() function for more
+       * details.
+       */
+      StoreFunction<T> store{nullptr};
     };
 
     //! Additional parameters for a list().
@@ -779,6 +811,8 @@ namespace Core::IO
       std::optional<InputSpecBuilders::Validators::Validator<RemoveOptional<T>>> validator{
           std::nullopt};
 
+      InputSpecBuilders::StoreFunction<T> store;
+
       std::array<InputSpecBuilders::Size, rank<T>()> size{};
     };
 
@@ -792,6 +826,8 @@ namespace Core::IO
       std::variant<std::monostate, StoredType> default_value{};
 
       InputSpecBuilders::ParameterCallback on_parse_callback{nullptr};
+
+      InputSpecBuilders::StoreFunction<T> store;
     };
 
     template <SupportedType T>
@@ -801,13 +837,14 @@ namespace Core::IO
       using StoredType = T;
       ParameterData<T> data;
       void parse(ValueParser& parser, InputParameterContainer& container) const;
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
       [[nodiscard]] bool has_correct_size(
-          const T& val, const InputParameterContainer& container) const;
+          const T& val, const InputSpecBuilders::Storage& container) const;
     };
 
     /**
@@ -828,12 +865,13 @@ namespace Core::IO
       //! The string representation of the choices.
       std::string choices_string;
       void parse(ValueParser& parser, InputParameterContainer& container) const;
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
       void print(std::ostream& stream, std::size_t indent) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
     };
 
     //! Helper for selection().
@@ -857,13 +895,13 @@ namespace Core::IO
       std::map<T, InputSpec> choices_for_matching;
 
       void parse(ValueParser& parser, InputParameterContainer& container) const;
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
       void print(std::ostream& stream, std::size_t indent) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
     };
 
     struct AllOfSpec
@@ -871,9 +909,9 @@ namespace Core::IO
       std::vector<InputSpec> specs;
 
       void parse(ValueParser& parser, InputParameterContainer& container) const;
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
@@ -887,10 +925,13 @@ namespace Core::IO
       //! A logical spec with the content of the group.
       InputSpec spec;
 
+      std::function<void(InputSpecBuilders::Storage& my_storage)> init_my_storage{};
+      InputSpecBuilders::StoreFunction<InputSpecBuilders::Storage> move_my_storage{};
+
       void parse(ValueParser& parser, InputParameterContainer& container) const;
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
@@ -910,10 +951,10 @@ namespace Core::IO
 
       void parse(ValueParser& parser, InputParameterContainer& container) const;
 
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
 
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
 
       void print(std::ostream& stream, std::size_t indent) const;
 
@@ -932,9 +973,9 @@ namespace Core::IO
       InputSpecBuilders::ListData data;
 
       void parse(ValueParser& parser, InputParameterContainer& container) const;
-      bool match(ConstYamlNodeRef node, InputParameterContainer& container,
+      bool match(ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
           IO::Internal::MatchEntry& match_entry) const;
-      void set_default_value(InputParameterContainer& container) const;
+      void set_default_value(InputSpecBuilders::Storage& container) const;
       void print(std::ostream& stream, std::size_t indent) const;
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
@@ -1021,10 +1062,16 @@ namespace Core::IO
      *   }});
      * @endcode
      *
-     * After parsing an InputSpec, the value of the parameter can be retrieved from an
-     * InputParameterContainer. If `default_value` is set, the parameter is implicitly optional. In
-     * this case, if the parameter is not present in the input file, the default value will be
-     * stored in the container.
+     * There are two ways how the parameters can be stored after parsing. By default, the parsed
+     * value is stored in an InputParameterContainer. Another powerful way is to use the
+     * in_struct() function to attach a struct member to the parameter. In this case, the
+     * parsed value will be stored in the struct member. Note that you will need to provide this
+     * struct by using the group_struct() function. See the documentation there for a usage example.
+     *
+     * After parsing an InputSpec, the value of the parameter can be retrieved from storage, either
+     * an InputParameterContainer or a struct. If `default_value` is set, the parameter is
+     * implicitly optional. In this case, if the parameter is not present in the input file, the
+     * default value will be stored.
      *
      * When you decide how to set the `default_value` field or whether to make a parameter optional,
      * consider the following cases:
@@ -1032,15 +1079,15 @@ namespace Core::IO
      *   - If you always require a parameter and there is no reasonable default value, do not set
      *     a `default_value`. This will make the parameter required. Parsing will fail if the
      *     parameter is not present, but after parsing you can be sure that the parameter can safely
-     *     be retrieved with InputParameterContainer::get(). A good example is the time step size in
-     *     a time integration scheme: this parameter is always required and taking an arbitrary
-     *     default value is not a good idea.
+     *     be retrieved with InputParameterContainer::get() or from the struct. A good example is
+     *     the time step size in a time integration scheme: this parameter is always required and
+     *     taking an arbitrary default value is not a good idea.
      *
      *   - Is there a reasonable default value for the parameter, which works in most situations? If
      *     yes, set `default_value` to this value. This guarantees that you can always read the
-     *     value from the container with InputParameterContainer::get(). A good example is a
-     *     parameter that activates or deactivates a feature, e.g., defaulting the EAS element
-     *     technology to off might be reasonable.
+     *     value from the container with InputParameterContainer::get() or from the struct. A good
+     *     example is a parameter that activates or deactivates a feature, e.g., defaulting the EAS
+     *     element technology to off might be reasonable.
      *
      *   - If the parameter is not required and there is no reasonable default value, wrap the type
      *     in `std::optional`. As an example, this may be useful for a damping parameter that, when
@@ -1180,6 +1227,49 @@ namespace Core::IO
      */
     [[nodiscard]] InputSpec group(
         std::string name, std::vector<InputSpec> specs, GroupData data = {});
+
+    /**
+     * This function shares all the properties of group(), but it allows you to create a group that
+     * stores the parsed values in a struct rather than in a container. You want to use this
+     * function in combination with a parameter() that stores its parsed value into a struct.
+     *
+     * Example:
+     *
+     * @code
+     * struct Data
+     * {
+     *   double alpha_f;
+     *   double alpha_m;
+     * };
+     *
+     * struct TimeIntegration
+     * {
+     *   double time_step;
+     *   Data data;
+     * };
+     *
+     * auto spec = group_struct<TimeIntegration>("time_integration",
+     *     {
+     *         parameter<double>("time_step", {.store = in_struct(&TimeIntegration::time_step)}),
+     *         group_struct<Data>("data",
+     *             {
+     *                 parameter<double>("alpha_f", {.store = in_struct(&Data::alpha_f)}),
+     *                 parameter<double>("alpha_m", {.store = in_struct(&Data::alpha_m)}),
+     *             },
+     *             {.store = in_struct(&TimeIntegration::data)}),
+     *     });
+     * @endcode
+     *
+     * The innermost parameters are stored in a `Data` struct, which is itself stored in the
+     * `data` member of the `TimeIntegration` struct. The outer group_struct() does not specify
+     * any special store behavior, so it stores the parsed value in an InputParameterContainer.
+     *
+     * @note Providing inconsistent types for the store functions and group_struct() will cause
+     * a runtime error.
+     */
+    template <typename T>
+    [[nodiscard]] InputSpec group_struct(
+        std::string name, std::vector<InputSpec> specs, GroupStructData<T> data = {});
 
     /**
      * This function is used to select one of multiple InputSpecs based on the value of a
@@ -1452,7 +1542,7 @@ void Core::IO::Internal::ParameterSpec<T>::parse(
 
 template <Core::IO::SupportedType T>
 bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
-    InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
+    InputSpecBuilders::Storage& container, IO::Internal::MatchEntry& match_entry) const
 {
   auto spec_name = ryml::to_csubstr(name);
 
@@ -1466,7 +1556,7 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     // It is OK to not encounter an optional parameter
     if (data.default_value.index() == 1)
     {
-      container.add(name, std::get<1>(data.default_value));
+      set_default_value(container);
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
@@ -1504,9 +1594,12 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
       match_entry.additional_info = ss.str();
       return false;
     }
-    container.add(name, value);
+
+    data.store(container, std::move(value));
+
     match_entry.state = IO::Internal::MatchEntry::State::matched;
-    if (data.on_parse_callback) data.on_parse_callback(container);
+    if (data.on_parse_callback && Internal::holds<InputParameterContainer>(container))
+      data.on_parse_callback(std::any_cast<InputParameterContainer&>(container));
     return true;
   }
   catch (const Core::Exception& e)
@@ -1603,10 +1696,17 @@ bool Core::IO::Internal::ParameterSpec<T>::emit(YamlNodeRef node,
   }
 }
 
+template <Core::IO::SupportedType T>
+void Core::IO::Internal::ParameterSpec<T>::set_default_value(
+    InputSpecBuilders::Storage& container) const
+{
+  data.store(container, T{std::get<1>(data.default_value)});
+}
+
 
 template <Core::IO::SupportedType T>
 bool Core::IO::Internal::ParameterSpec<T>::has_correct_size(
-    const T& val, const InputParameterContainer& container) const
+    const T& val, const InputSpecBuilders::Storage& container) const
 {
   if constexpr (rank<T>() == 0)
   {
@@ -1619,9 +1719,11 @@ bool Core::IO::Internal::ParameterSpec<T>::has_correct_size(
       int operator()(int size) const { return size; }
       int operator()(const InputSpecBuilders::SizeCallback& callback) const
       {
-        return callback(container);
+        FOUR_C_ASSERT(Internal::holds<InputParameterContainer>(container),
+            "Size callback can only be used with InputParameterContainer.");
+        return callback(std::any_cast<const InputParameterContainer&>(container));
       }
-      const InputParameterContainer& container;
+      const InputSpecBuilders::Storage& container;
     };
 
     std::array<std::size_t, rank<T>()> size_info;
@@ -1671,7 +1773,7 @@ void Core::IO::Internal::DeprecatedSelectionSpec<T>::parse(
 
 template <typename T>
 bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node,
-    InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
+    InputSpecBuilders::Storage& container, IO::Internal::MatchEntry& match_entry) const
 {
   auto spec_name = ryml::to_csubstr(name);
 
@@ -1685,7 +1787,7 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
     // It is OK to not encounter an optional parameter
     if (data.default_value.index() == 1)
     {
-      container.add(name, std::get<1>(data.default_value));
+      data.store(container, T(std::get<1>(data.default_value)));
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
@@ -1711,10 +1813,11 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
     {
       if (choice.first == value)
       {
-        container.add(name, choice.second);
+        data.store(container, T(choice.second));
         match_entry.state = IO::Internal::MatchEntry::State::matched;
         match_entry.matched_node = entry_node.node.id();
-        if (data.on_parse_callback) data.on_parse_callback(container);
+        if (data.on_parse_callback && Internal::holds<InputParameterContainer>(container))
+          data.on_parse_callback(std::any_cast<InputParameterContainer&>(container));
         return true;
       }
     }
@@ -1838,6 +1941,13 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::emit(YamlNodeRef node,
 }
 
 template <typename T>
+void Core::IO::Internal::DeprecatedSelectionSpec<T>::set_default_value(
+    InputSpecBuilders::Storage& container) const
+{
+  data.store(container, T{std::get<1>(data.default_value)});
+}
+
+template <typename T>
   requires(std::is_enum_v<T>)
 void Core::IO::Internal::SelectionSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
@@ -1868,7 +1978,7 @@ void Core::IO::Internal::SelectionSpec<T>::parse(
 template <typename T>
   requires(std::is_enum_v<T>)
 bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
-    InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
+    InputSpecBuilders::Storage& container, IO::Internal::MatchEntry& match_entry) const
 {
   const auto group_name_substr = ryml::to_csubstr(group_name);
 
@@ -1889,19 +1999,22 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
 
   // Parse into a separate container to avoid side effects if parsing fails.
   // First, only get the selector value.
-  InputParameterContainer selector_container;
+  std::any selector_container;
+  init_storage_with_container(selector_container);
   bool selector_found = selector_spec.impl().match(
       group_node, selector_container, match_entry.append_child(&selector_spec));
   if (!selector_found) return false;
 
-  auto selector_value = selector_container.get<T>(based_on.selector);
+  auto selector_value =
+      std::any_cast<InputParameterContainer&>(selector_container).get<T>(based_on.selector);
   FOUR_C_ASSERT(choices_for_matching.contains(selector_value),
       "Internal error: selector not found in choices.");
   const auto& selected_spec = choices_for_matching.at(selector_value);
 
   // The selected match will match the selector again (to ensure a full match of the node). Thus,
   // we will also parse the selector value again.
-  InputParameterContainer subcontainer;
+  std::any subcontainer;
+  init_storage_with_container(subcontainer);
   auto choice_matched = selected_spec.impl().match(
       group_node, subcontainer, match_entry.append_child(&selected_spec));
   if (!choice_matched) return false;
@@ -1909,7 +2022,7 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
   // Everything was correctly matched, so mark the whole node as matched.
   match_entry.state = IO::Internal::MatchEntry::State::matched;
 
-  container.group(group_name) = subcontainer;
+  store_container_in_container(group_name)(container, std::move(subcontainer));
   return true;
 }
 
@@ -1987,7 +2100,7 @@ bool Core::IO::Internal::SelectionSpec<T>::emit(YamlNodeRef node,
 template <typename T>
   requires(std::is_enum_v<T>)
 void Core::IO::Internal::SelectionSpec<T>::set_default_value(
-    InputParameterContainer& container) const
+    InputSpecBuilders::Storage& container) const
 {
   FOUR_C_THROW("Internal error: set_default_value() called on a SelectionSpec.");
 }
@@ -2030,6 +2143,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
   }
   internal_data.on_parse_callback = data.on_parse_callback;
   internal_data.validator = data.validator;
+  internal_data.store = data.store ? data.store : Internal::store_value_in_container<T>(name);
 
   if (internal_data.default_value.index() == 1 &&
       !Internal::validate_helper(std::get<1>(internal_data.default_value), data.validator))
@@ -2053,6 +2167,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
           .has_default_value = internal_data.default_value.index() == 1,
           .n_specs = 1,
           .type = Internal::InputSpecType::parameter,
+          .stores_to = &internal_data.store.stores_to(),
       });
 }
 
@@ -2098,6 +2213,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
           // one for the group, one for the selector, plus the number of specs for the choices.
           .n_specs = 2 + max_specs_for_choices_matching,
           .type = Internal::InputSpecType::selection,
+          .stores_to = &typeid(InputParameterContainer),
       });
 }
 
@@ -2136,6 +2252,7 @@ Core::IO::InputSpec Core::IO::Internal::selection_internal(std::string name,
     internal_data.default_value = data.default_value;
   }
   internal_data.on_parse_callback = data.on_parse_callback;
+  internal_data.store = data.store ? data.store : Internal::store_value_in_container<T>(name);
 
   const bool has_default_value = internal_data.default_value.index() == 1;
 
@@ -2169,6 +2286,7 @@ Core::IO::InputSpec Core::IO::Internal::selection_internal(std::string name,
           .has_default_value = has_default_value,
           .n_specs = 1,
           .type = InputSpecType::deprecated_selection,
+          .stores_to = &internal_data.store.stores_to(),
       });
 }
 
@@ -2211,6 +2329,64 @@ auto Core::IO::InputSpecBuilders::store_index_as(std::string name, std::vector<T
       container.add(name, reindexing[index]);
     }
   };
+}
+
+
+template <typename T>
+Core::IO::InputSpec Core::IO::InputSpecBuilders::group_struct(std::string name,
+    std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupStructData<T> data)
+{
+  auto internal_all_of = all_of(std::move(specs));
+
+  if (auto* stores_to = internal_all_of.impl().data.stores_to; stores_to && *stores_to != typeid(T))
+  {
+    FOUR_C_THROW("Group_struct '{}' of type '{}' contains specs that store to '{}'.", name,
+        Core::Utils::try_demangle(typeid(T).name()), Core::Utils::try_demangle(stores_to->name()));
+  }
+
+  if (!data.required.has_value())
+  {
+    data.required = !data.defaultable;
+  }
+  if (data.required.value() && data.defaultable)
+  {
+    FOUR_C_THROW("Group '{}': a group cannot be both required and defaultable.", name);
+  }
+  if (data.defaultable && !internal_all_of.impl().has_default_value())
+  {
+    FOUR_C_THROW(
+        "Group '{}': a group cannot be defaultable if not all of its child specs have default "
+        "values.",
+        name.c_str());
+  }
+
+  auto move_my_storage = Internal::wrap_group_in_container<T>(
+      data.store ? data.store : Internal::store_value_in_container<T>(name));
+
+  Internal::InputSpecImpl::CommonData common_data{
+      .name = name,
+      .description = data.description,
+      .required = data.required.value(),
+      .has_default_value = data.defaultable,
+      .n_specs = internal_all_of.impl().data.n_specs + 1,
+      .type = Internal::InputSpecType::group,
+      .stores_to = &move_my_storage.stores_to(),
+  };
+
+  return Internal::make_spec(
+      Internal::GroupSpec{
+          .name = name,
+          .data =
+              {
+                  .description = data.description,
+                  .required = data.required,
+                  .defaultable = data.defaultable,
+              },
+          .spec = std::move(internal_all_of),
+          .init_my_storage = [](Storage& storage) { storage.emplace<T>(); },
+          .move_my_storage = move_my_storage,
+      },
+      common_data);
 }
 
 FOUR_C_NAMESPACE_CLOSE

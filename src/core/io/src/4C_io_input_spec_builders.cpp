@@ -122,7 +122,10 @@ namespace
       }
       else if (entry->impl().has_default_value())
       {
-        entry->impl().set_default_value(container);
+        Core::IO::InputSpecBuilders::Storage storage;
+        Core::IO::Internal::init_storage_with_container(storage);
+        entry->impl().set_default_value(storage);
+        container.merge(std::any_cast<Core::IO::InputParameterContainer&&>(std::move(storage)));
       }
     }
   }
@@ -495,7 +498,7 @@ namespace
   // Match a vector of specs against a node. Returns true when all specs could be matched and
   // the node does not contain any unmatched entries.
   bool fully_match_specs(const std::vector<Core::IO::InputSpec>& specs,
-      Core::IO::ConstYamlNodeRef node, Core::IO::InputParameterContainer& container,
+      Core::IO::ConstYamlNodeRef node, InputSpecBuilders::Storage& container,
       Core::IO::Internal::MatchEntry& match_entry)
   {
     // Track whether the required specs were matched. This does not yet determine if there is
@@ -650,7 +653,7 @@ void Core::IO::Internal::GroupSpec::parse(
 }
 
 bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
-    Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
+    InputSpecBuilders::Storage& container, IO::Internal::MatchEntry& match_entry) const
 {
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
   const auto group_name = ryml::to_csubstr(name);
@@ -685,25 +688,29 @@ bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
   match_entry.matched_node = group_node.node.id();
 
   // Parse into a separate container to avoid side effects if parsing fails.
-  InputParameterContainer subcontainer;
-  bool all_matched = spec.impl().match(group_node, subcontainer, match_entry.append_child(&spec));
-
+  std::any struct_storage;
+  init_my_storage(struct_storage);
+  bool all_matched = spec.impl().match(group_node, struct_storage, match_entry.append_child(&spec));
   if (!all_matched)
   {
     // Match will stay a partial match.
     return false;
   }
-
-  container.group(name) = subcontainer;
+  move_my_storage(container, std::move(struct_storage));
   return true;
 }
 
 
-void Core::IO::Internal::GroupSpec::set_default_value(
-    Core::IO::InputParameterContainer& container) const
+void Core::IO::Internal::GroupSpec::set_default_value(InputSpecBuilders::Storage& container) const
 {
   FOUR_C_ASSERT(!name.empty(), "Internal error: group name must not be empty.");
-  if (spec.impl().has_default_value()) spec.impl().set_default_value(container.group(name));
+  if (spec.impl().has_default_value())
+  {
+    InputSpecBuilders::Storage subcontainer;
+    init_my_storage(subcontainer);
+    spec.impl().set_default_value(subcontainer);
+    move_my_storage(container, std::move(subcontainer));
+  }
 }
 
 
@@ -786,28 +793,22 @@ void Core::IO::Internal::AllOfSpec::parse(
 
 
 bool Core::IO::Internal::AllOfSpec::match(ConstYamlNodeRef node,
-    Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
+    InputSpecBuilders::Storage& container, IO::Internal::MatchEntry& match_entry) const
 {
-  // Parse into a separate container to avoid side effects if parsing fails.
-  InputParameterContainer subcontainer;
-
   match_entry.matched_node = node.node.id();
 
-  bool all_matched = fully_match_specs(specs, node, subcontainer, match_entry);
+  bool all_matched = fully_match_specs(specs, node, container, match_entry);
 
   if (!all_matched)
   {
     return false;
   }
 
-  container.merge(subcontainer);
-
   return true;
 }
 
 
-void Core::IO::Internal::AllOfSpec::set_default_value(
-    Core::IO::InputParameterContainer& container) const
+void Core::IO::Internal::AllOfSpec::set_default_value(InputSpecBuilders::Storage& container) const
 {
   for (const auto& spec : specs)
   {
@@ -929,16 +930,17 @@ void Core::IO::Internal::OneOfSpec::parse(
 
 
 bool Core::IO::Internal::OneOfSpec::match(ConstYamlNodeRef node,
-    Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
+    InputSpecBuilders::Storage& container, IO::Internal::MatchEntry& match_entry) const
 {
-  InputParameterContainer subcontainer;
+  // TODO: one_of only works for InputParameterContainer.
+  std::any subcontainer;
   match_entry.matched_node = node.node.id();
 
   std::size_t matched_index = 0;
   for (; matched_index < specs.size(); ++matched_index)
   {
     auto& spec_match = match_entry.append_child(&specs[matched_index]);
-    subcontainer.clear();
+    subcontainer.emplace<InputParameterContainer>();
     if (specs[matched_index].impl().match(node, subcontainer, spec_match))
     {
       break;
@@ -953,11 +955,11 @@ bool Core::IO::Internal::OneOfSpec::match(ConstYamlNodeRef node,
 
   // Check that no other spec can be matched.
   {
-    InputParameterContainer dummy_container;
+    std::any dummy_container;
     for (std::size_t j = matched_index + 1; j < specs.size(); ++j)
     {
       auto& spec_match = match_entry.append_child(&specs[j]);
-      dummy_container.clear();
+      dummy_container.emplace<InputParameterContainer>();
       if (specs[j].impl().match(node, dummy_container, spec_match))
       {
         return false;
@@ -966,15 +968,16 @@ bool Core::IO::Internal::OneOfSpec::match(ConstYamlNodeRef node,
   }
 
   // Match succeeded.
-  if (on_parse_callback) on_parse_callback(subcontainer, matched_index);
+  if (on_parse_callback)
+    on_parse_callback(std::any_cast<InputParameterContainer&>(subcontainer), matched_index);
   match_entry.state = IO::Internal::MatchEntry::State::matched;
-  container.merge(subcontainer);
+  std::any_cast<InputParameterContainer&>(container).merge(
+      std::any_cast<InputParameterContainer&>(subcontainer));
   return true;
 }
 
 
-void Core::IO::Internal::OneOfSpec::set_default_value(
-    Core::IO::InputParameterContainer& container) const
+void Core::IO::Internal::OneOfSpec::set_default_value(InputSpecBuilders::Storage& container) const
 {
   FOUR_C_THROW("Implementation error: OneOfSpec cannot have a default value.");
 }
@@ -1043,7 +1046,7 @@ void Core::IO::Internal::ListSpec::parse(
 
 
 bool Core::IO::Internal::ListSpec::match(ConstYamlNodeRef node,
-    Core::IO::InputParameterContainer& container, IO::Internal::MatchEntry& match_entry) const
+    InputSpecBuilders::Storage& container, IO::Internal::MatchEntry& match_entry) const
 {
   FOUR_C_ASSERT(!name.empty(), "Internal error: list name must not be empty.");
   const auto list_name = ryml::to_csubstr(name);
@@ -1072,13 +1075,15 @@ bool Core::IO::Internal::ListSpec::match(ConstYamlNodeRef node,
   {
     // Always reset the match entry. We only store the last match attempt for lists.
     child_match_entry.reset();
-    bool child_matched =
-        spec.impl().match(list_node.wrap(child), container_list.emplace_back(), child_match_entry);
+    std::any child_storage{InputParameterContainer()};
+    bool child_matched = spec.impl().match(list_node.wrap(child), child_storage, child_match_entry);
     if (!child_matched)
     {
       // Match will stay a partial match and the MatchEntry will have more details.
       return false;
     }
+    // Move the matched child into the list.
+    container_list.emplace_back(std::any_cast<InputParameterContainer&&>(std::move(child_storage)));
   }
 
   if (container_list.size() > max_entries)
@@ -1089,24 +1094,29 @@ bool Core::IO::Internal::ListSpec::match(ConstYamlNodeRef node,
   }
 
   // Everything was correctly matched, so mark the list node as matched.
-  container.add_list(name, std::move(container_list));
+  std::any_cast<InputParameterContainer&>(container).add_list(name, std::move(container_list));
   match_entry.state = IO::Internal::MatchEntry::State::matched;
 
   return true;
 }
 
 
-void Core::IO::Internal::ListSpec::set_default_value(
-    Core::IO::InputParameterContainer& container) const
+void Core::IO::Internal::ListSpec::set_default_value(InputSpecBuilders::Storage& container) const
 {
+  FOUR_C_ASSERT_ALWAYS(Internal::holds<InputParameterContainer>(container),
+      "Internal error: ListSpec can only set default values for InputParameterContainer.");
   std::vector<InputParameterContainer> default_list(data.size);
 
-  for (auto& subcontainer : default_list)
+  for (auto& list_entry : default_list)
   {
+    InputSpecBuilders::Storage subcontainer;
+    Internal::init_storage_with_container(subcontainer);
     spec.impl().set_default_value(subcontainer);
+    // Move the subcontainer into the list entry.
+    list_entry = std::any_cast<InputParameterContainer&&>(std::move(subcontainer));
   }
 
-  container.add_list(name, std::move(default_list));
+  std::any_cast<InputParameterContainer>(container).add_list(name, std::move(default_list));
 }
 
 
@@ -1211,7 +1221,7 @@ namespace
     if (std::find_if(one_of_it + 1, specs.end(), [](const auto& spec)
             { return spec.impl().data.type == InputSpecType::one_of; }) != specs.end())
     {
-      FOUR_C_THROW("Cannot have multiple one_of specs in the same all_of spec.");
+      FOUR_C_THROW("Cannot have multiple parallel one_of specs in the same all_of spec.");
     }
     using namespace InputSpecBuilders;
     // Take the choices from the one_of spec and enhance them with the other specs that we got
@@ -1255,6 +1265,30 @@ namespace
       if (specs[0].impl().data.type == InputSpecType::all_of) return std::move(specs[0]);
     }
 
+    // Assert that all specs store to the same type. If not, report the names and types.
+    if (!specs.empty() && !std::ranges::all_of(specs,
+                              [first_stores_to = specs[0].impl().data.stores_to](const auto& spec)
+                              {
+                                // Allow for nullptr when we aren't storing anything. This is an
+                                // edge case that could be removed if we never allow empty all_of
+                                // specs.
+                                const auto* stores_to = spec.impl().data.stores_to;
+                                return !stores_to || !first_stores_to ||
+                                       (stores_to == first_stores_to);
+                              }))
+    {
+      std::string error_message =
+          "All specs in an all_of must store to the same destination type. You passed:\n";
+      for (const auto& spec : specs)
+      {
+        error_message += "  - '" + spec.impl().name() + "' stores to " +
+                         Core::Utils::try_demangle(spec.impl().data.stores_to->name()) + "\n";
+      }
+      error_message +=
+          "This error indicates that your .store calls for some specs are not consistent.";
+      FOUR_C_THROW("{}", error_message);
+    }
+
     assert_unique_or_empty_names(specs);
 
     const bool any_required =
@@ -1267,6 +1301,7 @@ namespace
         .has_default_value = all_have_default_values(specs),
         .n_specs = count_contained_specs(specs) + 1,
         .type = InputSpecType::all_of,
+        .stores_to = specs.empty() ? nullptr : specs[0].impl().data.stores_to,
     };
 
     return Internal::make_spec(
@@ -1289,6 +1324,15 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
     std::string name, std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupData data)
 {
   auto internal_all_of = make_all_of(std::move(specs));
+
+  if (auto* stores_to = internal_all_of.impl().data.stores_to;
+      stores_to && *stores_to != typeid(InputParameterContainer))
+  {
+    FOUR_C_THROW(
+        "Group '{}' cannot store to type '{}'. Groups can only store to InputParameterContainer.\n"
+        "Did you mean to use a group_struct?",
+        name, Core::Utils::try_demangle(stores_to->name()));
+  }
 
   if (!data.required.has_value())
   {
@@ -1313,11 +1357,17 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
       .has_default_value = data.defaultable,
       .n_specs = internal_all_of.impl().data.n_specs + 1,
       .type = InputSpecType::group,
+      .stores_to = &typeid(InputParameterContainer),
   };
 
   return IO::Internal::make_spec(
       Internal::GroupSpec{
-          .name = name, .data = std::move(data), .spec = std::move(internal_all_of)},
+          .name = name,
+          .data = std::move(data),
+          .spec = std::move(internal_all_of),
+          .init_my_storage = init_storage_with_container,
+          .move_my_storage = store_container_in_container(name),
+      },
       common_data);
 }
 
@@ -1376,6 +1426,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
       .has_default_value = false,
       .n_specs = count_contained_specs(flattened_specs) + 1,
       .type = InputSpecType::one_of,
+      .stores_to = &typeid(InputParameterContainer),
   };
 
 
@@ -1396,6 +1447,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::list(
       .has_default_value = spec.impl().has_default_value() && data.size != dynamic_size,
       .n_specs = spec.impl().data.n_specs + 1,
       .type = InputSpecType::list,
+      .stores_to = &typeid(InputParameterContainer),
   };
 
   return IO::Internal::make_spec(

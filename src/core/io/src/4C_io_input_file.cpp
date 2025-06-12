@@ -844,7 +844,9 @@ namespace Core::IO
     {
       if (spec.impl().has_default_value())
       {
-        spec.impl().set_default_value(container);
+        // Matching against an empty node will set the default values.
+        auto tree = init_yaml_tree_with_exceptions();
+        spec.match(ConstYamlNodeRef(tree.rootref(), ""), container);
         return;
       }
       else if (spec.impl().required())
