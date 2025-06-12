@@ -569,8 +569,8 @@ void Solid::ModelEvaluator::Structure::rayleigh_damping_matrix()
 {
   if (eval_data().get_damping_type() != Inpar::Solid::damp_rayleigh) return;
 
-  const double& dampk = tim_int().get_data_sdyn().get_damping_stiffness_factor();
-  const double& dampm = tim_int().get_data_sdyn().get_damping_mass_factor();
+  const double dampk = tim_int().get_data_sdyn().get_damping_stiffness_factor();
+  const double dampm = tim_int().get_data_sdyn().get_damping_mass_factor();
 
   // damping matrix with initial stiffness
   damp().add(stiff(), false, dampk, 0.0);

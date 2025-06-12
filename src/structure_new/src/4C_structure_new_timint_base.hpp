@@ -346,7 +346,7 @@ namespace Solid
       void set_time_end(double timemax) override
       {
         check_init();
-        datasdyn_->get_time_max() = timemax;
+        datasdyn_->set_time_max(timemax);
       }
 
       /// Get time step size \f$\Delta t_n\f$
@@ -405,7 +405,7 @@ namespace Solid
       void set_step_end(int step_end) override
       {
         check_init_setup();
-        datasdyn_->get_step_max() = step_end;
+        datasdyn_->set_step_max(step_end);
       }
 
       //! Get divcont type
@@ -433,7 +433,8 @@ namespace Solid
       virtual double set_random_time_step_factor(double rand_tsfac)
       {
         check_init_setup();
-        return datasdyn_->get_random_time_step_factor() = rand_tsfac;
+        datasdyn_->set_random_time_step_factor(rand_tsfac);
+        return datasdyn_->get_random_time_step_factor();
       }
 
       //! Get current refinement level for time step adaption
@@ -447,7 +448,8 @@ namespace Solid
       virtual int set_div_con_refine_level(int divconrefinementlevel)
       {
         check_init_setup();
-        return datasdyn_->get_div_con_refine_level() = divconrefinementlevel;
+        datasdyn_->set_div_con_refine_level(divconrefinementlevel);
+        return datasdyn_->get_div_con_refine_level();
       }
 
       //! Get step of current refinement level for time step adaption
@@ -461,7 +463,8 @@ namespace Solid
       virtual int set_div_con_num_fine_step(int divconnumfinestep)
       {
         check_init_setup();
-        return datasdyn_->get_div_con_num_fine_step() = divconnumfinestep;
+        datasdyn_->set_div_con_num_fine_step(divconnumfinestep);
+        return datasdyn_->get_div_con_num_fine_step();
       }
 
       /// set evaluation action

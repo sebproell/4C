@@ -685,13 +685,6 @@ namespace Solid
         return dt_;
       };
 
-      /// Return timer for solution technique
-      std::shared_ptr<Teuchos::Time>& get_timer()
-      {
-        check_init_setup();
-        return timer_;
-      };
-
       /// Return the prediction indicator
       bool& is_predict()
       {

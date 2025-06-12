@@ -75,10 +75,10 @@ namespace Solid
 
      protected:
       /// get the indicator state
-      inline const bool& is_init() const { return isinit_; };
+      inline bool is_init() const { return isinit_; };
 
       /// get the indicator state
-      inline const bool& is_setup() const { return issetup_; };
+      inline bool is_setup() const { return issetup_; };
 
       /// Check if init() has been called, yet.
       inline void check_init() const
@@ -97,14 +97,14 @@ namespace Solid
       ///@{
 
       /// Returns final time \f$t_\text{fin}\f$
-      const double& get_time_max() const
+      double get_time_max() const
       {
         check_init_setup();
         return timemax_;
       };
 
       /// Returns final time step \f$N\f$
-      const int& get_step_max() const
+      int get_step_max() const
       {
         check_init_setup();
         return stepmax_;
@@ -124,14 +124,14 @@ namespace Solid
       };
 
       /// Returns dynamic type
-      const enum Inpar::Solid::DynamicType& get_dynamic_type() const
+      enum Inpar::Solid::DynamicType get_dynamic_type() const
       {
         check_init_setup();
         return dyntype_;
       };
 
       /// Get type of shell thickness scaling
-      const enum Inpar::Solid::StcScale& get_stc_algo_type() const
+      enum Inpar::Solid::StcScale get_stc_algo_type() const
       {
         check_init_setup();
         return stcscale_;
@@ -224,7 +224,7 @@ namespace Solid
 
       /// Returns number of times you want to halve your timestep in case nonlinear solver
       /// diverges
-      const int& get_max_div_con_refine_level() const
+      int get_max_div_con_refine_level() const
       {
         check_init_setup();
         return maxdivconrefinementlevel_;
@@ -235,13 +235,6 @@ namespace Solid
       {
         check_init_setup();
         return *noxparams_;
-      }
-
-      /// Returns local parameters
-      const Teuchos::ParameterList& get_local_params() const
-      {
-        check_init_setup();
-        return *locaparams_;
       }
 
       /// Returns the initial pseudo time step for the PTC method
@@ -343,21 +336,21 @@ namespace Solid
       /// @name Get the different status test control parameters (read only)
       ///@{
       /// Returns the STR vector norm type
-      const enum Inpar::Solid::VectorNorm& get_norm_type() const
+      enum Inpar::Solid::VectorNorm get_norm_type() const
       {
         check_init_setup();
         return normtype_;
       }
 
       /// Returns the NOX normtype
-      const enum ::NOX::Abstract::Vector::NormType& get_nox_norm_type() const
+      enum ::NOX::Abstract::Vector::NormType get_nox_norm_type() const
       {
         check_init_setup();
         return nox_normtype_;
       }
 
       /// Return random factor for timestep in case nonlinear solver diverges
-      const double& get_random_time_step_factor() const
+      double get_random_time_step_factor() const
       {
         check_init_setup();
         return rand_tsfac_;
@@ -365,7 +358,7 @@ namespace Solid
 
 
       /// Return level of refinement in case of divercontype_ == adapt_step
-      const int& get_div_con_refine_level() const
+      int get_div_con_refine_level() const
       {
         check_init_setup();
         return divconrefinementlevel_;
@@ -373,7 +366,7 @@ namespace Solid
 
 
       /// Return number of fine steps in case of in case of divercontype_ == adapt_step
-      const int& get_div_con_num_fine_step() const
+      int get_div_con_num_fine_step() const
       {
         check_init_setup();
         return divconnumfinestep_;
@@ -428,105 +421,46 @@ namespace Solid
       ///@}
       ///@}
 
-      /// @name Get mutable general control parameters (read and write access)
+      /// @name Set some general control parameters
       ///@{
-
-      /// Returns final time \f$t_\text{fin}\f$
-      double& get_time_max()
+      /// Set final time step \f$N\f$
+      void set_step_max(int new_stepmax)
       {
         check_init_setup();
-        return timemax_;
+        stepmax_ = new_stepmax;
       };
 
-      /// Returns final time step \f$N\f$
-      int& get_step_max()
+      /// Set final time \f$t_\text{fin}\f$
+      void set_time_max(double new_timemax)
       {
         check_init_setup();
-        return stepmax_;
+        timemax_ = new_timemax;
       };
 
-      /// Returns timer for solution technique
-      std::shared_ptr<Teuchos::Time>& get_timer()
+      /// Set random factor for timestep in case nonlinear solver diverges
+      void set_random_time_step_factor(double new_rand_tsfac)
       {
         check_init_setup();
-        return timer_;
-      };
-
-      /// Returns minimal non-linear iteration number
-      int& get_iter_min()
-      {
-        check_init_setup();
-        return itermin_;
-      };
-
-      /// Returns maximal non-linear iteration number
-      int& get_iter_max()
-      {
-        check_init_setup();
-        return itermax_;
-      };
-
-      double& get_pre_stress_time()
-      {
-        check_init_setup();
-        return prestresstime_;
+        rand_tsfac_ = new_rand_tsfac;
       }
 
-      double& get_pre_stress_displacement_tolerance()
+      /// Set level of refinement in case of divercontype_ == adapt_step
+      void set_div_con_refine_level(int new_divconrefinementlevel)
       {
         check_init_setup();
-        return prestress_displacement_tolerance_;
+        divconrefinementlevel_ = new_divconrefinementlevel;
       }
 
-      [[nodiscard]] int& get_pre_stress_minimum_number_of_load_steps()
+      /// Return number of fine steps in case of in case of divercontype_ == adapt_step
+      void set_div_con_num_fine_step(int new_divconnumfinestep)
       {
         check_init_setup();
-        return prestress_min_number_of_load_steps_;
+        divconnumfinestep_ = new_divconnumfinestep;
       }
+      ///@}
 
-      /// Returns prestress type
-      enum Inpar::Solid::PreStress& get_pre_stress_type()
-      {
-        check_init_setup();
-        return prestresstype_;
-      };
-
-      /// Returns predictor type
-      enum Inpar::Solid::PredEnum& get_predictor_type()
-      {
-        check_init_setup();
-        return predtype_;
-      };
-
-      /// Returns dynamic type
-      enum Inpar::Solid::DynamicType& get_dynamic_type()
-      {
-        check_init_setup();
-        return dyntype_;
-      };
-
-      /// Returns nonlinear solver type
-      enum Inpar::Solid::NonlinSolTech& get_nln_solver_type()
-      {
-        check_init_setup();
-        return nlnsolvertype_;
-      };
-
-      /// Returns mid-time energy type
-      enum Inpar::Solid::MidAverageEnum& get_mid_time_energy_type()
-      {
-        check_init_setup();
-        return mid_time_energy_type_;
-      }
-
-      /// Returns the divergence action
-      /// Short: What to do if the non-linear solver fails.
-      enum Inpar::Solid::DivContAct& get_divergence_action()
-      {
-        check_init_setup();
-        return divergenceaction_;
-      };
-
+      /// @name Get mutable NOX parameters (read and write access)
+      ///@{
       /// Returns nox parameters
       Teuchos::ParameterList& get_nox_params()
       {
@@ -539,34 +473,6 @@ namespace Solid
       {
         check_init_setup();
         return noxparams_;
-      }
-
-      /// Returns local parameters
-      Teuchos::ParameterList& get_local_params()
-      {
-        check_init_setup();
-        return *locaparams_;
-      }
-
-      /// Return random factor for time step in case nonlinear solver diverges
-      double& get_random_time_step_factor()
-      {
-        check_init_setup();
-        return rand_tsfac_;
-      }
-
-      /// Return level of refinement in case of divercontype_ == adapt_step
-      int& get_div_con_refine_level()
-      {
-        check_init_setup();
-        return divconrefinementlevel_;
-      }
-
-      /// Return number of fine steps in case of in case of divercontype_ == adapt_step
-      int& get_div_con_num_fine_step()
-      {
-        check_init_setup();
-        return divconnumfinestep_;
       }
 
       ///@}
@@ -590,57 +496,8 @@ namespace Solid
       }
       ///@}
 
-
-      /// @name Get mutable damping control parameters (read and write access)
-      ///@{
-      /// Returns damping type
-      enum Inpar::Solid::DampKind& get_damping_type()
-      {
-        check_init_setup();
-        return damptype_;
-      };
-
-      /// Returns damping factor for stiffness \f$c_\text{K}\f$
-      double& get_damping_stiffness_factor()
-      {
-        check_init_setup();
-        return dampk_;
-      };
-
-      /// Returns damping factor for mass \f$c_\text{M}\f$
-      double& get_damping_mass_factor()
-      {
-        check_init_setup();
-        return dampm_;
-      };
-      ///@}
-
-      /// @name Get mutable mass and inertia control parameters (read and write access)
-      ///@{
-      /// Returns mass linearization type
-      enum Inpar::Solid::MassLin& get_mass_lin_type()
-      {
-        check_init_setup();
-        return masslintype_;
-      };
-      ///@}
-
       /// @name Get model evaluator control parameters (read and write access)
       ///@{
-      /// Returns types of the current active models
-      std::set<enum Inpar::Solid::ModelType>& get_model_types()
-      {
-        check_init_setup();
-        return *modeltypes_;
-      };
-
-      /// Returns the current active element technologies
-      std::set<enum Inpar::Solid::EleTech>& get_element_technologies()
-      {
-        check_init_setup();
-        return *eletechs_;
-      };
-
       /// Return a pointer to the coupling model evaluator
       const std::shared_ptr<Solid::ModelEvaluator::Generic>& coupling_model_ptr()
       {
@@ -800,9 +657,6 @@ namespace Solid
 
       /// nox parameters list
       std::shared_ptr<Teuchos::ParameterList> noxparams_;
-
-      /// local parameter list
-      std::shared_ptr<Teuchos::ParameterList> locaparams_;
 
       /// initial pseudo time step for the pseudo transient continuation (PTC) method
       double ptc_delta_init_;
