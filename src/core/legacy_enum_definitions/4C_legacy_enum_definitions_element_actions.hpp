@@ -54,10 +54,10 @@ namespace Core::Elements
     struct_calc_stifftemp,  //!< TSI specific: mechanical-thermal stiffness
     struct_calc_global_gpstresses_map,  //!< basically calc_struct_stress but with assembly of
                                         //!< global gpstresses map
-    struct_calc_brownianforce,        //!< thermal (i.e. stochastic) and damping forces according to
-                                      //!< Brownian dynamics
-    struct_calc_brownianstiff,        //!< thermal (i.e. stochastic) and damping forces and stiffnes
-                                      //!< according to Brownian dynamics
+    struct_calc_brownianforce,  //!< thermal (i.e., stochastic) and damping forces according to
+                                //!< Brownian dynamics
+    struct_calc_brownianstiff,  //!< thermal (i.e., stochastic) and damping forces and stiffness
+                                //!< according to Brownian dynamics
     struct_poro_calc_fluidcoupling,   //!< calculate stiffness matrix related to fluid coupling
                                       //!< within porous medium problem
     struct_poro_calc_scatracoupling,  //!< calculate stiffness matrix related to scatra coupling
@@ -66,7 +66,7 @@ namespace Core::Elements
                                       //!< within porous medium problem
     struct_calc_addjacPTC,            //!< calculate element based PTC contributions
     struct_create_backup,        //!< create a backup state of the internally store state quantities
-                                 //!< (e.g. EAS, material history, etc.)
+                                 //!< (e.g., EAS, material history, etc.)
     struct_recover_from_backup,  //!< recover from previously stored backup state
     calc_struct_stiffscalar,     //!< calculate coupling term k_dS for monolithic SSI
     struct_calc_analytical_error  //!< compute L2 error in comparison to analytical solution
