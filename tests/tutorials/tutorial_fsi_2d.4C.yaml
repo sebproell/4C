@@ -129,6 +129,7 @@ STRUCTURE GEOMETRY:
 
 FLUID GEOMETRY:
   FILE: tutorial_fsi_2d.e
+  SHOW_INFO: "summary"
   ELEMENT_BLOCKS:
     - ID: 2
       ELEMENT_NAME: FLUID

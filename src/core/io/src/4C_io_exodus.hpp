@@ -20,6 +20,20 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::IO::Exodus
 {
+  enum class VerbosityLevel : int
+  {
+    none = 0,              ///< output of summary for blocks and sets,
+    summary = 1,           ///< output of summary for blocks and sets,
+    detailed_summary = 2,  ///< output of summary for each block and set,
+    detailed = 3,          ///< detailed output for each block and set,
+    full = 4               ///< detailed output, even for nodes and element connectivities
+  };
+  constexpr bool operator>(VerbosityLevel lhs, VerbosityLevel rhs)
+  {
+    return static_cast<int>(lhs) > static_cast<int>(rhs);
+  }
+
+
   struct ElementBlock;
   struct NodeSet;
   struct SideSet;
@@ -50,8 +64,12 @@ namespace Core::IO::Exodus
      */
     Mesh(std::filesystem::path exodus_file, MeshParameters mesh_parameters = {});
 
-    //! Print mesh info
-    void print(std::ostream& os, bool verbose = false) const;
+    /** Print mesh info
+     *  parameter:
+     *  os (std::ostream): output stream
+     *  verbose (VerbosityLevel): verbosity
+     */
+    void print(std::ostream& os, VerbosityLevel verbose) const;
 
     //! Get number of nodes in mesh
     [[nodiscard]] std::size_t get_num_nodes() const { return nodes_.size(); }
@@ -108,6 +126,9 @@ namespace Core::IO::Exodus
 
     //! title
     std::string title_;
+
+    //! exodus filename
+    std::string exodus_filename_;
   };
 
 
@@ -135,7 +156,7 @@ namespace Core::IO::Exodus
     /**
      * Pretty-print information about the element block.
      */
-    void print(std::ostream& os, bool verbose = false) const;
+    void print(std::ostream& os, VerbosityLevel verbose = VerbosityLevel::none) const;
   };
 
   /**
@@ -156,7 +177,7 @@ namespace Core::IO::Exodus
     /**
      * Pretty-print information about the node set.
      */
-    void print(std::ostream& os, bool verbose = false) const;
+    void print(std::ostream& os, VerbosityLevel verbose = VerbosityLevel::none) const;
   };
 
   /**
@@ -177,7 +198,7 @@ namespace Core::IO::Exodus
     /**
      * Pretty-print information about the side set.
      */
-    void print(std::ostream& os, bool verbose = false) const;
+    void print(std::ostream& os, VerbosityLevel verbose = VerbosityLevel::none) const;
   };
 }  // namespace Core::IO::Exodus
 

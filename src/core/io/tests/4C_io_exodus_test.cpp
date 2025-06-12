@@ -27,7 +27,7 @@ namespace
     EXPECT_EQ(mesh.get_element_block(1).elements.size(), 4);
     EXPECT_EQ(mesh.get_element_block(2).elements.size(), 4);
 
-    mesh.print(std::cout, true);
+    mesh.print(std::cout, Core::IO::Exodus::VerbosityLevel::none);
   }
 
   TEST(Exodus, NodeOffset)

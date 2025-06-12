@@ -8,6 +8,7 @@ PROBLEM TYPE:
 
 STRUCTURE GEOMETRY:
   FILE: "tutorial_contact_3d.e"
+  SHOW_INFO: "summary"
   ELEMENT_BLOCKS:
     - ID: 1
       ELEMENT_NAME: SOLID
