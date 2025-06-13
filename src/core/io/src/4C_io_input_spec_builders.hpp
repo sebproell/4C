@@ -955,8 +955,6 @@ namespace Core::IO
       void emit_metadata(YamlNodeRef node) const;
       bool emit(YamlNodeRef node, const InputParameterContainer& container,
           const InputSpecEmitOptions& options) const;
-
-      const AllOfSpec& content() const;
     };
 
 

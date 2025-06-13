@@ -143,8 +143,8 @@ namespace
 
   bool all_have_default_values(const std::vector<Core::IO::InputSpec>& specs)
   {
-    return std::all_of(specs.begin(), specs.end(),
-        [](const Core::IO::InputSpec& spec) { return spec.impl().has_default_value(); });
+    return std::ranges::all_of(
+        specs, [](const Core::IO::InputSpec& spec) { return spec.impl().has_default_value(); });
   }
 
   [[nodiscard]] const std::string& describe(const Core::IO::InputSpec& spec)
@@ -734,18 +734,14 @@ void Core::IO::Internal::GroupSpec::emit_metadata(YamlNodeRef node) const
   emit_value_as_yaml(node.wrap(node.node["defaultable"]), data.defaultable);
   node.node["specs"] |= ryml::SEQ;
   {
-    // Do not emit the internally used all_of but the specs that it contains.
-    for (const auto& spec : content().specs)
-    {
-      auto child = node.node["specs"].append_child();
-      child |= ryml::MAP;
-      spec.impl().emit_metadata(node.wrap(child));
-    }
+    auto child = node.node["specs"].append_child();
+    child |= ryml::MAP;
+    spec.impl().emit_metadata(node.wrap(child));
   }
 }
 
 
-bool Internal::GroupSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
+bool Core::IO::Internal::GroupSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
     const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -770,17 +766,6 @@ bool Internal::GroupSpec::emit(YamlNodeRef node, const InputParameterContainer& 
   // If group is not present, success depends on whether it is required.
   return !data.required.value();
 }
-
-const AllOfSpec& Core::IO::Internal::GroupSpec::content() const
-{
-  auto all_of_spec =
-      dynamic_cast<const Internal::InputSpecTypeErasedImplementation<AllOfSpec>*>(&spec.impl());
-  FOUR_C_ASSERT_ALWAYS(all_of_spec != nullptr,
-      "Internal error: GroupSpec must contain an AllOfSpec as its content.");
-
-  return all_of_spec->wrapped;
-}
-
 
 void Core::IO::Internal::AllOfSpec::parse(
     Core::IO::ValueParser& parser, Core::IO::InputParameterContainer& container) const
@@ -835,13 +820,6 @@ void Core::IO::Internal::AllOfSpec::print(std::ostream& stream, std::size_t inde
 
 void Core::IO::Internal::AllOfSpec::emit_metadata(YamlNodeRef node) const
 {
-  // Do not emit the all_of if it only contains one spec, as this is redundant.
-  if (specs.size() == 1)
-  {
-    specs.front().impl().emit_metadata(node);
-    return;
-  }
-
   node.node |= ryml::MAP;
 
   node.node["type"] = "all_of";
@@ -857,7 +835,7 @@ void Core::IO::Internal::AllOfSpec::emit_metadata(YamlNodeRef node) const
 }
 
 
-bool Internal::AllOfSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
+bool Core::IO::Internal::AllOfSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
     const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1006,7 +984,7 @@ void Core::IO::Internal::OneOfSpec::emit_metadata(YamlNodeRef node) const
 }
 
 
-bool Internal::OneOfSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
+bool Core::IO::Internal::OneOfSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
     const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1145,7 +1123,7 @@ void Core::IO::Internal::ListSpec::emit_metadata(YamlNodeRef node) const
 }
 
 
-bool Internal::ListSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
+bool Core::IO::Internal::ListSpec::emit(YamlNodeRef node, const InputParameterContainer& container,
     const InputSpecEmitOptions& options) const
 {
   node.node |= ryml::MAP;
@@ -1312,7 +1290,7 @@ namespace
   }
 }  // namespace
 
-Core::IO::InputSpec Internal::wrap_with_all_of(Core::IO::InputSpec spec)
+Core::IO::InputSpec Core::IO::Internal::wrap_with_all_of(Core::IO::InputSpec spec)
 {
   if (spec.impl().data.type == InputSpecType::all_of)
     return spec;
@@ -1438,6 +1416,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::one_of(std::vector<InputSpec> s
 Core::IO::InputSpec Core::IO::InputSpecBuilders::list(
     std::string name, Core::IO::InputSpec spec, ListData data)
 {
+  spec = wrap_with_all_of(std::move(spec));
   InputSpecImpl::CommonData common_data{
       .name = name,
       .description = data.description,

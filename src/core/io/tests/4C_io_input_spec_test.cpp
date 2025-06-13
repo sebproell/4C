@@ -633,28 +633,44 @@ required: true
 
     std::string expected = R"(type: one_of
 specs:
-  - name: a
-    type: int
-    required: true
-  - name: b
-    type: double
-    required: true
-  - type: one_of
+  - type: all_of
     specs:
-      - name: c
-        type: string
+      - name: a
+        type: int
         required: true
+  - type: all_of
+    specs:
+      - name: b
+        type: double
+        required: true
+  - type: all_of
+    specs:
       - type: one_of
         specs:
-          - name: d
-            type: double
-            required: true
-          - name: e
-            type: int
-            required: true
-          - name: f
-            type: string
-            required: true
+          - type: all_of
+            specs:
+              - name: c
+                type: string
+                required: true
+          - type: all_of
+            specs:
+              - type: one_of
+                specs:
+                  - type: all_of
+                    specs:
+                      - name: d
+                        type: double
+                        required: true
+                  - type: all_of
+                    specs:
+                      - name: e
+                        type: int
+                        required: true
+                  - type: all_of
+                    specs:
+                      - name: f
+                        type: string
+                        required: true
 )";
     EXPECT_EQ(out.str(), expected);
   }
@@ -747,258 +763,268 @@ specs:
       spec.emit_metadata(yaml);
       out << tree;
 
-      std::string expected = R"(type: one_of
+      std::string expected = R"(type: all_of
 specs:
-  - type: all_of
+  - type: one_of
     specs:
-      - name: a
-        type: int
-        required: false
-        default: 42
-      - name: b
-        type: vector
-        size: 3
-        value_type:
-          noneable: true
-          type: double
-        required: false
-        default: [1,null,3]
-      - name: string to string
-        type: map
-        size: 1
-        value_type:
-          type: string
-        required: false
-        default:
-          key: "abc"
-      - name: c
-        type: string
-        required: true
-      - name: e
-        type: enum
-        choices:
-          - name: A
-          - name: B
-          - name: C
-        required: false
-        default: A
-      - name: eo
-        noneable: true
-        type: enum
-        choices:
-          - name: A
-          - name: B
-          - name: C
-        required: false
-        default: null
-      - name: group2
-        type: group
-        required: false
-        defaultable: false
+      - type: all_of
         specs:
-          - name: g
+          - name: a
             type: int
-            required: true
-      - name: list
-        type: list
-        required: true
-        size: 2
-        spec:
-          type: all_of
-          specs:
-            - name: l1
-              type: int
-              required: true
-            - name: l2
-              type: double
-              required: true
-      - name: selection_group
-        type: selection
-        required: true
-        selector: type
-        choices:
-          - name: A
-            spec:
-              name: a
-              type: int
-              required: true
-          - name: B
-            spec:
-              name: b
-              type: int
-              required: true
-          - name: C
-            spec:
-              name: c
-              type: int
-              required: true
-  - type: all_of
-    specs:
-      - name: a
-        type: int
-        required: false
-        default: 42
-      - name: b
-        type: vector
-        size: 3
-        value_type:
-          noneable: true
-          type: double
-        required: false
-        default: [1,null,3]
-      - name: triple_vector
-        type: vector
-        value_type:
-          type: vector
-          size: 2
-          value_type:
+            required: false
+            default: 42
+          - name: b
             type: vector
+            size: 3
             value_type:
-              type: int
-        required: true
-      - name: e
-        type: enum
-        choices:
-          - name: A
-          - name: B
-          - name: C
-        required: false
-        default: A
-      - name: eo
-        noneable: true
-        type: enum
-        choices:
-          - name: A
-          - name: B
-          - name: C
-        required: false
-        default: null
-      - name: group2
-        type: group
-        required: false
-        defaultable: false
-        specs:
-          - name: g
-            type: int
-            required: true
-      - name: list
-        type: list
-        required: true
-        size: 2
-        spec:
-          type: all_of
-          specs:
-            - name: l1
-              type: int
-              required: true
-            - name: l2
+              noneable: true
               type: double
-              required: true
-      - name: selection_group
-        type: selection
-        required: true
-        selector: type
-        choices:
-          - name: A
-            spec:
-              name: a
-              type: int
-              required: true
-          - name: B
-            spec:
-              name: b
-              type: int
-              required: true
-          - name: C
-            spec:
-              name: c
-              type: int
-              required: true
-  - type: all_of
-    specs:
-      - name: a
-        type: int
-        required: false
-        default: 42
-      - name: b
-        type: vector
-        size: 3
-        value_type:
-          noneable: true
-          type: double
-        required: false
-        default: [1,null,3]
-      - name: group
-        type: group
-        description: A group
-        required: true
-        defaultable: false
-        specs:
+            required: false
+            default: [1,null,3]
+          - name: string to string
+            type: map
+            size: 1
+            value_type:
+              type: string
+            required: false
+            default:
+              key: "abc"
           - name: c
             type: string
-            description: "A string"
             required: true
-          - name: d
-            type: double
+          - name: e
+            type: enum
+            choices:
+              - name: A
+              - name: B
+              - name: C
+            required: false
+            default: A
+          - name: eo
+            noneable: true
+            type: enum
+            choices:
+              - name: A
+              - name: B
+              - name: C
+            required: false
+            default: null
+          - name: group2
+            type: group
+            required: false
+            defaultable: false
+            specs:
+              - type: all_of
+                specs:
+                  - name: g
+                    type: int
+                    required: true
+          - name: list
+            type: list
             required: true
-      - name: e
-        type: enum
-        choices:
-          - name: A
-          - name: B
-          - name: C
-        required: false
-        default: A
-      - name: eo
-        noneable: true
-        type: enum
-        choices:
-          - name: A
-          - name: B
-          - name: C
-        required: false
-        default: null
-      - name: group2
-        type: group
-        required: false
-        defaultable: false
+            size: 2
+            spec:
+              type: all_of
+              specs:
+                - name: l1
+                  type: int
+                  required: true
+                - name: l2
+                  type: double
+                  required: true
+          - name: selection_group
+            type: selection
+            required: true
+            selector: type
+            choices:
+              - name: A
+                spec:
+                  name: a
+                  type: int
+                  required: true
+              - name: B
+                spec:
+                  name: b
+                  type: int
+                  required: true
+              - name: C
+                spec:
+                  name: c
+                  type: int
+                  required: true
+      - type: all_of
         specs:
-          - name: g
+          - name: a
             type: int
-            required: true
-      - name: list
-        type: list
-        required: true
-        size: 2
-        spec:
-          type: all_of
-          specs:
-            - name: l1
-              type: int
-              required: true
-            - name: l2
+            required: false
+            default: 42
+          - name: b
+            type: vector
+            size: 3
+            value_type:
+              noneable: true
               type: double
-              required: true
-      - name: selection_group
-        type: selection
-        required: true
-        selector: type
-        choices:
-          - name: A
+            required: false
+            default: [1,null,3]
+          - name: triple_vector
+            type: vector
+            value_type:
+              type: vector
+              size: 2
+              value_type:
+                type: vector
+                value_type:
+                  type: int
+            required: true
+          - name: e
+            type: enum
+            choices:
+              - name: A
+              - name: B
+              - name: C
+            required: false
+            default: A
+          - name: eo
+            noneable: true
+            type: enum
+            choices:
+              - name: A
+              - name: B
+              - name: C
+            required: false
+            default: null
+          - name: group2
+            type: group
+            required: false
+            defaultable: false
+            specs:
+              - type: all_of
+                specs:
+                  - name: g
+                    type: int
+                    required: true
+          - name: list
+            type: list
+            required: true
+            size: 2
             spec:
-              name: a
-              type: int
-              required: true
-          - name: B
+              type: all_of
+              specs:
+                - name: l1
+                  type: int
+                  required: true
+                - name: l2
+                  type: double
+                  required: true
+          - name: selection_group
+            type: selection
+            required: true
+            selector: type
+            choices:
+              - name: A
+                spec:
+                  name: a
+                  type: int
+                  required: true
+              - name: B
+                spec:
+                  name: b
+                  type: int
+                  required: true
+              - name: C
+                spec:
+                  name: c
+                  type: int
+                  required: true
+      - type: all_of
+        specs:
+          - name: a
+            type: int
+            required: false
+            default: 42
+          - name: b
+            type: vector
+            size: 3
+            value_type:
+              noneable: true
+              type: double
+            required: false
+            default: [1,null,3]
+          - name: group
+            type: group
+            description: A group
+            required: true
+            defaultable: false
+            specs:
+              - type: all_of
+                specs:
+                  - name: c
+                    type: string
+                    description: "A string"
+                    required: true
+                  - name: d
+                    type: double
+                    required: true
+          - name: e
+            type: enum
+            choices:
+              - name: A
+              - name: B
+              - name: C
+            required: false
+            default: A
+          - name: eo
+            noneable: true
+            type: enum
+            choices:
+              - name: A
+              - name: B
+              - name: C
+            required: false
+            default: null
+          - name: group2
+            type: group
+            required: false
+            defaultable: false
+            specs:
+              - type: all_of
+                specs:
+                  - name: g
+                    type: int
+                    required: true
+          - name: list
+            type: list
+            required: true
+            size: 2
             spec:
-              name: b
-              type: int
-              required: true
-          - name: C
-            spec:
-              name: c
-              type: int
-              required: true
+              type: all_of
+              specs:
+                - name: l1
+                  type: int
+                  required: true
+                - name: l2
+                  type: double
+                  required: true
+          - name: selection_group
+            type: selection
+            required: true
+            selector: type
+            choices:
+              - name: A
+                spec:
+                  name: a
+                  type: int
+                  required: true
+              - name: B
+                spec:
+                  name: b
+                  type: int
+                  required: true
+              - name: C
+                spec:
+                  name: c
+                  type: int
+                  required: true
 )";
       EXPECT_EQ(out.str(), expected);
       std::cout << out.str() << std::endl;
