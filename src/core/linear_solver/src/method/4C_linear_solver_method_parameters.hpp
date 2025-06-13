@@ -36,7 +36,7 @@ namespace Core::LinearSolver
       into the solver parameter list.
     */
     static void compute_solver_parameters(
-        Core::FE::Discretization& dis, Teuchos::ParameterList& solverlist);
+        const Core::FE::Discretization& dis, Teuchos::ParameterList& solverlist);
 
     /*!
      * \brief Fix the nullspace to match a new given map
