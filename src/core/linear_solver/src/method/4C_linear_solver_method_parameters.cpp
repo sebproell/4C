@@ -24,7 +24,9 @@ void Core::LinearSolver::Parameters::compute_solver_parameters(
     Core::FE::Discretization& dis, Teuchos::ParameterList& solverlist)
 {
   std::shared_ptr<Core::LinAlg::Map> nullspaceMap =
-      solverlist.get<std::shared_ptr<Core::LinAlg::Map>>("null space: map", nullptr);
+      solverlist.get<std::shared_ptr<Core::LinAlg::Map>>("null space: node map", nullptr);
+  auto nullspace_dof_map =
+      solverlist.get<std::shared_ptr<Core::LinAlg::Map>>("null space: dof map", nullptr);
 
   int numdf = 1;
   int dimns = 1;
@@ -86,14 +88,14 @@ void Core::LinearSolver::Parameters::compute_solver_parameters(
 
   // set nullspace information
   {
-    if (nullspaceMap == nullptr)
+    if (nullspace_dof_map == nullptr)
     {
       // if no map is given, we calculate the nullspace on the map describing the
       // whole discretization
-      nullspaceMap = std::make_shared<Core::LinAlg::Map>(*dis.dof_row_map());
+      nullspace_dof_map = std::make_shared<Core::LinAlg::Map>(*dis.dof_row_map());
     }
 
-    auto nullspace = Core::FE::compute_null_space(dis, numdf, dimns, *nullspaceMap);
+    auto nullspace = Core::FE::compute_null_space(dis, numdf, dimns, *nullspace_dof_map);
 
     solverlist.set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace", nullspace);
     solverlist.set("null space: vectors", nullspace->Values());

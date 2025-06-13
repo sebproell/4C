@@ -125,6 +125,7 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_structure_li
     {
       // Create the beam and solid maps
       std::vector<int> solidDofs;
+      std::vector<int> solid_node_gids;
       std::vector<int> beamDofs;
 
       for (int i = 0; i < actdis.num_my_row_nodes(); i++)
@@ -134,11 +135,16 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_structure_li
         if (BeamInteraction::Utils::is_beam_node(*node))
           actdis.dof(node, beamDofs);
         else
+        {
           actdis.dof(node, solidDofs);
+          solid_node_gids.push_back(node->id());
+        }
       }
 
       std::shared_ptr<Core::LinAlg::Map> rowmap1(
           new Core::LinAlg::Map(-1, solidDofs.size(), solidDofs.data(), 0, actdis.get_comm()));
+      const auto node_row_map_solid = std::make_shared<Core::LinAlg::Map>(
+          -1, solid_node_gids.size(), solid_node_gids.data(), 0, actdis.get_comm());
       std::shared_ptr<Core::LinAlg::Map> rowmap2(
           new Core::LinAlg::Map(-1, beamDofs.size(), beamDofs.data(), 0, actdis.get_comm()));
 
@@ -154,7 +160,10 @@ std::shared_ptr<Core::LinAlg::Solver> Solid::SOLVER::Factory::build_structure_li
 
       linsolver->params()
           .sublist("Inverse1")
-          .set<std::shared_ptr<Core::LinAlg::Map>>("null space: map", rowmap1);
+          .set<std::shared_ptr<Core::LinAlg::Map>>("null space: node map", node_row_map_solid);
+      linsolver->params()
+          .sublist("Inverse1")
+          .set<std::shared_ptr<Core::LinAlg::Map>>("null space: dof map", rowmap1);
       Core::LinearSolver::Parameters::compute_solver_parameters(
           actdis, linsolver->params().sublist("Inverse1"));
 
