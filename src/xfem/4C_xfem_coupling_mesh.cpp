@@ -22,6 +22,8 @@
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
+#include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_linalg_utils_sparse_algebra_create.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
@@ -2359,8 +2361,10 @@ void XFEM::MeshCouplingFSI::evaluate_structural_cauchy_stress(Core::Elements::El
             linearizations.d_cauchyndir_dd = &d_cauchy_d_d;
             linearizations.d2_cauchyndir_dd2 = &d2_cauchy_d_d2;
 
-            cauchy_n_dir = solid_ele->get_normal_cauchy_stress_at_xi(
-                eledisp, rst_slave, normal, dir, linearizations);
+            cauchy_n_dir = solid_ele->get_normal_cauchy_stress_at_xi(eledisp,
+                Core::LinAlg::reinterpret_as_tensor<3>(rst_slave),
+                Core::LinAlg::reinterpret_as_tensor<3>(normal),
+                Core::LinAlg::reinterpret_as_tensor<3>(dir), linearizations);
           };
         }
         else
