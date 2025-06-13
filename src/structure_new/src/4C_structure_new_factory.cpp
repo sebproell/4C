@@ -50,8 +50,8 @@ std::shared_ptr<Solid::Integrator> Solid::Factory::build_implicit_integrator(
 {
   std::shared_ptr<Solid::IMPLICIT::Generic> impl_int_ptr = nullptr;
 
-  const enum Inpar::Solid::DynamicType& dyntype = datasdyn.get_dynamic_type();
-  const enum Inpar::Solid::PreStress& prestresstype = datasdyn.get_pre_stress_type();
+  const enum Inpar::Solid::DynamicType dyntype = datasdyn.get_dynamic_type();
+  const enum Inpar::Solid::PreStress prestresstype = datasdyn.get_pre_stress_type();
 
   // check if we have a problem that needs to be prestressed
   const bool is_prestress = prestresstype != Inpar::Solid::PreStress::none;

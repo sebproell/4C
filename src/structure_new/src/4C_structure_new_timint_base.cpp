@@ -158,12 +158,12 @@ bool Solid::TimeInt::Base::not_finished() const
   }
 
   // check the current time
-  const double& timenp = dataglobalstate_->get_time_np();
-  const double& timemax = datasdyn_->get_time_max();
-  const double& dt = (*dataglobalstate_->get_delta_time())[0];
+  const double timenp = dataglobalstate_->get_time_np();
+  const double timemax = datasdyn_->get_time_max();
+  const double dt = (*dataglobalstate_->get_delta_time())[0];
   // check the step counter
-  const int& stepnp = dataglobalstate_->get_step_np();
-  const int& stepmax = datasdyn_->get_step_max();
+  const int stepnp = dataglobalstate_->get_step_np();
+  const int stepmax = datasdyn_->get_step_max();
 
   return (timenp <= timemax + 1.0e-8 * dt and stepnp <= stepmax);
 }
