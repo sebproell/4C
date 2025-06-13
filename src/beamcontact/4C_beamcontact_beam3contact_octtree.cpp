@@ -359,7 +359,7 @@ void Beam3ContactOctTree::octree_output(
     // active contact pairs
     if ((int)contactpairelements.size() > 0)
     {
-      // Print contact_pairs to .dat-file and plot with Matlab....................
+      // Print contact_pairs to custom file format and plot with Matlab....................
       std::ostringstream filename;
       if (step != -2)
         filename << "contact_pairs" << std::setw(6) << std::setfill('0') << step << ".dat";
@@ -930,7 +930,7 @@ void Beam3ContactOctTree::create_spbb(Core::LinAlg::SerialDenseMatrix& coord, co
  |  N0 is maximum permissible number of "counted" boxes in the leaf octant.                |
  |  Returns vector IND of the same size as rows of allbboxes_ showing which region each     |
  |  box of a set belongs to; binary matrices BX, BY, BZ where each row shows               |
- |  "binary address" of each region are written to .dat- files each.                       |
+ |  "binary address" of each region are written to files each.                       |
  *----------------------------------------------------------------------------------------*/
 bool Beam3ContactOctTree::locate_all()
 {

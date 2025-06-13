@@ -253,7 +253,7 @@ Make sure you have enabled a debug profile in your cmake settings.
             - Select 4C from the dropdown menu for Target
             - Enter ``<PathToMpirun>/mpirun`` to Executable (find with ``which mpirun`` in console)
             - Add the arguments for mpirun:
-              ``-np <NumberOfProcesses> <PathTo4C-debug>/4C <PathToTest/TestName.dat> <OutputPreFix>``
+              ``-np <NumberOfProcesses> <PathTo4C-debug>/4C <PathToTest/TestFile> <OutputPreFix>``
 
     - Add any other parameters you need for the program to run (for example, the input file name and the output basename) to the arguments.
     - Enter the path you want to run the program in (maybe the one where your input file is located) to Working directory
@@ -346,7 +346,7 @@ They have to be placed in .vscode/launch.json in the configurations-list.
         "type": "cppdbg",
         "request": "launch",
         "program": "<4C-debug-execdir>/4C",
-        "args": ["/path/to/inputfile.dat", "<4C-problemdir>/xxx"],
+        "args": ["/path/to/inputfile", "<4C-problemdir>/xxx"],
         "cwd": "<4C-problemdir>",
         "setupCommands": [
             { "text": "handle SIGPIPE nostop noprint pass", "description": "ignore SIGPIPE", "ignoreFailures": true }
@@ -364,7 +364,7 @@ They have to be placed in .vscode/launch.json in the configurations-list.
         "request": "launch",
         "program": "<4C-debug-execdir>/build_debug/4C",
         "args": [
-            "/path/to/inputfile.dat",
+            "/path/to/inputfile",
             "<4C-problemdir>/xxxx"
             "restart=1",
             "restartfrom=<4C-problemdir>/xxx"
@@ -407,7 +407,7 @@ This mode is the "normal" mode. On a breakpoint, all processes make a pause.
             "-np",
             "3", // specify number of mpi ranks here
             "<4C-debug-execdir>/4C",
-            "/path/to/inputfile.dat",
+            "/path/to/inputfile",
             "<4C-problemdir>/xxx",
         ],
         "cwd": "<4C-problemdir>",
@@ -432,7 +432,7 @@ Start |FOURC| with the following command in an extra terminal:
 
 ::
 
-    ~/build_debug$ mpirun -np 2 ./4C input.dat out --interactive
+    ~/build_debug$ mpirun -np 2 ./4C <input> <output> --interactive
     Global rank 0 with PID 17235 on helmholtz.lnm.mw.tum.de is ready for attach
     Global rank 1 with PID 17236 on helmholtz.lnm.mw.tum.de is ready for attach
 

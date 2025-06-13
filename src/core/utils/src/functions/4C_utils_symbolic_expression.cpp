@@ -293,8 +293,6 @@ namespace Core::Utils::SymbolicExpressionDetails
       if ((t == ' ') || (t == '\t'))
       {
         /* ignore whitespaces */
-        /* this should never happen because we cannot read strings with
-         * whitespaces from .dat files. :( */
       }
       else if (t == '\n')
       {

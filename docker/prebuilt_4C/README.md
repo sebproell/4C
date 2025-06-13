@@ -14,7 +14,7 @@ docker build --tag 4c:latest .
 
 Then you can run one of the input files inside the docker image with
 ```
-mpirun -np 2 /home/user/4C/build/4C /home/user/4C/tests/input_files/<some input>.dat /home/user/output
+mpirun -np 2 /home/user/4C/build/4C /home/user/4C/tests/input_files/<some input> /home/user/output
 ```
 
 If you want to use your own input file you can either use a volume mount (`--mount`) or copy the file into the docker container (`docker cp`).
