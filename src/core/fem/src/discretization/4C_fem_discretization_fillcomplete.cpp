@@ -66,7 +66,7 @@ int Core::FE::Discretization::fill_complete(
         << "\n+--------------------------------------------------------------------+"
         << Core::IO::endl;
     Core::IO::cout(Core::IO::verbose)
-        << "| fill_complete() on discretization " << std::setw(34) << std::left << name()
+        << "| fill_complete() on discretization " << std::setw(33) << std::left << name()
         << std::setw(1) << std::right << "|" << Core::IO::endl;
   }
 
@@ -101,7 +101,7 @@ int Core::FE::Discretization::fill_complete(
     if (myrank == 0)
     {
       Core::IO::cout(Core::IO::verbose)
-          << "| assign_degrees_of_freedom() ...                                       |"
+          << "| assign_degrees_of_freedom() ...                                    |"
           << Core::IO::endl;
     }
     assign_degrees_of_freedom(0);
@@ -113,7 +113,7 @@ int Core::FE::Discretization::fill_complete(
     if (myrank == 0)
     {
       Core::IO::cout(Core::IO::verbose)
-          << "| initialize_elements() ...                                           |"
+          << "| initialize_elements() ...                                          |"
           << Core::IO::endl;
     }
     initialize_elements();
@@ -125,7 +125,7 @@ int Core::FE::Discretization::fill_complete(
     if (myrank == 0)
     {
       Core::IO::cout(Core::IO::verbose)
-          << "| boundary_conditions_geometry() ...                                   |"
+          << "| boundary_conditions_geometry() ...                                 |"
           << Core::IO::endl;
     }
 
