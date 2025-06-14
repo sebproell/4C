@@ -66,8 +66,8 @@ MATERIALS:
   - MAT: 4
     MAT_Fourier:
       CAPA: 1
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [1]
+      CONDUCT:
+        constant: [1]
   - MAT: 5
     MAT_electrode:
       DIFF_COEF_CONC_DEP_FUNCT: -1

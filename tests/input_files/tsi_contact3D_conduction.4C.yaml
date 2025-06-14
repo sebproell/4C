@@ -53,8 +53,8 @@ MATERIALS:
   - MAT: 2
     MAT_Fourier:
       CAPA: 0
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [52]
+      CONDUCT:
+        constant: [52]
 CLONING MATERIAL MAP:
   - SRC_FIELD: "structure"
     SRC_MAT: 1

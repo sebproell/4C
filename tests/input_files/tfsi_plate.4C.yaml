@@ -137,6 +137,11 @@ MATERIALS:
       YOUNG: 1
       NUE: 0
       DENS: 1
+  - MAT: 4
+    MAT_Fourier:
+      CAPA: 1000
+      CONDUCT:
+        constant: [100]
 CLONING MATERIAL MAP:
   - SRC_FIELD: "fluid"
     SRC_MAT: 1
