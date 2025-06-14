@@ -21,19 +21,22 @@ FOUR_C_NAMESPACE_OPEN
 //----------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------
 void Core::LinearSolver::Parameters::compute_solver_parameters(
-    Core::FE::Discretization& dis, Teuchos::ParameterList& solverlist)
+    const Core::FE::Discretization& dis, Teuchos::ParameterList& solverlist)
 {
-  std::shared_ptr<Core::LinAlg::Map> nullspaceMap =
-      solverlist.get<std::shared_ptr<Core::LinAlg::Map>>("null space: map", nullptr);
+  const auto nullspace_node_map =
+      solverlist.get<std::shared_ptr<Core::LinAlg::Map>>("null space: node map", nullptr);
+  auto nullspace_dof_map =
+      solverlist.get<std::shared_ptr<Core::LinAlg::Map>>("null space: dof map", nullptr);
 
   int numdf = 1;
   int dimns = 1;
-  int nv = 0;
-  int np = 0;
 
   // set parameter information for solver
   {
-    if (nullspaceMap == nullptr and dis.num_my_row_nodes() > 0)
+    int nv = 0;
+    int np = 0;
+
+    if (nullspace_node_map == nullptr and dis.num_my_row_nodes() > 0)
     {
       // no map given, just grab the block information on the first element that appears
       Core::Elements::Element* dwele = dis.l_row_element(0);
@@ -47,7 +50,7 @@ void Core::LinearSolver::Parameters::compute_solver_parameters(
         Core::Nodes::Node* actnode = dis.l_row_node(i);
         std::vector<int> dofs = dis.dof(0, actnode);
 
-        const int localIndex = nullspaceMap->lid(dofs[0]);
+        const int localIndex = nullspace_node_map->lid(dofs[0]);
 
         if (localIndex == -1) continue;
 
@@ -63,8 +66,6 @@ void Core::LinearSolver::Parameters::compute_solver_parameters(
     Core::Communication::max_all(ldata.data(), gdata.data(), 4, dis.get_comm());
     numdf = gdata[0];
     dimns = gdata[1];
-    nv = gdata[2];
-    np = gdata[3];
 
     // store nullspace information in solver list
     solverlist.set("PDE equations", numdf);
@@ -76,24 +77,24 @@ void Core::LinearSolver::Parameters::compute_solver_parameters(
   // set coordinate information
   {
     std::shared_ptr<Core::LinAlg::MultiVector<double>> coordinates;
-    if (nullspaceMap == nullptr)
+    if (nullspace_node_map == nullptr)
       coordinates = dis.build_node_coordinates();
     else
-      coordinates = dis.build_node_coordinates(nullspaceMap);
+      coordinates = dis.build_node_coordinates(nullspace_node_map);
 
     solverlist.set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("Coordinates", coordinates);
   }
 
   // set nullspace information
   {
-    if (nullspaceMap == nullptr)
+    if (nullspace_dof_map == nullptr)
     {
       // if no map is given, we calculate the nullspace on the map describing the
       // whole discretization
-      nullspaceMap = std::make_shared<Core::LinAlg::Map>(*dis.dof_row_map());
+      nullspace_dof_map = std::make_shared<Core::LinAlg::Map>(*dis.dof_row_map());
     }
 
-    auto nullspace = Core::FE::compute_null_space(dis, numdf, dimns, *nullspaceMap);
+    const auto nullspace = Core::FE::compute_null_space(dis, numdf, dimns, *nullspace_dof_map);
 
     solverlist.set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("nullspace", nullspace);
     solverlist.set("null space: vectors", nullspace->Values());
