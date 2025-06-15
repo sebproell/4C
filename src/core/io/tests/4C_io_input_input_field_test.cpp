@@ -47,8 +47,7 @@ namespace
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
       ryml::parse_in_arena(R"(stiffness:
-              type: constant
-              value: 1.0)",
+              constant: 1.0)",
           root);
 
       ConstYamlNodeRef node(root, "");
@@ -62,8 +61,7 @@ namespace
       SCOPED_TRACE("Input field from file");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
-      ryml::parse_in_arena(
-          ("stiffness:\n    type: from_file\n    value: " + input_field_file).c_str(), root);
+      ryml::parse_in_arena(("stiffness:\n    from_file: " + input_field_file).c_str(), root);
       std::flush(std::cout);
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;

@@ -579,21 +579,24 @@ namespace Core::IO
       from_file,
     };
 
+    /**
+     * Create an InputField from one of the supported ways.
+     */
     template <typename T>
     void input_field_callback(
         std::string name, const InputParameterContainer& in, InputSpecBuilders::Storage& out)
     {
-      if (in.get<InputFieldType>("type") == InputFieldType::from_file)
+      if (in.get<InputFieldType>("_selector") == InputFieldType::from_file)
       {
         std::unordered_map<int, T> map_data;
-        std::filesystem::path file_path = in.get<std::filesystem::path>("value");
+        std::filesystem::path file_path = in.get<std::filesystem::path>("from_file");
         IO::read_value_from_yaml(file_path, name, map_data);
         std::any_cast<InputParameterContainer&>(out).add(
             name, IO::InputField<T>(std::move(map_data)));
       }
-      else if (in.get<InputFieldType>("type") == InputFieldType::constant)
+      else if (in.get<InputFieldType>("_selector") == InputFieldType::constant)
       {
-        T data = in.get<T>("value");
+        T data = in.get<T>("constant");
         std::any_cast<InputParameterContainer&>(out).add(name, IO::InputField<T>(data));
       }
       else
@@ -752,7 +755,7 @@ namespace Core::IO
       std::array<Size, rank<T>()> size;
     };
 
-    template <typename StorageType>
+    template <typename Selector, typename StorageType>
     struct SelectionData
     {
       /**
@@ -769,6 +772,11 @@ namespace Core::IO
        * An optional function to store the selection group.
        */
       StoreFunction<StorageType> store{nullptr};
+
+      /**
+       * An optional function to store the value of the selector.
+       */
+      StoreFunction<Selector> store_selector{nullptr};
 
       /**
        * An optional function to store selection data.
@@ -921,36 +929,20 @@ namespace Core::IO
       void set_default_value(InputSpecBuilders::Storage& container) const;
     };
 
-    //! Helper for selection().
-    template <typename T>
-      requires(std::is_enum_v<T>)
-    struct BasedOn
-    {
-      std::string selector{"type"};
-      std::map<T, InputSpec> choices;
-      InputSpecBuilders::StoreFunction<T> store_selector{nullptr};
-    };
-
     template <typename T>
       requires(std::is_enum_v<T>)
     struct SelectionSpec
     {
       std::string group_name;
-      struct
-      {
-        std::string selector;
-        std::map<T, InputSpec> choices;
-      } based_on;
+      std::map<T, InputSpec> choices;
 
       struct
       {
         std::string description;
         bool required;
         InputSpecBuilders::SelectionCallback selection_callback;
+        InputSpecBuilders::StoreFunction<T> store_selector;
       } data;
-      InputSpec selector_spec;
-      //! The choices of the selection enhanced by the selector spec to allow full matching.
-      std::map<T, InputSpec> choices_for_matching;
 
       std::function<void(InputSpecBuilders::Storage& my_storage)> init_my_storage{};
       InputSpecBuilders::StoreFunction<InputSpecBuilders::Storage> move_my_storage{};
@@ -1331,10 +1323,9 @@ namespace Core::IO
         std::string name, std::vector<InputSpec> specs, GroupStructData<T> data = {});
 
     /**
-     * This function is used to select one of multiple InputSpecs based on the value of a
-     * selector enum parameter. For every possible value of the selector enum, a different InputSpec
-     * is expected. The selector parameter and the selected InputSpec live inside a group with the
-     * @p name. For example:
+     * This function is used to select one of multiple InputSpecs based on the value of an
+     * enum parameter. For every possible value of the selector enum, a different InputSpec
+     * is expected. For example:
      *
      * @code
      * enum class TimeIntegration
@@ -1344,38 +1335,38 @@ namespace Core::IO
      * };
      *
      * auto spec = selection<TimeIntegration>(
-     *     "Time integration", {.selector = "scheme",
-     *                             .choices = {
-     *                                 {TimeIntegration::OST, parameter<double>("theta")},
-     *                                 {
-     *                                     TimeIntegration::GenAlpha,
-     *                                     all_of({
-     *                                         parameter<double>("alpha_f"),
-     *                                         parameter<double>("alpha_m"),
-     *                                     }),
-     *                                 },
-     *                             }});
+     *     "time_integration", {
+     *         group("OST",{
+     *             parameter<double>("theta"),
+     *         }),
+     *         group("GenAlpha",{
+     *             parameter<double>("alpha_f"),
+     *             parameter<double>("alpha_m"),
+     *         }),
+     *     });
      * @endcode
      *
      * will match the following input:
      *
      * @code
-     * Time integration:
-     *   scheme: OST
-     *   theta: 0.5
+     * time_integration:
+     *   OST:
+     *     theta: 0.5
      * @endcode
      *
      * or the following input:
      *
      * @code
-     * Time integration:
-     *   scheme: GenAlpha
-     *   alpha_f: 1
-     *   alpha_m: 0.5
+     * time_integration:
+     *   GenAlpha:
+     *     alpha_f: 1
+     *     alpha_m: 0.5
      * @endcode
      *
-     * Note that the @p selector parameter is automatically added inside the group @p name by this
-     * function.
+     * Every name of a choice must match one of the enum values of the @p Selector type (in the
+     * example above: `OST` or `GenAlpha`).
+     * During matching, a parameter named "_selector" with the enum constant corresponding to the
+     * active choice is automatically added inside the group @p name by this function.
      *
      * Since this function is a clever combination of the functionalities of group() and
      * parameter(), it also provides support for storing the parsed values in a struct. Enhancing
@@ -1413,14 +1404,8 @@ namespace Core::IO
      *     {.store = as_variant<GenAlpha>(&TimeIntegrationParameters::parameters)});
      *
      * auto spec = selection<TimeIntegration, TimeIntegrationParameters>(
-     *     "Time integration", {.selector = "scheme",
-     *                             .choices =
-     *                                 {
-     *                                     {TimeIntegration::OST, ost},
-     *                                     {TimeIntegration::GenAlpha, gen_alpha},
-     *                                 },
-     *                             .store_selector =
-     *                               in_struct(&TimeIntegrationParameters::scheme)});
+     *     "time_integration", {ost, gen_alpha}
+     *     {.store_selector = in_struct(&TimeIntegrationParameters::scheme)});
      * @endcode
      *
      * Note that you need to enhance every choice of the selection to be a group_struct(), so that
@@ -1429,8 +1414,8 @@ namespace Core::IO
      */
     template <typename Selector, typename StorageType = DefaultStorage>
       requires(std::is_enum_v<Selector>)
-    [[nodiscard]] InputSpec selection(std::string name, Internal::BasedOn<Selector> based_on,
-        SelectionData<StorageType> data = {});
+    [[nodiscard]] InputSpec selection(std::string name, std::vector<InputSpec> choices,
+        SelectionData<Selector, StorageType> data = {});
 
     /**
      * Defines an input field for spatially dependent parameters.
@@ -2101,26 +2086,7 @@ template <typename T>
 void Core::IO::Internal::SelectionSpec<T>::parse(
     ValueParser& parser, InputParameterContainer& container) const
 {
-  if (parser.peek() == group_name)
-  {
-    parser.consume(group_name);
-    const auto selector_value = parser.read<T>();
-    FOUR_C_ASSERT(
-        based_on.choices.contains(selector_value), "Internal error: selector must be in choices.");
-    auto& group_container = container.group(group_name);
-    group_container.add(based_on.selector, selector_value);
-    auto spec = based_on.choices.at(selector_value);
-    spec.impl().parse(parser, group_container);
-  }
-  else if (!data.required)
-  {
-    return;
-  }
-  else
-  {
-    std::string next_token{parser.peek()};
-    FOUR_C_THROW("Could not parse '{}'. Next token is '{}'.", group_name.c_str(), next_token);
-  }
+  FOUR_C_THROW("Not implemented. You cannot use a selection in the legacy dat format.");
 }
 
 
@@ -2146,27 +2112,43 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
   match_entry.state = IO::Internal::MatchEntry::State::partial;
   match_entry.matched_node = group_node.node.id();
 
-  // Parse into a separate container to avoid side effects if parsing fails.
-  // First, only get the selector value.
-  std::any selector_container;
-  init_storage_with_container(selector_container);
-  bool selector_found = selector_spec.impl().match(
-      group_node, selector_container, match_entry.append_child(&selector_spec));
-  if (!selector_found) return false;
+  // The selection group must have exactly one child group with one of the selector values as key.
+  if (group_node.node.num_children() != 1)
+  {
+    match_entry.additional_info = "needs exactly one child with selector value as key";
+    return false;
+  }
 
-  auto selector_value =
-      std::any_cast<InputParameterContainer&>(selector_container).get<T>(based_on.selector);
-  FOUR_C_ASSERT(choices_for_matching.contains(selector_value),
-      "Internal error: selector not found in choices.");
-  const auto& selected_spec = choices_for_matching.at(selector_value);
+  const auto selected_node = group_node.wrap(group_node.node.first_child());
+  const auto selector_str = selected_node.node.key();
+  std::optional<T> selector_value =
+      EnumTools::enum_cast<T>(std::string_view{selector_str.data(), selector_str.size()});
 
-  // The selected match will match the selector again (to ensure a full match of the node). Thus,
-  // we will also parse the selector value again.
+  if (!selector_value)
+  {
+    match_entry.additional_info = "has wrong selector value, expected one of: ";
+    for (const auto& [choice_value, _] : choices)
+    {
+      match_entry.additional_info += std::string{EnumTools::enum_name<T>(choice_value)} + "|";
+    }
+    match_entry.additional_info.pop_back();  // Remove the last '|'
+    return false;
+  }
+
+  FOUR_C_ASSERT(
+      choices.contains(*selector_value), "Internal error: selector not found in choices.");
+  const auto& selected_spec = choices.at(*selector_value);
+
   InputSpecBuilders::Storage subcontainer;
   init_my_storage(subcontainer);
   auto choice_matched = selected_spec.impl().match(
       group_node, subcontainer, match_entry.append_child(&selected_spec));
   if (!choice_matched) return false;
+
+  if (data.store_selector)
+  {
+    data.store_selector(subcontainer, std::move(*selector_value));
+  }
 
   if (data.selection_callback)
   {
@@ -2193,13 +2175,10 @@ template <typename T>
 void Core::IO::Internal::SelectionSpec<T>::print(std::ostream& stream, std::size_t indent) const
 {
   stream << "// " << std::string(indent, ' ') << group_name;
-  selector_spec.impl().print(stream, indent + 2);
   stream << "// " << std::string(indent + 2, ' ') << "<choices>\n";
-  for (const auto& [selector_value, spec] : based_on.choices)
+  for (const auto& [selector_value, spec] : choices)
   {
     stream << "\n";
-    stream << "//" << std::string(indent + 2, ' ') << " if value of " << based_on.selector << " is "
-           << EnumTools::enum_name<T>(selector_value);
     spec.impl().print(stream, indent + 4);
   }
   stream << "\n";
@@ -2220,10 +2199,9 @@ void Core::IO::Internal::SelectionSpec<T>::emit_metadata(YamlNodeRef node) const
     emit_value_as_yaml(node.wrap(node.node["description"]), data.description);
   }
   emit_value_as_yaml(node.wrap(node.node["required"]), data.required);
-  node.node["selector"] << based_on.selector;
 
   node.node["choices"] |= ryml::SEQ;
-  for (const auto& [choice, spec] : based_on.choices)
+  for (const auto& [choice, spec] : choices)
   {
     auto entry = node.node["choices"].append_child();
     entry |= ryml::MAP;
@@ -2243,17 +2221,18 @@ bool Core::IO::Internal::SelectionSpec<T>::emit(YamlNodeRef node,
     auto group_node = node.node.append_child();
     group_node << ryml::key(group_name);
     group_node |= ryml::MAP;
-    bool success =
-        selector_spec.impl().emit(node.wrap(group_node), container.group(group_name), options);
-    if (!success) return false;
 
-    auto selector_value = container.group(group_name).get<T>(based_on.selector);
-    FOUR_C_ASSERT(based_on.choices.contains(selector_value),
-        "Internal error: selector not found in choices.");
+    // Try to emit each of the choices, only one of them will succeed.
+    bool success = false;
+    for (const auto& [selector_value, spec] : choices)
+    {
+      if (spec.impl().emit(node.wrap(group_node), container.group(group_name), options))
+      {
+        success = true;
+        break;
+      }
+    }
 
-    success = based_on.choices.at(selector_value)
-                  .impl()
-                  .emit(node.wrap(group_node), container.group(group_name), options);
     return success;
   }
   return !data.required;
@@ -2305,7 +2284,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
   }
   internal_data.on_parse_callback = data.on_parse_callback;
   internal_data.validator = data.validator;
-  internal_data.store = data.store ? data.store : Internal::store_value_in_container<T>(name);
+  internal_data.store = data.store ? data.store : in_container<T>(name);
 
   if (internal_data.default_value.index() == 1 &&
       !Internal::validate_helper(std::get<1>(internal_data.default_value), data.validator))
@@ -2336,31 +2315,46 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::parameter(
 template <typename Selector, typename StorageType>
   requires(std::is_enum_v<Selector>)
 Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
-    std::string name, Internal::BasedOn<Selector> based_on, SelectionData<StorageType> data)
+    std::string name, std::vector<InputSpec> choices, SelectionData<Selector, StorageType> data)
 {
+  std::map<Selector, InputSpec> choices_map;
+
+  for (auto&& choice : choices)
+  {
+    const auto& choice_name = choice.impl().name();
+
+    FOUR_C_ASSERT_ALWAYS(!name.empty(),
+        "Selection '{}' has at least one choice with an empty name. "
+        "Every choice needs to be a named InputSpec.",
+        name);
+
+    const auto selector_value = EnumTools::enum_cast<Selector>(choice_name);
+    FOUR_C_ASSERT_ALWAYS(selector_value,
+        "Selection '{}' has a choice with name '{}' that does not match any enum constant of type "
+        "'{}'.",
+        name, choice_name, EnumTools::enum_type_name<Selector>());
+
+    FOUR_C_ASSERT_ALWAYS(!choices_map.contains(*selector_value),
+        "Selection '{}' has at least two choices with the same name '{}'. "
+        "Every choice needs to be a uniquely named InputSpec.",
+        name, *selector_value);
+
+    choices_map.emplace(*selector_value, std::move(choice));
+  }
+
   // Ensure that every enum constant is mapped to a spec.
   for (const auto& e : EnumTools::enum_values<Selector>())
   {
-    FOUR_C_ASSERT_ALWAYS(based_on.choices.contains(e),
+    FOUR_C_ASSERT_ALWAYS(choices_map.contains(e),
         "You need to give an InputSpec for every possible value of enum '{}'. Missing "
         "choice for enum constant '{}'.",
         EnumTools::enum_type_name<Selector>(), EnumTools::enum_name(e));
   }
 
-  auto selector_spec = parameter<Selector>(based_on.selector, {.store = based_on.store_selector});
-  std::map<Selector, Core::IO::InputSpec> choices_for_matching;
-  for (const auto& [choice, spec] : based_on.choices)
-  {
-    choices_for_matching.emplace(choice, all_of({selector_spec, spec}));
-  }
-
-  std::size_t max_specs_for_choices_matching = std::ranges::max_element(
-      choices_for_matching, {}, [](const auto& spec) { return spec.second.impl().data.n_specs; })
-                                                   ->second.impl()
-                                                   .data.n_specs;
-
-  // Create a selector spec that stores to a container, so that we can easily get the value.
-  selector_spec = parameter<Selector>(based_on.selector, {});
+  std::size_t max_specs_for_choices = std::ranges::max_element(
+      choices_map, {}, [](const auto& spec) { return spec.second.impl().data.n_specs; })
+                                          ->second.impl()
+                                          .data.n_specs;
 
   StoreFunction<Storage> move_my_storage;
   if constexpr (std::is_same_v<StorageType, DefaultStorage>)
@@ -2370,7 +2364,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
   else
   {
     move_my_storage = Internal::wrap_group_in_container<StorageType>(
-        data.store ? data.store : Internal::store_value_in_container<StorageType>(name));
+        data.store ? data.store : in_container<StorageType>(name));
   }
 
   Internal::InputSpecImpl::CommonData common_data{
@@ -2378,28 +2372,35 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
       .description = data.description,
       .required = data.required,
       .has_default_value = false,
-      // one for the group, one for the selector, plus the number of specs for the choices.
-      .n_specs = 2 + max_specs_for_choices_matching,
+      // one for the group plus the number of specs for the choices.
+      .n_specs = 1 + max_specs_for_choices,
       .type = Internal::InputSpecType::selection,
       .stores_to = &move_my_storage.stores_to(),
   };
 
+  StoreFunction<Selector> store_selector;
+  if constexpr (std::is_same_v<StorageType, DefaultStorage>)
+  {
+    store_selector =
+        data.store_selector ? data.store_selector : in_container<Selector>("_selector");
+  }
+  else
+  {
+    // Use whatever was given. This may be null by default, which will be checked during match.
+    store_selector = data.store_selector;
+  }
+
   return IO::Internal::make_spec(
       Internal::SelectionSpec<Selector>{
           .group_name = name,
-          .based_on =
-              {
-                  .selector = based_on.selector,
-                  .choices = std::move(based_on.choices),
-              },
+          .choices = std::move(choices_map),
           .data =
               {
                   .description = data.description,
                   .required = data.required,
                   .selection_callback = data.selection_callback,
+                  .store_selector = store_selector,
               },
-          .selector_spec = std::move(selector_spec),
-          .choices_for_matching = std::move(choices_for_matching),
           .init_my_storage = [](Storage& storage) { storage.emplace<StorageType>(); },
           .move_my_storage = std::move(move_my_storage),
       },
@@ -2412,15 +2413,14 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::input_field(
 {
   auto spec = selection<Internal::InputFieldType>(name,
       {
-          .selector = "type",
-          .choices =
-              {
-                  {Internal::InputFieldType::from_file, parameter<std::filesystem::path>("value")},
-                  {Internal::InputFieldType::constant, parameter<T>("value")},
-              },
+          parameter<std::filesystem::path>("from_file"),
+          parameter<T>("constant"),
       },
-      {.selection_callback = [name](const InputParameterContainer& in, Storage& out)
-          { Internal::input_field_callback<T>(name, in, out); }});
+      {
+          .description = data.description,
+          .selection_callback = [name](const InputParameterContainer& in, Storage& out)
+          { Internal::input_field_callback<T>(name, in, out); },
+      });
   return spec;
 };
 
@@ -2478,7 +2478,7 @@ Core::IO::InputSpec Core::IO::Internal::selection_internal(std::string name,
     internal_data.default_value = data.default_value;
   }
   internal_data.on_parse_callback = data.on_parse_callback;
-  internal_data.store = data.store ? data.store : Internal::store_value_in_container<T>(name);
+  internal_data.store = data.store ? data.store : InputSpecBuilders::in_container<T>(name);
 
   const bool has_default_value = internal_data.default_value.index() == 1;
 
@@ -2586,8 +2586,8 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group_struct(std::string name,
         name.c_str());
   }
 
-  auto move_my_storage = Internal::wrap_group_in_container<T>(
-      data.store ? data.store : Internal::store_value_in_container<T>(name));
+  auto move_my_storage =
+      Internal::wrap_group_in_container<T>(data.store ? data.store : in_container<T>(name));
 
   Internal::InputSpecImpl::CommonData common_data{
       .name = name,
