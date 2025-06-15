@@ -64,6 +64,14 @@ namespace Core::IO
       const std::type_info* stores_to_{nullptr};
     };
 
+    /**
+     * Create a StoreFunction that stores a value in an InputParameterContainer under the
+     * given @p name. For most functions in InputSpecBuilders, this is the default way to
+     * store a value and there is rarely a need to use this function directly.
+     */
+    template <typename T>
+      requires(!std::is_same_v<T, InputParameterContainer>)
+    auto in_container(std::string name);
 
     /**
      * Create a StoreFunction which stores a value to a specific member of a struct. The funny
@@ -136,23 +144,6 @@ namespace Core::IO
     }
 
     /**
-     * Get a StoreFunction that stores a value in an InputParameterContainer. This is only used
-     * internally as the default if a storage function is not user-provided.
-     */
-    template <typename T>
-      requires(!std::is_same_v<T, InputParameterContainer>)
-    auto store_value_in_container(std::string name)
-    {
-      return InputSpecBuilders::StoreFunction<T>(
-          [name](InputSpecBuilders::Storage& storage, T&& value)
-          {
-            FOUR_C_ASSERT(storage.has_value(), "Storage must be initialized before storing.");
-            std::any_cast<InputParameterContainer&>(storage).add(name, std::move(value));
-          },
-          typeid(InputParameterContainer));
-    }
-
-    /**
      * Get a StoreFunction that stores a group container in an InputParameterContainer. This works
      * if both the storage and the group_storage are of type InputParameterContainer.
      */
@@ -189,6 +180,20 @@ namespace Core::IO
 
 
   // --- template definitions --- //
+
+  template <typename T>
+    requires(!std::is_same_v<T, InputParameterContainer>)
+  auto InputSpecBuilders::in_container(std::string name)
+  {
+    return InputSpecBuilders::StoreFunction<T>(
+        [name](InputSpecBuilders::Storage& storage, T&& value)
+        {
+          FOUR_C_ASSERT(storage.has_value(), "Storage must be initialized before storing.");
+          std::any_cast<InputParameterContainer&>(storage).add(name, std::move(value));
+        },
+        typeid(InputParameterContainer));
+  }
+
 
   template <typename StructType, typename MemberType>
   auto InputSpecBuilders::in_struct(MemberType StructType::* p)
