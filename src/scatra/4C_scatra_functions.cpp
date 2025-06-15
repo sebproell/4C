@@ -86,18 +86,15 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
   auto particle_magnetization = selection<ParticleMagnetizationModelType, ParticleMagnetization>(
       "particle_magnetization_model",
       {
-          .selector = "type",
-          .choices =
-              {
-                  {ParticleMagnetizationModelType::linear, std::move(linear)},
-                  {ParticleMagnetizationModelType::linear_with_saturation,
-                      std::move(linear_with_saturation)},
-                  {ParticleMagnetizationModelType::superparamagnetic, std::move(superparamagnetic)},
-              },
-          .store_selector = in_struct(&ParticleMagnetization::model_type),
+          std::move(linear),
+          std::move(linear_with_saturation),
+          std::move(superparamagnetic),
       },
-      {.description = "Magnetization model for the demagnetization factor f(|H|)",
-          .store = in_struct(&CylinderMagnetParameters::particle_magnetization)});
+      {
+          .description = "Magnetization model for the demagnetization factor f(|H|)",
+          .store = in_struct(&CylinderMagnetParameters::particle_magnetization),
+          .store_selector = in_struct(&ParticleMagnetization::model_type),
+      });
 
   auto spec = group("SCATRA_FUNCTION",
       {
