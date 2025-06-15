@@ -302,7 +302,6 @@ class Selection(Collection):
     name: str = None
     noneable: bool = False
     required: bool = False
-    selector: str = None
 
     def __post_init__(self):
         self.type = "selection"
