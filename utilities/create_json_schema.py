@@ -211,42 +211,12 @@ def schema_from_selection(selection):
     specs = []
 
     for choice in selection.choices:
-        # Add the selection parameter
-        selector_variable = Primitive(
-            name=selection.selector,
-            type="string",
-            required=True,
-            description=f"Selector type {choice.name} for {selection.name} (string)",
-            constant=choice.name,
-        )
-
-        choice = All_Of(
-            name=choice.name,
-            required=True,
-            description=f"Selector type {choice.name} for {selection.name} (string)",
-            specs=[selector_variable, choice.spec],
-        )
-        specs.append(choice)
+        specs.append(choice.spec)
 
     # The choices are options of a one_of
     schema = schema_from_one_of(One_Of(description=selection.description, specs=specs))
 
     schema["title"] = selection.short_description()
-
-    # Add the options additionally as property to be able to chose between them
-    schema["properties"] = {
-        selection.selector: schema_from_base_type(
-            Enum(
-                name=selection.selector,
-                type="string",
-                required=True,
-                description=f"Selector type for {selection.name} (string)\n"
-                + "\nchoices are: "
-                + ", ".join([choice.name for choice in selection.choices]),
-                choices=[choice.name for choice in selection.choices],
-            )
-        )
-    }
 
     # Selection can be noneable
     if selection.noneable:

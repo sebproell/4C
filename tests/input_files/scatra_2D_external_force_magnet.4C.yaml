@@ -89,7 +89,6 @@ FUNCT7:
           around_y_axis: 45
         particle_radius: 100e-6
         particle_magnetization_model:
-          type: linear_with_saturation
           linear_with_saturation:
             saturation_magnetization: 4.78e2
             susceptibility: 100.0

@@ -744,13 +744,12 @@ specs:
                 parameter<double>("l2"),
             }),
             {.size = 2}),
-        selection<EnumClass>("selection_group", {.selector = "type",
-                                                    .choices =
-                                                        {
-                                                            {EnumClass::A, parameter<int>("a")},
-                                                            {EnumClass::B, parameter<int>("b")},
-                                                            {EnumClass::C, parameter<int>("c")},
-                                                        }}),
+        selection<EnumClass>("selection_group",
+            {
+                parameter<int>("A"),
+                parameter<int>("B"),
+                parameter<int>("C"),
+            }),
     });
 
 
@@ -834,21 +833,20 @@ specs:
           - name: selection_group
             type: selection
             required: true
-            selector: type
             choices:
               - name: A
                 spec:
-                  name: a
+                  name: A
                   type: int
                   required: true
               - name: B
                 spec:
-                  name: b
+                  name: B
                   type: int
                   required: true
               - name: C
                 spec:
-                  name: c
+                  name: C
                   type: int
                   required: true
       - type: all_of
@@ -918,21 +916,20 @@ specs:
           - name: selection_group
             type: selection
             required: true
-            selector: type
             choices:
               - name: A
                 spec:
-                  name: a
+                  name: A
                   type: int
                   required: true
               - name: B
                 spec:
-                  name: b
+                  name: B
                   type: int
                   required: true
               - name: C
                 spec:
-                  name: c
+                  name: C
                   type: int
                   required: true
       - type: all_of
@@ -1007,21 +1004,20 @@ specs:
           - name: selection_group
             type: selection
             required: true
-            selector: type
             choices:
               - name: A
                 spec:
-                  name: a
+                  name: A
                   type: int
                   required: true
               - name: B
                 spec:
-                  name: b
+                  name: B
                   type: int
                   required: true
               - name: C
                 spec:
-                  name: c
+                  name: C
                   type: int
                   required: true
 )";
@@ -1162,26 +1158,23 @@ specs:
 
     auto spec = selection<Model>("model",
         {
-            .choices =
-                {
-                    {Model::linear, parameter<double>("coefficient")},
-                    {Model::quadratic, one_of({
-                                           all_of({
-                                               parameter<int>("a"),
-                                               parameter<double>("b"),
-                                           }),
-                                           parameter<double>("c"),
-                                       })},
-                },
+            group("linear", {parameter<double>("coefficient")}),
+            group("quadratic", {one_of({
+                                   all_of({
+                                       parameter<int>("a"),
+                                       parameter<double>("b"),
+                                   }),
+                                   parameter<double>("c"),
+                               })}),
         },
-        {.description = "", .required = false});
+        {.description = "", .required = false, .store_selector = in_container<Model>("type")});
     {
       SCOPED_TRACE("First selection");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
       ryml::parse_in_arena(R"(model:
-  type: linear
-  coefficient: 1.0
+  linear:
+    coefficient: 1.0
 )",
           root);
 
@@ -1189,7 +1182,7 @@ specs:
       InputParameterContainer container;
       spec.match(node, container);
       EXPECT_EQ(container.group("model").get<Model>("type"), Model::linear);
-      EXPECT_EQ(container.group("model").get<double>("coefficient"), 1.0);
+      EXPECT_EQ(container.group("model").group("linear").get<double>("coefficient"), 1.0);
     }
 
     {
@@ -1197,9 +1190,9 @@ specs:
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
       ryml::parse_in_arena(R"(model:
-  type: quadratic
-  a: 1
-  b: 2.0
+  quadratic:
+    a: 1
+    b: 2.0
 )",
           root);
 
@@ -1207,8 +1200,8 @@ specs:
       InputParameterContainer container;
       spec.match(node, container);
       EXPECT_EQ(container.group("model").get<Model>("type"), Model::quadratic);
-      EXPECT_EQ(container.group("model").get<int>("a"), 1);
-      EXPECT_EQ(container.group("model").get<double>("b"), 2.0);
+      EXPECT_EQ(container.group("model").group("quadratic").get<int>("a"), 1);
+      EXPECT_EQ(container.group("model").group("quadratic").get<double>("b"), 2.0);
     }
 
     {
@@ -1216,8 +1209,8 @@ specs:
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
       ryml::parse_in_arena(R"(model:
-  type: quadratic
-  c: 3.0
+  quadratic:
+    c: 3.0
 )",
           root);
 
@@ -1225,11 +1218,11 @@ specs:
       InputParameterContainer container;
       spec.match(node, container);
       EXPECT_EQ(container.group("model").get<Model>("type"), Model::quadratic);
-      EXPECT_EQ(container.group("model").get<double>("c"), 3.0);
+      EXPECT_EQ(container.group("model").group("quadratic").get<double>("c"), 3.0);
     }
 
     {
-      SCOPED_TRACE("Type matched but wrong choice");
+      SCOPED_TRACE("Too many keys");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
       ryml::parse_in_arena(R"(model:
@@ -1240,24 +1233,8 @@ specs:
 
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, "Expected parameter 'a'");
-    }
-
-    {
-      SCOPED_TRACE("Type matched but wrong choice v2");
-      ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::NodeRef root = tree.rootref();
-      ryml::parse_in_arena(R"(model:
-  type: quadratic
-  a: 1
-)",
-          root);
-
-      ConstYamlNodeRef node(root, "");
-      InputParameterContainer container;
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, "Expected parameter 'b'");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
+          "'model' needs exactly one child with selector value as key");
     }
   }
 
@@ -2378,34 +2355,23 @@ c: 3)",
       bool flag;
     };
 
-    auto
-        spec =
-            selection<Options>("model",
-                {
-                    .selector = "type",
-                    .choices =
-                        {
-                            {Options::a,
-                                group_struct<A>("a",
-                                    {
-                                        parameter<int>("a", {.store = in_struct(&A::a)}),
-                                        parameter<std::string>("s", {.store = in_struct(&A::s)}),
-                                    })},
-                            {Options::b, group_struct<B>(
-                                             "b", {
-                                                 parameter<double>("b",
-                                                     {.store = in_struct(&B::b)}),
-                                                 parameter<bool>(
-                                                     "flag", {.store = in_struct(&B::flag)}),
-                                             })},
-                        },
-               } 
-                );
+    auto spec = selection<Options>(
+        "model", {
+                     group_struct<A>("a",
+                         {
+                             parameter<int>("a", {.store = in_struct(&A::a)}),
+                             parameter<std::string>("s", {.store = in_struct(&A::s)}),
+                         }),
+                     group_struct<B>("b",
+                         {
+                             parameter<double>("b", {.store = in_struct(&B::b)}),
+                             parameter<bool>("flag", {.store = in_struct(&B::flag)}),
+                         }),
+                 });
 
     auto tree = init_yaml_tree_with_exceptions();
     ryml::NodeRef root = tree.rootref();
     ryml::parse_in_arena(R"(model:
-  type: a
   a:
     a: 1
     s: abc)",
@@ -2416,7 +2382,7 @@ c: 3)",
     spec.match(node, container);
 
     const auto& model = container.group("model");
-    EXPECT_EQ(model.get<Options>("type"), Options::a);
+    EXPECT_EQ(model.get<Options>("_selector"), Options::a);
     const auto& a = model.get<A>("a");
     EXPECT_EQ(a.a, 1);
     EXPECT_EQ(a.s, "abc");
@@ -2473,22 +2439,20 @@ c: 3)",
         "parameters", {
                           selection<Options, Model>("model",
                               {
-                                  .selector = "type",
-                                  .choices =
-                                      {
-                                          {Options::a, model_a},
-                                          {Options::b, model_b},
-                                      },
-                                  .store_selector = in_struct(&Model::type),
+                                  model_a,
+                                  model_b,
+
                               },
-                              {.store = in_struct(&Parameters::model)}),
+                              {
+                                  .store = in_struct(&Parameters::model),
+                                  .store_selector = in_struct(&Model::type),
+                              }),
                       });
 
     auto tree = init_yaml_tree_with_exceptions();
     ryml::NodeRef root = tree.rootref();
     ryml::parse_in_arena(R"(parameters:
   model:
-    type: a
     a:
       a: 1
       s: abc)",
