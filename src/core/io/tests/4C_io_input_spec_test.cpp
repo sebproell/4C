@@ -1167,7 +1167,7 @@ specs:
                                    parameter<double>("c"),
                                })}),
         },
-        {.description = "", .required = false, .store_selector = in_container<Model>("type")});
+        {.description = "", .store_selector = in_container<Model>("type")});
     {
       SCOPED_TRACE("First selection");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
