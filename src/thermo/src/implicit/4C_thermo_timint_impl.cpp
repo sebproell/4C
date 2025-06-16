@@ -71,7 +71,6 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
   // Also assume the same bulk material at every element, we pre-initialize with the conductivity
   // size.
   // Here we just grab the first local element we can find and initialize our data structures
-  /*
   auto material = std::dynamic_pointer_cast<Mat::Fourier>(discret_->l_row_element(0)->material());
   const size_t columns = material->conductivity(discret_->l_row_element(0)->id()).size();
   Epetra_FEVector overlapping_element_material_vector =
@@ -101,20 +100,19 @@ Thermo::TimIntImpl::TimIntImpl(const Teuchos::ParameterList& ioparams,
 
     for (size_t col = 0; col < columns; col++)
     {
-      Epetra_Vector* element_material = overlapping_element_material_vector(col);
+      Core::LinAlg::Vector<double> element_material(*overlapping_element_material_vector(col));
       double nodal_material = 0.0;
 
       for (int k = 0; k < num_elements; k++)
       {
         const int global_element_id = adjacent_elements[k]->id();
-        const int local_element_id = element_material->Map().LID(global_element_id);
-        nodal_material = 0.5 * (nodal_material + (*element_material)[local_element_id]);
+        const int local_element_id = element_material.get_map().lid(global_element_id);
+        nodal_material = nodal_material + element_material[local_element_id];
       }
 
-      conductivity_->ReplaceGlobalValue(node->id(), col, nodal_material);
+      conductivity_->ReplaceGlobalValue(node->id(), col, nodal_material / num_elements);
     }
   }
-  */
 
   // setup mortar coupling
   if (Global::Problem::instance()->get_problem_type() == Core::ProblemType::thermo)
@@ -456,8 +454,8 @@ Thermo::ConvergenceStatus Thermo::TimIntImpl::newton_full()
     // Solve K_Teffdyn . IncT = -R  ===>  IncT_{n+1}
 
     Core::LinearSolver::Parameters::compute_solver_parameters(*discret_, solver_->params());
-    // solver_->params().set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>(
-    //     "Material", conductivity_);
+    solver_->params().set<std::shared_ptr<Core::LinAlg::MultiVector<double>>>(
+        "Material", conductivity_);
 
     Core::LinAlg::SolverParams solver_params;
     if (solveradapttol_ and (iter_ > 1))
