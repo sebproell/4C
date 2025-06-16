@@ -1091,8 +1091,6 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
             parameter<double>("DENS", {.description = "mass density"}),
             parameter<double>(
                 "THEXPANS", {.description = "constant coefficient of linear thermal expansion"}),
-            parameter<double>("CAPA", {.description = "capacity"}),
-            parameter<double>("CONDUCT", {.description = "conductivity"}),
             parameter<double>("INITTEMP", {.description = "initial temperature"}),
             parameter<int>("THERMOMAT",
                 {.description = "mat id of thermal material part", .default_value = -1}),

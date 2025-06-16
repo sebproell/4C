@@ -205,7 +205,7 @@ void Discret::Elements::ScaTraEleCalcLoma<distype>::mat_thermo_st_venant_kirchho
   thermpressdt_ = 0.0;
 
   // compute diffusivity as ratio of conductivity and specific heat capacity at constant volume
-  my::diffmanager_->set_isotropic_diff(actmat->conductivity() / actmat->capacity(), k);
+  my::diffmanager_->set_isotropic_diff(actmat->conductivity()[0] / actmat->capacity(), k);
 
   return;
 }

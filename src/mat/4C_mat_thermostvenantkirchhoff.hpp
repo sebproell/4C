@@ -49,10 +49,6 @@ namespace Mat
       const double density_;
       //! linear coefficient of thermal expansion  \f$ \alpha_T \f$
       const double thermexpans_;
-      //! heat capacity \f$ C_V \f$
-      const double capa_;
-      //! heat conductivity \f$ k \f$
-      const double conduct_;
       //! initial temperature (constant) \f$ \theta_0 \f$
       const double thetainit_;
       //! thermal material id, -1 if not used (old interface)
@@ -171,12 +167,6 @@ namespace Mat
     //! density \f$ \rho \f$
     double density() const override { return params_->density_; }
 
-    //! conductivity \f$ k \f$
-    double conductivity() const { return params_->conduct_; }
-
-    //! material capacity \f$ C_V \f$
-    double capacity() const override { return params_->capa_; }
-
     //! Initial temperature \f$ \theta_0 \f$
     double init_temp() const { return params_->thetainit_; }
 
@@ -192,11 +182,15 @@ namespace Mat
     void evaluate(const Core::LinAlg::Matrix<1, 1>& gradtemp, Core::LinAlg::Matrix<1, 1>& cmat,
         Core::LinAlg::Matrix<1, 1>& heatflux, const int eleGID) const override;
 
+    std::vector<double> conductivity(int eleGID = 0) const override;
+
     void conductivity_deriv_t(Core::LinAlg::Matrix<3, 3>& dCondDT) const override;
 
     void conductivity_deriv_t(Core::LinAlg::Matrix<2, 2>& dCondDT) const override;
 
     void conductivity_deriv_t(Core::LinAlg::Matrix<1, 1>& dCondDT) const override;
+
+    double capacity() const override;
 
     double capacity_deriv_t() const override;
 

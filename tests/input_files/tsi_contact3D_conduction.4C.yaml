@@ -47,9 +47,8 @@ MATERIALS:
       NUE: 0
       DENS: 0
       THEXPANS: 0
-      CAPA: 0
-      CONDUCT: 52
       INITTEMP: 20
+      THERMOMAT: 2
   - MAT: 2
     MAT_Fourier:
       CAPA: 0

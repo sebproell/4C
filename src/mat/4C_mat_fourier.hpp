@@ -116,7 +116,7 @@ namespace Mat
 
     /// get element defined conductivity, defaults back to globally defined one if no element gid is
     /// given
-    std::vector<double> conductivity(int eleGID) const;
+    std::vector<double> conductivity(int eleGID) const override;
 
     /// volumetric heat capacity
     double capacity() const override { return params_->capa_; }

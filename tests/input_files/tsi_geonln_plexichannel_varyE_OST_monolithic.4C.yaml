@@ -80,9 +80,8 @@ MATERIALS:
       NUE: 0.35
       DENS: 1185
       THEXPANS: 7e-05
-      CAPA: 1.73721e+06
-      CONDUCT: 0.2
       INITTEMP: 50
+      THERMOMAT: 2
   - MAT: 2
     MAT_Fourier:
       CAPA: 1.73721e+06

@@ -12,6 +12,8 @@
 
 #include "4C_linalg_fixedsizematrix.hpp"
 
+#include <vector>
+
 FOUR_C_NAMESPACE_OPEN
 
 namespace Mat
@@ -44,6 +46,9 @@ namespace Mat
           Core::LinAlg::Matrix<1, 1>& heatflux,        ///< heatflux
           const int eleGID) const = 0;
 
+
+      //! @brief get conductivity
+      virtual std::vector<double> conductivity(int eleGID = 0) const = 0;
 
       //! @name Derivatives of conductivity tensor
       //! @{

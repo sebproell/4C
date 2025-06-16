@@ -1467,6 +1467,12 @@ void Mat::ThermoPlasticHyperElast::evaluate(const Core::LinAlg::Matrix<1, 1>& gr
   thermo_->evaluate(gradtemp, cmat, heatflux, eleGID);
 }
 
+std::vector<double> Mat::ThermoPlasticHyperElast::conductivity(int eleGID) const
+{
+  return thermo_->conductivity(eleGID);
+}
+
+
 void Mat::ThermoPlasticHyperElast::conductivity_deriv_t(Core::LinAlg::Matrix<3, 3>& dCondDT) const
 {
   thermo_->conductivity_deriv_t(dCondDT);

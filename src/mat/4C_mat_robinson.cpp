@@ -1503,6 +1503,11 @@ void Mat::Robinson::evaluate(const Core::LinAlg::Matrix<1, 1>& gradtemp,
   thermo_->evaluate(gradtemp, cmat, heatflux, eleGID);
 }
 
+std::vector<double> Mat::Robinson::conductivity(int eleGID) const
+{
+  return thermo_->conductivity(eleGID);
+}
+
 void Mat::Robinson::conductivity_deriv_t(Core::LinAlg::Matrix<3, 3>& dCondDT) const
 {
   thermo_->conductivity_deriv_t(dCondDT);
