@@ -362,49 +362,6 @@ int NOX::Nln::Aux::get_norm_type(
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 template <class T>
-::NOX::StatusTest::Generic* NOX::Nln::Aux::get_outer_status_test_with_quantity(
-    ::NOX::StatusTest::Generic& test, const NOX::Nln::StatusTest::QuantityType qtype)
-{
-  // try to cast the given test to a NOX_StatusTest_Combo
-  NOX::Nln::StatusTest::Combo* comboTest = dynamic_cast<NOX::Nln::StatusTest::Combo*>(&test);
-
-  // if it is no combo test, we just have to check for the desired type
-  if (comboTest == nullptr)
-  {
-    T* desiredTest = dynamic_cast<T*>(&test);
-
-    // not the desired status test...
-    if (desiredTest == nullptr) return nullptr;
-    // yeah we found one...
-    else
-    {
-      // check for the quantity
-      if (desiredTest->is_quantity(qtype))
-        return desiredTest;
-      else
-        return nullptr;
-    }
-  }
-  // if the nox_nln_statustest_combo Test cast was successful
-  else
-  {
-    const std::vector<Teuchos::RCP<::NOX::StatusTest::Generic>>& tests =
-        comboTest->get_test_vector();
-    for (auto& ctest : tests)
-    {
-      // recursive function call
-      ::NOX::StatusTest::Generic* ptr = get_outer_status_test_with_quantity<T>(*ctest, qtype);
-      if (ptr) return ptr;
-    }
-  }
-
-  // default return
-  return nullptr;
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-template <class T>
 ::NOX::StatusTest::Generic* NOX::Nln::Aux::get_outer_status_test(
     ::NOX::StatusTest::Generic& full_otest)
 {
@@ -616,15 +573,6 @@ std::string NOX::Nln::Aux::get_direction_method_list_name(const Teuchos::Paramet
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-template ::NOX::StatusTest::Generic*
-NOX::Nln::Aux::get_outer_status_test_with_quantity<NOX::Nln::StatusTest::NormF>(
-    ::NOX::StatusTest::Generic& test, const NOX::Nln::StatusTest::QuantityType qtype);
-template ::NOX::StatusTest::Generic*
-NOX::Nln::Aux::get_outer_status_test_with_quantity<NOX::Nln::StatusTest::NormUpdate>(
-    ::NOX::StatusTest::Generic& test, const NOX::Nln::StatusTest::QuantityType qtype);
-template ::NOX::StatusTest::Generic*
-NOX::Nln::Aux::get_outer_status_test_with_quantity<NOX::Nln::StatusTest::NormWRMS>(
-    ::NOX::StatusTest::Generic& test, const NOX::Nln::StatusTest::QuantityType qtype);
 template bool NOX::Nln::Aux::is_quantity<NOX::Nln::StatusTest::NormF>(
     const ::NOX::StatusTest::Generic& test, const NOX::Nln::StatusTest::QuantityType& qtype);
 template bool NOX::Nln::Aux::is_quantity<NOX::Nln::StatusTest::NormUpdate>(
