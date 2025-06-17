@@ -31,7 +31,13 @@ namespace Core::IO
   {
    public:
     using IndexType = int;
-    using StorageType = std::variant<T, std::unordered_map<IndexType, T>>;
+    using StorageType = std::variant<std::monostate, T, std::unordered_map<IndexType, T>>;
+
+    /**
+     * Default constructor. This InputField will not hold any data and will throw an error if
+     * any attempt is made to access its data. You need to assign a value to it before using it.
+     */
+    InputField() = default;
 
     /**
      * Construct an InputField from a single @p const_data. This field will have the same value
@@ -66,7 +72,7 @@ namespace Core::IO
       {
         return std::get<T>(data_);
       }
-      else if (std::holds_alternative<std::unordered_map<IndexType, T>>(data_))
+      if (std::holds_alternative<std::unordered_map<IndexType, T>>(data_))
       {
         const auto& map = std::get<std::unordered_map<IndexType, T>>(data_);
         auto it = map.find(element_id);
@@ -77,10 +83,14 @@ namespace Core::IO
         }
         return it->second;
       }
+      if (std::holds_alternative<std::monostate>(data_))
+      {
+        FOUR_C_THROW("InputField is empty.");
+      }
       std23::unreachable();
     }
 
-    std::variant<T, std::unordered_map<IndexType, T>> data_;
+    StorageType data_;
   };
 }  // namespace Core::IO
 

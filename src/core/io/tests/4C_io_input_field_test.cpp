@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "4C_io_input_field.hpp"
+
 #include "4C_io_input_file.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_io_value_parser.hpp"
@@ -26,7 +27,7 @@ namespace
   using namespace FourC::Core::IO;
   using namespace FourC::Core::IO::InputSpecBuilders;
 
-  TEST(InputFile, ReadJsonInputField)
+  TEST(InputField, ReadJsonInputField)
   {
     const std::string input_field_file =
         TESTING::get_support_file_path("test_files/input_field/stiffness_input_field.json");
@@ -37,7 +38,7 @@ namespace
     EXPECT_EQ(stiffness_map, expected_stiffness_map);
   }
 
-  TEST(InputFile, ReadSpecInputField)
+  TEST(InputField, ReadSpecInputField)
   {
     const std::string input_field_file =
         TESTING::get_support_file_path("test_files/input_field/stiffness_input_field.json");
@@ -53,8 +54,7 @@ namespace
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       spec.match(node, container);
-      InputField<double> input_field_stiffness =
-          container.group("stiffness").get<InputField<double>>("stiffness");
+      InputField<double> input_field_stiffness = container.get<InputField<double>>("stiffness");
       EXPECT_EQ(input_field_stiffness.at(1), 1.0);
     }
     {
@@ -66,12 +66,59 @@ namespace
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       spec.match(node, container);
-      InputField<double> input_field_stiffness =
-          container.group("stiffness").get<InputField<double>>("stiffness");
+      InputField<double> input_field_stiffness = container.get<InputField<double>>("stiffness");
       EXPECT_EQ(input_field_stiffness.at(1), 2.0);
       EXPECT_EQ(input_field_stiffness.at(2), 3.5);
       EXPECT_EQ(input_field_stiffness.at(3), 4.0);
       EXPECT_EQ(input_field_stiffness.at(4), 5.5);
+    }
+  }
+
+  TEST(InputField, ReadSpecToStruct)
+  {
+    struct Data
+    {
+      InputField<double> stiffness;
+    };
+
+    auto spec = group_struct<Data>(
+        "data", {
+                    input_field<double>("stiffness",
+                        {.description = "A stiffness field", .store = in_struct(&Data::stiffness)}),
+                });
+    {
+      SCOPED_TRACE("Constant input field");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(data:
+  stiffness:
+    constant: 1.0)",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      spec.match(node, container);
+      const auto& data = container.get<Data>("data");
+      EXPECT_EQ(data.stiffness.at(1), 1.0);
+    }
+
+    {
+      SCOPED_TRACE("Input field from file");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      const std::string input_field_file =
+          TESTING::get_support_file_path("test_files/input_field/stiffness_input_field.json");
+      ryml::parse_in_arena(
+          ("data:\n  stiffness:\n    from_file: " + input_field_file).c_str(), root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      spec.match(node, container);
+      const auto& data = container.get<Data>("data");
+      EXPECT_EQ(data.stiffness.at(1), 2.0);
+      EXPECT_EQ(data.stiffness.at(2), 3.5);
+      EXPECT_EQ(data.stiffness.at(3), 4.0);
+      EXPECT_EQ(data.stiffness.at(4), 5.5);
     }
   }
 }  // namespace

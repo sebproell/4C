@@ -579,31 +579,34 @@ namespace Core::IO
       from_file,
     };
 
-    /**
-     * Create an InputField from one of the supported ways.
-     */
     template <typename T>
-    void input_field_callback(
-        std::string name, const InputParameterContainer& in, InputSpecBuilders::Storage& out)
+    auto make_input_field_data_transform(
+        std::string name, InputSpecBuilders::StoreFunction<InputField<T>> store)
     {
-      if (in.get<InputFieldType>("_selector") == InputFieldType::from_file)
-      {
-        std::unordered_map<int, T> map_data;
-        std::filesystem::path file_path = in.get<std::filesystem::path>("from_file");
-        IO::read_value_from_yaml(file_path, name, map_data);
-        std::any_cast<InputParameterContainer&>(out).add(
-            name, IO::InputField<T>(std::move(map_data)));
-      }
-      else if (in.get<InputFieldType>("_selector") == InputFieldType::constant)
-      {
-        T data = in.get<T>("constant");
-        std::any_cast<InputParameterContainer&>(out).add(name, IO::InputField<T>(data));
-      }
-      else
-      {
-        FOUR_C_THROW(
-            "Unsupported input field type: {}", in.get<Core::IO::Internal::InputFieldType>("type"));
-      }
+      return InputSpecBuilders::StoreFunction<InputSpecBuilders::DefaultStorage>(
+          [=](InputSpecBuilders::Storage& out, InputSpecBuilders::DefaultStorage&& in)
+          {
+            if (in.get<InputFieldType>("_selector") == InputFieldType::from_file)
+            {
+              std::unordered_map<int, T> map_data;
+              std::filesystem::path file_path = in.get<std::filesystem::path>("from_file");
+              IO::read_value_from_yaml(file_path, name, map_data);
+              auto field = IO::InputField<T>(std::move(map_data));
+              store(out, std::move(field));
+            }
+            else if (in.get<InputFieldType>("_selector") == InputFieldType::constant)
+            {
+              T data = in.get<T>("constant");
+              auto field = IO::InputField<T>(data);
+              store(out, std::move(field));
+            }
+            else
+            {
+              FOUR_C_THROW("Unsupported input field type: {}",
+                  in.get<Core::IO::Internal::InputFieldType>("type"));
+            }
+          },
+          store.stores_to());
     }
   }  // namespace Internal
 
@@ -764,11 +767,6 @@ namespace Core::IO
       std::string description{};
 
       /**
-       * Whether the selection is required or optional.
-       */
-      bool required{true};
-
-      /**
        * An optional function to store the selection group.
        */
       StoreFunction<StorageType> store{nullptr};
@@ -779,9 +777,11 @@ namespace Core::IO
       StoreFunction<Selector> store_selector{nullptr};
 
       /**
-       * An optional function to store selection data.
+       * An optional function to transform the data of the selection and store it differently.
+       * This is a powerful expert function to implement advanced specs. For example, it is
+       * used to implement input_field().
        */
-      SelectionCallback selection_callback{nullptr};
+      StoreFunction<DefaultStorage> transform_data{nullptr};
     };
 
     //! Additional parameters for a group().
@@ -847,6 +847,25 @@ namespace Core::IO
        * The size of the List.
        */
       int size{dynamic_size};
+    };
+
+    /**
+     * Data for an InputField. Note that T is the type of the data stored inside the InputField.
+     */
+    template <typename T>
+    struct InputFieldData
+    {
+      /**
+       * An optional description of the value.
+       */
+      std::string description{};
+
+      /**
+       * An optional function to store the parsed InputField. By default, the result is stored in
+       * an InputParameterContainer. See the in_struct() function for more details on how to
+       * store the InputField in a struct.
+       */
+      StoreFunction<InputField<T>> store{nullptr};
     };
   }  // namespace InputSpecBuilders
 
@@ -939,8 +958,7 @@ namespace Core::IO
       struct
       {
         std::string description;
-        bool required;
-        InputSpecBuilders::SelectionCallback selection_callback;
+        InputSpecBuilders::StoreFunction<InputSpecBuilders::DefaultStorage> transform_data;
         InputSpecBuilders::StoreFunction<T> store_selector;
       } data;
 
@@ -1454,7 +1472,7 @@ namespace Core::IO
      * }
      */
     template <typename T>
-    [[nodiscard]] InputSpec input_field(std::string name, ParameterDataIn<T> data = {});
+    [[nodiscard]] InputSpec input_field(std::string name, InputFieldData<T> data = {});
 
     /**
      * All of the given InputSpecs are expected, e.g.,
@@ -2103,7 +2121,7 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
 
   if (!group_exists_nested && !group_node_is_input)
   {
-    return !data.required;
+    return false;
   }
 
   auto group_node = group_node_is_input ? node : node.wrap(node.node[group_name_substr]);
@@ -2150,15 +2168,10 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
     data.store_selector(subcontainer, std::move(*selector_value));
   }
 
-  if (data.selection_callback)
+  if (data.transform_data)
   {
-    InputSpecBuilders::Storage out;
-    init_my_storage(out);
-
-    data.selection_callback(
-        std::any_cast<const InputSpecBuilders::DefaultStorage&>(subcontainer), out);
-
-    move_my_storage(container, std::move(out));
+    data.transform_data(
+        container, std::any_cast<InputParameterContainer&&>(std::move(subcontainer)));
   }
   else
   {
@@ -2198,7 +2211,7 @@ void Core::IO::Internal::SelectionSpec<T>::emit_metadata(YamlNodeRef node) const
   {
     emit_value_as_yaml(node.wrap(node.node["description"]), data.description);
   }
-  emit_value_as_yaml(node.wrap(node.node["required"]), data.required);
+  emit_value_as_yaml(node.wrap(node.node["required"]), true);
 
   node.node["choices"] |= ryml::SEQ;
   for (const auto& [choice, spec] : choices)
@@ -2235,7 +2248,7 @@ bool Core::IO::Internal::SelectionSpec<T>::emit(YamlNodeRef node,
 
     return success;
   }
-  return !data.required;
+  return false;
 }
 
 template <typename T>
@@ -2370,12 +2383,13 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
   Internal::InputSpecImpl::CommonData common_data{
       .name = name,
       .description = data.description,
-      .required = data.required,
+      .required = true,
       .has_default_value = false,
       // one for the group plus the number of specs for the choices.
       .n_specs = 1 + max_specs_for_choices,
       .type = Internal::InputSpecType::selection,
-      .stores_to = &move_my_storage.stores_to(),
+      .stores_to =
+          data.transform_data ? &data.transform_data.stores_to() : &move_my_storage.stores_to(),
   };
 
   StoreFunction<Selector> store_selector;
@@ -2397,8 +2411,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
           .data =
               {
                   .description = data.description,
-                  .required = data.required,
-                  .selection_callback = data.selection_callback,
+                  .transform_data = data.transform_data,
                   .store_selector = store_selector,
               },
           .init_my_storage = [](Storage& storage) { storage.emplace<StorageType>(); },
@@ -2407,10 +2420,12 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::selection(
       common_data);
 }
 
+
 template <typename T>
 Core::IO::InputSpec Core::IO::InputSpecBuilders::input_field(
-    const std::string name, ParameterDataIn<T> data)
+    const std::string name, InputFieldData<T> data)
 {
+  auto store = data.store ? data.store : in_container<InputField<T>>(name);
   auto spec = selection<Internal::InputFieldType>(name,
       {
           parameter<std::filesystem::path>("from_file"),
@@ -2418,8 +2433,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::input_field(
       },
       {
           .description = data.description,
-          .selection_callback = [name](const InputParameterContainer& in, Storage& out)
-          { Internal::input_field_callback<T>(name, in, out); },
+          .transform_data = Internal::make_input_field_data_transform<T>(name, std::move(store)),
       });
   return spec;
 };
