@@ -604,7 +604,7 @@ function(
       )
 
   # remove file ending of input file for reference file
-  get_filename_component(name_of_reference_file ${name_of_input_file} NAME_WLE)
+  get_filename_component(name_of_reference_file ${name_of_input_file} NAME_WE)
 
   # specify test case
   add_test(
