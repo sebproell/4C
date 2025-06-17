@@ -81,7 +81,7 @@ MATERIALS:
       ELECTRONIC_COND: 100000
       ELECTRONIC_COND_CONC_SCALE_FUNC_NUM: -1
       A_s: 1564.794278374707
-      MICROFILE: "elch_1D_line2_multiscale_butlervolmer_anode.mat"
+      MICROFILE: "elch_1D_line2_multiscale_butlervolmer_anode.mat.4C.yaml"
       MICRODIS_NUM: 1
       DIFF_PARA_NUM: 1
       DIFF_PARA: [0.00026]
@@ -116,7 +116,7 @@ MATERIALS:
       ELECTRONIC_COND: 10000
       ELECTRONIC_COND_CONC_SCALE_FUNC_NUM: -1
       A_s: 1564.794278374707
-      MICROFILE: "elch_1D_line2_multiscale_butlervolmer_cathode.mat"
+      MICROFILE: "elch_1D_line2_multiscale_butlervolmer_cathode.mat.4C.yaml"
       MICRODIS_NUM: 2
       DIFF_PARA_NUM: 1
       DIFF_PARA: [0.00026]
