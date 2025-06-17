@@ -26,7 +26,7 @@ SOLVER 1:
 MATERIALS:
   - MAT: 1
     MAT_scatra_multiscale:
-      MICROFILE: "scatra_1D_line2_multiscale_constperm_micro1.mat"
+      MICROFILE: "scatra_1D_line2_multiscale_constperm_micro1.mat.4C.yaml"
       MICRODIS_NUM: 1
       POROSITY: 0.4764012244
       TORTUOSITY: 1.374674082
@@ -34,7 +34,7 @@ MATERIALS:
       DIFFUSIVITY: 0.1
   - MAT: 2
     MAT_scatra_multiscale:
-      MICROFILE: "scatra_1D_line2_multiscale_constperm_micro2.mat"
+      MICROFILE: "scatra_1D_line2_multiscale_constperm_micro2.mat.4C.yaml"
       MICRODIS_NUM: 2
       POROSITY: 0.4764012244
       TORTUOSITY: 1.374674082

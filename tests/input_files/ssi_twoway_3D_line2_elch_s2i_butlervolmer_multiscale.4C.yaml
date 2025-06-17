@@ -131,7 +131,7 @@ MATERIALS:
       ELECTRONIC_COND: 1e+10
       ELECTRONIC_COND_CONC_SCALE_FUNC_NUM: -1
       A_s: 1564.794278374707
-      MICROFILE: "ssi_twoway_3D_line2_elch_s2i_butlervolmer_multiscale_cathode.mat"
+      MICROFILE: "ssi_twoway_3D_line2_elch_s2i_butlervolmer_multiscale_cathode.mat.4C.yaml"
       MICRODIS_NUM: 2
       DIFF_PARA_NUM: 1
       DIFF_PARA: [0.00026]
