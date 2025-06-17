@@ -46,17 +46,8 @@ namespace NOX
             const Teuchos::RCP<NOX::Nln::Inner::StatusTest::Generic>& innerTests,
             const Teuchos::RCP<Teuchos::ParameterList>& params);
 
-        //! Necessary for the pre/post operator class
-        //! Be careful: This version allows you to actually change the parameter list entries
-        inline virtual const Teuchos::RCP<Teuchos::ParameterList>& get_list_ptr() const
-        {
-          return paramsPtr;
-        };
-
         //! Returns the stopping test.
         virtual const ::NOX::StatusTest::Generic& get_outer_status_test() const;
-
-        ::NOX::StatusTest::StatusType getStatus() const override;
 
         //! \brief Returns a pointer to one specific stopping test %T.
         /** If there is no outer test of type T, a nullptr pointer will be returned.
@@ -65,24 +56,12 @@ namespace NOX
         template <class T>
         ::NOX::StatusTest::Generic* get_outer_status_test() const;
 
-        //! \brief Returns a pointer to one specific stopping test %T.
-        /** If there is no outer test of type T with quantity type qtype, a nullptr
-         *  pointer will be returned.
-         *
-         *  */
-        template <class T>
-        ::NOX::StatusTest::Generic* get_outer_status_test_with_quantity(
-            const NOX::Nln::StatusTest::QuantityType qtype) const;
-
         //! Returns the ::NOX::Utils object
         [[nodiscard]] const ::NOX::Utils& get_utils() const;
 
         //! Returns the global status of the given test name
         template <class T>
         [[nodiscard]] ::NOX::StatusTest::StatusType get_status() const;
-
-        /// access the direction object
-        ::NOX::Direction::Generic& get_direction() const;
 
        protected:
         //! initialize additional variables or overwrite base class initialization

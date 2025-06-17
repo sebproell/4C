@@ -10,7 +10,6 @@
 #include "4C_solver_nonlin_nox_globaldata.hpp"
 #include "4C_solver_nonlin_nox_solver_linesearchbased.hpp"
 #include "4C_solver_nonlin_nox_solver_ptc.hpp"
-#include "4C_solver_nonlin_nox_solver_singlestep.hpp"
 
 #include <NOX_Solver_Factory.H>
 #include <NOX_Solver_Generic.H>
@@ -50,11 +49,7 @@ Teuchos::RCP<::NOX::Solver::Generic> NOX::Nln::Solver::Factory::build_solver(
     solver =
         Teuchos::make_rcp<NOX::Nln::Solver::PseudoTransient>(grp, outerTests, innerTests, params);
   }
-  else if (method == "Single Step")
-  {
-    solver = Teuchos::make_rcp<NOX::Nln::Solver::SingleStep>(grp, params);
-  }
-  else if (not nlnGlobalData.is_constrained())
+  else if (method == "Single Step" || !nlnGlobalData.is_constrained())
   {
     // unconstrained problems are able to call the standard nox factory
     solver = ::NOX::Solver::buildSolver(grp, outerTests, params);

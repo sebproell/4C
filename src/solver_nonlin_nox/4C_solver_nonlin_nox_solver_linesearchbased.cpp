@@ -154,28 +154,6 @@ template <class T>
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 template <class T>
-::NOX::StatusTest::Generic* NOX::Nln::Solver::LineSearchBased::get_outer_status_test_with_quantity(
-    const NOX::Nln::StatusTest::QuantityType qtype) const
-{
-  if (testPtr.is_null())
-  {
-    utilsPtr->err() << "The \"Status Test\" pointer is not initialized!" << std::endl;
-    throw "NOX Error";
-  }
-
-  return NOX::Nln::Aux::get_outer_status_test_with_quantity<T>(*testPtr, qtype);
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-::NOX::StatusTest::StatusType NOX::Nln::Solver::LineSearchBased::getStatus() const
-{
-  return status;
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-template <class T>
 ::NOX::StatusTest::StatusType NOX::Nln::Solver::LineSearchBased::get_status() const
 {
   ::NOX::StatusTest::StatusType gstatus = ::NOX::StatusTest::Unevaluated;
@@ -191,16 +169,6 @@ const ::NOX::Utils& NOX::Nln::Solver::LineSearchBased::get_utils() const { retur
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-::NOX::Direction::Generic& NOX::Nln::Solver::LineSearchBased::get_direction() const
-{
-  if (directionPtr.is_null())
-    FOUR_C_THROW("nullptr ptr: The direction pointer is not yet initialized.");
-
-  return *directionPtr;
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
 template ::NOX::StatusTest::StatusType
 NOX::Nln::Solver::LineSearchBased::get_status<NOX::Nln::StatusTest::NormF>() const;
 template ::NOX::StatusTest::StatusType
@@ -212,8 +180,5 @@ NOX::Nln::Solver::LineSearchBased::get_status<NOX::Nln::StatusTest::ActiveSet>()
 
 template ::NOX::StatusTest::Generic*
 NOX::Nln::Solver::LineSearchBased::get_outer_status_test<NOX::Nln::StatusTest::ActiveSet>() const;
-template ::NOX::StatusTest::Generic*
-NOX::Nln::Solver::LineSearchBased::get_outer_status_test_with_quantity<NOX::Nln::StatusTest::NormF>(
-    const NOX::Nln::StatusTest::QuantityType qtype) const;
 
 FOUR_C_NAMESPACE_CLOSE

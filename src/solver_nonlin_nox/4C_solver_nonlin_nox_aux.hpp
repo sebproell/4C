@@ -105,12 +105,6 @@ namespace NOX
       template <class T>
       ::NOX::StatusTest::Generic* get_outer_status_test(::NOX::StatusTest::Generic& full_otest);
 
-      /** \brief Do a recursive search for a <T> status test class containing
-       *  the given quantity. */
-      template <class T>
-      ::NOX::StatusTest::Generic* get_outer_status_test_with_quantity(
-          ::NOX::StatusTest::Generic& test, const NOX::Nln::StatusTest::QuantityType qtype);
-
       /*! \brief Do a recursive search for a <T> status test class and return its status.
        *
        * If more than one of the given status test objects is combined in a combination list,
