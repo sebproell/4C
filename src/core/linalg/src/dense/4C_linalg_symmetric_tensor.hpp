@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_internals.hpp"
 #include "4C_linalg_tensor_meta_utils.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -192,8 +193,9 @@ namespace Core::LinAlg
   }  // namespace Internal
 
   template <typename T>
-  constexpr bool is_symmetric_tensor = Internal::IsSymmetricCompressionTypeHelper<
-      TensorCompressionType<std::remove_cvref_t<T>>>::value;
+  constexpr bool is_symmetric_tensor =
+      is_tensor<T> && Internal::IsSymmetricCompressionTypeHelper<
+                          TensorCompressionType<std::remove_cvref_t<T>>>::value;
 
   /*!
    * @brief An owning, dense tensor of arbitrary rank with symmetry
@@ -304,7 +306,8 @@ namespace Core::LinAlg
    * @tparam OtherTensor
    */
   template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
-    requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
+    requires(is_tensor<OtherTensor> &&
+             std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
   constexpr TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>&
   operator+=(
       TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>& tensor,
@@ -316,7 +319,8 @@ namespace Core::LinAlg
    * @tparam OtherTensor
    */
   template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
-    requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
+    requires(is_tensor<OtherTensor> &&
+             std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
   constexpr TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>&
   operator-=(
       TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>& tensor,
@@ -328,7 +332,7 @@ namespace Core::LinAlg
    * @tparam OtherTensor
    */
   template <typename Scalar, typename Number, TensorStorageType storage_type, std::size_t... n>
-    requires(std::is_arithmetic_v<Scalar>)
+    requires(is_scalar<Scalar>)
   constexpr TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>&
   operator*=(
       TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>& tensor,
@@ -343,7 +347,7 @@ namespace Core::LinAlg
    * @tparam n
    */
   template <typename Scalar, typename Number, TensorStorageType storage_type, std::size_t... n>
-    requires(std::is_arithmetic_v<Scalar>)
+    requires(is_scalar<Scalar>)
   constexpr TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>&
   operator/=(
       TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>& tensor,
@@ -352,7 +356,7 @@ namespace Core::LinAlg
   /*!
    * @brief Compute the determinant of a symmetric tensor
    */
-  constexpr auto det(const TensorConcept auto& A)
+  constexpr auto det(const auto& A)
     requires(is_symmetric_tensor<decltype(A)>);
 
   /*!
@@ -389,7 +393,8 @@ namespace Core::LinAlg
    * @tparam TensorRight
    */
   template <typename TensorLeft, typename TensorRight>
-    requires(TensorLeft::rank() >= 2 && TensorRight::rank() >= 2 &&
+    requires(is_tensor<TensorLeft> && is_tensor<TensorRight> && TensorLeft::rank() >= 2 &&
+             TensorRight::rank() >= 2 &&
              TensorLeft::template extent<TensorLeft::rank() - 2>() ==
                  TensorRight::template extent<0>() &&
              TensorLeft::template extent<TensorLeft::rank() - 1>() ==
@@ -401,7 +406,7 @@ namespace Core::LinAlg
    * @brief Scales the tensor with a scalar value
    */
   template <typename Tensor, typename Scalar>
-    requires(std::is_arithmetic_v<Scalar> && is_symmetric_tensor<Tensor>)
+    requires(is_scalar<Scalar> && is_symmetric_tensor<Tensor>)
   constexpr auto scale(const Tensor& tensor, const Scalar& b);
 
   /*!
@@ -425,8 +430,7 @@ namespace Core::LinAlg
    * tensor
    */
   template <typename TensorLeft, typename TensorRight>
-    requires(TensorConcept<TensorLeft> && TensorConcept<TensorRight> &&
-             is_symmetric_tensor<TensorLeft> && is_symmetric_tensor<TensorRight>)
+    requires(is_symmetric_tensor<TensorLeft> && is_symmetric_tensor<TensorRight>)
   constexpr auto dyadic(const TensorLeft& A, const TensorRight& B);
 
   /*!
@@ -438,8 +442,7 @@ namespace Core::LinAlg
    */
   template <unsigned num_dyads = 2>
   constexpr auto self_dyadic(const auto& a)
-    requires(TensorConcept<std::remove_cvref_t<decltype(a)>> &&
-             std::remove_cvref_t<decltype(a)>::rank() == 1);
+    requires(is_tensor<decltype(a)> && std::remove_cvref_t<decltype(a)>::rank() == 1);
 
   // actual implementations
   template <typename Number, TensorStorageType storage_type, std::size_t... n>
@@ -520,7 +523,8 @@ namespace Core::LinAlg
   }
 
   template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
-    requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
+    requires(is_tensor<OtherTensor> &&
+             std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
   constexpr TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>&
   operator+=(
       TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>& tensor,
@@ -534,7 +538,8 @@ namespace Core::LinAlg
   }
 
   template <typename OtherTensor, typename Number, TensorStorageType storage_type, std::size_t... n>
-    requires(std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
+    requires(is_tensor<OtherTensor> &&
+             std::is_same_v<typename OtherTensor::shape_type, typename OtherTensor::shape_type>)
   constexpr TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>&
   operator-=(
       TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>& tensor,
@@ -548,7 +553,7 @@ namespace Core::LinAlg
   }
 
   template <typename Scalar, typename Number, TensorStorageType storage_type, std::size_t... n>
-    requires(std::is_arithmetic_v<Scalar>)
+    requires(is_scalar<Scalar>)
   constexpr TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>&
   operator*=(
       TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>& tensor,
@@ -559,7 +564,7 @@ namespace Core::LinAlg
   }
 
   template <typename Scalar, typename Number, TensorStorageType storage_type, std::size_t... n>
-    requires(std::is_arithmetic_v<Scalar>)
+    requires(is_scalar<Scalar>)
   constexpr TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>&
   operator/=(
       TensorInternal<Number, storage_type, Internal::SymmetricCompression<n...>, n...>& tensor,
@@ -652,7 +657,7 @@ namespace Core::LinAlg
   }  // namespace Internal
 
   // define tensor operations for symmetric tensors
-  constexpr auto det(const TensorConcept auto& A)
+  constexpr auto det(const auto& A)
     requires(is_symmetric_tensor<decltype(A)>)
   {
     return det(get_full(A));
@@ -697,7 +702,8 @@ namespace Core::LinAlg
   }
 
   template <typename TensorLeft, typename TensorRight>
-    requires(TensorLeft::rank() >= 2 && TensorRight::rank() >= 2 &&
+    requires(is_tensor<TensorLeft> && is_tensor<TensorRight> && TensorLeft::rank() >= 2 &&
+             TensorRight::rank() >= 2 &&
              TensorLeft::template extent<TensorLeft::rank() - 2>() ==
                  TensorRight::template extent<0>() &&
              TensorLeft::template extent<TensorLeft::rank() - 1>() ==
@@ -756,7 +762,7 @@ namespace Core::LinAlg
   }
 
   template <typename Tensor, typename Scalar>
-    requires(std::is_arithmetic_v<Scalar> && is_symmetric_tensor<Tensor>)
+    requires(is_scalar<Scalar> && is_symmetric_tensor<Tensor>)
   constexpr auto scale(const Tensor& tensor, const Scalar& b)
   {
     return assume_symmetry(scale(get_full(tensor), b));
@@ -779,8 +785,7 @@ namespace Core::LinAlg
   }
 
   template <typename TensorLeft, typename TensorRight>
-    requires(TensorConcept<TensorLeft> && TensorConcept<TensorRight> &&
-             is_symmetric_tensor<TensorLeft> && is_symmetric_tensor<TensorRight>)
+    requires(is_symmetric_tensor<TensorLeft> && is_symmetric_tensor<TensorRight>)
   constexpr auto dyadic(const TensorLeft& A, const TensorRight& B)
   {
     return assume_symmetry(dyadic(get_full(A), get_full(B)));
@@ -788,8 +793,7 @@ namespace Core::LinAlg
 
   template <unsigned num_dyads>
   constexpr auto self_dyadic(const auto& a)
-    requires(TensorConcept<std::remove_cvref_t<decltype(a)>> &&
-             std::remove_cvref_t<decltype(a)>::rank() == 1)
+    requires(is_tensor<decltype(a)> && std::remove_cvref_t<decltype(a)>::rank() == 1)
   {
     static_assert(
         num_dyads == 2 || num_dyads == 4, "Only self dyadic with two or four dyads are supported.");

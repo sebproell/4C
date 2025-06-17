@@ -10,12 +10,11 @@
 
 #include "4C_config.hpp"
 
-#include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_tensor_meta_utils.hpp"
+#include "4C_utils_fad_meta.hpp"
 
 #include <algorithm>
 #include <array>
-#include <concepts>
 #include <cstddef>
 #include <cstring>
 #include <span>
@@ -296,6 +295,16 @@ namespace Core::LinAlg
 
   namespace Internal
   {
+    template <typename T>
+    struct HasTensorBase : std::false_type
+    {
+    };
+    template <typename Number, TensorStorageType storage_type, typename Compression,
+        std::size_t... n>
+    struct HasTensorBase<TensorInternal<Number, storage_type, Compression, n...>> : std::true_type
+    {
+    };
+
     template <typename Tensor>
     struct CompressionTypeHelper;
 
@@ -306,6 +315,21 @@ namespace Core::LinAlg
       using type = Compression;
     };
   }  // namespace Internal
+
+  /*!
+   * @brief A check whether a given type is a tensor
+   *
+   * @tparam T
+   */
+  template <typename T>
+  static constexpr bool is_tensor = Internal::HasTensorBase<std::remove_cvref_t<T>>::value;
+
+  /*!
+   * @brief A check whether a type is a admissible scalar type for a tensor
+   */
+  template <typename Scalar>
+  static constexpr bool is_scalar =
+      std::is_arithmetic_v<Scalar> || FADUtils::SacadoFadType<std::remove_cvref_t<Scalar>>;
 
   template <typename Tensor>
   using TensorCompressionType =
