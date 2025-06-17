@@ -22,23 +22,24 @@ four_c_set_up_executable(${FOUR_C_EXECUTABLE_NAME})
 
 if(FOUR_C_ENABLE_METADATA_GENERATION)
   if(Python3_VERSION VERSION_GREATER_EQUAL "3.10")
-    # Create a json schema file for the input
     add_custom_command(
       TARGET ${FOUR_C_EXECUTABLE_NAME}
       POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E rm -f ${PROJECT_BINARY_DIR}/4C_metadata.yaml
-      COMMAND ${CMAKE_COMMAND} -E rm -f ${PROJECT_BINARY_DIR}/4C_schema.json
+      COMMAND
+        ${CMAKE_COMMAND} -E rm -f ${PROJECT_BINARY_DIR}/4C_metadata.yaml
+        ${PROJECT_BINARY_DIR}/4C_schema.json ${PROJECT_BINARY_DIR}/4C_schema_partial.json
       COMMAND
         ${FOUR_C_ENABLE_ADDRESS_SANITIZER_TEST_OPTIONS} "$<TARGET_FILE:${FOUR_C_EXECUTABLE_NAME}>"
         -p > ${PROJECT_BINARY_DIR}/4C_metadata.yaml
       COMMAND
         ${FOUR_C_PYTHON_VENV_BUILD}/bin/python ${PROJECT_SOURCE_DIR}/utilities/create_json_schema.py
         ${PROJECT_BINARY_DIR}/4C_metadata.yaml ${PROJECT_BINARY_DIR}/4C_schema.json
-      COMMENT "Creating JSON schema file for input"
+      COMMENT "Creating metadata and JSON schema files"
       )
   else()
     message(
-      WARNING "Your python version ${Python3_VERSION} is too old to generate the JSON schema file"
+      WARNING
+        "Your python version ${Python3_VERSION} is too old to generate metadata and JSON schema files"
       )
     add_custom_command(
       TARGET ${FOUR_C_EXECUTABLE_NAME}

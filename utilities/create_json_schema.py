@@ -665,8 +665,8 @@ def main(metadata_path, json_schema_path):
     # Create partial schema
     # Remove required section
     schema.pop("required")
-    json_schema_partial_path = json_schema_path.parent / (
-        json_schema_path.name + "_partial" + json_schema_path.suffix
+    json_schema_partial_path = json_schema_path.with_stem(
+        json_schema_path.stem + "_partial"
     )
     create_json_schema(schema, code_metadata["commit_hash"], json_schema_partial_path)
 
