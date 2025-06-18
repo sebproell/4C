@@ -9,10 +9,16 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_tensor_fad.hpp"
+
 #include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_unittest_utils_assertions_test.hpp"
 
 #include <Sacado.hpp>
+
+#include <type_traits>
 
 
 FOUR_C_NAMESPACE_OPEN
@@ -284,11 +290,143 @@ namespace
       static_assert(std::is_same_v<decltype(result), FadType>);
       EXPECT_NEAR(result.val(), 9.96, 1e-10);
       EXPECT_NEAR(result.dx(0), 1.2, 1e-10);
-      EXPECT_NEAR(result.dx(1), 2.8, 1e-10);
+      EXPECT_NEAR(result.dx(1), 1.4 * 2, 1e-10);
       EXPECT_NEAR(result.dx(2), 2.4, 1e-10);
     }
   }
 
+  TEST(TensorFAD, TensorDerivativeDerivWrtItself)
+  {
+    const Core::LinAlg::Tensor<double, 2> t = {{1.1, 1.2}};
+
+    const auto fad_t = Core::LinAlg::make_auto_diff_tensor(t);
+
+    const auto dt_dt =
+        Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(fad_t)>>(fad_t);
+
+    // resulting tensor should be the identity tensor
+    constexpr auto id = Core::LinAlg::TensorGenerators::identity<double, 2, 2>;
+    FOUR_C_EXPECT_NEAR(dt_dt, id, 1e-10);
+  }
+
+  TEST(TensorFAD, TensorDerivativeOperation)
+  {
+    const Core::LinAlg::Tensor<double, 2> t = {{1.1, 1.2}};
+
+    const auto fad_t = Core::LinAlg::make_auto_diff_tensor(t);
+
+    const auto dt_dt =
+        Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(fad_t)>>(2.5 * fad_t);
+
+    // resulting tensor should be the identity tensor scaled with 2.5
+    constexpr auto scaled_id = 2.5 * Core::LinAlg::TensorGenerators::identity<double, 2, 2>;
+    FOUR_C_EXPECT_NEAR(dt_dt, scaled_id, 1e-10);
+  }
+
+  TEST(TensorFAD, TensorDerivativeDetAndTr)
+  {
+    const Core::LinAlg::Tensor<double, 2, 2> t = {{
+        {1.1, 1.2},
+        {1.3, 1.4},
+    }};
+
+    const auto fad_t = Core::LinAlg::make_auto_diff_tensor(t);
+
+    const auto ddet_t_dt = Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(fad_t)>>(
+        Core::LinAlg::det(fad_t));
+
+    auto deriv_det = Core::LinAlg::det(t) * Core::LinAlg::transpose(Core::LinAlg::inv(t));
+
+    // compare against the analytical derivative
+    FOUR_C_EXPECT_NEAR(ddet_t_dt, deriv_det, 1e-10);
+
+    const auto dtr_t_dt = Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(fad_t)>>(
+        Core::LinAlg::trace(fad_t));
+
+
+    constexpr auto id = Core::LinAlg::TensorGenerators::identity<double, 2, 2>;
+    FOUR_C_EXPECT_NEAR(dtr_t_dt, id, 1e-10);
+  }
+
+  TEST(TensorFAD, TensorDerivativeSymmetricDetAndTr)
+  {
+    const Core::LinAlg::SymmetricTensor<double, 2, 2> t =
+        Core::LinAlg::assume_symmetry(Core::LinAlg::Tensor<double, 2, 2>{{
+            {1.1, 1.2},
+            {1.2, 1.4},
+        }});
+
+    const auto fad_t = Core::LinAlg::make_auto_diff_tensor(t);
+
+    const auto ddet_t_dt = Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(fad_t)>>(
+        Core::LinAlg::det(fad_t));
+
+    auto deriv_det_analytical = Core::LinAlg::det(t) * Core::LinAlg::inv(t);
+
+    // compare against the analytical derivative
+    FOUR_C_EXPECT_NEAR(ddet_t_dt, deriv_det_analytical, 1e-10);
+
+    const auto dtr_t_dt = Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(fad_t)>>(
+        Core::LinAlg::trace(fad_t));
+
+
+    constexpr auto id = Core::LinAlg::TensorGenerators::identity<double, 2, 2>;
+    FOUR_C_EXPECT_NEAR(dtr_t_dt, id, 1e-10);
+  }
+
+  TEST(TensorFAD, TensorDerivativeTensorWrtScalar)
+  {
+    const Core::LinAlg::Tensor<double, 2, 2> t = {{{1.1, 1.2}, {1.3, 1.4}}};
+
+    Sacado::Fad::DFad<double> a = Sacado::Fad::DFad<double>(1, 0, 2.1);
+
+    const auto dat_dt =
+        Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(a)>>(2 * a * t);
+
+    FOUR_C_EXPECT_NEAR(dat_dt, 2 * t, 1e-10);
+  }
+
+
+  TEST(TensorFAD, TensorDerivativeSymmetricTensorWrtScalar)
+  {
+    const Core::LinAlg::SymmetricTensor<double, 2, 2> t =
+        Core::LinAlg::assume_symmetry(Core::LinAlg::Tensor<double, 2, 2>{{
+            {1.1, 1.2},
+            {1.2, 1.4},
+        }});
+
+    Sacado::Fad::DFad<double> a = Sacado::Fad::DFad<double>(1, 0, 2.1);
+
+    const auto dat_dt =
+        Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(a)>>(2 * a * t);
+
+    FOUR_C_EXPECT_NEAR(dat_dt, 2 * t, 1e-10);
+  }
+
+
+  TEST(TensorFAD, TensorDerivativeSymmetricTensorWrtSymmetricTensor)
+  {
+    const Core::LinAlg::SymmetricTensor<double, 2, 2> t =
+        Core::LinAlg::assume_symmetry(Core::LinAlg::Tensor<double, 2, 2>{{
+            {1.1, 1.2},
+            {1.2, 1.4},
+        }});
+
+    const auto fad_t = Core::LinAlg::make_auto_diff_tensor(t);
+
+    const auto dt_dt =
+        Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(fad_t)>>(fad_t);
+
+    auto symmetric_identity =
+        Core::LinAlg::TensorGenerators::symmetric_identity<double, 2, 2, 2, 2>;
+    FOUR_C_EXPECT_NEAR(dt_dt, symmetric_identity, 1e-10);
+
+
+
+    const auto dscaled_t_dt =
+        Core::LinAlg::extract_derivative<std::remove_cvref_t<decltype(fad_t)>>(2.5 * fad_t);
+    FOUR_C_EXPECT_NEAR(dscaled_t_dt, 2.5 * symmetric_identity, 1e-10);
+  }
 }  // namespace
 
 FOUR_C_NAMESPACE_CLOSE
