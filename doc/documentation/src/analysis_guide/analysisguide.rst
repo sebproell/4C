@@ -8,13 +8,12 @@ Analysis Guide
    :maxdepth: 2
 
    workflow
-   ../parsed_files/inputfile
    problemtypes
    ../parsed_files/geometrydefinition
    elements
-   functions
+   ../parsed_files/functions
    ../parsed_files/boundaryconditions
-   contact
+   ../parsed_files/contact
    ../parsed_files/materials
    struct_dynamics
    linear_solvers

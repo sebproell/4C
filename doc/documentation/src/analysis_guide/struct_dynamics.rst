@@ -1,42 +1,58 @@
 Solving nonlinear systems in structural simulations
 ===================================================
 
-Life is nonlinear, and so are most of the simulations. Thus, the simulation software must be able to deal with nonlinear simulations, be the reason for the nonlinearity a large strain formulation, a nonlinear material model or nonlinear boundary/contact condition.
+Life is nonlinear, and so are most of the simulations.
+Thus, the simulation software must be able to deal with nonlinear simulations, be the reason for the nonlinearity a large strain formulation, a nonlinear material model or nonlinear boundary/contact condition.
 
 Since the theory of nonlinear finite element simulations is complex, we will only give an introduction of the necessary input parameters here.
 
-The basic details of the nonlinear solver are given in the section
-
-::
-
-   ----------------------STRUCTURAL DYNAMICS
+The basic details of the nonlinear solver are given in the section ``STRUCTURAL DYNAMIC``.
 
 
 First of all: since in contrast to a linear simulation,
 where we may scale results (displacements, strains, stresses) with a factor, and also superpose load cases by simply adding results of each load case,
 the load history is crucial in nonlinear simulations, and we commonly divide the simulation in steps (other programs denote these as *increments*).
 
-Users may give the time step size, the maximum time at the end of the simulation, and the maximum number of steps to be conducted by these parameters (the values behind the keywords show the default values):
+Users may give the time step size, the maximum time at the end of the simulation, and the maximum number of steps to be conducted by these parameters
+(the values behind the keywords show the default values):
 
-::
+.. code-block:: yaml
 
-   TIMESTEP  0.05
-   MAXTIME   5
-   NUMSTEP   200
+   STRUCTURAL DYNAMIC:
+     INT_STRATEGY: "Standard"
+     TIMESTEP: 0.05
+     MAXTIME: 5
+     NUMSTEP: 200
 
 Note that the simulation stops after NUMSTEP steps or at time=MAXTIME, whatever comes first.
 
-The main decision in a simulation is whether to account for inertia and other time dependent effects, that is, conducting a dynamic simulation, or ignoring these effects and conducting a static simulation. Several options exist for dynamic simulations, while there is only a single option for statics. For the concrete input, see in :ref:`DYNAMICTYPE<SECstructuraldynamic>`.
+The main decision in a simulation is whether to account for inertia and other time dependent effects,
+that is, conducting a dynamic simulation, or ignoring these effects and conducting a static simulation.
+Several options exist for dynamic simulations, while there is only a single option for statics.
+For the concrete input, see in :ref:`DYNAMICTYPE<SECstructuraldynamic>`.
 
 Time stepping in dynamic simulations
 ------------------------------------
 
-The time stepping in dynamic simulations may be implicit or explicit. While an implicit method involves an iterative procedure within each time step, the explicit solver is solely using the results of the previous time step to calculate the results of the current step. The time stepping procedure is given by the parameter
+The time stepping in dynamic simulations may be implicit or explicit.
+While an implicit method involves an iterative procedure within each time step, the explicit solver is solely using the results of the previous time step to calculate the results of the current step.
+The time stepping procedure is given by the parameter
 
 Explicit time stepping procedure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-While it sounds much easier (and thus faster) to base the solution of the current time step on the previous step without iteration, the main drawback is that the time step must be in general much smaller than for an implicit solver.  In order to get a correct solution, the time step in an explicit procedure must be small enough that a stress wave cannot travel farther than the smallest element characteristic length in a single time-step. This is called the Courant-Friedrichs-Lewy (CFL) condition. One may calculate this maximum time step size by
+The explicit scheme is requested with the parameter
+
+.. code-block:: yaml
+
+   STRUCTURAL DYNAMICS:
+     INT_STRATEGY: "Standard"
+     DYNAMICTYPE: "ExplicitEuler"
+
+While it sounds much easier (and thus faster) to base the solution of the current time step on the previous step without iteration,
+the main drawback is that the time step must be in general much smaller than for an implicit solver.
+In order to get a correct solution, the time step in an explicit procedure must be small enough that a stress wave cannot travel farther than the smallest element characteristic length in a single time-step.
+This is called the Courant-Friedrichs-Lewy (CFL) condition. One may calculate this maximum time step size by
 
 .. math::
 
@@ -53,8 +69,9 @@ Implicit time stepping procedure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 For implicit analyses, a number of time stepping methods exist, the most common of which are
 
-- ``GenAlpha``: generalized alpha method with up to four parameters, :math:`\beta, \alpha_M, \alpha_F, \rho_\infty`, see the reference section :ref:`--Structural dynamic/GenAlpha<SECstructuraldynamic_genalpha>`
-- ``OneStepTheta``: one-step theta method (a special version of generalized alpha with :math:`\alpha_M=\alpha_F=1`,
+- ``DYNAMICTYPE: GenAlpha``: generalized alpha method with up to four parameters, :math:`\beta, \alpha_M, \alpha_F, \rho_\infty`,
+  see the reference section :ref:`--Structural dynamic/GenAlpha<SECstructuraldynamic_genalpha>`
+- ``DYNAMICTYPE: OneStepTheta``: one-step theta method (a special version of generalized alpha with :math:`\alpha_M=\alpha_F=1`,
   see section :ref:`--Structural dynamic/OneStepTheta<SECstructuraldynamic_onesteptheta>`
 
 More in-depth information about some time stepping details are given in the :ref:`theory section<structdynamics_theory>` below.
@@ -64,9 +81,11 @@ Iterative solution
 ~~~~~~~~~~~~~~~~~~
 
 Note that an implicit time stepping procedure involves an iterative solution technique within each time step.
-The number of iterations is given in the parameter ``MAXITER`` (default: 50); the converge criteria can be defined in a very detailed way with quite a number of parameters.
+The number of iterations is given in the parameter ``MAXITER`` (default: 50);
+the converge criteria can be defined in a very detailed way with quite a number of parameters.
 
-The strategy for the iteration is specified by the parameter ``NLNSOL`` (nonlinear solution). The default is a full Newton-Raphson method, but several other methods exist as well:
+The strategy for the iteration is specified by the parameter ``NLNSOL`` (nonlinear solution).
+The default is a full Newton-Raphson method, but several other methods exist as well:
 
 - Modified Newton-Raphson
 - Pseudo-transient continuation
@@ -81,7 +100,8 @@ The strategy for the iteration is specified by the parameter ``NLNSOL`` (nonline
 
 The Uzawa Iteration has a number of additional parameters that can be used to improve convergence for special cases.
 
-The convergence can be improved in a dynamic simulation with an aritificial damping (``DAMPING``) of Rayleigh type or with a material based damping on element-level. If a Rayleigh damping is used, two parameters vary the effect of the damping:
+The convergence can be improved in a dynamic simulation with an aritificial damping (``DAMPING``) of Rayleigh type or with a material based damping on element-level.
+If a Rayleigh damping is used, two parameters vary the effect of the damping:
 
 - ``M_DAMP`` Rayleigh-coefficient for Rayleigh damping proportional to mass matrix (:math:`M_\text{DAMP} \times M`)
 - ``K_DAMP`` Rayleigh-coefficient for Rayleigh damping proportional to initial/reference stiffness matrix (:math:`K_\text{DAMP} \times K`)
@@ -203,7 +223,7 @@ are introduced to control the behavior of this approximation
 
 .. math::
 
-   \boldsymbol{A}^\gamma(\tau) &= \boldsymbol{A}_n + 2\gamma \frac{\boldsymbol{A}_{n+1} - \boldsymbol{A}_n}{\Delta t}\tau\\
+   \boldsymbol{A}^\gamma(\tau) &= \boldsymbol{A}_n + 2\gamma \frac{\boldsymbol{A}_{n+1} - \boldsymbol{A}_n}{\Delta t}\tau \\
    \boldsymbol{A}^\beta(\tau) &= \boldsymbol{A}_n + 6\beta  \frac{\boldsymbol{A}_{n+1} - \boldsymbol{A}_n}{\Delta t}\tau
 
 If :math:`\gamma=\frac{1}{2}` and :math:`\beta=\frac{1}{6}` are chosen,
