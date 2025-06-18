@@ -1091,8 +1091,6 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
             parameter<double>("DENS", {.description = "mass density"}),
             parameter<double>(
                 "THEXPANS", {.description = "constant coefficient of linear thermal expansion"}),
-            parameter<double>("CAPA", {.description = "capacity"}),
-            parameter<double>("CONDUCT", {.description = "conductivity"}),
             parameter<double>("INITTEMP", {.description = "initial temperature"}),
             parameter<int>("THERMOMAT",
                 {.description = "mat id of thermal material part", .default_value = -1}),
@@ -2409,17 +2407,12 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
     known_materials[Core::Materials::m_thermo_fourier] = group("MAT_Fourier",
         {
             parameter<double>("CAPA", {.description = "volumetric heat capacity"}),
-            parameter<int>("CONDUCT_PARA_NUM",
-                {.description =
-                        "Parameter representing the relevant number of entries in the thermal "
-                        "conductivity tensor. Setting its value to 1 resembles a scalar "
-                        "conductivity, 2 or 3 a diagonal conductivity and 4 or 9 the full "
-                        "conductivity tensor in two and three dimensions respectively."}),
-            parameter<std::vector<double>>("CONDUCT",
-                {.description =
-                        "Vector of values representing the thermal conductivity tensor in a "
-                        "row-wise ordering, with the vector size given by CONDUCT_PARA_NUM.",
-                    .size = from_parameter<int>("CONDUCT_PARA_NUM")}),
+            input_field<std::vector<double>>("CONDUCT",
+                {.description = "entries in the thermal "
+                                "conductivity tensor. Setting one value resembles a scalar "
+                                "conductivity, 2 or "
+                                "3 values a diagonal conductivity and 4 or 9 values the full "
+                                "conductivity tensor in two and three dimensions respectively."}),
         },
         {.description = "anisotropic linear Fourier's law of heat conduction"});
   }
@@ -2430,17 +2423,12 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
     known_materials[Core::Materials::m_soret] = group("MAT_soret",
         {
             parameter<double>("CAPA", {.description = "volumetric heat capacity"}),
-            parameter<int>("CONDUCT_PARA_NUM",
-                {.description =
-                        "Parameter representing the relevant number of entries in the thermal "
-                        "conductivity tensor. Setting its value to 1 resembles a scalar "
-                        "conductivity, 2 or 3 a diagonal conductivity and 4 or 9 the full "
-                        "conductivity tensor in two and three dimensions respectively."}),
-            parameter<std::vector<double>>("CONDUCT",
-                {.description =
-                        "Vector of values representing the thermal conductivity tensor in a "
-                        "row-wise ordering, with the vector size given by CONDUCT_PARA_NUM.",
-                    .size = from_parameter<int>("CONDUCT_PARA_NUM")}),
+            input_field<std::vector<double>>("CONDUCT",
+                {.description = "entries in the thermal "
+                                "conductivity tensor. Setting one value resembles a scalar "
+                                "conductivity, 2 or "
+                                "3 values a diagonal conductivity and 4 or 9 values the full "
+                                "conductivity tensor in two and three dimensions respectively."}),
             parameter<double>("SORET", {.description = "Soret coefficient"}),
         },
         {.description = "material for heat transport due to Fourier-type thermal conduction and "

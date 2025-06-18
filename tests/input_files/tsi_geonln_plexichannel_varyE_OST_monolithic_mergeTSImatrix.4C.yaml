@@ -83,14 +83,13 @@ MATERIALS:
       NUE: 0.35
       DENS: 1185
       THEXPANS: 7e-05
-      CAPA: 1.73721e+06
-      CONDUCT: 0.2
       INITTEMP: 50
+      THERMOMAT: 2
   - MAT: 2
     MAT_Fourier:
       CAPA: 1.73721e+06
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [0.2]
+      CONDUCT:
+        constant: [0.2]
 CLONING MATERIAL MAP:
   - SRC_FIELD: "structure"
     SRC_MAT: 1

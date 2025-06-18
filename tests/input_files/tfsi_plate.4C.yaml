@@ -129,14 +129,18 @@ MATERIALS:
       NUE: 0.3
       DENS: 1000
       THEXPANS: 6e-05
-      CAPA: 1000
-      CONDUCT: 100
       INITTEMP: 293
+      THERMOMAT: 4
   - MAT: 3
     MAT_Struct_StVenantKirchhoff:
       YOUNG: 1
       NUE: 0
       DENS: 1
+  - MAT: 4
+    MAT_Fourier:
+      CAPA: 1000
+      CONDUCT:
+        constant: [100]
 CLONING MATERIAL MAP:
   - SRC_FIELD: "fluid"
     SRC_MAT: 1

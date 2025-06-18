@@ -60,9 +60,8 @@ MATERIALS:
       NUE: 0.3
       DENS: 9.13e-06
       THEXPANS: 1.72e-05
-      CAPA: 3405.49
-      CONDUCT: 310000
       INITTEMP: 293.15
+      THERMOMAT: 2
   - MAT: 3
     MAT_Struct_ThermoStVenantK:
       YOUNGNUM: 1
@@ -70,9 +69,8 @@ MATERIALS:
       NUE: 0.3
       DENS: 8.91e-06
       THEXPANS: 1.22e-05
-      CAPA: 3956.04
-      CONDUCT: 75000
       INITTEMP: 293.15
+      THERMOMAT: 4
   - MAT: 0
     MAT_Struct_PlasticLinElast:
       YOUNG: 0
@@ -85,13 +83,13 @@ MATERIALS:
   - MAT: 2
     MAT_Fourier:
       CAPA: 3405.49
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [310000]
+      CONDUCT:
+        constant: [310000]
   - MAT: 4
     MAT_Fourier:
       CAPA: 3956.04
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [75000]
+      CONDUCT:
+        constant: [75000]
 CLONING MATERIAL MAP:
   - SRC_FIELD: "structure"
     SRC_MAT: 1

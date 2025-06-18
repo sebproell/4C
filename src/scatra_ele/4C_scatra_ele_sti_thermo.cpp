@@ -151,15 +151,16 @@ void Discret::Elements::ScaTraEleSTIThermo<distype>::calc_rhs_soret(
  | evaluate Soret material                                   fang 11/15 |
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
-void Discret::Elements::ScaTraEleSTIThermo<distype>::mat_soret(
-    const std::shared_ptr<const Core::Mat::Material> material  //!< Soret material
-)
+void Discret::Elements::ScaTraEleSTIThermo<distype>::mat_soret(const Core::Elements::Element* ele)
 {
+  // get parameters of secondary, thermodynamic electrolyte material
+  std::shared_ptr<const Core::Mat::Material> material = ele->material(1);
+
   // extract material parameters from Soret material
   const std::shared_ptr<const Mat::Soret> matsoret =
       std::static_pointer_cast<const Mat::Soret>(material);
 
-  const std::vector<double>& k = matsoret->conductivity();
+  const std::vector<double>& k = matsoret->conductivity(ele->id());
   FOUR_C_ASSERT(k.size() == 1, "Conductivity value needs to be a scalar quantity.");
 
   diffmanagerstithermo_->set_isotropic_diff(k[0], 0);

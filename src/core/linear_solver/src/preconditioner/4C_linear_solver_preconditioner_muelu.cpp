@@ -94,6 +94,15 @@ void Core::LinearSolver::MueLuPreconditioner::setup(Epetra_Operator* matrix,
     user_param_list.set("Nullspace", nullspace);
     user_param_list.set("Coordinates", coordinates);
 
+    Teuchos::RCP<Xpetra::MultiVector<SC, LO, GO, NO>> material;
+    if (muelulist_.isParameter("Material"))
+    {
+      material = Teuchos::make_rcp<EpetraMultiVector>(Teuchos::rcpFromRef(
+          muelulist_.get<std::shared_ptr<Core::LinAlg::MultiVector<double>>>("Material")
+              ->get_epetra_multi_vector()));
+      user_param_list.set("Material", material);
+    }
+
     H_ = MueLu::CreateXpetraPreconditioner(pmatrix_, *muelu_params);
     P_ = Teuchos::make_rcp<MueLu::EpetraOperator>(H_);
   }

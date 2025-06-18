@@ -661,9 +661,9 @@ void Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::get_material_params(
   // get parameters of primary, thermal material
   std::shared_ptr<const Core::Mat::Material> material = ele->material();
   if (material->material_type() == Core::Materials::m_soret)
-    mat_soret(material, densn[0], densnp[0], densam[0]);
+    mat_soret(ele, densn[0], densnp[0], densam[0]);
   else if (material->material_type() == Core::Materials::m_thermo_fourier)
-    mat_fourier(material, densn[0], densnp[0], densam[0]);
+    mat_fourier(ele, densn[0], densnp[0], densam[0]);
   else
     FOUR_C_THROW("Invalid thermal material!");
 
@@ -692,18 +692,16 @@ void Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::get_material_params(
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
 void Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::mat_soret(
-    const std::shared_ptr<const Core::Mat::Material> material,  //!< Soret material
-    double& densn,                                              //!< density at time t_(n)
-    double& densnp,  //!< density at time t_(n+1) or t_(n+alpha_F)
-    double& densam   //!< density at time t_(n+alpha_M)
-)
+    const Core::Elements::Element* ele, double& densn, double& densnp, double& densam)
 {
   // extract material parameters from Soret material
+  std::shared_ptr<const Core::Mat::Material> material = ele->material();
+
   const std::shared_ptr<const Mat::Soret> matsoret =
       std::static_pointer_cast<const Mat::Soret>(material);
   densn = densnp = densam = matsoret->capacity();
 
-  const std::vector<double>& k = matsoret->conductivity();
+  const std::vector<double>& k = matsoret->conductivity(ele->id());
   FOUR_C_ASSERT(k.size() == 1, "Conductivity value needs to be a scalar quantity.");
 
   diff_manager()->set_isotropic_diff(k[0], 0);
@@ -715,19 +713,17 @@ void Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::mat_soret(
  *----------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
 void Discret::Elements::ScaTraEleCalcSTIDiffCond<distype>::mat_fourier(
-    const std::shared_ptr<const Core::Mat::Material> material,  //!< Fourier material
-    double& densn,                                              //!< density at time t_(n)
-    double& densnp,  //!< density at time t_(n+1) or t_(n+alpha_F)
-    double& densam   //!< density at time t_(n+alpha_M)
-)
+    const Core::Elements::Element* ele, double& densn, double& densnp, double& densam)
 {
-  // extract material parameters from Soret material
+  // extract material parameters from Fourier material
+  std::shared_ptr<const Core::Mat::Material> material = ele->material();
+
   const std::shared_ptr<const Mat::Fourier> matfourier =
       std::static_pointer_cast<const Mat::Fourier>(material);
 
   densn = densnp = densam = matfourier->capacity();
 
-  const std::vector<double>& k = matfourier->conductivity();
+  const std::vector<double>& k = matfourier->conductivity(ele->id());
   FOUR_C_ASSERT(k.size() == 1, "Conductivity value needs to be a scalar quantity.");
 
   diff_manager()->set_isotropic_diff(k[0], 0);

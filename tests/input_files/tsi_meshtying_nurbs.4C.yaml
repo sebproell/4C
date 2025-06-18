@@ -65,14 +65,13 @@ MATERIALS:
       NUE: 0.2
       DENS: 0.1
       THEXPANS: 0.002
-      CAPA: 0.1
-      CONDUCT: 1
       INITTEMP: 0
+      THERMOMAT: 3
   - MAT: 3
     MAT_Fourier:
       CAPA: 0.1
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [1]
+      CONDUCT:
+        constant: [1]
 CLONING MATERIAL MAP:
   - SRC_FIELD: "structure"
     SRC_MAT: 1

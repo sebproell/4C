@@ -27,8 +27,6 @@ Mat::PAR::ThermoStVenantKirchhoff::ThermoStVenantKirchhoff(
       poissonratio_(matdata.parameters.get<double>("NUE")),
       density_(matdata.parameters.get<double>("DENS")),
       thermexpans_(matdata.parameters.get<double>("THEXPANS")),
-      capa_(matdata.parameters.get<double>("CAPA")),
-      conduct_(matdata.parameters.get<double>("CONDUCT")),
       thetainit_(matdata.parameters.get<double>("INITTEMP")),
       thermomat_(matdata.parameters.get<int>("THERMOMAT"))
 {
@@ -189,21 +187,26 @@ void Mat::ThermoStVenantKirchhoff::strain_energy(
 }
 
 void Mat::ThermoStVenantKirchhoff::evaluate(const Core::LinAlg::Matrix<3, 1>& gradtemp,
-    Core::LinAlg::Matrix<3, 3>& cmat, Core::LinAlg::Matrix<3, 1>& heatflux) const
+    Core::LinAlg::Matrix<3, 3>& cmat, Core::LinAlg::Matrix<3, 1>& heatflux, const int eleGID) const
 {
-  thermo_->evaluate(gradtemp, cmat, heatflux);
+  thermo_->evaluate(gradtemp, cmat, heatflux, eleGID);
 }
 
 void Mat::ThermoStVenantKirchhoff::evaluate(const Core::LinAlg::Matrix<2, 1>& gradtemp,
-    Core::LinAlg::Matrix<2, 2>& cmat, Core::LinAlg::Matrix<2, 1>& heatflux) const
+    Core::LinAlg::Matrix<2, 2>& cmat, Core::LinAlg::Matrix<2, 1>& heatflux, const int eleGID) const
 {
-  thermo_->evaluate(gradtemp, cmat, heatflux);
+  thermo_->evaluate(gradtemp, cmat, heatflux, eleGID);
 }
 
 void Mat::ThermoStVenantKirchhoff::evaluate(const Core::LinAlg::Matrix<1, 1>& gradtemp,
-    Core::LinAlg::Matrix<1, 1>& cmat, Core::LinAlg::Matrix<1, 1>& heatflux) const
+    Core::LinAlg::Matrix<1, 1>& cmat, Core::LinAlg::Matrix<1, 1>& heatflux, const int eleGID) const
 {
-  thermo_->evaluate(gradtemp, cmat, heatflux);
+  thermo_->evaluate(gradtemp, cmat, heatflux, eleGID);
+}
+
+std::vector<double> Mat::ThermoStVenantKirchhoff::conductivity(int eleGID) const
+{
+  return thermo_->conductivity(eleGID);
 }
 
 void Mat::ThermoStVenantKirchhoff::conductivity_deriv_t(Core::LinAlg::Matrix<3, 3>& dCondDT) const
@@ -220,6 +223,8 @@ void Mat::ThermoStVenantKirchhoff::conductivity_deriv_t(Core::LinAlg::Matrix<1, 
 {
   thermo_->conductivity_deriv_t(dCondDT);
 }
+
+double Mat::ThermoStVenantKirchhoff::capacity() const { return thermo_->capacity(); }
 
 double Mat::ThermoStVenantKirchhoff::capacity_deriv_t() const
 {

@@ -31,7 +31,7 @@ MATERIALS:
     MAT_Fourier:
       CAPA: 420
       CONDUCT:
-        constant: [100, 0, 0, 0, 10, 0, 0, 0, 1]
+        from_file: conductivity_input_field.json
 FUNCT1:
   - COMPONENT: 0
     SYMBOLIC_FUNCTION_OF_SPACE_TIME: "100"
@@ -6195,5 +6195,5 @@ RESULT DESCRIPTION:
       DIS: "thermo"
       NODE: 869
       QUANTITY: "temp"
-      VALUE: 49.59855188850252
+      VALUE: 4.26087373179712330e+01
       TOLERANCE: 1e-06

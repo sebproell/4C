@@ -97,8 +97,8 @@ MATERIALS:
   - MAT: 6
     MAT_Fourier:
       CAPA: 500
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [10]
+      CONDUCT:
+        constant: [10]
   - MAT: 7
     MAT_elchmat:
       NUMDOF: 2
@@ -146,8 +146,8 @@ MATERIALS:
   - MAT: 14
     MAT_Fourier:
       CAPA: 10000
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [1]
+      CONDUCT:
+        constant: [1]
   - MAT: 15
     MAT_electrode:
       DIFF_COEF_CONC_DEP_FUNCT: -1
@@ -188,8 +188,8 @@ MATERIALS:
   - MAT: 20
     MAT_Fourier:
       CAPA: 50000
-      CONDUCT_PARA_NUM: 1
-      CONDUCT: [100]
+      CONDUCT:
+        constant: [100]
 CLONING MATERIAL MAP:
   - SRC_FIELD: "structure"
     SRC_MAT: 2
