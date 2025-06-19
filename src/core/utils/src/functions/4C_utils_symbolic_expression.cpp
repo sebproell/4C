@@ -33,76 +33,58 @@ namespace
 
 namespace Core::Utils::SymbolicExpressionDetails
 {
-  /*----------------------------------------------------------------------*/
+  using IndexType = std::size_t;
+  constexpr IndexType invalid_index = -1uL;
+
+  enum class NodeType : unsigned char
+  {
+    // independent variable: 't', 'x', ...
+    variable,
+    // numeric value
+    number,
+    // mathematical function e.g. 'sin', 'cos', 'exp', ...
+    function,
+    // (binary) operator e.g. '+', '-', '*', '/', ...
+    op,
+  };
+
   /*!
   \brief Syntax tree node holding binary, unary operator or literals
   */
-  template <class T>
-  class SyntaxTreeNode
+  struct SyntaxTreeNode
   {
-   public:
-    using NodePtr = std::unique_ptr<SyntaxTreeNode<T>>;
-
-    //! destructor
-    ~SyntaxTreeNode() = default;
-
-    //! copy constructor
-    SyntaxTreeNode(const SyntaxTreeNode& other)
-        : type_{other.type_},
-          variable_{other.variable_},
-          function_{other.function_},
-          lhs_{std::make_unique<SyntaxTreeNode>(*other.lhs_)},
-          rhs_{std::make_unique<SyntaxTreeNode>(*other.rhs_)} {};
-
-    //! copy assignment operator
-    SyntaxTreeNode& operator=(const SyntaxTreeNode& other)
-    {
-      if (&other == this) return *this;
-      type_ = other.type_;
-      variable_ = other.variable_;
-      function_ = other.function_;
-      lhs_ = std::make_unique<SyntaxTreeNode>(*other.lhs_);
-      rhs_ = std::make_unique<SyntaxTreeNode>(*other.rhs_);
-      return *this;
-    };
-
-    //! move constructor
-    SyntaxTreeNode(SyntaxTreeNode&& other) noexcept = default;
-
-    //! move assignment operator
-    SyntaxTreeNode& operator=(SyntaxTreeNode&& other) noexcept = default;
-
-    enum NodeType
-    {
-      lt_variable,  // independent variable: 't', 'x', ...
-      lt_number,    // number (literal)
-      lt_function,
-      lt_operator
-    };
-
-    //! Construct a SyntaxTreeNode with content @p type and a @p lhs and  @p rhs operand.
-    SyntaxTreeNode(NodeType type, NodePtr lhs, NodePtr rhs)
-        : type_(type), lhs_(std::move(lhs)), rhs_(std::move(rhs))
-    {
-    }
-
-    //! type of the node, ie operator, literal, ...
-    NodeType type_;
-
-    //! particularise the node content: a literal number is double, an operatir has a character
+    /**
+     * Node either holds a number, or string operator, variable name or a function name.
+     */
     union
     {
-      double number;  // holds 1.0, 7.e-9, etc
-      char op;        // hold '+', '*', etc
-    } v_;
+      double number{};
+      std::string_view str;  // this views into the expression string or a string literal
+    } as;
 
-    //! input string expressing the variable, holds 't', 'x', etc
-    std::string variable_;
-    //! input string expressing the function
-    std::string function_;
+    //! Index of the node in the syntax tree
+    IndexType my_index;
 
-    NodePtr lhs_;  // left hand side node
-    NodePtr rhs_;  // right hand side node
+    //! Lhs and rhs nodes
+    IndexType lhs_index{-1u};
+    IndexType rhs_index{-1u};
+
+    //! type of the node, ie operator, literal, ...
+    NodeType type;
+
+    [[nodiscard]] const double& number() const
+    {
+      FOUR_C_ASSERT(type == NodeType::number, "Node is not a number.");
+      return as.number;
+    }
+
+    [[nodiscard]] const std::string_view& str() const
+    {
+      FOUR_C_ASSERT(
+          type == NodeType::variable || type == NodeType::function || type == NodeType::op,
+          "Node is not a variable or function.");
+      return as.str;
+    }
   };
 
 
@@ -115,7 +97,7 @@ namespace Core::Utils::SymbolicExpressionDetails
   {
    public:
     //! constructor
-    Lexer(std::string funct) : funct_(std::move(funct)), pos_(0) {}
+    Lexer(std::string_view funct) : funct_(funct), pos_(0) {}
 
     //! delivers funct_ character at position pos_++
     int get_next();
@@ -141,12 +123,12 @@ namespace Core::Utils::SymbolicExpressionDetails
       tok_comma  // comma ',' (used to separate function arguments)
     };
 
-    std::string funct_;  // function description as string, i.e. "t^2", "sin(t)", etc
-    unsigned pos_;       // current position in string funct_
-    TokenType tok_;      // current token of string funct_
-    char* str_;          // pointer to current character in funct_
-    int integer_;        // translated integer number or length of operator word
-    double real_;        // translated real number
+    std::string_view funct_;  // function description as string, i.e. "t^2", "sin(t)", etc
+    unsigned pos_;            // current position in string funct_
+    TokenType tok_;           // current token of string funct_
+    const char* str_;         // pointer to begin of current string token in funct_
+    int integer_;             // translated integer number or length of operator word
+    double real_;             // translated real number
   };
 
   //! helper structs
@@ -169,7 +151,7 @@ namespace Core::Utils::SymbolicExpressionDetails
   class Parser
   {
    public:
-    using NodePtr = typename SyntaxTreeNode<T>::NodePtr;
+    using NodePtr = SyntaxTreeNode*;
 
     //! constructor
     Parser(std::string funct);
@@ -178,18 +160,19 @@ namespace Core::Utils::SymbolicExpressionDetails
     ~Parser() = default;
 
     //! copy constructor
-    Parser(const Parser& other)
-        : symbolicexpression_{other.symbolicexpression_},
-          expr_{std::make_unique<SyntaxTreeNode<T>>(*other.expr_)},
-          parsed_variable_constant_names_{other.parsed_variable_constant_names_} {};
+    Parser(const Parser& other) : symbolicexpression_(other.symbolicexpression_) { parse(); }
 
     //! copy assignment operator
     Parser& operator=(const Parser& other)
     {
       if (&other == this) return *this;
       symbolicexpression_ = other.symbolicexpression_;
-      expr_ = std::make_unique<NodePtr>(*other.expr_);
-      parsed_variable_constant_names_ = other.parsed_variable_constant_names_;
+      node_arena_.clear();
+      parsed_variable_constant_names_.clear();
+      variable_values_ = nullptr;
+      constant_values_ = nullptr;
+
+      parse();
       return *this;
     };
 
@@ -228,11 +211,16 @@ namespace Core::Utils::SymbolicExpressionDetails
     [[nodiscard]] bool is_variable(const std::string& varname) const;
 
    private:
+    void parse();
     NodePtr parse_primary(Lexer& lexer);
     NodePtr parse_pow(Lexer& lexer);
     NodePtr parse_term(Lexer& lexer);
     NodePtr parse_expr(Lexer& lexer);
     NodePtr parse(Lexer& lexer);
+
+    //! Create a new node in the node arena and return a pointer to it.
+    //! Optionally, a left-hand side and right-hand side node can be provided.
+    NodePtr create_node(NodeType type, NodePtr lhs = nullptr, NodePtr rhs = nullptr);
 
     //! given symbolic expression
     std::string symbolicexpression_;
@@ -242,13 +230,25 @@ namespace Core::Utils::SymbolicExpressionDetails
         const std::map<std::string, double>& constants = {}) const;
 
     //! recursively extract corresponding number out of a syntax tree node
-    T interpret(const SyntaxTreeNode<T>& node) const;
+    T interpret(const SyntaxTreeNode& node) const;
 
-    //! syntax tree root
-    NodePtr expr_;
+    const SyntaxTreeNode& at(IndexType index) const
+    {
+      FOUR_C_ASSERT(index < node_arena_.size(), "Index out of bounds: {}", index);
+      return node_arena_[index];
+    }
+
+    /**
+     * Actual storage for all parsed syntax tree nodes. The first element is the root node of
+     * the tree.
+     */
+    std::vector<SyntaxTreeNode> node_arena_;
+
+    //! root node of the syntax tree
+    SyntaxTreeNode* root_{nullptr};
 
     //! set of all parsed variables
-    std::set<std::string> parsed_variable_constant_names_;
+    std::set<std::string_view> parsed_variable_constant_names_;
 
     //! necessary variable values for evaluating the parsed expression
     mutable const std::map<std::string, T>* variable_values_{nullptr};
@@ -440,19 +440,9 @@ namespace Core::Utils::SymbolicExpressionDetails
   \brief Constructor of parser object
   */
   template <class T>
-  Parser<T>::Parser(std::string funct)
+  Parser<T>::Parser(std::string funct) : symbolicexpression_{std::move(funct)}
   {
-    //! set symbolic expression
-    symbolicexpression_ = funct;
-
-    //! create Lexer which stores all token of funct
-    Lexer lexer{std::move(funct)};
-
-    //! retrieve first token of funct
-    lexer.lexan();
-
-    //! create syntax tree equivalent to funct
-    expr_ = parse(lexer);
+    parse();
   }
 
   /*----------------------------------------------------------------------*/
@@ -464,6 +454,19 @@ namespace Core::Utils::SymbolicExpressionDetails
   {
     //! check if variable exists
     return (parsed_variable_constant_names_.count(varname) != 0);
+  }
+
+  template <class T>
+  void Parser<T>::parse()
+  {
+    //! create Lexer which stores all token of funct
+    Lexer lexer{symbolicexpression_};
+
+    //! retrieve first token of funct
+    lexer.lexan();
+
+    //! create syntax tree equivalent to funct
+    root_ = parse(lexer);
   }
 
 
@@ -489,9 +492,13 @@ namespace Core::Utils::SymbolicExpressionDetails
       const std::map<std::string, double>& constants) const
   {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-    const bool all_required_variables_passed = std::all_of(parsed_variable_constant_names_.begin(),
-        parsed_variable_constant_names_.end(), [&](const auto& var_name)
-        { return (variable_values.count(var_name) + constants.count(var_name)) == 1; });
+    const bool all_required_variables_passed =
+        std::all_of(parsed_variable_constant_names_.begin(), parsed_variable_constant_names_.end(),
+            [&](const auto& var_name)
+            {
+              return (variable_values.count(std::string(var_name)) +
+                         constants.count(std::string(var_name))) == 1;
+            });
 
     if (!all_required_variables_passed)
     {
@@ -524,10 +531,10 @@ namespace Core::Utils::SymbolicExpressionDetails
     if (constants.size() != 0) constant_values_ = &constants;
 
     //! check if function has been parsed
-    FOUR_C_ASSERT(expr_ != nullptr, "Internal error");
+    FOUR_C_ASSERT(!node_arena_.empty(), "Internal error");
 
     //! evaluate syntax tree of function depending on set variables
-    auto result = this->interpret(*expr_);
+    auto result = this->interpret(*root_);
 
     //! set variable_values_ and constant_values_ as nullptr again for safety reasons
     variable_values_ = nullptr;
@@ -555,44 +562,43 @@ namespace Core::Utils::SymbolicExpressionDetails
         lexer.lexan();
         break;
       case Lexer::tok_int:
-        lhs = std::make_unique<SyntaxTreeNode<T>>(SyntaxTreeNode<T>::lt_number, nullptr, nullptr);
-        lhs->v_.number = lexer.integer_;
+        lhs = create_node(NodeType::number);
+        lhs->as.number = lexer.integer_;
         lexer.lexan();
         break;
       case Lexer::tok_real:
-        lhs = std::make_unique<SyntaxTreeNode<T>>(SyntaxTreeNode<T>::lt_number, nullptr, nullptr);
-        lhs->v_.number = lexer.real_;
+        lhs = create_node(NodeType::number);
+        lhs->as.number = lexer.real_;
         lexer.lexan();
         break;
       case Lexer::tok_sub:
       {
         NodePtr rhs;
         lexer.lexan();
-        /*rhs = parse_primary();*/
         rhs = parse_pow(lexer);
-        if (rhs->type_ == SyntaxTreeNode<T>::lt_number)
+        // This is a unary minus operator.
+        if (rhs->type == NodeType::number)
         {
-          rhs->v_.number *= -1;
-          lhs = std::move(rhs);
+          rhs->as.number *= -1;
+          lhs = rhs;
         }
         else
         {
-          lhs = std::make_unique<SyntaxTreeNode<T>>(SyntaxTreeNode<T>::lt_number, nullptr, nullptr);
-          lhs->v_.number = -1;
-          lhs = std::make_unique<SyntaxTreeNode<T>>(
-              SyntaxTreeNode<T>::lt_operator, std::move(lhs), std::move(rhs));
-          lhs->v_.op = '*';
+          lhs = create_node(NodeType::number);
+          lhs->as.number = -1;
+          lhs = create_node(NodeType::op, lhs, rhs);
+          lhs->as.str = "*";
         }
         break;
       }
       case Lexer::tok_name:
       {
         // get substring starting from str_ with length of lexer.integer_
-        std::string name(lexer.str_, lexer.integer_);
-        if ((lexer.integer_ == 2) && (std::strncmp("pi", lexer.str_, lexer.integer_) == 0))
+        std::string_view name(lexer.str_, lexer.integer_);
+        if (name == "pi")
         {
-          lhs = std::make_unique<SyntaxTreeNode<T>>(SyntaxTreeNode<T>::lt_number, nullptr, nullptr);
-          lhs->v_.number = M_PI;
+          lhs = create_node(NodeType::number);
+          lhs->as.number = M_PI;
           lexer.lexan();
           break;
         }
@@ -604,31 +610,39 @@ namespace Core::Utils::SymbolicExpressionDetails
               name == "sqrt" or name == "ceil" or name == "heaviside" or name == "fabs" or
               name == "floor")
           {
-            lhs = std::make_unique<SyntaxTreeNode<T>>(
-                SyntaxTreeNode<T>::lt_function, nullptr, nullptr);
-            lhs->function_ = name;
+            // Consume opening parenthesis
             lexer.lexan();
             if (lexer.tok_ != Lexer::tok_lpar)
               FOUR_C_THROW("'(' expected after function name '{}'", name);
+
             lexer.lexan();
-            lhs->lhs_ = parse_expr(lexer);
+            lhs = create_node(NodeType::function, parse_expr(lexer));
+            lhs->as.str = name;
+
+            // Consume closing parenthesis
             if (lexer.tok_ != Lexer::tok_rpar) FOUR_C_THROW("')' expected");
             lexer.lexan();
             break;
           }
           else if (name == "atan2")
           {
-            lhs = std::make_unique<SyntaxTreeNode<T>>(
-                SyntaxTreeNode<T>::lt_function, nullptr, nullptr);
-            lhs->function_ = name;
+            // Consume opening parenthesis
             lexer.lexan();
             if (lexer.tok_ != Lexer::tok_lpar)
               FOUR_C_THROW("'(' expected after function name '{}'", name);
+
             lexer.lexan();
-            lhs->lhs_ = parse_expr(lexer);
+            auto first_arg = parse_expr(lexer);
+
+            // Consume comma separating the two arguments
             if (lexer.tok_ != Lexer::tok_comma) FOUR_C_THROW("',' expected");
             lexer.lexan();
-            lhs->rhs_ = parse_expr(lexer);
+            auto second_arg = parse_expr(lexer);
+
+            lhs = create_node(NodeType::function, first_arg, second_arg);
+            lhs->as.str = name;
+
+            // Consume closing parenthesis
             if (lexer.tok_ != Lexer::tok_rpar)
               FOUR_C_THROW("')' expected for function name '{}'", name);
             lexer.lexan();
@@ -636,9 +650,8 @@ namespace Core::Utils::SymbolicExpressionDetails
           }
           else
           {
-            lhs = std::make_unique<SyntaxTreeNode<T>>(
-                SyntaxTreeNode<T>::lt_variable, nullptr, nullptr);
-            lhs->variable_ = name;
+            lhs = create_node(NodeType::variable);
+            lhs->as.str = name;
             parsed_variable_constant_names_.insert(name);
             lexer.lexan();
           }
@@ -671,9 +684,8 @@ namespace Core::Utils::SymbolicExpressionDetails
       {
         lexer.lexan();
         rhs = parse_primary(lexer);
-        lhs = std::make_unique<SyntaxTreeNode<T>>(
-            SyntaxTreeNode<T>::lt_operator, std::move(lhs), std::move(rhs));
-        lhs->v_.op = '^';
+        lhs = create_node(NodeType::op, lhs, rhs);
+        lhs->as.str = "^";
       }
       else
       {
@@ -702,17 +714,15 @@ namespace Core::Utils::SymbolicExpressionDetails
       {
         lexer.lexan();
         rhs = parse_pow(lexer);
-        lhs = std::make_unique<SyntaxTreeNode<T>>(
-            SyntaxTreeNode<T>::lt_operator, std::move(lhs), std::move(rhs));
-        lhs->v_.op = '*';
+        lhs = create_node(NodeType::op, lhs, rhs);
+        lhs->as.str = "*";
       }
       else if (lexer.tok_ == Lexer::tok_div)
       {
         lexer.lexan();
         rhs = parse_pow(lexer);
-        lhs = std::make_unique<SyntaxTreeNode<T>>(
-            SyntaxTreeNode<T>::lt_operator, std::move(lhs), std::move(rhs));
-        lhs->v_.op = '/';
+        lhs = create_node(NodeType::op, lhs, rhs);
+        lhs->as.str = "/";
       }
       else
       {
@@ -738,10 +748,21 @@ namespace Core::Utils::SymbolicExpressionDetails
     if (lexer.tok_ != Lexer::tok_done)
     {
       FOUR_C_THROW("Invalid syntax: The remaining string '{}' is not parsed.",
-          lexer.funct_.c_str() + lexer.pos_);
+          lexer.funct_.data() + lexer.pos_);
     }
 
     return lhs;
+  }
+
+  template <class T>
+  typename Parser<T>::NodePtr Parser<T>::create_node(NodeType type, NodePtr lhs, NodePtr rhs)
+  {
+    SyntaxTreeNode& node = node_arena_.emplace_back();
+    node.my_index = node_arena_.size() - 1;
+    node.type = type;
+    node.lhs_index = lhs ? lhs->my_index : invalid_index;
+    node.rhs_index = rhs ? rhs->my_index : invalid_index;
+    return &node;
   }
 
   /*----------------------------------------------------------------------*/
@@ -751,8 +772,8 @@ namespace Core::Utils::SymbolicExpressionDetails
   template <class T>
   auto Parser<T>::parse_expr(Lexer& lexer) -> NodePtr
   {
-    typename SyntaxTreeNode<T>::NodePtr lhs;
-    typename SyntaxTreeNode<T>::NodePtr rhs;
+    NodePtr lhs;
+    NodePtr rhs;
 
     lhs = parse_term(lexer);
     for (;;)
@@ -761,17 +782,15 @@ namespace Core::Utils::SymbolicExpressionDetails
       {
         lexer.lexan();
         rhs = parse_term(lexer);
-        lhs = std::make_unique<SyntaxTreeNode<T>>(
-            SyntaxTreeNode<T>::lt_operator, std::move(lhs), std::move(rhs));
-        lhs->v_.op = '+';
+        lhs = create_node(NodeType::op, lhs, rhs);
+        lhs->as.str = "+";
       }
       else if (lexer.tok_ == Lexer::tok_sub)
       {
         lexer.lexan();
         rhs = parse_term(lexer);
-        lhs = std::make_unique<SyntaxTreeNode<T>>(
-            SyntaxTreeNode<T>::lt_operator, std::move(lhs), std::move(rhs));
-        lhs->v_.op = '-';
+        lhs = create_node(NodeType::op, lhs, rhs);
+        lhs->as.str = "-";
       }
       else
       {
@@ -788,28 +807,28 @@ namespace Core::Utils::SymbolicExpressionDetails
   \brief Recursively extract corresponding number out of a syntax tree node
   */
   template <class T>
-  T Parser<T>::interpret(const SyntaxTreeNode<T>& node) const
+  T Parser<T>::interpret(const SyntaxTreeNode& node) const
   {
     T res = 0;  // the result
 
-    switch (node.type_)
+    switch (node.type)
     {
       // literal numbers: leaf of syntax tree node
-      case SyntaxTreeNode<T>::lt_number:
-        res = node.v_.number;
+      case NodeType::number:
+        res = node.as.number;
         break;
       // binary operators: bifurcating branch of syntax tree node
-      case SyntaxTreeNode<T>::lt_operator:
+      case NodeType::op:
       {
         T lhs;
         T rhs;
 
         // recursively visit branches and obtain sub-results
-        lhs = interpret(*node.lhs_);
-        rhs = interpret(*node.rhs_);
+        lhs = interpret(at(node.lhs_index));
+        rhs = interpret(at(node.rhs_index));
 
         // evaluate the node operator
-        switch (node.v_.op)
+        switch (node.as.str.front())
         {
           case '+':
             res = lhs + rhs;
@@ -828,95 +847,87 @@ namespace Core::Utils::SymbolicExpressionDetails
             res = std::pow(lhs, rhs);
             break;
           default:
-            FOUR_C_THROW("unsupported operator '{}'", node.v_.op);
+            FOUR_C_THROW("unsupported operator '{}'", node.as.str);
         }
         break;
       }
       // independent variables: as set by user
-      case SyntaxTreeNode<T>::lt_variable:
+      case NodeType::variable:
       {
-        if (parsed_variable_constant_names_.count(node.variable_) != 0)
+        const auto& var = node.str();
+        if (parsed_variable_constant_names_.count(var))
         {
           if (constant_values_ == nullptr)
           {
-            if (variable_values_->find(node.variable_) == variable_values_->end())
+            if (!variable_values_->contains(std::string(var)))
             {
-              FOUR_C_THROW(
-                  "variable or constant '{}' not given as input in evaluate()", node.variable_);
+              FOUR_C_THROW("variable or constant '{}' not given as input in evaluate()", var);
             }
             else
             {
-              res = variable_values_->at(std::string(node.variable_));
+              res = variable_values_->at(std::string(var));
             }
           }
           else
           {
-            if ((variable_values_->find(node.variable_) == variable_values_->end()) &&
-                (constant_values_->find(node.variable_) == constant_values_->end()))
+            if (variable_values_->contains(std::string(var)))
             {
-              FOUR_C_THROW("variable or constant '{}' not given as input in EvaluateDeriv()",
-                  node.variable_);
+              res = variable_values_->at(std::string(var));
+            }
+            else if (constant_values_->contains(std::string(var)))
+            {
+              res = constant_values_->at(std::string(var));
             }
             else
-            {
-              if (variable_values_->find(node.variable_) != variable_values_->end())
-              {
-                res = variable_values_->at(node.variable_);
-              }
-              else if (constant_values_->find(node.variable_) != constant_values_->end())
-              {
-                res = constant_values_->at(node.variable_);
-              }
-              else
-                FOUR_C_THROW("Something went really wrong!");
-            }
+              FOUR_C_THROW("variable or constant '{}' not given as input in EvaluateDeriv()", var);
           }
         }
         else
-          FOUR_C_THROW("unknown variable '{}'", node.variable_);
+          FOUR_C_THROW("unknown variable '{}'", var);
         break;
       }
       // unary operators
-      case SyntaxTreeNode<T>::lt_function:
+      case NodeType::function:
       {
         T arg;
-        arg = interpret(*node.lhs_);
-        if (node.function_ == "acos")
+        arg = interpret(at(node.lhs_index));
+        const auto& function = node.str();
+        if (function == "acos")
           res = acos(arg);
-        else if (node.function_ == "asin")
+        else if (function == "asin")
           res = asin(arg);
-        else if (node.function_ == "atan")
+        else if (function == "atan")
           res = atan(arg);
-        else if (node.function_ == "cos")
+        else if (function == "cos")
           res = cos(arg);
-        else if (node.function_ == "sin")
+        else if (function == "sin")
           res = sin(arg);
-        else if (node.function_ == "tan")
+        else if (function == "tan")
           res = tan(arg);
-        else if (node.function_ == "cosh")
+        else if (function == "cosh")
           res = cosh(arg);
-        else if (node.function_ == "sinh")
+        else if (function == "sinh")
           res = sinh(arg);
-        else if (node.function_ == "tanh")
+        else if (function == "tanh")
           res = tanh(arg);
-        else if (node.function_ == "exp")
+        else if (function == "exp")
           res = exp(arg);
-        else if (node.function_ == "log")
+        else if (function == "log")
           res = log(arg);
-        else if (node.function_ == "log10")
+        else if (function == "log10")
           res = log10(arg);
-        else if (node.function_ == "sqrt")
+        else if (function == "sqrt")
           res = sqrt(arg);
-        else if (node.function_ == "atan2")
+        else if (function == "atan2")
         {
           T arg2;
           // recursively visit branches and obtain sub-results
-          arg2 = interpret(*node.rhs_);
+          arg2 = interpret(at(node.rhs_index));
           res = atan2(arg, arg2);
         }
-        else if (node.function_ == "fabs")
+        else if (function == "fabs")
           res = fabs(arg);
-        else if (node.function_ == "heaviside")
+        else if (function == "heaviside")
         {
           if (arg > 0)
           {
@@ -928,7 +939,7 @@ namespace Core::Utils::SymbolicExpressionDetails
           }
         }
         else
-          FOUR_C_THROW("unknown function_ '{}'", node.function_);
+          FOUR_C_THROW("unknown function_ '{}'", function);
         break;
       }
       default:
