@@ -1028,6 +1028,14 @@ Core::Utils::SymbolicExpression<Number>& Core::Utils::SymbolicExpression<Number>
 template <typename Number>
 Core::Utils::SymbolicExpression<Number>::~SymbolicExpression() = default;
 
+template <typename Number>
+Core::Utils::SymbolicExpression<Number>::SymbolicExpression(
+    SymbolicExpression&& other) noexcept = default;
+
+template <typename Number>
+Core::Utils::SymbolicExpression<Number>& Core::Utils::SymbolicExpression<Number>::operator=(
+    SymbolicExpression&& other) noexcept = default;
+
 // explicit instantiations
 template class Core::Utils::SymbolicExpression<double>;
 

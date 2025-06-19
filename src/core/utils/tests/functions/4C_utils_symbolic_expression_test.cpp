@@ -160,6 +160,32 @@ namespace
         "unexpected token tok_done");
   }
 
+  TEST(SymbolicExpressionTest, Copyable)
+  {
+    Core::Utils::SymbolicExpression<double> symbolicexpression("2*x + y + 4*z");
+    std::map<std::string, double> variables = {{"x", 1.0}, {"y", 2.0}, {"z", 3.0}};
+
+    auto copy = symbolicexpression;
+    EXPECT_DOUBLE_EQ(copy.value(variables), 16.0);
+
+    Core::Utils::SymbolicExpression<double> another_expression("x");
+    another_expression = copy;
+    EXPECT_DOUBLE_EQ(another_expression.value(variables), 16.0);
+  }
+
+
+  TEST(SymbolicExpressionTest, Moveable)
+  {
+    Core::Utils::SymbolicExpression<double> symbolicexpression("2*x + y + 4*z");
+    std::map<std::string, double> variables = {{"x", 1.0}, {"y", 2.0}, {"z", 3.0}};
+
+    Core::Utils::SymbolicExpression<double> moved_expression(std::move(symbolicexpression));
+    EXPECT_DOUBLE_EQ(moved_expression.value(variables), 16.0);
+
+    Core::Utils::SymbolicExpression<double> another_expression("x");
+    another_expression = std::move(moved_expression);
+    EXPECT_DOUBLE_EQ(another_expression.value(variables), 16.0);
+  }
 
 
 }  // namespace

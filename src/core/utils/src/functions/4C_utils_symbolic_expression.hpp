@@ -80,10 +80,10 @@ namespace Core::Utils
     SymbolicExpression& operator=(const SymbolicExpression& other);
 
     //! move constructor
-    SymbolicExpression(SymbolicExpression&& other) noexcept = default;
+    SymbolicExpression(SymbolicExpression&& other) noexcept;
 
     //! move assignment operator
-    SymbolicExpression& operator=(SymbolicExpression&& other) noexcept = default;
+    SymbolicExpression& operator=(SymbolicExpression&& other) noexcept;
 
 
     /*!
