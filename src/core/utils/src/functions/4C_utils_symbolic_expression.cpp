@@ -9,11 +9,13 @@
 
 #include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
+#include "4C_utils_std23_unreachable.hpp"
 
 #include <Sacado.hpp>
 
 #include <cmath>
 #include <cstring>
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
@@ -25,10 +27,12 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::Utils::SymbolicExpressionDetails
 {
-  using IndexType = std::size_t;
-  constexpr IndexType invalid_index = -1uL;
+  // This type limits the maximum number of variables, AST nodes, instructions etc. to 2^32-1, which
+  // is more than enough.
+  using IndexType = std::uint16_t;
+  constexpr IndexType invalid_index = std::numeric_limits<IndexType>::max();
 
-  enum class NodeType : unsigned char
+  enum class NodeType : std::uint8_t
   {
     // numeric value
     number,
@@ -40,7 +44,7 @@ namespace Core::Utils::SymbolicExpressionDetails
     variable,
   };
 
-  enum class UnaryFunctionType : unsigned char
+  enum class UnaryFunctionType : std::uint8_t
   {
     acos,
     asin,
@@ -59,14 +63,61 @@ namespace Core::Utils::SymbolicExpressionDetails
     fabs,
   };
 
-  enum class BinaryFunctionType : unsigned char
+  template <typename T>
+  using UnaryFunction = T (*)(const T&);
+
+  template <typename T>
+  constexpr std::array<UnaryFunction<T>, 15> unary_function_table = {
+      [](const T& arg) -> T { return acos(arg); },
+      [](const T& arg) -> T { return asin(arg); },
+      [](const T& arg) -> T { return atan(arg); },
+      [](const T& arg) -> T { return cos(arg); },
+      [](const T& arg) -> T { return sin(arg); },
+      [](const T& arg) -> T { return tan(arg); },
+      [](const T& arg) -> T { return cosh(arg); },
+      [](const T& arg) -> T { return sinh(arg); },
+      [](const T& arg) -> T { return tanh(arg); },
+      [](const T& arg) -> T { return exp(arg); },
+      [](const T& arg) -> T { return log(arg); },
+      [](const T& arg) -> T { return log10(arg); },
+      [](const T& arg) -> T { return sqrt(arg); },
+      [](const T& arg) -> T { return arg >= 0 ? 1.0 : 0.0; },
+      [](const T& arg) -> T { return fabs(arg); },
+  };
+
+  enum class BinaryFunctionType : std::uint8_t
   {
-    plus,
-    minus,
+    add,
+    sub,
     mul,
     div,
     atan2,
     pow,
+  };
+
+  template <typename T>
+  using BinaryFunction = T (*)(const T&, const T&);
+
+  template <typename T>
+  constexpr std::array<BinaryFunction<T>, 6> binary_function_table = {
+      [](const T& lhs, const T& rhs) -> T { return lhs + rhs; },        // add
+      [](const T& lhs, const T& rhs) -> T { return lhs - rhs; },        // sub
+      [](const T& lhs, const T& rhs) -> T { return lhs * rhs; },        // mul
+      [](const T& lhs, const T& rhs) -> T { return lhs / rhs; },        // div
+      [](const T& lhs, const T& rhs) -> T { return atan2(lhs, rhs); },  // atan2
+      [](const T& lhs, const T& rhs) -> T { return pow(lhs, rhs); },    // pow
+  };
+
+
+  /**
+   * The value stored in a syntax tree node or a byte code instruction.
+   */
+  union Value
+  {
+    double number{};
+    UnaryFunctionType unary_function;
+    BinaryFunctionType binary_function;
+    IndexType var_index;  // refer to a variable stored in the parser
   };
 
   /**
@@ -77,21 +128,43 @@ namespace Core::Utils::SymbolicExpressionDetails
     /**
      * The different options that could be stored in the node.
      */
-    union Value
-    {
-      double number{};
-      UnaryFunctionType unary_function;
-      BinaryFunctionType binary_function;
-      IndexType var_index;  // refer to a variable stored in the parser
-    } as;
+    Value as;
 
     //! Lhs and rhs nodes
-    IndexType lhs_index{-1u};
-    IndexType rhs_index{-1u};
+    IndexType lhs_index{invalid_index};
+    IndexType rhs_index{invalid_index};
 
     //! type of the node, ie operator, literal, ...
     NodeType type;
   };
+
+  /**
+   * Opcode for the bytecode representation of the symbolic expression.
+   */
+  enum class OpCode : unsigned char
+  {
+    load_const,
+    load_var,
+    unary_function,
+    binary_function,
+  };
+
+  /**
+   * Bytecode instruction.
+   */
+  struct Instruction
+  {  // true if this is a unary function, false if it is a binary function
+    bool is_unary_function;
+    // index of the function in the function table
+    std::uint8_t function_index;
+    // First operand
+    IndexType src1;
+    // Second operand
+    IndexType src2{};
+    // Destination register index
+    IndexType dst_reg;
+  };
+
 
 
   /*----------------------------------------------------------------------*/
@@ -146,6 +219,7 @@ namespace Core::Utils::SymbolicExpressionDetails
   template <typename T>
   struct IsFAD<Sacado::Fad::DFad<T>> : public std::true_type
   {
+    using value_type = T;
   };
 
 
@@ -166,7 +240,7 @@ namespace Core::Utils::SymbolicExpressionDetails
     ~Parser() = default;
 
     //! copy constructor
-    Parser(const Parser& other) : symbolicexpression_(other.symbolicexpression_) { parse(); }
+    Parser(const Parser& other) : symbolicexpression_(other.symbolicexpression_) { init(); }
 
     //! copy assignment operator
     Parser& operator=(const Parser& other)
@@ -174,10 +248,10 @@ namespace Core::Utils::SymbolicExpressionDetails
       if (&other == this) return *this;
       symbolicexpression_ = other.symbolicexpression_;
       node_arena_.clear();
+      instructions_.clear();
       parsed_variable_constant_names_.clear();
-      variable_constants_.clear();
 
-      parse();
+      init();
       return *this;
     };
 
@@ -213,6 +287,12 @@ namespace Core::Utils::SymbolicExpressionDetails
         const std::map<std::string, double>& constants = {}) const;
 
    private:
+    void init()
+    {
+      parse();
+      compile();
+    }
+
     void parse();
     IndexType parse_primary(Lexer& lexer);
     IndexType parse_pow(Lexer& lexer);
@@ -222,21 +302,24 @@ namespace Core::Utils::SymbolicExpressionDetails
 
     //! Create a new node in the node arena and return a pointer to it.
     //! Optionally, a left-hand side and right-hand side node index can be provided.
-    IndexType create_node(NodeType type, SyntaxTreeNode::Value value, IndexType lhs = invalid_index,
-        IndexType rhs = invalid_index);
+    IndexType create_node(
+        NodeType type, Value value, IndexType lhs = invalid_index, IndexType rhs = invalid_index);
 
     //! Either return the index of @p var or give it a new one.
     IndexType create_variable(std::string_view var);
 
-    //! given symbolic expression
-    std::string symbolicexpression_;
+    //! Compile the AST of this expression into bytecode.
+    void compile();
 
     //! evaluates the parsed expression
     T evaluate(const std::map<std::string, T>& variable_values,
         const std::map<std::string, double>& constants = {}) const;
 
-    //! recursively extract corresponding number out of a syntax tree node
-    T interpret(const SyntaxTreeNode& node) const;
+    //! Execute the compiled bytecode instructions.
+    void execute_bytecode(std::vector<T>& vm_memory) const;
+
+    //! Print the bytecode instructions to the given output stream.
+    void print_instructions(std::ostream& os) const;
 
     const SyntaxTreeNode& at(IndexType index) const
     {
@@ -250,21 +333,34 @@ namespace Core::Utils::SymbolicExpressionDetails
       return node_arena_[index];
     }
 
+    //! given symbolic expression
+    std::string symbolicexpression_;
+
     /**
      * Actual storage for all parsed syntax tree nodes. The first element is the root node of
      * the tree.
      */
     std::vector<SyntaxTreeNode> node_arena_;
 
+    /**
+     * The bytecode instructions that represent the parsed expression.
+     */
+    std::vector<Instruction> instructions_;
+
+    /**
+     * Temporary storage for the evaluation of the expression.
+     * This is the memory that the bytecode instructions will operate on. The data consists of
+     * the user variables and constants, the intermediate result registers and the numeric
+     * constants. All sizes are fixed during compile().
+     */
+    mutable std::vector<T> vm_memory_;
+    IndexType vm_register_size_{};
+
     //! root node of the syntax tree
     IndexType root_{invalid_index};
 
     //! set of all parsed variables
     std::vector<std::string_view> parsed_variable_constant_names_;
-
-    //! During evaluation, this map hold the values of the variables and constants at
-    //! a specified index.
-    mutable std::vector<T> variable_constants_;
   };
 
 
@@ -452,7 +548,7 @@ namespace Core::Utils::SymbolicExpressionDetails
   template <class T>
   Parser<T>::Parser(std::string funct) : symbolicexpression_{std::move(funct)}
   {
-    parse();
+    init();
   }
 
 
@@ -491,21 +587,21 @@ namespace Core::Utils::SymbolicExpressionDetails
   T Parser<T>::evaluate(const std::map<std::string, T>& variable_values,
       const std::map<std::string, double>& constants) const
   {
-    //! check if function has been parsed
     FOUR_C_ASSERT(!node_arena_.empty(), "Internal error");
 
-    variable_constants_.resize(parsed_variable_constant_names_.size());
+    // Place the user variable and constant values into the data vector. They go into the first
+    // entries in the vm_memory.
     for (unsigned int i = 0; i < parsed_variable_constant_names_.size(); i++)
     {
       if (auto it = variable_values.find(std::string(parsed_variable_constant_names_[i]));
           it != variable_values.end())
       {
-        variable_constants_[i] = it->second;
+        vm_memory_[i] = it->second;
       }
       else if (auto it = constants.find(std::string(parsed_variable_constant_names_[i]));
           it != constants.end())
       {
-        variable_constants_[i] = it->second;
+        vm_memory_[i] = it->second;
       }
       else
       {
@@ -528,11 +624,10 @@ namespace Core::Utils::SymbolicExpressionDetails
       }
     }
 
+    execute_bytecode(vm_memory_);
 
-    //! evaluate syntax tree of function depending on set variables
-    auto result = this->interpret(at(root_));
-
-    return result;
+    // Result is in the first register, which is directly after the last variable.
+    return vm_memory_[parsed_variable_constant_names_.size()];
   }
 
   /*----------------------------------------------------------------------*/
@@ -739,9 +834,13 @@ namespace Core::Utils::SymbolicExpressionDetails
   }
 
   template <class T>
-  IndexType Parser<T>::create_node(
-      NodeType type, SyntaxTreeNode::Value value, IndexType lhs, IndexType rhs)
+  IndexType Parser<T>::create_node(NodeType type, Value value, IndexType lhs, IndexType rhs)
   {
+    FOUR_C_ASSERT_ALWAYS(node_arena_.size() < invalid_index,
+        "Could not parse expression '{}'\nThis expression is too complicated and the number of AST "
+        "nodes exceeds the maximum allowed size of {}.",
+        symbolicexpression_, invalid_index);
+
     SyntaxTreeNode& node = node_arena_.emplace_back();
     node.as = value;
     node.type = type;
@@ -781,14 +880,14 @@ namespace Core::Utils::SymbolicExpressionDetails
         lexer.lexan();
         IndexType rhs = parse_term(lexer);
         lhs = create_node(
-            NodeType::binary_function, {.binary_function = BinaryFunctionType::plus}, lhs, rhs);
+            NodeType::binary_function, {.binary_function = BinaryFunctionType::add}, lhs, rhs);
       }
       else if (lexer.tok_ == Lexer::tok_sub)
       {
         lexer.lexan();
         IndexType rhs = parse_term(lexer);
         lhs = create_node(
-            NodeType::binary_function, {.binary_function = BinaryFunctionType::minus}, lhs, rhs);
+            NodeType::binary_function, {.binary_function = BinaryFunctionType::sub}, lhs, rhs);
       }
       else
       {
@@ -800,127 +899,300 @@ namespace Core::Utils::SymbolicExpressionDetails
   }
 
 
-  /*----------------------------------------------------------------------*/
-  /*!
-  \brief Recursively extract corresponding number out of a syntax tree node
-  */
   template <class T>
-  T Parser<T>::interpret(const SyntaxTreeNode& node) const
+  void Parser<T>::compile()
   {
-    T res = 0;  // the result
+    instructions_.reserve(node_arena_.size());
 
-    switch (node.type)
+    // Order the data we operate on in one contiguous memory block.
+    // First, we store the variables, then the registers, and finally the constants.
+    // We know the number of variables from the parser, but we do not know the number of
+    // constants and registers that will be used. These may change due to optimization.
+    // While compiling, we use a large offset to distinguish between registers and constants and
+    // fixup these cases in a second pass.
+    IndexType registers_offset = parsed_variable_constant_names_.size();
+    IndexType tmp_constants_offset = std::numeric_limits<IndexType>::max() >> 1;
+
+    // Track the current register index on the stack and remember the maximum index used.
+    // This is used to determine the maximum stack size.
+    struct RegisterStackTop
     {
-      case NodeType::number:
+      IndexType current{};
+      IndexType max{};
+
+      IndexType& operator--()
       {
-        res = node.as.number;
-        break;
+        FOUR_C_ASSERT(current > 0, "Internal error: Register stack underflow.");
+        return --current;
       }
-      case NodeType::binary_function:
+
+      IndexType& operator++()
       {
-        T lhs;
-        T rhs;
+        ++current;
+        max = std::max(current, max);
+        return current;
+      }
 
-        // recursively visit branches and obtain sub-results
-        lhs = interpret(at(node.lhs_index));
-        rhs = interpret(at(node.rhs_index));
+      operator const IndexType&() const { return current; }
+    } register_stack_size;
 
-        // evaluate the node operator
-        switch (node.as.binary_function)
+    std::vector<T> constants;
+
+    struct StackEntry
+    {
+      enum class Type : std::uint8_t
+      {
+        var_index,
+        reg_index,
+        number,
+      } type;
+
+      IndexType index;
+      // Only used for number.
+      T value{};
+    };
+    std::vector<StackEntry> stack_simulator;
+
+
+    // For compilation, we need a post-order traversal of the syntax tree. Since this order is also
+    // exactly the order in which the AST was built, we can just take the nodes in the order they
+    // are stored in the node_arena_ vector.
+    for (const auto& node : node_arena_)
+    {
+      switch (node.type)
+      {
+        case NodeType::number:
         {
-          case BinaryFunctionType::plus:
-            res = lhs + rhs;
-            break;
-          case BinaryFunctionType::minus:
-            res = lhs - rhs;
-            break;
-          case BinaryFunctionType::mul:
-            res = lhs * rhs;
-            break;
-          case BinaryFunctionType::div:
-            res = lhs / rhs;
-            break;
-          case BinaryFunctionType::pow:
-            res = std::pow(lhs, rhs);
-            break;
-          case BinaryFunctionType::atan2:
-            res = std::atan2(lhs, rhs);
-            break;
+          IndexType index = tmp_constants_offset + constants.size();
+          stack_simulator.emplace_back(StackEntry{
+              .type = StackEntry::Type::number,
+              .index = index,
+              .value = node.as.number,
+          });
+          constants.push_back(node.as.number);
+          break;
         }
-        break;
-      }
-      case NodeType::variable:
-      {
-        res = variable_constants_[node.as.var_index];
-        break;
-      }
-      case NodeType::unary_function:
-      {
-        T arg = interpret(at(node.lhs_index));
-        switch (node.as.unary_function)
+        case NodeType::variable:
         {
-          case UnaryFunctionType::acos:
-            res = acos(arg);
-            break;
-          case UnaryFunctionType::asin:
-            res = asin(arg);
-            break;
-          case UnaryFunctionType::atan:
-            res = atan(arg);
-            break;
-          case UnaryFunctionType::cos:
-            res = cos(arg);
-            break;
-          case UnaryFunctionType::sin:
-            res = sin(arg);
-            break;
-          case UnaryFunctionType::tan:
-            res = tan(arg);
-            break;
-          case UnaryFunctionType::cosh:
-            res = cosh(arg);
-            break;
-          case UnaryFunctionType::sinh:
-            res = sinh(arg);
-            break;
-          case UnaryFunctionType::tanh:
-            res = tanh(arg);
-            break;
-          case UnaryFunctionType::exp:
-            res = exp(arg);
-            break;
-          case UnaryFunctionType::log:
-            res = log(arg);
-            break;
-          case UnaryFunctionType::log10:
-            res = log10(arg);
-            break;
-          case UnaryFunctionType::sqrt:
-            res = sqrt(arg);
-            break;
-          case UnaryFunctionType::fabs:
-            res = fabs(arg);
-            break;
-          case UnaryFunctionType::heaviside:
+          stack_simulator.emplace_back(StackEntry{
+              .type = StackEntry::Type::var_index,
+              .index = node.as.var_index,
+          });
+          break;
+        }
+        case NodeType::unary_function:
+        {
+          FOUR_C_ASSERT(stack_simulator.size() >= 1,
+              "Internal error: A valid expression should contain at least one value on the stack "
+              "for a unary function.");
+
+          const auto& operand = stack_simulator.back();
+          stack_simulator.pop_back();
+
+          const auto function_index =
+              static_cast<std::underlying_type_t<UnaryFunctionType>>(node.as.unary_function);
+          switch (operand.type)
           {
-            if (arg > 0)
+            // Apply the function to the value. No instruction is generated for this case.
+            case StackEntry::Type::number:
             {
-              res = 1.0;
+              T value = unary_function_table<T>[function_index](operand.value);
+              constants.back() = value;
+              stack_simulator.emplace_back(StackEntry{
+                  .type = StackEntry::Type::number,
+                  .index = operand.index,
+                  .value = value,
+              });
+              break;
             }
-            else
+            case StackEntry::Type::reg_index:
+              --register_stack_size;
+              [[fallthrough]];
+            case StackEntry::Type::var_index:
             {
-              res = 0.0;
+              IndexType dst_reg = registers_offset + register_stack_size;
+              instructions_.emplace_back(Instruction{
+                  .is_unary_function = true,
+                  .function_index = function_index,
+                  .src1 = operand.index,
+                  .dst_reg = dst_reg,
+              });
+              stack_simulator.emplace_back(StackEntry{
+                  .type = StackEntry::Type::reg_index,
+                  .index = dst_reg,
+              });
+              ++register_stack_size;
+              break;
             }
+              std23::unreachable();
+          }
+          break;
+        }
+        case NodeType::binary_function:
+        {
+          const auto& rhs_operand = stack_simulator.back();
+          stack_simulator.pop_back();
+          const auto& lhs_operand = stack_simulator.back();
+          stack_simulator.pop_back();
+
+          const auto function_index =
+              static_cast<std::underlying_type_t<BinaryFunctionType>>(node.as.binary_function);
+
+          // Check for constant folding. If both operands are constants, we can compute the result
+          // directly and do not need to generate an instruction.
+          if (lhs_operand.type == StackEntry::Type::number &&
+              rhs_operand.type == StackEntry::Type::number)
+          {
+            T value =
+                binary_function_table<T>[function_index](lhs_operand.value, rhs_operand.value);
+            // Pop off one value and overwrite the other one.
+            constants.pop_back();
+            constants.back() = value;
+
+            IndexType index = tmp_constants_offset + constants.size() - 1;
+            stack_simulator.emplace_back(StackEntry{
+                .type = StackEntry::Type::number,
+                .index = index,
+                .value = value,
+            });
             break;
           }
+
+          if (lhs_operand.type == StackEntry::Type::reg_index) --register_stack_size;
+          if (rhs_operand.type == StackEntry::Type::reg_index) --register_stack_size;
+
+          // Otherwise, generate an instruction for the binary function.
+          IndexType dst_reg = registers_offset + register_stack_size;
+          instructions_.emplace_back(Instruction{
+              .is_unary_function = false,
+              .function_index = function_index,
+              .src1 = lhs_operand.index,
+              .src2 = rhs_operand.index,
+              .dst_reg = dst_reg,
+          });
+          stack_simulator.emplace_back(StackEntry{
+              .type = StackEntry::Type::reg_index,
+              .index = dst_reg,
+          });
+
+          ++register_stack_size;
+
+          break;
         }
-        break;
       }
     }
 
-    return res;
+
+    // Now we can compute the correct offsets for the constants.
+    IndexType actual_constants_offset = registers_offset + register_stack_size.max;
+    for (auto& instr : instructions_)
+    {
+      if (instr.src1 >= tmp_constants_offset)
+      {
+        instr.src1 = actual_constants_offset + (instr.src1 - tmp_constants_offset);
+      }
+      if (instr.src2 >= tmp_constants_offset)
+      {
+        instr.src2 = actual_constants_offset + (instr.src2 - tmp_constants_offset);
+      }
+    }
+
+    // Finally, we can resize the data vector to hold all variables, registers and constants.
+    vm_memory_.resize(actual_constants_offset + constants.size());
+    vm_register_size_ = register_stack_size.max;
+    // Copy the constants into the data vector.
+    std::copy(constants.begin(), constants.end(), vm_memory_.begin() + actual_constants_offset);
   }
 
+
+  template <class T>
+  void Parser<T>::execute_bytecode(std::vector<T>& vm_memory) const
+  {
+    for (const auto& instr : instructions_)
+    {
+      const auto& lhs = vm_memory[instr.src1];
+      auto& dst = vm_memory[instr.dst_reg];
+      if (instr.is_unary_function)
+      {
+        dst = unary_function_table<T>[instr.function_index](lhs);
+      }
+      else
+      {
+        auto binary_function = static_cast<BinaryFunctionType>(instr.function_index);
+        const auto& rhs = vm_memory[instr.src2];
+        switch (binary_function)
+        {
+          case BinaryFunctionType::add:
+            dst = lhs + rhs;
+            break;
+          case BinaryFunctionType::sub:
+            dst = lhs - rhs;
+            break;
+          case BinaryFunctionType::mul:
+            dst = lhs * rhs;
+            break;
+          case BinaryFunctionType::div:
+            dst = lhs / rhs;
+            break;
+          default:
+            dst = binary_function_table<T>[instr.function_index](lhs, rhs);
+            break;
+        }
+      }
+    }
+  }
+
+
+  template <class T>
+  void Parser<T>::print_instructions(std::ostream& os) const
+  {
+    const auto operand = [&](IndexType index) -> std::string
+    {
+      if (index < parsed_variable_constant_names_.size())
+      {
+        return std::string(parsed_variable_constant_names_[index]);
+      }
+
+      IndexType offset = parsed_variable_constant_names_.size();
+      if (index < offset + vm_register_size_)
+      {
+        return "%" + std::to_string(index - offset);
+      }
+
+      if (index < vm_memory_.size())
+      {
+        if constexpr (IsFAD<T>::value)
+        {
+          if constexpr (IsFAD<typename IsFAD<T>::value_type>::value)
+            return std::to_string(vm_memory_[index].val().val());
+          else
+            return std::to_string(vm_memory_[index].val());
+        }
+        else
+          return std::to_string(vm_memory_[index]);
+      }
+
+      return "(invalid index)";
+    };
+
+    for (const auto& instr : instructions_)
+    {
+      if (instr.is_unary_function)
+      {
+        os << EnumTools::enum_name(EnumTools::enum_value<UnaryFunctionType>(instr.function_index))
+           << " " << operand(instr.src1) << ", "
+           << "%" << (instr.dst_reg - parsed_variable_constant_names_.size());
+      }
+      else
+      {
+        os << EnumTools::enum_name(EnumTools::enum_value<BinaryFunctionType>(instr.function_index))
+           << " " << operand(instr.src1) << ", " << operand(instr.src2) << ", " << "%"
+           << (instr.dst_reg - parsed_variable_constant_names_.size());
+      }
+      os << '\n';
+    }
+    os << std::flush;
+  }
 }  // namespace Core::Utils::SymbolicExpressionDetails
 
 template <typename T>
