@@ -54,12 +54,16 @@ namespace Core::Utils::SymbolicExpressionDetails
   struct SyntaxTreeNode
   {
     /**
-     * Node either holds a number, or string operator, variable name or a function name.
+     * Node either holds
+     *   - a number,
+     *   - a string operator or a function name,
+     *   - an index to a variable stored in the parser.
      */
     union
     {
       double number{};
-      std::string_view str;  // this views into the expression string or a string literal
+      std::string_view str;   // this views into the expression string or a string literal
+      std::size_t var_index;  // refer to a variable stored in the parser
     } as;
 
     //! Index of the node in the syntax tree
@@ -169,8 +173,7 @@ namespace Core::Utils::SymbolicExpressionDetails
       symbolicexpression_ = other.symbolicexpression_;
       node_arena_.clear();
       parsed_variable_constant_names_.clear();
-      variable_values_ = nullptr;
-      constant_values_ = nullptr;
+      variable_constants_.clear();
 
       parse();
       return *this;
@@ -207,9 +210,6 @@ namespace Core::Utils::SymbolicExpressionDetails
     T evaluate_derivative(const std::map<std::string, T2>& variable_values,
         const std::map<std::string, double>& constants = {}) const;
 
-    //! Check if a variable with name 'varname' exists
-    [[nodiscard]] bool is_variable(const std::string& varname) const;
-
    private:
     void parse();
     NodePtr parse_primary(Lexer& lexer);
@@ -221,6 +221,9 @@ namespace Core::Utils::SymbolicExpressionDetails
     //! Create a new node in the node arena and return a pointer to it.
     //! Optionally, a left-hand side and right-hand side node can be provided.
     NodePtr create_node(NodeType type, NodePtr lhs = nullptr, NodePtr rhs = nullptr);
+
+    //! Either return the index of @p var or give it a new one.
+    IndexType create_variable(std::string_view var);
 
     //! given symbolic expression
     std::string symbolicexpression_;
@@ -248,13 +251,11 @@ namespace Core::Utils::SymbolicExpressionDetails
     SyntaxTreeNode* root_{nullptr};
 
     //! set of all parsed variables
-    std::set<std::string_view> parsed_variable_constant_names_;
+    std::vector<std::string_view> parsed_variable_constant_names_;
 
-    //! necessary variable values for evaluating the parsed expression
-    mutable const std::map<std::string, T>* variable_values_{nullptr};
-
-    //! necessary constant values for evaluating the parsed expression
-    mutable const std::map<std::string, double>* constant_values_{nullptr};
+    //! During evaluation, this map hold the values of the variables and constants at
+    //! a specified index.
+    mutable std::vector<T> variable_constants_;
   };
 
 
@@ -445,16 +446,6 @@ namespace Core::Utils::SymbolicExpressionDetails
     parse();
   }
 
-  /*----------------------------------------------------------------------*/
-  /*!
-  \brief Check if input is a variable name
-  */
-  template <class T>
-  bool Parser<T>::is_variable(const std::string& varname) const
-  {
-    //! check if variable exists
-    return (parsed_variable_constant_names_.count(varname) != 0);
-  }
 
   template <class T>
   void Parser<T>::parse()
@@ -491,54 +482,46 @@ namespace Core::Utils::SymbolicExpressionDetails
   T Parser<T>::evaluate(const std::map<std::string, T>& variable_values,
       const std::map<std::string, double>& constants) const
   {
-#ifdef FOUR_C_ENABLE_ASSERTIONS
-    const bool all_required_variables_passed =
-        std::all_of(parsed_variable_constant_names_.begin(), parsed_variable_constant_names_.end(),
-            [&](const auto& var_name)
-            {
-              return (variable_values.count(std::string(var_name)) +
-                         constants.count(std::string(var_name))) == 1;
-            });
-
-    if (!all_required_variables_passed)
-    {
-      std::string evaluate_variable_names = std::accumulate(variable_values.begin(),
-          variable_values.end(), std::string(), [](const std::string& acc, const auto& v)
-          { return acc.empty() ? v.first : acc + ", " + v.first; });
-
-      std::string evaluate_constant_names = std::accumulate(constants.begin(), constants.end(),
-          std::string(), [](const std::string& acc, const auto& v)
-          { return acc.empty() ? v.first : acc + ", " + v.first; });
-
-      FOUR_C_THROW(
-          "Some variables that this parser encountered in the expression are not passed to "
-          "the Evaluate function.\n\n"
-          "Expression:  {} \n"
-          "Variables passed to Evaluate: {} \n"
-          "Constants passed to Evaluate: {}",
-          symbolicexpression_.c_str(), evaluate_variable_names.c_str(),
-          evaluate_constant_names.c_str());
-    }
-#endif
-
-    //! safety check if variable_values_ and constant_values_ are nullptr
-    FOUR_C_ASSERT(variable_values_ == nullptr, "Internal error");
-    FOUR_C_ASSERT(constant_values_ == nullptr, "Internal error");
-
-    //! set variable values
-    variable_values_ = &variable_values;
-    //! set constant values if map of constants is not empty
-    if (constants.size() != 0) constant_values_ = &constants;
-
     //! check if function has been parsed
     FOUR_C_ASSERT(!node_arena_.empty(), "Internal error");
 
+    variable_constants_.resize(parsed_variable_constant_names_.size());
+    for (unsigned int i = 0; i < parsed_variable_constant_names_.size(); i++)
+    {
+      if (auto it = variable_values.find(std::string(parsed_variable_constant_names_[i]));
+          it != variable_values.end())
+      {
+        variable_constants_[i] = it->second;
+      }
+      else if (auto it = constants.find(std::string(parsed_variable_constant_names_[i]));
+          it != constants.end())
+      {
+        variable_constants_[i] = it->second;
+      }
+      else
+      {
+        std::string evaluate_variable_names = std::accumulate(variable_values.begin(),
+            variable_values.end(), std::string(), [](const std::string& acc, const auto& v)
+            { return acc.empty() ? v.first : acc + ", " + v.first; });
+
+        std::string evaluate_constant_names = std::accumulate(constants.begin(), constants.end(),
+            std::string(), [](const std::string& acc, const auto& v)
+            { return acc.empty() ? v.first : acc + ", " + v.first; });
+
+        FOUR_C_THROW(
+            "Some variables that this parser encountered in the expression are not passed to "
+            "the evaluate function.\n\n"
+            "Expression:  {} \n"
+            "Variables passed: {} \n"
+            "Constants passed: {}",
+            symbolicexpression_.c_str(), evaluate_variable_names.c_str(),
+            evaluate_constant_names.c_str());
+      }
+    }
+
+
     //! evaluate syntax tree of function depending on set variables
     auto result = this->interpret(*root_);
-
-    //! set variable_values_ and constant_values_ as nullptr again for safety reasons
-    variable_values_ = nullptr;
-    constant_values_ = nullptr;
 
     return result;
   }
@@ -651,8 +634,7 @@ namespace Core::Utils::SymbolicExpressionDetails
           else
           {
             lhs = create_node(NodeType::variable);
-            lhs->as.str = name;
-            parsed_variable_constant_names_.insert(name);
+            lhs->as.var_index = create_variable(name);
             lexer.lexan();
           }
         }
@@ -765,6 +747,21 @@ namespace Core::Utils::SymbolicExpressionDetails
     return &node;
   }
 
+  template <class T>
+  IndexType Parser<T>::create_variable(std::string_view var)
+  {
+    auto it = std::ranges::find(parsed_variable_constant_names_, var);
+    if (it != parsed_variable_constant_names_.end())
+    {
+      return std::distance(parsed_variable_constant_names_.begin(), it);
+    }
+    else
+    {
+      parsed_variable_constant_names_.emplace_back(var);
+      return parsed_variable_constant_names_.size() - 1;
+    }
+  }
+
   /*----------------------------------------------------------------------*/
   /*!
   \brief Parse entities connected by addition or subtraction: a+b, a-b
@@ -854,36 +851,7 @@ namespace Core::Utils::SymbolicExpressionDetails
       // independent variables: as set by user
       case NodeType::variable:
       {
-        const auto& var = node.str();
-        if (parsed_variable_constant_names_.count(var))
-        {
-          if (constant_values_ == nullptr)
-          {
-            if (!variable_values_->contains(std::string(var)))
-            {
-              FOUR_C_THROW("variable or constant '{}' not given as input in evaluate()", var);
-            }
-            else
-            {
-              res = variable_values_->at(std::string(var));
-            }
-          }
-          else
-          {
-            if (variable_values_->contains(std::string(var)))
-            {
-              res = variable_values_->at(std::string(var));
-            }
-            else if (constant_values_->contains(std::string(var)))
-            {
-              res = constant_values_->at(std::string(var));
-            }
-            else
-              FOUR_C_THROW("variable or constant '{}' not given as input in EvaluateDeriv()", var);
-          }
-        }
-        else
-          FOUR_C_THROW("unknown variable '{}'", var);
+        res = variable_constants_[node.as.var_index];
         break;
       }
       // unary operators
