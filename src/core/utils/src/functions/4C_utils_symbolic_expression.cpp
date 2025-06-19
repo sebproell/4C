@@ -22,14 +22,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace
-{
-  template <std::size_t n>
-  [[nodiscard]] bool contains(const std::array<std::string, n>& array, const std::string& element)
-  {
-    return std::find(array.begin(), array.end(), element) != array.end();
-  }
-}  // namespace
 
 namespace Core::Utils::SymbolicExpressionDetails
 {
@@ -38,36 +30,60 @@ namespace Core::Utils::SymbolicExpressionDetails
 
   enum class NodeType : unsigned char
   {
-    // independent variable: 't', 'x', ...
-    variable,
     // numeric value
     number,
-    // mathematical function e.g. 'sin', 'cos', 'exp', ...
-    function,
-    // (binary) operator e.g. '+', '-', '*', '/', ...
-    op,
+    // unary function e.g. 'sin', 'cos', 'exp', ...
+    unary_function,
+    // binary function e.g. '+', '-', '*', '/', ...
+    binary_function,
+    // independent variable: 't', 'x', ...
+    variable,
   };
 
-  /*!
-  \brief Syntax tree node holding binary, unary operator or literals
-  */
+  enum class UnaryFunctionType : unsigned char
+  {
+    acos,
+    asin,
+    atan,
+    cos,
+    sin,
+    tan,
+    cosh,
+    sinh,
+    tanh,
+    exp,
+    log,
+    log10,
+    sqrt,
+    heaviside,
+    fabs,
+  };
+
+  enum class BinaryFunctionType : unsigned char
+  {
+    plus,
+    minus,
+    mul,
+    div,
+    atan2,
+    pow,
+  };
+
+  /**
+   * \brief Syntax tree node holding binary, unary operator, variables or literals.
+   */
   struct SyntaxTreeNode
   {
     /**
-     * Node either holds
-     *   - a number,
-     *   - a string operator or a function name,
-     *   - an index to a variable stored in the parser.
+     * The different options that could be stored in the node.
      */
-    union
+    union Value
     {
       double number{};
-      std::string_view str;   // this views into the expression string or a string literal
-      std::size_t var_index;  // refer to a variable stored in the parser
+      UnaryFunctionType unary_function;
+      BinaryFunctionType binary_function;
+      IndexType var_index;  // refer to a variable stored in the parser
     } as;
-
-    //! Index of the node in the syntax tree
-    IndexType my_index;
 
     //! Lhs and rhs nodes
     IndexType lhs_index{-1u};
@@ -75,20 +91,6 @@ namespace Core::Utils::SymbolicExpressionDetails
 
     //! type of the node, ie operator, literal, ...
     NodeType type;
-
-    [[nodiscard]] const double& number() const
-    {
-      FOUR_C_ASSERT(type == NodeType::number, "Node is not a number.");
-      return as.number;
-    }
-
-    [[nodiscard]] const std::string_view& str() const
-    {
-      FOUR_C_ASSERT(
-          type == NodeType::variable || type == NodeType::function || type == NodeType::op,
-          "Node is not a variable or function.");
-      return as.str;
-    }
   };
 
 
@@ -212,15 +214,16 @@ namespace Core::Utils::SymbolicExpressionDetails
 
    private:
     void parse();
-    NodePtr parse_primary(Lexer& lexer);
-    NodePtr parse_pow(Lexer& lexer);
-    NodePtr parse_term(Lexer& lexer);
-    NodePtr parse_expr(Lexer& lexer);
-    NodePtr parse(Lexer& lexer);
+    IndexType parse_primary(Lexer& lexer);
+    IndexType parse_pow(Lexer& lexer);
+    IndexType parse_term(Lexer& lexer);
+    IndexType parse_expr(Lexer& lexer);
+    IndexType parse(Lexer& lexer);
 
     //! Create a new node in the node arena and return a pointer to it.
-    //! Optionally, a left-hand side and right-hand side node can be provided.
-    NodePtr create_node(NodeType type, NodePtr lhs = nullptr, NodePtr rhs = nullptr);
+    //! Optionally, a left-hand side and right-hand side node index can be provided.
+    IndexType create_node(NodeType type, SyntaxTreeNode::Value value, IndexType lhs = invalid_index,
+        IndexType rhs = invalid_index);
 
     //! Either return the index of @p var or give it a new one.
     IndexType create_variable(std::string_view var);
@@ -241,6 +244,12 @@ namespace Core::Utils::SymbolicExpressionDetails
       return node_arena_[index];
     }
 
+    SyntaxTreeNode& at(IndexType index)
+    {
+      FOUR_C_ASSERT(index < node_arena_.size(), "Index out of bounds: {}", index);
+      return node_arena_[index];
+    }
+
     /**
      * Actual storage for all parsed syntax tree nodes. The first element is the root node of
      * the tree.
@@ -248,7 +257,7 @@ namespace Core::Utils::SymbolicExpressionDetails
     std::vector<SyntaxTreeNode> node_arena_;
 
     //! root node of the syntax tree
-    SyntaxTreeNode* root_{nullptr};
+    IndexType root_{invalid_index};
 
     //! set of all parsed variables
     std::vector<std::string_view> parsed_variable_constant_names_;
@@ -521,7 +530,7 @@ namespace Core::Utils::SymbolicExpressionDetails
 
 
     //! evaluate syntax tree of function depending on set variables
-    auto result = this->interpret(*root_);
+    auto result = this->interpret(at(root_));
 
     return result;
   }
@@ -532,10 +541,9 @@ namespace Core::Utils::SymbolicExpressionDetails
          such as numbers, parentheses, independent variables, operator names
   */
   template <class T>
-  auto Parser<T>::parse_primary(Lexer& lexer) -> NodePtr
+  IndexType Parser<T>::parse_primary(Lexer& lexer)
   {
-    NodePtr lhs = nullptr;
-
+    IndexType lhs = invalid_index;
     switch (lexer.tok_)
     {
       case Lexer::tok_lpar:
@@ -545,32 +553,29 @@ namespace Core::Utils::SymbolicExpressionDetails
         lexer.lexan();
         break;
       case Lexer::tok_int:
-        lhs = create_node(NodeType::number);
-        lhs->as.number = lexer.integer_;
+        lhs = create_node(NodeType::number, {.number = static_cast<double>(lexer.integer_)});
         lexer.lexan();
         break;
       case Lexer::tok_real:
-        lhs = create_node(NodeType::number);
-        lhs->as.number = lexer.real_;
+        lhs = create_node(NodeType::number, {.number = lexer.real_});
         lexer.lexan();
         break;
       case Lexer::tok_sub:
       {
-        NodePtr rhs;
-        lexer.lexan();
-        rhs = parse_pow(lexer);
         // This is a unary minus operator.
-        if (rhs->type == NodeType::number)
+        lexer.lexan();
+        IndexType rhs = parse_pow(lexer);
+        auto& rhs_node = at(rhs);
+        if (rhs_node.type == NodeType::number)
         {
-          rhs->as.number *= -1;
+          rhs_node.as.number *= -1;
           lhs = rhs;
         }
         else
         {
-          lhs = create_node(NodeType::number);
-          lhs->as.number = -1;
-          lhs = create_node(NodeType::op, lhs, rhs);
-          lhs->as.str = "*";
+          lhs = create_node(NodeType::number, {.number = -1});
+          lhs = create_node(
+              NodeType::binary_function, {.binary_function = BinaryFunctionType::mul}, lhs, rhs);
         }
         break;
       }
@@ -580,8 +585,7 @@ namespace Core::Utils::SymbolicExpressionDetails
         std::string_view name(lexer.str_, lexer.integer_);
         if (name == "pi")
         {
-          lhs = create_node(NodeType::number);
-          lhs->as.number = M_PI;
+          lhs = create_node(NodeType::number, {.number = M_PI});
           lexer.lexan();
           break;
         }
@@ -599,8 +603,9 @@ namespace Core::Utils::SymbolicExpressionDetails
               FOUR_C_THROW("'(' expected after function name '{}'", name);
 
             lexer.lexan();
-            lhs = create_node(NodeType::function, parse_expr(lexer));
-            lhs->as.str = name;
+            auto function_name = *EnumTools::enum_cast<UnaryFunctionType>(name);
+            lhs = create_node(
+                NodeType::unary_function, {.unary_function = function_name}, parse_expr(lexer));
 
             // Consume closing parenthesis
             if (lexer.tok_ != Lexer::tok_rpar) FOUR_C_THROW("')' expected");
@@ -622,8 +627,8 @@ namespace Core::Utils::SymbolicExpressionDetails
             lexer.lexan();
             auto second_arg = parse_expr(lexer);
 
-            lhs = create_node(NodeType::function, first_arg, second_arg);
-            lhs->as.str = name;
+            lhs = create_node(NodeType::binary_function,
+                {.binary_function = BinaryFunctionType::atan2}, first_arg, second_arg);
 
             // Consume closing parenthesis
             if (lexer.tok_ != Lexer::tok_rpar)
@@ -633,8 +638,7 @@ namespace Core::Utils::SymbolicExpressionDetails
           }
           else
           {
-            lhs = create_node(NodeType::variable);
-            lhs->as.var_index = create_variable(name);
+            lhs = create_node(NodeType::variable, {.var_index = create_variable(name)});
             lexer.lexan();
           }
         }
@@ -654,10 +658,10 @@ namespace Core::Utils::SymbolicExpressionDetails
   \brief Parse entities connected by power: a^b
   */
   template <class T>
-  auto Parser<T>::parse_pow(Lexer& lexer) -> NodePtr
+  IndexType Parser<T>::parse_pow(Lexer& lexer)
   {
-    NodePtr lhs;
-    NodePtr rhs;
+    IndexType lhs;
+    IndexType rhs;
 
     lhs = parse_primary(lexer);
     for (;;)
@@ -666,8 +670,8 @@ namespace Core::Utils::SymbolicExpressionDetails
       {
         lexer.lexan();
         rhs = parse_primary(lexer);
-        lhs = create_node(NodeType::op, lhs, rhs);
-        lhs->as.str = "^";
+        lhs = create_node(
+            NodeType::binary_function, {.binary_function = BinaryFunctionType::pow}, lhs, rhs);
       }
       else
       {
@@ -684,10 +688,10 @@ namespace Core::Utils::SymbolicExpressionDetails
   \brief Parse entities connected by multiplication or division: a*b, a/b
   */
   template <class T>
-  auto Parser<T>::parse_term(Lexer& lexer) -> NodePtr
+  IndexType Parser<T>::parse_term(Lexer& lexer)
   {
-    NodePtr lhs;
-    NodePtr rhs;
+    IndexType lhs;
+    IndexType rhs;
 
     lhs = parse_pow(lexer);
     for (;;)
@@ -696,15 +700,15 @@ namespace Core::Utils::SymbolicExpressionDetails
       {
         lexer.lexan();
         rhs = parse_pow(lexer);
-        lhs = create_node(NodeType::op, lhs, rhs);
-        lhs->as.str = "*";
+        lhs = create_node(
+            NodeType::binary_function, {.binary_function = BinaryFunctionType::mul}, lhs, rhs);
       }
       else if (lexer.tok_ == Lexer::tok_div)
       {
         lexer.lexan();
         rhs = parse_pow(lexer);
-        lhs = create_node(NodeType::op, lhs, rhs);
-        lhs->as.str = "/";
+        lhs = create_node(
+            NodeType::binary_function, {.binary_function = BinaryFunctionType::div}, lhs, rhs);
       }
       else
       {
@@ -720,11 +724,9 @@ namespace Core::Utils::SymbolicExpressionDetails
   \brief Parse entity
   */
   template <class T>
-  auto Parser<T>::parse(Lexer& lexer) -> NodePtr
+  IndexType Parser<T>::parse(Lexer& lexer)
   {
-    NodePtr lhs;
-
-    lhs = parse_expr(lexer);
+    IndexType lhs = parse_expr(lexer);
 
     // check if parsing ended before processing the entire string
     if (lexer.tok_ != Lexer::tok_done)
@@ -737,14 +739,16 @@ namespace Core::Utils::SymbolicExpressionDetails
   }
 
   template <class T>
-  typename Parser<T>::NodePtr Parser<T>::create_node(NodeType type, NodePtr lhs, NodePtr rhs)
+  IndexType Parser<T>::create_node(
+      NodeType type, SyntaxTreeNode::Value value, IndexType lhs, IndexType rhs)
   {
     SyntaxTreeNode& node = node_arena_.emplace_back();
-    node.my_index = node_arena_.size() - 1;
+    node.as = value;
     node.type = type;
-    node.lhs_index = lhs ? lhs->my_index : invalid_index;
-    node.rhs_index = rhs ? rhs->my_index : invalid_index;
-    return &node;
+    node.lhs_index = lhs;
+    node.rhs_index = rhs;
+    // Index of the node that was just created.
+    return node_arena_.size() - 1;
   }
 
   template <class T>
@@ -767,27 +771,24 @@ namespace Core::Utils::SymbolicExpressionDetails
   \brief Parse entities connected by addition or subtraction: a+b, a-b
   */
   template <class T>
-  auto Parser<T>::parse_expr(Lexer& lexer) -> NodePtr
+  IndexType Parser<T>::parse_expr(Lexer& lexer)
   {
-    NodePtr lhs;
-    NodePtr rhs;
-
-    lhs = parse_term(lexer);
+    IndexType lhs = parse_term(lexer);
     for (;;)
     {
       if (lexer.tok_ == Lexer::tok_add)
       {
         lexer.lexan();
-        rhs = parse_term(lexer);
-        lhs = create_node(NodeType::op, lhs, rhs);
-        lhs->as.str = "+";
+        IndexType rhs = parse_term(lexer);
+        lhs = create_node(
+            NodeType::binary_function, {.binary_function = BinaryFunctionType::plus}, lhs, rhs);
       }
       else if (lexer.tok_ == Lexer::tok_sub)
       {
         lexer.lexan();
-        rhs = parse_term(lexer);
-        lhs = create_node(NodeType::op, lhs, rhs);
-        lhs->as.str = "-";
+        IndexType rhs = parse_term(lexer);
+        lhs = create_node(
+            NodeType::binary_function, {.binary_function = BinaryFunctionType::minus}, lhs, rhs);
       }
       else
       {
@@ -810,12 +811,12 @@ namespace Core::Utils::SymbolicExpressionDetails
 
     switch (node.type)
     {
-      // literal numbers: leaf of syntax tree node
       case NodeType::number:
+      {
         res = node.as.number;
         break;
-      // binary operators: bifurcating branch of syntax tree node
-      case NodeType::op:
+      }
+      case NodeType::binary_function:
       {
         T lhs;
         T rhs;
@@ -825,94 +826,96 @@ namespace Core::Utils::SymbolicExpressionDetails
         rhs = interpret(at(node.rhs_index));
 
         // evaluate the node operator
-        switch (node.as.str.front())
+        switch (node.as.binary_function)
         {
-          case '+':
+          case BinaryFunctionType::plus:
             res = lhs + rhs;
             break;
-          case '-':
+          case BinaryFunctionType::minus:
             res = lhs - rhs;
             break;
-          case '*':
+          case BinaryFunctionType::mul:
             res = lhs * rhs;
             break;
-          case '/':
-            /* check for rhs==0.0? */
+          case BinaryFunctionType::div:
             res = lhs / rhs;
             break;
-          case '^':
+          case BinaryFunctionType::pow:
             res = std::pow(lhs, rhs);
             break;
-          default:
-            FOUR_C_THROW("unsupported operator '{}'", node.as.str);
+          case BinaryFunctionType::atan2:
+            res = std::atan2(lhs, rhs);
+            break;
         }
         break;
       }
-      // independent variables: as set by user
       case NodeType::variable:
       {
         res = variable_constants_[node.as.var_index];
         break;
       }
-      // unary operators
-      case NodeType::function:
+      case NodeType::unary_function:
       {
-        T arg;
-        arg = interpret(at(node.lhs_index));
-        const auto& function = node.str();
-        if (function == "acos")
-          res = acos(arg);
-        else if (function == "asin")
-          res = asin(arg);
-        else if (function == "atan")
-          res = atan(arg);
-        else if (function == "cos")
-          res = cos(arg);
-        else if (function == "sin")
-          res = sin(arg);
-        else if (function == "tan")
-          res = tan(arg);
-        else if (function == "cosh")
-          res = cosh(arg);
-        else if (function == "sinh")
-          res = sinh(arg);
-        else if (function == "tanh")
-          res = tanh(arg);
-        else if (function == "exp")
-          res = exp(arg);
-        else if (function == "log")
-          res = log(arg);
-        else if (function == "log10")
-          res = log10(arg);
-        else if (function == "sqrt")
-          res = sqrt(arg);
-        else if (function == "atan2")
+        T arg = interpret(at(node.lhs_index));
+        switch (node.as.unary_function)
         {
-          T arg2;
-          // recursively visit branches and obtain sub-results
-          arg2 = interpret(at(node.rhs_index));
-          res = atan2(arg, arg2);
-        }
-        else if (function == "fabs")
-          res = fabs(arg);
-        else if (function == "heaviside")
-        {
-          if (arg > 0)
+          case UnaryFunctionType::acos:
+            res = acos(arg);
+            break;
+          case UnaryFunctionType::asin:
+            res = asin(arg);
+            break;
+          case UnaryFunctionType::atan:
+            res = atan(arg);
+            break;
+          case UnaryFunctionType::cos:
+            res = cos(arg);
+            break;
+          case UnaryFunctionType::sin:
+            res = sin(arg);
+            break;
+          case UnaryFunctionType::tan:
+            res = tan(arg);
+            break;
+          case UnaryFunctionType::cosh:
+            res = cosh(arg);
+            break;
+          case UnaryFunctionType::sinh:
+            res = sinh(arg);
+            break;
+          case UnaryFunctionType::tanh:
+            res = tanh(arg);
+            break;
+          case UnaryFunctionType::exp:
+            res = exp(arg);
+            break;
+          case UnaryFunctionType::log:
+            res = log(arg);
+            break;
+          case UnaryFunctionType::log10:
+            res = log10(arg);
+            break;
+          case UnaryFunctionType::sqrt:
+            res = sqrt(arg);
+            break;
+          case UnaryFunctionType::fabs:
+            res = fabs(arg);
+            break;
+          case UnaryFunctionType::heaviside:
           {
-            res = 1.0;
-          }
-          else
-          {
-            res = 0.0;
+            if (arg > 0)
+            {
+              res = 1.0;
+            }
+            else
+            {
+              res = 0.0;
+            }
+            break;
           }
         }
-        else
-          FOUR_C_THROW("unknown function_ '{}'", function);
         break;
       }
-      default:
-        FOUR_C_THROW("unknown syntax tree node type");
-        break;
     }
 
     return res;
