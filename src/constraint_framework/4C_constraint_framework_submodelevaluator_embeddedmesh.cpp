@@ -7,6 +7,7 @@
 
 #include "4C_constraint_framework_submodelevaluator_embeddedmesh.hpp"
 
+#include "4C_comm_mpi_utils.hpp"
 #include "4C_constraint_framework_embeddedmesh_solid_to_solid_mortar_manager.hpp"
 #include "4C_constraint_framework_embeddedmesh_solid_to_solid_utils.hpp"
 #include "4C_global_data.hpp"
@@ -94,6 +95,22 @@ void Constraints::SubmodelEvaluator::EmbeddedMeshConstraintManager::runtime_outp
 {
   // Write runtime output for the embedded mesh method
   mortar_manager_->write_output(output_time_and_step.first, output_time_and_step.second);
+}
+
+std::map<Solid::EnergyType, double>
+Constraints::SubmodelEvaluator::EmbeddedMeshConstraintManager::get_energy() const
+{
+  std::map<Solid::EnergyType, double> embedded_mesh_energy;
+  double mortar_manager_energy = mortar_manager_->get_energy();
+
+  // The value we returned here is summed up over all processors. Since we already have the global
+  // energy here, we only return it on rank 0.
+  if (Core::Communication::my_mpi_rank(mortar_manager_->get_my_comm()) == 0)
+  {
+    embedded_mesh_energy[Solid::embedded_mesh_penalty_potential] = mortar_manager_energy;
+  }
+
+  return embedded_mesh_energy;
 }
 
 FOUR_C_NAMESPACE_CLOSE
