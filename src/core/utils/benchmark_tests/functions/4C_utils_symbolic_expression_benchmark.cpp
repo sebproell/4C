@@ -30,9 +30,24 @@ namespace
   }
   BENCHMARK(symbolic_expression_constant);
 
+  void symbolic_expression_constant_folding(benchmark::State& state)
+  {
+    // A benchmark that evaluates a expression which can be simplified to a constant.
+    // Should run as fast as the constant benchmark above.
+    SymbolicExpression<double> expr("2*1.0^2 + 2.0 + 4*3.0");
+    std::map<std::string, double> variables;
+    for (auto _ : state)
+    {
+      double result = expr.value(variables);
+      benchmark::DoNotOptimize(result);
+    }
+  }
+  BENCHMARK(symbolic_expression_constant_folding);
+
   void symbolic_expression_basic(benchmark::State& state)
   {
-    SymbolicExpression<double> expr("2*x^2 + y + 4*z");
+    // Only basic arithmetic, including expensive division.
+    SymbolicExpression<double> expr("2*x + y/2 - 4*z");
     std::map<std::string, double> variables = {{"x", 1.0}, {"y", 2.0}, {"z", 3.0}};
 
     for (auto _ : state)
@@ -42,6 +57,23 @@ namespace
     }
   }
   BENCHMARK(symbolic_expression_basic);
+
+
+
+  void symbolic_expression_basic_native(benchmark::State& state)
+  {
+    // Execute the same code at the natively compiled level to compare performance.
+    volatile double x = 1.0;
+    volatile double y = 2.0;
+    volatile double z = 3.0;
+
+    for (auto _ : state)
+    {
+      volatile double result = 2 * x + y / 2 - 4 * z;
+      benchmark::DoNotOptimize(result);
+    }
+  }
+  BENCHMARK(symbolic_expression_basic_native);
 
 
   void symbolic_expression_first_derivative(benchmark::State& state)
