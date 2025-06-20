@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_utils_scalar_interpolation.hpp"
 #include "4C_linalg_utlis_quaternion_interpolation.hpp"
 #include "4C_unittest_utils_assertions_test.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -207,8 +208,8 @@ TEST(QuaternionInterpolationTest, SlerpThreeQuaternions_2DRefLoc_EquidistantInte
   interp_loc(1, 0) = (ref_locs[0](1, 0) + ref_locs[1](1, 0) + ref_locs[2](1, 0)) / 3.0;
 
   // Use inverse distance weighting function and default params
-  auto weight_func = Core::LinAlg::ScalarInterpolation::WeightingFunction::inverse_distance;
-  Core::LinAlg::ScalarInterpolation::InterpParams interp_params;
+  auto weight_func = Core::LinAlg::ScalarInterpolationWeightingFunction::inverse_distance;
+  Core::LinAlg::ScalarInterpolationParams interp_params;
 
   Core::LinAlg::GeneralizedSphericalLinearInterpolator<2> interpolator(
       quats, ref_locs, weight_func, interp_params);
@@ -306,8 +307,8 @@ TEST(QuaternionInterpolationTest, SlerpFourQuaternions_2DRefLoc_EquidistantInter
   interp_loc(1, 0) = 0.5;
 
   // Use inverse distance weighting function and default params
-  auto weight_func = Core::LinAlg::ScalarInterpolation::WeightingFunction::inverse_distance;
-  Core::LinAlg::ScalarInterpolation::InterpParams interp_params;
+  auto weight_func = Core::LinAlg::ScalarInterpolationWeightingFunction::inverse_distance;
+  Core::LinAlg::ScalarInterpolationParams interp_params;
 
   Core::LinAlg::GeneralizedSphericalLinearInterpolator<2> interpolator(
       quats, ref_locs, weight_func, interp_params);

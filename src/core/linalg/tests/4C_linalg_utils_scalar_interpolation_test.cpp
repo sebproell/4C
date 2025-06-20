@@ -26,7 +26,7 @@ namespace
 {
   TEST(LinalgScalarInterpolationTest, CalculateNormalizedWeights1DInverseDistance)
   {
-    using namespace Core::LinAlg::ScalarInterpolation;
+    using namespace Core::LinAlg;
 
     // 1D
     constexpr unsigned int loc_dim = 3;
@@ -45,15 +45,16 @@ namespace
     interp_loc(0, 0) = 0.5;
 
     // Weighting function: inverse distance
-    WeightingFunction weight_func = WeightingFunction::inverse_distance;
+    ScalarInterpolationWeightingFunction weight_func =
+        ScalarInterpolationWeightingFunction::inverse_distance;
 
     // Interpolation parameters
-    InterpParams interp_params;
+    ScalarInterpolationParams interp_params;
     interp_params.distance_threshold = 1e-12;
     interp_params.inverse_distance_power = 1.0;  // Use power of 1 for inverse distance
 
     // Call the function
-    std::vector<double> weights = Core::LinAlg::ScalarInterpolation::calculate_normalized_weights(
+    std::vector<double> weights = Core::LinAlg::calculate_normalized_weights(
         ref_locs, interp_loc, weight_func, interp_params);
 
     // So weights should be [0.25, 0.75]
@@ -65,7 +66,7 @@ namespace
 
   TEST(LinalgScalarInterpolationTest, CalculateNormalizedWeights1DExponential)
   {
-    using namespace Core::LinAlg::ScalarInterpolation;
+    using namespace Core::LinAlg;
 
     // 1D
     constexpr unsigned int loc_dim = 3;
@@ -84,15 +85,16 @@ namespace
     interp_loc(0, 0) = 0.5;
 
     // Weighting function: exponential
-    WeightingFunction weight_func = WeightingFunction::exponential;
+    ScalarInterpolationWeightingFunction weight_func =
+        ScalarInterpolationWeightingFunction::exponential;
 
     // Interpolation parameters
-    InterpParams interp_params;
+    ScalarInterpolationParams interp_params;
     interp_params.distance_threshold = 1e-12;
     interp_params.exponential_decay_c = 1.0;  // decay parameter
 
     // Call the function
-    std::vector<double> weights = Core::LinAlg::ScalarInterpolation::calculate_normalized_weights(
+    std::vector<double> weights = Core::LinAlg::calculate_normalized_weights(
         ref_locs, interp_loc, weight_func, interp_params);
 
     // Calculate expected weights manually
@@ -112,7 +114,7 @@ namespace
     // see Satheesh et al., 2024, 10.1002/nme.7373, Section 2.4.4 Comparison of eigenvalue
     // interpolation methods
 
-    using namespace Core::LinAlg::ScalarInterpolation;
+    using namespace Core::LinAlg;
 
     constexpr unsigned int loc_dim = 1;
 
@@ -134,8 +136,9 @@ namespace
     scalar_data.push_back({0.1});
     scalar_data.push_back({1.0});
 
-    WeightingFunction weight_func = WeightingFunction::exponential;
-    InterpParams interp_params;
+    ScalarInterpolationWeightingFunction weight_func =
+        ScalarInterpolationWeightingFunction::exponential;
+    ScalarInterpolationParams interp_params;
     interp_params.distance_threshold = 1e-12;
     interp_params.exponential_decay_c = 10.0;
 
@@ -164,7 +167,7 @@ namespace
     // see Satheesh et al., 2024, 10.1002/nme.7373, Section 2.4.4 Comparison of eigenvalue
     // interpolation methods
 
-    using namespace Core::LinAlg::ScalarInterpolation;
+    using namespace Core::LinAlg;
 
     constexpr unsigned int loc_dim = 1;
     constexpr unsigned int poly_order = 2;
@@ -188,8 +191,9 @@ namespace
     scalar_data.push_back({0.1, 0.1, 0.1});
     scalar_data.push_back({1.0, 1.0, 1.0});
 
-    WeightingFunction weight_func = WeightingFunction::exponential;
-    InterpParams interp_params;
+    ScalarInterpolationWeightingFunction weight_func =
+        ScalarInterpolationWeightingFunction::exponential;
+    ScalarInterpolationParams interp_params;
     interp_params.distance_threshold = 1e-12;
     interp_params.exponential_decay_c = 1.0;
 
@@ -236,7 +240,7 @@ namespace
     //                       = 4.5
     // -----------------------------------------------------------------------------
 
-    using namespace Core::LinAlg::ScalarInterpolation;
+    using namespace Core::LinAlg;
 
     constexpr unsigned int loc_dim = 3;
     constexpr unsigned int poly_order = 1;
@@ -261,8 +265,9 @@ namespace
       scalar_data.push_back({static_cast<double>(i + 1)});
     }
 
-    WeightingFunction weight_func = WeightingFunction::exponential;
-    InterpParams interp_params;
+    ScalarInterpolationWeightingFunction weight_func =
+        ScalarInterpolationWeightingFunction::exponential;
+    ScalarInterpolationParams interp_params;
     interp_params.distance_threshold = 1e-12;
     interp_params.exponential_decay_c = 1.0;
 
@@ -313,7 +318,7 @@ namespace
     // Thus, the displacement at the centroid is $34.5$.
     // -----------------------------------------------------------------------------
 
-    using namespace Core::LinAlg::ScalarInterpolation;
+    using namespace Core::LinAlg;
 
     constexpr unsigned int loc_dim = 3;
     constexpr unsigned int poly_order = 2;
@@ -356,8 +361,9 @@ namespace
       scalar_data.push_back({static_cast<double>(i + 1)});
     }
 
-    WeightingFunction weight_func = WeightingFunction::exponential;
-    InterpParams interp_params;
+    ScalarInterpolationWeightingFunction weight_func =
+        ScalarInterpolationWeightingFunction::exponential;
+    ScalarInterpolationParams interp_params;
     interp_params.distance_threshold = 1e-12;
     interp_params.exponential_decay_c = 1.0;
 
@@ -379,7 +385,7 @@ namespace
     // see Satheesh et al., 2024, 10.1002/nme.7373, Section 2.4.4 Comparison of eigenvalue
     // interpolation methods
 
-    using namespace Core::LinAlg::ScalarInterpolation;
+    using namespace Core::LinAlg;
 
     constexpr unsigned int loc_dim = 1;
     constexpr unsigned int poly_order = 2;
@@ -403,8 +409,9 @@ namespace
     scalar_data.push_back({0.1, 0.1, 0.1});
     scalar_data.push_back({1.0, 1.0, 1.0});
 
-    WeightingFunction weight_func = WeightingFunction::exponential;
-    InterpParams interp_params;
+    ScalarInterpolationWeightingFunction weight_func =
+        ScalarInterpolationWeightingFunction::exponential;
+    ScalarInterpolationParams interp_params;
     interp_params.distance_threshold = 1e-12;
     interp_params.exponential_decay_c = 1.0;
 

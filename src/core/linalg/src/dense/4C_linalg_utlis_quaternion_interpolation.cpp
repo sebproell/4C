@@ -69,8 +69,8 @@ Core::LinAlg::GeneralizedSphericalLinearInterpolator<loc_dim>::
     GeneralizedSphericalLinearInterpolator(
         const std::vector<Core::LinAlg::Matrix<4, 1>>& unit_quaternions,
         const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
-        const Core::LinAlg::ScalarInterpolation::WeightingFunction weight_func,
-        const Core::LinAlg::ScalarInterpolation::InterpParams& interp_params)
+        const Core::LinAlg::ScalarInterpolationWeightingFunction weight_func,
+        const Core::LinAlg::ScalarInterpolationParams& interp_params)
     : unit_quaternions_(unit_quaternions),
       ref_locs_(ref_locs),
       weight_func_(weight_func),
@@ -155,7 +155,7 @@ Core::LinAlg::GeneralizedSphericalLinearInterpolator<loc_dim>::get_interpolated_
 {
   if (interp_loc != nullptr and normalized_weights_.empty())
   {
-    normalized_weights_ = Core::LinAlg::ScalarInterpolation::calculate_normalized_weights(
+    normalized_weights_ = Core::LinAlg::calculate_normalized_weights(
         ref_locs_, *interp_loc, weight_func_, interp_params_);
   }
 

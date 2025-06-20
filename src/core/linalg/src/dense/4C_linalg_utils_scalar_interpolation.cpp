@@ -20,8 +20,7 @@ FOUR_C_NAMESPACE_OPEN
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim, unsigned int poly_order, unsigned int num_coefficients>
-Core::LinAlg::Matrix<num_coefficients, 1>
-Core::LinAlg::ScalarInterpolation::polynomial_shape_function(
+Core::LinAlg::Matrix<num_coefficients, 1> Core::LinAlg::polynomial_shape_function(
     const Core::LinAlg::Matrix<loc_dim, 1>& location)
 {
   Core::LinAlg::Matrix<num_coefficients, 1> polynomial(Core::LinAlg::Initialization::zero);
@@ -145,40 +144,41 @@ Core::LinAlg::ScalarInterpolation::polynomial_shape_function(
 }
 
 // 1D linear
-template Core::LinAlg::Matrix<2, 1> Core::LinAlg::ScalarInterpolation::polynomial_shape_function<1,
-    1, 2>(const Core::LinAlg::Matrix<1, 1>&);
+template Core::LinAlg::Matrix<2, 1> Core::LinAlg::polynomial_shape_function<1, 1, 2>(
+    const Core::LinAlg::Matrix<1, 1>&);
 
 // 1D quadratic
-template Core::LinAlg::Matrix<3, 1> Core::LinAlg::ScalarInterpolation::polynomial_shape_function<1,
-    2, 3>(const Core::LinAlg::Matrix<1, 1>&);
+template Core::LinAlg::Matrix<3, 1> Core::LinAlg::polynomial_shape_function<1, 2, 3>(
+    const Core::LinAlg::Matrix<1, 1>&);
 
 // 2D linear
-template Core::LinAlg::Matrix<4, 1> Core::LinAlg::ScalarInterpolation::polynomial_shape_function<2,
-    1, 4>(const Core::LinAlg::Matrix<2, 1>&);
+template Core::LinAlg::Matrix<4, 1> Core::LinAlg::polynomial_shape_function<2, 1, 4>(
+    const Core::LinAlg::Matrix<2, 1>&);
 
 // 2D quadratic (incomplete)
-template Core::LinAlg::Matrix<6, 1> Core::LinAlg::ScalarInterpolation::polynomial_shape_function<2,
-    2, 6>(const Core::LinAlg::Matrix<2, 1>&);
+template Core::LinAlg::Matrix<6, 1> Core::LinAlg::polynomial_shape_function<2, 2, 6>(
+    const Core::LinAlg::Matrix<2, 1>&);
 
 // 2D quadratic (complete)
-template Core::LinAlg::Matrix<8, 1> Core::LinAlg::ScalarInterpolation::polynomial_shape_function<2,
-    2, 8>(const Core::LinAlg::Matrix<2, 1>&);
+template Core::LinAlg::Matrix<8, 1> Core::LinAlg::polynomial_shape_function<2, 2, 8>(
+    const Core::LinAlg::Matrix<2, 1>&);
 
 // 3D linear
-template Core::LinAlg::Matrix<8, 1> Core::LinAlg::ScalarInterpolation::polynomial_shape_function<3,
-    1, 8>(const Core::LinAlg::Matrix<3, 1>&);
+template Core::LinAlg::Matrix<8, 1> Core::LinAlg::polynomial_shape_function<3, 1, 8>(
+    const Core::LinAlg::Matrix<3, 1>&);
 
 // 3D quadratic
-template Core::LinAlg::Matrix<10, 1> Core::LinAlg::ScalarInterpolation::polynomial_shape_function<3,
-    2, 10>(const Core::LinAlg::Matrix<3, 1>&);
+template Core::LinAlg::Matrix<10, 1> Core::LinAlg::polynomial_shape_function<3, 2, 10>(
+    const Core::LinAlg::Matrix<3, 1>&);
 
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim>
-std::vector<double> Core::LinAlg::ScalarInterpolation::calculate_normalized_weights(
+std::vector<double> Core::LinAlg::calculate_normalized_weights(
     const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
-    const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc, const WeightingFunction weight_func,
-    const InterpParams& interp_params)
+    const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc,
+    const ScalarInterpolationWeightingFunction weight_func,
+    const ScalarInterpolationParams& interp_params)
 {
   std::vector<double> weights(ref_locs.size(), 0.0);
   std::vector<Core::LinAlg::Matrix<loc_dim, 1>> ref_locs_tmp(ref_locs);
@@ -189,7 +189,7 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::calculate_normalized_weig
   // calculate the weight based on the chosen weighting function
   switch (weight_func)
   {
-    case WeightingFunction::inverse_distance:
+    case ScalarInterpolationWeightingFunction::inverse_distance:
     {
       double exponent = loc_dim;  // default exponent for inverse distance
       if (interp_params.inverse_distance_power.has_value())
@@ -206,7 +206,7 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::calculate_normalized_weig
     }
     break;
 
-    case WeightingFunction::exponential:
+    case ScalarInterpolationWeightingFunction::exponential:
     {
       for (unsigned int i = 0; i < ref_locs_tmp.size(); ++i)
       {
@@ -219,7 +219,7 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::calculate_normalized_weig
     }
     break;
 
-    case WeightingFunction::unity:
+    case ScalarInterpolationWeightingFunction::unity:
     {
       for (unsigned int i = 0; i < ref_locs_tmp.size(); ++i)
         weights[i] = 1.0 / static_cast<double>(ref_locs_tmp.size());
@@ -257,25 +257,26 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::calculate_normalized_weig
 }
 
 // Explicit template instantiations for calculate_normalized_weights
-template std::vector<double> Core::LinAlg::ScalarInterpolation::calculate_normalized_weights<1>(
+template std::vector<double> Core::LinAlg::calculate_normalized_weights<1>(
     const std::vector<Core::LinAlg::Matrix<1, 1>>&, const Core::LinAlg::Matrix<1, 1>&,
-    const Core::LinAlg::ScalarInterpolation::WeightingFunction,
-    const Core::LinAlg::ScalarInterpolation::InterpParams&);
-template std::vector<double> Core::LinAlg::ScalarInterpolation::calculate_normalized_weights<2>(
+    const Core::LinAlg::ScalarInterpolationWeightingFunction,
+    const Core::LinAlg::ScalarInterpolationParams&);
+template std::vector<double> Core::LinAlg::calculate_normalized_weights<2>(
     const std::vector<Core::LinAlg::Matrix<2, 1>>&, const Core::LinAlg::Matrix<2, 1>&,
-    const Core::LinAlg::ScalarInterpolation::WeightingFunction,
-    const Core::LinAlg::ScalarInterpolation::InterpParams&);
-template std::vector<double> Core::LinAlg::ScalarInterpolation::calculate_normalized_weights<3>(
+    const Core::LinAlg::ScalarInterpolationWeightingFunction,
+    const Core::LinAlg::ScalarInterpolationParams&);
+template std::vector<double> Core::LinAlg::calculate_normalized_weights<3>(
     const std::vector<Core::LinAlg::Matrix<3, 1>>&, const Core::LinAlg::Matrix<3, 1>&,
-    const Core::LinAlg::ScalarInterpolation::WeightingFunction,
-    const Core::LinAlg::ScalarInterpolation::InterpParams&);
+    const Core::LinAlg::ScalarInterpolationWeightingFunction,
+    const Core::LinAlg::ScalarInterpolationParams&);
 
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim, unsigned int poly_order, unsigned int num_coefficients>
-Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_dim, poly_order,
-    num_coefficients>::ScalarInterpolator(const ScalarInterpolationType scalar_interp_type,
-    const WeightingFunction weight_func, const InterpParams& interp_params)
+Core::LinAlg::ScalarInterpolator<loc_dim, poly_order, num_coefficients>::ScalarInterpolator(
+    const ScalarInterpolationType scalar_interp_type,
+    const ScalarInterpolationWeightingFunction weight_func,
+    const ScalarInterpolationParams& interp_params)
     : scalar_interp_type_(scalar_interp_type),
       weight_func_(weight_func),
       interp_params_(interp_params)
@@ -293,7 +294,7 @@ Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_dim, poly_order,
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim, unsigned int poly_order, unsigned int num_coefficients>
-std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_dim, poly_order,
+std::vector<double> Core::LinAlg::ScalarInterpolator<loc_dim, poly_order,
     num_coefficients>::logarithmic_weighted_average(const std::vector<std::vector<double>>&
                                                         scalar_data,
     const std::vector<double>& weights)
@@ -324,8 +325,9 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_di
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim, unsigned int poly_order, unsigned int num_coefficients>
-std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_dim, poly_order,
-    num_coefficients>::moving_least_square(const std::vector<std::vector<double>>& scalar_data,
+std::vector<double>
+Core::LinAlg::ScalarInterpolator<loc_dim, poly_order, num_coefficients>::moving_least_square(
+    const std::vector<std::vector<double>>& scalar_data,
     const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
     const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc, const std::vector<double>& weights)
 {
@@ -346,8 +348,8 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_di
 
     // compute the polynomial shape function for the current reference location
     p_i.put_scalar(0.0);  // reset p_i to zero
-    p_i.update(Core::LinAlg::ScalarInterpolation::polynomial_shape_function<loc_dim, poly_order,
-        num_coefficients>(ref_locs_tmp[i]));
+    p_i.update(Core::LinAlg::polynomial_shape_function<loc_dim, poly_order, num_coefficients>(
+        ref_locs_tmp[i]));
 
     // bj = w * p_i * scalar_data[i][j]
     for (unsigned int j = 0; j < field_size; ++j)  // number of scalar fields
@@ -380,7 +382,7 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_di
     yj.multiply(Pinv, bj[j]);  // compute the coeffiicents
 
     p_inter.put_scalar(0.0);  // reset p_inter to zero
-    p_inter.update(Core::LinAlg::ScalarInterpolation::polynomial_shape_function<loc_dim, poly_order,
+    p_inter.update(Core::LinAlg::polynomial_shape_function<loc_dim, poly_order,
         num_coefficients>(interp_loc_shifted));  // compute the polynomial shape function at
                                                  // the interpolation point
 
@@ -396,7 +398,7 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_di
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim, unsigned int poly_order, unsigned int num_coefficients>
-std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_dim, poly_order,
+std::vector<double> Core::LinAlg::ScalarInterpolator<loc_dim, poly_order,
     num_coefficients>::logarithmic_moving_least_squares(const std::vector<std::vector<double>>&
                                                             scalar_data,
     const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
@@ -437,8 +439,9 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_di
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim, unsigned int poly_order, unsigned int num_coefficients>
-std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_dim, poly_order,
-    num_coefficients>::get_interpolated_scalar(const std::vector<std::vector<double>>& scalar_data,
+std::vector<double>
+Core::LinAlg::ScalarInterpolator<loc_dim, poly_order, num_coefficients>::get_interpolated_scalar(
+    const std::vector<std::vector<double>>& scalar_data,
     const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
     const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc)
 {
@@ -450,7 +453,7 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_di
   if (ref_locs.size() < 1)
     FOUR_C_THROW("At least one reference location is required for interpolation.");
 
-  auto weights = Core::LinAlg::ScalarInterpolation::calculate_normalized_weights(
+  auto weights = Core::LinAlg::calculate_normalized_weights(
       ref_locs, interp_loc, weight_func_, interp_params_);
 
   // If one weight is 1.0, return the corresponding scalar data directly
@@ -459,14 +462,13 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_di
 
   switch (scalar_interp_type_)  // Choose the interpolation method based on the type
   {
-    case Core::LinAlg::ScalarInterpolation::ScalarInterpolationType::logarithmic_weighted_average:
+    case Core::LinAlg::ScalarInterpolationType::logarithmic_weighted_average:
       return logarithmic_weighted_average(scalar_data, weights);
       break;
-    case Core::LinAlg::ScalarInterpolation::ScalarInterpolationType::moving_least_squares:
+    case Core::LinAlg::ScalarInterpolationType::moving_least_squares:
       return moving_least_square(scalar_data, ref_locs, interp_loc, weights);
       break;
-    case Core::LinAlg::ScalarInterpolation::ScalarInterpolationType::
-        logarithmic_moving_least_squares:
+    case Core::LinAlg::ScalarInterpolationType::logarithmic_moving_least_squares:
       return logarithmic_moving_least_squares(scalar_data, ref_locs, interp_loc, weights);
       break;
     default:
@@ -476,18 +478,18 @@ std::vector<double> Core::LinAlg::ScalarInterpolation::ScalarInterpolator<loc_di
 }
 
 // Explicit template instantiations
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<1>;
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<2>;
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<3>;
+template class Core::LinAlg::ScalarInterpolator<1>;
+template class Core::LinAlg::ScalarInterpolator<2>;
+template class Core::LinAlg::ScalarInterpolator<3>;
 
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<1, 1, 2>;
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<1, 2, 3>;
+template class Core::LinAlg::ScalarInterpolator<1, 1, 2>;
+template class Core::LinAlg::ScalarInterpolator<1, 2, 3>;
 
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<2, 1, 4>;
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<2, 2, 6>;
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<2, 2, 8>;
+template class Core::LinAlg::ScalarInterpolator<2, 1, 4>;
+template class Core::LinAlg::ScalarInterpolator<2, 2, 6>;
+template class Core::LinAlg::ScalarInterpolator<2, 2, 8>;
 
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<3, 1, 8>;
-template class Core::LinAlg::ScalarInterpolation::ScalarInterpolator<3, 2, 10>;
+template class Core::LinAlg::ScalarInterpolator<3, 1, 8>;
+template class Core::LinAlg::ScalarInterpolator<3, 2, 10>;
 
 FOUR_C_NAMESPACE_CLOSE
