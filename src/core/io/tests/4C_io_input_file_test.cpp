@@ -136,11 +136,12 @@ namespace
 
     MPI_Comm comm(MPI_COMM_WORLD);
     Core::IO::InputFile input(
-        {{"INCLUDED SECTION 2", all_of({
-                                    parameter<int>("a"),
-                                    parameter<double>("b"),
-                                    parameter<bool>("c"),
-                                })},
+        {{"INCLUDED SECTION 2", group("INCLUDED SECTION 2",
+                                    {
+                                        parameter<int>("a"),
+                                        parameter<double>("b"),
+                                        parameter<bool>("c"),
+                                    })},
             {"SECTION WITH SUBSTRUCTURE", list("SECTION WITH SUBSTRUCTURE",
                                               all_of({
                                                   parameter<int>("MAT"),
@@ -164,9 +165,10 @@ namespace
 
     Core::IO::InputParameterContainer container;
     input.match_section("INCLUDED SECTION 2", container);
-    EXPECT_EQ(container.get<int>("a"), 1);
-    EXPECT_EQ(container.get<double>("b"), 2.0);
-    EXPECT_EQ(container.get<bool>("c"), true);
+    const auto& included_section_2 = container.group("INCLUDED SECTION 2");
+    EXPECT_EQ(included_section_2.get<int>("a"), 1);
+    EXPECT_EQ(included_section_2.get<double>("b"), 2.0);
+    EXPECT_EQ(included_section_2.get<bool>("c"), true);
 
     container.clear();
     input.match_section("SECTION WITH SUBSTRUCTURE", container);

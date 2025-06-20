@@ -54,10 +54,14 @@ void Core::IO::InputSpec::match(ConstYamlNodeRef yaml, InputParameterContainer& 
 {
   FOUR_C_ASSERT(pimpl_, "InputSpec is empty.");
 
-  auto spec_for_matching = Internal::wrap_with_all_of(*this);
-  Internal::MatchTree match_tree{spec_for_matching, yaml};
+  const auto& spec_name = impl().name();
+  FOUR_C_ASSERT_ALWAYS(spec_name != "",
+      "You are trying to match an unnamed InputSpec. "
+      "You can only match a named spec, not an all_of or one_of spec.");
 
-  if (auto* stores_to = spec_for_matching.impl().data.stores_to;
+  Internal::MatchTree match_tree{*this, yaml};
+
+  if (auto* stores_to = impl().data.stores_to;
       stores_to && *stores_to != typeid(InputParameterContainer))
   {
     FOUR_C_THROW(
@@ -68,7 +72,7 @@ void Core::IO::InputSpec::match(ConstYamlNodeRef yaml, InputParameterContainer& 
 
   InputSpecBuilders::Storage storage;
   Internal::init_storage_with_container(storage);
-  spec_for_matching.pimpl_->match(yaml, storage, match_tree.root());
+  impl().match(yaml, storage, match_tree.root());
   container.merge(std::any_cast<InputParameterContainer&&>(std::move(storage)));
 
   match_tree.assert_match();

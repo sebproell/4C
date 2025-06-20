@@ -1052,7 +1052,7 @@ specs:
     }
   }
 
-  TEST(InputSpecTest, MatchYamlEntry)
+  TEST(InputSpecTest, MatchYamlParameter)
   {
     auto spec = parameter<int>("a");
 
@@ -1139,6 +1139,17 @@ specs:
       {
         SCOPED_TRACE("Match group node.");
         ConstYamlNodeRef node(root["group"], "");
+        InputParameterContainer container;
+        spec.match(node, container);
+        EXPECT_EQ(container.group("group").get<int>("a"), 1);
+        EXPECT_EQ(container.group("group").get<std::string>("b"), "b");
+      }
+
+      {
+        SCOPED_TRACE("Top-level match ignores unused.");
+        root["dummy"] << 1;
+
+        ConstYamlNodeRef node(root, "");
         InputParameterContainer container;
         spec.match(node, container);
         EXPECT_EQ(container.group("group").get<int>("a"), 1);
@@ -1286,177 +1297,54 @@ specs:
   }
 
 
-  TEST(InputSpecTest, MatchYamlAllOf)
-  {
-    auto spec = all_of({
-        parameter<int>("a"),
-        parameter<std::vector<std::string>>("b"),
-        parameter<std::optional<int>>("c"),
-        group("group",
-            {
-                parameter<int>("d"),
-            },
-            {.required = false}),
-    });
-
-    // Full parse
-    {
-      ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::NodeRef root = tree.rootref();
-
-      root |= ryml::MAP;
-      root["a"] << 1;
-      root["b"] |= ryml::SEQ;
-      root["b"].append_child() << "b1";
-      root["b"].append_child() << "b2";
-      root["c"] << 2;
-      root["group"] |= ryml::MAP;
-      root["group"]["d"] << 42;
-
-      ConstYamlNodeRef node(root, "");
-
-      InputParameterContainer container;
-      spec.match(node, container);
-      EXPECT_EQ(container.get<int>("a"), 1);
-      const auto& b = container.get<std::vector<std::string>>("b");
-      EXPECT_EQ(b.size(), 2);
-      EXPECT_EQ(b[0], "b1");
-      EXPECT_EQ(b[1], "b2");
-      EXPECT_EQ(container.get<std::optional<int>>("c").value(), 2);
-      EXPECT_EQ(container.group("group").get<int>("d"), 42);
-    }
-
-    // default left out
-    {
-      ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::NodeRef root = tree.rootref();
-
-      ryml::parse_in_arena(R"(a: 1
-b:
-    - b1
-    - b2
-)",
-          root);
-      ConstYamlNodeRef node(root, "");
-
-      InputParameterContainer container;
-      spec.match(node, container);
-      EXPECT_FALSE(container.get<std::optional<int>>("c").has_value());
-      EXPECT_FALSE(container.has_group("group"));
-    }
-
-    {
-      SCOPED_TRACE("Explicit null in selection");
-      ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::NodeRef root = tree.rootref();
-
-      ryml::parse_in_arena(R"(a: 1
-b:
-    - b1
-    - b2
-c: null
-group:
-    d: 42
-)",
-          root);
-      ConstYamlNodeRef node(root, "");
-
-      InputParameterContainer container;
-      spec.match(node, container);
-      EXPECT_FALSE(container.get<std::optional<int>>("c").has_value());
-      EXPECT_EQ(container.group("group").get<int>("d"), 42);
-    }
-
-    // too little input
-    {
-      ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::NodeRef root = tree.rootref();
-
-      root |= ryml::MAP;
-      root["a"] << 1;
-      ConstYamlNodeRef node(root, "");
-
-      InputParameterContainer container;
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          spec.match(node, container), Core::Exception, "Expected parameter 'b'");
-    }
-
-    // too much input
-    {
-      ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::NodeRef root = tree.rootref();
-
-      ryml::parse_in_arena(R"(a: 1
-b:
-    - b1
-    - b2
-c: 2
-d:
-  d1: 42
-  d2:
-    d3: 43
-)",
-          root);
-
-      ConstYamlNodeRef node(root, "");
-
-      InputParameterContainer container;
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          R"({
-  [ ] Matched parameter 'a'
-  [ ] Matched parameter 'b'
-  [ ] Matched parameter 'c'
-  [ ] Skipped optional group 'group'
-  [!] The following data remains unused:
-    d:
-      d1: 42
-      d2:
-        d3: 43
-})");
-    }
-  }
-
   TEST(InputSpecTest, MatchYamlOneOf)
   {
-    auto spec = one_of({
-        all_of({
-            parameter<int>("a"),
-            parameter<std::string>("b"),
-        }),
-        all_of({
-            parameter<std::string>("a"),
-            parameter<double>("d"),
-        }),
-    });
+    auto spec = group("data", {
+                                  one_of({
+                                      all_of({
+                                          parameter<int>("a"),
+                                          parameter<std::string>("b"),
+                                      }),
+                                      all_of({
+                                          parameter<std::string>("a"),
+                                          parameter<double>("d"),
+                                      }),
+                                  }),
+                              });
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(data:
+  a: 1
+  b: b
+)",
+          root);
 
-      root |= ryml::MAP;
-      root["a"] << 1;
-      root["b"] << "b";
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<int>("a"), 1);
-      EXPECT_EQ(container.get<std::string>("b"), "b");
+      const auto& data = container.group("data");
+      EXPECT_EQ(data.get<int>("a"), 1);
+      EXPECT_EQ(data.get<std::string>("b"), "b");
     }
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
-
-      root |= ryml::MAP;
-      root["a"] << "c";
-      root["d"] << 2.0;
+      ryml::parse_in_arena(R"(data:
+  a: c
+  d: 2.0
+)",
+          root);
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<std::string>("a"), "c");
-      EXPECT_EQ(container.get<double>("d"), 2.0);
+      const auto& data = container.group("data");
+      EXPECT_EQ(data.get<std::string>("a"), "c");
+      EXPECT_EQ(data.get<double>("d"), 2.0);
     };
 
     {
@@ -1464,27 +1352,30 @@ d:
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
 
-      root |= ryml::MAP;
-      root["a"] << 1;
-      root["b"] << "b";
-      root["d"] << 2.0;
+      ryml::parse_in_arena(R"(data:
+  a: 1
+  b: b
+  d: 2
+)",
+          root);
+
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
           spec.match(node, container), Core::Exception, R"([X] Expected one of:
-    {
-      [ ] Matched parameter 'a'
-      [ ] Matched parameter 'b'
-      [!] The following data remains unused:
-        d: 2
-    }
-    {
-      [ ] Matched parameter 'a'
-      [ ] Matched parameter 'd'
-      [!] The following data remains unused:
-        b: b
-    })");
+      {
+        [ ] Matched parameter 'a'
+        [ ] Matched parameter 'b'
+        [!] The following data remains unused:
+          d: 2
+      }
+      {
+        [ ] Matched parameter 'a'
+        [ ] Matched parameter 'd'
+        [!] The following data remains unused:
+          b: b
+      })");
     }
   }
 
@@ -1596,9 +1487,7 @@ d:
 
   TEST(InputSpecTest, MatchYamlPath)
   {
-    auto spec = all_of({
-        parameter<std::filesystem::path>("a"),
-    });
+    auto spec = parameter<std::filesystem::path>("a");
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
@@ -1642,17 +1531,18 @@ d:
 
   TEST(InputSpecTest, MatchYamlOptional)
   {
-    auto spec = all_of({
-        parameter<std::optional<int>>("i"),
-        parameter<std::optional<std::string>>("s"),
-        parameter<std::vector<std::optional<double>>>("v", {.size = 3}),
-    });
+    auto spec = group("data", {
+                                  parameter<std::optional<int>>("i"),
+                                  parameter<std::optional<std::string>>("s"),
+                                  parameter<std::vector<std::optional<double>>>("v", {.size = 3}),
+                              });
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::parse_in_arena(R"(i : 1
-s: string
-v: [1.0, 2.0, 3.0]
+      ryml::parse_in_arena(R"(data:
+  i : 1
+  s: string
+  v: [1.0, 2.0, 3.0]
 )",
           &tree);
       ryml::NodeRef root = tree.rootref();
@@ -1660,9 +1550,10 @@ v: [1.0, 2.0, 3.0]
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<std::optional<int>>("i"), 1);
-      EXPECT_EQ(container.get<std::optional<std::string>>("s"), "string");
-      const auto& v = container.get<std::vector<std::optional<double>>>("v");
+      const auto& data = container.group("data");
+      EXPECT_EQ(data.get<std::optional<int>>("i"), 1);
+      EXPECT_EQ(data.get<std::optional<std::string>>("s"), "string");
+      const auto& v = data.get<std::vector<std::optional<double>>>("v");
       EXPECT_EQ(v.size(), 3);
       EXPECT_EQ(v[0], 1.0);
       EXPECT_EQ(v[1], 2.0);
@@ -1671,9 +1562,10 @@ v: [1.0, 2.0, 3.0]
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::parse_in_arena(R"(i : null
-s: # Note: leaving the key out is the same as setting null
-v: [Null, NULL, ~] # all the other spellings that YAML supports
+      ryml::parse_in_arena(R"(data:
+  i : null
+  s: # Note: leaving the key out is the same as setting null
+  v: [Null, NULL, ~] # all the other spellings that YAML supports
 )",
           &tree);
       ryml::NodeRef root = tree.rootref();
@@ -1681,9 +1573,10 @@ v: [Null, NULL, ~] # all the other spellings that YAML supports
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<std::optional<int>>("i"), std::nullopt);
-      EXPECT_EQ(container.get<std::optional<std::string>>("s"), std::nullopt);
-      const auto& v = container.get<std::vector<std::optional<double>>>("v");
+      const auto& data = container.group("data");
+      EXPECT_EQ(data.get<std::optional<int>>("i"), std::nullopt);
+      EXPECT_EQ(data.get<std::optional<std::string>>("s"), std::nullopt);
+      const auto& v = data.get<std::vector<std::optional<double>>>("v");
       EXPECT_EQ(v.size(), 3);
       EXPECT_EQ(v[0], std::nullopt);
       EXPECT_EQ(v[1], std::nullopt);
@@ -1694,37 +1587,40 @@ v: [Null, NULL, ~] # all the other spellings that YAML supports
   TEST(InputSpecTest, MatchYamlSizes)
   {
     using ComplicatedType = std::vector<std::map<std::string, std::vector<int>>>;
-    auto spec = all_of({
-        parameter<int>("num"),
-        parameter<ComplicatedType>("v", {.size = {2, dynamic_size, from_parameter<int>("num")}}),
-    });
+    auto spec = group("data", {
+                                  parameter<int>("num"),
+                                  parameter<ComplicatedType>(
+                                      "v", {.size = {2, dynamic_size, from_parameter<int>("num")}}),
+                              });
 
     {
       SCOPED_TRACE("Expected sizes");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::parse_in_arena(R"(num: 2
-v:
-  - key1: [1, 2]
-    key2: [3, 4]
-  - key1: [5, 6])",
+      ryml::parse_in_arena(R"(data:
+  num: 2
+  v:
+    - key1: [1, 2]
+      key2: [3, 4]
+    - key1: [5, 6])",
           &tree);
       ryml::NodeRef root = tree.rootref();
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
       spec.match(node, container);
-      const auto& v = container.get<ComplicatedType>("v");
+      const auto& v = container.group("data").get<ComplicatedType>("v");
       EXPECT_EQ(v.size(), 2);
     }
 
     {
       SCOPED_TRACE("Wrong size from_parameter");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::parse_in_arena(R"(num: 2
-v:
-  - key1: [1, 2, 3]
-    key2: [3, 4]
-  - key1: [5, 6])",
+      ryml::parse_in_arena(R"(data:
+  num: 2
+  v:
+    - key1: [1, 2, 3]
+      key2: [3, 4]
+    - key1: [5, 6])",
           &tree);
       ryml::NodeRef root = tree.rootref();
       ConstYamlNodeRef node(root, "");
@@ -1736,11 +1632,12 @@ v:
     {
       SCOPED_TRACE("Wrong size explicitly set.");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::parse_in_arena(R"(num: 2
-v:
-  - key1: [1, 2]
-  - key1: [5, 6]
-  - key1: [7, 8])",
+      ryml::parse_in_arena(R"(data:
+  num: 2
+  v:
+    - key1: [1, 2]
+    - key1: [5, 6]
+    - key1: [7, 8])",
           &tree);
       ryml::NodeRef root = tree.rootref();
       ConstYamlNodeRef node(root, "");
@@ -1753,44 +1650,44 @@ v:
 
   TEST(InputSpecTest, MaterialExample)
   {
-    auto mat_spec = all_of({
-        parameter<int>("MAT"),
-        one_of({
-            group("MAT_A",
-                {
-                    parameter<int>("a"),
-                }),
-            group("MAT_B",
-                {
-                    parameter<int>("b"),
-                }),
-        }),
-    });
+    auto mat_spec = group("material", {
+                                          parameter<int>("MAT"),
+                                          one_of({
+                                              group("MAT_A",
+                                                  {
+                                                      parameter<int>("a"),
+                                                  }),
+                                              group("MAT_B",
+                                                  {
+                                                      parameter<int>("b"),
+                                                  }),
+                                          }),
+                                      });
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(material:
+  MAT: 1
+  MAT_A:
+    a: 2
+)",
+          root);
 
-      root |= ryml::MAP;
-      root["MAT"] << 1;
-
-      root["MAT_A"] |= ryml::MAP;
-      root["MAT_A"]["a"] << 2;
       ConstYamlNodeRef node(root, "");
 
       InputParameterContainer container;
       mat_spec.match(node, container);
-      EXPECT_EQ(container.get<int>("MAT"), 1);
-      EXPECT_EQ(container.group("MAT_A").get<int>("a"), 2);
+      const auto& material = container.group("material");
+      EXPECT_EQ(material.get<int>("MAT"), 1);
+      EXPECT_EQ(material.group("MAT_A").get<int>("a"), 2);
     }
   }
 
   TEST(InputSpecTest, EmptyMatchesAllDefaulted)
   {
     // This was a bug where a single defaulted parameter was incorrectly reported as not matching.
-    auto spec = all_of({
-        parameter<int>("a", {.default_value = 42}),
-    });
+    auto spec = parameter<int>("a", {.default_value = 42});
 
     {
       ryml::Tree tree = init_yaml_tree_with_exceptions();
@@ -1807,23 +1704,26 @@ v:
   TEST(InputSpecTest, SizedOptionalVector)
   {
     // This was a bug where an optional vector was not parsed correctly.
-    auto spec = all_of({
-        parameter<int>("num", {.default_value = 2}),
-        parameter<std::optional<std::vector<double>>>("v", {.size = from_parameter<int>("num")}),
-    });
+    auto spec = group("data", {
+                                  parameter<int>("num", {.default_value = 2}),
+                                  parameter<std::optional<std::vector<double>>>(
+                                      "v", {.size = from_parameter<int>("num")}),
+                              });
 
     {
       SCOPED_TRACE("Optional has value");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::parse_in_arena(R"(num: 2
-v: [1.0, 2.0])",
+      ryml::parse_in_arena(R"(data:
+  num: 2
+  v: [1.0, 2.0])",
           &tree);
       ConstYamlNodeRef node(tree.rootref(), "");
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<int>("num"), 2);
-      const auto& v = container.get<std::optional<std::vector<double>>>("v");
+      const auto& data = container.group("data");
+      EXPECT_EQ(data.get<int>("num"), 2);
+      const auto& v = data.get<std::optional<std::vector<double>>>("v");
       EXPECT_TRUE(v.has_value());
       EXPECT_EQ(v->size(), 2);
       EXPECT_EQ((*v)[0], 1.0);
@@ -1833,15 +1733,17 @@ v: [1.0, 2.0])",
     {
       SCOPED_TRACE("Empty optional");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::parse_in_arena(R"(num: 2
-v: null)",
+      ryml::parse_in_arena(R"(data:
+  num: 2
+  v: null)",
           &tree);
       ConstYamlNodeRef node(tree.rootref(), "");
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<int>("num"), 2);
-      const auto& v = container.get<std::optional<std::vector<double>>>("v");
+      const auto& data = container.group("data");
+      EXPECT_EQ(data.get<int>("num"), 2);
+      const auto& v = data.get<std::optional<std::vector<double>>>("v");
       EXPECT_FALSE(v.has_value());
     }
   }
@@ -1966,40 +1868,39 @@ v: [1,2,3]
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          R"({
-  [!] Candidate group 'parameters'
-    {
-      [ ] Matched parameter 'start'
-      [ ] Defaulted parameter 'write_output'
-      [!] Candidate group 'TimeIntegration'
-        {
-          [X] Expected one of:
-            {
-              [!] Candidate group 'OST'
-                {
-                  [!] Candidate parameter 'theta' has wrong type, expected type: double
-                }
-              [!] The following data remains unused:
-                Special:
-                  type: invalid
-            }
-            {
-              [!] Candidate group 'Special'
-                {
-                  [!] Candidate parameter 'type' has wrong value, possible values: user|gemm
-                }
-              [!] The following data remains unused:
-                OST:
-                  theta: true
-            }
-          [!] The following data remains unused:
-            Special:
-              type: invalid
-            OST:
-              theta: true
-        }
-    }
-})");
+          R"([!] Candidate group 'parameters'
+  {
+    [ ] Matched parameter 'start'
+    [ ] Defaulted parameter 'write_output'
+    [!] Candidate group 'TimeIntegration'
+      {
+        [X] Expected one of:
+          {
+            [!] Candidate group 'OST'
+              {
+                [!] Candidate parameter 'theta' has wrong type, expected type: double
+              }
+            [!] The following data remains unused:
+              Special:
+                type: invalid
+          }
+          {
+            [!] Candidate group 'Special'
+              {
+                [!] Candidate parameter 'type' has wrong value, possible values: user|gemm
+              }
+            [!] The following data remains unused:
+              OST:
+                theta: true
+          }
+        [!] The following data remains unused:
+          Special:
+            type: invalid
+          OST:
+            theta: true
+      }
+  }
+)");
     }
     {
       SCOPED_TRACE("Unused parts.");
@@ -2019,86 +1920,86 @@ parameters:
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception,
-          R"({
-  [!] Candidate group 'parameters'
-    {
-      [ ] Matched parameter 'start'
-      [ ] Defaulted parameter 'write_output'
-      [!] Candidate group 'TimeIntegration'
-        {
-          [X] Expected one of:
-            {
-              [!] Candidate group 'OST'
-                {
-                  [ ] Matched parameter 'theta'
-                }
-              [!] The following data remains unused:
-                Special: 
-            }
-          [!] The following data remains unused:
-            Special: 
-            OST:
-              theta: 0.5
-        }
-      [!] The following data remains unused:
-        unused: "abc"
-    }
-  [!] The following data remains unused:
-    data:
-      a: 1
-})");
+          R"([!] Candidate group 'parameters'
+  {
+    [ ] Matched parameter 'start'
+    [ ] Defaulted parameter 'write_output'
+    [!] Candidate group 'TimeIntegration'
+      {
+        [X] Expected one of:
+          {
+            [ ] Matched group 'OST'
+            [!] The following data remains unused:
+              Special: 
+          }
+        [!] The following data remains unused:
+          Special: 
+          OST:
+            theta: 0.5
+      }
+    [!] The following data remains unused:
+      unused: "abc"
+  }
+)");
     }
   }
 
   TEST(InputSpecTest, ParameterValidation)
   {
-    auto spec = all_of({
-        parameter<int>("a", {.default_value = 42, .validator = Validators::in_range(0, 50)}),
-        parameter<std::optional<double>>("b", {.validator = Validators::positive<double>()}),
-    });
+    auto spec = group("parameters",
+        {
+            parameter<int>("a", {.default_value = 42, .validator = Validators::in_range(0, 50)}),
+            parameter<std::optional<double>>("b", {.validator = Validators::positive<double>()}),
+        });
 
     {
       SCOPED_TRACE("Valid input");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
-      ryml::parse_in_arena(R"(a: 1
-b: 2.0)",
+      ryml::parse_in_arena(R"(parameters:
+  a: 1
+  b: 2.0)",
           root);
 
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<int>("a"), 1);
-      EXPECT_EQ(*container.get<std::optional<double>>("b"), 2.0);
+      const auto& parameters = container.group("parameters");
+      EXPECT_EQ(parameters.get<int>("a"), 1);
+      EXPECT_EQ(*parameters.get<std::optional<double>>("b"), 2.0);
     }
 
     {
       SCOPED_TRACE("Valid input with defaulted parameter");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
-      ryml::parse_in_arena(R"(a: 1)", root);
+      ryml::parse_in_arena(R"(parameters:
+  a: 1)",
+          root);
 
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<int>("a"), 1);
-      EXPECT_FALSE(container.get<std::optional<double>>("b").has_value());
+      const auto& parameters = container.group("parameters");
+      EXPECT_EQ(parameters.get<int>("a"), 1);
+      EXPECT_FALSE(parameters.get<std::optional<double>>("b").has_value());
     }
 
     {
       SCOPED_TRACE("Validation failure");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
-      ryml::parse_in_arena(R"(a: -1
-b: 0.0)",
+      ryml::parse_in_arena(R"(parameters:
+  a: -1
+  b: 0.0)",
           root);
 
       ConstYamlNodeRef node(root, "");
       InputParameterContainer container;
-      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception, R"({
-  [!] Candidate parameter 'a' does not pass validation: in_range[0,50]
-  [!] Candidate parameter 'b' does not pass validation: in_range(0,1.7976931348623157e+308]
-})");
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(spec.match(node, container), Core::Exception, R"(
+    [!] Candidate parameter 'a' does not pass validation: in_range[0,50]
+    [!] Candidate parameter 'b' does not pass validation: in_range(0,1.7976931348623157e+308]
+)");
     }
   }
 
@@ -2117,51 +2018,59 @@ b: 0.0)",
   TEST(InputSpecTest, OneOfOverlappingOptionsSingleParameter)
   {
     // This is a tricky case, where one_of the choices is a single parameter
-    const auto spec = one_of({parameter<int>("a"), all_of({
-                                                       parameter<int>("a"),
-                                                       parameter<int>("b"),
-                                                   })});
+    const auto spec = group("data", {
+                                        one_of({parameter<int>("a"), all_of({
+                                                                         parameter<int>("a"),
+                                                                         parameter<int>("b"),
+                                                                     })}),
+                                    });
 
     {
       SCOPED_TRACE("Overlapping values.");
       ryml::Tree tree = init_yaml_tree_with_exceptions();
-      ryml::parse_in_arena(R"(a: 1
-b: 2)",
+      ryml::parse_in_arena(R"(data:
+  a: 1
+  b: 2)",
           &tree);
       const ConstYamlNodeRef node(tree.rootref(), "");
 
       InputParameterContainer container;
       spec.match(node, container);
-      EXPECT_EQ(container.get<int>("a"), 1);
-      EXPECT_EQ(container.get<int>("b"), 2);
+      const auto& data = container.group("data");
+      EXPECT_EQ(data.get<int>("a"), 1);
+      EXPECT_EQ(data.get<int>("b"), 2);
     }
   }
 
   TEST(InputSpecTest, OneOfOverlappingOptionsSafeAllOf)
   {
     // This case is similar to the previous one, but already uses all_ofs.
-    const auto spec = one_of({
-        all_of({
-            parameter<int>("a"),
-            parameter<int>("b"),
-        }),
-        all_of({
-            parameter<int>("a"),
-            parameter<int>("b"),
-            parameter<int>("c"),
-        }),
-    });
+    const auto spec = group("data", {
+                                        one_of({
+                                            all_of({
+                                                parameter<int>("a"),
+                                                parameter<int>("b"),
+                                            }),
+                                            all_of({
+                                                parameter<int>("a"),
+                                                parameter<int>("b"),
+                                                parameter<int>("c"),
+                                            }),
+                                        }),
+                                    });
     ryml::Tree tree = init_yaml_tree_with_exceptions();
-    ryml::parse_in_arena(R"(a: 1
-b: 2
-c: 3)",
+    ryml::parse_in_arena(R"(data:
+  a: 1
+  b: 2
+  c: 3)",
         &tree);
     const ConstYamlNodeRef node(tree.rootref(), "");
     InputParameterContainer container;
     spec.match(node, container);
-    EXPECT_EQ(container.get<int>("a"), 1);
-    EXPECT_EQ(container.get<int>("b"), 2);
-    EXPECT_EQ(container.get<int>("c"), 3);
+    const auto& data = container.group("data");
+    EXPECT_EQ(data.get<int>("a"), 1);
+    EXPECT_EQ(data.get<int>("b"), 2);
+    EXPECT_EQ(data.get<int>("c"), 3);
   }
 
 
@@ -2285,13 +2194,11 @@ c: 3)",
     }
 
     {
-      SCOPED_TRACE("Missing group_struct but all_of");
+      SCOPED_TRACE("Top-level group_struct");
 
-      // This is fine because one could continue to use the all_of in a group_struct later
-      auto spec = all_of({
-          parameter<int>("a", {.store = in_struct(&S::a)}),
-          parameter<int>("b", {.store = in_struct(&S::b)}),
-      });
+      // Construction of this spec is fine because one could continue to use this spec inside
+      // a group_struct, but it is not allowed to match it directly.
+      auto spec = parameter<int>("a", {.store = in_struct(&S::a)});
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
 

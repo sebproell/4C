@@ -700,6 +700,7 @@ bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
     // Match will stay a partial match.
     return false;
   }
+  match_entry.state = IO::Internal::MatchEntry::State::matched;
   move_my_storage(container, std::move(struct_storage));
   return true;
 }
@@ -786,14 +787,7 @@ bool Core::IO::Internal::AllOfSpec::match(ConstYamlNodeRef node,
 {
   match_entry.matched_node = node.node.id();
 
-  bool all_matched = fully_match_specs(specs, node, container, match_entry);
-
-  if (!all_matched)
-  {
-    return false;
-  }
-
-  return true;
+  return fully_match_specs(specs, node, container, match_entry);
 }
 
 
