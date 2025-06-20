@@ -2,7 +2,17 @@
 {% set input_file1_content = load_input_file(input_file1) %}
 {% set input_file2 = "fbi_fluid_obstacle.4C.yaml" %}
 {% set input_file2_content = load_input_file(input_file2) %}
-
+{% set input_file3 = "sohex8_dbc_monitor.4C.yaml" %}
+{% set input_file3_content = load_input_file(input_file3) %}
+{% set input_file4 = "constr3D_NormComp_STI.4C.yaml" %}
+{% set input_file4_content = load_input_file(input_file4) %}
+{% set input_file5 = "constr2D_MPC_angle.4C.yaml" %}
+{% set input_file5_content = load_input_file(input_file5) %}
+{% set input_file6 = "elch_gaussian_hill_pbc_genalpha.4C.yaml" %}
+{% set input_file6_content = load_input_file(input_file6) %}
+{% set input_file7 = "rve3d_periodic_bcs.4C.yaml" %}
+{% set input_file7_content = load_input_file(input_file7) %}
+.4C.yaml
 .. _boundaryconditions:
 
 Boundary Conditions
@@ -20,9 +30,10 @@ with subsequent lines defining the region and the specific values of the
 boundary conditions. Note that some boundary condition types do not follow this general structure.
 For each particular condition, refer to the :ref:`boundary condition reference <prescribedconditionreference>`.
 
-What follows is a list of condition entries (a dictionary) starting with the entry pair ``E: <set>``, where ``set`` is the number of the TOPOLOGY set defined in terms of points, lines, surfaces and volumes, respectively.
+What follows is a list of condition entries (a dictionary) starting with the entry pair ``E: <set>``,
+where ``set`` is the number of the TOPOLOGY set defined in terms of points, lines, surfaces and volumes, respectively.
 The subsequent entries depend on the type of condition.
-As an example, namely a Neumann and a Dirichlet boundary condition are given below:
+As an example, namely a Neumann and a Dirichlet boundary condition are given below (taken from {{ input_file1 }}):
 
 {{ section_dump(input_file1_content, ["DESIGN SURF NEUMANN CONDITIONS", "DESIGN SURF DIRICH CONDITIONS", ]) }}
 
@@ -132,27 +143,13 @@ directory of the simulation directory. Note that even even the TAG
 parameter can be given for any dirichlet boundary condition, it only
 produces results for forces and moments in a structural analysis.
 
-One needs also to set the corresponding IO, such as
+One needs also to set the corresponding IO, such as the following (taken from {{ input_file3 }}):
 
-.. code-block:: yaml
+{{ section_dump(input_file3_content, "IO/MONITOR STRUCTURE DBC") }}
 
-
-   IO/MONITOR STRUCTURE DBC:
-     INTERVAL_STEPS: 1
-     PRECISION_FILE: 16
-     PRECISION_SCREEN: 5
-     FILE_TYPE: csv
-     WRITE_HEADER: no
-
-, see :ref:`SECio_monitorstructuredbc`,
-and set the right time integration strategy, :ref:`INT_STRATEGY<SECstructuraldynamic>`,
-by which the standard one, i.e. Generalized Newmark Alpha, should always work.
-
-.. code-block:: yaml
-
-
-   STRUCTURAL DYNAMIC:
-     INT_STRATEGY: Standard
+This writes a csv file for each dirichlet boundary condition containing the above tag in the directory ``<output_name>_monitor_dbc/*.csv``.
+For further parameters (as, for example, the accuracy), see :ref:`SECio_monitorstructuredbc`,
+and set the right time integration strategy, :ref:`INT_STRATEGY<SECstructuraldynamic>`.
 
 Note that the TAG parameter may only be set for linear elements, not for
 quadratic ones (HEX20, TET10)
@@ -291,13 +288,6 @@ but rather a displacement relative to other displacements, which is commonly cal
 Several nodes coupled for specific degrees of freedom
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: yaml
-
-   DESIGN POINT COUPLING CONDITIONS:
-   - E: <pointset>
-     NUMDOF: <numdof>
-     ONOFF: [ 0|1, ..., 0|1 ]
-
 Some applications (typically in structural / solid mechanics) require the coupling of certain DoFs of two or more nodes at the same geometrical position, while certain other DoFs of those
 nodes shall remain independent (e.g. joints and hinges in frames).
 While it is very easy to couple all(!) DoFs of several nodes at the same geometrical position (by simply merging the nodes into one node), things are more complicated if only certain DoFs are to be coupled.
@@ -334,118 +324,52 @@ see also :ref:`designpointcouplingconditions`.
 Surface coupled to a node in a given direction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: yaml
+In this constraint, the whole surface is displaced the same amount as a single master node
+(which is not defined by a DPOINT, but by its given node ID).
 
-   DESIGN SURFACE NORMALDIR MULTIPNT CONSTRAINT 3D:
-   - E: <surfset>
-     ConditionID: <conditionID>
-     amplitude: <amplitude>
-     curve: <curveID>
-     activeTime <inittime>
-     masterNode: <masternodeID>
-     direction: <n_x> <n_y> <n_z>
-     value: [disp|x]
-     control: [abs|rel]
-   #
-   DESIGN SURFACE NORMALDIR MULTIPNT CONSTRAINT 3D PEN:
-   - E: <surfset>
-     ConditionID: <conditionID>
-     amplitude: <amplitude>
-     curve: <curveID>
-     activeTime <inittime>
-     penalty: <penalty>
-     masterNode: <masternodeID>
-     direction: <n_x> <n_y> <n_z>
-     value: [disp|x]
-     control: [abs|rel]
+{{ section_dump(input_file4_content, "DESIGN SURFACE NORMALDIR MULTIPNT CONSTRAINT 3D") }}
 
-
-The whole surface is displaced the same amount as a single master node (which is not defined by a DPOINT, but by its ID). The penalty version uses a different algorithm, where one has to provide a penalty parameter.
+There is also a penalty version, which uses a different algorithm, where one has to provide a penalty parameter.
 See also :ref:`designsurfacenormaldirmultipntconstraint3d` and :ref:`designsurfacenormaldirmultipntconstraint3dpen`.
 
 Node displacement relative to a given surface or line
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: yaml
-
-   DESIGN SURFACE MULTIPNT CONSTRAINT 3D:
-   - E <surfaceset>
-     ConditionID: <conditionID>
-     amplitude: <amplitude>
-     curve: <curveID>
-     activeTime: <inittime>
-     planeNodes:
-     - <node1>
-     - <node2>
-     - <node3>
-     control: [dist|angle]
-   #
-   DESIGN LINE MULTIPNT CONSTRAINT 2D:
-   - E <lineset>
-     ConditionID: <conditionID>
-     amplitude: <amplitude>
-     curve: <curveID>
-     constrNode1: <node1>
-     constrNode2: <node2>
-     constrNode3: <node3>
-     control: [dist|angle]
-     activeTime: <inittime>
-   #
-
-
 This is a rather specific constraint, where a plane (or a line, respectively) is defined by three nodes, which are given as index of the ``<surfset>|<lineset>``
 (the index is starting from 1 for whatever reasons),
-and the other nodes of this set are displaced with respect to this plane/line. See :ref:`designsurfacemultipntconstraint3D` and :ref:`designlinemultipntconstraint2D`
+and the other nodes of this set are displaced with respect to this plane/line.
+An example using this constraint for a line is given in {{ input_file5 }}:
+
+{{ section_dump(input_file5_content, "DESIGN LINE MULTIPNT CONSTRAINT 2D") }}
+
+For the surface condition and a complete list of possible parameters, see :ref:`designsurfacemultipntconstraint3D` and :ref:`designlinemultipntconstraint2D`
 
 Periodic boundary conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: yaml
-
-   DESIGN SURF PERIODIC BOUNDARY CONDITIONS:
-   # definition of slave surface
-   - E: <surfset>
-     ID: 1
-     MASTER_OR_SLAVE: Slave
-     PLANE: [xy|xz|yz]
-     LAYER: 1
-     ANGLE: 0.0
-     ABSTREETOL: 1e-6
-   # definition of master surface
-   - E: <surfset>
-     ID: 1
-     MASTER_OR_SLAVE: Master
-     PLANE: [xy|xz|yz]
-     LAYER: 1
-     ANGLE: 0.0
-     ABSTREETOL: 1e-6
-   #
-   DESIGN LINE PERIODIC BOUNDARY CONDITIONS:
-   # definition of slave line
-   - E: <lineset>
-     ID: 1
-     MASTER_OR_SLAVE: Slave
-     PLANE: [xy|xz|yz]
-     LAYER: 1
-     ANGLE: 0.0
-     ABSTREETOL: 1e-6
-   # definition of master line
-   - E: <lineset>
-     ID: 1
-     MASTER_OR_SLAVE: Slave
-     PLANE: [xy|xz|yz]
-     LAYER: 1
-     ANGLE: 0.0
-     ABSTREETOL: 1e-6
 
 
 Periodic boundaries are defined as conditions, where nodes on one surface (normal to any of the cartesian coordinate directions, i.e., xy, yz, or xz),
 are bound to the respective nodes on the opposite side, see the reference :ref:`designsurfperiodicboundaryconditions`, :ref:`designlineperiodicboundaryconditions`.
 They can be defined at one or several sides of the structure.
-Nodes at either side must be at equal plane coordinates (within the tolerance given by `ABSTREETOL`), and the normal distance must be equal for each nodal pair.
 
+Two types of periodic boundary conditions are implemented, one is for general periodic behavior, denoted as ``PERIODIC BOUNDARY CONDITIONS``,
+the other one is only useful for structural mechanics, where the displacement on one side can differ from the displacement on the other side by a certain (spatially constant) amount, called ``PERIODIC RVE 3D BOUNDARY CONDITIONS``.
+For both types, the coordinates on the opposite surfaces/lines must be on equal positions (except the constant plane/line distance).
+
+The general case is used in a number of test files for various physics, see the one taken from an electro-chemical simulation, {{ input_file6 }}:
+
+{{ section_dump(input_file6_content, "DESIGN SURF PERIODIC BOUNDARY CONDITIONS") }}
+
+Here, nodes at either side must be at equal plane coordinates within the tolerance given by `ABSTREETOL`.
 The definition of `ANGLE` is used for rotational symmetry.
 For this case, the master must always be in the defined `PLANE`, and the slave is rotated by the given angle, while the same plane must be given.
+
+The mechanical periodic boundary conditions (mainly used in micro mechanics, where these conditions model a so-called representative volume element, thus the name RVE BOUNDARY)
+have a different structure, here the surfaces must comply with the global cartesian directions, x,y,z, and the surfaces have to be defined pairwise for each direction where they are applied
+(they don't need to be applied for all directions). An example showing its application is given in {{ input_file7 }}:
+
+{{ section_dump(input_file7_content, "DESIGN SURF PERIODIC RVE 3D BOUNDARY CONDITIONS") }}
+
 
 
 
