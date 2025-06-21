@@ -31,7 +31,7 @@ Core::Utils::ParsedFunctionVariable::ParsedFunctionVariable(
 double Core::Utils::ParsedFunctionVariable::value(const double t)
 {
   // evaluate the value of the function
-  double value = timefunction_->value({{"t", t}});
+  double value = timefunction_->value("t", t);
 
   return value;
 }
@@ -44,7 +44,7 @@ double Core::Utils::ParsedFunctionVariable::time_derivative_value(
   tfad.val() = Sacado::Fad::DFad<double>(1, 0, t);
   Sacado::Fad::DFad<Sacado::Fad::DFad<double>> vfad;
 
-  vfad = timefunction_->second_derivative({{"t", tfad}}, {});
+  vfad = timefunction_->second_derivative("t", tfad);
 
   if (deg == 0)
   {
@@ -256,11 +256,11 @@ double Core::Utils::MultiFunctionVariable::value(const double t)
   double value;
   if (index == 0)
   {
-    value = timefunction_[0]->value({{"t", t_equivalent}});
+    value = timefunction_[0]->value("t", t_equivalent);
   }
   else
   {
-    value = timefunction_[index - 1]->value({{"t", t_equivalent}});
+    value = timefunction_[index - 1]->value("t", t_equivalent);
   }
 
   return value;
@@ -307,11 +307,11 @@ double Core::Utils::MultiFunctionVariable::time_derivative_value(const double t,
   // evaluate the derivative of the function considering the different possibilities
   if (index == 0)
   {
-    vfad = timefunction_[0]->second_derivative({{"t", tfad}}, {});
+    vfad = timefunction_[0]->second_derivative("t", tfad);
   }
   else
   {
-    vfad = timefunction_[index - 1]->second_derivative({{"t", tfad}}, {});
+    vfad = timefunction_[index - 1]->second_derivative("t", tfad);
   }
 
   if (deg == 0)

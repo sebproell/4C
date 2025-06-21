@@ -10,28 +10,16 @@
 
 #include "4C_config.hpp"
 
-#include "4C_utils_exceptions.hpp"
+#include "4C_utils_symbolic_expression_details.hpp"
 
-#include <Sacado.hpp>
-
-#include <map>
 #include <memory>
 #include <numeric>
 #include <string>
 
 FOUR_C_NAMESPACE_OPEN
 
-
 namespace Core::Utils
 {
-  // forward declaration
-  namespace SymbolicExpressionDetails
-  {
-    template <typename Number>
-    class Parser;
-  }
-
-
   /*!
    *  @brief The SymbolicExpression class evaluates and forms the first and second derivatives of
    * arbitrary symbolic expressions.
@@ -87,50 +75,55 @@ namespace Core::Utils
 
 
     /*!
-     * @brief evaluates the parsed expression for a given set of variables
+     * @brief Evaluates the parsed expression for a given set of variables
      *
-     * @param[in] variable_values A map containing all variables (variablename, value) necessary to
-     * evaluate the parsed expression. If a parsed variable is not specified, an error is thrown
-     * naming the missing variable.
-     * @return Value of the parsed expression
+     * The variables can be either passed as key-value pairs (preferred) or as a map of keys and
+     * values (slower).
+     *
+     * @code
+     * symbolic_expression.value("x", 1.0, "y", 2.0);
+     * // or
+     * symbolic_expression.value({{"x", 1.0}, {"y", 2.0}});
+     * @endcode
+     *
+     * Failing to provide a value for a variable that is parsed in the expression will result in an
+     * exception being thrown. It is *not* an error to provide a value for a variable that is
+     * not parsed in the expression; the variable is simply ignored.
+     *
+     * @return A ValueType with the value of the expression evaluated for the given variables.
      */
-    ValueType value(const std::map<std::string, ValueType>& variable_values) const;
+    template <typename... Args>
+    ValueType value(Args&&... args) const;
 
 
     /*!
-     * @brief evaluates the first derivative of the parsed expression with respect to a given set of
-     * variables. If a parsed variable is not specified in the @p variable_values or @p constants,
-     * an error is thrown naming the missing variable.
+     * @brief Evaluates the first derivative of the parsed expression.
      *
-     * @param[in] variable_values A map containing all variables (variablename, value) necessary to
-     * build the first derivative of the parsed expression with respect to this variables. Since the
-     * first derivative of the parsed expression is evaluated, only Sacado::Fad::DFad<Number> types,
-     * with Number being an arithmetic type, are allowed.
-     * @param[in] constants A map containing all constants (constantname, value) necessary
-     * to evaluate the parsed expression.
-     * @return  First derivative of the parsed expression with respect to the variables
+     * This functions makes use of the FirstDerivativeType to compute the first derivative. The
+     * variables can be either passed as key-value pairs (preferred) or as a map of keys and
+     * values (slower). The values need to be of FirstDerivativeType. See value() for the
+     * general syntax.
+     *
+     * @return A FirstDerivativeType object that contains the first derivatives of the expression
+     * with respect to the variables that were passed.
      */
-    FirstDerivativeType first_derivative(std::map<std::string, FirstDerivativeType> variable_values,
-        const std::map<std::string, ValueType>& constant_values) const;
+    template <typename... Args>
+    FirstDerivativeType first_derivative(Args&&... args) const;
 
 
     /*!
-     * @brief evaluates the second derivative of the parsed expression with respect to a given set
-     * of variables. If a parsed variable is not specified in the @p variable_values or @p
-     * constants, an error is thrown naming the missing variable.
+     * @brief Evaluates the second derivative of the parsed expression.
      *
-     * @param[in] variable_values A map containing all variables (variablename, value) necessary to
-     * build the first derivative of the parsed expression with respect to this variables. Since the
-     * second derivative of the parsed expression is evaluated, only
-     * Sacado::Fad::DFad<Sacado::Fad::DFad<Number>> types, with Number being an arithmetic type, are
-     * allowed.
-     * @param[in] constants A map containing all constants (constantname, value) necessary
-     * to evaluate the parsed expression.
-     * @return  Second derivative of the parsed expression with respect to the variables
+     * This functions makes use of the SecondDerivativeType to compute the second derivative. The
+     * variables can be either passed as key-value pairs (preferred) or as a map of keys and
+     * values (slower). The values need to be of SecondDerivativeType. See value() for the
+     * general syntax.
+     *
+     * @returns A SecondDerivativeType object that contains the second derivatives of the expression
+     * with respect to the variables that were passed.
      */
-    SecondDerivativeType second_derivative(
-        const std::map<std::string, SecondDerivativeType>& variable_values,
-        const std::map<std::string, ValueType>& constant_values) const;
+    template <typename... Args>
+    SecondDerivativeType second_derivative(Args&&... args) const;
 
    private:
     //! Parser for the symbolic expression evaluation
@@ -144,6 +137,29 @@ namespace Core::Utils
     std::unique_ptr<Core::Utils::SymbolicExpressionDetails::Parser<SecondDerivativeType>>
         parser_for_secondderivative_;
   };
+
+  template <typename T>
+  template <typename... Args>
+  auto SymbolicExpression<T>::value(Args&&... args) const -> ValueType
+  {
+    return parser_for_value_->evaluate(std::forward<Args>(args)...);
+  }
+
+
+  template <typename T>
+  template <typename... Args>
+  auto SymbolicExpression<T>::first_derivative(Args&&... args) const -> FirstDerivativeType
+  {
+    return parser_for_firstderivative_->evaluate(std::forward<Args>(args)...);
+  }
+
+
+  template <typename T>
+  template <typename... Args>
+  auto SymbolicExpression<T>::second_derivative(Args&&... args) const -> SecondDerivativeType
+  {
+    return parser_for_secondderivative_->evaluate(std::forward<Args>(args)...);
+  }
 
 }  // namespace Core::Utils
 
