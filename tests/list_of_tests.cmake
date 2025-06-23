@@ -495,7 +495,6 @@ four_c_test(TEST_FILE elch_pulseplating_hex27_moving_boundary.4C.yaml NP 3 RESTA
 four_c_test(TEST_FILE elch_RCE_rotsymm_pbc.4C.yaml NP 2)
 four_c_test(TEST_FILE elch_straight_convection.4C.yaml NP 2)
 four_c_test(TEST_FILE elch_test.4C.yaml NP 2)
-four_c_test(TEST_FILE embeddedmesh_2d_hertzian_contact.yaml NP 2 CSV_COMPARISON_RESULT_FILE xxx_energy.csv CSV_COMPARISON_REFERENCE_FILE ref/embeddedmesh_2d_hertzian_contact_energy.csv CSV_COMPARISON_TOL_R 0.0 CSV_COMPARISON_TOL_A 1.0e-16)
 four_c_test(TEST_FILE embeddedmesh_block_nurbs27_hex8_wedge6.4C.yaml NP 2)
 four_c_test(TEST_FILE embeddedmesh_cantilever_beam.4C.yaml NP 1)
 four_c_test(TEST_FILE embeddedmesh_cut_bar_under_torsion_one_element.4C.yaml NP 1)
@@ -1931,6 +1930,7 @@ if (FOUR_C_WITH_ARBORX)
     four_c_test(TEST_FILE beam3r_herm2line3_static_point_coupling_BTSPH_contact_stent_honeycomb_stretch_r01_circ10_boundingvolume.4C.yaml NP 3 RESTART_STEP 20)
     four_c_test(TEST_FILE embeddedmesh_parallel_bending_beam.4C.yaml NP 3)
     four_c_test(TEST_FILE embeddedmesh_parallel_bending_beam_fine.4C.yaml NP 3)
+    four_c_test(TEST_FILE embeddedmesh_2d_hertzian_contact.yaml NP 2 CSV_COMPARISON_RESULT_FILE xxx_energy.csv CSV_COMPARISON_REFERENCE_FILE ref/embeddedmesh_2d_hertzian_contact_energy.csv CSV_COMPARISON_TOL_R 0.0 CSV_COMPARISON_TOL_A 1.0e-16)
 
     # only execute these vtk tests with ArborX
     four_c_test_vtk(beam3eb_static_beam_to_solid_volume_meshtying_beam_to_beam_contact_boundingvolume-vtk-beam-interaction-geometric-search.4C.yaml beam3eb_static_beam_to_solid_volume_meshtying_beam_to_beam_contact_boundingvolume.4C.yaml 2 xxx-beam-interaction-geometric-search.pvd ref/beam3eb_static_beam_to_solid_volume_meshtying_beam_to_beam_contact_boundingvolume-vtk/beam-interaction-geometric-search.pvd 1e-06 0.0 1.0)
