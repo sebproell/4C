@@ -16,6 +16,8 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace
 {
+  using FAD = Sacado::Fad::DFad<double>;
+
   /// converts the values of variables from type double to FAD double and returns the modified
   /// vector of name-value-pairs
   std::map<std::string, Sacado::Fad::DFad<double>> convert_variable_values_to_fad_objects(
@@ -49,14 +51,14 @@ namespace
   {
     Core::Utils::SymbolicExpression<double> symbolicexpression("2.0");
 
-    EXPECT_DOUBLE_EQ(symbolicexpression.value({}), 2.0);
+    EXPECT_DOUBLE_EQ(symbolicexpression.value(), 2.0);
   }
 
   TEST(SymbolicExpressionTest, TestValue)
   {
     Core::Utils::SymbolicExpression<double> symbolicexpression("2*x");
 
-    EXPECT_DOUBLE_EQ(symbolicexpression.value({{"x", 2.0}}), 4.0);
+    EXPECT_DOUBLE_EQ(symbolicexpression.value("x", 2.0), 4.0);
   }
 
   TEST(SymbolicExpressionTest, TestFirstDeriv)
@@ -67,21 +69,15 @@ namespace
         "2*Variable1*Variable1*Constant1*Variable2*Variable2");
     Core::Utils::SymbolicExpression<double> symbolicexpression_pow2(
         "2*Variable1^2*Constant1*Variable2^2");
-    std::map<std::string, double> constants{{"Constant1", 2.0}};
 
     std::map<std::string, double> variables{{"Variable1", 6.0}, {"Variable2", 3.0}};
 
-    auto variables_FAD = convert_variable_values_to_fad_objects(variables);
+    auto variable_values = convert_variable_values_to_fad_objects(variables);
+    variable_values.emplace("Constant1", 2.0);
 
-    // convert vector of pairs to map variables_values
-    std::map<std::string, Sacado::Fad::DFad<double>> variable_values;
-
-    std::copy(variables_FAD.begin(), variables_FAD.end(),
-        std::inserter(variable_values, variable_values.begin()));
-
-    auto fdfad_bilin = symbolicexpression_bilin.first_derivative(variable_values, constants);
-    auto fdfad_xtimesx = symbolicexpression_xtimesx.first_derivative(variable_values, constants);
-    auto fdfad_pow2 = symbolicexpression_pow2.first_derivative(variable_values, constants);
+    auto fdfad_bilin = symbolicexpression_bilin.first_derivative(variable_values);
+    auto fdfad_xtimesx = symbolicexpression_xtimesx.first_derivative(variable_values);
+    auto fdfad_pow2 = symbolicexpression_pow2.first_derivative(variable_values);
 
     EXPECT_DOUBLE_EQ(fdfad_bilin.dx(0), 12.0);                    // dFunction1/dVariable1
     EXPECT_DOUBLE_EQ(fdfad_bilin.dx(1), 24.0);                    // dFunction1/dVariable2
@@ -107,35 +103,47 @@ namespace
     Core::Utils::SymbolicExpression<double> symbolicexpression_xtimesx("x * x");
 
     EXPECT_NEAR(
-        symbolicexpression_sincostan.value({{"x", 0.2}, {"y", 0.4}}), 1.4114033869288349, 1.0e-14);
+        symbolicexpression_sincostan.value("x", 0.2, "y", 0.4), 1.4114033869288349, 1.0e-14);
 
-    EXPECT_NEAR(
-        symbolicexpression_logexp.value({{"x", 0.2}, {"y", 0.4}}), -0.59794000867203767, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_logexp.value("x", 0.2, "y", 0.4), -0.59794000867203767, 1.0e-14);
 
-    EXPECT_NEAR(symbolicexpression_sqrtheavisidefabs.value({}), 5.3, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_sqrtheavisidefabs.value(), 5.3, 1.0e-14);
 
-    EXPECT_NEAR(symbolicexpression_atan2.value({}), 0.46364760900080609, 1.0e-14);
-    EXPECT_NEAR(symbolicexpression_xpow2.value({{"x", 0.2}}),
-        symbolicexpression_xtimesx.value({{"x", 0.2}}), 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_atan2.value(), 0.46364760900080609, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_xpow2.value("x", 0.2),
+        symbolicexpression_xtimesx.value("x", 0.2), 1.0e-14);
   }
 
   TEST(SymbolicExpressionTest, TestValidLiterals)
   {
     Core::Utils::SymbolicExpression<double> symbolicexpression("2*pi * 1.0e-3  + 3.0E-4 * x");
 
-    EXPECT_NEAR(symbolicexpression.value({{"x", 1.0}}), 0.0065831853071795865, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression.value("x", 1.0), 0.0065831853071795865, 1.0e-14);
   }
 
   TEST(SymbolicExpressionTest, UnaryMinus)
   {
     Core::Utils::SymbolicExpression<double> symbolicexpression("-4.0 * t");
-    auto variables = std::map<std::string, double>{{"t", 1.0}};
-    auto fad_variables = convert_variable_values_to_fad_objects(variables);
 
-    auto value = symbolicexpression.value(variables);
+    auto value = symbolicexpression.value("t", 1.0);
     EXPECT_DOUBLE_EQ(value, -4.0);
-    auto first_derivative = symbolicexpression.first_derivative(fad_variables, {});
+    auto first_derivative = symbolicexpression.first_derivative("t", FAD(1, 0, 1.0));
     EXPECT_DOUBLE_EQ(first_derivative.dx(0), -4.0);
+  }
+
+  TEST(SymbolicExpressionTest, UselessVariablesDiscarded)
+  {
+    Core::Utils::SymbolicExpression<double> symbolicexpression("1.23");
+
+    auto value = symbolicexpression.value("x", 1.0);
+    EXPECT_DOUBLE_EQ(value, 1.23);
+  }
+
+  TEST(SymbolicExpressionTest, SingleVariable)
+  {
+    Core::Utils::SymbolicExpression<double> symbolicexpression("x");
+    auto value = symbolicexpression.value("x", 1.0);
+    EXPECT_DOUBLE_EQ(value, 1.0);
   }
 
   TEST(SymbolicExpressionTest, EvaluateWithMissingVariableThrows)
@@ -143,7 +151,7 @@ namespace
     Core::Utils::SymbolicExpression<double> symbolicexpression(
         "2*Variable1*Constant1*Variable2*Variable3");
 
-    EXPECT_ANY_THROW(symbolicexpression.value({{"Variable1", 1.0}, {"Constant1", 1.0}}));
+    EXPECT_ANY_THROW(symbolicexpression.value("Variable1", 1.0, "Constant1", 1.0));
   }
 
   TEST(SymbolicExpressionTest, InvalidOperatorThrows)

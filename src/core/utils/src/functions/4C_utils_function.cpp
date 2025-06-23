@@ -114,8 +114,12 @@ namespace
     // number of variables
     auto numvariables = static_cast<int>(variables.size());
 
+    std::map<std::string, Sacado::Fad::DFad<double>> variable_values = variables;
+    std::copy(constant_values.begin(), constant_values.end(),
+        std::inserter(variable_values, variable_values.end()));
+
     // evaluate the expression
-    Sacado::Fad::DFad<double> fdfad = expr[component]->first_derivative(variables, constant_values);
+    Sacado::Fad::DFad<double> fdfad = expr[component]->first_derivative(variable_values);
 
     // resulting vector
     std::vector<double> res(numvariables);
@@ -427,7 +431,7 @@ std::vector<double> Core::Utils::SymbolicFunctionOfSpaceTime::evaluate_spatial_d
   set_values_in_expression_second_deriv(variables_, x, t, variable_values);
 
   // The expression evaluates to an FAD object for up to second derivatives
-  SecondDerivativeType fdfad = expr_[component_mod]->second_derivative(variable_values, {});
+  SecondDerivativeType fdfad = expr_[component_mod]->second_derivative(variable_values);
 
   // Here we return the first spatial derivatives given by FAD component 0, 1 and 2
   return {fdfad.dx(0).val(), fdfad.dx(1).val(), fdfad.dx(2).val()};
@@ -459,7 +463,7 @@ std::vector<double> Core::Utils::SymbolicFunctionOfSpaceTime::evaluate_time_deri
   {
     // evaluation of derivatives
 
-    fdfad = expr_[component_mod]->second_derivative(variable_values, {});
+    fdfad = expr_[component_mod]->second_derivative(variable_values);
 
     // evaluation of dF/dt applying the chain rule:
     // dF/dt = dF*/dt + sum_i(dF/dvi*dvi/dt)

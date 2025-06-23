@@ -77,7 +77,7 @@ double Core::Utils::SymbolicFunctionOfTime::evaluate_derivative(
     variable_values.emplace(variables_[i]->name(), fadvectvars[i]);
   }
 
-  auto f_dfad = expr_[component]->first_derivative(variable_values, {});
+  auto f_dfad = expr_[component]->first_derivative(variable_values);
 
   double f_dt = f_dfad.dx(0);
   for (int i = 0; i < static_cast<int>(variables_.size()); ++i)
