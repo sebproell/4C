@@ -1926,8 +1926,6 @@ namespace Core::LinAlg
     template <class ValueType, unsigned int i, unsigned int j>
     constexpr inline void normalize(ValueType* vector)
     {
-      FOUR_C_ASSERT_ALWAYS(j == 1, "normalize() is only available for column vectors");
-
       ValueType norm2 = DenseFunctions::norm2<ValueType, i, j>(vector);
       if (norm2 < 1e-10)
       {
@@ -2332,9 +2330,8 @@ namespace Core::LinAlg
     /// Normalize vector
     /*!
       Normalize this matrix, i.e. scale it to have a norm2 of 1.
-      This only works for column vectors, i.e. matrices with one column.
 
-      \note This function will throw an exception if the matrix is not a column vector.
+      \note This function will throw an exception if the matrix norm is zero.
      */
     inline void normalize() { DenseFunctions::normalize<ValueType, rows, cols>(data()); }
 

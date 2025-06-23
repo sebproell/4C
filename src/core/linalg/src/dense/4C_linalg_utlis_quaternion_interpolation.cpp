@@ -40,7 +40,8 @@ Core::LinAlg::Matrix<4, 1> Core::LinAlg::spherical_linear_interpolation(
   {
     // If the quaternions are close, use linear interpolation
     Core::LinAlg::Matrix<4, 1> result;
-    for (int i = 0; i < 4; ++i) result(i, 0) = (1.0 - t) * q1(i, 0) + t * q2_mod(i, 0);
+    for (int i = 0; i < 4; ++i) result(i, 0) = std::lerp(q1(i, 0), q2_mod(i, 0), t);
+
     // Normalize
     result.normalize();
     return result;
