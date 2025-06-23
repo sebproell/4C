@@ -13,6 +13,7 @@
 
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_functionvariables.hpp"
+#include "4C_utils_symbolic_expression.fwd.hpp"
 
 #include <memory>
 #include <span>
@@ -23,10 +24,6 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::Utils
 {
-
-  template <class T>
-  class SymbolicExpression;
-
   /*!
    * \brief interface for space- and time-dependent functions.
    *

@@ -10,6 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_utils_symbolic_expression.fwd.hpp"
+
 #include <memory>
 #include <vector>
 
@@ -24,9 +26,6 @@ namespace Core::IO
 /*----------------------------------------------------------------------*/
 namespace Core::Utils
 {
-  template <class T>
-  class SymbolicExpression;
-
   struct Periodicstruct
   {
     bool periodic;
@@ -79,7 +78,7 @@ namespace Core::Utils
 
    private:
     /// parsed function
-    std::shared_ptr<Core::Utils::SymbolicExpression<double>> timefunction_;
+    std::shared_ptr<Core::Utils::SymbolicExpression<double, "t">> timefunction_;
   };
 
 
@@ -142,7 +141,7 @@ namespace Core::Utils
     const std::vector<double> times_;
 
     /// vector of parsed functions
-    std::vector<std::shared_ptr<Core::Utils::SymbolicExpression<double>>> timefunction_;
+    std::vector<std::shared_ptr<Core::Utils::SymbolicExpression<double, "t">>> timefunction_;
 
 
     /// flag for periodic repetition

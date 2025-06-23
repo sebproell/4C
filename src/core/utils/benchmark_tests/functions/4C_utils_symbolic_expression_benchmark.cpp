@@ -19,11 +19,11 @@ namespace
   void symbolic_expression_constant(benchmark::State& state)
   {
     // A baseline benchmark which has no variables and only evaluates a constant expression.
-    SymbolicExpression<double> expr("3.14");
+    SymbolicExpression<double, "x"> expr("3.14");
 
     for (auto _ : state)
     {
-      double result = expr.value();
+      double result = expr.value(var<"x">(1.0));
       benchmark::DoNotOptimize(result);
     }
   }
@@ -33,10 +33,10 @@ namespace
   {
     // A benchmark that evaluates a expression which can be simplified to a constant.
     // Should run as fast as the constant benchmark above.
-    SymbolicExpression<double> expr("2*1.0^2 + 2.0 + 4*3.0");
+    SymbolicExpression<double, "x"> expr("2*1.0^2 + 2.0 + 4*3.0");
     for (auto _ : state)
     {
-      double result = expr.value();
+      double result = expr.value(var<"x">(1.0));
       benchmark::DoNotOptimize(result);
     }
   }
@@ -49,13 +49,25 @@ namespace
 
     for (auto _ : state)
     {
-      double result = expr.value("x", 1.0, "y", 2.0, "z", 3.0);
+      double result = expr.value({{"x", 1.0}, {"y", 2.0}, {"z", 3.0}});
       benchmark::DoNotOptimize(result);
     }
   }
   BENCHMARK(symbolic_expression_basic);
 
 
+  void symbolic_expression_basic_compile_time_variables(benchmark::State& state)
+  {
+    // Only basic arithmetic, including expensive division.
+    SymbolicExpression<double, "x", "y", "z"> expr("2*x + y/2 - 4*z");
+
+    for (auto _ : state)
+    {
+      double result = expr.value(var<"x">(1.0), var<"y">(2.0), var<"z">(3.0));
+      benchmark::DoNotOptimize(result);
+    }
+  }
+  BENCHMARK(symbolic_expression_basic_compile_time_variables);
 
   void symbolic_expression_basic_native(benchmark::State& state)
   {
@@ -75,12 +87,12 @@ namespace
 
   void symbolic_expression_first_derivative(benchmark::State& state)
   {
-    SymbolicExpression<double> expr("2*x^2 + y + 4*z");
+    SymbolicExpression<double, "x", "y", "z"> expr("2*x^2 + y + 4*z");
 
     for (auto _ : state)
     {
-      auto result = expr.first_derivative(
-          "x", FirstDerivativeType(2, 0, 1.0), "y", FirstDerivativeType(2, 1, 2.0), "z", 3.0);
+      auto result = expr.first_derivative(var<"x">(FirstDerivativeType(2, 0, 1.0)),
+          var<"y">(FirstDerivativeType(2, 1, 2.0)), var<"z">(FirstDerivativeType(3.0)));
       benchmark::DoNotOptimize(result);
     }
   }
@@ -89,12 +101,12 @@ namespace
 
   void symbolic_expression_second_derivative(benchmark::State& state)
   {
-    SymbolicExpression<double> expr("2*x^2 + y + 4*z");
+    SymbolicExpression<double, "x", "y", "z"> expr("2*x^2 + y + 4*z");
 
     for (auto _ : state)
     {
-      auto result = expr.second_derivative(
-          "x", SecondDerivativeType(2, 0, 1.0), "y", SecondDerivativeType(2, 1, 2.0), "z", 3.0);
+      auto result = expr.second_derivative(var<"x">(SecondDerivativeType(2, 0, 1.0)),
+          var<"y">(SecondDerivativeType(2, 1, 2.0)), var<"z">(SecondDerivativeType(3.0)));
       benchmark::DoNotOptimize(result);
     }
   }
@@ -103,11 +115,11 @@ namespace
 
   void symbolic_expression_functions(benchmark::State& state)
   {
-    SymbolicExpression<double> expr("sin(x) + cos(y) * exp(z) - log10(x + y)");
+    SymbolicExpression<double, "x", "y", "z"> expr("sin(x) + cos(y) * exp(z) - log10(x + y)");
 
     for (auto _ : state)
     {
-      double result = expr.value("x", 1.0, "y", 2.0, "z", 3.0);
+      double result = expr.value(var<"x">(1.0), var<"y">(2.0), var<"z">(3.0));
       benchmark::DoNotOptimize(result);
     }
   }
