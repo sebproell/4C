@@ -637,7 +637,7 @@ void NTS::Interpolator::interpolate_master_temp_3d(
 void NTS::Interpolator::nw_t_e_2d(CONTACT::Node& mynode, double& area, double& jumpval,
     Core::Gen::Pairedvector<int, double>& dslipmatrix)
 {
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // multiply the two shape functions
   double prod1 = abs(jumpval);
@@ -657,7 +657,7 @@ void NTS::Interpolator::nw_t_e_2d(CONTACT::Node& mynode, double& area, double& j
   if (!sswear_)
   {
     double fac = 1.0;
-    for (_CI p = dslipmatrix.begin(); p != dslipmatrix.end(); ++p)
+    for (CI p = dslipmatrix.begin(); p != dslipmatrix.end(); ++p)
       tmmap_jk[p->first] += fac * (p->second);
   }
   return;
@@ -676,7 +676,7 @@ void NTS::Interpolator::nw_slip_2d(CONTACT::Node& mynode, Mortar::Element& mele,
   const int ncol = mele.num_node();
   const int ndof = mynode.num_dof();
 
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Core::Gen::Pairedvector<int, double> dslipgp(linsize + ndof * ncol);
 
@@ -731,9 +731,9 @@ void NTS::Interpolator::nw_slip_2d(CONTACT::Node& mynode, Mortar::Element& mele,
   Core::Gen::Pairedvector<int, double>& dmap_txsl_i = mynode.data().get_deriv_txi()[0];
   Core::Gen::Pairedvector<int, double>& dmap_tysl_i = mynode.data().get_deriv_txi()[1];
 
-  for (_CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
+  for (CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
     dmap_txsl_gp[p->first] += 1.0 * (p->second);
-  for (_CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
+  for (CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
     dmap_tysl_gp[p->first] += 1.0 * (p->second);
 
   // build directional derivative of slave GP tagent (unit)
@@ -747,24 +747,24 @@ void NTS::Interpolator::nw_slip_2d(CONTACT::Node& mynode, Mortar::Element& mele,
   const double sxsyv = tanv[0] * tanv[1] * llv;
   const double sysyv = tanv[1] * tanv[1] * llv;
 
-  for (_CI p = dmap_txsl_gp.begin(); p != dmap_txsl_gp.end(); ++p)
+  for (CI p = dmap_txsl_gp.begin(); p != dmap_txsl_gp.end(); ++p)
   {
     dmap_txsl_gp_unit[p->first] += linv * (p->second);
     dmap_txsl_gp_unit[p->first] -= lllinv * sxsxv * (p->second);
     dmap_tysl_gp_unit[p->first] -= lllinv * sxsyv * (p->second);
   }
 
-  for (_CI p = dmap_tysl_gp.begin(); p != dmap_tysl_gp.end(); ++p)
+  for (CI p = dmap_tysl_gp.begin(); p != dmap_tysl_gp.end(); ++p)
   {
     dmap_tysl_gp_unit[p->first] += linv * (p->second);
     dmap_tysl_gp_unit[p->first] -= lllinv * sysyv * (p->second);
     dmap_txsl_gp_unit[p->first] -= lllinv * sxsyv * (p->second);
   }
 
-  for (_CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
+  for (CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
     dslipgp[p->first] += jumpv[0] * (p->second);
 
-  for (_CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
+  for (CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
     dslipgp[p->first] += jumpv[1] * (p->second);
 
   // coord lin
@@ -780,7 +780,7 @@ void NTS::Interpolator::nw_slip_2d(CONTACT::Node& mynode, Mortar::Element& mele,
     {
       dslipgp[mnode->dofs()[k]] -= mval[z] * tanv[k];
 
-      for (_CI p = dmxi.begin(); p != dmxi.end(); ++p)
+      for (CI p = dmxi.begin(); p != dmxi.end(); ++p)
         dslipgp[p->first] -=
             tanv[k] * mderiv(z, 0) * (mcoord(k, z) - (mcoordold)(k, z)) * (p->second);
     }
@@ -798,7 +798,7 @@ void NTS::Interpolator::nw_slip_2d(CONTACT::Node& mynode, Mortar::Element& mele,
       dynamic_cast<CONTACT::FriNode&>(mynode).fri_data().get_deriv_var_jump()[0];
 
   double fac = 1.0;
-  for (_CI p = dslipgp.begin(); p != dslipgp.end(); ++p) djumpmap[p->first] += fac * (p->second);
+  for (CI p = dslipgp.begin(); p != dslipgp.end(); ++p) djumpmap[p->first] += fac * (p->second);
 
   return;
 }
@@ -818,7 +818,7 @@ void NTS::Interpolator::nw_wear_2d(CONTACT::Node& mynode, Mortar::Element& mele,
   const int ncol = mele.num_node();
   const int ndof = mynode.num_dof();
 
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   std::array<double, 3> gpt = {0.0, 0.0, 0.0};
   std::array<double, 3> gplm = {0.0, 0.0, 0.0};
@@ -902,11 +902,11 @@ void NTS::Interpolator::nw_wear_2d(CONTACT::Node& mynode, Mortar::Element& mele,
 
     // **********************************************************************
     // (1) Lin of normal for LM -- deriv normal maps from weighted gap lin.
-    for (_CI p = mynode.data().get_deriv_n()[0].begin(); p != mynode.data().get_deriv_n()[0].end();
+    for (CI p = mynode.data().get_deriv_n()[0].begin(); p != mynode.data().get_deriv_n()[0].end();
         ++p)
       dwear[p->first] += abs(jumpval) * gplm[0] * (p->second);
 
-    for (_CI p = mynode.data().get_deriv_n()[1].begin(); p != mynode.data().get_deriv_n()[1].end();
+    for (CI p = mynode.data().get_deriv_n()[1].begin(); p != mynode.data().get_deriv_n()[1].end();
         ++p)
       dwear[p->first] += abs(jumpval) * gplm[1] * (p->second);
 
@@ -919,9 +919,9 @@ void NTS::Interpolator::nw_wear_2d(CONTACT::Node& mynode, Mortar::Element& mele,
     Core::Gen::Pairedvector<int, double>& dmap_txsl_i = mynode.data().get_deriv_txi()[0];
     Core::Gen::Pairedvector<int, double>& dmap_tysl_i = mynode.data().get_deriv_txi()[1];
 
-    for (_CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
+    for (CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
       dmap_txsl_gp[p->first] += (p->second);
-    for (_CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
+    for (CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
       dmap_tysl_gp[p->first] += (p->second);
 
     // (b) build directional derivative of slave GP tagent (unit)
@@ -935,14 +935,14 @@ void NTS::Interpolator::nw_wear_2d(CONTACT::Node& mynode, Mortar::Element& mele,
     const double sxsy = gpt[0] * gpt[1] * ll;
     const double sysy = gpt[1] * gpt[1] * ll;
 
-    for (_CI p = dmap_txsl_gp.begin(); p != dmap_txsl_gp.end(); ++p)
+    for (CI p = dmap_txsl_gp.begin(); p != dmap_txsl_gp.end(); ++p)
     {
       dmap_txsl_gp_unit[p->first] += linv * (p->second);
       dmap_txsl_gp_unit[p->first] -= lllinv * sxsx * (p->second);
       dmap_tysl_gp_unit[p->first] -= lllinv * sxsy * (p->second);
     }
 
-    for (_CI p = dmap_tysl_gp.begin(); p != dmap_tysl_gp.end(); ++p)
+    for (CI p = dmap_tysl_gp.begin(); p != dmap_tysl_gp.end(); ++p)
     {
       dmap_tysl_gp_unit[p->first] += linv * (p->second);
       dmap_tysl_gp_unit[p->first] -= lllinv * sysy * (p->second);
@@ -950,17 +950,17 @@ void NTS::Interpolator::nw_wear_2d(CONTACT::Node& mynode, Mortar::Element& mele,
     }
 
     // add tangent lin. to dweargp
-    for (_CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
+    for (CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
       dwear[p->first] += xabsx * jump[0] * (p->second);
 
-    for (_CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
+    for (CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
       dwear[p->first] += xabsx * jump[1] * (p->second);
 
     // add tangent lin. to slip linearization for wear Tmatrix
-    for (_CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
+    for (CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
       dslipmatrix[p->first] += xabsxT * jump[0] * (p->second);
 
-    for (_CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
+    for (CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
       dslipmatrix[p->first] += xabsxT * jump[1] * (p->second);
 
     // **********************************************************************
@@ -977,7 +977,7 @@ void NTS::Interpolator::nw_wear_2d(CONTACT::Node& mynode, Mortar::Element& mele,
     // lin master part -- mxi
     for (int i = 0; i < ncol; ++i)
     {
-      for (_CI p = dmxi.begin(); p != dmxi.end(); ++p)
+      for (CI p = dmxi.begin(); p != dmxi.end(); ++p)
       {
         double valx = mderiv(i, 0) * (mcoord(0, i) - ((mcoordold)(0, i)));
         dmap_mcoord_gp_x[p->first] += valx * (p->second);
@@ -1000,29 +1000,29 @@ void NTS::Interpolator::nw_wear_2d(CONTACT::Node& mynode, Mortar::Element& mele,
     }
 
     // slave: add to jumplin
-    for (_CI p = dmap_slcoord_gp_x.begin(); p != dmap_slcoord_gp_x.end(); ++p)
+    for (CI p = dmap_slcoord_gp_x.begin(); p != dmap_slcoord_gp_x.end(); ++p)
       dmap_coord_x[p->first] += (p->second);
-    for (_CI p = dmap_slcoord_gp_y.begin(); p != dmap_slcoord_gp_y.end(); ++p)
+    for (CI p = dmap_slcoord_gp_y.begin(); p != dmap_slcoord_gp_y.end(); ++p)
       dmap_coord_y[p->first] += (p->second);
 
     // master: add to jumplin
-    for (_CI p = dmap_mcoord_gp_x.begin(); p != dmap_mcoord_gp_x.end(); ++p)
+    for (CI p = dmap_mcoord_gp_x.begin(); p != dmap_mcoord_gp_x.end(); ++p)
       dmap_coord_x[p->first] -= (p->second);
-    for (_CI p = dmap_mcoord_gp_y.begin(); p != dmap_mcoord_gp_y.end(); ++p)
+    for (CI p = dmap_mcoord_gp_y.begin(); p != dmap_mcoord_gp_y.end(); ++p)
       dmap_coord_y[p->first] -= (p->second);
 
     // add to dweargp
-    for (_CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
+    for (CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
       dwear[p->first] += xabsx * gpt[0] * (p->second);
 
-    for (_CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
+    for (CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
       dwear[p->first] += xabsx * gpt[1] * (p->second);
 
     // add tangent lin. to slip linearization for wear Tmatrix
-    for (_CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
+    for (CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
       dslipmatrix[p->first] += xabsxT * gpt[0] * (p->second);
 
-    for (_CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
+    for (CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
       dslipmatrix[p->first] += xabsxT * gpt[1] * (p->second);
   }
 
@@ -1078,15 +1078,15 @@ void NTS::Interpolator::nw_gap_2d(CONTACT::Node& mynode, Mortar::Element& sele,
   // **************************
   // linearization
   // **************************
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
   Core::Gen::Pairedvector<int, double> dgapgp(10 * ncol);
 
   //*************************************************************
-  for (_CI p = mynode.data().get_deriv_n()[0].begin(); p != mynode.data().get_deriv_n()[0].end();
+  for (CI p = mynode.data().get_deriv_n()[0].begin(); p != mynode.data().get_deriv_n()[0].end();
       ++p)
     dgapgp[p->first] += (mgpx[0] - sgpx[0]) * (p->second);
 
-  for (_CI p = mynode.data().get_deriv_n()[1].begin(); p != mynode.data().get_deriv_n()[1].end();
+  for (CI p = mynode.data().get_deriv_n()[1].begin(); p != mynode.data().get_deriv_n()[1].end();
       ++p)
     dgapgp[p->first] += (mgpx[1] - sgpx[1]) * (p->second);
 
@@ -1104,7 +1104,7 @@ void NTS::Interpolator::nw_gap_2d(CONTACT::Node& mynode, Mortar::Element& sele,
     {
       dgapgp[mnode->dofs()[k]] += mval[z] * gpn[k];
 
-      for (_CI p = dmxi.begin(); p != dmxi.end(); ++p)
+      for (CI p = dmxi.begin(); p != dmxi.end(); ++p)
         dgapgp[p->first] += gpn[k] * mderiv(z, 0) * mnode->xspatial()[k] * (p->second);
     }
   }
@@ -1112,7 +1112,7 @@ void NTS::Interpolator::nw_gap_2d(CONTACT::Node& mynode, Mortar::Element& sele,
   std::map<int, double>& dgmap = mynode.data().get_deriv_gnts();
 
   // (1) Lin(g) - gap function
-  for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += (p->second);
+  for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += (p->second);
 
   return;
 }
@@ -1166,21 +1166,21 @@ void NTS::Interpolator::nw_gap_3d(CONTACT::Node& mynode, Mortar::Element& mele,
   // **************************
   // linearization
   // **************************
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // TODO: linsize for parallel simulations buggy. 100 for safety
   Core::Gen::Pairedvector<int, double> dgapgp(3 * ncol + 3 * mynode.get_linsize() + 100);
 
   //*************************************************************
-  for (_CI p = mynode.data().get_deriv_n()[0].begin(); p != mynode.data().get_deriv_n()[0].end();
+  for (CI p = mynode.data().get_deriv_n()[0].begin(); p != mynode.data().get_deriv_n()[0].end();
       ++p)
     dgapgp[p->first] += (mgpx[0] - sgpx[0]) * (p->second);
 
-  for (_CI p = mynode.data().get_deriv_n()[1].begin(); p != mynode.data().get_deriv_n()[1].end();
+  for (CI p = mynode.data().get_deriv_n()[1].begin(); p != mynode.data().get_deriv_n()[1].end();
       ++p)
     dgapgp[p->first] += (mgpx[1] - sgpx[1]) * (p->second);
 
-  for (_CI p = mynode.data().get_deriv_n()[2].begin(); p != mynode.data().get_deriv_n()[2].end();
+  for (CI p = mynode.data().get_deriv_n()[2].begin(); p != mynode.data().get_deriv_n()[2].end();
       ++p)
     dgapgp[p->first] += (mgpx[2] - sgpx[2]) * (p->second);
 
@@ -1198,10 +1198,10 @@ void NTS::Interpolator::nw_gap_3d(CONTACT::Node& mynode, Mortar::Element& mele,
     {
       dgapgp[mnode->dofs()[k]] += mval[z] * gpn[k];
 
-      for (_CI p = dmxi[0].begin(); p != dmxi[0].end(); ++p)
+      for (CI p = dmxi[0].begin(); p != dmxi[0].end(); ++p)
         dgapgp[p->first] += gpn[k] * mderiv(z, 0) * mnode->xspatial()[k] * (p->second);
 
-      for (_CI p = dmxi[1].begin(); p != dmxi[1].end(); ++p)
+      for (CI p = dmxi[1].begin(); p != dmxi[1].end(); ++p)
         dgapgp[p->first] += gpn[k] * mderiv(z, 1) * mnode->xspatial()[k] * (p->second);
     }
   }
@@ -1210,7 +1210,7 @@ void NTS::Interpolator::nw_gap_3d(CONTACT::Node& mynode, Mortar::Element& mele,
 
   // (1) Lin(g) - gap function
   double fac = 1.0;
-  for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+  for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
   return;
 }
@@ -1237,7 +1237,7 @@ void NTS::Interpolator::nw_master_temp(CONTACT::Node& mynode, Mortar::Element& m
   // **************************
   // linearization
   // **************************
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   std::map<int, double>& dTpdT = mynode.tsi_data().deriv_temp_master_temp();
   dTpdT.clear();
@@ -1247,7 +1247,7 @@ void NTS::Interpolator::nw_master_temp(CONTACT::Node& mynode, Mortar::Element& m
   std::map<int, double>& dTpdd = mynode.tsi_data().deriv_temp_master_disp();
   dTpdd.clear();
   for (int d = 0; d < 2; ++d)
-    for (_CI p = dmxi[d].begin(); p != dmxi[d].end(); ++p)
+    for (CI p = dmxi[d].begin(); p != dmxi[d].end(); ++p)
     {
       double& dest = dTpdd[p->first];
       for (int mn = 0; mn < mele.num_node(); ++mn)
@@ -1267,7 +1267,7 @@ void NTS::Interpolator::nw_d_m_2d(CONTACT::Node& mynode, Mortar::Element& sele,
     Core::LinAlg::SerialDenseMatrix& mderiv, Core::Gen::Pairedvector<int, double>& dmxi)
 {
   const int ncol = mele.num_node();
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // node-wise M value
   for (int k = 0; k < ncol; ++k)
@@ -1299,7 +1299,7 @@ void NTS::Interpolator::nw_d_m_2d(CONTACT::Node& mynode, Mortar::Element& sele,
 
     // (3) Lin(NMaster) - master GP coordinates
     fac = mderiv(k, 0);
-    for (_CI p = dmxi.begin(); p != dmxi.end(); ++p) dmmap_jk[p->first] += fac * (p->second);
+    for (CI p = dmxi.begin(); p != dmxi.end(); ++p) dmmap_jk[p->first] += fac * (p->second);
   }  // loop over master nodes
 
   return;
@@ -1315,7 +1315,7 @@ void NTS::Interpolator::nw_d_m_3d(CONTACT::Node& mynode, Mortar::Element& mele,
 {
   const int ncol = mele.num_node();
 
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // node-wise M value
   for (int k = 0; k < ncol; ++k)
@@ -1346,10 +1346,10 @@ void NTS::Interpolator::nw_d_m_3d(CONTACT::Node& mynode, Mortar::Element& mele,
     std::map<int, double>& dmmap_jk = mynode.data().get_deriv_mnts()[mgid];
 
     fac = mderiv(k, 0);
-    for (_CI p = dmxi[0].begin(); p != dmxi[0].end(); ++p) dmmap_jk[p->first] += fac * (p->second);
+    for (CI p = dmxi[0].begin(); p != dmxi[0].end(); ++p) dmmap_jk[p->first] += fac * (p->second);
 
     fac = mderiv(k, 1);
-    for (_CI p = dmxi[1].begin(); p != dmxi[1].end(); ++p) dmmap_jk[p->first] += fac * (p->second);
+    for (CI p = dmxi[1].begin(); p != dmxi[1].end(); ++p) dmmap_jk[p->first] += fac * (p->second);
   }  // loop over master nodes
 
   return;
@@ -1443,7 +1443,7 @@ void NTS::Interpolator::deriv_xi_gp_2d(Mortar::Element& sele, Mortar::Element& m
   fac_ymsl_gp -= sgpx[1];
 
   // prepare linearization
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // build directional derivative of slave GP coordinates
   Core::Gen::Pairedvector<int, double> dmap_xsl_gp(linsize + nummnode * ndof);
@@ -1454,7 +1454,7 @@ void NTS::Interpolator::deriv_xi_gp_2d(Mortar::Element& sele, Mortar::Element& m
     dmap_xsl_gp[smrtrnodes[i]->dofs()[0]] += valsxigp[i];
     dmap_ysl_gp[smrtrnodes[i]->dofs()[1]] += valsxigp[i];
 
-    for (_CI p = derivsxi.begin(); p != derivsxi.end(); ++p)
+    for (CI p = derivsxi.begin(); p != derivsxi.end(); ++p)
     {
       double facx = derivsxigp(i, 0) * (smrtrnodes[i]->xspatial()[0]);
       double facy = derivsxigp(i, 0) * (smrtrnodes[i]->xspatial()[1]);
@@ -1480,12 +1480,12 @@ void NTS::Interpolator::deriv_xi_gp_2d(Mortar::Element& sele, Mortar::Element& m
     Core::Gen::Pairedvector<int, double>& dmap_nysl_i =
         dynamic_cast<CONTACT::Node*>(smrtrnodes[i])->data().get_deriv_n()[1];
 
-    for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+    for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
       dmap_nxsl_gp_mod[p->first] += valsxigp[i] * (p->second);
-    for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+    for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
       dmap_nysl_gp_mod[p->first] += valsxigp[i] * (p->second);
 
-    for (_CI p = derivsxi.begin(); p != derivsxi.end(); ++p)
+    for (CI p = derivsxi.begin(); p != derivsxi.end(); ++p)
     {
       double valx = derivsxigp(i, 0) * smrtrnodes[i]->mo_data().n()[0];
       dmap_nxsl_gp_mod[p->first] += valx * (p->second);
@@ -1500,14 +1500,14 @@ void NTS::Interpolator::deriv_xi_gp_2d(Mortar::Element& sele, Mortar::Element& m
   const double linv = 1.0 / length;
   const double lllinv = 1.0 / (length * length * length);
 
-  for (_CI p = dmap_nxsl_gp_mod.begin(); p != dmap_nxsl_gp_mod.end(); ++p)
+  for (CI p = dmap_nxsl_gp_mod.begin(); p != dmap_nxsl_gp_mod.end(); ++p)
   {
     dmap_nxsl_gp[p->first] += linv * (p->second);
     dmap_nxsl_gp[p->first] -= lllinv * sxsx * (p->second);
     dmap_nysl_gp[p->first] -= lllinv * sxsy * (p->second);
   }
 
-  for (_CI p = dmap_nysl_gp_mod.begin(); p != dmap_nysl_gp_mod.end(); ++p)
+  for (CI p = dmap_nysl_gp_mod.begin(); p != dmap_nysl_gp_mod.end(); ++p)
   {
     dmap_nysl_gp[p->first] += linv * (p->second);
     dmap_nysl_gp[p->first] -= lllinv * sysy * (p->second);
@@ -1519,9 +1519,9 @@ void NTS::Interpolator::deriv_xi_gp_2d(Mortar::Element& sele, Mortar::Element& m
   // *********************************************************************
 
   // add derivative of slave GP coordinates
-  for (_CI p = dmap_xsl_gp.begin(); p != dmap_xsl_gp.end(); ++p)
+  for (CI p = dmap_xsl_gp.begin(); p != dmap_xsl_gp.end(); ++p)
     derivmxi[p->first] -= sgpn[1] * (p->second);
-  for (_CI p = dmap_ysl_gp.begin(); p != dmap_ysl_gp.end(); ++p)
+  for (CI p = dmap_ysl_gp.begin(); p != dmap_ysl_gp.end(); ++p)
     derivmxi[p->first] += sgpn[0] * (p->second);
 
   // add derivatives of master node coordinates
@@ -1532,14 +1532,13 @@ void NTS::Interpolator::deriv_xi_gp_2d(Mortar::Element& sele, Mortar::Element& m
   }
 
   // add derivative of slave GP normal
-  for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+  for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
     derivmxi[p->first] -= fac_ymsl_gp * (p->second);
-  for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+  for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
     derivmxi[p->first] += fac_xmsl_gp * (p->second);
 
   // multiply all entries with cmxigp
-  for (_CI p = derivmxi.begin(); p != derivmxi.end(); ++p)
-    derivmxi[p->first] = cmxigp * (p->second);
+  for (CI p = derivmxi.begin(); p != derivmxi.end(); ++p) derivmxi[p->first] = cmxigp * (p->second);
 
   return;
 }
@@ -1607,7 +1606,7 @@ void NTS::Interpolator::deriv_xi_gp_3d(Mortar::Element& sele, Mortar::Element& m
   lmatrix.invert();
 
   // build directional derivative of slave GP normal
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < numsnode; ++i)
@@ -1632,14 +1631,14 @@ void NTS::Interpolator::deriv_xi_gp_3d(Mortar::Element& sele, Mortar::Element& m
     Core::Gen::Pairedvector<int, double>& dmap_nzsl_i =
         dynamic_cast<CONTACT::Node*>(smrtrnodes[i])->data().get_deriv_n()[2];
 
-    for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+    for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
       dmap_nxsl_gp[p->first] += valsxigp[i] * (p->second);
-    for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+    for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
       dmap_nysl_gp[p->first] += valsxigp[i] * (p->second);
-    for (_CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
+    for (CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
       dmap_nzsl_gp[p->first] += valsxigp[i] * (p->second);
 
-    for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+    for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
     {
       double valx = derivsxigp(i, 0) * smrtrnodes[i]->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -1649,7 +1648,7 @@ void NTS::Interpolator::deriv_xi_gp_3d(Mortar::Element& sele, Mortar::Element& m
       dmap_nzsl_gp[p->first] += valz * (p->second);
     }
 
-    for (_CI p = derivsxi[1].begin(); p != derivsxi[1].end(); ++p)
+    for (CI p = derivsxi[1].begin(); p != derivsxi[1].end(); ++p)
     {
       double valx = derivsxigp(i, 1) * smrtrnodes[i]->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -1679,7 +1678,7 @@ void NTS::Interpolator::deriv_xi_gp_3d(Mortar::Element& sele, Mortar::Element& m
       derivmxi[0][smrtrnodes[z]->dofs()[k]] += valsxigp[z] * lmatrix(0, k);
       derivmxi[1][smrtrnodes[z]->dofs()[k]] += valsxigp[z] * lmatrix(1, k);
 
-      for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+      for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
       {
         derivmxi[0][p->first] +=
             derivsxigp(z, 0) * smrtrnodes[z]->xspatial()[k] * lmatrix(0, k) * (p->second);
@@ -1687,7 +1686,7 @@ void NTS::Interpolator::deriv_xi_gp_3d(Mortar::Element& sele, Mortar::Element& m
             derivsxigp(z, 0) * smrtrnodes[z]->xspatial()[k] * lmatrix(1, k) * (p->second);
       }
 
-      for (_CI p = derivsxi[1].begin(); p != derivsxi[1].end(); ++p)
+      for (CI p = derivsxi[1].begin(); p != derivsxi[1].end(); ++p)
       {
         derivmxi[0][p->first] +=
             derivsxigp(z, 1) * smrtrnodes[z]->xspatial()[k] * lmatrix(0, k) * (p->second);
@@ -1698,17 +1697,17 @@ void NTS::Interpolator::deriv_xi_gp_3d(Mortar::Element& sele, Mortar::Element& m
   }
 
   // (3) slave Gauss point normal part
-  for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+  for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
   {
     derivmxi[0][p->first] += alpha * lmatrix(0, 0) * (p->second);
     derivmxi[1][p->first] += alpha * lmatrix(1, 0) * (p->second);
   }
-  for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+  for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
   {
     derivmxi[0][p->first] += alpha * lmatrix(0, 1) * (p->second);
     derivmxi[1][p->first] += alpha * lmatrix(1, 1) * (p->second);
   }
-  for (_CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
+  for (CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
   {
     derivmxi[0][p->first] += alpha * lmatrix(0, 2) * (p->second);
     derivmxi[1][p->first] += alpha * lmatrix(1, 2) * (p->second);

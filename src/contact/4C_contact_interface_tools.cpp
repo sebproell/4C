@@ -810,11 +810,11 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
     if (!node) FOUR_C_THROW("Cannot find node with gid %", gid);
     Node* cnode = dynamic_cast<Node*>(node);
 
-    using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+    using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
     if ((int)(cnode->mo_data().get_d().size()) == 0) continue;
 
-    for (_CI it = cnode->mo_data().get_d().begin(); it != cnode->mo_data().get_d().end(); ++it)
+    for (CI it = cnode->mo_data().get_d().begin(); it != cnode->mo_data().get_d().end(); ++it)
       refD[it->first] = it->second;
 
 
@@ -874,9 +874,8 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
       if ((int)(kcnode->mo_data().get_d().size()) == 0) continue;
 
       using CI = std::map<int, double>::const_iterator;
-      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
-      for (_CI it = kcnode->mo_data().get_d().begin(); it != kcnode->mo_data().get_d().end(); ++it)
+      for (auto it = kcnode->mo_data().get_d().begin(); it != kcnode->mo_data().get_d().end(); ++it)
         newD[it->first] = it->second;
 
       // print results (derivatives) to screen
@@ -981,9 +980,8 @@ void CONTACT::Interface::fd_check_mortar_d_deriv()
       if ((int)(kcnode->mo_data().get_d().size()) == 0) continue;
 
       using CI = std::map<int, double>::const_iterator;
-      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
-      for (_CI it = kcnode->mo_data().get_d().begin(); it != kcnode->mo_data().get_d().end(); ++it)
+      for (auto it = kcnode->mo_data().get_d().begin(); it != kcnode->mo_data().get_d().end(); ++it)
         newD[it->first] = it->second;
 
       // print results (derivatives) to screen

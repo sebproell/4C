@@ -681,7 +681,7 @@ void CONTACT::Integrator::integrate_deriv_segment_2d(Mortar::Element& sele, doub
   Core::LinAlg::SerialDenseMatrix ssecderiv(nrow, 1);
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < nrow; ++i)
@@ -790,9 +790,9 @@ void CONTACT::Integrator::integrate_deriv_segment_2d(Mortar::Element& sele, doub
     // evaluate the GP slave coordinate derivatives
     std::vector<Core::Gen::Pairedvector<int, double>> dsxigp(
         1, Core::Gen::Pairedvector<int, double>(linsize + ndof * ncol));
-    for (_CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p)
+    for (CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p)
       dsxigp[0][p->first] += 0.5 * (1.0 - eta[0]) * (p->second);
-    for (_CI p = ximaps[1].begin(); p != ximaps[1].end(); ++p)
+    for (CI p = ximaps[1].begin(); p != ximaps[1].end(); ++p)
       dsxigp[0][p->first] += 0.5 * (1.0 + eta[0]) * (p->second);
 
     // evaluate the GP master coordinate derivatives
@@ -809,11 +809,11 @@ void CONTACT::Integrator::integrate_deriv_segment_2d(Mortar::Element& sele, doub
     for (Core::Gen::Pairedvector<int, double>::const_iterator p = derivjacSele.begin();
         p != derivjacSele.end(); ++p)
       derivjac[p->first] += dsxideta * p->second;
-    for (_CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p)
+    for (CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p)
       derivjac[p->first] -= .5 * dxdsxi * p->second;
-    for (_CI p = ximaps[1].begin(); p != ximaps[1].end(); ++p)
+    for (CI p = ximaps[1].begin(); p != ximaps[1].end(); ++p)
       derivjac[p->first] += .5 * dxdsxi * p->second;
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
       derivjac[p->first] += dsxideta * dxdsxidsxi * p->second;
 
     //**********************************************************************
@@ -1735,7 +1735,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane(Mortar::Element& sel
 
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   if (cppnormal_)
@@ -1875,7 +1875,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane(Mortar::Element& sel
 
     for (int v = 0; v < 3; ++v)
       for (int d = 0; d < 3; ++d)
-        for (_CI p = (cell->get_deriv_vertex(v))[d].begin();
+        for (CI p = (cell->get_deriv_vertex(v))[d].begin();
             p != (cell->get_deriv_vertex(v))[d].end(); ++p)
           lingp[p->first](d) += svalcell(v) * (p->second);
 
@@ -1981,7 +1981,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
     sele.deriv_shape_dual(dualmap);
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < nrow; ++i)
@@ -2122,7 +2122,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
     for (int v = 0; v < 2; ++v)
       for (int d = 0; d < 3; ++d)
-        for (_CI p = (cell->get_deriv_vertex(v))[d].begin();
+        for (CI p = (cell->get_deriv_vertex(v))[d].begin();
             p != (cell->get_deriv_vertex(v))[d].end(); ++p)
           lingp[p->first](d) += svalcell(v) * (p->second);
 
@@ -2141,19 +2141,19 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
     if (lele.id() == 0)
     {
-      for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p) dlxigp[0][p->first] += (p->second);
+      for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p) dlxigp[0][p->first] += (p->second);
     }
     else if (lele.id() == 1)
     {
-      for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p) dlxigp[0][p->first] += (p->second);
+      for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p) dlxigp[0][p->first] += (p->second);
     }
     else if (lele.id() == 2)
     {
-      for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p) dlxigp[0][p->first] -= (p->second);
+      for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p) dlxigp[0][p->first] -= (p->second);
     }
     else if (lele.id() == 3)
     {
-      for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p) dlxigp[0][p->first] -= (p->second);
+      for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p) dlxigp[0][p->first] -= (p->second);
     }
     else
       FOUR_C_THROW("invalid local id of line ele");
@@ -2226,14 +2226,14 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
       Core::Gen::Pairedvector<int, double>& dmap_nysl_i = cnode->data().get_deriv_n()[1];
       Core::Gen::Pairedvector<int, double>& dmap_nzsl_i = cnode->data().get_deriv_n()[2];
 
-      for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+      for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
         dmap_nxsl_gp[p->first] += sval[i] * (p->second);
-      for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+      for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
         dmap_nysl_gp[p->first] += sval[i] * (p->second);
-      for (_CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
+      for (CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
         dmap_nzsl_gp[p->first] += sval[i] * (p->second);
 
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
       {
         double valx = sderiv(i, 0) * cnode->mo_data().n()[0];
         dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -2243,7 +2243,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
         dmap_nzsl_gp[p->first] += valz * (p->second);
       }
 
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
       {
         double valx = sderiv(i, 1) * cnode->mo_data().n()[0];
         dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -2264,7 +2264,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
     const double sysz = gpn[1] * gpn[2] * ll;
     const double szsz = gpn[2] * gpn[2] * ll;
 
-    for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+    for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
     {
       dnmap_unit[0][p->first] += linv * (p->second);
       dnmap_unit[0][p->first] -= lllinv * sxsx * (p->second);
@@ -2272,7 +2272,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
       dnmap_unit[2][p->first] -= lllinv * sxsz * (p->second);
     }
 
-    for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+    for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
     {
       dnmap_unit[1][p->first] += linv * (p->second);
       dnmap_unit[1][p->first] -= lllinv * sysy * (p->second);
@@ -2280,7 +2280,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
       dnmap_unit[2][p->first] -= lllinv * sysz * (p->second);
     }
 
-    for (_CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
+    for (CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
     {
       dnmap_unit[2][p->first] += linv * (p->second);
       dnmap_unit[2][p->first] -= lllinv * szsz * (p->second);
@@ -2289,13 +2289,13 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
     }
 
     // add everything to dgapgp
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       dgapgp[p->first] += (mgpx[0] - sgpx[0]) * (p->second);
 
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       dgapgp[p->first] += (mgpx[1] - sgpx[1]) * (p->second);
 
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       dgapgp[p->first] += (mgpx[2] - sgpx[2]) * (p->second);
 
     // lin slave nodes
@@ -2305,7 +2305,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
       for (int k = 0; k < 3; ++k) dgapgp[cnode->dofs()[k]] -= sval[z] * gpn[k];
     }
 
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -2315,7 +2315,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
         for (int k = 0; k < 3; ++k) dg -= gpn[k] * sderiv(z, 0) * cnode->xspatial()[k] * ps;
       }
     }
-    for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+    for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -2334,7 +2334,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
       for (int k = 0; k < 3; ++k) dgapgp[cnode->dofs()[k]] += mval[z] * gpn[k];
     }
 
-    for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+    for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -2370,7 +2370,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
     for (int iter = 0; iter < nrow; ++iter)
     {
       // map iterator
-      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+      using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(mynodes[iter]);
       if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -2390,17 +2390,17 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
         for (int d = 0; d < n_dim() - 1; ++d)
         {
           fac = wgt * sderiv(iter, d) * gap * jac;
-          for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+          for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
             dgmap[p->first] += fac * (p->second);
         }
 
         // (3) Lin(g) - gap function
         fac = wgt * sval[iter] * jac;
-        for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+        for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
         // (4) Lin(dsxideta) - intcell GP Jacobian
         fac = wgt * sval[iter] * gap;
-        for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+        for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
           dgmap[p->first] += fac * (p->second);
       }
 
@@ -2414,17 +2414,17 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
         for (int d = 0; d < n_dim() - 1; ++d)
         {
           fac = wgt * lmderiv(iter, d) * gap * jac;
-          for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+          for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
             dgmap[p->first] += fac * (p->second);
         }
 
         // (3) Lin(g) - gap function
         fac = wgt * lmval[iter] * jac;
-        for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+        for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
         // (4) Lin(dsxideta) - intcell GP Jacobian
         fac = wgt * lmval[iter] * gap;
-        for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+        for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
           dgmap[p->first] += fac * (p->second);
       }
     }
@@ -2516,14 +2516,14 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
             ddmap_jk[p->first] += fac * (p->second);
           }
 
           fac = wgt * lmderiv(j, 1) * mval[k] * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
             ddmap_jk[p->first] += fac * (p->second);
@@ -2531,14 +2531,14 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
           // (3) Lin(NMaster) - master GP coordinates
           fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-          for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+          for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
             ddmap_jk[p->first] += fac * (p->second);
           }
 
           //        fac = wgt*lmval[j]*mderiv(k, 1)*jac;
-          //        for (_CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
+          //        for (CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
           //        {
           //          dmmap_jk[p->first] += fac*(p->second);
           //          ddmap_jk[p->first] += fac*(p->second);
@@ -2546,7 +2546,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * mval[k];
-          for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+          for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
             ddmap_jk[p->first] += fac * (p->second);
@@ -2579,32 +2579,32 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           {
             ddmap_jk[p->first] += fac * (p->second);
           }
 
           fac = wgt * lmderiv(j, 1) * sval[k] * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           {
             ddmap_jk[p->first] += fac * (p->second);
           }
 
           // (3) Lin(NMaster) - master GP coordinates
           fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           {
             ddmap_jk[p->first] += fac * (p->second);
           }
 
           fac = wgt * lmval[j] * sderiv(k, 1) * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           {
             ddmap_jk[p->first] += fac * (p->second);
           }
 
           //        fac = wgt*lmval[j]*mderiv(k, 1)*jac;
-          //        for (_CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
+          //        for (CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
           //        {
           //          dmmap_jk[p->first] += fac*(p->second);
           //          ddmap_jk[p->first] += fac*(p->second);
@@ -2612,7 +2612,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * sval[k];
-          for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+          for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
           {
             ddmap_jk[p->first] += fac * (p->second);
           }
@@ -2634,26 +2634,26 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
           }
 
           fac = wgt * lmderiv(j, 1) * mval[k] * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
           }
 
           // (3) Lin(NMaster) - master GP coordinates
           fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-          for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+          for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
           }
 
           //        fac = wgt*lmval[j]*mderiv(k, 1)*jac;
-          //        for (_CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
+          //        for (CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
           //        {
           //          dmmap_jk[p->first] += fac*(p->second);
           //          ddmap_jk[p->first] += fac*(p->second);
@@ -2661,7 +2661,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_stl(Mortar::Element&
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * mval[k];
-          for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+          for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
           }
@@ -2728,7 +2728,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
     sele.deriv_shape_dual(dualmap);
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < nrowL; ++i)
@@ -2893,7 +2893,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
     for (int v = 0; v < 2; ++v)
       for (int d = 0; d < 3; ++d)
-        for (_CI p = (cell->get_deriv_vertex(v))[d].begin();
+        for (CI p = (cell->get_deriv_vertex(v))[d].begin();
             p != (cell->get_deriv_vertex(v))[d].end(); ++p)
           lingp[p->first](d) += svalcell(v) * (p->second);
 
@@ -2912,19 +2912,19 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
     if (lsele.id() == 0)
     {
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dlxigp[0][p->first] += (p->second);
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dlxigp[0][p->first] += (p->second);
     }
     else if (lsele.id() == 1)
     {
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p) dlxigp[0][p->first] += (p->second);
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p) dlxigp[0][p->first] += (p->second);
     }
     else if (lsele.id() == 2)
     {
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dlxigp[0][p->first] -= (p->second);
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dlxigp[0][p->first] -= (p->second);
     }
     else if (lsele.id() == 3)
     {
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p) dlxigp[0][p->first] -= (p->second);
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p) dlxigp[0][p->first] -= (p->second);
     }
     else
       FOUR_C_THROW("invalid local id of line ele");
@@ -2997,14 +2997,14 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
       Core::Gen::Pairedvector<int, double>& dmap_nysl_i = cnode->data().get_deriv_n()[1];
       Core::Gen::Pairedvector<int, double>& dmap_nzsl_i = cnode->data().get_deriv_n()[2];
 
-      for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+      for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
         dmap_nxsl_gp[p->first] += sval[i] * (p->second);
-      for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+      for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
         dmap_nysl_gp[p->first] += sval[i] * (p->second);
-      for (_CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
+      for (CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
         dmap_nzsl_gp[p->first] += sval[i] * (p->second);
 
-      for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+      for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
       {
         double valx = sderiv(i, 0) * cnode->mo_data().n()[0];
         dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -3025,7 +3025,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
     const double sysz = gpn[1] * gpn[2] * ll;
     const double szsz = gpn[2] * gpn[2] * ll;
 
-    for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+    for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
     {
       dnmap_unit[0][p->first] += linv * (p->second);
       dnmap_unit[0][p->first] -= lllinv * sxsx * (p->second);
@@ -3033,7 +3033,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
       dnmap_unit[2][p->first] -= lllinv * sxsz * (p->second);
     }
 
-    for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+    for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
     {
       dnmap_unit[1][p->first] += linv * (p->second);
       dnmap_unit[1][p->first] -= lllinv * sysy * (p->second);
@@ -3041,7 +3041,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
       dnmap_unit[2][p->first] -= lllinv * sysz * (p->second);
     }
 
-    for (_CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
+    for (CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
     {
       dnmap_unit[2][p->first] += linv * (p->second);
       dnmap_unit[2][p->first] -= lllinv * szsz * (p->second);
@@ -3050,13 +3050,13 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
     }
 
     // add everything to dgapgp
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       dgapgp[p->first] += (mgpx[0] - sgpx[0]) * (p->second);
 
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       dgapgp[p->first] += (mgpx[1] - sgpx[1]) * (p->second);
 
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       dgapgp[p->first] += (mgpx[2] - sgpx[2]) * (p->second);
 
     // lin slave nodes
@@ -3066,7 +3066,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
       for (int k = 0; k < 3; ++k) dgapgp[cnode->dofs()[k]] -= sval[z] * gpn[k];
     }
 
-    for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+    for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -3084,7 +3084,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
       for (int k = 0; k < 3; ++k) dgapgp[cnode->dofs()[k]] += mval[z] * gpn[k];
     }
 
-    for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+    for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -3095,7 +3095,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
       }
     }
 
-    for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+    for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -3129,7 +3129,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
     for (int iter = 0; iter < nrowL; ++iter)
     {
       // map iterator
-      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+      using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(mynodes[iter]);
       if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -3151,17 +3151,17 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
         for (int d = 0; d < n_dim() - 2; ++d)
         {
           fac = wgt * sderiv(iter, d) * gap * jac;
-          for (_CI p = dlxigp[d].begin(); p != dlxigp[d].end(); ++p)
+          for (CI p = dlxigp[d].begin(); p != dlxigp[d].end(); ++p)
             dgmap[p->first] += fac * (p->second);
         }
 
         // (3) Lin(g) - gap function
         fac = wgt * sval[iter] * jac;
-        for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+        for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
         // (4) Lin(dsxideta) - intcell GP Jacobian
         fac = wgt * sval[iter] * gap;
-        for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+        for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
           dgmap[p->first] += fac * (p->second);
       }
 
@@ -3175,17 +3175,17 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
         for (int d = 0; d < n_dim() - 2; ++d)
         {
           fac = wgt * lmderiv(iter, d) * gap * jac;
-          for (_CI p = dlxigp[d].begin(); p != dlxigp[d].end(); ++p)
+          for (CI p = dlxigp[d].begin(); p != dlxigp[d].end(); ++p)
             dgmap[p->first] += fac * (p->second);
         }
 
         // (3) Lin(g) - gap function
         fac = wgt * lmval[iter] * jac;
-        for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+        for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
         // (4) Lin(dsxideta) - intcell GP Jacobian
         fac = wgt * lmval[iter] * gap;
-        for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+        for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
           dgmap[p->first] += fac * (p->second);
       }
     }
@@ -3377,25 +3377,25 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
             // (2) Lin(NSlave) - slave GP coordinates
             fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-            for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+            for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
               dmmap_jk[p->first] += fac * (p->second);
 
             //            fac = wgt*lmderiv(j, 1)*mval[k]*jac;
-            //            for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+            //            for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
             //              dmmap_jk[p->first] += fac*(p->second);
 
             // (3) Lin(NMaster) - master GP coordinates
             fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-            for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+            for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
               dmmap_jk[p->first] += fac * (p->second);
 
             fac = wgt * lmval[j] * mderiv(k, 1) * jac;
-            for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+            for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
               dmmap_jk[p->first] += fac * (p->second);
 
             // (4) Lin(dsxideta) - intcell GP Jacobian
             fac = wgt * lmval[j] * mval[k];
-            for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+            for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
               dmmap_jk[p->first] += fac * (p->second);
           }  // loop over master nodes
 
@@ -3433,25 +3433,25 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
               // (2) Lin(NSlave) - slave GP coordinates
               fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-              for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+              for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
                 dmmap_jk[p->first] += fac * (p->second);
 
               //              fac = wgt*lmderiv(j, 1)*sval[k]*jac;
-              //              for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+              //              for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
               //                dmmap_jk[p->first] -= fac*(p->second);
 
               // (3) Lin(NSlave) - slave GP coordinates
               fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-              for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+              for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
                 dmmap_jk[p->first] += fac * (p->second);
 
               //              fac = wgt*lmval[j]*sderiv(k, 1)*jac;
-              //              for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+              //              for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
               //                dmmap_jk[p->first] -= fac*(p->second);
 
               // (4) Lin(dsxideta) - intcell GP Jacobian
               fac = wgt * lmval[j] * sval[k];
-              for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+              for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
                 dmmap_jk[p->first] += fac * (p->second);
             }
 
@@ -3479,25 +3479,25 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
               // (2) Lin(NSlave) - slave GP coordinates
               fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-              for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+              for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
                 ddmap_jk[p->first] += fac * (p->second);
 
               //              fac = wgt*lmderiv(j, 1)*sval[k]*jac;
-              //              for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+              //              for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
               //                ddmap_jk[p->first] += fac*(p->second);
 
               // (3) Lin(NSlave) - slave GP coordinates
               fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-              for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+              for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
                 ddmap_jk[p->first] += fac * (p->second);
 
               //              fac = wgt*lmval[j]*sderiv(k, 1)*jac;
-              //              for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+              //              for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
               //                ddmap_jk[p->first] += fac*(p->second);
 
               // (4) Lin(dsxideta) - intcell GP Jacobian
               fac = wgt * lmval[j] * sval[k];
-              for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+              for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
                 ddmap_jk[p->first] += fac * (p->second);
             }
           }  // loop over slave nodes
@@ -3532,7 +3532,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
             // (2) Lin(NSlave) - slave GP coordinates
             fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-            for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+            for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
               ddmap_jk[p->first] += fac * (p->second);
@@ -3540,14 +3540,14 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
             // (3) Lin(NMaster) - master GP coordinates
             fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-            for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+            for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
               ddmap_jk[p->first] += fac * (p->second);
             }
 
             fac = wgt * lmval[j] * mderiv(k, 1) * jac;
-            for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+            for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
               ddmap_jk[p->first] += fac * (p->second);
@@ -3555,7 +3555,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
             // (4) Lin(dsxideta) - intcell GP Jacobian
             fac = wgt * lmval[j] * mval[k];
-            for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+            for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
               ddmap_jk[p->first] += fac * (p->second);
@@ -3591,27 +3591,27 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-          for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+          for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
           }
 
           // (3) Lin(NMaster) - master GP coordinates
           fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-          for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+          for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
           }
 
           fac = wgt * lmval[j] * mderiv(k, 1) * jac;
-          for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+          for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
           }
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * mval[k];
-          for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+          for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
           {
             dmmap_jk[p->first] += fac * (p->second);
           }
@@ -3635,21 +3635,21 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
             // (2) Lin(NSlave) - slave GP coordinates
             fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-            for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+            for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
             }
 
             // (3) Lin(NMaster) - master GP coordinates
             fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-            for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+            for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
             }
 
             // (4) Lin(dsxideta) - intcell GP Jacobian
             fac = wgt * lmval[j] * sval[k];
-            for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+            for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
             }
@@ -3665,21 +3665,21 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_lts(Mortar::Element&
 
             // (2) Lin(NSlave) - slave GP coordinates
             fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-            for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+            for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
             }
 
             // (3) Lin(NMaster) - master GP coordinates
             fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-            for (_CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
+            for (CI p = dlxigp[0].begin(); p != dlxigp[0].end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
             }
 
             // (4) Lin(dsxideta) - intcell GP Jacobian
             fac = wgt * lmval[j] * sval[k];
-            for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+            for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
             {
               dmmap_jk[p->first] += fac * (p->second);
             }
@@ -3786,7 +3786,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_quad(Mortar::Element
   if (!myintnodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // prepare directional derivative of dual shape functions
   // this is necessary for all slave element types except tri3
@@ -4025,7 +4025,7 @@ void CONTACT::Integrator::integrate_deriv_cell_3d_aux_plane_quad(Mortar::Element
 
     for (int v = 0; v < 3; ++v)
       for (int d = 0; d < 3; ++d)
-        for (_CI p = (cell->get_deriv_vertex(v))[d].begin();
+        for (CI p = (cell->get_deriv_vertex(v))[d].begin();
             p != (cell->get_deriv_vertex(v))[d].end(); ++p)
           lingp[p->first](d) += svalcell(v) * (p->second);
 
@@ -4245,7 +4245,7 @@ void CONTACT::Integrator::integrate_deriv_ele_2d(Mortar::Element& sele,
   std::shared_ptr<Core::LinAlg::SerialDenseMatrix> lagmult;
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // prepare directional derivative of dual shape functions
   // this is only necessary for quadratic dual shape functions in 2D
@@ -4365,7 +4365,7 @@ void CONTACT::Integrator::integrate_deriv_ele_2d(Mortar::Element& sele,
           // evaluate the GP slave coordinate derivatives --> no entries
           std::vector<Core::Gen::Pairedvector<int, double>> dsxigp(
               1, Core::Gen::Pairedvector<int, double>(linsize + ndof * ncol));
-          for (_CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p) dsxigp[0][p->first] = 0.0;
+          for (CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p) dsxigp[0][p->first] = 0.0;
 
           // evaluate the GP master coordinate derivatives
           std::vector<Core::Gen::Pairedvector<int, double>> dmxigp(
@@ -4589,7 +4589,7 @@ void CONTACT::Integrator::integrate_d(Mortar::Element& sele, MPI_Comm comm, bool
 
     if (lin)
     {
-      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+      using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       // (1) Lin(Phi) - dual shape functions
       if (duallin)
@@ -4607,7 +4607,7 @@ void CONTACT::Integrator::integrate_d(Mortar::Element& sele, MPI_Comm comm, bool
       }
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
-      for (_CI p = jacslavemap.begin(); p != jacslavemap.end(); ++p)
+      for (CI p = jacslavemap.begin(); p != jacslavemap.end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dderivtmp = dMatrixDeriv[p->first];
         for (int j = 0; j < nrow; ++j)
@@ -4871,7 +4871,7 @@ void CONTACT::Integrator::deriv_xi_a_b_2d(const Mortar::Element& sele, double sx
   mele.evaluate_shape(pmxib, valmxib, derivmxib, nummnode, false);
 
   // prepare linearizations
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // compute leading constant for DerivXiBMaster if start node = slave node
   if (startslave == true)
@@ -4936,13 +4936,13 @@ void CONTACT::Integrator::deriv_xi_a_b_2d(const Mortar::Element& sele, double sx
     }
 
     // add derivative of slave node normal
-    for (_CI p = derivN[0].begin(); p != derivN[0].end(); ++p)
+    for (CI p = derivN[0].begin(); p != derivN[0].end(); ++p)
       dmap_mxib[p->first] -= fac_ymsl_b * (p->second);
-    for (_CI p = derivN[1].begin(); p != derivN[1].end(); ++p)
+    for (CI p = derivN[1].begin(); p != derivN[1].end(); ++p)
       dmap_mxib[p->first] += fac_xmsl_b * (p->second);
 
     // multiply all entries with cmxib
-    for (_CI p = dmap_mxib.begin(); p != dmap_mxib.end(); ++p)
+    for (CI p = dmap_mxib.begin(); p != dmap_mxib.end(); ++p)
       dmap_mxib[p->first] = cmxib * (p->second);
 
     // return map to DerivM() method
@@ -5017,13 +5017,13 @@ void CONTACT::Integrator::deriv_xi_a_b_2d(const Mortar::Element& sele, double sx
     }
 
     // add derivative of slave node normal
-    for (_CI p = derivN[0].begin(); p != derivN[0].end(); ++p)
+    for (CI p = derivN[0].begin(); p != derivN[0].end(); ++p)
       dmap_mxia[p->first] -= fac_ymsl_a * (p->second);
-    for (_CI p = derivN[1].begin(); p != derivN[1].end(); ++p)
+    for (CI p = derivN[1].begin(); p != derivN[1].end(); ++p)
       dmap_mxia[p->first] += fac_xmsl_a * (p->second);
 
     // multiply all entries with cmxia
-    for (_CI p = dmap_mxia.begin(); p != dmap_mxia.end(); ++p)
+    for (CI p = dmap_mxia.begin(); p != dmap_mxia.end(); ++p)
       dmap_mxia[p->first] = cmxia * (p->second);
 
     // return map to DerivM() method
@@ -5100,14 +5100,14 @@ void CONTACT::Integrator::deriv_xi_a_b_2d(const Mortar::Element& sele, double sx
       const Core::Gen::Pairedvector<int, double>& nymap_curr =
           static_cast<const CONTACT::Node*>(smrtrnodes[i])->data().get_deriv_n()[1];
 
-      for (_CI p = nxmap_curr.begin(); p != nxmap_curr.end(); ++p)
+      for (CI p = nxmap_curr.begin(); p != nxmap_curr.end(); ++p)
         dmap_sxia[p->first] -= valsxia[i] * fac_yslm_a * (p->second);
-      for (_CI p = nymap_curr.begin(); p != nymap_curr.end(); ++p)
+      for (CI p = nymap_curr.begin(); p != nymap_curr.end(); ++p)
         dmap_sxia[p->first] += valsxia[i] * fac_xslm_a * (p->second);
     }
 
     // multiply all entries with csxia
-    for (_CI p = dmap_sxia.begin(); p != dmap_sxia.end(); ++p)
+    for (CI p = dmap_sxia.begin(); p != dmap_sxia.end(); ++p)
       dmap_sxia[p->first] = csxia * (p->second);
 
     // return map to DerivM() method
@@ -5180,14 +5180,14 @@ void CONTACT::Integrator::deriv_xi_a_b_2d(const Mortar::Element& sele, double sx
       const Core::Gen::Pairedvector<int, double>& nymap_curr =
           static_cast<const CONTACT::Node*>(smrtrnodes[i])->data().get_deriv_n()[1];
 
-      for (_CI p = nxmap_curr.begin(); p != nxmap_curr.end(); ++p)
+      for (CI p = nxmap_curr.begin(); p != nxmap_curr.end(); ++p)
         dmap_sxib[p->first] -= valsxib[i] * fac_yslm_b * (p->second);
-      for (_CI p = nymap_curr.begin(); p != nymap_curr.end(); ++p)
+      for (CI p = nymap_curr.begin(); p != nymap_curr.end(); ++p)
         dmap_sxib[p->first] += valsxib[i] * fac_xslm_b * (p->second);
     }
 
     // multiply all entries with csxib
-    for (_CI p = dmap_sxib.begin(); p != dmap_sxib.end(); ++p)
+    for (CI p = dmap_sxib.begin(); p != dmap_sxib.end(); ++p)
       dmap_sxib[p->first] = csxib * (p->second);
 
     // return map to DerivM() method
@@ -5292,7 +5292,7 @@ void CONTACT::Integrator::deriv_xi_gp_2d(const Mortar::Element& sele, const Mort
   fac_ymsl_gp -= sgpx[1];
 
   // prepare linearization
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // build directional derivative of slave GP coordinates
   Core::Gen::Pairedvector<int, double> dmap_xsl_gp(linsize + nummnode * ndof);
@@ -5303,7 +5303,7 @@ void CONTACT::Integrator::deriv_xi_gp_2d(const Mortar::Element& sele, const Mort
     dmap_xsl_gp[smrtrnodes[i]->dofs()[0]] += valsxigp[i];
     dmap_ysl_gp[smrtrnodes[i]->dofs()[1]] += valsxigp[i];
 
-    for (_CI p = derivsxi.begin(); p != derivsxi.end(); ++p)
+    for (CI p = derivsxi.begin(); p != derivsxi.end(); ++p)
     {
       double facx = derivsxigp(i, 0) * (smrtrnodes[i]->xspatial()[0]);
       double facy = derivsxigp(i, 0) * (smrtrnodes[i]->xspatial()[1]);
@@ -5329,12 +5329,12 @@ void CONTACT::Integrator::deriv_xi_gp_2d(const Mortar::Element& sele, const Mort
     const Core::Gen::Pairedvector<int, double>& dmap_nysl_i =
         static_cast<const CONTACT::Node*>(smrtrnodes[i])->data().get_deriv_n()[1];
 
-    for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+    for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
       dmap_nxsl_gp_mod[p->first] += valsxigp[i] * (p->second);
-    for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+    for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
       dmap_nysl_gp_mod[p->first] += valsxigp[i] * (p->second);
 
-    for (_CI p = derivsxi.begin(); p != derivsxi.end(); ++p)
+    for (CI p = derivsxi.begin(); p != derivsxi.end(); ++p)
     {
       double valx = derivsxigp(i, 0) * smrtrnodes[i]->mo_data().n()[0];
       dmap_nxsl_gp_mod[p->first] += valx * (p->second);
@@ -5349,14 +5349,14 @@ void CONTACT::Integrator::deriv_xi_gp_2d(const Mortar::Element& sele, const Mort
   const double linv = 1.0 / length;
   const double lllinv = 1.0 / (length * length * length);
 
-  for (_CI p = dmap_nxsl_gp_mod.begin(); p != dmap_nxsl_gp_mod.end(); ++p)
+  for (CI p = dmap_nxsl_gp_mod.begin(); p != dmap_nxsl_gp_mod.end(); ++p)
   {
     dmap_nxsl_gp[p->first] += linv * (p->second);
     dmap_nxsl_gp[p->first] -= lllinv * sxsx * (p->second);
     dmap_nysl_gp[p->first] -= lllinv * sxsy * (p->second);
   }
 
-  for (_CI p = dmap_nysl_gp_mod.begin(); p != dmap_nysl_gp_mod.end(); ++p)
+  for (CI p = dmap_nysl_gp_mod.begin(); p != dmap_nysl_gp_mod.end(); ++p)
   {
     dmap_nysl_gp[p->first] += linv * (p->second);
     dmap_nysl_gp[p->first] -= lllinv * sysy * (p->second);
@@ -5368,9 +5368,9 @@ void CONTACT::Integrator::deriv_xi_gp_2d(const Mortar::Element& sele, const Mort
   // *********************************************************************
 
   // add derivative of slave GP coordinates
-  for (_CI p = dmap_xsl_gp.begin(); p != dmap_xsl_gp.end(); ++p)
+  for (CI p = dmap_xsl_gp.begin(); p != dmap_xsl_gp.end(); ++p)
     derivmxi[p->first] -= sgpn[1] * (p->second);
-  for (_CI p = dmap_ysl_gp.begin(); p != dmap_ysl_gp.end(); ++p)
+  for (CI p = dmap_ysl_gp.begin(); p != dmap_ysl_gp.end(); ++p)
     derivmxi[p->first] += sgpn[0] * (p->second);
 
   // add derivatives of master node coordinates
@@ -5381,14 +5381,13 @@ void CONTACT::Integrator::deriv_xi_gp_2d(const Mortar::Element& sele, const Mort
   }
 
   // add derivative of slave GP normal
-  for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+  for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
     derivmxi[p->first] -= fac_ymsl_gp * (p->second);
-  for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+  for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
     derivmxi[p->first] += fac_xmsl_gp * (p->second);
 
   // multiply all entries with cmxigp
-  for (_CI p = derivmxi.begin(); p != derivmxi.end(); ++p)
-    derivmxi[p->first] = cmxigp * (p->second);
+  for (CI p = derivmxi.begin(); p != derivmxi.end(); ++p) derivmxi[p->first] = cmxigp * (p->second);
 }
 
 /*----------------------------------------------------------------------*
@@ -5457,7 +5456,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d(const Mortar::Element& sele, const Mort
   lmatrix.invert();
 
   // build directional derivative of slave GP normal
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < numsnode; ++i)
@@ -5479,14 +5478,14 @@ void CONTACT::Integrator::deriv_xi_gp_3d(const Mortar::Element& sele, const Mort
     const Core::Gen::Pairedvector<int, double>& dmap_nzsl_i =
         static_cast<const CONTACT::Node*>(smrtrnodes[i])->data().get_deriv_n()[2];
 
-    for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+    for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
       dmap_nxsl_gp[p->first] += valsxigp[i] * (p->second);
-    for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+    for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
       dmap_nysl_gp[p->first] += valsxigp[i] * (p->second);
-    for (_CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
+    for (CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
       dmap_nzsl_gp[p->first] += valsxigp[i] * (p->second);
 
-    for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+    for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
     {
       double valx = derivsxigp(i, 0) * smrtrnodes[i]->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -5496,7 +5495,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d(const Mortar::Element& sele, const Mort
       dmap_nzsl_gp[p->first] += valz * (p->second);
     }
 
-    for (_CI p = derivsxi[1].begin(); p != derivsxi[1].end(); ++p)
+    for (CI p = derivsxi[1].begin(); p != derivsxi[1].end(); ++p)
     {
       double valx = derivsxigp(i, 1) * smrtrnodes[i]->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -5526,7 +5525,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d(const Mortar::Element& sele, const Mort
       derivmxi[0][smrtrnodes[z]->dofs()[k]] += valsxigp[z] * lmatrix(0, k);
       derivmxi[1][smrtrnodes[z]->dofs()[k]] += valsxigp[z] * lmatrix(1, k);
 
-      for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+      for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
       {
         derivmxi[0][p->first] +=
             derivsxigp(z, 0) * smrtrnodes[z]->xspatial()[k] * lmatrix(0, k) * (p->second);
@@ -5534,7 +5533,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d(const Mortar::Element& sele, const Mort
             derivsxigp(z, 0) * smrtrnodes[z]->xspatial()[k] * lmatrix(1, k) * (p->second);
       }
 
-      for (_CI p = derivsxi[1].begin(); p != derivsxi[1].end(); ++p)
+      for (CI p = derivsxi[1].begin(); p != derivsxi[1].end(); ++p)
       {
         derivmxi[0][p->first] +=
             derivsxigp(z, 1) * smrtrnodes[z]->xspatial()[k] * lmatrix(0, k) * (p->second);
@@ -5545,17 +5544,17 @@ void CONTACT::Integrator::deriv_xi_gp_3d(const Mortar::Element& sele, const Mort
   }
 
   // (3) slave Gauss point normal part
-  for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+  for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
   {
     derivmxi[0][p->first] += alpha * lmatrix(0, 0) * (p->second);
     derivmxi[1][p->first] += alpha * lmatrix(1, 0) * (p->second);
   }
-  for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+  for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
   {
     derivmxi[0][p->first] += alpha * lmatrix(0, 1) * (p->second);
     derivmxi[1][p->first] += alpha * lmatrix(1, 1) * (p->second);
   }
-  for (_CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
+  for (CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
   {
     derivmxi[0][p->first] += alpha * lmatrix(0, 2) * (p->second);
     derivmxi[1][p->first] += alpha * lmatrix(1, 2) * (p->second);
@@ -5603,7 +5602,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d_aux_plane(const Mortar::Element& ele, c
   lmatrix.invert();
 
   // start to fill linearization maps for element GP
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // see if this is an IntEle
   const Mortar::IntElement* ie = dynamic_cast<const Mortar::IntElement*>(&ele);
@@ -5622,7 +5621,7 @@ void CONTACT::Integrator::deriv_xi_gp_3d_aux_plane(const Mortar::Element& ele, c
     ie->node_linearization(nodelin);
     for (int z = 0; z < numnode; ++z)
       for (int k = 0; k < 3; ++k)
-        for (_CI p = nodelin[z][k].begin(); p != nodelin[z][k].end(); ++p)
+        for (CI p = nodelin[z][k].begin(); p != nodelin[z][k].end(); ++p)
         {
           derivxi[0][p->first] -= valxigp[z] * lmatrix(0, k) * p->second;
           derivxi[1][p->first] -= valxigp[z] * lmatrix(1, k) * p->second;
@@ -5645,17 +5644,17 @@ void CONTACT::Integrator::deriv_xi_gp_3d_aux_plane(const Mortar::Element& ele, c
   }
 
   // (3) AuxPlane normal part
-  for (_CI p = derivauxn[0].begin(); p != derivauxn[0].end(); ++p)
+  for (CI p = derivauxn[0].begin(); p != derivauxn[0].end(); ++p)
   {
     derivxi[0][p->first] += alpha * lmatrix(0, 0) * (p->second);
     derivxi[1][p->first] += alpha * lmatrix(1, 0) * (p->second);
   }
-  for (_CI p = derivauxn[1].begin(); p != derivauxn[1].end(); ++p)
+  for (CI p = derivauxn[1].begin(); p != derivauxn[1].end(); ++p)
   {
     derivxi[0][p->first] += alpha * lmatrix(0, 1) * (p->second);
     derivxi[1][p->first] += alpha * lmatrix(1, 1) * (p->second);
   }
-  for (_CI p = derivauxn[2].begin(); p != derivauxn[2].end(); ++p)
+  for (CI p = derivauxn[2].begin(); p != derivauxn[2].end(); ++p)
   {
     derivxi[0][p->first] += alpha * lmatrix(0, 2) * (p->second);
     derivxi[1][p->first] += alpha * lmatrix(1, 2) * (p->second);
@@ -6539,7 +6538,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
     std::vector<Core::Gen::Pairedvector<int, double>>& dnmap_unit)
 {
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -6646,14 +6645,14 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
     Core::Gen::Pairedvector<int, double>& dmap_nysl_i = cnode->data().get_deriv_n()[1];
     Core::Gen::Pairedvector<int, double>& dmap_nzsl_i = cnode->data().get_deriv_n()[2];
 
-    for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+    for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
       dmap_nxsl_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+    for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
       dmap_nysl_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
+    for (CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
       dmap_nzsl_gp[p->first] += sval[i] * (p->second);
 
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
     {
       double valx = sderiv(i, 0) * cnode->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -6663,7 +6662,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
       dmap_nzsl_gp[p->first] += valz * (p->second);
     }
 
-    for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+    for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
     {
       double valx = sderiv(i, 1) * cnode->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -6684,7 +6683,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
   const double sysz = gpn[1] * gpn[2] * ll;
   const double szsz = gpn[2] * gpn[2] * ll;
 
-  for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+  for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
   {
     dnmap_unit[0][p->first] += linv * (p->second);
     dnmap_unit[0][p->first] -= lllinv * sxsx * (p->second);
@@ -6692,7 +6691,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
     dnmap_unit[2][p->first] -= lllinv * sxsz * (p->second);
   }
 
-  for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+  for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
   {
     dnmap_unit[1][p->first] += linv * (p->second);
     dnmap_unit[1][p->first] -= lllinv * sysy * (p->second);
@@ -6700,7 +6699,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
     dnmap_unit[2][p->first] -= lllinv * sysz * (p->second);
   }
 
-  for (_CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
+  for (CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
   {
     dnmap_unit[2][p->first] += linv * (p->second);
     dnmap_unit[2][p->first] -= lllinv * szsz * (p->second);
@@ -6709,13 +6708,13 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
   }
 
   // add everything to dgapgp
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     dgapgp[p->first] += (mgpx[0] - sgpx[0]) * (p->second);
 
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     dgapgp[p->first] += (mgpx[1] - sgpx[1]) * (p->second);
 
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     dgapgp[p->first] += (mgpx[2] - sgpx[2]) * (p->second);
 
   // for wear as own discretization
@@ -6730,19 +6729,19 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
 
         dgapgp[frinode->dofs()[k]] -= sval[z] * gpn[k];
 
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dgapgp[p->first] -= gpn[k] * sderiv(z, 0) *
                               (frinode->xspatial()[k] -
                                   frinode->mo_data().n()[k] * frinode->wear_data().wcurr()[0]) *
                               (p->second);
 
-        for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+        for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           dgapgp[p->first] -= gpn[k] * sderiv(z, 1) *
                               (frinode->xspatial()[k] -
                                   frinode->mo_data().n()[k] * frinode->wear_data().wcurr()[0]) *
                               (p->second);
 
-        for (_CI p = frinode->data().get_deriv_n()[k].begin();
+        for (CI p = frinode->data().get_deriv_n()[k].begin();
             p != frinode->data().get_deriv_n()[k].end(); ++p)
           dgapgp[p->first] += gpn[k] * sval[z] * frinode->wear_data().wcurr()[0] * (p->second);
       }
@@ -6756,7 +6755,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
       for (int k = 0; k < 3; ++k) dgapgp[cnode->dofs()[k]] -= sval[z] * gpn[k];
     }
 
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -6767,7 +6766,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
       }
     }
 
-    for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+    for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -6790,19 +6789,19 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
       {
         dgapgp[frinode->dofs()[k]] += mval[z] * gpn[k];
 
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dgapgp[p->first] += gpn[k] * mderiv(z, 0) *
                               (frinode->xspatial()[k] -
                                   frinode->mo_data().n()[k] * frinode->wear_data().wcurr()[0]) *
                               (p->second);
 
-        for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+        for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
           dgapgp[p->first] += gpn[k] * mderiv(z, 1) *
                               (frinode->xspatial()[k] -
                                   frinode->mo_data().n()[k] * frinode->wear_data().wcurr()[0]) *
                               (p->second);
 
-        for (_CI p = frinode->data().get_deriv_n()[k].begin();
+        for (CI p = frinode->data().get_deriv_n()[k].begin();
             p != frinode->data().get_deriv_n()[k].end(); ++p)
           dgapgp[p->first] -= gpn[k] * mval[z] * frinode->wear_data().wcurr()[0] * (p->second);
       }
@@ -6817,7 +6816,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
       for (int k = 0; k < 3; ++k) dgapgp[cnode->dofs()[k]] += mval[z] * gpn[k];
     }
 
-    for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+    for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -6828,7 +6827,7 @@ void CONTACT::Integrator::gap_3d(Mortar::Element& sele, Mortar::Element& mele,
       }
     }
 
-    for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+    for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
     {
       double& dg = dgapgp[p->first];
       const double& ps = p->second;
@@ -6850,7 +6849,7 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
     std::vector<Core::Gen::Pairedvector<int, double>>& dnmap_unit)
 {
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = nullptr;
@@ -6942,12 +6941,12 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
     Core::Gen::Pairedvector<int, double>& dmap_nysl_i =
         dynamic_cast<CONTACT::Node*>(snodes[i])->data().get_deriv_n()[1];
 
-    for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+    for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
       dmap_nxsl_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+    for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
       dmap_nysl_gp[p->first] += sval[i] * (p->second);
 
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
     {
       double valx = sderiv(i, 0) * snode->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -6964,14 +6963,14 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
   const double sxsy = gpn[0] * gpn[1] * ll;  // to get the non-unit normal
   const double sysy = gpn[1] * gpn[1] * ll;
 
-  for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+  for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
   {
     dnmap_unit[0][p->first] += linv * (p->second);
     dnmap_unit[0][p->first] -= lllinv * sxsx * (p->second);
     dnmap_unit[1][p->first] -= lllinv * sxsy * (p->second);
   }
 
-  for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+  for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
   {
     dnmap_unit[1][p->first] += linv * (p->second);
     dnmap_unit[1][p->first] -= lllinv * sysy * (p->second);
@@ -6981,10 +6980,10 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
   // *****************************************************************************
   // add everything to dgapgp                                                    *
   // *****************************************************************************
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     dgapgp[p->first] += (mgpx[0] - sgpx[0]) * (p->second);
 
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     dgapgp[p->first] += (mgpx[1] - sgpx[1]) * (p->second);
 
   // for wear as own discretization
@@ -7000,12 +6999,12 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
 
         dgapgp[frinode->dofs()[k]] -= sval[z] * gpn[k];
 
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dgapgp[p->first] -= gpn[k] * sderiv(z, 0) *
                               (frinode->xspatial()[k] - frinode->mo_data().n()[k] * w) *
                               (p->second);
 
-        for (_CI p = frinode->data().get_deriv_n()[k].begin();
+        for (CI p = frinode->data().get_deriv_n()[k].begin();
             p != frinode->data().get_deriv_n()[k].end(); ++p)
           dgapgp[p->first] += gpn[k] * sval[z] * w * (p->second);
       }
@@ -7021,7 +7020,7 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
       {
         dgapgp[snode->dofs()[k]] -= sval[z] * (gpn[k]);
 
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dgapgp[p->first] -= gpn[k] * sderiv(z, 0) * snode->xspatial()[k] * (p->second);
       }
     }
@@ -7040,12 +7039,12 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
 
         dgapgp[frinode->dofs()[k]] += mval[z] * gpn[k];
 
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dgapgp[p->first] += gpn[k] * mderiv(z, 0) *
                               (frinode->xspatial()[k] - frinode->mo_data().n()[k] * w) *
                               (p->second);
 
-        for (_CI p = frinode->data().get_deriv_n()[k].begin();
+        for (CI p = frinode->data().get_deriv_n()[k].begin();
             p != frinode->data().get_deriv_n()[k].end(); ++p)
           dgapgp[p->first] -= gpn[k] * mval[z] * w * (p->second);
       }
@@ -7061,7 +7060,7 @@ void CONTACT::Integrator::gap_2d(Mortar::Element& sele, Mortar::Element& mele,
       {
         dgapgp[mnode->dofs()[k]] += mval[z] * gpn[k];
 
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dgapgp[p->first] += gpn[k] * mderiv(z, 0) * mnode->xspatial()[k] * (p->second);
       }
     }
@@ -7084,7 +7083,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
     std::vector<Core::Gen::Pairedvector<int, double>>& dnmap_unit)
 {
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -7208,14 +7207,14 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
     Core::Gen::Pairedvector<int, double>& dmap_nysl_i = cnode->data().get_deriv_n()[1];
     Core::Gen::Pairedvector<int, double>& dmap_nzsl_i = cnode->data().get_deriv_n()[2];
 
-    for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+    for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
       dmap_nxsl_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+    for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
       dmap_nysl_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
+    for (CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
       dmap_nzsl_gp[p->first] += sval[i] * (p->second);
 
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
     {
       double valx = sderiv(i, 0) * cnode->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -7225,7 +7224,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
       dmap_nzsl_gp[p->first] += valz * (p->second);
     }
 
-    for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+    for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
     {
       double valx = sderiv(i, 1) * cnode->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -7246,7 +7245,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
   const double sysz = gpn[1] * gpn[2] * ll;
   const double szsz = gpn[2] * gpn[2] * ll;
 
-  for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+  for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
   {
     dnmap_unit[0][p->first] += linv * (p->second);
     dnmap_unit[0][p->first] -= lllinv * sxsx * (p->second);
@@ -7254,7 +7253,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
     dnmap_unit[2][p->first] -= lllinv * sxsz * (p->second);
   }
 
-  for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+  for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
   {
     dnmap_unit[1][p->first] += linv * (p->second);
     dnmap_unit[1][p->first] -= lllinv * sysy * (p->second);
@@ -7262,7 +7261,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
     dnmap_unit[2][p->first] -= lllinv * sysz * (p->second);
   }
 
-  for (_CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
+  for (CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
   {
     dnmap_unit[2][p->first] += linv * (p->second);
     dnmap_unit[2][p->first] -= lllinv * szsz * (p->second);
@@ -7271,13 +7270,13 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
   }
 
   // add everything to dgapgp
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     dgapgp[p->first] += (mgpx[0] - sgpx[0]) * (p->second);
 
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     dgapgp[p->first] += (mgpx[1] - sgpx[1]) * (p->second);
 
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     dgapgp[p->first] += (mgpx[2] - sgpx[2]) * (p->second);
 
   // for wear as own discretization
@@ -7292,19 +7291,19 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
 
         dgapgp[frinode->dofs()[k]] -= sval[z] * gpn[k];
 
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dgapgp[p->first] -= gpn[k] * sderiv(z, 0) *
                               (frinode->xspatial()[k] -
                                   frinode->mo_data().n()[k] * frinode->wear_data().wcurr()[0]) *
                               (p->second);
 
-        for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+        for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           dgapgp[p->first] -= gpn[k] * sderiv(z, 1) *
                               (frinode->xspatial()[k] -
                                   frinode->mo_data().n()[k] * frinode->wear_data().wcurr()[0]) *
                               (p->second);
 
-        for (_CI p = frinode->data().get_deriv_n()[k].begin();
+        for (CI p = frinode->data().get_deriv_n()[k].begin();
             p != frinode->data().get_deriv_n()[k].end(); ++p)
           dgapgp[p->first] += gpn[k] * sval[z] * frinode->wear_data().wcurr()[0] * (p->second);
       }
@@ -7320,10 +7319,10 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
       {
         dgapgp[cnode->dofs()[k]] -= sval[z] * gpn[k];
 
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dgapgp[p->first] -= gpn[k] * sderiv(z, 0) * cnode->xspatial()[k] * (p->second);
 
-        for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+        for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           dgapgp[p->first] -= gpn[k] * sderiv(z, 1) * cnode->xspatial()[k] * (p->second);
       }
     }
@@ -7340,19 +7339,19 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
       {
         dgapgp[frinode->dofs()[k]] += mval[z] * gpn[k];
 
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dgapgp[p->first] += gpn[k] * mderiv(z, 0) *
                               (frinode->xspatial()[k] -
                                   frinode->mo_data().n()[k] * frinode->wear_data().wcurr()[0]) *
                               (p->second);
 
-        for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+        for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
           dgapgp[p->first] += gpn[k] * mderiv(z, 1) *
                               (frinode->xspatial()[k] -
                                   frinode->mo_data().n()[k] * frinode->wear_data().wcurr()[0]) *
                               (p->second);
 
-        for (_CI p = frinode->data().get_deriv_n()[k].begin();
+        for (CI p = frinode->data().get_deriv_n()[k].begin();
             p != frinode->data().get_deriv_n()[k].end(); ++p)
           dgapgp[p->first] -= gpn[k] * mval[z] * frinode->wear_data().wcurr()[0] * (p->second);
       }
@@ -7369,10 +7368,10 @@ void inline CONTACT::Integrator::gp_3d_g_quad_pwlin(Mortar::Element& sele,
       {
         dgapgp[cnode->dofs()[k]] += mval[z] * gpn[k];
 
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dgapgp[p->first] += gpn[k] * mderiv(z, 0) * cnode->xspatial()[k] * (p->second);
 
-        for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+        for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
           dgapgp[p->first] += gpn[k] * mderiv(z, 1) * cnode->xspatial()[k] * (p->second);
       }
     }
@@ -7404,7 +7403,7 @@ void inline CONTACT::Integrator::gp_2d_g_lin(int& iter, Mortar::Element& sele,
   double fac = 0.0;
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get the corresponding map as a reference
   std::map<int, double>& dgmap = dynamic_cast<CONTACT::Node*>(mymrtrnode)->data().get_deriv_g();
@@ -7417,15 +7416,15 @@ void inline CONTACT::Integrator::gp_2d_g_lin(int& iter, Mortar::Element& sele,
 
     // (2) Lin(Phi) - slave GP coordinates
     fac = wgt * sderiv(iter, 0) * gap * jac;
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dgmap[p->first] += fac * (p->second);
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dgmap[p->first] += fac * (p->second);
 
     // (3) Lin(g) - gap function
     fac = wgt * sval[iter] * jac;
-    for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+    for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
     // (4) Lin(dxdsxi) - slave GP Jacobian
     fac = wgt * sval[iter] * gap;
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
       dgmap[p->first] += fac * (p->second);
   }
 
@@ -7447,15 +7446,15 @@ void inline CONTACT::Integrator::gp_2d_g_lin(int& iter, Mortar::Element& sele,
 
     // (2) Lin(Phi) - slave GP coordinates
     fac = wgt * lmderiv(iter, 0) * gap * jac;
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dgmap[p->first] += fac * (p->second);
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dgmap[p->first] += fac * (p->second);
 
     // (3) Lin(g) - gap function
     fac = wgt * lmval[iter] * jac;
-    for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+    for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
     // (4) Lin(dxdsxi) - slave GP Jacobian
     fac = wgt * lmval[iter] * gap;
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
       dgmap[p->first] += fac * (p->second);
   }
 
@@ -7560,7 +7559,7 @@ void inline CONTACT::Integrator::gp_3d_g_quad_lin(int& iter, Mortar::Element& se
   const int nrow = sele.num_node();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -7584,20 +7583,20 @@ void inline CONTACT::Integrator::gp_3d_g_quad_lin(int& iter, Mortar::Element& se
 
     // (2) Lin(Phi) - slave GP coordinates
     fac = wgt * lmderiv(iter, 0) * gap * jac;
-    for (_CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
+    for (CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
       dgmap[p->first] += fac * (p->second);
 
     fac = wgt * lmderiv(iter, 1) * gap * jac;
-    for (_CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
+    for (CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
       dgmap[p->first] += fac * (p->second);
 
     // (3) Lin(g) - gap function
     fac = wgt * lmval[iter] * jac;
-    for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+    for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
     fac = wgt * lmval[iter] * gap;
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
       dgmap[p->first] += fac * (p->second);
   }
 
@@ -7631,20 +7630,20 @@ void inline CONTACT::Integrator::gp_3d_g_quad_lin(int& iter, Mortar::Element& se
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmderiv(iter, 0) * gap * jac;
-      for (_CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
+      for (CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
         dgmap[p->first] += fac * (p->second);
 
       fac = wgt * lmderiv(iter, 1) * gap * jac;
-      for (_CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
+      for (CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
         dgmap[p->first] += fac * (p->second);
 
       // (3) Lin(g) - gap function
       fac = wgt * lmval[iter] * jac;
-      for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+      for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * lmval[iter] * gap;
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         dgmap[p->first] += fac * (p->second);
     }
     else if (shape_fcn() == Inpar::Mortar::shape_petrovgalerkin)
@@ -7653,20 +7652,20 @@ void inline CONTACT::Integrator::gp_3d_g_quad_lin(int& iter, Mortar::Element& se
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * sderiv(iter, 0) * gap * jac;
-      for (_CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
+      for (CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
         dgmap[p->first] += fac * (p->second);
 
       fac = wgt * sderiv(iter, 1) * gap * jac;
-      for (_CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
+      for (CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
         dgmap[p->first] += fac * (p->second);
 
       // (3) Lin(g) - gap function
       fac = wgt * sval[iter] * jac;
-      for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+      for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * sval[iter] * gap;
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         dgmap[p->first] += fac * (p->second);
     }
   }
@@ -7688,7 +7687,7 @@ void CONTACT::Integrator::gp_g_lin(int& iter, Mortar::Element& sele, Mortar::Ele
   const int ncol = mele.num_node();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -7713,17 +7712,17 @@ void CONTACT::Integrator::gp_g_lin(int& iter, Mortar::Element& sele, Mortar::Ele
     for (int d = 0; d < n_dim() - 1; ++d)
     {
       fac = wgt * sderiv(iter, d) * gap * jac;
-      for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+      for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
         dgmap[p->first] += fac * (p->second);
     }
 
     // (3) Lin(g) - gap function
     fac = wgt * sval[iter] * jac;
-    for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+    for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
     fac = wgt * sval[iter] * gap;
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
       dgmap[p->first] += fac * (p->second);
   }
 
@@ -7745,17 +7744,17 @@ void CONTACT::Integrator::gp_g_lin(int& iter, Mortar::Element& sele, Mortar::Ele
     for (int d = 0; d < n_dim() - 1; ++d)
     {
       fac = wgt * lmderiv(iter, d) * gap * jac;
-      for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+      for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
         dgmap[p->first] += fac * (p->second);
     }
 
     // (3) Lin(g) - gap function
     fac = wgt * lmval[iter] * jac;
-    for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+    for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
     fac = wgt * lmval[iter] * gap;
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
       dgmap[p->first] += fac * (p->second);
   }
 
@@ -7808,7 +7807,7 @@ void CONTACT::Integrator::gp_3d_dm_lin_bound(Mortar::Element& sele, Mortar::Elem
   Core::Nodes::Node** snodes = sele.nodes();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   if (shape_fcn() == Inpar::Mortar::shape_standard)
   {
@@ -7837,25 +7836,25 @@ void CONTACT::Integrator::gp_3d_dm_lin_bound(Mortar::Element& sele, Mortar::Elem
 
         // (2) Lin(NSlave) - slave GP coordinates
         fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         fac = wgt * lmderiv(j, 1) * mval[k] * jac;
-        for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+        for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         // (3) Lin(NMaster) - master GP coordinates
         fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         fac = wgt * lmval[j] * mderiv(k, 1) * jac;
-        for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+        for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         // (4) Lin(dsxideta) - intcell GP Jacobian
         fac = wgt * lmval[j] * mval[k];
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
       }  // loop over master nodes
 
@@ -7898,25 +7897,25 @@ void CONTACT::Integrator::gp_3d_dm_lin_bound(Mortar::Element& sele, Mortar::Elem
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = sign * wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
 
           fac = sign * wgt * lmderiv(j, 1) * sval[k] * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = sign * wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
 
           fac = sign * wgt * lmval[j] * sderiv(k, 1) * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = sign * wgt * lmval[j] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
         }
 
@@ -7932,25 +7931,25 @@ void CONTACT::Integrator::gp_3d_dm_lin_bound(Mortar::Element& sele, Mortar::Elem
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           fac = wgt * lmderiv(j, 1) * sval[k] * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           fac = wgt * lmval[j] * sderiv(k, 1) * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
         }
       }  // loop over slave nodes
@@ -7995,25 +7994,25 @@ void CONTACT::Integrator::gp_3d_dm_lin_bound(Mortar::Element& sele, Mortar::Elem
 
         // (2) Lin(NSlave) - slave GP coordinates
         fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         fac = wgt * lmderiv(j, 1) * mval[k] * jac;
-        for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+        for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         // (3) Lin(NMaster) - master GP coordinates
         fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         fac = wgt * lmval[j] * mderiv(k, 1) * jac;
-        for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+        for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         // (4) Lin(dsxideta) - intcell GP Jacobian
         fac = wgt * lmval[j] * mval[k];
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
       }  // loop over master nodes
 
@@ -8067,25 +8066,25 @@ void CONTACT::Integrator::gp_3d_dm_lin_bound(Mortar::Element& sele, Mortar::Elem
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = sign * wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
 
           fac = sign * wgt * lmderiv(j, 1) * sval[k] * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = sign * wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
 
           fac = sign * wgt * lmval[j] * sderiv(k, 1) * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = sign * wgt * lmval[j] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             (*dmmap_jk)[p->first] += fac * (p->second);
         }
 
@@ -8111,25 +8110,25 @@ void CONTACT::Integrator::gp_3d_dm_lin_bound(Mortar::Element& sele, Mortar::Elem
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           fac = wgt * lmderiv(j, 1) * sval[k] * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           fac = wgt * lmval[j] * sderiv(k, 1) * jac;
-          for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+          for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
         }
       }  // loop over slave nodes
@@ -8158,7 +8157,7 @@ void inline CONTACT::Integrator::gp_2d_dm_lin_bound(Mortar::Element& sele, Morta
   Core::Nodes::Node** snodes = sele.nodes();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   if (shape_fcn() == Inpar::Mortar::shape_standard)
   {
@@ -8187,25 +8186,25 @@ void inline CONTACT::Integrator::gp_2d_dm_lin_bound(Mortar::Element& sele, Morta
 
         // (2) Lin(NSlave) - slave GP coordinates
         fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-        for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+        for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         //        fac = wgt*lmderiv(j, 1)*mval[k]*jac;
-        //        for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+        //        for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
         //          dmmap_jk[p->first] += fac*(p->second);
 
         // (3) Lin(NMaster) - master GP coordinates
         fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-        for (_CI p = derivmxi[0].begin(); p != derivmxi[0].end(); ++p)
+        for (CI p = derivmxi[0].begin(); p != derivmxi[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         //        fac = wgt*lmval[j]*mderiv(k, 1)*jac;
-        //        for (_CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
+        //        for (CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
         //          dmmap_jk[p->first] += fac*(p->second);
 
         // (4) Lin(dsxideta) - intcell GP Jacobian
         fac = wgt * lmval[j] * mval[k];
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
       }  // loop over master nodes
 
@@ -8231,25 +8230,25 @@ void inline CONTACT::Integrator::gp_2d_dm_lin_bound(Mortar::Element& sele, Morta
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+          for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
 
           //          fac = wgt*lmderiv(j, 1)*sval[k]*jac;
-          //          for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+          //          for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
           //            dmmap_jk[p->first] -= fac*(p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+          for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
 
           //          fac = wgt*lmval[j]*sderiv(k, 1)*jac;
-          //          for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+          //          for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
           //            dmmap_jk[p->first] -= fac*(p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
         }
 
@@ -8265,25 +8264,25 @@ void inline CONTACT::Integrator::gp_2d_dm_lin_bound(Mortar::Element& sele, Morta
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+          for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           //          fac = wgt*lmderiv(j, 1)*sval[k]*jac;
-          //          for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+          //          for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
           //            ddmap_jk[p->first] += fac*(p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+          for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           //          fac = wgt*lmval[j]*sderiv(k, 1)*jac;
-          //          for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+          //          for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
           //            ddmap_jk[p->first] += fac*(p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
         }
       }  // loop over slave nodes
@@ -8328,25 +8327,25 @@ void inline CONTACT::Integrator::gp_2d_dm_lin_bound(Mortar::Element& sele, Morta
 
         // (2) Lin(NSlave) - slave GP coordinates
         fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-        for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+        for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         //        fac = wgt*lmderiv(j, 1)*mval[k]*jac;
-        //        for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+        //        for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
         //          dmmap_jk[p->first] += fac*(p->second);
 
         // (3) Lin(NMaster) - master GP coordinates
         fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-        for (_CI p = derivmxi[0].begin(); p != derivmxi[0].end(); ++p)
+        for (CI p = derivmxi[0].begin(); p != derivmxi[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         //        fac = wgt*lmval[j]*mderiv(k, 1)*jac;
-        //        for (_CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
+        //        for (CI p=dmxigp[1].begin(); p!=dmxigp[1].end(); ++p)
         //          dmmap_jk[p->first] += fac*(p->second);
 
         // (4) Lin(dsxideta) - intcell GP Jacobian
         fac = wgt * lmval[j] * mval[k];
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
       }  // loop over master nodes
 
@@ -8383,25 +8382,25 @@ void inline CONTACT::Integrator::gp_2d_dm_lin_bound(Mortar::Element& sele, Morta
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+          for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
 
           //          fac = wgt*lmderiv(j, 1)*sval[k]*jac;
-          //          for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+          //          for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
           //            dmmap_jk[p->first] -= fac*(p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+          for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
 
           //          fac = wgt*lmval[j]*sderiv(k, 1)*jac;
-          //          for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+          //          for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
           //            dmmap_jk[p->first] -= fac*(p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
         }
 
@@ -8427,25 +8426,25 @@ void inline CONTACT::Integrator::gp_2d_dm_lin_bound(Mortar::Element& sele, Morta
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-          for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+          for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           //          fac = wgt*lmderiv(j, 1)*sval[k]*jac;
-          //          for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+          //          for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
           //            ddmap_jk[p->first] += fac*(p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-          for (_CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
+          for (CI p = derivsxi[0].begin(); p != derivsxi[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           //          fac = wgt*lmval[j]*sderiv(k, 1)*jac;
-          //          for (_CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
+          //          for (CI p=dsxigp[1].begin(); p!=dsxigp[1].end(); ++p)
           //            ddmap_jk[p->first] += fac*(p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
         }
       }  // loop over slave nodes
@@ -8477,7 +8476,7 @@ void inline CONTACT::Integrator::gp_2d_dm_ele_lin(int& iter, bool& bound, Mortar
   mnodes = mele.nodes();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(snodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -8505,13 +8504,13 @@ void inline CONTACT::Integrator::gp_2d_dm_ele_lin(int& iter, bool& bound, Mortar
 
       // (3) Lin(NMaster) - master GP coordinates
       fac = wgt * lmval[iter] * mderiv(k, 0) * dxdsxi;
-      for (_CI p = dmxigp.begin(); p != dmxigp.end(); ++p) dmmap_jk[p->first] += fac * (p->second);
+      for (CI p = dmxigp.begin(); p != dmxigp.end(); ++p) dmmap_jk[p->first] += fac * (p->second);
 
       // (4) Lin(dsxideta) - segment end coordinates --> 0
 
       // (5) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * lmval[iter] * mval[k];
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         dmmap_jk[p->first] += fac * (p->second);
 
       // (6) Lin(dxdsxi) - slave GP coordinates --> 0
@@ -8538,7 +8537,7 @@ void inline CONTACT::Integrator::gp_2d_dm_ele_lin(int& iter, bool& bound, Mortar
 
       // (5) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * lmval[iter] * sval[k];
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         ddmap_jk[p->first] += fac * (p->second);
 
       // (6) Lin(dxdsxi) - slave GP coordinates --> 0
@@ -8581,7 +8580,7 @@ void inline CONTACT::Integrator::gp_2d_dm_ele_lin(int& iter, bool& bound, Mortar
 
       // (3) Lin(NMaster) - master GP coordinates
       fac = wgt * lmval[iter] * mderiv(k, 0) * dxdsxi;
-      for (_CI p = dmxigp.begin(); p != dmxigp.end(); ++p)
+      for (CI p = dmxigp.begin(); p != dmxigp.end(); ++p)
       {
         dmmap_jk[p->first] += fac * (p->second);
         if (!bound) ddmap_jk[p->first] += fac * (p->second);
@@ -8591,7 +8590,7 @@ void inline CONTACT::Integrator::gp_2d_dm_ele_lin(int& iter, bool& bound, Mortar
 
       // (5) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * lmval[iter] * mval[k];
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
       {
         dmmap_jk[p->first] += fac * (p->second);
         if (!bound) ddmap_jk[p->first] += fac * (p->second);
@@ -8623,7 +8622,7 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
   mnodes = mele.nodes();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // **************** no edge modification *****************************
   // (and LinM also for edge node modification case)
@@ -8659,17 +8658,17 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
 
         // (2) Lin(NSlave) - slave GP coordinates
         fac = wgt * lmderiv(iter, 0) * mval[k] * jac;
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         // (3) Lin(NMaster) - master GP coordinates
         fac = wgt * lmval[iter] * mderiv(k, 0) * jac;
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         // (4) Lin(dxdsxi) - slave GP Jacobian
         fac = wgt * lmval[iter] * mval[k];
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
       }  // loop over master nodes
 
@@ -8697,17 +8696,17 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(iter, 0) * sval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmval[iter] * sderiv(k, 0) * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
 
           // (4) Lin(dxdsxi) - slave GP Jacobian
           fac = wgt * lmval[iter] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             dmmap_jk[p->first] -= fac * (p->second);
         }
 
@@ -8723,17 +8722,17 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(iter, 0) * sval[k] * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           // (3) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmval[iter] * sderiv(k, 0) * jac;
-          for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+          for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
 
           // (4) Lin(dxdsxi) - slave GP Jacobian
           fac = wgt * lmval[iter] * sval[k];
-          for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+          for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
             ddmap_jk[p->first] += fac * (p->second);
         }
       }  // loop over slave nodes
@@ -8766,17 +8765,17 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
 
         // (2) Lin(NSlave) - slave GP coordinates
         fac = wgt * lmderiv(iter, 0) * mval[k] * jac;
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         // (3) Lin(NMaster) - master GP coordinates
         fac = wgt * lmval[iter] * mderiv(k, 0) * jac;
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
 
         // (4) Lin(dxdsxi) - slave GP Jacobian
         fac = wgt * lmval[iter] * mval[k];
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
           dmmap_jk[p->first] += fac * (p->second);
       }  // loop over master nodes
 
@@ -8796,17 +8795,17 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
 
         // (2) Lin(NSlave) - slave GP coordinates
         fac = wgt * lmderiv(iter, 0) * sval[k] * jac;
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           ddmap_jk[p->first] += fac * (p->second);
 
         // (3) Lin(NSlave) - slave GP coordinates
         fac = wgt * lmval[iter] * sderiv(k, 0) * jac;
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
           ddmap_jk[p->first] += fac * (p->second);
 
         // (4) Lin(dxdsxi) - slave GP Jacobian
         fac = wgt * lmval[iter] * sval[k];
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
           ddmap_jk[p->first] += fac * (p->second);
       }  // loop over slave nodes
     }
@@ -8846,7 +8845,7 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
         // (2) Lin(Phi) - slave GP coordinates
         fac = wgt * lmderiv(iter, 0) * mval[k] * jac;
 
-        for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+        for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         {
           dmmap_jk[p->first] += fac * (p->second);
           if (!bound) ddmap_jk[p->first] += fac * (p->second);
@@ -8855,7 +8854,7 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
         // (3) Lin(NMaster) - master GP coordinates
         fac = wgt * lmval[iter] * mderiv(k, 0) * jac;
 
-        for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+        for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
         {
           dmmap_jk[p->first] += fac * (p->second);
           if (!bound) ddmap_jk[p->first] += fac * (p->second);
@@ -8864,7 +8863,7 @@ void inline CONTACT::Integrator::gp_2d_dm_lin(int& iter, bool& bound, bool& linl
         // (4) Lin(dxdsxi) - slave GP Jacobian
         fac = wgt * lmval[iter] * mval[k];
 
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         {
           dmmap_jk[p->first] += fac * (p->second);
           if (!bound) ddmap_jk[p->first] += fac * (p->second);
@@ -9003,7 +9002,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
   for (int i = 0; i < nrow; ++i) smnodes[i] = dynamic_cast<Mortar::Node*>(snodes[i]);
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // **************** no edge modification *****************************
   // (and LinM also for edge node modification case)
@@ -9021,7 +9020,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
     // (2) Lin(NSlave) - slave GP coordinates
     // (3) Lin(NSlave) - slave GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dpsxigp[d].begin(); p != dpsxigp[d].end(); ++p)
+      for (CI p = dpsxigp[d].begin(); p != dpsxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dMderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9034,7 +9033,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
           }
       }
     // (4) Lin(dsxideta) - intcell GP Jacobian
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
     {
       Core::LinAlg::SerialDenseMatrix& dMderiv =
           dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9047,7 +9046,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
 
     // (2) Lin(NSlave) - slave GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dpsxigp[d].begin(); p != dpsxigp[d].end(); ++p)
+      for (CI p = dpsxigp[d].begin(); p != dpsxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& mMderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_mderiv()[p->first];
@@ -9058,7 +9057,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
 
     // (3) Lin(NMaster) - master GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dpmxigp[d].begin(); p != dpmxigp[d].end(); ++p)
+      for (CI p = dpmxigp[d].begin(); p != dpmxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& mMderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_mderiv()[p->first];
@@ -9068,7 +9067,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
       }
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
     {
       Core::LinAlg::SerialDenseMatrix& mMderiv =
           dynamic_cast<CONTACT::Element&>(sele).get_mderiv()[p->first];
@@ -9114,9 +9113,9 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
           // (1) Lin(Phi) - dual shape functions
           if (duallin)
           {
-            using _CIM =
+            using CIM =
                 Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-            for (_CIM p = dualmap.begin(); p != dualmap.end(); ++p)
+            for (CIM p = dualmap.begin(); p != dualmap.end(); ++p)
             {
               double lmderiv_d = 0.0;
               for (int m = 0; m < nrow; ++m) lmderiv_d += (p->second)(j, m) * sval[m];
@@ -9127,25 +9126,25 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
 
           // (2) Lin(NSlave) - slave GP coordinates
           fac = wgt * lmderiv(j, 0) * mval[k] * jac;
-          for (_CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
+          for (CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
             dmmap_jk[p->first] += fac * (p->second);
 
           fac = wgt * lmderiv(j, 1) * mval[k] * jac;
-          for (_CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
+          for (CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
             dmmap_jk[p->first] += fac * (p->second);
 
           // (3) Lin(NMaster) - master GP coordinates
           fac = wgt * lmval[j] * mderiv(k, 0) * jac;
-          for (_CI p = dpmxigp[0].begin(); p != dpmxigp[0].end(); ++p)
+          for (CI p = dpmxigp[0].begin(); p != dpmxigp[0].end(); ++p)
             dmmap_jk[p->first] += fac * (p->second);
 
           fac = wgt * lmval[j] * mderiv(k, 1) * jac;
-          for (_CI p = dpmxigp[1].begin(); p != dpmxigp[1].end(); ++p)
+          for (CI p = dpmxigp[1].begin(); p != dpmxigp[1].end(); ++p)
             dmmap_jk[p->first] += fac * (p->second);
 
           // (4) Lin(dsxideta) - intcell GP Jacobian
           fac = wgt * lmval[j] * mval[k];
-          for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+          for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
             dmmap_jk[p->first] += fac * (p->second);
         }  // loop over master nodes
 
@@ -9169,14 +9168,14 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
             // (1) Lin(Phi) - dual shape functions
             if (duallin)
             {
-              using _CIM =
+              using CIM =
                   Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
               fac = wgt * sval[k] * jac;
-              for (_CIM p = dualmap.begin(); p != dualmap.end(); ++p)
+              for (CIM p = dualmap.begin(); p != dualmap.end(); ++p)
                 for (int m = 0; m < nrow; ++m)
                   dmmap_jk[p->first] -= fac * (p->second)(j, m) * sval[m];
 
-              for (_CIM p = dualmap.begin(); p != dualmap.end(); ++p)
+              for (CIM p = dualmap.begin(); p != dualmap.end(); ++p)
               {
                 double lmderiv_d = 0.0;
                 for (int m = 0; m < nrow; ++m) lmderiv_d += (p->second)(j, m) * sval[m];
@@ -9187,25 +9186,25 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
 
             // (2) Lin(NSlave) - slave GP coordinates
             fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-            for (_CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
+            for (CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
               dmmap_jk[p->first] -= fac * (p->second);
 
             fac = wgt * lmderiv(j, 1) * sval[k] * jac;
-            for (_CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
+            for (CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
               dmmap_jk[p->first] -= fac * (p->second);
 
             // (3) Lin(NSlave) - slave GP coordinates
             fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-            for (_CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
+            for (CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
               dmmap_jk[p->first] -= fac * (p->second);
 
             fac = wgt * lmval[j] * sderiv(k, 1) * jac;
-            for (_CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
+            for (CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
               dmmap_jk[p->first] -= fac * (p->second);
 
             // (4) Lin(dsxideta) - intcell GP Jacobian
             fac = wgt * lmval[j] * sval[k];
-            for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+            for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
               dmmap_jk[p->first] -= fac * (p->second);
           }
 
@@ -9219,14 +9218,14 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
             // (1) Lin(Phi) - dual shape functions
             if (duallin)
             {
-              using _CIM =
+              using CIM =
                   Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
               fac = wgt * sval[k] * jac;
-              for (_CIM p = dualmap.begin(); p != dualmap.end(); ++p)
+              for (CIM p = dualmap.begin(); p != dualmap.end(); ++p)
                 for (int m = 0; m < nrow; ++m)
                   ddmap_jk[p->first] += fac * (p->second)(j, m) * sval[m];
 
-              for (_CIM p = dualmap.begin(); p != dualmap.end(); ++p)
+              for (CIM p = dualmap.begin(); p != dualmap.end(); ++p)
               {
                 double lmderiv_d = 0.0;
                 for (int m = 0; m < nrow; ++m) lmderiv_d += (p->second)(j, m) * sval[m];
@@ -9237,25 +9236,25 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
 
             // (2) Lin(NSlave) - slave GP coordinates
             fac = wgt * lmderiv(j, 0) * sval[k] * jac;
-            for (_CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
+            for (CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
               ddmap_jk[p->first] += fac * (p->second);
 
             fac = wgt * lmderiv(j, 1) * sval[k] * jac;
-            for (_CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
+            for (CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
               ddmap_jk[p->first] += fac * (p->second);
 
             // (3) Lin(NSlave) - slave GP coordinates
             fac = wgt * lmval[j] * sderiv(k, 0) * jac;
-            for (_CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
+            for (CI p = dpsxigp[0].begin(); p != dpsxigp[0].end(); ++p)
               ddmap_jk[p->first] += fac * (p->second);
 
             fac = wgt * lmval[j] * sderiv(k, 1) * jac;
-            for (_CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
+            for (CI p = dpsxigp[1].begin(); p != dpsxigp[1].end(); ++p)
               ddmap_jk[p->first] += fac * (p->second);
 
             // (4) Lin(dsxideta) - intcell GP Jacobian
             fac = wgt * lmval[j] * sval[k];
-            for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+            for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
               ddmap_jk[p->first] += fac * (p->second);
           }
         }  // loop over slave nodes
@@ -9297,7 +9296,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
 
     // (2) Lin(Phi) - slave GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dpsxigp[d].begin(); p != dpsxigp[d].end(); ++p)
+      for (CI p = dpsxigp[d].begin(); p != dpsxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dDderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9314,7 +9313,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
 
     // (3) Lin(NMaster) - master GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dpmxigp[d].begin(); p != dpmxigp[d].end(); ++p)
+      for (CI p = dpmxigp[d].begin(); p != dpmxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dDderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9330,7 +9329,7 @@ void inline CONTACT::Integrator::gp_3d_dm_quad_lin(bool& duallin, Mortar::Elemen
       }
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
     {
       Core::LinAlg::SerialDenseMatrix& dDderiv =
           dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9363,7 +9362,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
   const int ncol = mele.num_node();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // standard shape functions
   if (shape_fcn() == Inpar::Mortar::shape_standard)
@@ -9374,7 +9373,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
 
     // (2) Lin(NSlave) - slave GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+      for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dMderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_mderiv()[p->first];
@@ -9385,7 +9384,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
 
     // (3) Lin(NMaster) - master GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+      for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dMderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_mderiv()[p->first];
@@ -9395,7 +9394,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
       }
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
     {
       Core::LinAlg::SerialDenseMatrix& dMderiv =
           dynamic_cast<CONTACT::Element&>(sele).get_mderiv()[p->first];
@@ -9410,7 +9409,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
     // (2) Lin(NSlave) - slave GP coordinates
     // (3) Lin(NSlave) - slave GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+      for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dDderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9422,7 +9421,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
       }
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
     {
       Core::LinAlg::SerialDenseMatrix& dDderiv =
           dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9459,7 +9458,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
 
     // (2) Lin(Phi) - slave GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+      for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dDderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9476,7 +9475,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
 
     // (3) Lin(NMaster) - master GP coordinates
     for (int d = 0; d < 2; ++d)
-      for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+      for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
       {
         Core::LinAlg::SerialDenseMatrix& dDderiv =
             dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9492,7 +9491,7 @@ void inline CONTACT::Integrator::gp_3d_dm_lin(Mortar::Element& sele, Mortar::Ele
       }
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
     {
       Core::LinAlg::SerialDenseMatrix& dDderiv =
           dynamic_cast<CONTACT::Element&>(sele).get_dderiv()[p->first];
@@ -9595,7 +9594,7 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
   linsize = linsize * 2;
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   //***********************************************************************
   // Here, the tangential relative slip increment is used and NOT the
@@ -9708,10 +9707,10 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
 
     // **********************************************************************
     // (1) Lin of normal for LM -- deriv normal maps from weighted gap lin.
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gplm[0] * (p->second);
 
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gplm[1] * (p->second);
 
     // **********************************************************************
@@ -9729,23 +9728,23 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
         }
       }
     }
-    for (_CI p = ddualgp_x.begin(); p != ddualgp_x.end(); ++p)
+    for (CI p = ddualgp_x.begin(); p != ddualgp_x.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[0] * (p->second);
-    for (_CI p = ddualgp_y.begin(); p != ddualgp_y.end(); ++p)
+    for (CI p = ddualgp_y.begin(); p != ddualgp_y.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[1] * (p->second);
 
     // LM deriv
     for (int i = 0; i < nrow; ++i)
     {
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
       {
         ddualgp_x_sxi[p->first] += ((lagmult)(0, i)) * lmderiv(i, 0) * (p->second);
         ddualgp_y_sxi[p->first] += ((lagmult)(1, i)) * lmderiv(i, 0) * (p->second);
       }
     }
-    for (_CI p = ddualgp_x_sxi.begin(); p != ddualgp_x_sxi.end(); ++p)
+    for (CI p = ddualgp_x_sxi.begin(); p != ddualgp_x_sxi.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[0] * (p->second);
-    for (_CI p = ddualgp_y_sxi.begin(); p != ddualgp_y_sxi.end(); ++p)
+    for (CI p = ddualgp_y_sxi.begin(); p != ddualgp_y_sxi.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[1] * (p->second);
 
 
@@ -9764,12 +9763,12 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
       Core::Gen::Pairedvector<int, double>& dmap_tysl_i =
           dynamic_cast<CONTACT::Node*>(cnode)->data().get_deriv_txi()[1];
 
-      for (_CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
+      for (CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
         dmap_txsl_gp[p->first] += sval[i] * (p->second);
-      for (_CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
+      for (CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
         dmap_tysl_gp[p->first] += sval[i] * (p->second);
 
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
       {
         double valx = sderiv(i, 0) * dynamic_cast<CONTACT::Node*>(cnode)->data().txi()[0];
         dmap_txsl_gp[p->first] += valx * (p->second);
@@ -9789,14 +9788,14 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
     const double sxsy = gpt[0] * gpt[1] * ll;
     const double sysy = gpt[1] * gpt[1] * ll;
 
-    for (_CI p = dmap_txsl_gp.begin(); p != dmap_txsl_gp.end(); ++p)
+    for (CI p = dmap_txsl_gp.begin(); p != dmap_txsl_gp.end(); ++p)
     {
       dmap_txsl_gp_unit[p->first] += linv * (p->second);
       dmap_txsl_gp_unit[p->first] -= lllinv * sxsx * (p->second);
       dmap_tysl_gp_unit[p->first] -= lllinv * sxsy * (p->second);
     }
 
-    for (_CI p = dmap_tysl_gp.begin(); p != dmap_tysl_gp.end(); ++p)
+    for (CI p = dmap_tysl_gp.begin(); p != dmap_tysl_gp.end(); ++p)
     {
       dmap_tysl_gp_unit[p->first] += linv * (p->second);
       dmap_tysl_gp_unit[p->first] -= lllinv * sysy * (p->second);
@@ -9804,17 +9803,17 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
     }
 
     // add tangent lin. to dweargp
-    for (_CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
+    for (CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
       dweargp[p->first] += xabsx * jump[0] * (p->second);
 
-    for (_CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
+    for (CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
       dweargp[p->first] += xabsx * jump[1] * (p->second);
 
     // add tangent lin. to slip linearization for wear Tmatrix
-    for (_CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
+    for (CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
       dsliptmatrixgp[p->first] += xabsxT * jump[0] * (p->second);
 
-    for (_CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
+    for (CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
       dsliptmatrixgp[p->first] += xabsxT * jump[1] * (p->second);
 
     // **********************************************************************
@@ -9831,7 +9830,7 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
     // lin slave part -- sxi
     for (int i = 0; i < nrow; ++i)
     {
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
       {
         double valx =
             sderiv(i, 0) * (sele.get_nodal_coords(0, i) - (sele.get_nodal_coords_old(0, i)));
@@ -9845,7 +9844,7 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
     // lin master part -- mxi
     for (int i = 0; i < ncol; ++i)
     {
-      for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+      for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
       {
         double valx =
             mderiv(i, 0) * (mele.get_nodal_coords(0, i) - (mele.get_nodal_coords_old(0, i)));
@@ -9874,29 +9873,29 @@ void inline CONTACT::Integrator::gp_2d_wear(Mortar::Element& sele, Mortar::Eleme
     }
 
     // slave: add to jumplin
-    for (_CI p = dmap_slcoord_gp_x.begin(); p != dmap_slcoord_gp_x.end(); ++p)
+    for (CI p = dmap_slcoord_gp_x.begin(); p != dmap_slcoord_gp_x.end(); ++p)
       dmap_coord_x[p->first] += (p->second);
-    for (_CI p = dmap_slcoord_gp_y.begin(); p != dmap_slcoord_gp_y.end(); ++p)
+    for (CI p = dmap_slcoord_gp_y.begin(); p != dmap_slcoord_gp_y.end(); ++p)
       dmap_coord_y[p->first] += (p->second);
 
     // master: add to jumplin
-    for (_CI p = dmap_mcoord_gp_x.begin(); p != dmap_mcoord_gp_x.end(); ++p)
+    for (CI p = dmap_mcoord_gp_x.begin(); p != dmap_mcoord_gp_x.end(); ++p)
       dmap_coord_x[p->first] -= (p->second);
-    for (_CI p = dmap_mcoord_gp_y.begin(); p != dmap_mcoord_gp_y.end(); ++p)
+    for (CI p = dmap_mcoord_gp_y.begin(); p != dmap_mcoord_gp_y.end(); ++p)
       dmap_coord_y[p->first] -= (p->second);
 
     // add to dweargp
-    for (_CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
+    for (CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
       dweargp[p->first] += xabsx * gpt[0] * (p->second);
 
-    for (_CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
+    for (CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
       dweargp[p->first] += xabsx * gpt[1] * (p->second);
 
     // add tangent lin. to slip linearization for wear Tmatrix
-    for (_CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
+    for (CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
       dsliptmatrixgp[p->first] += xabsxT * gpt[0] * (p->second);
 
-    for (_CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
+    for (CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
       dsliptmatrixgp[p->first] += xabsxT * gpt[1] * (p->second);
   }
 }
@@ -9925,7 +9924,7 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
   Core::Nodes::Node** mnodes = mele.nodes();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   //***********************************************************************
   // Here, the tangential relative slip increment is used and NOT the
@@ -10063,13 +10062,13 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
 
     // **********************************************************************
     // (1) Lin of normal for LM -- deriv normal maps from weighted gap lin.
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gplm[0] * (p->second);
 
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gplm[1] * (p->second);
 
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gplm[2] * (p->second);
 
     // **********************************************************************
@@ -10088,34 +10087,34 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
         }
       }
     }
-    for (_CI p = ddualgp_x.begin(); p != ddualgp_x.end(); ++p)
+    for (CI p = ddualgp_x.begin(); p != ddualgp_x.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[0] * (p->second);
-    for (_CI p = ddualgp_y.begin(); p != ddualgp_y.end(); ++p)
+    for (CI p = ddualgp_y.begin(); p != ddualgp_y.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[1] * (p->second);
-    for (_CI p = ddualgp_z.begin(); p != ddualgp_z.end(); ++p)
+    for (CI p = ddualgp_z.begin(); p != ddualgp_z.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[2] * (p->second);
 
     // LM deriv
     for (int i = 0; i < nrow; ++i)
     {
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
       {
         ddualgp_x_sxi[p->first] += (lagmult)(0, i) * lmderiv(i, 0) * (p->second);
         ddualgp_y_sxi[p->first] += (lagmult)(1, i) * lmderiv(i, 0) * (p->second);
         ddualgp_z_sxi[p->first] += (lagmult)(2, i) * lmderiv(i, 0) * (p->second);
       }
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
       {
         ddualgp_x_sxi[p->first] += (lagmult)(0, i) * lmderiv(i, 1) * (p->second);
         ddualgp_y_sxi[p->first] += (lagmult)(1, i) * lmderiv(i, 1) * (p->second);
         ddualgp_z_sxi[p->first] += (lagmult)(2, i) * lmderiv(i, 1) * (p->second);
       }
     }
-    for (_CI p = ddualgp_x_sxi.begin(); p != ddualgp_x_sxi.end(); ++p)
+    for (CI p = ddualgp_x_sxi.begin(); p != ddualgp_x_sxi.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[0] * (p->second);
-    for (_CI p = ddualgp_y_sxi.begin(); p != ddualgp_y_sxi.end(); ++p)
+    for (CI p = ddualgp_y_sxi.begin(); p != ddualgp_y_sxi.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[1] * (p->second);
-    for (_CI p = ddualgp_z_sxi.begin(); p != ddualgp_z_sxi.end(); ++p)
+    for (CI p = ddualgp_z_sxi.begin(); p != ddualgp_z_sxi.end(); ++p)
       dweargp[p->first] += abs(jumpval[0]) * gpn[2] * (p->second);
 
     // **********************************************************************
@@ -10125,24 +10124,24 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
     // lin tangplane: 1-n x n --> - ( dn x n + n x dn )
     for (int i = 0; i < 3; ++i)
     {
-      for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+      for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
         tanggp[0][i][p->first] -= gpn[i] * (p->second);
 
-      for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+      for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
         tanggp[1][i][p->first] -= gpn[i] * (p->second);
 
-      for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+      for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
         tanggp[2][i][p->first] -= gpn[i] * (p->second);
     }
     for (int i = 0; i < 3; ++i)
     {
-      for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+      for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
         tanggp[i][0][p->first] -= gpn[i] * (p->second);
 
-      for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+      for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
         tanggp[i][1][p->first] -= gpn[i] * (p->second);
 
-      for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+      for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
         tanggp[i][2][p->first] -= gpn[i] * (p->second);
     }
 
@@ -10151,55 +10150,55 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
     Core::Gen::Pairedvector<int, double> dt2((ncol * ndof) + linsize);
 
     // xccord from tang jump lin --> lin tangplane * jump
-    for (_CI p = tanggp[0][0].begin(); p != tanggp[0][0].end(); ++p)
+    for (CI p = tanggp[0][0].begin(); p != tanggp[0][0].end(); ++p)
       dt0[p->first] += (p->second) * jump(0, 0);
 
-    for (_CI p = tanggp[0][1].begin(); p != tanggp[0][1].end(); ++p)
+    for (CI p = tanggp[0][1].begin(); p != tanggp[0][1].end(); ++p)
       dt0[p->first] += (p->second) * jump(1, 0);
 
-    for (_CI p = tanggp[0][2].begin(); p != tanggp[0][2].end(); ++p)
+    for (CI p = tanggp[0][2].begin(); p != tanggp[0][2].end(); ++p)
       dt0[p->first] += (p->second) * jump(2, 0);
 
     // yccord from tang jump lin
-    for (_CI p = tanggp[1][0].begin(); p != tanggp[1][0].end(); ++p)
+    for (CI p = tanggp[1][0].begin(); p != tanggp[1][0].end(); ++p)
       dt1[p->first] += (p->second) * jump(0, 0);
 
-    for (_CI p = tanggp[1][1].begin(); p != tanggp[1][1].end(); ++p)
+    for (CI p = tanggp[1][1].begin(); p != tanggp[1][1].end(); ++p)
       dt1[p->first] += (p->second) * jump(1, 0);
 
-    for (_CI p = tanggp[1][2].begin(); p != tanggp[1][2].end(); ++p)
+    for (CI p = tanggp[1][2].begin(); p != tanggp[1][2].end(); ++p)
       dt1[p->first] += (p->second) * jump(2, 0);
 
     // zccord from tang jump lin
-    for (_CI p = tanggp[2][0].begin(); p != tanggp[2][0].end(); ++p)
+    for (CI p = tanggp[2][0].begin(); p != tanggp[2][0].end(); ++p)
       dt2[p->first] += (p->second) * jump(0, 0);
 
-    for (_CI p = tanggp[2][1].begin(); p != tanggp[2][1].end(); ++p)
+    for (CI p = tanggp[2][1].begin(); p != tanggp[2][1].end(); ++p)
       dt2[p->first] += (p->second) * jump(1, 0);
 
-    for (_CI p = tanggp[2][2].begin(); p != tanggp[2][2].end(); ++p)
+    for (CI p = tanggp[2][2].begin(); p != tanggp[2][2].end(); ++p)
       dt2[p->first] += (p->second) * jump(2, 0);
 
 
     // add to weargp :  1/abs(tangplane*jump) * LM * tanjump^T * (lin. tangplane * jump)
-    for (_CI p = dt0.begin(); p != dt0.end(); ++p)
+    for (CI p = dt0.begin(); p != dt0.end(); ++p)
       dweargp[p->first] += xabsx * (p->second) * jumptan(0, 0);
-    for (_CI p = dt1.begin(); p != dt1.end(); ++p)
+    for (CI p = dt1.begin(); p != dt1.end(); ++p)
       dweargp[p->first] += xabsx * (p->second) * jumptan(1, 0);
-    for (_CI p = dt2.begin(); p != dt2.end(); ++p)
+    for (CI p = dt2.begin(); p != dt2.end(); ++p)
       dweargp[p->first] += xabsx * (p->second) * jumptan(2, 0);
 
     // slip lin. for discrete wear
     // u/abs(u) * lin tang * jump
     if (wear_type() == Inpar::Wear::wear_primvar)
     {
-      for (_CI p = dt0.begin(); p != dt0.end(); ++p)
+      for (CI p = dt0.begin(); p != dt0.end(); ++p)
         dsliptmatrixgp[p->first] += absx * (p->second) * jumptan(0, 0);
 
-      for (_CI p = dt1.begin(); p != dt1.end(); ++p)
+      for (CI p = dt1.begin(); p != dt1.end(); ++p)
         dsliptmatrixgp[p->first] += absx * (p->second) * jumptan(1, 0);
 
-      for (_CI p = dt2.begin(); p != dt2.end(); ++p)
+      for (CI p = dt2.begin(); p != dt2.end(); ++p)
         dsliptmatrixgp[p->first] += absx * (p->second) * jumptan(2, 0);
     }
 
@@ -10220,7 +10219,7 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
     // lin slave part -- sxi
     for (int i = 0; i < nrow; ++i)
     {
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
       {
         double valx =
             sderiv(i, 0) * (sele.get_nodal_coords(0, i) - sele.get_nodal_coords_old(0, i));
@@ -10232,7 +10231,7 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
             sderiv(i, 0) * (sele.get_nodal_coords(2, i) - sele.get_nodal_coords_old(2, i));
         dmap_slcoord_gp_z[p->first] += valz * (p->second);
       }
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
       {
         double valx =
             sderiv(i, 1) * (sele.get_nodal_coords(0, i) - sele.get_nodal_coords_old(0, i));
@@ -10249,7 +10248,7 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
     // lin master part -- mxi
     for (int i = 0; i < ncol; ++i)
     {
-      for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+      for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
       {
         double valx =
             mderiv(i, 0) * (mele.get_nodal_coords(0, i) - mele.get_nodal_coords_old(0, i));
@@ -10261,7 +10260,7 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
             mderiv(i, 0) * (mele.get_nodal_coords(2, i) - mele.get_nodal_coords_old(2, i));
         dmap_mcoord_gp_z[p->first] += valz * (p->second);
       }
-      for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+      for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
       {
         double valx =
             mderiv(i, 1) * (mele.get_nodal_coords(0, i) - mele.get_nodal_coords_old(0, i));
@@ -10295,19 +10294,19 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
     }
 
     // slave: add to jumplin
-    for (_CI p = dmap_slcoord_gp_x.begin(); p != dmap_slcoord_gp_x.end(); ++p)
+    for (CI p = dmap_slcoord_gp_x.begin(); p != dmap_slcoord_gp_x.end(); ++p)
       dmap_coord_x[p->first] += (p->second);
-    for (_CI p = dmap_slcoord_gp_y.begin(); p != dmap_slcoord_gp_y.end(); ++p)
+    for (CI p = dmap_slcoord_gp_y.begin(); p != dmap_slcoord_gp_y.end(); ++p)
       dmap_coord_y[p->first] += (p->second);
-    for (_CI p = dmap_slcoord_gp_z.begin(); p != dmap_slcoord_gp_z.end(); ++p)
+    for (CI p = dmap_slcoord_gp_z.begin(); p != dmap_slcoord_gp_z.end(); ++p)
       dmap_coord_z[p->first] += (p->second);
 
     // master: add to jumplin
-    for (_CI p = dmap_mcoord_gp_x.begin(); p != dmap_mcoord_gp_x.end(); ++p)
+    for (CI p = dmap_mcoord_gp_x.begin(); p != dmap_mcoord_gp_x.end(); ++p)
       dmap_coord_x[p->first] -= (p->second);
-    for (_CI p = dmap_mcoord_gp_y.begin(); p != dmap_mcoord_gp_y.end(); ++p)
+    for (CI p = dmap_mcoord_gp_y.begin(); p != dmap_mcoord_gp_y.end(); ++p)
       dmap_coord_y[p->first] -= (p->second);
-    for (_CI p = dmap_mcoord_gp_z.begin(); p != dmap_mcoord_gp_z.end(); ++p)
+    for (CI p = dmap_mcoord_gp_z.begin(); p != dmap_mcoord_gp_z.end(); ++p)
       dmap_coord_z[p->first] -= (p->second);
 
     // matrix vector prod -- tan
@@ -10315,46 +10314,46 @@ void inline CONTACT::Integrator::gp_3d_wear(Mortar::Element& sele, Mortar::Eleme
     Core::Gen::Pairedvector<int, double> lintan1((nrow + ncol) * ndof + linsize);
     Core::Gen::Pairedvector<int, double> lintan2((nrow + ncol) * ndof + linsize);
 
-    for (_CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
+    for (CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
       lintan0[p->first] += tanplane(0, 0) * (p->second);
-    for (_CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
+    for (CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
       lintan0[p->first] += tanplane(0, 1) * (p->second);
-    for (_CI p = dmap_coord_z.begin(); p != dmap_coord_z.end(); ++p)
+    for (CI p = dmap_coord_z.begin(); p != dmap_coord_z.end(); ++p)
       lintan0[p->first] += tanplane(0, 2) * (p->second);
 
-    for (_CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
+    for (CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
       lintan1[p->first] += tanplane(1, 0) * (p->second);
-    for (_CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
+    for (CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
       lintan1[p->first] += tanplane(1, 1) * (p->second);
-    for (_CI p = dmap_coord_z.begin(); p != dmap_coord_z.end(); ++p)
+    for (CI p = dmap_coord_z.begin(); p != dmap_coord_z.end(); ++p)
       lintan1[p->first] += tanplane(1, 2) * (p->second);
 
-    for (_CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
+    for (CI p = dmap_coord_x.begin(); p != dmap_coord_x.end(); ++p)
       lintan2[p->first] += tanplane(2, 0) * (p->second);
-    for (_CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
+    for (CI p = dmap_coord_y.begin(); p != dmap_coord_y.end(); ++p)
       lintan2[p->first] += tanplane(2, 1) * (p->second);
-    for (_CI p = dmap_coord_z.begin(); p != dmap_coord_z.end(); ++p)
+    for (CI p = dmap_coord_z.begin(); p != dmap_coord_z.end(); ++p)
       lintan2[p->first] += tanplane(2, 2) * (p->second);
 
     // add to dweargp
-    for (_CI p = lintan0.begin(); p != lintan0.end(); ++p)
+    for (CI p = lintan0.begin(); p != lintan0.end(); ++p)
       dweargp[p->first] += xabsx * jumptan(0, 0) * (p->second);
-    for (_CI p = lintan1.begin(); p != lintan1.end(); ++p)
+    for (CI p = lintan1.begin(); p != lintan1.end(); ++p)
       dweargp[p->first] += xabsx * jumptan(1, 0) * (p->second);
-    for (_CI p = lintan2.begin(); p != lintan2.end(); ++p)
+    for (CI p = lintan2.begin(); p != lintan2.end(); ++p)
       dweargp[p->first] += xabsx * jumptan(2, 0) * (p->second);
 
     // slip lin. for discrete wear
     // u/abs(u) * tang * lin jump
     if (wear_type() == Inpar::Wear::wear_primvar)
     {
-      for (_CI p = lintan0.begin(); p != lintan0.end(); ++p)
+      for (CI p = lintan0.begin(); p != lintan0.end(); ++p)
         dsliptmatrixgp[p->first] += absx * (p->second) * jumptan(0, 0);
 
-      for (_CI p = lintan1.begin(); p != lintan1.end(); ++p)
+      for (CI p = lintan1.begin(); p != lintan1.end(); ++p)
         dsliptmatrixgp[p->first] += absx * (p->second) * jumptan(1, 0);
 
-      for (_CI p = lintan2.begin(); p != lintan2.end(); ++p)
+      for (CI p = lintan2.begin(); p != lintan2.end(); ++p)
         dsliptmatrixgp[p->first] += absx * (p->second) * jumptan(2, 0);
     }
   }
@@ -10539,7 +10538,7 @@ void inline CONTACT::Integrator::gp_2d_te_master_lin(int& iter,  // like k
   if (!mnodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(mnodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -10569,31 +10568,31 @@ void inline CONTACT::Integrator::gp_2d_te_master_lin(int& iter,  // like k
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmderiv(j, 0) * mval[iter] * dsxideta * dxdsxi * abs(jumpval[0]);
-      for (_CI p = dsxigp.begin(); p != dsxigp.end(); ++p) tmmap_jk[p->first] += fac * (p->second);
+      for (CI p = dsxigp.begin(); p != dsxigp.end(); ++p) tmmap_jk[p->first] += fac * (p->second);
 
       // (3) Lin(Phi) - slave GP coordinates
       fac = wgt * lmval[j] * mderiv(iter, 0) * dsxideta * dxdsxi * abs(jumpval[0]);
-      for (_CI p = dmxigp.begin(); p != dmxigp.end(); ++p) tmmap_jk[p->first] += fac * (p->second);
+      for (CI p = dmxigp.begin(); p != dmxigp.end(); ++p) tmmap_jk[p->first] += fac * (p->second);
 
       // (4) Lin(dsxideta) - segment end coordinates
       fac = wgt * lmval[j] * mval[iter] * dxdsxi * abs(jumpval[0]);
-      for (_CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p)
+      for (CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p)
         tmmap_jk[p->first] -= 0.5 * fac * (p->second);
-      for (_CI p = ximaps[1].begin(); p != ximaps[1].end(); ++p)
+      for (CI p = ximaps[1].begin(); p != ximaps[1].end(); ++p)
         tmmap_jk[p->first] += 0.5 * fac * (p->second);
 
       // (5) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * lmval[j] * mval[iter] * dsxideta * abs(jumpval[0]);
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         tmmap_jk[p->first] += fac * (p->second);
 
       // (6) Lin(dxdsxi) - slave GP coordinates
       fac = wgt * lmval[j] * mval[iter] * dsxideta * dxdsxidsxi * abs(jumpval[0]);
-      for (_CI p = dsxigp.begin(); p != dsxigp.end(); ++p) tmmap_jk[p->first] += fac * (p->second);
+      for (CI p = dsxigp.begin(); p != dsxigp.end(); ++p) tmmap_jk[p->first] += fac * (p->second);
 
       // (7) Lin(wear)
       fac = wgt * lmval[j] * mval[iter] * dsxideta * dxdsxi;
-      for (_CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)  // dsliptmatrixgp
+      for (CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)  // dsliptmatrixgp
       {
         tmmap_jk[p->first] += fac * (p->second);
       }
@@ -10613,27 +10612,27 @@ void inline CONTACT::Integrator::gp_2d_te_master_lin(int& iter,  // like k
 
       // (1) Lin(Phi) - slave GP coordinates
       fac = wgt * mderiv(iter, 0) * mval[j] * dsxideta * dxdsxi;
-      for (_CI p = dmxigp.begin(); p != dmxigp.end(); ++p) emmap_jk[p->first] += fac * (p->second);
+      for (CI p = dmxigp.begin(); p != dmxigp.end(); ++p) emmap_jk[p->first] += fac * (p->second);
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * mval[iter] * mderiv(j, 0) * dsxideta * dxdsxi;
-      for (_CI p = dmxigp.begin(); p != dmxigp.end(); ++p) emmap_jk[p->first] += fac * (p->second);
+      for (CI p = dmxigp.begin(); p != dmxigp.end(); ++p) emmap_jk[p->first] += fac * (p->second);
 
       // (3) Lin(dsxideta) - segment end coordinates
       fac = wgt * mval[iter] * mval[j] * dxdsxi;
-      for (_CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p)
+      for (CI p = ximaps[0].begin(); p != ximaps[0].end(); ++p)
         emmap_jk[p->first] -= 0.5 * fac * (p->second);
-      for (_CI p = ximaps[1].begin(); p != ximaps[1].end(); ++p)
+      for (CI p = ximaps[1].begin(); p != ximaps[1].end(); ++p)
         emmap_jk[p->first] += 0.5 * fac * (p->second);
 
       // (4) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * mval[iter] * mval[j] * dsxideta;
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (5) Lin(dxdsxi) - slave GP coordinates
       fac = wgt * mval[iter] * mval[j] * dsxideta * dxdsxidsxi;
-      for (_CI p = dsxigp.begin(); p != dsxigp.end(); ++p) emmap_jk[p->first] += fac * (p->second);
+      for (CI p = dsxigp.begin(); p != dsxigp.end(); ++p) emmap_jk[p->first] += fac * (p->second);
     }  // end integrate linE
   }
   else if (wear_shape_fcn() ==
@@ -10663,7 +10662,7 @@ void inline CONTACT::Integrator::gp_2d_te_lin(int& iter, Mortar::Element& sele,
   if (!snodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(snodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -10693,24 +10692,24 @@ void inline CONTACT::Integrator::gp_2d_te_lin(int& iter, Mortar::Element& sele,
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmderiv(j, 0) * sval[iter] * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         tmmap_jk[p->first] += fac * (p->second);
 
       // (3) Lin(Phi) - slave GP coordinates
       fac = wgt * lmval[j] * sderiv(iter, 0) * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         tmmap_jk[p->first] += fac * (p->second);
 
       // (4) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * lmval[j] * sval[iter] * abs(jumpval[0]);
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         tmmap_jk[p->first] += fac * (p->second);
 
       // (7) Lin(wear)
       if (!sswear_)
       {
         fac = wgt * lmval[j] * sval[iter] * jac;
-        for (_CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)  // dsliptmatrixgp
+        for (CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)  // dsliptmatrixgp
         {
           tmmap_jk[p->first] += fac * (p->second);
         }
@@ -10732,17 +10731,17 @@ void inline CONTACT::Integrator::gp_2d_te_lin(int& iter, Mortar::Element& sele,
 
       // (1) Lin(Phi) - slave GP coordinates
       fac = wgt * sderiv(iter, 0) * sval[j] * jac;
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * sval[iter] * sderiv(j, 0) * jac;
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (4) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * sval[iter] * sval[j];
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
     }  // end integrate linE
   }
@@ -10772,7 +10771,7 @@ void inline CONTACT::Integrator::gp_2d_te_lin(int& iter, Mortar::Element& sele,
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmderiv(j, 0) * lmval[iter] * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         tmmap_jk[p->first] += fac * (p->second);
 
 
@@ -10788,17 +10787,17 @@ void inline CONTACT::Integrator::gp_2d_te_lin(int& iter, Mortar::Element& sele,
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmderiv(iter, 0) * lmval[j] * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         tmmap_jk[p->first] += fac * (p->second);
 
       // (3) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * lmval[j] * lmval[iter] * abs(jumpval[0]);
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         tmmap_jk[p->first] += fac * (p->second);
 
       // (4) Lin(wear)
       fac = wgt * lmval[j] * lmval[iter] * jac;
-      for (_CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)  // dsliptmatrixgp
+      for (CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)  // dsliptmatrixgp
         tmmap_jk[p->first] += fac * (p->second);
     }  // end integrate linT
 
@@ -10826,17 +10825,17 @@ void inline CONTACT::Integrator::gp_2d_te_lin(int& iter, Mortar::Element& sele,
 
       // (1) Lin(Phi) - slave GP coordinates
       fac = wgt * lmderiv(iter, 0) * sval[j] * jac;
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmval[iter] * sderiv(j, 0) * jac;
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (3) Lin(dxdsxi) - slave GP Jacobian
       fac = wgt * lmval[iter] * sval[j];
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
     }  // end integrate linE
   }
@@ -10862,7 +10861,7 @@ void inline CONTACT::Integrator::gp_3d_te_lin(int& iter, Mortar::Element& sele,
   if (!snodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(snodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -10893,33 +10892,33 @@ void inline CONTACT::Integrator::gp_3d_te_lin(int& iter, Mortar::Element& sele,
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmderiv(j, 0) * sval[iter] * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * lmderiv(j, 1) * sval[iter] * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
 
       // (3) Lin(NMaster) - master GP coordinates
       fac = wgt * lmval[j] * sderiv(iter, 0) * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * lmval[j] * sderiv(iter, 1) * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * lmval[j] * sval[iter] * abs(jumpval[0]);
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       if (!sswear_)
       {
         fac = wgt * lmval[j] * sval[iter] * jac;
-        for (_CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)
+        for (CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)
           dtmap_jk[p->first] += fac * (p->second);
       }
     }
@@ -10938,25 +10937,25 @@ void inline CONTACT::Integrator::gp_3d_te_lin(int& iter, Mortar::Element& sele,
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * sderiv(j, 0) * sval[iter] * jac;
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * sderiv(j, 1) * sval[iter] * jac;
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (3) Lin(NMaster) - master GP coordinates
       fac = wgt * sval[j] * sderiv(iter, 0) * jac;
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * sval[j] * sderiv(iter, 1) * jac;
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * sval[j] * sval[iter];
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
     }  // end integrate linE
@@ -10990,11 +10989,11 @@ void inline CONTACT::Integrator::gp_3d_te_lin(int& iter, Mortar::Element& sele,
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmderiv(j, 0) * lmval[iter] * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * lmderiv(j, 1) * lmval[iter] * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       //**********************************************
@@ -11013,11 +11012,11 @@ void inline CONTACT::Integrator::gp_3d_te_lin(int& iter, Mortar::Element& sele,
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * lmval[j] * lmderiv(iter, 0) * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * lmval[j] * lmderiv(iter, 1) * jac * abs(jumpval[0]);
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       //**********************************************
@@ -11025,11 +11024,11 @@ void inline CONTACT::Integrator::gp_3d_te_lin(int& iter, Mortar::Element& sele,
       //**********************************************
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * lmval[j] * lmval[iter] * abs(jumpval[0]);
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * lmval[j] * lmval[iter] * jac;
-      for (_CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)
+      for (CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
     }
 
@@ -11061,25 +11060,25 @@ void inline CONTACT::Integrator::gp_3d_te_lin(int& iter, Mortar::Element& sele,
 
       // (2) Lin(Phi) - slave GP coordinates
       fac = wgt * sderiv(j, 0) * lmval[iter] * jac;
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * sderiv(j, 1) * lmval[iter] * jac;
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (3) Lin(NMaster) - master GP coordinates
       fac = wgt * sval[j] * lmderiv(iter, 0) * jac;
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * sval[j] * lmderiv(iter, 1) * jac;
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * sval[j] * lmval[iter];
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
     }  // end integrate linE
@@ -11114,7 +11113,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
   if (!mnodes) FOUR_C_THROW("Null pointer!");
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   Mortar::Node* mymrtrnode = dynamic_cast<Mortar::Node*>(mnodes[iter]);
   if (!mymrtrnode) FOUR_C_THROW("Null pointer!");
@@ -11147,7 +11146,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
       for (int d = 0; d < n_dim() - 1; ++d)
       {
         fac = wgt * lmderiv(j, d) * mval[iter] * jac * abs(jumpval[0]);
-        for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+        for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
           dtmap_jk[p->first] += fac * (p->second);
       }
 
@@ -11155,17 +11154,17 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
       for (int d = 0; d < n_dim() - 1; ++d)
       {
         fac = wgt * lmval[j] * mderiv(iter, d) * jac * abs(jumpval[0]);
-        for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+        for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
           dtmap_jk[p->first] += fac * (p->second);
       }
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * lmval[j] * mval[iter] * abs(jumpval[0]);
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * lmval[j] * mval[iter] * jac;
-      for (_CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)
+      for (CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
     }
 
@@ -11185,7 +11184,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
       for (int d = 0; d < n_dim() - 1; ++d)
       {
         fac = wgt * mderiv(j, d) * mval[iter] * jac;
-        for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+        for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
           emmap_jk[p->first] += fac * (p->second);
       }
 
@@ -11193,13 +11192,13 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
       for (int d = 0; d < n_dim() - 1; ++d)
       {
         fac = wgt * mval[j] * mderiv(iter, d) * jac;
-        for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+        for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
           emmap_jk[p->first] += fac * (p->second);
       }
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * mval[j] * mval[iter];
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
     }  // end integrate linE
@@ -11235,7 +11234,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
       for (int d = 0; d < n_dim() - 1; ++d)
       {
         fac = wgt * lmderiv(j, d) * lm2val[iter] * jac * abs(jumpval[0]);
-        for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
+        for (CI p = dsxigp[d].begin(); p != dsxigp[d].end(); ++p)
           dtmap_jk[p->first] += fac * (p->second);
       }
 
@@ -11256,7 +11255,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
       for (int d = 0; d < n_dim() - 1; ++d)
       {
         fac = wgt * lmval[j] * lm2deriv(iter, d) * jac * abs(jumpval[0]);
-        for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+        for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
           dtmap_jk[p->first] += fac * (p->second);
       }
 
@@ -11264,11 +11263,11 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * lmval[j] * lm2val[iter] * abs(jumpval[0]);
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
 
       fac = wgt * lmval[j] * lm2val[iter] * jac;
-      for (_CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)
+      for (CI p = dsliptmatrixgp.begin(); p != dsliptmatrixgp.end(); ++p)
         dtmap_jk[p->first] += fac * (p->second);
     }
 
@@ -11288,7 +11287,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
       for (int d = 0; d < n_dim() - 1; ++d)
       {
         fac = wgt * mderiv(j, d) * lm2val[iter] * jac;
-        for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+        for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
           emmap_jk[p->first] += fac * (p->second);
       }
 
@@ -11309,7 +11308,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
       for (int d = 0; d < n_dim() - 1; ++d)
       {
         fac = wgt * mval[j] * lm2deriv(iter, d) * jac;
-        for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+        for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
           emmap_jk[p->first] += fac * (p->second);
       }
 
@@ -11317,7 +11316,7 @@ void inline CONTACT::Integrator::gp_3d_te_master_lin(int& iter, Mortar::Element&
 
       // (4) Lin(dsxideta) - intcell GP Jacobian
       fac = wgt * mval[j] * mval[iter];
-      for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+      for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
         emmap_jk[p->first] += fac * (p->second);
 
     }  // end integrate linE
@@ -11338,7 +11337,7 @@ void inline CONTACT::Integrator::gp_2d_slip_incr(Mortar::Element& sele, Mortar::
     Core::Gen::Pairedvector<int, double>& dslipgp, int& linsize)
 {
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -11406,12 +11405,12 @@ void inline CONTACT::Integrator::gp_2d_slip_incr(Mortar::Element& sele, Mortar::
     Core::Gen::Pairedvector<int, double>& dmap_tysl_i =
         dynamic_cast<CONTACT::Node*>(snodes[i])->data().get_deriv_txi()[1];
 
-    for (_CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
+    for (CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
       dmap_txsl_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
+    for (CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
       dmap_tysl_gp[p->first] += sval[i] * (p->second);
 
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
     {
       double valx = sderiv(i, 0) * dynamic_cast<CONTACT::Node*>(snodes[i])->data().txi()[0];
       dmap_txsl_gp[p->first] += valx * (p->second);
@@ -11431,24 +11430,24 @@ void inline CONTACT::Integrator::gp_2d_slip_incr(Mortar::Element& sele, Mortar::
   const double sxsyv = tanv[0] * tanv[1] * llv;
   const double sysyv = tanv[1] * tanv[1] * llv;
 
-  for (_CI p = dmap_txsl_gp.begin(); p != dmap_txsl_gp.end(); ++p)
+  for (CI p = dmap_txsl_gp.begin(); p != dmap_txsl_gp.end(); ++p)
   {
     dmap_txsl_gp_unit[p->first] += linv * (p->second);
     dmap_txsl_gp_unit[p->first] -= lllinv * sxsxv * (p->second);
     dmap_tysl_gp_unit[p->first] -= lllinv * sxsyv * (p->second);
   }
 
-  for (_CI p = dmap_tysl_gp.begin(); p != dmap_tysl_gp.end(); ++p)
+  for (CI p = dmap_tysl_gp.begin(); p != dmap_tysl_gp.end(); ++p)
   {
     dmap_tysl_gp_unit[p->first] += linv * (p->second);
     dmap_tysl_gp_unit[p->first] -= lllinv * sysyv * (p->second);
     dmap_txsl_gp_unit[p->first] -= lllinv * sxsyv * (p->second);
   }
 
-  for (_CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
+  for (CI p = dmap_txsl_gp_unit.begin(); p != dmap_txsl_gp_unit.end(); ++p)
     dslipgp[p->first] += jumpv[0] * (p->second);
 
-  for (_CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
+  for (CI p = dmap_tysl_gp_unit.begin(); p != dmap_tysl_gp_unit.end(); ++p)
     dslipgp[p->first] += jumpv[1] * (p->second);
 
   // coord lin
@@ -11459,7 +11458,7 @@ void inline CONTACT::Integrator::gp_2d_slip_incr(Mortar::Element& sele, Mortar::
     {
       dslipgp[snode->dofs()[k]] += sval[z] * tanv[k];
 
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
         dslipgp[p->first] += tanv[k] * sderiv(z, 0) *
                              (sele.get_nodal_coords(k, z) - sele.get_nodal_coords_old(k, z)) *
                              (p->second);
@@ -11473,7 +11472,7 @@ void inline CONTACT::Integrator::gp_2d_slip_incr(Mortar::Element& sele, Mortar::
     {
       dslipgp[mnode->dofs()[k]] -= mval[z] * tanv[k];
 
-      for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+      for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
         dslipgp[p->first] -= tanv[k] * mderiv(z, 0) *
                              (mele.get_nodal_coords(k, z) - mele.get_nodal_coords_old(k, z)) *
                              (p->second);
@@ -11507,7 +11506,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
     std::vector<Core::Gen::Pairedvector<int, double>>& dslipgp)
 {
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -11633,18 +11632,18 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
     Core::Gen::Pairedvector<int, double>& dmap_tzsl_i =
         dynamic_cast<CONTACT::Node*>(snodes[i])->data().get_deriv_txi()[2];
 
-    for (_CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
+    for (CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
       dmap_txix_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
+    for (CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
       dmap_txiy_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_tzsl_i.begin(); p != dmap_tzsl_i.end(); ++p)
+    for (CI p = dmap_tzsl_i.begin(); p != dmap_tzsl_i.end(); ++p)
       dmap_txiz_gp[p->first] += sval[i] * (p->second);
 
     const double txi_x = dynamic_cast<CONTACT::Node*>(snodes[i])->data().txi()[0];
     const double txi_y = dynamic_cast<CONTACT::Node*>(snodes[i])->data().txi()[1];
     const double txi_z = dynamic_cast<CONTACT::Node*>(snodes[i])->data().txi()[2];
 
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
     {
       double valx = sderiv(i, 0) * txi_x;
       dmap_txix_gp[p->first] += valx * (p->second);
@@ -11654,7 +11653,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
       dmap_txiz_gp[p->first] += valz * (p->second);
     }
 
-    for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+    for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
     {
       double valx = sderiv(i, 1) * txi_x;
       dmap_txix_gp[p->first] += valx * (p->second);
@@ -11676,7 +11675,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
   const double sysz1 = tanv1[1] * tanv1[2] * ll1;
   const double szsz1 = tanv1[2] * tanv1[2] * ll1;
 
-  for (_CI p = dmap_txix_gp.begin(); p != dmap_txix_gp.end(); ++p)
+  for (CI p = dmap_txix_gp.begin(); p != dmap_txix_gp.end(); ++p)
   {
     dmap_txix_gp_unit[p->first] += linv1 * (p->second);
     dmap_txix_gp_unit[p->first] -= lllinv1 * sxsx1 * (p->second);
@@ -11684,7 +11683,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
     dmap_txiz_gp_unit[p->first] -= lllinv1 * sxsz1 * (p->second);
   }
 
-  for (_CI p = dmap_txiy_gp.begin(); p != dmap_txiy_gp.end(); ++p)
+  for (CI p = dmap_txiy_gp.begin(); p != dmap_txiy_gp.end(); ++p)
   {
     dmap_txiy_gp_unit[p->first] += linv1 * (p->second);
     dmap_txiy_gp_unit[p->first] -= lllinv1 * sysy1 * (p->second);
@@ -11692,7 +11691,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
     dmap_txiz_gp_unit[p->first] -= lllinv1 * sysz1 * (p->second);
   }
 
-  for (_CI p = dmap_txiz_gp.begin(); p != dmap_txiz_gp.end(); ++p)
+  for (CI p = dmap_txiz_gp.begin(); p != dmap_txiz_gp.end(); ++p)
   {
     dmap_txiz_gp_unit[p->first] += linv1 * (p->second);
     dmap_txiz_gp_unit[p->first] -= lllinv1 * szsz1 * (p->second);
@@ -11721,18 +11720,18 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
     Core::Gen::Pairedvector<int, double>& dmap_tzsl_i =
         dynamic_cast<CONTACT::Node*>(snodes[i])->data().get_deriv_teta()[2];
 
-    for (_CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
+    for (CI p = dmap_txsl_i.begin(); p != dmap_txsl_i.end(); ++p)
       dmap_tetax_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
+    for (CI p = dmap_tysl_i.begin(); p != dmap_tysl_i.end(); ++p)
       dmap_tetay_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_tzsl_i.begin(); p != dmap_tzsl_i.end(); ++p)
+    for (CI p = dmap_tzsl_i.begin(); p != dmap_tzsl_i.end(); ++p)
       dmap_tetaz_gp[p->first] += sval[i] * (p->second);
 
     const double teta_x = dynamic_cast<CONTACT::Node*>(snodes[i])->data().teta()[0];
     const double teta_y = dynamic_cast<CONTACT::Node*>(snodes[i])->data().teta()[1];
     const double teta_z = dynamic_cast<CONTACT::Node*>(snodes[i])->data().teta()[2];
 
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
     {
       double valx = sderiv(i, 0) * teta_x;
       dmap_tetax_gp[p->first] += valx * (p->second);
@@ -11742,7 +11741,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
       dmap_tetaz_gp[p->first] += valz * (p->second);
     }
 
-    for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+    for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
     {
       double valx = sderiv(i, 1) * teta_x;
       dmap_tetax_gp[p->first] += valx * (p->second);
@@ -11764,7 +11763,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
   const double sysz2 = tanv2[1] * tanv2[2] * ll2;
   const double szsz2 = tanv2[2] * tanv2[2] * ll2;
 
-  for (_CI p = dmap_tetax_gp.begin(); p != dmap_tetax_gp.end(); ++p)
+  for (CI p = dmap_tetax_gp.begin(); p != dmap_tetax_gp.end(); ++p)
   {
     dmap_tetax_gp_unit[p->first] += linv2 * (p->second);
     dmap_tetax_gp_unit[p->first] -= lllinv2 * sxsx2 * (p->second);
@@ -11772,7 +11771,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
     dmap_tetaz_gp_unit[p->first] -= lllinv2 * sxsz2 * (p->second);
   }
 
-  for (_CI p = dmap_tetay_gp.begin(); p != dmap_tetay_gp.end(); ++p)
+  for (CI p = dmap_tetay_gp.begin(); p != dmap_tetay_gp.end(); ++p)
   {
     dmap_tetay_gp_unit[p->first] += linv2 * (p->second);
     dmap_tetay_gp_unit[p->first] -= lllinv2 * sysy2 * (p->second);
@@ -11780,7 +11779,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
     dmap_tetaz_gp_unit[p->first] -= lllinv2 * sysz2 * (p->second);
   }
 
-  for (_CI p = dmap_tetaz_gp.begin(); p != dmap_tetaz_gp.end(); ++p)
+  for (CI p = dmap_tetaz_gp.begin(); p != dmap_tetaz_gp.end(); ++p)
   {
     dmap_tetaz_gp_unit[p->first] += linv2 * (p->second);
     dmap_tetaz_gp_unit[p->first] -= lllinv2 * szsz2 * (p->second);
@@ -11789,23 +11788,23 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
   }
 
   // TXI
-  for (_CI p = dmap_txix_gp_unit.begin(); p != dmap_txix_gp_unit.end(); ++p)
+  for (CI p = dmap_txix_gp_unit.begin(); p != dmap_txix_gp_unit.end(); ++p)
     dslipgp[0][p->first] += jumpv[0] * (p->second);
 
-  for (_CI p = dmap_txiy_gp_unit.begin(); p != dmap_txiy_gp_unit.end(); ++p)
+  for (CI p = dmap_txiy_gp_unit.begin(); p != dmap_txiy_gp_unit.end(); ++p)
     dslipgp[0][p->first] += jumpv[1] * (p->second);
 
-  for (_CI p = dmap_txiz_gp_unit.begin(); p != dmap_txiz_gp_unit.end(); ++p)
+  for (CI p = dmap_txiz_gp_unit.begin(); p != dmap_txiz_gp_unit.end(); ++p)
     dslipgp[0][p->first] += jumpv[2] * (p->second);
 
   // TETA
-  for (_CI p = dmap_tetax_gp_unit.begin(); p != dmap_tetax_gp_unit.end(); ++p)
+  for (CI p = dmap_tetax_gp_unit.begin(); p != dmap_tetax_gp_unit.end(); ++p)
     dslipgp[1][p->first] += jumpv[0] * (p->second);
 
-  for (_CI p = dmap_tetay_gp_unit.begin(); p != dmap_tetay_gp_unit.end(); ++p)
+  for (CI p = dmap_tetay_gp_unit.begin(); p != dmap_tetay_gp_unit.end(); ++p)
     dslipgp[1][p->first] += jumpv[1] * (p->second);
 
-  for (_CI p = dmap_tetaz_gp_unit.begin(); p != dmap_tetaz_gp_unit.end(); ++p)
+  for (CI p = dmap_tetaz_gp_unit.begin(); p != dmap_tetaz_gp_unit.end(); ++p)
     dslipgp[1][p->first] += jumpv[2] * (p->second);
 
   // coord lin
@@ -11818,7 +11817,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
       dslipgp[0][snode->dofs()[k]] += sval[z] * tanv1[k];
       dslipgp[1][snode->dofs()[k]] += sval[z] * tanv2[k];
 
-      for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+      for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
       {
         dslipgp[0][p->first] += tanv1[k] * sderiv(z, 0) *
                                 (sele.get_nodal_coords(k, z) - sele.get_nodal_coords_old(k, z)) *
@@ -11828,7 +11827,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
                                 (p->second);
       }
 
-      for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+      for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
       {
         dslipgp[0][p->first] += tanv1[k] * sderiv(z, 1) *
                                 (sele.get_nodal_coords(k, z) - sele.get_nodal_coords_old(k, z)) *
@@ -11849,7 +11848,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
       dslipgp[0][mnode->dofs()[k]] -= mval[z] * tanv1[k];
       dslipgp[1][mnode->dofs()[k]] -= mval[z] * tanv2[k];
 
-      for (_CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
+      for (CI p = dmxigp[0].begin(); p != dmxigp[0].end(); ++p)
       {
         dslipgp[0][p->first] -= tanv1[k] * mderiv(z, 0) *
                                 (mele.get_nodal_coords(k, z) - mele.get_nodal_coords_old(k, z)) *
@@ -11859,7 +11858,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr(Mortar::Element& sele, Mortar::
                                 (p->second);
       }
 
-      for (_CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
+      for (CI p = dmxigp[1].begin(); p != dmxigp[1].end(); ++p)
       {
         dslipgp[0][p->first] -= tanv1[k] * mderiv(z, 1) *
                                 (mele.get_nodal_coords(k, z) - mele.get_nodal_coords_old(k, z)) *
@@ -11889,7 +11888,7 @@ void inline CONTACT::Integrator::gp_2d_slip_incr_lin(int& iter, Mortar::Element&
   double fac = 0.0;
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   FriNode* snode = dynamic_cast<FriNode*>(snodes[iter]);
   if (snode->is_on_boundor_ce()) return;
@@ -11912,16 +11911,15 @@ void inline CONTACT::Integrator::gp_2d_slip_incr_lin(int& iter, Mortar::Element&
 
   // (2) Lin(Phi) - slave GP coordinates
   fac = wgt * lmderiv(iter, 0) * jumpvalv[0] * jac;
-  for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
-    djumpmap[p->first] += fac * (p->second);
+  for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) djumpmap[p->first] += fac * (p->second);
 
   // (3) Lin(g) - gap function
   fac = wgt * lmval[iter] * jac;
-  for (_CI p = dslipgp.begin(); p != dslipgp.end(); ++p) djumpmap[p->first] += fac * (p->second);
+  for (CI p = dslipgp.begin(); p != dslipgp.end(); ++p) djumpmap[p->first] += fac * (p->second);
 
   // (4) Lin(dxdsxi) - slave GP Jacobian
   fac = wgt * lmval[iter] * jumpvalv[0];
-  for (_CI p = derivjac.begin(); p != derivjac.end(); ++p) djumpmap[p->first] += fac * (p->second);
+  for (CI p = derivjac.begin(); p != derivjac.end(); ++p) djumpmap[p->first] += fac * (p->second);
 }
 
 /*----------------------------------------------------------------------*
@@ -11940,7 +11938,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr_lin(int& iter, Mortar::Element&
   double nrow = sele.num_node();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   FriNode* snode = dynamic_cast<FriNode*>(snodes[iter]);
 
@@ -11974,7 +11972,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr_lin(int& iter, Mortar::Element&
   // (2) Lin(Phi) - slave GP coordinates --> because of duality
   fac1 = wgt * lmderiv(iter, 0) * jumpvalv[0] * jac;
   fac2 = wgt * lmderiv(iter, 0) * jumpvalv[1] * jac;
-  for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
+  for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
   {
     djumpmap1[p->first] += fac1 * (p->second);
     djumpmap2[p->first] += fac2 * (p->second);
@@ -11982,7 +11980,7 @@ void inline CONTACT::Integrator::gp_3d_slip_incr_lin(int& iter, Mortar::Element&
 
   fac1 = wgt * lmderiv(iter, 1) * jumpvalv[0] * jac;
   fac2 = wgt * lmderiv(iter, 1) * jumpvalv[1] * jac;
-  for (_CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
+  for (CI p = dsxigp[1].begin(); p != dsxigp[1].end(); ++p)
   {
     djumpmap1[p->first] += fac1 * (p->second);
     djumpmap2[p->first] += fac2 * (p->second);
@@ -11990,15 +11988,15 @@ void inline CONTACT::Integrator::gp_3d_slip_incr_lin(int& iter, Mortar::Element&
 
   // (3) Lin(w) - wear function
   fac1 = wgt * lmval[iter] * jac;
-  for (_CI p = dslipgp[0].begin(); p != dslipgp[0].end(); ++p)
+  for (CI p = dslipgp[0].begin(); p != dslipgp[0].end(); ++p)
     djumpmap1[p->first] += fac1 * (p->second);
-  for (_CI p = dslipgp[1].begin(); p != dslipgp[1].end(); ++p)
+  for (CI p = dslipgp[1].begin(); p != dslipgp[1].end(); ++p)
     djumpmap2[p->first] += fac1 * (p->second);
 
   // (5) Lin(dxdsxi) - slave GP Jacobian
   fac1 = wgt * lmval[iter] * jumpvalv[0];
   fac2 = wgt * lmval[iter] * jumpvalv[1];
-  for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+  for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
   {
     djumpmap1[p->first] += fac1 * (p->second);
     djumpmap2[p->first] += fac2 * (p->second);
@@ -12025,7 +12023,7 @@ void inline CONTACT::Integrator::gp_2d_wear_lin(int& iter, Mortar::Element& sele
   Core::Nodes::Node** snodes = sele.nodes();
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get the corresponding map as a reference
   CONTACT::Node* cnode = dynamic_cast<CONTACT::Node*>(snodes[iter]);
@@ -12039,16 +12037,15 @@ void inline CONTACT::Integrator::gp_2d_wear_lin(int& iter, Mortar::Element& sele
 
     // (2) Lin(Phi) - slave GP coordinates --> because of duality
     facw = wcoeff * wgt * sderiv(iter, 0) * wearval * jac;
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
-      dwmap[p->first] += facw * (p->second);
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dwmap[p->first] += facw * (p->second);
 
     // (3) Lin(w) - wear function
     facw = wcoeff * wgt * sval[iter] * jac;
-    for (_CI p = dweargp.begin(); p != dweargp.end(); ++p) dwmap[p->first] += facw * (p->second);
+    for (CI p = dweargp.begin(); p != dweargp.end(); ++p) dwmap[p->first] += facw * (p->second);
 
     // (4) Lin(dxdsxi) - slave GP Jacobian
     facw = wcoeff * wgt * sval[iter] * wearval;
-    for (_CI p = derivjac.begin(); p != derivjac.end(); ++p) dwmap[p->first] += facw * (p->second);
+    for (CI p = derivjac.begin(); p != derivjac.end(); ++p) dwmap[p->first] += facw * (p->second);
   }
   else  // no petrov_galerkin
   {
@@ -12067,16 +12064,15 @@ void inline CONTACT::Integrator::gp_2d_wear_lin(int& iter, Mortar::Element& sele
 
     // (2) Lin(Phi) - slave GP coordinates --> because of duality
     facw = wcoeff * wgt * lmderiv(iter, 0) * wearval * jac;
-    for (_CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p)
-      dwmap[p->first] += facw * (p->second);
+    for (CI p = dsxigp[0].begin(); p != dsxigp[0].end(); ++p) dwmap[p->first] += facw * (p->second);
 
     // (3) Lin(w) - wear function
     facw = wcoeff * wgt * lmval[iter] * jac;
-    for (_CI p = dweargp.begin(); p != dweargp.end(); ++p) dwmap[p->first] += facw * (p->second);
+    for (CI p = dweargp.begin(); p != dweargp.end(); ++p) dwmap[p->first] += facw * (p->second);
 
     // (4) Lin(dxdsxi) - slave GP Jacobian
     facw = wcoeff * wgt * lmval[iter] * wearval;
-    for (_CI p = derivjac.begin(); p != derivjac.end(); ++p) dwmap[p->first] += facw * (p->second);
+    for (CI p = derivjac.begin(); p != derivjac.end(); ++p) dwmap[p->first] += facw * (p->second);
   }
 
   //****************************************************************
@@ -12230,7 +12226,7 @@ void inline CONTACT::Integrator::gp_ncoup_deriv(Mortar::Element& sele, Mortar::E
     std::vector<Core::Gen::Pairedvector<int, double>>& dnmap_unit, bool quadratic, int nintrow)
 {
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -12430,7 +12426,7 @@ void inline CONTACT::Integrator::gp_ncoup_deriv(Mortar::Element& sele, Mortar::E
   // dncoupgp ... (v(struct)-v(fluid)) * delta n
   for (int k = 0; k < n_dim(); ++k)
   {
-    for (_CI p = dnmap_unit[k].begin(); p != dnmap_unit[k].end(); ++p)
+    for (CI p = dnmap_unit[k].begin(); p != dnmap_unit[k].end(); ++p)
     {
       double slaveside = 0.0;
       if (slaveporo)
@@ -12459,7 +12455,7 @@ void inline CONTACT::Integrator::gp_ncoup_deriv(Mortar::Element& sele, Mortar::E
             sporosity * sval[i] * gpn[k] * timefac;  // linearisation of vs add for master side
         for (unsigned int d = 0; d < dsxigp.size(); ++d)
         {
-          for (_CI p = dsxigp[d].begin(); p != dsxigp[d].end();
+          for (CI p = dsxigp[d].begin(); p != dsxigp[d].end();
               ++p)  // linearization of shape function N
           {
             dncoupgp[p->first] -=
@@ -12486,7 +12482,7 @@ void inline CONTACT::Integrator::gp_ncoup_deriv(Mortar::Element& sele, Mortar::E
         dncoupgp[mrtrnode->dofs()[k]] -= mporosity * mval[i] * gpn[k] * timefac;
         for (unsigned int d = 0; d < dmxigp.size(); ++d)
         {
-          for (_CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
+          for (CI p = dmxigp[d].begin(); p != dmxigp[d].end(); ++p)
           {
             dncoupgp[p->first] +=
                 mporosity * gpn[k] * mderiv(i, d) * mrtrnode->poro_data().fvel()[k] * (p->second);
@@ -12585,8 +12581,7 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
   // evaluated on the slave side interface surface
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
-  using CI = std::map<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get slave element nodes themselves
   Core::Nodes::Node** snodes = sele.nodes();
@@ -12612,16 +12607,16 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
     for (unsigned int k = 0; k < dsxigp.size(); ++k)
     {
       fac = wgt * sderiv(iter, k) * ncoup * jac;
-      for (_CI p = dsxigp[k].begin(); p != dsxigp[k].end(); ++p)
+      for (CI p = dsxigp[k].begin(); p != dsxigp[k].end(); ++p)
         dgmap[p->first] += fac * (p->second);
     }
     // (3) Lin(g) - normal coupling condition ncoup function
     fac = wgt * sval[iter] * jac;
-    for (CI p = dncoupgp.begin(); p != dncoupgp.end(); ++p) dgmap[p->first] += fac * (p->second);
+    for (auto p = dncoupgp.begin(); p != dncoupgp.end(); ++p) dgmap[p->first] += fac * (p->second);
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
     fac = wgt * sval[iter] * ncoup;
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
       dgmap[p->first] += fac * (p->second);
   }
 
@@ -12645,7 +12640,7 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
     for (unsigned int k = 0; k < dsxigp.size(); ++k)
     {
       fac = wgt * lmderiv(iter, k) * ncoup * jac;
-      for (_CI p = dsxigp[k].begin(); p != dsxigp[k].end(); ++p)
+      for (CI p = dsxigp[k].begin(); p != dsxigp[k].end(); ++p)
       {
         dgmap[p->first] += fac * (p->second);
       }
@@ -12653,14 +12648,14 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
 
     // (3) Lin(g) - normal coupling condition ncoup function
     fac = wgt * lmval[iter] * jac;
-    for (CI p = dncoupgp.begin(); p != dncoupgp.end(); ++p)
+    for (auto p = dncoupgp.begin(); p != dncoupgp.end(); ++p)
     {
       dgmap[p->first] += fac * (p->second);
     }
 
     // (4) Lin(dsxideta) - intcell GP Jacobian
     fac = wgt * lmval[iter] * ncoup;
-    for (_CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
+    for (CI p = jacintcellmap.begin(); p != jacintcellmap.end(); ++p)
     {
       dgmap[p->first] += fac * (p->second);
     }
@@ -12674,7 +12669,7 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
   {
     // (3) Lin(g) - normal coupling condition function
     fac = wgt * sval[iter] * jac;
-    for (CI p = dvelncoupgp.begin(); p != dvelncoupgp.end(); ++p)
+    for (auto p = dvelncoupgp.begin(); p != dvelncoupgp.end(); ++p)
       dvelncoupmap[p->first] += fac * (p->second);
   }
   // the usual standard or dual LM approach
@@ -12682,7 +12677,7 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
   {
     // (3) Lin(g) - normal coupling condition function
     fac = wgt * lmval[iter] * jac;
-    for (CI p = dvelncoupgp.begin(); p != dvelncoupgp.end(); ++p)
+    for (auto p = dvelncoupgp.begin(); p != dvelncoupgp.end(); ++p)
     {
       dvelncoupmap[p->first] += fac * (p->second);
     }
@@ -12697,7 +12692,7 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
   {
     // (3) Lin(g) - normal coupling condition function
     fac = wgt * sval[iter] * jac;
-    for (CI p = dpresncoupgp.begin(); p != dpresncoupgp.end(); ++p)
+    for (auto p = dpresncoupgp.begin(); p != dpresncoupgp.end(); ++p)
       dpresncoupmap[p->first] += fac * (p->second);
   }
   // the usual standard or dual LM approach
@@ -12705,7 +12700,7 @@ void inline CONTACT::Integrator::gp_ncoup_lin(int& iter, Mortar::Element& sele,
   {
     // (3) Lin(g) - normal coupling condition function
     fac = wgt * lmval[iter] * jac;
-    for (CI p = dpresncoupgp.begin(); p != dpresncoupgp.end(); ++p)
+    for (auto p = dpresncoupgp.begin(); p != dpresncoupgp.end(); ++p)
     {
       dpresncoupmap[p->first] += fac * (p->second);
     }

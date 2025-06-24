@@ -23,9 +23,6 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-// forward declarations
-struct _MATERIAL;
-
 namespace Core::FE
 {
   class Discretization;

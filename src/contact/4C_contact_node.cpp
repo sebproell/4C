@@ -753,7 +753,7 @@ void CONTACT::Node::build_averaged_edge_tangent()
   //**************************************************
   //      LINEARIZATION
   //**************************************************
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   for (int j = 0; j < (int)((data().get_deriv_tangent()).size()); ++j)
     (data().get_deriv_tangent())[j].clear();
@@ -775,38 +775,38 @@ void CONTACT::Node::build_averaged_edge_tangent()
   }
   // first part
   std::vector<Core::Gen::Pairedvector<int, double>> Lin1(3, 100);  // added all sizes
-  for (_CI p = lint[0].begin(); p != lint[0].end(); ++p) Lin1[0][p->first] += p->second / length;
-  for (_CI p = lint[1].begin(); p != lint[1].end(); ++p) Lin1[1][p->first] += p->second / length;
-  for (_CI p = lint[2].begin(); p != lint[2].end(); ++p) Lin1[2][p->first] += p->second / length;
+  for (CI p = lint[0].begin(); p != lint[0].end(); ++p) Lin1[0][p->first] += p->second / length;
+  for (CI p = lint[1].begin(); p != lint[1].end(); ++p) Lin1[1][p->first] += p->second / length;
+  for (CI p = lint[2].begin(); p != lint[2].end(); ++p) Lin1[2][p->first] += p->second / length;
 
   Core::Gen::Pairedvector<int, double> Lin2(100);  // added all sizes
-  for (_CI p = lint[0].begin(); p != lint[0].end(); ++p)
+  for (CI p = lint[0].begin(); p != lint[0].end(); ++p)
     Lin2[p->first] += p->second * mo_data().edge_tangent()[0];
-  for (_CI p = lint[1].begin(); p != lint[1].end(); ++p)
+  for (CI p = lint[1].begin(); p != lint[1].end(); ++p)
     Lin2[p->first] += p->second * mo_data().edge_tangent()[1];
-  for (_CI p = lint[2].begin(); p != lint[2].end(); ++p)
+  for (CI p = lint[2].begin(); p != lint[2].end(); ++p)
     Lin2[p->first] += p->second * mo_data().edge_tangent()[2];
 
   std::vector<Core::Gen::Pairedvector<int, double>> Lin3(3, 100);  // added all sizes
-  for (_CI p = Lin2.begin(); p != Lin2.end(); ++p)
+  for (CI p = Lin2.begin(); p != Lin2.end(); ++p)
     Lin3[0][p->first] += p->second * mo_data().edge_tangent()[0] / (length * length * length);
-  for (_CI p = Lin2.begin(); p != Lin2.end(); ++p)
+  for (CI p = Lin2.begin(); p != Lin2.end(); ++p)
     Lin3[1][p->first] += p->second * mo_data().edge_tangent()[1] / (length * length * length);
-  for (_CI p = Lin2.begin(); p != Lin2.end(); ++p)
+  for (CI p = Lin2.begin(); p != Lin2.end(); ++p)
     Lin3[2][p->first] += p->second * mo_data().edge_tangent()[2] / (length * length * length);
 
-  for (_CI p = Lin1[0].begin(); p != Lin1[0].end(); ++p)
+  for (CI p = Lin1[0].begin(); p != Lin1[0].end(); ++p)
     data().get_deriv_tangent()[0][p->first] += p->second;
-  for (_CI p = Lin1[1].begin(); p != Lin1[1].end(); ++p)
+  for (CI p = Lin1[1].begin(); p != Lin1[1].end(); ++p)
     data().get_deriv_tangent()[1][p->first] += p->second;
-  for (_CI p = Lin1[2].begin(); p != Lin1[2].end(); ++p)
+  for (CI p = Lin1[2].begin(); p != Lin1[2].end(); ++p)
     data().get_deriv_tangent()[2][p->first] += p->second;
 
-  for (_CI p = Lin3[0].begin(); p != Lin3[0].end(); ++p)
+  for (CI p = Lin3[0].begin(); p != Lin3[0].end(); ++p)
     data().get_deriv_tangent()[0][p->first] -= p->second;
-  for (_CI p = Lin3[1].begin(); p != Lin3[1].end(); ++p)
+  for (CI p = Lin3[1].begin(); p != Lin3[1].end(); ++p)
     data().get_deriv_tangent()[1][p->first] -= p->second;
-  for (_CI p = Lin3[2].begin(); p != Lin3[2].end(); ++p)
+  for (CI p = Lin3[2].begin(); p != Lin3[2].end(); ++p)
     data().get_deriv_tangent()[2][p->first] -= p->second;
 
   // std::cout << "tangent = " << MoData().EdgeTangent()[0] << "  " << MoData().EdgeTangent()[1] <<

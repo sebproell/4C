@@ -1570,7 +1570,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_3d_lin(
   //   Lin deta = - inv(dF) * Lin F             //
   //**********************************************
   // prepare linearizations
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // get linsize
   int linsize = 0;
@@ -1617,8 +1617,8 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_3d_lin(
 
     for (int k = 0; k < 3; ++k)
     {
-      for (_CI p = mnode->data().get_deriv_n()[k].begin();
-          p != mnode->data().get_deriv_n()[k].end(); ++p)
+      for (CI p = mnode->data().get_deriv_n()[k].begin(); p != mnode->data().get_deriv_n()[k].end();
+          ++p)
       {
         (auxnormalLin[k])[p->first] += mval(i) * (p->second);
       }
@@ -1628,7 +1628,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_3d_lin(
   // *alpha
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = auxnormalLin[j].begin(); p != auxnormalLin[j].end(); ++p)
+    for (CI p = auxnormalLin[j].begin(); p != auxnormalLin[j].end(); ++p)
       (normalpartLin[j])[p->first] += (p->second) * alpha;
   }
 
@@ -1639,19 +1639,19 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_3d_lin(
   // All terms:
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = xmLin[j].begin(); p != xmLin[j].end(); ++p) (fLin[j])[p->first] += (p->second);
+    for (CI p = xmLin[j].begin(); p != xmLin[j].end(); ++p) (fLin[j])[p->first] += (p->second);
 
-    for (_CI p = normalpartLin[j].begin(); p != normalpartLin[j].end(); ++p)
+    for (CI p = normalpartLin[j].begin(); p != normalpartLin[j].end(); ++p)
       (fLin[j])[p->first] += (p->second);
 
-    for (_CI p = xsLin[j].begin(); p != xsLin[j].end(); ++p) (fLin[j])[p->first] -= (p->second);
+    for (CI p = xsLin[j].begin(); p != xsLin[j].end(); ++p) (fLin[j])[p->first] -= (p->second);
   }
 
   for (int i = 0; i < 3; ++i)
   {
     for (int k = 0; k < 3; ++k)
     {
-      for (_CI p = fLin[i].begin(); p != fLin[i].end(); ++p)
+      for (CI p = fLin[i].begin(); p != fLin[i].end(); ++p)
         (etaLin[k])[p->first] -= (p->second) * df(k, i);
     }
   }
@@ -1672,27 +1672,27 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_3d_lin(
     if (!node) FOUR_C_THROW("Cannot find master node");
     const CONTACT::Node* mnode = dynamic_cast<const CONTACT::Node*>(node);
 
-    for (_CI p = etaLin[0].begin(); p != etaLin[0].end(); ++p)
+    for (CI p = etaLin[0].begin(); p != etaLin[0].end(); ++p)
     {
       (n_eta0_deriv[0])[p->first] += mderiv(0, k) * (p->second) * mnode->mo_data().n()[0];
       (n_eta0_deriv[1])[p->first] += mderiv(0, k) * (p->second) * mnode->mo_data().n()[1];
       (n_eta0_deriv[2])[p->first] += mderiv(0, k) * (p->second) * mnode->mo_data().n()[2];
     }
 
-    for (_CI p = etaLin[1].begin(); p != etaLin[1].end(); ++p)
+    for (CI p = etaLin[1].begin(); p != etaLin[1].end(); ++p)
     {
       (n_eta1_deriv[0])[p->first] += mderiv(1, k) * (p->second) * mnode->mo_data().n()[0];
       (n_eta1_deriv[1])[p->first] += mderiv(1, k) * (p->second) * mnode->mo_data().n()[1];
       (n_eta1_deriv[2])[p->first] += mderiv(1, k) * (p->second) * mnode->mo_data().n()[2];
     }
 
-    for (_CI p = mnode->data().get_deriv_n()[0].begin(); p != mnode->data().get_deriv_n()[0].end();
+    for (CI p = mnode->data().get_deriv_n()[0].begin(); p != mnode->data().get_deriv_n()[0].end();
         ++p)
       (n_n_deriv[0])[p->first] += mval(k) * (p->second);
-    for (_CI p = mnode->data().get_deriv_n()[1].begin(); p != mnode->data().get_deriv_n()[1].end();
+    for (CI p = mnode->data().get_deriv_n()[1].begin(); p != mnode->data().get_deriv_n()[1].end();
         ++p)
       (n_n_deriv[1])[p->first] += mval(k) * (p->second);
-    for (_CI p = mnode->data().get_deriv_n()[2].begin(); p != mnode->data().get_deriv_n()[2].end();
+    for (CI p = mnode->data().get_deriv_n()[2].begin(); p != mnode->data().get_deriv_n()[2].end();
         ++p)
       (n_n_deriv[2])[p->first] += mval(k) * (p->second);
   }
@@ -1700,11 +1700,11 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_3d_lin(
 
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = n_eta1_deriv[j].begin(); p != n_eta1_deriv[j].end(); ++p)
+    for (CI p = n_eta1_deriv[j].begin(); p != n_eta1_deriv[j].end(); ++p)
       (normaltolineLin[j])[p->first] += (p->second);
-    for (_CI p = n_eta0_deriv[j].begin(); p != n_eta0_deriv[j].end(); ++p)
+    for (CI p = n_eta0_deriv[j].begin(); p != n_eta0_deriv[j].end(); ++p)
       (normaltolineLin[j])[p->first] += (p->second);
-    for (_CI p = n_n_deriv[j].begin(); p != n_n_deriv[j].end(); ++p)
+    for (CI p = n_n_deriv[j].begin(); p != n_n_deriv[j].end(); ++p)
       (normaltolineLin[j])[p->first] += (p->second);
   }
 
@@ -1882,7 +1882,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_2d_lin(
   //   Lin deta = - inv(dF) * Lin F             //
   //**********************************************
   // prepare linearizations
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   std::vector<Core::Gen::Pairedvector<int, double>> etaLin(3, 1000);
   std::vector<Core::Gen::Pairedvector<int, double>> fLin(3, 1000);
@@ -1917,8 +1917,8 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_2d_lin(
 
     for (int k = 0; k < 3; ++k)
     {
-      for (_CI p = mnode->data().get_deriv_n()[k].begin();
-          p != mnode->data().get_deriv_n()[k].end(); ++p)
+      for (CI p = mnode->data().get_deriv_n()[k].begin(); p != mnode->data().get_deriv_n()[k].end();
+          ++p)
       {
         (auxnormalLin[k])[p->first] += mval(i) * (p->second);
       }
@@ -1928,7 +1928,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_2d_lin(
   // *alpha
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = auxnormalLin[j].begin(); p != auxnormalLin[j].end(); ++p)
+    for (CI p = auxnormalLin[j].begin(); p != auxnormalLin[j].end(); ++p)
       (normalpartLin[j])[p->first] += (p->second) * alpha;
   }
 
@@ -1939,19 +1939,19 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_2d_lin(
   // All terms:
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = xmLin[j].begin(); p != xmLin[j].end(); ++p) (fLin[j])[p->first] += (p->second);
+    for (CI p = xmLin[j].begin(); p != xmLin[j].end(); ++p) (fLin[j])[p->first] += (p->second);
 
-    for (_CI p = normalpartLin[j].begin(); p != normalpartLin[j].end(); ++p)
+    for (CI p = normalpartLin[j].begin(); p != normalpartLin[j].end(); ++p)
       (fLin[j])[p->first] += (p->second);
 
-    for (_CI p = xsLin[j].begin(); p != xsLin[j].end(); ++p) (fLin[j])[p->first] -= (p->second);
+    for (CI p = xsLin[j].begin(); p != xsLin[j].end(); ++p) (fLin[j])[p->first] -= (p->second);
   }
 
   for (int i = 0; i < 2; ++i)
   {
     for (int k = 0; k < 2; ++k)
     {
-      for (_CI p = fLin[i].begin(); p != fLin[i].end(); ++p)
+      for (CI p = fLin[i].begin(); p != fLin[i].end(); ++p)
         (etaLin[k])[p->first] -= (p->second) * df(k, i);
     }
   }
@@ -1971,20 +1971,20 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_2d_lin(
     if (!node) FOUR_C_THROW("Cannot find master node");
     const CONTACT::Node* mnode = dynamic_cast<const CONTACT::Node*>(node);
 
-    for (_CI p = etaLin[0].begin(); p != etaLin[0].end(); ++p)
+    for (CI p = etaLin[0].begin(); p != etaLin[0].end(); ++p)
     {
       (n_eta0_deriv[0])[p->first] += mderiv(0, k) * (p->second) * mnode->mo_data().n()[0];
       (n_eta0_deriv[1])[p->first] += mderiv(0, k) * (p->second) * mnode->mo_data().n()[1];
       (n_eta0_deriv[2])[p->first] += mderiv(0, k) * (p->second) * mnode->mo_data().n()[2];
     }
 
-    for (_CI p = mnode->data().get_deriv_n()[0].begin(); p != mnode->data().get_deriv_n()[0].end();
+    for (CI p = mnode->data().get_deriv_n()[0].begin(); p != mnode->data().get_deriv_n()[0].end();
         ++p)
       (n_n_deriv[0])[p->first] += mval(k) * (p->second);
-    for (_CI p = mnode->data().get_deriv_n()[1].begin(); p != mnode->data().get_deriv_n()[1].end();
+    for (CI p = mnode->data().get_deriv_n()[1].begin(); p != mnode->data().get_deriv_n()[1].end();
         ++p)
       (n_n_deriv[1])[p->first] += mval(k) * (p->second);
-    for (_CI p = mnode->data().get_deriv_n()[2].begin(); p != mnode->data().get_deriv_n()[2].end();
+    for (CI p = mnode->data().get_deriv_n()[2].begin(); p != mnode->data().get_deriv_n()[2].end();
         ++p)
       (n_n_deriv[2])[p->first] += mval(k) * (p->second);
   }
@@ -1992,9 +1992,9 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_nodal_normal_2d_lin(
 
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = n_eta0_deriv[j].begin(); p != n_eta0_deriv[j].end(); ++p)
+    for (CI p = n_eta0_deriv[j].begin(); p != n_eta0_deriv[j].end(); ++p)
       (normaltolineLin[j])[p->first] += (p->second);
-    for (_CI p = n_n_deriv[j].begin(); p != n_n_deriv[j].end(); ++p)
+    for (CI p = n_n_deriv[j].begin(); p != n_n_deriv[j].end(); ++p)
       (normaltolineLin[j])[p->first] += (p->second);
   }
 
@@ -2309,7 +2309,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_normal_2d_lin(const Mor
   //   Lin deta = - inv(dF) * Lin F             //
   //**********************************************
   // prepare linearizations
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   std::vector<Core::Gen::Pairedvector<int, double>> etaLin(3, 1000);
   std::vector<Core::Gen::Pairedvector<int, double>> fLin(3, 1000);
@@ -2351,9 +2351,9 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_normal_2d_lin(const Mor
   }
 
   // cross product linearization
-  for (_CI p = x_0Lin[1].begin(); p != x_0Lin[1].end(); ++p)
+  for (CI p = x_0Lin[1].begin(); p != x_0Lin[1].end(); ++p)
     (auxnormalLin[0])[p->first] += (p->second);
-  for (_CI p = x_0Lin[0].begin(); p != x_0Lin[0].end(); ++p)
+  for (CI p = x_0Lin[0].begin(); p != x_0Lin[0].end(); ++p)
     (auxnormalLin[1])[p->first] -= (p->second);
 
   // calc normalpart without alpha
@@ -2378,19 +2378,19 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_normal_2d_lin(const Mor
   // row loop
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = auxnormalLin[0].begin(); p != auxnormalLin[0].end(); ++p)
+    for (CI p = auxnormalLin[0].begin(); p != auxnormalLin[0].end(); ++p)
       (auxnormalunitLin[j])[p->first] += (p->second) * W(j, 0);
 
-    for (_CI p = auxnormalLin[1].begin(); p != auxnormalLin[1].end(); ++p)
+    for (CI p = auxnormalLin[1].begin(); p != auxnormalLin[1].end(); ++p)
       (auxnormalunitLin[j])[p->first] += (p->second) * W(j, 1);
 
-    for (_CI p = auxnormalLin[2].begin(); p != auxnormalLin[2].end(); ++p)
+    for (CI p = auxnormalLin[2].begin(); p != auxnormalLin[2].end(); ++p)
       (auxnormalunitLin[j])[p->first] += (p->second) * W(j, 2);
   }
 
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = auxnormalunitLin[j].begin(); p != auxnormalunitLin[j].end(); ++p)
+    for (CI p = auxnormalunitLin[j].begin(); p != auxnormalunitLin[j].end(); ++p)
       (normalpartLin[j])[p->first] += (p->second) * alpha;
   }
 
@@ -2402,12 +2402,12 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_normal_2d_lin(const Mor
   // All terms:
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = xmLin[j].begin(); p != xmLin[j].end(); ++p) (fLin[j])[p->first] += (p->second);
+    for (CI p = xmLin[j].begin(); p != xmLin[j].end(); ++p) (fLin[j])[p->first] += (p->second);
 
-    for (_CI p = normalpartLin[j].begin(); p != normalpartLin[j].end(); ++p)
+    for (CI p = normalpartLin[j].begin(); p != normalpartLin[j].end(); ++p)
       (fLin[j])[p->first] += (p->second);
 
-    for (_CI p = xsLin[j].begin(); p != xsLin[j].end(); ++p) (fLin[j])[p->first] -= (p->second);
+    for (CI p = xsLin[j].begin(); p != xsLin[j].end(); ++p) (fLin[j])[p->first] -= (p->second);
   }
 
 
@@ -2415,7 +2415,7 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_normal_2d_lin(const Mor
   {
     for (int k = 0; k < 3; ++k)
     {
-      for (_CI p = fLin[i].begin(); p != fLin[i].end(); ++p)
+      for (CI p = fLin[i].begin(); p != fLin[i].end(); ++p)
         (etaLin[k])[p->first] -= (p->second) * df(k, i);
     }
   }
@@ -2442,15 +2442,15 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_normal_2d_lin(const Mor
 
     for (int k = 0; k < 2; ++k)
     {
-      for (_CI p = etaLin[0].begin(); p != etaLin[0].end(); ++p)
+      for (CI p = etaLin[0].begin(); p != etaLin[0].end(); ++p)
         (x_0Linnew[k])[p->first] += (p->second) * deriv2(i) * mnode->xspatial()[k];
     }
   }
 
   // cross product linearization
-  for (_CI p = x_0Linnew[1].begin(); p != x_0Linnew[1].end(); ++p)
+  for (CI p = x_0Linnew[1].begin(); p != x_0Linnew[1].end(); ++p)
     (normaltolineLinaux[0])[p->first] += (p->second);
-  for (_CI p = x_0Linnew[0].begin(); p != x_0Linnew[0].end(); ++p)
+  for (CI p = x_0Linnew[0].begin(); p != x_0Linnew[0].end(); ++p)
     (normaltolineLinaux[1])[p->first] -= (p->second);
 
   // normalize lin
@@ -2469,13 +2469,13 @@ bool Mortar::ProjectorCalc<distype>::project_s_node_by_m_normal_2d_lin(const Mor
   // row loop
   for (int j = 0; j < 3; ++j)
   {
-    for (_CI p = normaltolineLinaux[0].begin(); p != normaltolineLinaux[0].end(); ++p)
+    for (CI p = normaltolineLinaux[0].begin(); p != normaltolineLinaux[0].end(); ++p)
       (normaltolineLin[j])[p->first] += (p->second) * Wfinal(j, 0);
 
-    for (_CI p = normaltolineLinaux[1].begin(); p != normaltolineLinaux[1].end(); ++p)
+    for (CI p = normaltolineLinaux[1].begin(); p != normaltolineLinaux[1].end(); ++p)
       (normaltolineLin[j])[p->first] += (p->second) * Wfinal(j, 1);
 
-    for (_CI p = normaltolineLinaux[2].begin(); p != normaltolineLinaux[2].end(); ++p)
+    for (CI p = normaltolineLinaux[2].begin(); p != normaltolineLinaux[2].end(); ++p)
       (normaltolineLin[j])[p->first] += (p->second) * Wfinal(j, 2);
   }
 

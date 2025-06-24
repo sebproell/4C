@@ -226,7 +226,7 @@ void CONTACT::LineToSurfaceCoupling3d::consist_dual_shape()
 
   // various variables
   double detg = 0.0;
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // initialize matrices de and me
   Core::LinAlg::SerialDenseMatrix me(nnodes, nnodes, true);
@@ -307,7 +307,7 @@ void CONTACT::LineToSurfaceCoupling3d::consist_dual_shape()
 
     for (int v = 0; v < 2; ++v)
       for (int d = 0; d < 3; ++d)
-        for (_CI p = (currcell->get_deriv_vertex(v))[d].begin();
+        for (CI p = (currcell->get_deriv_vertex(v))[d].begin();
             p != (currcell->get_deriv_vertex(v))[d].end(); ++p)
           lingp[p->first](d) += svalcell(v) * (p->second);
 
@@ -319,7 +319,7 @@ void CONTACT::LineToSurfaceCoupling3d::consist_dual_shape()
     dpsxigp = dsxigp;
 
     double fac = 0.;
-    for (_CI p = derivjaccell.begin(); p != derivjaccell.end(); ++p)
+    for (CI p = derivjaccell.begin(); p != derivjaccell.end(); ++p)
     {
       Core::LinAlg::Matrix<max_nnodes + 1, max_nnodes>& dtmp = derivde_new[p->first];
       const double& ps = p->second;
@@ -332,7 +332,7 @@ void CONTACT::LineToSurfaceCoupling3d::consist_dual_shape()
     }
 
     for (int i = 0; i < 2; ++i)
-      for (_CI p = dpsxigp[i].begin(); p != dpsxigp[i].end(); ++p)
+      for (CI p = dpsxigp[i].begin(); p != dpsxigp[i].end(); ++p)
       {
         Core::LinAlg::Matrix<max_nnodes + 1, max_nnodes>& dtmp = derivde_new[p->first];
         const double& ps = p->second;
@@ -382,9 +382,9 @@ void CONTACT::LineToSurfaceCoupling3d::consist_dual_shape()
   // (this is done according to a quite complex formula, which
   // we get from the linearization of the biorthogonality condition:
   // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-  using _CIM = Core::Gen::Pairedvector<int,
+  using CIM = Core::Gen::Pairedvector<int,
       Core::LinAlg::Matrix<max_nnodes + 1, max_nnodes>>::const_iterator;
-  for (_CIM p = derivde_new.begin(); p != derivde_new.end(); ++p)
+  for (CIM p = derivde_new.begin(); p != derivde_new.end(); ++p)
   {
     Core::LinAlg::Matrix<max_nnodes + 1, max_nnodes>& dtmp = derivde_new[p->first];
     Core::LinAlg::SerialDenseMatrix& pt = derivae[p->first];
@@ -1456,7 +1456,7 @@ void CONTACT::LineToSurfaceCoupling3d::lineclip_vertex_linearization(Mortar::Ver
   const int nmrows = surface_element().num_node();
 
   // iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // compute factor Z
   std::array<double, 3> crossZ = {0.0, 0.0, 0.0};
@@ -1600,7 +1600,7 @@ void CONTACT::LineToSurfaceCoupling3d::lineclip_vertex_linearization(Mortar::Ver
   // bring everything together -> lineclip vertex linearization
   for (int k = 0; k < 3; ++k)
   {
-    for (_CI p = slavelin0[k].begin(); p != slavelin0[k].end(); ++p)
+    for (CI p = slavelin0[k].begin(); p != slavelin0[k].end(); ++p)
     {
       currlin[k][p->first] += (p->second);
       currlin[k][p->first] += ZNfac * (p->second);
@@ -1610,7 +1610,7 @@ void CONTACT::LineToSurfaceCoupling3d::lineclip_vertex_linearization(Mortar::Ver
         currlin[dim][p->first] -= sedge[dim] * ZNNfac * crossdN1[k] * (p->second);
       }
     }
-    for (_CI p = slavelin1[k].begin(); p != slavelin1[k].end(); ++p)
+    for (CI p = slavelin1[k].begin(); p != slavelin1[k].end(); ++p)
     {
       currlin[k][p->first] -= ZNfac * (p->second);
       for (int dim = 0; dim < 3; ++dim)
@@ -1618,7 +1618,7 @@ void CONTACT::LineToSurfaceCoupling3d::lineclip_vertex_linearization(Mortar::Ver
         currlin[dim][p->first] += sedge[dim] * ZNNfac * crossdN1[k] * (p->second);
       }
     }
-    for (_CI p = masterlin0[k].begin(); p != masterlin0[k].end(); ++p)
+    for (CI p = masterlin0[k].begin(); p != masterlin0[k].end(); ++p)
     {
       for (int dim = 0; dim < 3; ++dim)
       {
@@ -1627,7 +1627,7 @@ void CONTACT::LineToSurfaceCoupling3d::lineclip_vertex_linearization(Mortar::Ver
         currlin[dim][p->first] -= sedge[dim] * ZNNfac * crossdN2[k] * (p->second);
       }
     }
-    for (_CI p = masterlin1[k].begin(); p != masterlin1[k].end(); ++p)
+    for (CI p = masterlin1[k].begin(); p != masterlin1[k].end(); ++p)
     {
       for (int dim = 0; dim < 3; ++dim)
       {
@@ -1635,7 +1635,7 @@ void CONTACT::LineToSurfaceCoupling3d::lineclip_vertex_linearization(Mortar::Ver
         currlin[dim][p->first] += sedge[dim] * ZNNfac * crossdN2[k] * (p->second);
       }
     }
-    for (_CI p = linauxn[k].begin(); p != linauxn[k].end(); ++p)
+    for (CI p = linauxn[k].begin(); p != linauxn[k].end(); ++p)
     {
       for (int dim = 0; dim < 3; ++dim)
       {
@@ -1715,7 +1715,7 @@ bool CONTACT::LineToSurfaceCoupling3d::auxiliary_plane()
  *----------------------------------------------------------------------*/
 bool CONTACT::LineToSurfaceCoupling3d::auxiliary_line()
 {
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int nnodes = line_element()->num_node();
   if (nnodes != 2) FOUR_C_THROW("Auxiliary line calculation only for line2 elements!");
@@ -1760,13 +1760,13 @@ bool CONTACT::LineToSurfaceCoupling3d::auxiliary_line()
     auxn()[1] += 0.5 * mycnode->mo_data().n()[1];
     auxn()[2] += 0.5 * mycnode->mo_data().n()[2];
 
-    for (_CI p = mycnode->data().get_deriv_n()[0].begin();
+    for (CI p = mycnode->data().get_deriv_n()[0].begin();
         p != mycnode->data().get_deriv_n()[0].end(); ++p)
       (dauxn[0])[p->first] += 0.5 * (p->second);
-    for (_CI p = mycnode->data().get_deriv_n()[1].begin();
+    for (CI p = mycnode->data().get_deriv_n()[1].begin();
         p != mycnode->data().get_deriv_n()[1].end(); ++p)
       (dauxn[1])[p->first] += 0.5 * (p->second);
-    for (_CI p = mycnode->data().get_deriv_n()[2].begin();
+    for (CI p = mycnode->data().get_deriv_n()[2].begin();
         p != mycnode->data().get_deriv_n()[2].end(); ++p)
       (dauxn[2])[p->first] += 0.5 * (p->second);
 
@@ -1830,92 +1830,92 @@ bool CONTACT::LineToSurfaceCoupling3d::auxiliary_line()
   std::vector<Core::Gen::Pairedvector<int, double>> tplaney(3, linsize_ * 10);
   std::vector<Core::Gen::Pairedvector<int, double>> tplanez(3, linsize_ * 10);
 
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     tplanex[0][p->first] -= tangent[0] * p->second;
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     tplanex[1][p->first] -= tangent[1] * p->second;
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     tplanex[2][p->first] -= tangent[2] * p->second;
 
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     tplaney[0][p->first] -= tangent[0] * p->second;
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     tplaney[1][p->first] -= tangent[1] * p->second;
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     tplaney[2][p->first] -= tangent[2] * p->second;
 
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     tplanez[0][p->first] -= tangent[0] * p->second;
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     tplanez[1][p->first] -= tangent[1] * p->second;
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     tplanez[2][p->first] -= tangent[2] * p->second;
 
   //------------
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     tplanex[0][p->first] -= tangent[0] * p->second;
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     tplanex[1][p->first] -= tangent[0] * p->second;
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     tplanex[2][p->first] -= tangent[0] * p->second;
 
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     tplaney[0][p->first] -= tangent[1] * p->second;
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     tplaney[1][p->first] -= tangent[1] * p->second;
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     tplaney[2][p->first] -= tangent[1] * p->second;
 
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     tplanez[0][p->first] -= tangent[2] * p->second;
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     tplanez[1][p->first] -= tangent[2] * p->second;
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     tplanez[2][p->first] -= tangent[2] * p->second;
 
 
 
-  for (_CI p = dauxn[0].begin(); p != dauxn[0].end(); ++p)
+  for (CI p = dauxn[0].begin(); p != dauxn[0].end(); ++p)
     get_deriv_auxn()[0][p->first] += tanplane(0, 0) * p->second;
-  for (_CI p = dauxn[1].begin(); p != dauxn[1].end(); ++p)
+  for (CI p = dauxn[1].begin(); p != dauxn[1].end(); ++p)
     get_deriv_auxn()[0][p->first] += tanplane(0, 1) * p->second;
-  for (_CI p = dauxn[2].begin(); p != dauxn[2].end(); ++p)
+  for (CI p = dauxn[2].begin(); p != dauxn[2].end(); ++p)
     get_deriv_auxn()[0][p->first] += tanplane(0, 2) * p->second;
 
-  for (_CI p = dauxn[0].begin(); p != dauxn[0].end(); ++p)
+  for (CI p = dauxn[0].begin(); p != dauxn[0].end(); ++p)
     get_deriv_auxn()[1][p->first] += tanplane(1, 0) * p->second;
-  for (_CI p = dauxn[1].begin(); p != dauxn[1].end(); ++p)
+  for (CI p = dauxn[1].begin(); p != dauxn[1].end(); ++p)
     get_deriv_auxn()[1][p->first] += tanplane(1, 1) * p->second;
-  for (_CI p = dauxn[2].begin(); p != dauxn[2].end(); ++p)
+  for (CI p = dauxn[2].begin(); p != dauxn[2].end(); ++p)
     get_deriv_auxn()[1][p->first] += tanplane(1, 2) * p->second;
 
-  for (_CI p = dauxn[0].begin(); p != dauxn[0].end(); ++p)
+  for (CI p = dauxn[0].begin(); p != dauxn[0].end(); ++p)
     get_deriv_auxn()[2][p->first] += tanplane(2, 0) * p->second;
-  for (_CI p = dauxn[1].begin(); p != dauxn[1].end(); ++p)
+  for (CI p = dauxn[1].begin(); p != dauxn[1].end(); ++p)
     get_deriv_auxn()[2][p->first] += tanplane(2, 1) * p->second;
-  for (_CI p = dauxn[2].begin(); p != dauxn[2].end(); ++p)
+  for (CI p = dauxn[2].begin(); p != dauxn[2].end(); ++p)
     get_deriv_auxn()[2][p->first] += tanplane(2, 2) * p->second;
 
   //-----------------------------
-  for (_CI p = tplanex[0].begin(); p != tplanex[0].end(); ++p)
+  for (CI p = tplanex[0].begin(); p != tplanex[0].end(); ++p)
     get_deriv_auxn()[0][p->first] += auxn()[0] * p->second;
-  for (_CI p = tplanex[1].begin(); p != tplanex[1].end(); ++p)
+  for (CI p = tplanex[1].begin(); p != tplanex[1].end(); ++p)
     get_deriv_auxn()[0][p->first] += auxn()[1] * p->second;
-  for (_CI p = tplanex[2].begin(); p != tplanex[2].end(); ++p)
+  for (CI p = tplanex[2].begin(); p != tplanex[2].end(); ++p)
     get_deriv_auxn()[0][p->first] += auxn()[2] * p->second;
 
-  for (_CI p = tplaney[0].begin(); p != tplaney[0].end(); ++p)
+  for (CI p = tplaney[0].begin(); p != tplaney[0].end(); ++p)
     get_deriv_auxn()[1][p->first] += auxn()[0] * p->second;
-  for (_CI p = tplaney[1].begin(); p != tplaney[1].end(); ++p)
+  for (CI p = tplaney[1].begin(); p != tplaney[1].end(); ++p)
     get_deriv_auxn()[1][p->first] += auxn()[1] * p->second;
-  for (_CI p = tplaney[2].begin(); p != tplaney[2].end(); ++p)
+  for (CI p = tplaney[2].begin(); p != tplaney[2].end(); ++p)
     get_deriv_auxn()[1][p->first] += auxn()[2] * p->second;
 
-  for (_CI p = tplanez[0].begin(); p != tplanez[0].end(); ++p)
+  for (CI p = tplanez[0].begin(); p != tplanez[0].end(); ++p)
     get_deriv_auxn()[2][p->first] += auxn()[0] * p->second;
-  for (_CI p = tplanez[1].begin(); p != tplanez[1].end(); ++p)
+  for (CI p = tplanez[1].begin(); p != tplanez[1].end(); ++p)
     get_deriv_auxn()[2][p->first] += auxn()[1] * p->second;
-  for (_CI p = tplanez[2].begin(); p != tplanez[2].end(); ++p)
+  for (CI p = tplanez[2].begin(); p != tplanez[2].end(); ++p)
     get_deriv_auxn()[2][p->first] += auxn()[2] * p->second;
 
 
@@ -2027,7 +2027,7 @@ void CONTACT::LineToSurfaceCoupling3d::slave_vertex_linearization(
     for (int dim = 0; dim < 3; ++dim) snodelin[in][dim][smrtrnodes[in]->dofs()[dim]] += 1.;
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int,
+  using CI = Core::Gen::Pairedvector<int,
       double>::const_iterator;  // linearization of element center Auxc()
   //  std::vector<Core::Gen::Pairedvector<int  ,double> >
   //  linauxc(3,10*surface_element().num_node());
@@ -2035,7 +2035,7 @@ void CONTACT::LineToSurfaceCoupling3d::slave_vertex_linearization(
 
   //  for (int i = 0; i < nrow; ++i)
   //      for (int dim=0; dim<3; ++dim)
-  //        for (_CI p=snodelin[i][dim].begin(); p!=snodelin[i][dim].end(); ++p)
+  //        for (CI p=snodelin[i][dim].begin(); p!=snodelin[i][dim].end(); ++p)
   //          linauxc[dim][p->first] = sval[i]*p->second;
 
   // linearization of element normal Auxn()
@@ -2067,19 +2067,19 @@ void CONTACT::LineToSurfaceCoupling3d::slave_vertex_linearization(
     if (!mrtrmnode) FOUR_C_THROW("cast to mortar node failed");
 
     // (1) slave node coordinates part
-    for (_CI p = mnodelin[i][0].begin(); p != mnodelin[i][0].end(); ++p)
+    for (CI p = mnodelin[i][0].begin(); p != mnodelin[i][0].end(); ++p)
     {
       currlin[i][0][p->first] += (1.0 - auxn()[0] * auxn()[0]) * p->second;
       currlin[i][1][p->first] -= (auxn()[0] * auxn()[1]) * p->second;
       currlin[i][2][p->first] -= (auxn()[0] * auxn()[2]) * p->second;
     }
-    for (_CI p = mnodelin[i][1].begin(); p != mnodelin[i][1].end(); ++p)
+    for (CI p = mnodelin[i][1].begin(); p != mnodelin[i][1].end(); ++p)
     {
       currlin[i][0][p->first] -= (auxn()[0] * auxn()[1]) * p->second;
       currlin[i][1][p->first] += (1.0 - auxn()[1] * auxn()[1]) * p->second;
       currlin[i][2][p->first] -= (auxn()[1] * auxn()[2]) * p->second;
     }
-    for (_CI p = mnodelin[i][2].begin(); p != mnodelin[i][2].end(); ++p)
+    for (CI p = mnodelin[i][2].begin(); p != mnodelin[i][2].end(); ++p)
     {
       currlin[i][0][p->first] -= (auxn()[2] * auxn()[0]) * p->second;
       currlin[i][1][p->first] -= (auxn()[2] * auxn()[1]) * p->second;
@@ -2087,13 +2087,13 @@ void CONTACT::LineToSurfaceCoupling3d::slave_vertex_linearization(
     }
 
     // (2) slave element center coordinates (Auxc()) part
-    for (_CI p = get_deriv_auxc()[0].begin(); p != get_deriv_auxc()[0].end(); ++p)
+    for (CI p = get_deriv_auxc()[0].begin(); p != get_deriv_auxc()[0].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[0] * auxn()[k] * (p->second);
 
-    for (_CI p = get_deriv_auxc()[1].begin(); p != get_deriv_auxc()[1].end(); ++p)
+    for (CI p = get_deriv_auxc()[1].begin(); p != get_deriv_auxc()[1].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[1] * auxn()[k] * (p->second);
 
-    for (_CI p = get_deriv_auxc()[2].begin(); p != get_deriv_auxc()[2].end(); ++p)
+    for (CI p = get_deriv_auxc()[2].begin(); p != get_deriv_auxc()[2].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[2] * auxn()[k] * (p->second);
 
     // (3) slave element normal (Auxn()) part
@@ -2101,21 +2101,21 @@ void CONTACT::LineToSurfaceCoupling3d::slave_vertex_linearization(
                    (mrtrmnode->xspatial()[1] - auxc()[1]) * auxn()[1] +
                    (mrtrmnode->xspatial()[2] - auxc()[2]) * auxn()[2];
 
-    for (_CI p = linauxn[0].begin(); p != linauxn[0].end(); ++p)
+    for (CI p = linauxn[0].begin(); p != linauxn[0].end(); ++p)
     {
       currlin[i][0][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
         currlin[i][k][p->first] -= (mrtrmnode->xspatial()[0] - auxc()[0]) * auxn()[k] * (p->second);
     }
 
-    for (_CI p = linauxn[1].begin(); p != linauxn[1].end(); ++p)
+    for (CI p = linauxn[1].begin(); p != linauxn[1].end(); ++p)
     {
       currlin[i][1][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
         currlin[i][k][p->first] -= (mrtrmnode->xspatial()[1] - auxc()[1]) * auxn()[k] * (p->second);
     }
 
-    for (_CI p = linauxn[2].begin(); p != linauxn[2].end(); ++p)
+    for (CI p = linauxn[2].begin(); p != linauxn[2].end(); ++p)
     {
       currlin[i][2][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
@@ -2223,14 +2223,14 @@ void CONTACT::LineToSurfaceCoupling3d::master_vertex_linearization(
     for (int dim = 0; dim < 3; ++dim) nodelin[in][dim][smrtrnodes[in]->dofs()[dim]] += 1.;
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int,
+  using CI = Core::Gen::Pairedvector<int,
       double>::const_iterator;  // linearization of element center Auxc()
   //  std  ::vector<Core::Gen::Pairedvector<int  ,double> > linauxc(3,surface_element().num_node());
   //  // assume 3 dofs per node
   //
   //  for (int i = 0; i < nrow; ++i)
   //      for (int dim=0; dim<3; ++dim)
-  //        for (_CI p=nodelin[i][dim].begin(); p!=nodelin[i][dim].end(); ++p)
+  //        for (CI p=nodelin[i][dim].begin(); p!=nodelin[i][dim].end(); ++p)
   //          linauxc[dim][p->first] = sval[i]*p->second;
 
   // linearization of element normal Auxn()
@@ -2244,19 +2244,19 @@ void CONTACT::LineToSurfaceCoupling3d::master_vertex_linearization(
     if (!mrtrsnode) FOUR_C_THROW("cast to mortar node failed");
 
     // (1) slave node coordinates part
-    for (_CI p = nodelin[i][0].begin(); p != nodelin[i][0].end(); ++p)
+    for (CI p = nodelin[i][0].begin(); p != nodelin[i][0].end(); ++p)
     {
       currlin[i][0][p->first] += (1.0 - auxn()[0] * auxn()[0]) * p->second;
       currlin[i][1][p->first] -= (auxn()[0] * auxn()[1]) * p->second;
       currlin[i][2][p->first] -= (auxn()[0] * auxn()[2]) * p->second;
     }
-    for (_CI p = nodelin[i][1].begin(); p != nodelin[i][1].end(); ++p)
+    for (CI p = nodelin[i][1].begin(); p != nodelin[i][1].end(); ++p)
     {
       currlin[i][0][p->first] -= (auxn()[0] * auxn()[1]) * p->second;
       currlin[i][1][p->first] += (1.0 - auxn()[1] * auxn()[1]) * p->second;
       currlin[i][2][p->first] -= (auxn()[1] * auxn()[2]) * p->second;
     }
-    for (_CI p = nodelin[i][2].begin(); p != nodelin[i][2].end(); ++p)
+    for (CI p = nodelin[i][2].begin(); p != nodelin[i][2].end(); ++p)
     {
       currlin[i][0][p->first] -= (auxn()[2] * auxn()[0]) * p->second;
       currlin[i][1][p->first] -= (auxn()[2] * auxn()[1]) * p->second;
@@ -2264,13 +2264,13 @@ void CONTACT::LineToSurfaceCoupling3d::master_vertex_linearization(
     }
 
     // (2) slave element center coordinates (Auxc()) part
-    for (_CI p = get_deriv_auxc()[0].begin(); p != get_deriv_auxc()[0].end(); ++p)
+    for (CI p = get_deriv_auxc()[0].begin(); p != get_deriv_auxc()[0].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[0] * auxn()[k] * (p->second);
 
-    for (_CI p = get_deriv_auxc()[1].begin(); p != get_deriv_auxc()[1].end(); ++p)
+    for (CI p = get_deriv_auxc()[1].begin(); p != get_deriv_auxc()[1].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[1] * auxn()[k] * (p->second);
 
-    for (_CI p = get_deriv_auxc()[2].begin(); p != get_deriv_auxc()[2].end(); ++p)
+    for (CI p = get_deriv_auxc()[2].begin(); p != get_deriv_auxc()[2].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[2] * auxn()[k] * (p->second);
 
     // (3) slave element normal (Auxn()) part
@@ -2278,21 +2278,21 @@ void CONTACT::LineToSurfaceCoupling3d::master_vertex_linearization(
                    (mrtrsnode->xspatial()[1] - auxc()[1]) * auxn()[1] +
                    (mrtrsnode->xspatial()[2] - auxc()[2]) * auxn()[2];
 
-    for (_CI p = linauxn[0].begin(); p != linauxn[0].end(); ++p)
+    for (CI p = linauxn[0].begin(); p != linauxn[0].end(); ++p)
     {
       currlin[i][0][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
         currlin[i][k][p->first] -= (mrtrsnode->xspatial()[0] - auxc()[0]) * auxn()[k] * (p->second);
     }
 
-    for (_CI p = linauxn[1].begin(); p != linauxn[1].end(); ++p)
+    for (CI p = linauxn[1].begin(); p != linauxn[1].end(); ++p)
     {
       currlin[i][1][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
         currlin[i][k][p->first] -= (mrtrsnode->xspatial()[1] - auxc()[1]) * auxn()[k] * (p->second);
     }
 
-    for (_CI p = linauxn[2].begin(); p != linauxn[2].end(); ++p)
+    for (CI p = linauxn[2].begin(); p != linauxn[2].end(); ++p)
     {
       currlin[i][2][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
@@ -2397,8 +2397,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
   line_master_element()->evaluate_shape(mxi, mval, mderiv, nnodes);
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
-  using CI = std::map<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   int linsize = 0;
   for (int i = 0; i < nrow; ++i)
@@ -2469,14 +2468,14 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     Core::Gen::Pairedvector<int, double>& dmap_nysl_i = cnode->data().get_deriv_n()[1];
     Core::Gen::Pairedvector<int, double>& dmap_nzsl_i = cnode->data().get_deriv_n()[2];
 
-    for (_CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
+    for (CI p = dmap_nxsl_i.begin(); p != dmap_nxsl_i.end(); ++p)
       dmap_nxsl_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
+    for (CI p = dmap_nysl_i.begin(); p != dmap_nysl_i.end(); ++p)
       dmap_nysl_gp[p->first] += sval[i] * (p->second);
-    for (_CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
+    for (CI p = dmap_nzsl_i.begin(); p != dmap_nzsl_i.end(); ++p)
       dmap_nzsl_gp[p->first] += sval[i] * (p->second);
 
-    for (_CI p = dsxi.begin(); p != dsxi.end(); ++p)
+    for (CI p = dsxi.begin(); p != dsxi.end(); ++p)
     {
       double valx = sderiv(i, 0) * cnode->mo_data().n()[0];
       dmap_nxsl_gp[p->first] += valx * (p->second);
@@ -2497,7 +2496,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
   const double sysz = gpn[1] * gpn[2] * ll;
   const double szsz = gpn[2] * gpn[2] * ll;
 
-  for (_CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
+  for (CI p = dmap_nxsl_gp.begin(); p != dmap_nxsl_gp.end(); ++p)
   {
     dnmap_unit[0][p->first] += linv * (p->second);
     dnmap_unit[0][p->first] -= lllinv * sxsx * (p->second);
@@ -2505,7 +2504,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     dnmap_unit[2][p->first] -= lllinv * sxsz * (p->second);
   }
 
-  for (_CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
+  for (CI p = dmap_nysl_gp.begin(); p != dmap_nysl_gp.end(); ++p)
   {
     dnmap_unit[1][p->first] += linv * (p->second);
     dnmap_unit[1][p->first] -= lllinv * sysy * (p->second);
@@ -2513,7 +2512,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     dnmap_unit[2][p->first] -= lllinv * sysz * (p->second);
   }
 
-  for (_CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
+  for (CI p = dmap_nzsl_gp.begin(); p != dmap_nzsl_gp.end(); ++p)
   {
     dnmap_unit[2][p->first] += linv * (p->second);
     dnmap_unit[2][p->first] -= lllinv * szsz * (p->second);
@@ -2522,13 +2521,13 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
   }
 
   // add everything to dgapgp
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     dgapgp[p->first] += (mgpx[0] - sgpx[0]) * (p->second);
 
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     dgapgp[p->first] += (mgpx[1] - sgpx[1]) * (p->second);
 
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     dgapgp[p->first] += (mgpx[2] - sgpx[2]) * (p->second);
 
   // lin slave nodes
@@ -2538,7 +2537,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     for (int k = 0; k < 3; ++k) dgapgp[cnode->dofs()[k]] -= sval[z] * gpn[k];
   }
 
-  for (_CI p = dsxi.begin(); p != dsxi.end(); ++p)
+  for (CI p = dsxi.begin(); p != dsxi.end(); ++p)
   {
     double& dg = dgapgp[p->first];
     const double& ps = p->second;
@@ -2557,7 +2556,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     for (int k = 0; k < 3; ++k) dgapgp[cnode->dofs()[k]] += mval[z] * gpn[k];
   }
 
-  for (_CI p = dmxi.begin(); p != dmxi.end(); ++p)
+  for (CI p = dmxi.begin(); p != dmxi.end(); ++p)
   {
     double& dg = dgapgp[p->first];
     const double& ps = p->second;
@@ -2594,18 +2593,18 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
 
   std::vector<std::map<int, double>>& dgmap = cnode->data().get_deriv_gltl();
 
-  for (_CI p = dgapgp.begin(); p != dgapgp.end(); ++p)
+  for (CI p = dgapgp.begin(); p != dgapgp.end(); ++p)
   {
     dgmap[0][p->first] += gpn[0] * (p->second);
     dgmap[1][p->first] += gpn[1] * (p->second);
     dgmap[2][p->first] += gpn[2] * (p->second);
   }
 
-  for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+  for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
     dgmap[0][p->first] += gap * (p->second);
-  for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+  for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
     dgmap[1][p->first] += gap * (p->second);
-  for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+  for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
     dgmap[2][p->first] += gap * (p->second);
 
   //*****************************************
@@ -2646,7 +2645,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
 
     // (3) Lin(NMaster) - master GP coordinates
     fac = sderiv(k, 0);
-    for (_CI p = dsxi.begin(); p != dsxi.end(); ++p)
+    for (CI p = dsxi.begin(); p != dsxi.end(); ++p)
     {
       ddmap_jk[p->first] += fac * (p->second);
     }
@@ -2667,7 +2666,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
 
     // (3) Lin(NMaster) - master GP coordinates
     fac = mderiv(k, 0);
-    for (_CI p = dmxi.begin(); p != dmxi.end(); ++p)
+    for (CI p = dmxi.begin(); p != dmxi.end(); ++p)
     {
       dmmap_jk[p->first] += fac * (p->second);
     }
@@ -2726,7 +2725,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
       // check if we have dold
       if (dynamic_cast<FriNode*>(contactnode)->fri_data().get_d_old_ltl().size() > 0)
       {
-        for (_CI p = dynamic_cast<FriNode*>(contactnode)->fri_data().get_d_old_ltl().begin();
+        for (CI p = dynamic_cast<FriNode*>(contactnode)->fri_data().get_d_old_ltl().begin();
             p != dynamic_cast<FriNode*>(contactnode)->fri_data().get_d_old_ltl().end(); ++p)
         {
           // node id
@@ -2748,7 +2747,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
         if (dynamic_cast<FriNode*>(contactnode)->fri_data().get_m_old_ltl().size() < 1)
           FOUR_C_THROW("something went wrong!");
 
-        for (CI p = dynamic_cast<FriNode*>(contactnode)->fri_data().get_m_old_ltl().begin();
+        for (auto p = dynamic_cast<FriNode*>(contactnode)->fri_data().get_m_old_ltl().begin();
             p != dynamic_cast<FriNode*>(contactnode)->fri_data().get_m_old_ltl().end(); ++p)
         {
           // node id
@@ -2806,7 +2805,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     for (int k = 0; k < nrow; ++k)
     {
       Node* node = dynamic_cast<Node*>(mynodes[k]);
-      for (_CI p = dsxi.begin(); p != dsxi.end(); ++p)
+      for (CI p = dsxi.begin(); p != dsxi.end(); ++p)
       {
         for (int z = 0; z < 3; ++z)
           djmap[z][p->first] -= sderiv(k, 0) * (p->second) * node->xspatial()[z];
@@ -2824,7 +2823,7 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     for (int k = 0; k < ncol; ++k)
     {
       Node* node = dynamic_cast<Node*>(mnodes[k]);
-      for (_CI p = dmxi.begin(); p != dmxi.end(); ++p)
+      for (CI p = dmxi.begin(); p != dmxi.end(); ++p)
       {
         for (int z = 0; z < 3; ++z)
           djmap[z][p->first] += mderiv(k, 0) * (p->second) * node->xspatial()[z];
@@ -2832,13 +2831,13 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     }  // loop over slave nodes
 
     // sgpx and mgpx old
-    for (_CI p = mgpxoldlinx.begin(); p != mgpxoldlinx.end(); ++p) djmap[0][p->first] -= p->second;
-    for (_CI p = mgpxoldliny.begin(); p != mgpxoldliny.end(); ++p) djmap[1][p->first] -= p->second;
-    for (_CI p = mgpxoldlinz.begin(); p != mgpxoldlinz.end(); ++p) djmap[2][p->first] -= p->second;
+    for (CI p = mgpxoldlinx.begin(); p != mgpxoldlinx.end(); ++p) djmap[0][p->first] -= p->second;
+    for (CI p = mgpxoldliny.begin(); p != mgpxoldliny.end(); ++p) djmap[1][p->first] -= p->second;
+    for (CI p = mgpxoldlinz.begin(); p != mgpxoldlinz.end(); ++p) djmap[2][p->first] -= p->second;
 
-    for (_CI p = sgpxoldlinx.begin(); p != sgpxoldlinx.end(); ++p) djmap[0][p->first] += p->second;
-    for (_CI p = sgpxoldliny.begin(); p != sgpxoldliny.end(); ++p) djmap[1][p->first] += p->second;
-    for (_CI p = sgpxoldlinz.begin(); p != sgpxoldlinz.end(); ++p) djmap[2][p->first] += p->second;
+    for (CI p = sgpxoldlinx.begin(); p != sgpxoldlinx.end(); ++p) djmap[0][p->first] += p->second;
+    for (CI p = sgpxoldliny.begin(); p != sgpxoldliny.end(); ++p) djmap[1][p->first] += p->second;
+    for (CI p = sgpxoldlinz.begin(); p != sgpxoldlinz.end(); ++p) djmap[2][p->first] += p->second;
 
 
 
@@ -2846,92 +2845,92 @@ void CONTACT::LineToLineCouplingPoint3d::evaluate_terms(double* sxi, double* mxi
     std::vector<Core::Gen::Pairedvector<int, double>> tplaney(3, 100);
     std::vector<Core::Gen::Pairedvector<int, double>> tplanez(3, 100);
 
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       tplanex[0][p->first] -= gpn[0] * p->second;
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       tplanex[1][p->first] -= gpn[1] * p->second;
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       tplanex[2][p->first] -= gpn[2] * p->second;
 
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       tplaney[0][p->first] -= gpn[0] * p->second;
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       tplaney[1][p->first] -= gpn[1] * p->second;
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       tplaney[2][p->first] -= gpn[2] * p->second;
 
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       tplanez[0][p->first] -= gpn[0] * p->second;
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       tplanez[1][p->first] -= gpn[1] * p->second;
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       tplanez[2][p->first] -= gpn[2] * p->second;
 
     //------------
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       tplanex[0][p->first] -= gpn[0] * p->second;
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       tplanex[1][p->first] -= gpn[0] * p->second;
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       tplanex[2][p->first] -= gpn[0] * p->second;
 
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       tplaney[0][p->first] -= gpn[1] * p->second;
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       tplaney[1][p->first] -= gpn[1] * p->second;
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       tplaney[2][p->first] -= gpn[1] * p->second;
 
-    for (_CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
+    for (CI p = dnmap_unit[0].begin(); p != dnmap_unit[0].end(); ++p)
       tplanez[0][p->first] -= gpn[2] * p->second;
-    for (_CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
+    for (CI p = dnmap_unit[1].begin(); p != dnmap_unit[1].end(); ++p)
       tplanez[1][p->first] -= gpn[2] * p->second;
-    for (_CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
+    for (CI p = dnmap_unit[2].begin(); p != dnmap_unit[2].end(); ++p)
       tplanez[2][p->first] -= gpn[2] * p->second;
 
     //-----------------------------
 
-    for (_CI p = djmap[0].begin(); p != djmap[0].end(); ++p)
+    for (CI p = djmap[0].begin(); p != djmap[0].end(); ++p)
       djmapfinal[0][p->first] += tanplane(0, 0) * p->second;
-    for (_CI p = djmap[1].begin(); p != djmap[1].end(); ++p)
+    for (CI p = djmap[1].begin(); p != djmap[1].end(); ++p)
       djmapfinal[0][p->first] += tanplane(0, 1) * p->second;
-    for (_CI p = djmap[2].begin(); p != djmap[2].end(); ++p)
+    for (CI p = djmap[2].begin(); p != djmap[2].end(); ++p)
       djmapfinal[0][p->first] += tanplane(0, 2) * p->second;
 
-    for (_CI p = djmap[0].begin(); p != djmap[0].end(); ++p)
+    for (CI p = djmap[0].begin(); p != djmap[0].end(); ++p)
       djmapfinal[1][p->first] += tanplane(1, 0) * p->second;
-    for (_CI p = djmap[1].begin(); p != djmap[1].end(); ++p)
+    for (CI p = djmap[1].begin(); p != djmap[1].end(); ++p)
       djmapfinal[1][p->first] += tanplane(1, 1) * p->second;
-    for (_CI p = djmap[2].begin(); p != djmap[2].end(); ++p)
+    for (CI p = djmap[2].begin(); p != djmap[2].end(); ++p)
       djmapfinal[1][p->first] += tanplane(1, 2) * p->second;
 
-    for (_CI p = djmap[0].begin(); p != djmap[0].end(); ++p)
+    for (CI p = djmap[0].begin(); p != djmap[0].end(); ++p)
       djmapfinal[2][p->first] += tanplane(2, 0) * p->second;
-    for (_CI p = djmap[1].begin(); p != djmap[1].end(); ++p)
+    for (CI p = djmap[1].begin(); p != djmap[1].end(); ++p)
       djmapfinal[2][p->first] += tanplane(2, 1) * p->second;
-    for (_CI p = djmap[2].begin(); p != djmap[2].end(); ++p)
+    for (CI p = djmap[2].begin(); p != djmap[2].end(); ++p)
       djmapfinal[2][p->first] += tanplane(2, 2) * p->second;
 
     //-----------------------------
-    for (_CI p = tplanex[0].begin(); p != tplanex[0].end(); ++p)
+    for (CI p = tplanex[0].begin(); p != tplanex[0].end(); ++p)
       djmapfinal[0][p->first] += jump[0] * p->second;
-    for (_CI p = tplanex[1].begin(); p != tplanex[1].end(); ++p)
+    for (CI p = tplanex[1].begin(); p != tplanex[1].end(); ++p)
       djmapfinal[0][p->first] += jump[1] * p->second;
-    for (_CI p = tplanex[2].begin(); p != tplanex[2].end(); ++p)
+    for (CI p = tplanex[2].begin(); p != tplanex[2].end(); ++p)
       djmapfinal[0][p->first] += jump[2] * p->second;
 
-    for (_CI p = tplaney[0].begin(); p != tplaney[0].end(); ++p)
+    for (CI p = tplaney[0].begin(); p != tplaney[0].end(); ++p)
       djmapfinal[1][p->first] += jump[0] * p->second;
-    for (_CI p = tplaney[1].begin(); p != tplaney[1].end(); ++p)
+    for (CI p = tplaney[1].begin(); p != tplaney[1].end(); ++p)
       djmapfinal[1][p->first] += jump[1] * p->second;
-    for (_CI p = tplaney[2].begin(); p != tplaney[2].end(); ++p)
+    for (CI p = tplaney[2].begin(); p != tplaney[2].end(); ++p)
       djmapfinal[1][p->first] += jump[2] * p->second;
 
-    for (_CI p = tplanez[0].begin(); p != tplanez[0].end(); ++p)
+    for (CI p = tplanez[0].begin(); p != tplanez[0].end(); ++p)
       djmapfinal[2][p->first] += jump[0] * p->second;
-    for (_CI p = tplanez[1].begin(); p != tplanez[1].end(); ++p)
+    for (CI p = tplanez[1].begin(); p != tplanez[1].end(); ++p)
       djmapfinal[2][p->first] += jump[1] * p->second;
-    for (_CI p = tplanez[2].begin(); p != tplanez[2].end(); ++p)
+    for (CI p = tplanez[2].begin(); p != tplanez[2].end(); ++p)
       djmapfinal[2][p->first] += jump[2] * p->second;
 
   }  // end friction
@@ -2952,7 +2951,7 @@ void CONTACT::LineToLineCouplingPoint3d::line_intersection(double* sxi, double* 
   const int nnodes = 2;
 
   // prepare linearizations
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // calculate slave vector
   Node* ns1 = dynamic_cast<Node*>(line_slave_element()->nodes()[0]);
@@ -3020,13 +3019,13 @@ void CONTACT::LineToLineCouplingPoint3d::line_intersection(double* sxi, double* 
     ts2[1] *= -1.0;
     ts2[2] *= -1.0;
 
-    for (_CI p = ns2->data().get_deriv_tangent()[0].begin();
+    for (CI p = ns2->data().get_deriv_tangent()[0].begin();
         p != ns2->data().get_deriv_tangent()[0].end(); ++p)
       ns2->data().get_deriv_tangent()[0][p->first] *= -1.0;
-    for (_CI p = ns2->data().get_deriv_tangent()[1].begin();
+    for (CI p = ns2->data().get_deriv_tangent()[1].begin();
         p != ns2->data().get_deriv_tangent()[1].end(); ++p)
       ns2->data().get_deriv_tangent()[1][p->first] *= -1.0;
-    for (_CI p = ns2->data().get_deriv_tangent()[2].begin();
+    for (CI p = ns2->data().get_deriv_tangent()[2].begin();
         p != ns2->data().get_deriv_tangent()[2].end(); ++p)
       ns2->data().get_deriv_tangent()[2][p->first] *= -1.0;
   }
@@ -3051,13 +3050,13 @@ void CONTACT::LineToLineCouplingPoint3d::line_intersection(double* sxi, double* 
     tm2[1] *= -1.0;
     tm2[2] *= -1.0;
 
-    for (_CI p = nm2->data().get_deriv_tangent()[0].begin();
+    for (CI p = nm2->data().get_deriv_tangent()[0].begin();
         p != nm2->data().get_deriv_tangent()[0].end(); ++p)
       nm2->data().get_deriv_tangent()[0][p->first] *= -1.0;
-    for (_CI p = nm2->data().get_deriv_tangent()[1].begin();
+    for (CI p = nm2->data().get_deriv_tangent()[1].begin();
         p != nm2->data().get_deriv_tangent()[1].end(); ++p)
       nm2->data().get_deriv_tangent()[1][p->first] *= -1.0;
-    for (_CI p = nm2->data().get_deriv_tangent()[2].begin();
+    for (CI p = nm2->data().get_deriv_tangent()[2].begin();
         p != nm2->data().get_deriv_tangent()[2].end(); ++p)
       nm2->data().get_deriv_tangent()[2][p->first] *= -1.0;
   }
@@ -3212,11 +3211,11 @@ void CONTACT::LineToLineCouplingPoint3d::line_intersection(double* sxi, double* 
   // why!?!?!? tangent vector slave
   for (int i = 0; i < 3; ++i)
   {
-    for (_CI p = ns1->data().get_deriv_tangent()[i].begin();
+    for (CI p = ns1->data().get_deriv_tangent()[i].begin();
         p != ns1->data().get_deriv_tangent()[i].end(); ++p)
       (vsLin[i])[p->first] += sval[0] * p->second;
 
-    for (_CI p = ns2->data().get_deriv_tangent()[i].begin();
+    for (CI p = ns2->data().get_deriv_tangent()[i].begin();
         p != ns2->data().get_deriv_tangent()[i].end(); ++p)
       (vsLin[i])[p->first] += sval[1] * p->second;
   }
@@ -3224,11 +3223,11 @@ void CONTACT::LineToLineCouplingPoint3d::line_intersection(double* sxi, double* 
   // tangent vector master
   for (int i = 0; i < 3; ++i)
   {
-    for (_CI p = nm1->data().get_deriv_tangent()[i].begin();
+    for (CI p = nm1->data().get_deriv_tangent()[i].begin();
         p != nm1->data().get_deriv_tangent()[i].end(); ++p)
       (vmLin[i])[p->first] += mval[0] * p->second;
 
-    for (_CI p = nm2->data().get_deriv_tangent()[i].begin();
+    for (CI p = nm2->data().get_deriv_tangent()[i].begin();
         p != nm2->data().get_deriv_tangent()[i].end(); ++p)
       (vmLin[i])[p->first] += mval[1] * p->second;
   }
@@ -3250,29 +3249,29 @@ void CONTACT::LineToLineCouplingPoint3d::line_intersection(double* sxi, double* 
   Core::Gen::Pairedvector<int, double> f1(1000);
 
   // lin xdiff * tangent + xdiff * lin tangent
-  for (_CI p = xLin[0].begin(); p != xLin[0].end(); ++p) f0[p->first] += (p->second) * vs[0];
-  for (_CI p = xLin[1].begin(); p != xLin[1].end(); ++p) f0[p->first] += (p->second) * vs[1];
-  for (_CI p = xLin[2].begin(); p != xLin[2].end(); ++p) f0[p->first] += (p->second) * vs[2];
+  for (CI p = xLin[0].begin(); p != xLin[0].end(); ++p) f0[p->first] += (p->second) * vs[0];
+  for (CI p = xLin[1].begin(); p != xLin[1].end(); ++p) f0[p->first] += (p->second) * vs[1];
+  for (CI p = xLin[2].begin(); p != xLin[2].end(); ++p) f0[p->first] += (p->second) * vs[2];
 
-  for (_CI p = vsLin[0].begin(); p != vsLin[0].end(); ++p) f0[p->first] += (p->second) * xdiff[0];
-  for (_CI p = vsLin[1].begin(); p != vsLin[1].end(); ++p) f0[p->first] += (p->second) * xdiff[1];
-  for (_CI p = vsLin[2].begin(); p != vsLin[2].end(); ++p) f0[p->first] += (p->second) * xdiff[2];
+  for (CI p = vsLin[0].begin(); p != vsLin[0].end(); ++p) f0[p->first] += (p->second) * xdiff[0];
+  for (CI p = vsLin[1].begin(); p != vsLin[1].end(); ++p) f0[p->first] += (p->second) * xdiff[1];
+  for (CI p = vsLin[2].begin(); p != vsLin[2].end(); ++p) f0[p->first] += (p->second) * xdiff[2];
 
   // lin xdiff * tangent + xdiff * lin tangent
-  for (_CI p = xLin[0].begin(); p != xLin[0].end(); ++p) f1[p->first] += (p->second) * vm[0];
-  for (_CI p = xLin[1].begin(); p != xLin[1].end(); ++p) f1[p->first] += (p->second) * vm[1];
-  for (_CI p = xLin[2].begin(); p != xLin[2].end(); ++p) f1[p->first] += (p->second) * vm[2];
+  for (CI p = xLin[0].begin(); p != xLin[0].end(); ++p) f1[p->first] += (p->second) * vm[0];
+  for (CI p = xLin[1].begin(); p != xLin[1].end(); ++p) f1[p->first] += (p->second) * vm[1];
+  for (CI p = xLin[2].begin(); p != xLin[2].end(); ++p) f1[p->first] += (p->second) * vm[2];
 
-  for (_CI p = vmLin[0].begin(); p != vmLin[0].end(); ++p) f1[p->first] += (p->second) * xdiff[0];
-  for (_CI p = vmLin[1].begin(); p != vmLin[1].end(); ++p) f1[p->first] += (p->second) * xdiff[1];
-  for (_CI p = vmLin[2].begin(); p != vmLin[2].end(); ++p) f1[p->first] += (p->second) * xdiff[2];
+  for (CI p = vmLin[0].begin(); p != vmLin[0].end(); ++p) f1[p->first] += (p->second) * xdiff[0];
+  for (CI p = vmLin[1].begin(); p != vmLin[1].end(); ++p) f1[p->first] += (p->second) * xdiff[1];
+  for (CI p = vmLin[2].begin(); p != vmLin[2].end(); ++p) f1[p->first] += (p->second) * xdiff[2];
 
   // end
-  for (_CI p = f0.begin(); p != f0.end(); ++p) dsxi[p->first] -= (p->second) * df(0, 0);
-  for (_CI p = f1.begin(); p != f1.end(); ++p) dsxi[p->first] -= (p->second) * df(0, 1);
+  for (CI p = f0.begin(); p != f0.end(); ++p) dsxi[p->first] -= (p->second) * df(0, 0);
+  for (CI p = f1.begin(); p != f1.end(); ++p) dsxi[p->first] -= (p->second) * df(0, 1);
 
-  for (_CI p = f0.begin(); p != f0.end(); ++p) dmxi[p->first] -= (p->second) * df(1, 0);
-  for (_CI p = f1.begin(); p != f1.end(); ++p) dmxi[p->first] -= (p->second) * df(1, 1);
+  for (CI p = f0.begin(); p != f0.end(); ++p) dmxi[p->first] -= (p->second) * df(1, 0);
+  for (CI p = f1.begin(); p != f1.end(); ++p) dmxi[p->first] -= (p->second) * df(1, 1);
 
   sxi[0] = xiS;
   mxi[0] = xiM;

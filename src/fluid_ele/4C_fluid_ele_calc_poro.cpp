@@ -3753,30 +3753,27 @@ void Discret::Elements::FluidEleCalcPoro<distype>::lin_mesh_motion_3d_pres_od(
 
       for (int vi = 0; vi < nen_; ++vi)
       {
-        const double N_XYZ__vi_0 = N_XYZ_(0, vi);
-        const double N_XYZ__vi_1 = N_XYZ_(1, vi);
-        const double N_XYZ__vi_2 = N_XYZ_(2, vi);
+        const double N_XYZ_vi_0 = N_XYZ_(0, vi);
+        const double N_XYZ_vi_1 = N_XYZ_(1, vi);
+        const double N_XYZ_vi_2 = N_XYZ_(2, vi);
 
         for (int ui = 0; ui < nen_; ++ui)
         {
           const double v00 =
-              +N_XYZ__vi_1 *
-                  (refgradp_0 * derxjm_(0, 0, 1, ui) + refgradp_1 * derxjm_(0, 1, 1, ui) +
-                      refgradp_2 * derxjm_(0, 2, 1, ui)) +
-              N_XYZ__vi_2 * (refgradp_0 * derxjm_(0, 0, 2, ui) + refgradp_1 * derxjm_(0, 1, 2, ui) +
-                                refgradp_2 * derxjm_(0, 2, 2, ui));
+              +N_XYZ_vi_1 * (refgradp_0 * derxjm_(0, 0, 1, ui) + refgradp_1 * derxjm_(0, 1, 1, ui) +
+                                refgradp_2 * derxjm_(0, 2, 1, ui)) +
+              N_XYZ_vi_2 * (refgradp_0 * derxjm_(0, 0, 2, ui) + refgradp_1 * derxjm_(0, 1, 2, ui) +
+                               refgradp_2 * derxjm_(0, 2, 2, ui));
           const double v01 =
-              +N_XYZ__vi_0 *
-                  (refgradp_0 * derxjm_(1, 0, 0, ui) + refgradp_1 * derxjm_(1, 1, 0, ui) +
-                      refgradp_2 * derxjm_(1, 2, 0, ui)) +
-              N_XYZ__vi_2 * (refgradp_0 * derxjm_(1, 0, 2, ui) + refgradp_1 * derxjm_(1, 1, 2, ui) +
-                                refgradp_2 * derxjm_(1, 2, 2, ui));
+              +N_XYZ_vi_0 * (refgradp_0 * derxjm_(1, 0, 0, ui) + refgradp_1 * derxjm_(1, 1, 0, ui) +
+                                refgradp_2 * derxjm_(1, 2, 0, ui)) +
+              N_XYZ_vi_2 * (refgradp_0 * derxjm_(1, 0, 2, ui) + refgradp_1 * derxjm_(1, 1, 2, ui) +
+                               refgradp_2 * derxjm_(1, 2, 2, ui));
           const double v02 =
-              +N_XYZ__vi_0 *
-                  (refgradp_0 * derxjm_(2, 0, 0, ui) + refgradp_1 * derxjm_(2, 1, 0, ui) +
-                      refgradp_2 * derxjm_(2, 2, 0, ui)) +
-              N_XYZ__vi_1 * (refgradp_0 * derxjm_(2, 0, 1, ui) + refgradp_1 * derxjm_(2, 1, 1, ui) +
-                                refgradp_2 * derxjm_(2, 2, 1, ui));
+              +N_XYZ_vi_0 * (refgradp_0 * derxjm_(2, 0, 0, ui) + refgradp_1 * derxjm_(2, 1, 0, ui) +
+                                refgradp_2 * derxjm_(2, 2, 0, ui)) +
+              N_XYZ_vi_1 * (refgradp_0 * derxjm_(2, 0, 1, ui) + refgradp_1 * derxjm_(2, 1, 1, ui) +
+                               refgradp_2 * derxjm_(2, 2, 1, ui));
 
           ecoupl_p(vi, ui * 3 + 0) += v * v00;
           ecoupl_p(vi, ui * 3 + 1) += v * v01;

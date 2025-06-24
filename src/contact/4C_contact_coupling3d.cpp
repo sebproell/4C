@@ -384,14 +384,14 @@ bool CONTACT::Coupling3d::slave_vertex_linearization(
     sIntEle->node_linearization(nodelin);
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int,
+  using CI = Core::Gen::Pairedvector<int,
       double>::const_iterator;  // linearization of element center Auxc()
   std ::vector<Core::Gen::Pairedvector<int, double>> linauxc(
       3, slave_element().num_node());  // assume 3 dofs per node
 
   for (int i = 0; i < nrow; ++i)
     for (int dim = 0; dim < 3; ++dim)
-      for (_CI p = nodelin[i][dim].begin(); p != nodelin[i][dim].end(); ++p)
+      for (CI p = nodelin[i][dim].begin(); p != nodelin[i][dim].end(); ++p)
         linauxc[dim][p->first] = sval[i] * p->second;
 
   // linearization of element normal Auxn()
@@ -405,19 +405,19 @@ bool CONTACT::Coupling3d::slave_vertex_linearization(
     if (!mrtrsnode) FOUR_C_THROW("cast to mortar node failed");
 
     // (1) slave node coordinates part
-    for (_CI p = nodelin[i][0].begin(); p != nodelin[i][0].end(); ++p)
+    for (CI p = nodelin[i][0].begin(); p != nodelin[i][0].end(); ++p)
     {
       currlin[i][0][p->first] += (1.0 - auxn()[0] * auxn()[0]) * p->second;
       currlin[i][1][p->first] -= (auxn()[0] * auxn()[1]) * p->second;
       currlin[i][2][p->first] -= (auxn()[0] * auxn()[2]) * p->second;
     }
-    for (_CI p = nodelin[i][1].begin(); p != nodelin[i][1].end(); ++p)
+    for (CI p = nodelin[i][1].begin(); p != nodelin[i][1].end(); ++p)
     {
       currlin[i][0][p->first] -= (auxn()[0] * auxn()[1]) * p->second;
       currlin[i][1][p->first] += (1.0 - auxn()[1] * auxn()[1]) * p->second;
       currlin[i][2][p->first] -= (auxn()[1] * auxn()[2]) * p->second;
     }
-    for (_CI p = nodelin[i][2].begin(); p != nodelin[i][2].end(); ++p)
+    for (CI p = nodelin[i][2].begin(); p != nodelin[i][2].end(); ++p)
     {
       currlin[i][0][p->first] -= (auxn()[2] * auxn()[0]) * p->second;
       currlin[i][1][p->first] -= (auxn()[2] * auxn()[1]) * p->second;
@@ -425,13 +425,13 @@ bool CONTACT::Coupling3d::slave_vertex_linearization(
     }
 
     // (2) slave element center coordinates (Auxc()) part
-    for (_CI p = linauxc[0].begin(); p != linauxc[0].end(); ++p)
+    for (CI p = linauxc[0].begin(); p != linauxc[0].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[0] * auxn()[k] * (p->second);
 
-    for (_CI p = linauxc[1].begin(); p != linauxc[1].end(); ++p)
+    for (CI p = linauxc[1].begin(); p != linauxc[1].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[1] * auxn()[k] * (p->second);
 
-    for (_CI p = linauxc[2].begin(); p != linauxc[2].end(); ++p)
+    for (CI p = linauxc[2].begin(); p != linauxc[2].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[2] * auxn()[k] * (p->second);
 
     // (3) slave element normal (Auxn()) part
@@ -439,21 +439,21 @@ bool CONTACT::Coupling3d::slave_vertex_linearization(
                    (mrtrsnode->xspatial()[1] - auxc()[1]) * auxn()[1] +
                    (mrtrsnode->xspatial()[2] - auxc()[2]) * auxn()[2];
 
-    for (_CI p = linauxn[0].begin(); p != linauxn[0].end(); ++p)
+    for (CI p = linauxn[0].begin(); p != linauxn[0].end(); ++p)
     {
       currlin[i][0][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
         currlin[i][k][p->first] -= (mrtrsnode->xspatial()[0] - auxc()[0]) * auxn()[k] * (p->second);
     }
 
-    for (_CI p = linauxn[1].begin(); p != linauxn[1].end(); ++p)
+    for (CI p = linauxn[1].begin(); p != linauxn[1].end(); ++p)
     {
       currlin[i][1][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
         currlin[i][k][p->first] -= (mrtrsnode->xspatial()[1] - auxc()[1]) * auxn()[k] * (p->second);
     }
 
-    for (_CI p = linauxn[2].begin(); p != linauxn[2].end(); ++p)
+    for (CI p = linauxn[2].begin(); p != linauxn[2].end(); ++p)
     {
       currlin[i][2][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
@@ -523,14 +523,14 @@ bool CONTACT::Coupling3d::master_vertex_linearization(
     sIntEle->node_linearization(snodelin);
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int,
+  using CI = Core::Gen::Pairedvector<int,
       double>::const_iterator;  // linearization of element center Auxc()
   std ::vector<Core::Gen::Pairedvector<int, double>> linauxc(
       3, slave_element().num_node());  // assume 3 dofs per node
 
   for (int i = 0; i < nrow; ++i)
     for (int dim = 0; dim < 3; ++dim)
-      for (_CI p = snodelin[i][dim].begin(); p != snodelin[i][dim].end(); ++p)
+      for (CI p = snodelin[i][dim].begin(); p != snodelin[i][dim].end(); ++p)
         linauxc[dim][p->first] = sval[i] * p->second;
 
   // linearization of element normal Auxn()
@@ -566,19 +566,19 @@ bool CONTACT::Coupling3d::master_vertex_linearization(
     if (!mrtrmnode) FOUR_C_THROW("cast to mortar node failed");
 
     // (1) slave node coordinates part
-    for (_CI p = mnodelin[i][0].begin(); p != mnodelin[i][0].end(); ++p)
+    for (CI p = mnodelin[i][0].begin(); p != mnodelin[i][0].end(); ++p)
     {
       currlin[i][0][p->first] += (1.0 - auxn()[0] * auxn()[0]) * p->second;
       currlin[i][1][p->first] -= (auxn()[0] * auxn()[1]) * p->second;
       currlin[i][2][p->first] -= (auxn()[0] * auxn()[2]) * p->second;
     }
-    for (_CI p = mnodelin[i][1].begin(); p != mnodelin[i][1].end(); ++p)
+    for (CI p = mnodelin[i][1].begin(); p != mnodelin[i][1].end(); ++p)
     {
       currlin[i][0][p->first] -= (auxn()[0] * auxn()[1]) * p->second;
       currlin[i][1][p->first] += (1.0 - auxn()[1] * auxn()[1]) * p->second;
       currlin[i][2][p->first] -= (auxn()[1] * auxn()[2]) * p->second;
     }
-    for (_CI p = mnodelin[i][2].begin(); p != mnodelin[i][2].end(); ++p)
+    for (CI p = mnodelin[i][2].begin(); p != mnodelin[i][2].end(); ++p)
     {
       currlin[i][0][p->first] -= (auxn()[2] * auxn()[0]) * p->second;
       currlin[i][1][p->first] -= (auxn()[2] * auxn()[1]) * p->second;
@@ -586,13 +586,13 @@ bool CONTACT::Coupling3d::master_vertex_linearization(
     }
 
     // (2) slave element center coordinates (Auxc()) part
-    for (_CI p = linauxc[0].begin(); p != linauxc[0].end(); ++p)
+    for (CI p = linauxc[0].begin(); p != linauxc[0].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[0] * auxn()[k] * (p->second);
 
-    for (_CI p = linauxc[1].begin(); p != linauxc[1].end(); ++p)
+    for (CI p = linauxc[1].begin(); p != linauxc[1].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[1] * auxn()[k] * (p->second);
 
-    for (_CI p = linauxc[2].begin(); p != linauxc[2].end(); ++p)
+    for (CI p = linauxc[2].begin(); p != linauxc[2].end(); ++p)
       for (int k = 0; k < 3; ++k) currlin[i][k][p->first] += auxn()[2] * auxn()[k] * (p->second);
 
     // (3) slave element normal (Auxn()) part
@@ -600,21 +600,21 @@ bool CONTACT::Coupling3d::master_vertex_linearization(
                    (mrtrmnode->xspatial()[1] - auxc()[1]) * auxn()[1] +
                    (mrtrmnode->xspatial()[2] - auxc()[2]) * auxn()[2];
 
-    for (_CI p = linauxn[0].begin(); p != linauxn[0].end(); ++p)
+    for (CI p = linauxn[0].begin(); p != linauxn[0].end(); ++p)
     {
       currlin[i][0][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
         currlin[i][k][p->first] -= (mrtrmnode->xspatial()[0] - auxc()[0]) * auxn()[k] * (p->second);
     }
 
-    for (_CI p = linauxn[1].begin(); p != linauxn[1].end(); ++p)
+    for (CI p = linauxn[1].begin(); p != linauxn[1].end(); ++p)
     {
       currlin[i][1][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
         currlin[i][k][p->first] -= (mrtrmnode->xspatial()[1] - auxc()[1]) * auxn()[k] * (p->second);
     }
 
-    for (_CI p = linauxn[2].begin(); p != linauxn[2].end(); ++p)
+    for (CI p = linauxn[2].begin(); p != linauxn[2].end(); ++p)
     {
       currlin[i][2][p->first] -= xdotn * (p->second);
       for (int k = 0; k < 3; ++k)
@@ -639,7 +639,7 @@ bool CONTACT::Coupling3d::lineclip_vertex_linearization(const Mortar::Vertex& cu
   const int nmrows = master_int_element().num_node();
 
   // iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // compute factor Z
   std::array<double, 3> crossZ = {0.0, 0.0, 0.0};
@@ -783,7 +783,7 @@ bool CONTACT::Coupling3d::lineclip_vertex_linearization(const Mortar::Vertex& cu
   // bring everything together -> lineclip vertex linearization
   for (int k = 0; k < 3; ++k)
   {
-    for (_CI p = slavelin0[k].begin(); p != slavelin0[k].end(); ++p)
+    for (CI p = slavelin0[k].begin(); p != slavelin0[k].end(); ++p)
     {
       currlin[k][p->first] += (p->second);
       currlin[k][p->first] += ZNfac * (p->second);
@@ -793,7 +793,7 @@ bool CONTACT::Coupling3d::lineclip_vertex_linearization(const Mortar::Vertex& cu
         currlin[dim][p->first] -= sedge[dim] * ZNNfac * crossdN1[k] * (p->second);
       }
     }
-    for (_CI p = slavelin1[k].begin(); p != slavelin1[k].end(); ++p)
+    for (CI p = slavelin1[k].begin(); p != slavelin1[k].end(); ++p)
     {
       currlin[k][p->first] -= ZNfac * (p->second);
       for (int dim = 0; dim < 3; ++dim)
@@ -801,7 +801,7 @@ bool CONTACT::Coupling3d::lineclip_vertex_linearization(const Mortar::Vertex& cu
         currlin[dim][p->first] += sedge[dim] * ZNNfac * crossdN1[k] * (p->second);
       }
     }
-    for (_CI p = masterlin0[k].begin(); p != masterlin0[k].end(); ++p)
+    for (CI p = masterlin0[k].begin(); p != masterlin0[k].end(); ++p)
     {
       for (int dim = 0; dim < 3; ++dim)
       {
@@ -810,7 +810,7 @@ bool CONTACT::Coupling3d::lineclip_vertex_linearization(const Mortar::Vertex& cu
         currlin[dim][p->first] -= sedge[dim] * ZNNfac * crossdN2[k] * (p->second);
       }
     }
-    for (_CI p = masterlin1[k].begin(); p != masterlin1[k].end(); ++p)
+    for (CI p = masterlin1[k].begin(); p != masterlin1[k].end(); ++p)
     {
       for (int dim = 0; dim < 3; ++dim)
       {
@@ -818,7 +818,7 @@ bool CONTACT::Coupling3d::lineclip_vertex_linearization(const Mortar::Vertex& cu
         currlin[dim][p->first] += sedge[dim] * ZNNfac * crossdN2[k] * (p->second);
       }
     }
-    for (_CI p = linauxn[k].begin(); p != linauxn[k].end(); ++p)
+    for (CI p = linauxn[k].begin(); p != linauxn[k].end(); ++p)
     {
       for (int dim = 0; dim < 3; ++dim)
       {
@@ -1689,7 +1689,7 @@ void CONTACT::Coupling3dManager::consistent_dual_shape()
 
   // various variables
   double detg = 0.0;
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // initialize matrices de and me
   Core::LinAlg::SerialDenseMatrix me(nnodes, nnodes, true);
@@ -1797,7 +1797,7 @@ void CONTACT::Coupling3dManager::consistent_dual_shape()
 
         for (int v = 0; v < 3; ++v)
           for (int d = 0; d < 3; ++d)
-            for (_CI p = (currcell->get_deriv_vertex(v))[d].begin();
+            for (CI p = (currcell->get_deriv_vertex(v))[d].begin();
                 p != (currcell->get_deriv_vertex(v))[d].end(); ++p)
               lingp[p->first](d) += svalcell(v) * (p->second);
 
@@ -1820,7 +1820,7 @@ void CONTACT::Coupling3dManager::consistent_dual_shape()
           dpsxigp = dsxigp;
 
         double fac = 0.;
-        for (_CI p = derivjaccell.begin(); p != derivjaccell.end(); ++p)
+        for (CI p = derivjaccell.begin(); p != derivjaccell.end(); ++p)
         {
           Core::LinAlg::Matrix<max_nnodes + 1, max_nnodes>& dtmp = derivde_new[p->first];
           const double& ps = p->second;
@@ -1833,7 +1833,7 @@ void CONTACT::Coupling3dManager::consistent_dual_shape()
         }
 
         for (int i = 0; i < 2; ++i)
-          for (_CI p = dpsxigp[i].begin(); p != dpsxigp[i].end(); ++p)
+          for (CI p = dpsxigp[i].begin(); p != dpsxigp[i].end(); ++p)
           {
             Core::LinAlg::Matrix<max_nnodes + 1, max_nnodes>& dtmp = derivde_new[p->first];
             const double& ps = p->second;
@@ -1928,9 +1928,9 @@ void CONTACT::Coupling3dManager::consistent_dual_shape()
   // (this is done according to a quite complex formula, which
   // we get from the linearization of the biorthogonality condition:
   // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-  using _CIM = Core::Gen::Pairedvector<int,
+  using CIM = Core::Gen::Pairedvector<int,
       Core::LinAlg::Matrix<max_nnodes + 1, max_nnodes>>::const_iterator;
-  for (_CIM p = derivde_new.begin(); p != derivde_new.end(); ++p)
+  for (CIM p = derivde_new.begin(); p != derivde_new.end(); ++p)
   {
     Core::LinAlg::Matrix<max_nnodes + 1, max_nnodes>& dtmp = derivde_new[p->first];
     Core::LinAlg::SerialDenseMatrix& pt = derivae[p->first];
