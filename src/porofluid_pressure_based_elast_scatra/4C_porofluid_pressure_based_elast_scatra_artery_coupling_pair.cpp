@@ -1634,9 +1634,10 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
 
     const double jacobian_determinant_artery = current_segment_length / 2.0;
     evaluate_function_coupling(current_gp_weight, shape_functions_artery,
-        shape_functions_homogenized, jacobian_determinant_artery, *ele_rhs_artery,
-        *ele_rhs_homogenized, *ele_matrix_artery_artery, *ele_matrix_artery_homogenized,
-        *ele_matrix_homogenized_artery, *ele_matrix_homogenized_homogenized, integrated_diameter);
+        shape_functions_artery_deriv, shape_functions_homogenized, jacobian_determinant_artery,
+        *ele_rhs_artery, *ele_rhs_homogenized, *ele_matrix_artery_artery,
+        *ele_matrix_artery_homogenized, *ele_matrix_homogenized_artery,
+        *ele_matrix_homogenized_homogenized, integrated_diameter);
   }
 }
 
@@ -2059,6 +2060,7 @@ template <Core::FE::CellType dis_type_artery, Core::FE::CellType dis_type_homoge
 void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
     dis_type_homogenized, dim>::evaluate_function_coupling(const double& gp_weight,
     const Core::LinAlg::Matrix<1, num_nodes_artery_>& shape_functions_artery,
+    const Core::LinAlg::Matrix<1, num_nodes_artery_>& shape_functions_artery_deriv,
     const Core::LinAlg::Matrix<1, num_nodes_homogenized_>& shape_functions_homogenized,
     const double& jacobi, Core::LinAlg::SerialDenseVector& ele_rhs_artery,
     Core::LinAlg::SerialDenseVector& ele_rhs_homogenized,
@@ -2071,9 +2073,13 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
   std::vector artery_scalar_np_at_gp(num_scalars_artery_, 0.0);
   std::vector homogenized_scalar_np_at_gp(num_scalars_homogenized_, 0.0);
   double artery_pressure_at_gp = 0.0;
+  double artery_pressure_gradient_at_gp = 0.0;
 
   // get artery values at GP
-  get_artery_values_at_gp(shape_functions_artery, artery_pressure_at_gp, artery_scalar_np_at_gp);
+  get_artery_values_at_gp(shape_functions_artery, shape_functions_artery_deriv,
+      artery_pressure_at_gp, artery_pressure_gradient_at_gp, artery_scalar_np_at_gp);
+  const auto artery_element_flow_rate = evaluate_artery_flow_rate(artery_pressure_gradient_at_gp);
+
   // get scatra values at GP
   get_homogenized_scalar_values_at_gp(shape_functions_homogenized, homogenized_scalar_np_at_gp);
   // NOTE: values of fluid phases held by managers
@@ -2098,8 +2104,8 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
 
       // evaluate and assemble
       evaluate_function_and_deriv(*function_vector_[0][i_art], artery_pressure_at_gp,
-          artery_scalar_np_at_gp, homogenized_scalar_np_at_gp, function_value, artery_derivs,
-          homogenized_derivs);
+          artery_element_flow_rate, artery_scalar_np_at_gp, homogenized_scalar_np_at_gp,
+          function_value, artery_derivs, homogenized_derivs);
       assemble_function_coupling_into_ele_matrix_rhs_artery(i_art, gp_weight,
           shape_functions_artery, shape_functions_homogenized, jacobi, scale_vector_[0][i_art],
           function_value, artery_derivs, homogenized_derivs, ele_rhs_artery,
@@ -2117,8 +2123,8 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
 
       // evaluate and assemble
       evaluate_function_and_deriv(*function_vector_[1][i_homo], artery_pressure_at_gp,
-          artery_scalar_np_at_gp, homogenized_scalar_np_at_gp, function_value, artery_derivs,
-          homogenized_derivs);
+          artery_element_flow_rate, artery_scalar_np_at_gp, homogenized_scalar_np_at_gp,
+          function_value, artery_derivs, homogenized_derivs);
       assemble_function_coupling_into_ele_matrix_rhs_homogenized(
           homogenized_dofs_to_assemble_functions_into_[i_homo], gp_weight, shape_functions_artery,
           shape_functions_homogenized, jacobi, scale_vector_[1][i_homo],
@@ -2430,8 +2436,11 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
     dis_type_homogenized,
     dim>::get_artery_values_at_gp(const Core::LinAlg::Matrix<1, num_nodes_artery_>&
                                       shape_functions_artery,
-    double& artery_pressure, std::vector<double>& artery_scalars)
+    const Core::LinAlg::Matrix<1, num_nodes_artery_>& shape_functions_artery_deriv,
+    double& artery_pressure, double& artery_pressure_gradient, std::vector<double>& artery_scalars)
 {
+  double artery_pressure_deriv = 0.0;
+
   switch (coupling_type_)
   {
     case CouplingType::porofluid:
@@ -2439,6 +2448,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
       for (unsigned int i = 0; i < num_nodes_artery_; i++)
       {
         artery_pressure += shape_functions_artery(i) * phi_np_artery_ele_[i];
+        artery_pressure_deriv += shape_functions_artery_deriv(i) * phi_np_artery_ele_[i];
         for (int i_scal = 0; i_scal < num_scalars_artery_; i_scal++)
           artery_scalars[i_scal] += shape_functions_artery(i) * nodal_artery_scalar_np_[i_scal](i);
       }
@@ -2449,6 +2459,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
       for (unsigned int i = 0; i < num_nodes_artery_; i++)
       {
         artery_pressure += shape_functions_artery(i) * nodal_artery_pressure_np_(i);
+        artery_pressure_deriv += shape_functions_artery_deriv(i) * nodal_artery_pressure_np_(i);
         for (int i_art = 0; i_art < num_dof_artery_; i_art++)
           artery_scalars[i_art] +=
               shape_functions_artery(i) * phi_np_artery_ele_[i * num_dof_artery_ + i_art];
@@ -2459,6 +2470,10 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
       FOUR_C_THROW("Unknown coupling type.");
       break;
   }
+  // the artery pressure gradient is the derivative with respect to the parameter space coordinate
+  // multiplied with the inverse Jacobian matrix (in case of 1D line elements: dxi/ds = 2 / L)
+  // grad p = (dp/dxi) * (dxi/ds) = (dp/dxi) * (2 / L)
+  artery_pressure_gradient = (2.0 / artery_ele_length_) * artery_pressure_deriv;
 }
 
 /*----------------------------------------------------------------------*
@@ -2627,9 +2642,10 @@ template <Core::FE::CellType dis_type_artery, Core::FE::CellType dis_type_homoge
 void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
     dis_type_homogenized, dim>::evaluate_function_and_deriv(const Core::Utils::FunctionOfAnything&
                                                                 function,
-    const double& artery_pressure, const std::vector<double>& artery_scalars,
-    const std::vector<double>& homogenized_scalars, double& function_value,
-    std::vector<double>& artery_derivs, std::vector<double>& homogenized_derivs)
+    const double& artery_pressure, const double& artery_element_flow_rate,
+    const std::vector<double>& artery_scalars, const std::vector<double>& homogenized_scalars,
+    double& function_value, std::vector<double>& artery_derivs,
+    std::vector<double>& homogenized_derivs)
 {
   double time = Discret::Elements::ScaTraEleParameterTimInt::instance("scatra")->time();
 
@@ -2661,6 +2677,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
       variables.emplace_back("D", artery_diameter_at_gp_);
 
       constants.emplace_back("t", time);
+      variables.emplace_back("Q_art", artery_element_flow_rate);
 
       // evaluate the reaction term
       function_value = function.evaluate(variables, constants, 0);
@@ -2687,6 +2704,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
       set_fluid_values_as_constants(constants, artery_pressure);
 
       constants.emplace_back("t", time);
+      variables.emplace_back("Q_art", artery_element_flow_rate);
 
       // evaluate the reaction term
       function_value = function.evaluate(variables, constants, 0);
@@ -2701,6 +2719,22 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
       FOUR_C_THROW("Unknown coupling type.");
       break;
   }
+}
+
+/*----------------------------------------------------------------------*
+ *----------------------------------------------------------------------*/
+template <Core::FE::CellType dis_type_artery, Core::FE::CellType dis_type_homogenized, int dim>
+double PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
+    dis_type_homogenized, dim>::evaluate_artery_flow_rate(const double artery_pressure_gradient)
+    const
+{
+  const double radius = artery_diameter_at_gp_ / 2.0;
+
+  // Hagen-Poiseuille equation
+  const double artery_element_flow_rate = -artery_pressure_gradient * M_PI * radius * radius *
+                                          radius * radius / (8.0 * artery_material_->viscosity());
+
+  return artery_element_flow_rate;
 }
 
 /*----------------------------------------------------------------------*
