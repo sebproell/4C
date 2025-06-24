@@ -136,7 +136,7 @@ namespace
       InputField<double> stiffness;
     };
 
-    auto spec = group_struct<Data>(
+    auto spec = group<Data>(
         "data", {
                     input_field<double>("stiffness",
                         {.description = "A stiffness field", .store = in_struct(&Data::stiffness)}),

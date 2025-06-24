@@ -94,7 +94,7 @@ TestGroup:
         } selection_param;
       } nested_group;
     };
-    auto spec = group_struct<TestGroup>("TestGroup",
+    auto spec = group<TestGroup>("TestGroup",
         {
             parameter<int>("int_param", {.store = in_struct(&TestGroup::int_param)}),
             parameter<double>("double_param", {.store = in_struct(&TestGroup::double_param)}),
@@ -102,7 +102,7 @@ TestGroup:
             parameter<std::vector<int>>(
                 "vector_param", {.default_value = std::vector{1, 2, 3},
                                     .store = in_struct(&TestGroup::vector_param)}),
-            group_struct<TestGroup::NestedGroup>("NestedGroup",
+            group<TestGroup::NestedGroup>("NestedGroup",
                 {
                     selection<Selector, TestGroup::NestedGroup::SelectionParam>("selection_param",
                         {
@@ -112,7 +112,7 @@ TestGroup:
                             parameter<double>(
                                 "b", {.store = as_variant<double>(
                                           &TestGroup::NestedGroup::SelectionParam::options)}),
-                            group_struct<C>("c",
+                            group<C>("c",
                                 {
                                     parameter<int>("e", {.store = in_struct(&C::e)}),
                                     parameter<double>("f", {.store = in_struct(&C::f)}),

@@ -2098,10 +2098,10 @@ parameters:
       Inner inner;
     };
 
-    auto spec = group_struct<Outer>("outer",
+    auto spec = group<Outer>("outer",
         {
             parameter<double>("d", {.store = in_struct(&Outer::d)}),
-            group_struct<Inner>("inner",
+            group<Inner>("inner",
                 {
                     parameter<int>("a", {.store = in_struct(&Inner::a)}),
                     parameter<Option>("option", {.store = in_struct(&Inner::option)}),
@@ -2149,10 +2149,10 @@ parameters:
     };
 
     {
-      SCOPED_TRACE("Inconsistent fields in group_struct");
+      SCOPED_TRACE("Inconsistent fields in group");
       const auto construct = []()
       {
-        auto spec = group_struct<S>("inconsistent",
+        auto spec = group<S>("inconsistent",
             {
                 parameter<int>("a", {.store = in_struct(&S::a)}),
                 // here we "forgot" to specify the .store for b and want to receive an error
@@ -2166,14 +2166,14 @@ parameters:
     }
 
     {
-      SCOPED_TRACE("Wrong type in group_struct");
+      SCOPED_TRACE("Wrong struct in group");
       const auto construct = []()
       {
-        auto spec = group_struct<Other>(
-            "inconsistent", {
-                                parameter<int>("a", {.store = in_struct(&S::a)}),
-                                parameter<int>("b", {.store = in_struct(&S::b)}),
-                            });
+        auto spec =
+            group<Other>("inconsistent", {
+                                             parameter<int>("a", {.store = in_struct(&S::a)}),
+                                             parameter<int>("b", {.store = in_struct(&S::b)}),
+                                         });
       };
 
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
@@ -2181,7 +2181,7 @@ parameters:
     }
 
     {
-      SCOPED_TRACE("Missing group_struct but group");
+      SCOPED_TRACE("Wrong default storage in group");
       const auto construct = []()
       {
         auto spec = group("inconsistent", {
@@ -2190,14 +2190,14 @@ parameters:
                                           });
       };
       FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-          construct(), Core::Exception, "Groups can only store to InputParameterContainer.");
+          construct(), Core::Exception, "contains specs that store to");
     }
 
     {
-      SCOPED_TRACE("Top-level group_struct");
+      SCOPED_TRACE("Top-level group");
 
       // Construction of this spec is fine because one could continue to use this spec inside
-      // a group_struct, but it is not allowed to match it directly.
+      // a group, but it is not allowed to match it directly.
       auto spec = parameter<int>("a", {.store = in_struct(&S::a)});
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
@@ -2221,7 +2221,7 @@ parameters:
       std::string s;
     };
 
-    auto spec = group_struct<S>("s",
+    auto spec = group<S>("s",
         {
             parameter<int>("a", {.default_value = 1, .store = in_struct(&S::a)}),
             parameter<int>("b", {.default_value = 2, .store = in_struct(&S::b)}),
@@ -2264,12 +2264,12 @@ parameters:
 
     auto spec = selection<Options>(
         "model", {
-                     group_struct<A>("a",
+                     group<A>("a",
                          {
                              parameter<int>("a", {.store = in_struct(&A::a)}),
                              parameter<std::string>("s", {.store = in_struct(&A::s)}),
                          }),
-                     group_struct<B>("b",
+                     group<B>("b",
                          {
                              parameter<double>("b", {.store = in_struct(&B::b)}),
                              parameter<bool>("flag", {.store = in_struct(&B::flag)}),
@@ -2328,33 +2328,33 @@ parameters:
       Model model;
     };
 
-    auto model_a = group_struct<A>("a",
+    auto model_a = group<A>("a",
         {
             parameter<int>("a", {.store = in_struct(&A::a)}),
             parameter<std::string>("s", {.store = in_struct(&A::s)}),
         },
         {.store = as_variant<A>(&Model::model)});
 
-    auto model_b = group_struct<B>("b",
+    auto model_b = group<B>("b",
         {
             parameter<double>("b", {.store = in_struct(&B::b)}),
             parameter<bool>("flag", {.store = in_struct(&B::flag)}),
         },
         {.store = as_variant<B>(&Model::model)});
 
-    auto spec = group_struct<Parameters>(
-        "parameters", {
-                          selection<Options, Model>("model",
-                              {
-                                  model_a,
-                                  model_b,
+    auto spec =
+        group<Parameters>("parameters", {
+                                            selection<Options, Model>("model",
+                                                {
+                                                    model_a,
+                                                    model_b,
 
-                              },
-                              {
-                                  .store = in_struct(&Parameters::model),
-                                  .store_selector = in_struct(&Model::type),
-                              }),
-                      });
+                                                },
+                                                {
+                                                    .store = in_struct(&Parameters::model),
+                                                    .store_selector = in_struct(&Model::type),
+                                                }),
+                                        });
 
     auto tree = init_yaml_tree_with_exceptions();
     ryml::NodeRef root = tree.rootref();
