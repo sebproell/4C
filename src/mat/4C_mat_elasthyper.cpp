@@ -189,7 +189,7 @@ int Mat::ElastHyper::mat_id(const unsigned index) const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-double Mat::ElastHyper::shear_mod() const
+double Mat::ElastHyper::shear_mod(int ele_gid) const
 {
   // principal coefficients
   bool haveshearmod = false;
@@ -198,7 +198,7 @@ double Mat::ElastHyper::shear_mod() const
     // loop map of associated potential summands
     for (const auto& p : potsum_)
     {
-      p->add_shear_mod(haveshearmod, shearmod);
+      p->add_shear_mod(haveshearmod, shearmod, ele_gid);
     }
   }
   if (!haveshearmod)

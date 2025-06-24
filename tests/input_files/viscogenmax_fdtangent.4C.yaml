@@ -51,7 +51,8 @@ MATERIALS:
       BETA: -2
   - MAT: 3
     ELAST_IsoNeoHooke:
-      MUE: 3939.437
+      MUE:
+        constant: 3939.437
   - MAT: 4
     ELAST_Iso1Pow:
       C: 25910.38

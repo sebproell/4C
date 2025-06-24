@@ -93,7 +93,8 @@ MATERIALS:
       DENS: 1050
   - MAT: 41
     ELAST_IsoNeoHooke:
-      MUE: 72
+      MUE:
+        constant: 72
   - MAT: 100
     ELAST_StructuralTensor:
       STRATEGY: "Standard"

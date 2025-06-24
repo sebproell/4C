@@ -63,7 +63,8 @@ MATERIALS:
       DENS: 0.1
   - MAT: 3
     ELAST_IsoNeoHooke:
-      MUE: 60
+      MUE:
+        constant: 60
   - MAT: 11
     MAT_matlist_reactions:
       LOCAL: false

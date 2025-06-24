@@ -122,10 +122,11 @@ void Mixture::IsotropicCylinderPrestressStrategy::evaluate_prestress(const Mixtu
   double Res = 1.0;
   double dResdlamb_pre;
   double lamb_pre = 1. / (params_->circumferential_prestretch_ * params_->axial_prestretch_);
+  const double mue = matiso->mue(eleGID);
   while (std::abs(Res) > 1.0e-10)
   {
     Res =
-        matiso->mue() * initial_constituent_reference_density *
+        mue * initial_constituent_reference_density *
             std::pow(params_->circumferential_prestretch_ * params_->axial_prestretch_ * lamb_pre,
                 -4. / 3.) *  // TODO: When deriving these equations by hand, I get -2.0 / 3.0. To be
                              //  compatible with the old implementation I decided for now to keep
@@ -142,7 +143,7 @@ void Mixture::IsotropicCylinderPrestressStrategy::evaluate_prestress(const Mixtu
         ((1.0 - (r - params_->inner_radius_) / params_->wall_thickness_) * params_->pressure_);
 
     dResdlamb_pre =
-        matiso->mue() * initial_constituent_reference_density *
+        mue * initial_constituent_reference_density *
             (-(4. / 3.) *
                 std::pow(
                     params_->circumferential_prestretch_ * params_->axial_prestretch_ * lamb_pre,
@@ -153,7 +154,7 @@ void Mixture::IsotropicCylinderPrestressStrategy::evaluate_prestress(const Mixtu
                     (params_->circumferential_prestretch_ * params_->circumferential_prestretch_ +
                         params_->axial_prestretch_ * params_->axial_prestretch_ +
                         lamb_pre * lamb_pre)) +
-        matiso->mue() * initial_constituent_reference_density *
+        mue * initial_constituent_reference_density *
             std::pow(params_->circumferential_prestretch_ * params_->circumferential_prestretch_ *
                          params_->axial_prestretch_ * params_->axial_prestretch_ * lamb_pre *
                          lamb_pre,

@@ -54,7 +54,8 @@ MATERIALS:
       PRESTRESS_STRATEGY: 129
   - MAT: 121
     ELAST_IsoNeoHooke:
-      MUE: 1
+      MUE:
+        constant: 1
   - MAT: 122
     ELAST_VolSussmanBathe:
       KAPPA: 100

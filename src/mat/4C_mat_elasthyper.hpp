@@ -206,7 +206,7 @@ namespace Mat
     double density() const override { return params_->density_; }
 
     /// a shear modulus equivalent
-    virtual double shear_mod() const;
+    virtual double shear_mod(int ele_gid) const;
 
     /// a young's modulus equivalent
     virtual double get_young();

@@ -6796,7 +6796,7 @@ double Discret::Elements::FluidEleCalcPoro<distype>::compute_effective_stiffness
     case Core::Materials::m_elasthyper:
     {
       std::shared_ptr<Mat::ElastHyper> ehmat = std::dynamic_pointer_cast<Mat::ElastHyper>(curmat);
-      effective_stiffness = ehmat->shear_mod();
+      effective_stiffness = ehmat->shear_mod(Base::eid_);
       break;
     }
     default:

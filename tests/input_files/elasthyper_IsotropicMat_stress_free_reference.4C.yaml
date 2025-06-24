@@ -114,7 +114,8 @@ MATERIALS:
       DENS: 0.001
   - MAT: 112
     ELAST_IsoNeoHooke:
-      MUE: 1
+      MUE:
+        constant: 1
   - MAT: 13
     MAT_ElastHyper:
       NUMMAT: 1

@@ -648,9 +648,10 @@ void Mat::GrowthRemodelElastHyper::evaluate_prestretch(
   double R = 1.0;
   double dRdlamb_pre = 0.0;
   double lamb_pre = 1. / (params_->lamb_prestretch_cir_ * params_->lamb_prestretch_ax_);
+  const double mue = matiso->mue(eleGID);
   while (fabs(R) > 1.0e-10)
   {
-    R = matiso->mue() * init_rho_el_[gp] *
+    R = mue * init_rho_el_[gp] *
             std::pow(params_->lamb_prestretch_cir_ * params_->lamb_prestretch_cir_ *
                          params_->lamb_prestretch_ax_ * params_->lamb_prestretch_ax_ * lamb_pre *
                          lamb_pre,
@@ -666,7 +667,7 @@ void Mat::GrowthRemodelElastHyper::evaluate_prestretch(
         ((1.0 - (gp_rad_[gp] - 10.0e-3) / params_->t_ref_) * params_->p_mean_);
 
     dRdlamb_pre =
-        matiso->mue() * init_rho_el_[gp] *
+        mue * init_rho_el_[gp] *
             (-(4. / 3.) *
                 std::pow(params_->lamb_prestretch_cir_ * params_->lamb_prestretch_ax_ * lamb_pre,
                     -7. / 3.) *
@@ -675,7 +676,7 @@ void Mat::GrowthRemodelElastHyper::evaluate_prestretch(
                 (1. / 3.) * (params_->lamb_prestretch_cir_ * params_->lamb_prestretch_cir_ +
                                 params_->lamb_prestretch_ax_ * params_->lamb_prestretch_ax_ +
                                 lamb_pre * lamb_pre)) +
-        matiso->mue() * init_rho_el_[gp] *
+        mue * init_rho_el_[gp] *
             std::pow(params_->lamb_prestretch_cir_ * params_->lamb_prestretch_cir_ *
                          params_->lamb_prestretch_ax_ * params_->lamb_prestretch_ax_ * lamb_pre *
                          lamb_pre,
@@ -1452,7 +1453,7 @@ void Mat::GrowthRemodelElastHyper::evaluate_stress_cmat_membrane(
   for (const auto& k : potsumelmem_)
   {
     matmem = std::dynamic_pointer_cast<Mat::Elastic::IsoNeoHooke>(k);
-    mue_el_mem += matmem->mue();
+    mue_el_mem += matmem->mue(eleGID);
   }
 
   FAD X_det = XM_fad(0, 0) * (XM_fad(1, 1) * XM_fad(2, 2) - XM_fad(1, 2) * XM_fad(2, 1)) -

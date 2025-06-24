@@ -59,7 +59,8 @@ MATERIALS:
       DENS: 1
   - MAT: 31
     ELAST_IsoNeoHooke:
-      MUE: 40
+      MUE:
+        constant: 40
 RESULT DESCRIPTION:
   - PARTICLE:
       ID: 0
