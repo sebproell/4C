@@ -119,8 +119,8 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
           parameter<double>("RIGID_BODY_PHASECHANGE_RADIUS",
               {.description = "search radius for neighboring rigid bodies in case of phase change",
                   .default_value = -1.0})},
-      {.defaultable =
-              true}); /*-------------------------------------------------------------------------*
+      {.required =
+              false}); /*-------------------------------------------------------------------------*
 | control parameters for initial/boundary conditions |
 *-------------------------------------------------------------------------*/
   list["PARTICLE DYNAMIC/INITIAL AND BOUNDARY CONDITIONS"] = group(
@@ -174,7 +174,7 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
                       "Refer to the function ID describing the temperature boundary condition of "
                       "particle phase",
                   .default_value = "none"})},
-      {.defaultable = true});
+      {.required = false});
 
   /*-------------------------------------------------------------------------*
    | smoothed particle hydrodynamics (SPH) specific control parameters       |
@@ -421,7 +421,7 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
               {.description = "rigid particle contact stiffness", .default_value = -1.0}),
           parameter<double>("RIGIDPARTICLECONTACTDAMP",
               {.description = "rigid particle contact damping parameter", .default_value = 0.0})},
-      {.defaultable = true});
+      {.required = false});
 
   /*-------------------------------------------------------------------------*
    | discrete element method (DEM) specific control parameters               |
@@ -547,7 +547,7 @@ void Inpar::PARTICLE::set_valid_parameters(std::map<std::string, Core::IO::Input
           parameter<double>("ADHESION_SURFACE_ENERGY_FACTOR",
               {.description = "factor to calculate minimum adhesion surface energy",
                   .default_value = 1.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 /*---------------------------------------------------------------------------*

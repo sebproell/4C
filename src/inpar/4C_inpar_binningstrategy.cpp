@@ -47,7 +47,7 @@ void Inpar::BINSTRATEGY::set_valid_parameters(std::map<std::string, Core::IO::In
           parameter<Core::Binstrategy::WriteBins>(
               "WRITEBINS", {.description = "Write none, row or column bins for visualization",
                                .default_value = Core::Binstrategy::WriteBins::none})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

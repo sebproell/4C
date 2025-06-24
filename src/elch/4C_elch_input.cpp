@@ -121,8 +121,8 @@ void ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list
                       "the cell voltage, SOC, and C-Rate will be written to the csv file every "
                       "step, even if RESULTSEVERY is not 1",
                   .default_value = false})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   // attention: this list is a sublist of elchcontrol
   list["ELCH CONTROL/DIFFCOND"] = group("ELCH CONTROL/DIFFCOND",
       {
@@ -158,7 +158,7 @@ void ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list
                   .default_value = -1.0}),
           parameter<double>("PERMITTIVITY_VACUUM",
               {.description = "Vacuum permittivity", .default_value = 8.8541878128e-12})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   // sublist for space-charge layers
@@ -201,7 +201,7 @@ void ElCh::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list
           parameter<int>(
               "INITFUNCNO", {.description = "function number for scalar transport initial field",
                                 .default_value = -1})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

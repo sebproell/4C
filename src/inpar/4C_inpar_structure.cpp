@@ -424,8 +424,8 @@ namespace Inpar
               // Function to evaluate initial displacement
               parameter<int>("STARTFUNCNO",
                   {.description = "Function for Initial displacement", .default_value = -1})},
-          {.defaultable =
-                  true}); /*--------------------------------------------------------------------*/
+          {.required =
+                  false}); /*--------------------------------------------------------------------*/
       /* parameters for time step size adaptivity in structural dynamics */
       list["STRUCTURAL DYNAMIC/TIMEADAPTIVITY"] = group("STRUCTURAL DYNAMIC/TIMEADAPTIVITY",
           {
@@ -495,7 +495,7 @@ namespace Inpar
               parameter<int>("ADAPTSTEPMAX",
                   {.description = "Limit maximally allowed step size reduction attempts (>0)",
                       .default_value = 0})},
-          {.defaultable = true});
+          {.required = false});
 
       /// valid parameters for JOINT EXPLICIT
 
@@ -543,7 +543,7 @@ namespace Inpar
               parameter<double>("M_DAMP", {.description = "", .default_value = -1.0}),
 
               parameter<double>("K_DAMP", {.description = "", .default_value = -1.0})},
-          {.defaultable = true});
+          {.required = false});
 
       /*----------------------------------------------------------------------*/
       /* parameters for generalised-alpha structural integrator */
@@ -570,7 +570,7 @@ namespace Inpar
                   "RHO_INF", {.description = "Spectral radius for generalised-alpha time "
                                              "integration, valid range is [0,1]",
                                  .default_value = 1.0})},
-          {.defaultable = true});
+          {.required = false});
 
       /*----------------------------------------------------------------------*/
       /* parameters for one-step-theta structural integrator */
@@ -579,7 +579,7 @@ namespace Inpar
 
               parameter<double>("THETA",
                   {.description = "One-step-theta factor in (0,1]", .default_value = 0.5})},
-          {.defaultable = true});
+          {.required = false});
 
       /*----------------------------------------------------------------------*/
       /* parameters for error evaluation */
@@ -592,7 +592,7 @@ namespace Inpar
                       .default_value = false}),
               parameter<int>("ANALYTICAL_DISPLACEMENT_FUNCTION",
                   {.description = "function ID of the analytical solution", .default_value = -1})},
-          {.defaultable = true});
+          {.required = false});
     }
 
 

@@ -133,7 +133,7 @@ void Inpar::FPSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
               {.description = "Beavers-Joseph-Coefficient for Slip-Boundary-Condition at "
                               "Fluid-Porous-Interface (0.1-4)",
                   .default_value = 1.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

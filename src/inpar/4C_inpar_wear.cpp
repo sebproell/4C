@@ -99,7 +99,7 @@ void Inpar::Wear::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
               },
               {.description = "Definition wear time scale compares to std. time scale",
                   .default_value = wear_time_equal})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

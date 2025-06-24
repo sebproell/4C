@@ -109,7 +109,7 @@ void Cut::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
           parameter<bool>("INTEGRATE_INSIDE_CELLS",
               {.description = "Should the integration be done on inside cells",
                   .default_value = true})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

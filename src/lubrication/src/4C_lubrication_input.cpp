@@ -165,7 +165,7 @@ void Lubrication::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           /// Flag for considering the pure Reynolds Equation
           parameter<bool>("PURE_LUB",
               {.description = "the problem is pure lubrication", .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

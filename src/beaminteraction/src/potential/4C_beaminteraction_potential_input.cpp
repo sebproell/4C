@@ -85,8 +85,7 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                       "Within this length of the master beam end point the potential is smoothly "
                       "reduced to one half to account for infinitely long master beam "
                       "surrogates."})},
-      {.defaultable =
-              true}); /*------------------------------------------------------------------------*/
+      {.required = false});
   /* parameters for visualization of potential-based beam interactions via output at runtime */
 
   list["BEAM POTENTIAL/RUNTIME VTK OUTPUT"] = group("BEAM POTENTIAL/RUNTIME VTK OUTPUT",
@@ -128,7 +127,7 @@ void BeamPotential::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                               "master and slave beam element global ID (uid_0_beam_1_gid, "
                               "uid_1_beam_2_gid) and local Gauss point ID (uid_2_gp_id)",
                   .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 void BeamPotential::set_valid_conditions(

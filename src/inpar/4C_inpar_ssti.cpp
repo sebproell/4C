@@ -66,8 +66,8 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
                   .default_value = ScaTraTimIntType::elch}),
           parameter<bool>("ADAPTIVE_TIMESTEPPING",
               {.description = "flag for adaptive time stepping", .default_value = false})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   /* parameters for monolithic SSTI                                       */
   /*----------------------------------------------------------------------*/
   list["SSTI CONTROL/MONOLITHIC"] = group("SSTI CONTROL/MONOLITHIC",
@@ -109,7 +109,7 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
                       "use equilibration method of ScaTra to equilibrate initial calculation "
                       "of potential",
                   .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for thermo                                                */
@@ -128,7 +128,7 @@ void Inpar::SSTI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
               },
               {.description = "defines, how to set the initial field",
                   .default_value = Inpar::ScaTra::InitialField::initfield_field_by_function})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

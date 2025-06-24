@@ -66,7 +66,7 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
           parameter<double>("K_PTC",
               {.description = "PTC parameter: 0 means normal Newton, ->infty means steepest desc",
                   .default_value = 0.0})},
-      {.defaultable = true});
+      {.required = false});
   list["CARDIOVASCULAR 0D-STRUCTURE COUPLING/SYS-PUL CIRCULATION PARAMETERS"] = group(
       "CARDIOVASCULAR 0D-STRUCTURE COUPLING/SYS-PUL CIRCULATION PARAMETERS",
       {
@@ -375,7 +375,7 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
           parameter<double>(
               "V_cap_pul_u", {.description = "unstressed volume of pulmonary capillaries",
                                  .default_value = 123.0e3})},
-      {.defaultable = true});
+      {.required = false});
 
 
 
@@ -626,7 +626,7 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
           parameter<double>(
               "ppO2_ven_sys_0", {.description = "initial systemic venous O2 partial pressure",
                                     .default_value = 1.0})},
-      {.defaultable = true});
+      {.required = false});
 
   list["MOR"] = group("MOR",
       {
@@ -634,7 +634,7 @@ void Inpar::Cardiovascular0D::set_valid_parameters(std::map<std::string, Core::I
           parameter<std::string>(
               "POD_MATRIX", {.description = "filename of file containing projection matrix",
                                 .default_value = "none"})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

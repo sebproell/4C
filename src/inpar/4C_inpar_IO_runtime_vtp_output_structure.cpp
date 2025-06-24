@@ -55,7 +55,7 @@ namespace Inpar
               // write force actin in linker
               parameter<bool>("LINKINGFORCE",
                   {.description = "write force acting in linker", .default_value = false})},
-          {.defaultable = true});
+          {.required = false});
     }
 
 

@@ -34,7 +34,7 @@ void Core::GeometricSearch::set_valid_parameters(std::map<std::string, Core::IO:
           parameter<bool>("WRITE_GEOMETRIC_SEARCH_VISUALIZATION",
               {.description = "If visualization output for the geometric search should be written",
                   .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

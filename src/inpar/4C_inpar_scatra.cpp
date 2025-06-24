@@ -331,8 +331,8 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           // flag for adaptive time stepping
           parameter<bool>("ADAPTIVE_TIMESTEPPING",
               {.description = "flag for adaptive time stepping", .default_value = false})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   list["SCALAR TRANSPORT DYNAMIC/NONLINEAR"] = group("SCALAR TRANSPORT DYNAMIC/NONLINEAR",
       {
 
@@ -366,11 +366,11 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                       "The linear solver shall be this much better than the current nonlinear "
                       "residual in the nonlinear convergence limit",
                   .default_value = 0.1})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   list["SCALAR TRANSPORT DYNAMIC/STABILIZATION"] = group("SCALAR TRANSPORT DYNAMIC/STABILIZATION",
-      {all_specs_for_scatra_stabilization()}, {.defaultable = true});
+      {all_specs_for_scatra_stabilization()}, {.required = false});
 
   // ----------------------------------------------------------------------
   // artery mesh tying
@@ -418,7 +418,7 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           // scale for coupling (scatra part)
           parameter<std::string>("SCALEREAC_CONT",
               {.description = "scale for coupling (scatra part)", .default_value = "0"})},
-      {.defaultable = true});
+      {.required = false});
 
   // ----------------------------------------------------------------------
   list["SCALAR TRANSPORT DYNAMIC/EXTERNAL FORCE"] = group("SCALAR TRANSPORT DYNAMIC/EXTERNAL FORCE",
@@ -435,7 +435,7 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           // Function ID for mobility of the scalar
           parameter<int>("INTRINSIC_MOBILITY_FUNCTION_ID",
               {.description = "Function ID for intrinsic mobility", .default_value = -1})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

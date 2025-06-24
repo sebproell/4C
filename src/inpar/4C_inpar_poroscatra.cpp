@@ -141,7 +141,7 @@ void Inpar::PoroScaTra::set_valid_parameters(std::map<std::string, Core::IO::Inp
 
           parameter<bool>(
               "MATCHINGGRID", {.description = "is matching grid", .default_value = true})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

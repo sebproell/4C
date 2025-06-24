@@ -49,8 +49,8 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
               {.description = "number of layers around the interface which keep their computed "
                               "convective velocity",
                   .default_value = -1})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   list["LEVEL-SET CONTROL/REINITIALIZATION"] = group("LEVEL-SET CONTROL/REINITIALIZATION",
       {
 
@@ -214,7 +214,7 @@ void Inpar::LevelSet::set_valid_parameters(std::map<std::string, Core::IO::Input
           parameter<Inpar::ScaTra::DiffFunc>(
               "DIFF_FUNC", {.description = "function for diffusivity",
                                .default_value = Inpar::ScaTra::hyperbolic})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

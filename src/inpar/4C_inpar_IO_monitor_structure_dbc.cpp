@@ -57,7 +57,7 @@ namespace Inpar
                   {.description =
                           "write information about monitored boundary condition to output file",
                       .default_value = false})},
-          {.defaultable = true});
+          {.required = false});
     }
 
     std::string to_string(FileType type)

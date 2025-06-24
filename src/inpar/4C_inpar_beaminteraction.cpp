@@ -44,8 +44,8 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
           parameter<SearchStrategy>("SEARCH_STRATEGY",
               {.description = "Type of search strategy used for finding coupling pairs",
                   .default_value = SearchStrategy::bruteforce_with_binning})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   /* parameters for crosslinking submodel */
 
   list["BEAM INTERACTION/CROSSLINKING"] = group("BEAM INTERACTION/CROSSLINKING",
@@ -107,7 +107,7 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
           parameter<std::string>("FILAMENTBSPOTRANGELOCAL",
               {.description = "Lower and upper arc parameter bound for binding spots on a filament",
                   .default_value = "0.0 1.0"})},
-      {.defaultable = true});
+      {.required = false});
 
 
   /*----------------------------------------------------------------------*/
@@ -152,7 +152,7 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
           parameter<std::string>("FILAMENTBSPOTRANGELOCAL",
               {.description = "Lower and upper arc parameter bound for binding spots on a filament",
                   .default_value = "0.0 1.0"})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for beam to ? contact submodel*/
@@ -172,7 +172,7 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
                   {"penalty", bstr_penalty},
               },
               {.description = "Type of employed solving strategy", .default_value = bstr_none})},
-      {.defaultable = true});
+      {.required = false});
 
   // ...
 
@@ -194,7 +194,7 @@ void Inpar::BeamInteraction::set_valid_parameters(std::map<std::string, Core::IO
           parameter<double>("PENALTY_PARAMETER",
               {.description = "Penalty parameter for beam-to-rigidsphere contact",
                   .default_value = 0.0})},
-      {.defaultable = true});
+      {.required = false});
 
   // ...
 

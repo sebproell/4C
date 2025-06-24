@@ -185,7 +185,7 @@ void Inpar::PoroElast::set_valid_parameters(std::map<std::string, Core::IO::Inpu
           parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
               {.description = "flag for equilibration of global system of equations",
                   .default_value = Core::LinAlg::EquilibrationMethod::none})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -30,7 +30,7 @@ void Inpar::ElectroPhysiology::set_valid_parameters(
           parameter<double>("ACTTHRES", {.description = "threshold for the potential for computing "
                                                         "and postprocessing activation time ",
                                             .default_value = 1.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

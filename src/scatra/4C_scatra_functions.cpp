@@ -142,7 +142,7 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
                                   .store = in_struct(&Rotation::y_axis)}),
                       },
                       {.description = "Rotation of the magnet around different axes",
-                          .defaultable = true,
+                          .required = false,
                           .store = in_struct(&CylinderMagnetParameters::magnet_rotation)}),
                   parameter<double>("particle_radius",
                       {.description = "Radius of the magnetic particle",

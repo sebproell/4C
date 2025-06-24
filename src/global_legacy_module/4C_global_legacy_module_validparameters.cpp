@@ -104,7 +104,7 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
           parameter<int>("NUMAIRWAYSDIS",
               {.description = "Number of meshes in reduced dimensional airways network field",
                   .default_value = 1})},
-      {.defaultable = true});
+      {.required = false});
 
   specs["PROBLEM SIZE"] = group("PROBLEM SIZE",
       {
@@ -125,7 +125,7 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
           parameter<int>("MATERIALS", {.description = "number of materials", .default_value = 0}),
           parameter<int>("NUMDF",
               {.description = "maximum number of degrees of freedom", .default_value = 3})},
-      {.defaultable = true});
+      {.required = false});
   Inpar::PROBLEMTYPE::set_valid_parameters(specs);
 
   /*----------------------------------------------------------------------*/
@@ -142,7 +142,7 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
               {.description = "Number of linear solver for the projection of least squares "
                               "Dirichlet boundary conditions for NURBS discretizations",
                   .default_value = -1})},
-      {.defaultable = true});
+      {.required = false});
 
   const auto add_geometry_section = [](auto& specs, const std::string& field_identifier)
   {

@@ -106,7 +106,7 @@ void Inpar::S2I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               {.description = "evaluate integral of coupling flux on slave side "
                               "for each s2i condition and write it to csv file",
                   .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

@@ -60,7 +60,7 @@ void BrownianDynamics::set_valid_parameters(std::map<std::string, Core::IO::Inpu
                       "multiplied by fluid viscosity): translational perpendicular/parallel to "
                       "beam axis, rotational around axis",
                   .default_value = "0.0 0.0 0.0"})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

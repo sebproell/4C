@@ -675,7 +675,7 @@ bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
       return true;
     }
 
-    if (!data.required.value())
+    if (!data.required)
     {
       // Not present and not required.
       match_entry.state = IO::Internal::MatchEntry::State::not_required;
@@ -735,8 +735,7 @@ void Core::IO::Internal::GroupSpec::emit_metadata(YamlNodeRef node) const
   {
     node.node["description"] << data.description;
   }
-  emit_value_as_yaml(node.wrap(node.node["required"]), data.required.value());
-  emit_value_as_yaml(node.wrap(node.node["defaultable"]), data.defaultable);
+  emit_value_as_yaml(node.wrap(node.node["required"]), data.required);
   node.node["specs"] |= ryml::SEQ;
   {
     auto child = node.node["specs"].append_child();
@@ -762,14 +761,14 @@ bool Core::IO::Internal::GroupSpec::emit(YamlNodeRef node, const InputParameterC
       return false;
     }
     // If no children were added, remove the group node as well, unless it is required.
-    if (!data.required.value() && group_node.num_children() == 0)
+    if (!data.required && group_node.num_children() == 0)
     {
       checkpoint.restore();
     }
     return true;
   }
   // If group is not present, success depends on whether it is required.
-  return !data.required.value();
+  return !data.required;
 }
 
 void Core::IO::Internal::AllOfSpec::parse(

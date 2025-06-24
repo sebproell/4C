@@ -77,7 +77,7 @@ void Inpar::PaSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           parameter<double>(
               "MINOMEGA", {.description = "smallest omega allowed for Aitken relaxation",
                               .default_value = 0.1})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

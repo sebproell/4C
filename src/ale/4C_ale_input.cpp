@@ -89,7 +89,7 @@ void ALE::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
           parameter<int>(
               "LINEAR_SOLVER", {.description = "number of linear solver used for ale problems...",
                                    .default_value = -1})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

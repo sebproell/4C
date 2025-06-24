@@ -193,8 +193,7 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
                   .default_value = -1.0}),
           parameter<int>("RESTARTEVERY",
               {.description = "write restart every RESTARTEVERY steps", .default_value = -1})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required = false});
   list["IO/EVERY ITERATION"] = group("IO/EVERY ITERATION",
       {
 
@@ -220,7 +219,7 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
                       "If yes, the ownership of elements and nodes are written each Newton step, "
                       "instead of only once per time/load step.",
                   .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

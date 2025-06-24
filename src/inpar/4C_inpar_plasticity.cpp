@@ -83,7 +83,7 @@ void Inpar::Plasticity::set_valid_parameters(std::map<std::string, Core::IO::Inp
           parameter<TSI::DissipationMode>(
               "DISSIPATION_MODE", {.description = "method to calculate the plastic dissipation",
                                       .default_value = TSI::pl_multiplier})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

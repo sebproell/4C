@@ -384,7 +384,6 @@ required: true
             },
             {
                 .required = false,
-                .defaultable = true,
             }),
         parameter<std::string>("c"),
     });
@@ -810,7 +809,6 @@ specs:
           - name: group2
             type: group
             required: false
-            defaultable: false
             specs:
               - type: all_of
                 specs:
@@ -893,7 +891,6 @@ specs:
           - name: group2
             type: group
             required: false
-            defaultable: false
             specs:
               - type: all_of
                 specs:
@@ -950,7 +947,6 @@ specs:
             type: group
             description: A group
             required: true
-            defaultable: false
             specs:
               - type: all_of
                 specs:
@@ -981,7 +977,6 @@ specs:
           - name: group2
             type: group
             required: false
-            defaultable: false
             specs:
               - type: all_of
                 specs:
@@ -2227,7 +2222,7 @@ parameters:
             parameter<int>("b", {.default_value = 2, .store = in_struct(&S::b)}),
             parameter<std::string>("s", {.default_value = "default", .store = in_struct(&S::s)}),
         },
-        {.defaultable = true});
+        {.required = false});
 
     ryml::Tree tree = init_yaml_tree_with_exceptions();
     ryml::NodeRef root = tree.rootref();

@@ -125,7 +125,7 @@ namespace Inpar
                     {.description =
                             "Number of subsegments along a single beam element for visualization",
                         .default_value = 5})},
-            {.defaultable = true});
+            {.required = false});
       }
     }  // namespace Beam
   }  // namespace IORuntimeOutput

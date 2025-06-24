@@ -795,13 +795,7 @@ namespace Core::IO
       /**
        * Whether the Group is required or optional.
        */
-      std::optional<bool> required{};
-
-      /**
-       * Whether the Group will store itself and its children with defaulted values, if the Group
-       * is not encountered in the input. This only works if all children have default values.
-       */
-      bool defaultable{};
+      bool required{true};
 
       /**
        * An optional function to store a parsed value. See the in_struct() function for more
@@ -975,7 +969,7 @@ namespace Core::IO
       struct
       {
         std::string description;
-        std::optional<bool> required;
+        bool required;
         bool defaultable;
       } data;
       //! A logical spec with the content of the group.
@@ -1301,16 +1295,15 @@ namespace Core::IO
      *
      * Whether a group can have a default value is determined by the default values of its children.
      * If all of its children have default values, the group can have a default value. In this case,
-     * you may set the `defaultable` option to guarantee that the default values of the children are
+     * setting `.required = false` guarantees that the default values of the children are
      * stored under the group name in the container, even if the group is not present in the input.
-     * Obviously, this only makes sense if the group is not required.
      * This behavior is analogous to the behavior of the parameter() function. While parameters with
      * default values are often a good idea (if the default value is meaningful), groups with
      * default values are less common. If you follow the advice to use groups to activate features,
-     * you will usually have required parameters in the group and, consequently, the group cannot be
-     * `defaultable`. Put differently, if you have a group with many default values, you are likely
+     * you will usually have required parameters in the group and, consequently, the group will not
+     * be defaultable. Put differently, if you have a group with many default values, you are likely
      * not using the InputSpecs to their full potential. Consider splitting the group into multiple
-     * smaller groups or use the one_of() function to select between different groups.
+     * smaller groups or use selection() to select between different groups.
      *
      * @note If you want to group multiple InputSpecs without creating a new named scope, use the
      * all_of() function.
@@ -2576,21 +2569,8 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(std::string name,
         Core::Utils::try_demangle(stores_to->name()));
   }
 
-  if (!data.required.has_value())
-  {
-    data.required = !data.defaultable;
-  }
-  if (data.required.value() && data.defaultable)
-  {
-    FOUR_C_THROW("Group '{}': a group cannot be both required and defaultable.", name);
-  }
-  if (data.defaultable && !internal_all_of.impl().has_default_value())
-  {
-    FOUR_C_THROW(
-        "Group '{}': a group cannot be defaultable if not all of its child specs have default "
-        "values.",
-        name.c_str());
-  }
+  // The group is defaultable if it is not required and all child specs are defaultable.
+  const bool defaultable = !data.required && internal_all_of.impl().has_default_value();
 
   StoreFunction<Storage> move_my_storage;
   if constexpr (std::is_same_v<StorageType, DefaultStorage>)
@@ -2606,8 +2586,8 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(std::string name,
   Internal::InputSpecImpl::CommonData common_data{
       .name = name,
       .description = data.description,
-      .required = data.required.value(),
-      .has_default_value = data.defaultable,
+      .required = data.required,
+      .has_default_value = defaultable,
       .n_specs = internal_all_of.impl().data.n_specs + 1,
       .type = Internal::InputSpecType::group,
       .stores_to = &move_my_storage.stores_to(),
@@ -2620,7 +2600,7 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group(std::string name,
               {
                   .description = data.description,
                   .required = data.required,
-                  .defaultable = data.defaultable,
+                  .defaultable = defaultable,
               },
           .spec = std::move(internal_all_of),
           .init_my_storage = [](Storage& storage) { storage.emplace<StorageType>(); },

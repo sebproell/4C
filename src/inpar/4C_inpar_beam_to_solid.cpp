@@ -106,7 +106,7 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
 
   list["BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING"] =
       group("BEAM INTERACTION/BEAM TO SOLID VOLUME MESHTYING", beam_to_solid_volume_mestying,
-          {.defaultable = true});
+          {.required = false});
 
 
   // Beam to solid volume mesh tying output parameters.
@@ -158,7 +158,7 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
                                             "for testing of created VTK files).",
                                 .default_value = false}),
       },
-      {.defaultable = true});
+      {.required = false});
 
 
   // Beam to solid surface mesh tying parameters.
@@ -203,7 +203,7 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
   Inpar::GeometryPair::set_valid_parameters_line_to_surface(beam_to_solid_surface_meshtying);
   list["BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING"] =
       group("BEAM INTERACTION/BEAM TO SOLID SURFACE MESHTYING", beam_to_solid_surface_meshtying,
-          {.defaultable = true});
+          {.required = false});
 
 
   // Beam to solid surface contact parameters.
@@ -252,7 +252,7 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
 
   list["BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT"] =
       group("BEAM INTERACTION/BEAM TO SOLID SURFACE CONTACT", beam_to_solid_surface_contact,
-          {.defaultable = true});
+          {.required = false});
 
 
   // Beam to solid surface output parameters.
@@ -303,7 +303,7 @@ void Inpar::BeamToSolid::set_valid_parameters(std::map<std::string, Core::IO::In
                                             "for testing of created VTK files).",
                                 .default_value = false}),
       },
-      {.defaultable = true});
+      {.required = false});
 }
 
 /**

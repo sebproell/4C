@@ -41,7 +41,7 @@ void Inpar::Constraints::set_valid_parameters(std::map<std::string, Core::IO::In
               {.description =
                       "Penalty parameter for the constraint enforcement in embedded mesh coupling",
                   .default_value = 0.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

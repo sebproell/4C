@@ -40,7 +40,7 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
                                       .default_value = BeamToFluidPreSortStrategy::bruteforce}),
 
       },
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   std::vector<Core::IO::InputSpec> beam_to_fluid_meshtying = {
@@ -73,7 +73,7 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 
   list["FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING"] =
       group("FLUID BEAM INTERACTION/BEAM TO FLUID MESHTYING", beam_to_fluid_meshtying,
-          {.defaultable = true});
+          {.required = false});
 
 
 
@@ -125,7 +125,7 @@ void FBI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
                   .default_value = 5}),
 
       },
-      {.defaultable = true});
+      {.required = false});
 }
 
 void FBI::set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist)
