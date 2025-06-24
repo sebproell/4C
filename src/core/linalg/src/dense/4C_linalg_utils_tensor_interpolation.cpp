@@ -12,6 +12,7 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
 #include "4C_linalg_utils_densematrix_eigen.hpp"
+#include "4C_linalg_utils_scalar_interpolation.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_fad.hpp"
 
@@ -255,10 +256,10 @@ namespace
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim>
-Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<
-    loc_dim>::SecondOrderTensorInterpolator(unsigned int order,
-    const RotationInterpolationType rot_interp_type,
-    const EigenvalInterpolationType eigenval_interp_type, const InterpParams& interp_params)
+Core::LinAlg::SecondOrderTensorInterpolator<loc_dim>::SecondOrderTensorInterpolator(
+    unsigned int order, const RotationInterpolationType rot_interp_type,
+    const EigenvalInterpolationType eigenval_interp_type,
+    const ScalarInterpolationParams& interp_params)
     : polynomial_space_(create_polynomial_space(order)),
       rot_interp_type_(rot_interp_type),
       eigenval_interp_type_(eigenval_interp_type),
@@ -270,8 +271,7 @@ Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim>
 Core::FE::PolynomialSpaceComplete<loc_dim, Core::FE::Polynomial>
-Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<loc_dim>::create_polynomial_space(
-    unsigned int order)
+Core::LinAlg::SecondOrderTensorInterpolator<loc_dim>::create_polynomial_space(unsigned int order)
 {
   std::vector<double> coeffs(order + 1, 0.0);
   std::vector<Core::FE::Polynomial> poly_space_1d;
@@ -292,11 +292,11 @@ Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<loc_dim>::creat
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim>
 Core::LinAlg::Matrix<3, 3>
-Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<loc_dim>::get_interpolated_matrix(
+Core::LinAlg::SecondOrderTensorInterpolator<loc_dim>::get_interpolated_matrix(
     const std::vector<Core::LinAlg::Matrix<3, 3>>& ref_matrices,
     const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
     const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc,
-    Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType& err_type)
+    Core::LinAlg::TensorInterpolationErrorType& err_type)
 {
   // reset error type
   err_type = TensorInterpolationErrorType::NoErrors;
@@ -837,11 +837,10 @@ Core::LinAlg::Matrix<3, 3> Core::LinAlg::calc_rot_matrix_from_rot_vect(
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <>
-Core::LinAlg::Matrix<3, 3>
-Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1>::get_interpolated_matrix(
+Core::LinAlg::Matrix<3, 3> Core::LinAlg::SecondOrderTensorInterpolator<1>::get_interpolated_matrix(
     const std::vector<Core::LinAlg::Matrix<3, 3>>& ref_matrices,
     const std::vector<double>& ref_locs, const double interp_loc,
-    Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType& err_type)
+    Core::LinAlg::TensorInterpolationErrorType& err_type)
 {
   // auxiliaries
   Core::LinAlg::Matrix<1, 1> temp_matrix;
@@ -868,12 +867,12 @@ Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1>::get_interpo
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 template <unsigned int loc_dim>
-Core::LinAlg::Matrix<9, loc_dim> Core::LinAlg::TensorInterpolation::
-    SecondOrderTensorInterpolator<loc_dim>::get_interpolation_gradient(
-        const std::vector<Core::LinAlg::Matrix<3, 3>>& ref_matrices,
-        const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
-        const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc,
-        Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType& err_type)
+Core::LinAlg::Matrix<9, loc_dim>
+Core::LinAlg::SecondOrderTensorInterpolator<loc_dim>::get_interpolation_gradient(
+    const std::vector<Core::LinAlg::Matrix<3, 3>>& ref_matrices,
+    const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
+    const Core::LinAlg::Matrix<loc_dim, 1>& interp_loc,
+    Core::LinAlg::TensorInterpolationErrorType& err_type, const double perturbation_factor)
 {
   // auxiliaries
   Core::LinAlg::Matrix<9, 1> temp9x1(Core::LinAlg::Initialization::zero);
@@ -884,7 +883,7 @@ Core::LinAlg::Matrix<9, loc_dim> Core::LinAlg::TensorInterpolation::
       get_interpolated_matrix(ref_matrices, ref_locs, interp_loc, err_type);
 
   // check for interpolation errors
-  if (err_type != Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors)
+  if (err_type != Core::LinAlg::TensorInterpolationErrorType::NoErrors)
   {
     // return empty matrix
     return Core::LinAlg::Matrix<9, loc_dim>(Core::LinAlg::Initialization::zero);
@@ -906,22 +905,22 @@ Core::LinAlg::Matrix<9, loc_dim> Core::LinAlg::TensorInterpolation::
   {
     // get perturbed locations
     perturbed_pos_loc = interp_loc;
-    perturbed_pos_loc(i, 0) += interp_params_.perturbation_factor;
+    perturbed_pos_loc(i, 0) += perturbation_factor;
     perturbed_neg_loc = interp_loc;
-    perturbed_neg_loc(i, 0) -= interp_params_.perturbation_factor;
+    perturbed_neg_loc(i, 0) -= perturbation_factor;
 
 
     // compute the perturbed matrices
     perturbed_pos_matrix =
         get_interpolated_matrix(ref_matrices, ref_locs, perturbed_pos_loc, err_type);
-    if (err_type != Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors)
+    if (err_type != Core::LinAlg::TensorInterpolationErrorType::NoErrors)
     {
       // return empty matrix
       return Core::LinAlg::Matrix<9, loc_dim>(Core::LinAlg::Initialization::zero);
     }
     perturbed_neg_matrix =
         get_interpolated_matrix(ref_matrices, ref_locs, perturbed_neg_loc, err_type);
-    if (err_type != Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors)
+    if (err_type != Core::LinAlg::TensorInterpolationErrorType::NoErrors)
     {
       // return empty matrix
       return Core::LinAlg::Matrix<9, loc_dim>(Core::LinAlg::Initialization::zero);
@@ -929,7 +928,7 @@ Core::LinAlg::Matrix<9, loc_dim> Core::LinAlg::TensorInterpolation::
 
     // compute the finite difference derivative
     temp3x3.update(1.0 / 2.0, perturbed_pos_matrix, -1.0 / 2.0, perturbed_neg_matrix, 0.0);
-    temp3x3.scale(1.0 / interp_params_.perturbation_factor);
+    temp3x3.scale(1.0 / perturbation_factor);
     Core::LinAlg::Voigt::matrix_3x3_to_9x1(temp3x3, temp9x1);
 
     // update the respective column of the output matrix
@@ -946,10 +945,10 @@ Core::LinAlg::Matrix<9, loc_dim> Core::LinAlg::TensorInterpolation::
  *--------------------------------------------------------------------*/
 template <>
 Core::LinAlg::Matrix<9, 1>
-Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1>::get_interpolation_gradient(
+Core::LinAlg::SecondOrderTensorInterpolator<1>::get_interpolation_gradient(
     const std::vector<Core::LinAlg::Matrix<3, 3>>& ref_matrices,
     const std::vector<double>& ref_locs, const double interp_loc,
-    Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType& err_type)
+    Core::LinAlg::TensorInterpolationErrorType& err_type, const double perturbation_factor)
 {
   // auxiliaries
   Core::LinAlg::Matrix<1, 1> temp1x1(Core::LinAlg::Initialization::zero);
@@ -969,14 +968,14 @@ Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1>::get_interpo
 
   // call the general constructor with the matrix expressions
   return get_interpolation_gradient(
-      ref_matrices, converted_ref_locs, converted_interp_loc, err_type);
+      ref_matrices, converted_ref_locs, converted_interp_loc, err_type, perturbation_factor);
 }
 
 
 
 // explicit instantiation of template functions
-template class Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1>;
-template class Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<2>;
-template class Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<3>;
+template class Core::LinAlg::SecondOrderTensorInterpolator<1>;
+template class Core::LinAlg::SecondOrderTensorInterpolator<2>;
+template class Core::LinAlg::SecondOrderTensorInterpolator<3>;
 
 FOUR_C_NAMESPACE_CLOSE

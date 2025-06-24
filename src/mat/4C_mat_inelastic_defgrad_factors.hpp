@@ -1508,7 +1508,7 @@ namespace Mat
     StateQuantityDerivatives state_quantity_derivatives_;
 
     //! tensor interpolator used in the substepping procedure (one-dimensional, of order 1)
-    Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1> tensor_interpolator_;
+    Core::LinAlg::SecondOrderTensorInterpolator<1> tensor_interpolator_;
 
     //! tensor interpolation: reference matrices
     std::vector<Core::LinAlg::Matrix<3, 3>> ref_matrices_;

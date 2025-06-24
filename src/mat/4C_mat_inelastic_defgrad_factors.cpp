@@ -15,6 +15,7 @@
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
 #include "4C_linalg_four_tensor_generators.hpp"
 #include "4C_linalg_utils_densematrix_funct.hpp"
+#include "4C_linalg_utils_scalar_interpolation.hpp"
 #include "4C_linalg_utils_tensor_interpolation.hpp"
 #include "4C_mat_elast_couptransverselyisotropic.hpp"
 #include "4C_mat_elasthyper_service.hpp"
@@ -453,17 +454,17 @@ namespace
   // Initialize the second-order tensor interpolator for
   // InelasticDefgradTransvIsotropElastViscoplast Currently, we consider R - LOG interpolation with
   // a set exponential decay factor.
-  Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1> init_tensor_interpolator()
+  Core::LinAlg::SecondOrderTensorInterpolator<1> init_tensor_interpolator()
   {
     // initialize interpolation parameter list
-    Core::LinAlg::TensorInterpolation::InterpParams interp_param_list;
+    Core::LinAlg::ScalarInterpolationParams interp_param_list;
     /// add exponential decay factor for weighting
     interp_param_list.exponential_decay_c = 20.0;
 
     // return corresponding tensor interpolator
-    return Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1>{1,
-        Core::LinAlg::TensorInterpolation::RotationInterpolationType::RotationVector,
-        Core::LinAlg::TensorInterpolation::EigenvalInterpolationType::LOG, interp_param_list};
+    return Core::LinAlg::SecondOrderTensorInterpolator<1>{1,
+        Core::LinAlg::RotationInterpolationType::RotationVector,
+        Core::LinAlg::EigenvalInterpolationType::LOG, interp_param_list};
   }
 
 
@@ -2909,8 +2910,8 @@ Core::LinAlg::Matrix<10, 1> Mat::InelasticDefgradTransvIsotropElastViscoplast::l
   bool new_substep_status = true;
 
   // declare error status for tensor interpolation
-  Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType tensor_interpolator_err_status{
-      Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors};
+  Core::LinAlg::TensorInterpolationErrorType tensor_interpolator_err_status{
+      Core::LinAlg::TensorInterpolationErrorType::NoErrors};
 
   // substepping procedure
   while (substep_params.substep_counter <= substep_params.total_num_of_substeps)
@@ -2923,10 +2924,9 @@ Core::LinAlg::Matrix<10, 1> Mat::InelasticDefgradTransvIsotropElastViscoplast::l
         (substep_params.t + substep_params.curr_dt) / time_step_settings_.dt_,
         tensor_interpolator_err_status);
     FOUR_C_ASSERT_ALWAYS(
-        tensor_interpolator_err_status ==
-            Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors,
+        tensor_interpolator_err_status == Core::LinAlg::TensorInterpolationErrorType::NoErrors,
         "Tensor interpolation failed with err: {}",
-        Core::LinAlg::TensorInterpolation::make_error_message(tensor_interpolator_err_status));
+        Core::LinAlg::make_error_message(tensor_interpolator_err_status));
 
     // Newton-Raphson scheme for the current substep
     while (true)
@@ -3117,17 +3117,16 @@ bool Mat::InelasticDefgradTransvIsotropElastViscoplast::prepare_new_substep(
       time_step_quantities_.last_substep_plastic_strain_[gp_]);
 
   // initialize the error status for the tensor interpolation
-  Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType tensor_interpolator_err_status{
-      Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors};
+  Core::LinAlg::TensorInterpolationErrorType tensor_interpolator_err_status{
+      Core::LinAlg::TensorInterpolationErrorType::NoErrors};
 
   // recompute the current right CG
   curr_CM = tensor_interpolator_.get_interpolated_matrix(ref_matrices_, ref_locs_,
       (t + curr_dt) / time_step_settings_.dt_, tensor_interpolator_err_status);
   FOUR_C_ASSERT_ALWAYS(
-      tensor_interpolator_err_status ==
-          Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors,
+      tensor_interpolator_err_status == Core::LinAlg::TensorInterpolationErrorType::NoErrors,
       "Tensor interpolation failed with err: {}",
-      Core::LinAlg::TensorInterpolation::make_error_message(tensor_interpolator_err_status));
+      Core::LinAlg::make_error_message(tensor_interpolator_err_status));
 
 
   // reset iteration counter to 0, as we restart the Newton-Raphson Loop

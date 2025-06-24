@@ -10,6 +10,7 @@
 #include "4C_linalg_utils_tensor_interpolation.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_utils_scalar_interpolation.hpp"
 #include "4C_unittest_utils_assertions_test.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -35,12 +36,12 @@ namespace
     Core::LinAlg::Matrix<3, 3> temp3x3(Core::LinAlg::Initialization::zero);
 
     // create interpolation parameter object
-    Core::LinAlg::TensorInterpolation::InterpParams interp_params;
+    Core::LinAlg::ScalarInterpolationParams interp_params;
 
     // create tensor interpolator
-    Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1> interp{1,
-        Core::LinAlg::TensorInterpolation::RotationInterpolationType::RotationVector,
-        Core::LinAlg::TensorInterpolation::EigenvalInterpolationType::LOG, interp_params};
+    Core::LinAlg::SecondOrderTensorInterpolator<1> interp{1,
+        Core::LinAlg::RotationInterpolationType::RotationVector,
+        Core::LinAlg::EigenvalInterpolationType::LOG, interp_params};
 
     std::vector<Core::LinAlg::Matrix<3, 3>> ref_matrices;
     std::vector<Core::LinAlg::Matrix<1, 1>> ref_locs;
@@ -87,14 +88,12 @@ namespace
 
     Core::LinAlg::Matrix<1, 1> loc_interp(Core::LinAlg::Initialization::zero);
 
-    Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType err_type =
-        Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors;
+    Core::LinAlg::TensorInterpolationErrorType err_type =
+        Core::LinAlg::TensorInterpolationErrorType::NoErrors;
     Core::LinAlg::Matrix<3, 3> T_interp =
         interp.get_interpolated_matrix(ref_matrices, ref_locs, loc_interp, err_type);
-    FOUR_C_ASSERT_ALWAYS(
-        err_type == Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors,
-        "Tensor interpolation failed with err: {}",
-        Core::LinAlg::TensorInterpolation::make_error_message(err_type));
+    FOUR_C_ASSERT_ALWAYS(err_type == Core::LinAlg::TensorInterpolationErrorType::NoErrors,
+        "Tensor interpolation failed with err: {}", Core::LinAlg::make_error_message(err_type));
 
     // reference result
     Core::LinAlg::Matrix<3, 3> lambda_T_ref(Core::LinAlg::Initialization::zero);
@@ -127,12 +126,12 @@ namespace
     Core::LinAlg::Matrix<3, 3> temp3x3(Core::LinAlg::Initialization::zero);
 
     // create interpolation parameter object
-    Core::LinAlg::TensorInterpolation::InterpParams interp_params;
+    Core::LinAlg::ScalarInterpolationParams interp_params;
 
     // create tensor interpolator
-    Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1> interp{1,
-        Core::LinAlg::TensorInterpolation::RotationInterpolationType::RotationVector,
-        Core::LinAlg::TensorInterpolation::EigenvalInterpolationType::LOG, interp_params};
+    Core::LinAlg::SecondOrderTensorInterpolator<1> interp{1,
+        Core::LinAlg::RotationInterpolationType::RotationVector,
+        Core::LinAlg::EigenvalInterpolationType::LOG, interp_params};
 
     std::vector<Core::LinAlg::Matrix<3, 3>> ref_matrices;
     std::vector<Core::LinAlg::Matrix<1, 1>> ref_locs;
@@ -187,14 +186,12 @@ namespace
 
     Core::LinAlg::Matrix<1, 1> loc_interp(Core::LinAlg::Initialization::zero);
 
-    Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType err_type =
-        Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors;
+    Core::LinAlg::TensorInterpolationErrorType err_type =
+        Core::LinAlg::TensorInterpolationErrorType::NoErrors;
     Core::LinAlg::Matrix<3, 3> T_interp =
         interp.get_interpolated_matrix(ref_matrices, ref_locs, loc_interp, err_type);
-    FOUR_C_ASSERT_ALWAYS(
-        err_type == Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors,
-        "Tensor interpolation failed with err: {}",
-        Core::LinAlg::TensorInterpolation::make_error_message(err_type));
+    FOUR_C_ASSERT_ALWAYS(err_type == Core::LinAlg::TensorInterpolationErrorType::NoErrors,
+        "Tensor interpolation failed with err: {}", Core::LinAlg::make_error_message(err_type));
 
     // reference result
     Core::LinAlg::Matrix<3, 3> lambda_T_ref(Core::LinAlg::Initialization::zero);
@@ -299,25 +296,23 @@ namespace
         Core::LinAlg::calc_rot_vect_from_rot_matrix(right_matrix_Q);
 
     // create interpolation parameter object
-    Core::LinAlg::TensorInterpolation::InterpParams interp_params;
+    Core::LinAlg::ScalarInterpolationParams interp_params;
 
     // create tensor interpolator
-    Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1> interp{1,
-        Core::LinAlg::TensorInterpolation::RotationInterpolationType::RotationVector,
-        Core::LinAlg::TensorInterpolation::EigenvalInterpolationType::LOG, interp_params};
+    Core::LinAlg::SecondOrderTensorInterpolator<1> interp{1,
+        Core::LinAlg::RotationInterpolationType::RotationVector,
+        Core::LinAlg::EigenvalInterpolationType::LOG, interp_params};
 
     // get interp matrix (loc = specified)
     double loc = 5.695328e-01;
     std::vector<Core::LinAlg::Matrix<3, 3>> ref_matrices{left_matrix, right_matrix};
     std::vector<double> ref_locs{0.0, 1.0};
-    Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType err_type =
-        Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors;
+    Core::LinAlg::TensorInterpolationErrorType err_type =
+        Core::LinAlg::TensorInterpolationErrorType::NoErrors;
     Core::LinAlg::Matrix<3, 3> interp_matrix =
         interp.get_interpolated_matrix(ref_matrices, ref_locs, loc, err_type);
-    FOUR_C_ASSERT_ALWAYS(
-        err_type == Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors,
-        "Tensor interpolation failed with err: {}",
-        Core::LinAlg::TensorInterpolation::make_error_message(err_type));
+    FOUR_C_ASSERT_ALWAYS(err_type == Core::LinAlg::TensorInterpolationErrorType::NoErrors,
+        "Tensor interpolation failed with err: {}", Core::LinAlg::make_error_message(err_type));
 
     // perform polar decomposition of interp matrix
     Core::LinAlg::Matrix<3, 3> interp_matrix_R{Core::LinAlg::Initialization::zero};
@@ -518,37 +513,33 @@ namespace
     interp_loc(0) = 0.5;
 
     // create interpolation parameter object
-    Core::LinAlg::TensorInterpolation::InterpParams interp_params;
+    Core::LinAlg::ScalarInterpolationParams interp_params;
     interp_params.exponential_decay_c = 10.0;
-    interp_params.perturbation_factor = 1.0e-10;
+    const double perturbation_factor = 1.0e-10;
 
     // create tensor interpolator
-    Core::LinAlg::TensorInterpolation::SecondOrderTensorInterpolator<1> interp{1,
-        Core::LinAlg::TensorInterpolation::RotationInterpolationType::RotationVector,
-        Core::LinAlg::TensorInterpolation::EigenvalInterpolationType::LOG, interp_params};
+    Core::LinAlg::SecondOrderTensorInterpolator<1> interp{1,
+        Core::LinAlg::RotationInterpolationType::RotationVector,
+        Core::LinAlg::EigenvalInterpolationType::LOG, interp_params};
 
     // declare error type
-    Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType err_type =
-        Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors;
+    Core::LinAlg::TensorInterpolationErrorType err_type =
+        Core::LinAlg::TensorInterpolationErrorType::NoErrors;
 
     // get interpolation gradient
     std::vector<Core::LinAlg::Matrix<3, 3>> ref_matrices{left_matrix, right_matrix};
     std::vector<Core::LinAlg::Matrix<1, 1>> ref_locs{left_matrix_loc, right_matrix_loc};
     // ... using the standard method
-    Core::LinAlg::Matrix<9, 1> interp_gradient_standard =
-        interp.get_interpolation_gradient(ref_matrices, ref_locs, interp_loc, err_type);
-    FOUR_C_ASSERT_ALWAYS(
-        err_type == Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors,
-        "Tensor interpolation failed with err: {}",
-        Core::LinAlg::TensorInterpolation::make_error_message(err_type));
+    Core::LinAlg::Matrix<9, 1> interp_gradient_standard = interp.get_interpolation_gradient(
+        ref_matrices, ref_locs, interp_loc, err_type, perturbation_factor);
+    FOUR_C_ASSERT_ALWAYS(err_type == Core::LinAlg::TensorInterpolationErrorType::NoErrors,
+        "Tensor interpolation failed with err: {}", Core::LinAlg::make_error_message(err_type));
     // ... using the specialized method
     Core::LinAlg::Matrix<9, 1> interp_gradient_specialized = interp.get_interpolation_gradient(
         ref_matrices, std::vector<double>{left_matrix_loc(0, 0), right_matrix_loc(0, 0)},
-        interp_loc(0, 0), err_type);
-    FOUR_C_ASSERT_ALWAYS(
-        err_type == Core::LinAlg::TensorInterpolation::TensorInterpolationErrorType::NoErrors,
-        "Tensor interpolation failed with err: {}",
-        Core::LinAlg::TensorInterpolation::make_error_message(err_type));
+        interp_loc(0, 0), err_type, perturbation_factor);
+    FOUR_C_ASSERT_ALWAYS(err_type == Core::LinAlg::TensorInterpolationErrorType::NoErrors,
+        "Tensor interpolation failed with err: {}", Core::LinAlg::make_error_message(err_type));
 
 
     // declare the reference eigenvalue derivatives

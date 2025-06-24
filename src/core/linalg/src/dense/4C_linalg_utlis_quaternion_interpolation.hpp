@@ -64,8 +64,8 @@ namespace Core
       GeneralizedSphericalLinearInterpolator(
           const std::vector<Core::LinAlg::Matrix<4, 1>>& unit_quaternions,
           const std::vector<Core::LinAlg::Matrix<loc_dim, 1>>& ref_locs,
-          const Core::LinAlg::ScalarInterpolation::WeightingFunction weight_func,
-          const Core::LinAlg::ScalarInterpolation::InterpParams& interp_params);
+          const Core::LinAlg::ScalarInterpolationWeightingFunction weight_func,
+          const Core::LinAlg::ScalarInterpolationParams& interp_params);
 
       /**
        * @brief Constructs a GeneralizedSphericalLinearInterpolator with a set of normalized
@@ -212,8 +212,8 @@ namespace Core
       std::vector<Core::LinAlg::Matrix<4, 1>> unit_quaternions_;
       std::vector<double> normalized_weights_;
       std::vector<Core::LinAlg::Matrix<loc_dim, 1>> ref_locs_;
-      Core::LinAlg::ScalarInterpolation::WeightingFunction weight_func_;
-      Core::LinAlg::ScalarInterpolation::InterpParams interp_params_;
+      Core::LinAlg::ScalarInterpolationWeightingFunction weight_func_;
+      Core::LinAlg::ScalarInterpolationParams interp_params_;
     };
   }  // namespace LinAlg
 }  // namespace Core
