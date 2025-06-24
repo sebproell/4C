@@ -11,12 +11,14 @@
 
 #include "4C_unittest_utils_assertions_test.hpp"
 #include "4C_utils_exceptions.hpp"
+#include "4C_utils_symbolic_expression.fwd.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
 namespace
 {
   using FAD = Sacado::Fad::DFad<double>;
+  using Core::Utils::var;
 
   /// converts the values of variables from type double to FAD double and returns the modified
   /// vector of name-value-pairs
@@ -49,16 +51,16 @@ namespace
 
   TEST(SymbolicExpressionTest, TestNoVariables)
   {
-    Core::Utils::SymbolicExpression<double> symbolicexpression("2.0");
+    Core::Utils::SymbolicExpression<double, "t"> symbolicexpression("2.0");
 
-    EXPECT_DOUBLE_EQ(symbolicexpression.value(), 2.0);
+    EXPECT_DOUBLE_EQ(symbolicexpression.value(Core::Utils::var<"t">(0.)), 2.0);
   }
 
   TEST(SymbolicExpressionTest, TestValue)
   {
     Core::Utils::SymbolicExpression<double> symbolicexpression("2*x");
 
-    EXPECT_DOUBLE_EQ(symbolicexpression.value("x", 2.0), 4.0);
+    EXPECT_DOUBLE_EQ(symbolicexpression.value({{"x", 2.0}}), 4.0);
   }
 
   TEST(SymbolicExpressionTest, TestFirstDeriv)
@@ -87,47 +89,47 @@ namespace
 
   TEST(SymbolicExpressionTest, TestValidFunctionsAndOperators)
   {
-    Core::Utils::SymbolicExpression<double> symbolicexpression_sincostan(
+    Core::Utils::SymbolicExpression<double, "x"> symbolicexpression_sincostan(
         "2*cos(x) * sin(x) * tan(x) + cosh(x) * sinh(x) * tanh(x) + asin(1.0) * acos(0.5) * "
         "atan(1.0) ");
 
-    Core::Utils::SymbolicExpression<double> symbolicexpression_logexp(
+    Core::Utils::SymbolicExpression<double, "x", "y"> symbolicexpression_logexp(
         " log(exp(1)) * log10(y) - x");
 
-    Core::Utils::SymbolicExpression<double> symbolicexpression_sqrtheavisidefabs(
+    Core::Utils::SymbolicExpression<double, "x"> symbolicexpression_sqrtheavisidefabs(
         "sqrt(4) + heaviside(3.0) + fabs(2.3) / 1^1");
 
-    Core::Utils::SymbolicExpression<double> symbolicexpression_atan2("atan2(2,4)");
+    Core::Utils::SymbolicExpression<double, "x"> symbolicexpression_atan2("atan2(2,4)");
 
-    Core::Utils::SymbolicExpression<double> symbolicexpression_xpow2("x^2");
-    Core::Utils::SymbolicExpression<double> symbolicexpression_xtimesx("x * x");
+    Core::Utils::SymbolicExpression<double, "x"> symbolicexpression_xpow2("x^2");
+    Core::Utils::SymbolicExpression<double, "x"> symbolicexpression_xtimesx("x * x");
 
-    EXPECT_NEAR(
-        symbolicexpression_sincostan.value("x", 0.2, "y", 0.4), 1.4114033869288349, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_sincostan.value(var<"x">(0.2)), 1.4114033869288349, 1.0e-14);
 
-    EXPECT_NEAR(symbolicexpression_logexp.value("x", 0.2, "y", 0.4), -0.59794000867203767, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_logexp.value(var<"x">(0.2), var<"y">(0.4)), -0.59794000867203767,
+        1.0e-14);
 
-    EXPECT_NEAR(symbolicexpression_sqrtheavisidefabs.value(), 5.3, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_sqrtheavisidefabs.value(var<"x">(1.0)), 5.3, 1.0e-14);
 
-    EXPECT_NEAR(symbolicexpression_atan2.value(), 0.46364760900080609, 1.0e-14);
-    EXPECT_NEAR(symbolicexpression_xpow2.value("x", 0.2),
-        symbolicexpression_xtimesx.value("x", 0.2), 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_atan2.value(var<"x">(1.0)), 0.46364760900080609, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression_xpow2.value(var<"x">(0.2)),
+        symbolicexpression_xtimesx.value(var<"x">(0.2)), 1.0e-14);
   }
 
   TEST(SymbolicExpressionTest, TestValidLiterals)
   {
-    Core::Utils::SymbolicExpression<double> symbolicexpression("2*pi * 1.0e-3  + 3.0E-4 * x");
+    Core::Utils::SymbolicExpression<double, "x"> symbolicexpression("2*pi * 1.0e-3  + 3.0E-4 * x");
 
-    EXPECT_NEAR(symbolicexpression.value("x", 1.0), 0.0065831853071795865, 1.0e-14);
+    EXPECT_NEAR(symbolicexpression.value(var<"x">(1.0)), 0.0065831853071795865, 1.0e-14);
   }
 
   TEST(SymbolicExpressionTest, UnaryMinus)
   {
     Core::Utils::SymbolicExpression<double> symbolicexpression("-4.0 * t");
 
-    auto value = symbolicexpression.value("t", 1.0);
+    auto value = symbolicexpression.value({{"t", 1.0}});
     EXPECT_DOUBLE_EQ(value, -4.0);
-    auto first_derivative = symbolicexpression.first_derivative("t", FAD(1, 0, 1.0));
+    auto first_derivative = symbolicexpression.first_derivative({{"t", FAD(1, 0, 1.0)}});
     EXPECT_DOUBLE_EQ(first_derivative.dx(0), -4.0);
   }
 
@@ -135,14 +137,14 @@ namespace
   {
     Core::Utils::SymbolicExpression<double> symbolicexpression("1.23");
 
-    auto value = symbolicexpression.value("x", 1.0);
+    auto value = symbolicexpression.value({{"x", 1.0}});
     EXPECT_DOUBLE_EQ(value, 1.23);
   }
 
   TEST(SymbolicExpressionTest, SingleVariable)
   {
-    Core::Utils::SymbolicExpression<double> symbolicexpression("x");
-    auto value = symbolicexpression.value("x", 1.0);
+    Core::Utils::SymbolicExpression<double, "x"> symbolicexpression("x");
+    auto value = symbolicexpression.value(var<"x">(1.0));
     EXPECT_DOUBLE_EQ(value, 1.0);
   }
 
@@ -151,7 +153,7 @@ namespace
     Core::Utils::SymbolicExpression<double> symbolicexpression(
         "2*Variable1*Constant1*Variable2*Variable3");
 
-    EXPECT_ANY_THROW(symbolicexpression.value("Variable1", 1.0, "Constant1", 1.0));
+    EXPECT_ANY_THROW(symbolicexpression.value({{"Variable1", 1.0}, {"Constant1", 1.0}}));
   }
 
   TEST(SymbolicExpressionTest, InvalidOperatorThrows)
@@ -201,6 +203,30 @@ namespace
     Core::Utils::SymbolicExpression<double> another_expression("x");
     another_expression = std::move(moved_expression);
     EXPECT_DOUBLE_EQ(another_expression.value(variables), 16.0);
+  }
+
+  TEST(SymbolicExpressionTest, CompileTimeStrings)
+  {
+    constexpr Core::Utils::CompileTimeString x1{"x"};
+    constexpr Core::Utils::CompileTimeString x2{"x"};
+    constexpr Core::Utils::CompileTimeString y{"y"};
+    constexpr Core::Utils::CompileTimeString z{"abc"};
+
+    static_assert(x1 == x2);
+    static_assert(x1 != y);
+    static_assert(x1 != z);
+
+    static_assert(Core::Utils::index_of<"x", "x">() == 0);
+    static_assert(Core::Utils::index_of<"x", "other", "x", "another">() == 1);
+    static_assert(Core::Utils::index_of<"x", "other", "another">() == -1);
+  }
+
+  TEST(SymbolicExpressionTest, CompileTimeVariables)
+  {
+    Core::Utils::SymbolicExpression<double, "x", "y", "z"> symbolicexpression("2*x + y + 4*z");
+    auto value = symbolicexpression.value(
+        Core::Utils::var<"x">(1.0), Core::Utils::var<"y">(2.0), Core::Utils::var<"z">(3.0));
+    EXPECT_DOUBLE_EQ(value, 16.0);
   }
 
 

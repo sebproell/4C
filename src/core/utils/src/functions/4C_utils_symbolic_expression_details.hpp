@@ -14,6 +14,7 @@
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_fad_meta.hpp"
 #include "4C_utils_std23_unreachable.hpp"
+#include "4C_utils_symbolic_expression.fwd.hpp"
 
 #include <Sacado.hpp>
 
@@ -24,7 +25,6 @@
 #include <map>
 #include <memory>
 #include <numeric>
-#include <set>
 #include <string>
 #include <utility>
 
@@ -217,95 +217,36 @@ namespace Core::Utils::SymbolicExpressionDetails
   };
 
 
-  /*----------------------------------------------------------------------*/
-
-
-  /*!
-    \brief Parser
-    */
+  /**
+   * Parse symbolic expressions into a syntax tree.
+   */
   template <class T>
   class Parser
   {
    public:
     using NodePtr = SyntaxTreeNode*;
 
-    //! constructor
-    Parser(std::string funct);
-
-    //! destructor
-    ~Parser() = default;
-
-    //! copy constructor
-    Parser(const Parser& other) : symbolicexpression_(other.symbolicexpression_) { init(); }
-
-    //! copy assignment operator
-    Parser& operator=(const Parser& other)
+    //! Parse @p expression into a syntax tree.
+    Parser(std::string expression, const std::vector<std::string_view>& allowed_variable_names)
+        : allowed_variable_names_(allowed_variable_names), expression_(expression)
     {
-      if (&other == this) return *this;
-      symbolicexpression_ = other.symbolicexpression_;
-      node_arena_.clear();
-      instructions_.clear();
-      parsed_variable_constant_names_.clear();
-
-      init();
-      return *this;
-    };
-
-    //! move constructor
-    Parser(Parser&& other) noexcept = default;
-
-    //! move assignment operator
-    Parser& operator=(Parser&& other) noexcept = default;
-
-
-    /**
-     * @brief Evaluate the symbolic expression for key-value pairs.
-     *
-     * For example:
-     *
-     * @code
-     * expr.evaluate("x", 1.0, "y", 2.0);
-     * @endcode
-     */
-    template <typename... Args>
-    T evaluate(std::string_view first_key, const T& first_val, Args&&... args) const
-    {
-      return do_evaluate(first_key, first_val, std::forward<Args>(args)...);
+      allow_any_variable_ = allowed_variable_names_.empty();
+      parse();
     }
 
     /**
-     * @brief Evaluate the symbolic expression for a map-like container.
-     *
-     * @note If you know the argument names, prefer using the variadic template version that takes
-     * key-value pairs for better performance.
+     * Actual storage for all parsed syntax tree nodes. The first element is the root node of
+     * the tree.
      */
-    template <typename MapLike>
-    T evaluate(const MapLike& variable_values) const
-    {
-      return do_evaluate(variable_values);
-    }
+    std::vector<SyntaxTreeNode> node_arena_;
 
-    /**
-     * @brief Evaluate the symbolic expression without any arguments.
-     *
-     * This will only work if the expression is a constant without any variables.
-     */
-    T evaluate() const { return do_evaluate(); }
+    //! root node of the syntax tree
+    IndexType root_{invalid_index};
 
-    /**
-     * Print the bytecode instructions to the given output stream.
-     *
-     * This is useful for debugging and understanding how the expression is compiled.
-     */
-    void print_instructions(std::ostream& os) const;
+    //! All variables that were either allowed a priori or found in the expression.
+    std::vector<std::string_view> allowed_variable_names_;
 
    private:
-    void init()
-    {
-      parse();
-      compile();
-    }
-
     void parse();
     IndexType parse_primary(Lexer& lexer);
     IndexType parse_pow(Lexer& lexer);
@@ -321,24 +262,107 @@ namespace Core::Utils::SymbolicExpressionDetails
     //! Either return the index of @p var or give it a new one.
     IndexType create_variable(std::string_view var);
 
-    //! Compile the AST of this expression into bytecode.
-    void compile();
-
-    //! Evaluate the expression with the given arguments.
-    template <typename... Args>
-    T do_evaluate(Args&&... args) const;
-
-    //! Execute the compiled bytecode instructions.
-    void execute_bytecode(std::vector<T>& vm_memory) const;
-
     //! given symbolic expression
-    std::string symbolicexpression_;
+    std::string expression_;
+
+    bool allow_any_variable_{false};
+  };
+
+  /**
+   * Implementation of the symbolic expression.
+   *
+   * This class does all the heavy lifting of parsing the expression, compiling it into bytecode,
+   * and evaluating it for given variables.
+   */
+  template <typename Number, CompileTimeString... variables>
+  class Impl
+  {
+   public:
+    //! The variables that can be used in the expression. If empty, any variable can be used.
+    static constexpr std::array<std::string_view, sizeof...(variables)> variable_names = {
+        variables.value...};
+
+    //! Parse and compile the expression.
+    Impl(std::string expression) : expression_(std::move(expression)) { init(); }
+
+    //! Evaluate for statically known variables.
+    template <typename = void>
+      requires(sizeof...(variables) > 0)
+    Number evaluate(VarWrapper<variables, Number>&&... vars) const
+    {
+      // Move the variable values into a statically known slot in the memory.
+      ((vm_memory_[index_of<variables, variables...>()] = std::move(vars.value)), ...);
+
+      execute_bytecode(vm_memory_);
+
+      return vm_memory_[vm_result_index_];
+    }
+
+    //! Evaluate for dynamically specified variables.
+    template <typename = void>
+      requires(sizeof...(variables) == 0)
+    Number evaluate(const std::map<std::string, Number>& vars) const
+    {
+      CopyDynamicVariablesToMemoryHelper var_to_mem_helper{
+          .vm_memory = vm_memory_,
+          .identifiers = variable_names_,
+      };
+
+      var_to_mem_helper.fill_memory(vars);
+
+      if (var_to_mem_helper.touch_count != variable_names_.size())
+      {
+        std::string missing_variables;
+        for (const auto& var : variable_names_)
+        {
+          if (!vars.contains(var))
+          {
+            missing_variables += var + " ";
+          }
+        }
+
+        FOUR_C_THROW(
+            "Missing variables {}to evaluate expression '{}'", missing_variables, expression_);
+      }
+
+      execute_bytecode(vm_memory_);
+      return vm_memory_[vm_result_index_];
+    }
 
     /**
-     * Actual storage for all parsed syntax tree nodes. The first element is the root node of
-     * the tree.
+     * Print the bytecode instructions to the given output stream.
+     *
+     * This is useful for debugging and understanding how the expression is compiled.
      */
-    std::vector<SyntaxTreeNode> node_arena_;
+    void print_instructions(std::ostream& os) const;
+
+   private:
+    struct CopyDynamicVariablesToMemoryHelper
+    {
+      void fill_memory(const std::map<std::string, Number>& variable_values)
+      {
+        for (const auto& [key, val] : variable_values)
+        {
+          auto it = std::ranges::find(identifiers, key);
+          if (it != identifiers.end())
+          {
+            auto index = std::distance(identifiers.begin(), it);
+            vm_memory[index] = val;
+            touch_count++;
+          }
+        }
+      }
+
+      std::vector<Number>& vm_memory;
+      const std::vector<std::string>& identifiers;
+      unsigned touch_count{};
+    };
+
+    void init();
+
+    void compile(const Parser<Number>& parser);
+
+    void execute_bytecode(std::vector<Number>& memory) const;
 
     /**
      * The bytecode instructions that represent the parsed expression.
@@ -351,38 +375,23 @@ namespace Core::Utils::SymbolicExpressionDetails
      * the user variables and constants, the intermediate result registers and the numeric
      * constants. All sizes are fixed during compile().
      */
-    mutable std::vector<T> vm_memory_;
+    mutable std::vector<Number> vm_memory_;
     IndexType vm_register_size_{};
     //! The index in vm_memory_ where the result of the expression is stored.
     IndexType vm_result_index_{};
 
-    //! root node of the syntax tree
-    IndexType root_{invalid_index};
+    std::string expression_;
 
-    //! set of all parsed variables
-    std::vector<std::string_view> parsed_variable_constant_names_;
+    std::vector<std::string> variable_names_;
   };
 
-
-  /*======================================================================*/
-  /* Parser methods */
-
-  /*----------------------------------------------------------------------*/
-  /*!
-  \brief Constructor of parser object
-  */
-  template <class T>
-  Parser<T>::Parser(std::string funct) : symbolicexpression_{std::move(funct)}
-  {
-    init();
-  }
 
 
   template <class T>
   void Parser<T>::parse()
   {
     //! create Lexer which stores all token of funct
-    Lexer lexer{symbolicexpression_};
+    Lexer lexer{expression_};
 
     //! retrieve first token of funct
     lexer.lexan();
@@ -391,74 +400,6 @@ namespace Core::Utils::SymbolicExpressionDetails
     root_ = parse(lexer);
   }
 
-  template <typename T>
-  struct CopyVariablesToMemoryHelper
-  {
-    void fill_memory(const std::map<std::string, T>& variable_values)
-    {
-      for (const auto& [key, val] : variable_values)
-      {
-        fill_memory(key, val);
-      }
-    }
-
-    void fill_memory()
-    {  // base case for recursion
-    }
-
-    template <typename... Remainder>
-    void fill_memory(std::string_view key, const T& val, Remainder&&... remainder)
-    {
-      auto it = std::ranges::find(identifiers, key);
-      if (it != identifiers.end())
-      {
-        auto index = std::distance(identifiers.begin(), it);
-        vm_memory[index] = val;
-        touched.set(index);
-      }
-      fill_memory(std::forward<Remainder>(remainder)...);
-    }
-
-    std::vector<T>& vm_memory;
-    const std::vector<std::string_view>& identifiers;
-    static constexpr std::size_t max_variable_count = 64;
-    std::bitset<max_variable_count> touched{};
-  };
-
-  template <class T>
-  template <typename... Args>
-  T Parser<T>::do_evaluate(Args&&... args) const
-  {
-    CopyVariablesToMemoryHelper<T> var_to_mem_helper{
-        .vm_memory = vm_memory_,
-        .identifiers = parsed_variable_constant_names_,
-    };
-
-    var_to_mem_helper.fill_memory(std::forward<Args>(args)...);
-
-    if (var_to_mem_helper.touched.count() != parsed_variable_constant_names_.size())
-    {
-      std::string missing_variables;
-      for (size_t i = 0; i < parsed_variable_constant_names_.size(); ++i)
-      {
-        if (!var_to_mem_helper.touched[i])
-        {
-          missing_variables += std::string(parsed_variable_constant_names_[i]) + ",";
-        }
-      }
-      missing_variables.pop_back();  // remove last comma
-
-      FOUR_C_THROW("Missing variables {} to evaluate expression '{}'", missing_variables,
-          symbolicexpression_);
-    }
-
-    execute_bytecode(vm_memory_);
-
-    // Result is in the first register, which is directly after the last variable.
-    return vm_memory_[vm_result_index_];
-  }
-
-  /*----------------------------------------------------------------------*/
   /*!
   \brief Parse primary entities, i.e. literals and unary operators,
          such as numbers, parentheses, independent variables, operator names
@@ -667,7 +608,7 @@ namespace Core::Utils::SymbolicExpressionDetails
     FOUR_C_ASSERT_ALWAYS(node_arena_.size() < invalid_index,
         "Could not parse expression '{}'\nThis expression is too complicated and the number of AST "
         "nodes exceeds the maximum allowed size of {}.",
-        symbolicexpression_, invalid_index);
+        expression_, invalid_index);
 
     SyntaxTreeNode& node = node_arena_.emplace_back();
     node.as = value;
@@ -681,15 +622,24 @@ namespace Core::Utils::SymbolicExpressionDetails
   template <class T>
   IndexType Parser<T>::create_variable(std::string_view var)
   {
-    auto it = std::ranges::find(parsed_variable_constant_names_, var);
-    if (it != parsed_variable_constant_names_.end())
+    auto it = std::ranges::find(allowed_variable_names_, var);
+    // Variable is already known and allowed.
+    if (it != allowed_variable_names_.end())
     {
-      return std::distance(parsed_variable_constant_names_.begin(), it);
+      return std::distance(allowed_variable_names_.begin(), it);
     }
     else
     {
-      parsed_variable_constant_names_.emplace_back(var);
-      return parsed_variable_constant_names_.size() - 1;
+      if (allow_any_variable_)
+      {
+        // If we allow any variable, we just add it to the list of parsed variables.
+        allowed_variable_names_.emplace_back(var);
+        return allowed_variable_names_.size() - 1;
+      }
+      else
+      {
+        FOUR_C_THROW("While parsing '{}': variable '{}' is not allowed.", expression_, var);
+      }
     }
   }
 
@@ -727,16 +677,30 @@ namespace Core::Utils::SymbolicExpressionDetails
   }
 
 
-  template <class T>
-  void Parser<T>::compile()
+  template <typename T, CompileTimeString... variables>
+  void Impl<T, variables...>::init()
   {
+    // Use the variable names provided in the template parameters to initialize the parser.
+    // If no variable names are provided, we allow any variable name.
+    std::vector<std::string_view> allowed_variable_names(
+        variable_names.begin(), variable_names.end());
+    Parser<T> parser{expression_, allowed_variable_names};
+    compile(parser);
+  }
+
+
+  template <class T, CompileTimeString... variables>
+  void Impl<T, variables...>::compile(const Parser<T>& parser)
+  {
+    for (const auto& name : parser.allowed_variable_names_) variable_names_.emplace_back(name);
+
     // Order the data we operate on in one contiguous memory block.
     // First, we store the variables, then the registers, and finally the constants.
     // We know the number of variables from the parser, but we do not know the number of
     // constants and registers that will be used. These may change due to optimization.
     // While compiling, we use a large offset to distinguish between registers and constants and
     // fixup these cases in a second pass.
-    const IndexType registers_offset = parsed_variable_constant_names_.size();
+    const IndexType registers_offset = variable_names_.size();
     const IndexType tmp_constants_offset = std::numeric_limits<IndexType>::max() >> 1;
 
     // Track the current register index and remember the maximum index used.
@@ -783,7 +747,7 @@ namespace Core::Utils::SymbolicExpressionDetails
     // For compilation, we need a post-order traversal of the syntax tree. Since this order is also
     // exactly the order in which the AST was built, we can just take the nodes in the order they
     // are stored in the node_arena_ vector.
-    for (const auto& node : node_arena_)
+    for (const auto& node : parser.node_arena_)
     {
       switch (node.type)
       {
@@ -912,7 +876,7 @@ namespace Core::Utils::SymbolicExpressionDetails
     FOUR_C_ASSERT((stack_simulator.size() == 1),
         "Internal error: while compiling '{}'.\nStack contains {} values and {} instructions "
         "were compiled.",
-        symbolicexpression_, stack_simulator.size(), instructions_.size());
+        expression_, stack_simulator.size(), instructions_.size());
 
 
     // Now we can compute the correct offsets for the constants.
@@ -940,8 +904,8 @@ namespace Core::Utils::SymbolicExpressionDetails
   }
 
 
-  template <class T>
-  void Parser<T>::execute_bytecode(std::vector<T>& vm_memory) const
+  template <class T, CompileTimeString... variables>
+  void Impl<T, variables...>::execute_bytecode(std::vector<T>& vm_memory) const
   {
     for (const auto& instr : instructions_)
     {
@@ -978,17 +942,17 @@ namespace Core::Utils::SymbolicExpressionDetails
   }
 
 
-  template <class T>
-  void Parser<T>::print_instructions(std::ostream& os) const
+  template <class T, CompileTimeString... variables>
+  void Impl<T, variables...>::print_instructions(std::ostream& os) const
   {
     const auto operand = [&](IndexType index) -> std::string
     {
-      if (index < parsed_variable_constant_names_.size())
+      if (index < variable_names_.size())
       {
-        return std::string(parsed_variable_constant_names_[index]);
+        return std::string(variable_names_[index]);
       }
 
-      IndexType offset = parsed_variable_constant_names_.size();
+      IndexType offset = variable_names_.size();
       if (index < offset + vm_register_size_)
       {
         return "%" + std::to_string(index - offset);
@@ -1016,18 +980,19 @@ namespace Core::Utils::SymbolicExpressionDetails
       {
         os << EnumTools::enum_name(EnumTools::enum_value<UnaryFunctionType>(instr.function_index))
            << " " << operand(instr.src1) << ", "
-           << "%" << (instr.dst_reg - parsed_variable_constant_names_.size());
+           << "%" << (instr.dst_reg - variable_names_.size());
       }
       else
       {
         os << EnumTools::enum_name(EnumTools::enum_value<BinaryFunctionType>(instr.function_index))
            << " " << operand(instr.src1) << ", " << operand(instr.src2) << ", " << "%"
-           << (instr.dst_reg - parsed_variable_constant_names_.size());
+           << (instr.dst_reg - variable_names_.size());
       }
       os << '\n';
     }
     os << std::flush;
   }
+
 }  // namespace Core::Utils::SymbolicExpressionDetails
 
 FOUR_C_NAMESPACE_CLOSE

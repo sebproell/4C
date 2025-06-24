@@ -10,10 +10,10 @@
 
 #include "4C_config.hpp"
 
+#include "4C_utils_symbolic_expression.fwd.hpp"
 #include "4C_utils_symbolic_expression_details.hpp"
 
 #include <memory>
-#include <numeric>
 #include <string>
 
 FOUR_C_NAMESPACE_OPEN
@@ -21,26 +21,48 @@ FOUR_C_NAMESPACE_OPEN
 namespace Core::Utils
 {
   /*!
-   *  @brief The SymbolicExpression class evaluates and forms the first and second derivatives of
+   * @brief A SymbolicExpression evaluates and forms the first and second derivatives of
    * arbitrary symbolic expressions.
    *
    * The class constructs a SymbolicExpression from an expression string. The expression must only
    * contain supported functions ("acos", "asin", "atan", "cos", "sin", "tan", "cosh", "sinh",
    * "tanh", "exp", "log", "log10", "sqrt", "heaviside", "fabs", "atan2") literals
-   * ('1.0', 'pi', 'e', 'E', etc) and supported operators ("+", "-", "*", "/", "^", ".", ","). In
+   * ('1.0', 'pi', 'e', 'E', etc) and supported operators ("+", "-", "*", "/", "^"). In
    * addition, an arbitrary number of variables can be contained. Any substring that is not a number
-   * or supported function is parsed as a variable. When calling Value(), FirstDerivative() or
-   * SecondDerivative(), the variables that have been parsed need to be supplied with a value.
+   * or supported function is parsed as a variable. When calling value(), first_derivative() or
+   * second_derivative(), the variables that have been parsed need to be supplied with a value.
    *
-   * \note If you want to evaluate the same expression more than once, it is better to reuse that
-   * object of the SymbolicExpression instead of creating a new object of that class with the same
-   * expression so that the expression only needs to be parsed once.
+   * There are two ways to use this class:
+   *
+   * 1. Compile-time variables: The expression can be defined with compile-time variables, which
+   *    are defined as template parameters. This is the preferred, explicit, compile-time checked,
+   *    and efficient way to use this class.
+   *    Example:
+   *
+   *    @code
+   *    SymbolicExpression<double, "x", "y", "z"> expr("2*x + y/2 - 4*z");
+   *    expr.value(var<"x">(1.0), var<"y">(2.0), var<"z">(3.0));
+   *    @endcode
+   *
+   * 2. Run-time variables: The expression can be defined without compile-time variables, in which
+   *    case the variables are passed as a map of key-value pairs at runtime. Use this if you have
+   *    to, but be aware that this is less efficient and does not provide compile-time checks.
+   *    Example:
+   *
+   *    @code
+   *    SymbolicExpression<double> expr("2*x + y/2 - 4*z");
+   *    expr.value({{"x", 1.0}, {"y", 2.0}, {"z", 3.0}});
+   *    @endcode
+   *
+   * @note If you want to evaluate the same expression more than once, it is important to reuse a
+   * SymbolicExpression instead of creating a new one with the same expression so that the
+   * expression only needs to be parsed and compiled once.
    *
    * @tparam Number: Only an arithmetic type is allowed for template parameter. So far only double
    * is supported.
    */
 
-  template <typename Number>
+  template <typename Number, CompileTimeString... variables>
   class SymbolicExpression
   {
     static_assert(std::is_arithmetic_v<Number>, "Need an arithmetic type.");
@@ -53,13 +75,16 @@ namespace Core::Utils
     //! Type returned by the SecondDerivative() function
     using SecondDerivativeType = Sacado::Fad::DFad<Sacado::Fad::DFad<Number>>;
 
+    //! True if the expression contains compile-time variables, false otherwise.
+    static constexpr bool has_compile_time_variables = (sizeof...(variables) > 0);
+
     //! Construct a SymbolicExpression from the given @p expression string. The expression must only
     //! contain supported functions, literals and operators, as well as arbitrary number of
     //! variables. See the class documentation for more details.
-    SymbolicExpression(const std::string& expression);
+    explicit SymbolicExpression(const std::string& expression);
 
     //! destructor
-    ~SymbolicExpression();
+    ~SymbolicExpression() = default;
 
     //! copy constructor
     SymbolicExpression(const SymbolicExpression& other);
@@ -68,97 +93,169 @@ namespace Core::Utils
     SymbolicExpression& operator=(const SymbolicExpression& other);
 
     //! move constructor
-    SymbolicExpression(SymbolicExpression&& other) noexcept;
+    SymbolicExpression(SymbolicExpression&& other) noexcept = default;
 
     //! move assignment operator
-    SymbolicExpression& operator=(SymbolicExpression&& other) noexcept;
+    SymbolicExpression& operator=(SymbolicExpression&& other) noexcept = default;
 
+    /**
+     * @brief Evaluates the parsed expression with compile-time variables.
+     *
+     * Use the var() helper function to create the variables. The variables must be passed in the
+     * same order as they were defined in the template parameters.
+     */
+    template <typename = void>
+      requires(has_compile_time_variables)
+    ValueType value(VarWrapper<variables, ValueType>&&... vars) const
+    {
+      return impl_value_->evaluate(std::move(vars)...);
+    }
 
-    /*!
-     * @brief Evaluates the parsed expression for a given set of variables
-     *
-     * The variables can be either passed as key-value pairs (preferred) or as a map of keys and
-     * values (slower).
-     *
-     * @code
-     * symbolic_expression.value("x", 1.0, "y", 2.0);
-     * // or
-     * symbolic_expression.value({{"x", 1.0}, {"y", 2.0}});
-     * @endcode
+    /**
+     * @brief Evaluates the parsed expression with runtime variables.
      *
      * Failing to provide a value for a variable that is parsed in the expression will result in an
      * exception being thrown. It is *not* an error to provide a value for a variable that is
      * not parsed in the expression; the variable is simply ignored.
-     *
-     * @return A ValueType with the value of the expression evaluated for the given variables.
      */
-    template <typename... Args>
-    ValueType value(Args&&... args) const;
+    template <typename = void>
+      requires(!has_compile_time_variables)
+    ValueType value(const std::map<std::string, ValueType>& args) const
+    {
+      return impl_value_->evaluate(args);
+    }
+
+
+    /**
+     * @brief Evaluates the first derivative of the parsed expression with compile-time variables.
+     *
+     * Use the var() helper function to create the variables. The variables must be passed in the
+     * same order as they were defined in the template parameters. The values need to be of
+     * the FirstDerivativeType, which means an auto-differentiated type. How you set the values is
+     * up to the user. Specifically, it is not necessary to set up every variable for
+     * differentiation. Example:
+     *
+     * @code
+     * SymbolicExpression<double, "x", "y", "z"> expr("2*x + y/2 - 4*z");
+     * // Differentiating with respect to x and y, but not z.
+     * auto diff = expr.first_derivative(var<"x">(FirstDerivativeType(1, 0, 1.0)),
+     *   var<"y">(FirstDerivativeType(2, 1, 2.0)),
+     *   var<"z">(FirstDerivativeType(3.0)));
+     * @endcode
+     */
+    template <typename = void>
+      requires(has_compile_time_variables)
+    FirstDerivativeType first_derivative(VarWrapper<variables, FirstDerivativeType>&&... vars) const
+    {
+      return impl_first_deriv_->evaluate(std::move(vars)...);
+    }
 
 
     /*!
-     * @brief Evaluates the first derivative of the parsed expression.
+     * @brief Evaluates the first derivative of the parsed expression with runtime variables.
      *
-     * This functions makes use of the FirstDerivativeType to compute the first derivative. The
-     * variables can be either passed as key-value pairs (preferred) or as a map of keys and
-     * values (slower). The values need to be of FirstDerivativeType. See value() for the
-     * general syntax.
-     *
-     * @return A FirstDerivativeType object that contains the first derivatives of the expression
-     * with respect to the variables that were passed.
+     * See the other functions in this class for details on how to pass variables and set up the
+     * derivative values.
      */
-    template <typename... Args>
-    FirstDerivativeType first_derivative(Args&&... args) const;
+    template <typename = void>
+      requires(!has_compile_time_variables)
+    FirstDerivativeType first_derivative(
+        const std::map<std::string, FirstDerivativeType>& args) const
+    {
+      return impl_first_deriv_->evaluate(args);
+    }
 
 
     /*!
-     * @brief Evaluates the second derivative of the parsed expression.
+     * @brief Evaluates the second derivative of the parsed expression with compile-time variables.
      *
-     * This functions makes use of the SecondDerivativeType to compute the second derivative. The
-     * variables can be either passed as key-value pairs (preferred) or as a map of keys and
-     * values (slower). The values need to be of SecondDerivativeType. See value() for the
-     * general syntax.
-     *
-     * @returns A SecondDerivativeType object that contains the second derivatives of the expression
-     * with respect to the variables that were passed.
+     * See the other functions in this class for details on how to pass variables and set up the
+     * derivative values.
      */
-    template <typename... Args>
-    SecondDerivativeType second_derivative(Args&&... args) const;
+    template <typename = void>
+      requires(has_compile_time_variables)
+    SecondDerivativeType second_derivative(
+        VarWrapper<variables, SecondDerivativeType>&&... vars) const
+    {
+      return impl_second_deriv_->evaluate(std::move(vars)...);
+    }
+
+
+    /**
+     * @brief Evaluates the second derivative of the parsed expression with runtime variables.
+     *
+     * See the other functions in this class for details on how to pass variables and set up the
+     * derivative values.
+     */
+    template <typename = void>
+      requires(!has_compile_time_variables)
+    SecondDerivativeType second_derivative(
+        const std::map<std::string, SecondDerivativeType>& args) const
+    {
+      return impl_second_deriv_->evaluate(args);
+    }
 
    private:
-    //! Parser for the symbolic expression evaluation
-    std::unique_ptr<Core::Utils::SymbolicExpressionDetails::Parser<ValueType>> parser_for_value_;
+    std::unique_ptr<Core::Utils::SymbolicExpressionDetails::Impl<ValueType, variables...>>
+        impl_value_;
 
-    //! Parser for the symbolic expression first derivative evaluation
-    std::unique_ptr<Core::Utils::SymbolicExpressionDetails::Parser<FirstDerivativeType>>
-        parser_for_firstderivative_;
+    std::unique_ptr<Core::Utils::SymbolicExpressionDetails::Impl<FirstDerivativeType, variables...>>
+        impl_first_deriv_;
 
-    //! Parser for the symbolic expression second derivative evaluation
-    std::unique_ptr<Core::Utils::SymbolicExpressionDetails::Parser<SecondDerivativeType>>
-        parser_for_secondderivative_;
+    std::unique_ptr<
+        Core::Utils::SymbolicExpressionDetails::Impl<SecondDerivativeType, variables...>>
+        impl_second_deriv_;
   };
 
-  template <typename T>
-  template <typename... Args>
-  auto SymbolicExpression<T>::value(Args&&... args) const -> ValueType
+
+  template <typename Number, Core::Utils::CompileTimeString... variables>
+  Core::Utils::SymbolicExpression<Number, variables...>::SymbolicExpression(
+      const std::string& expression)
+      : impl_value_(
+            std::make_unique<Core::Utils::SymbolicExpressionDetails::Impl<ValueType, variables...>>(
+                expression)),
+        impl_first_deriv_(std::make_unique<
+            Core::Utils::SymbolicExpressionDetails::Impl<FirstDerivativeType, variables...>>(
+            expression)),
+        impl_second_deriv_(std::make_unique<
+            Core::Utils::SymbolicExpressionDetails::Impl<SecondDerivativeType, variables...>>(
+            expression))
   {
-    return parser_for_value_->evaluate(std::forward<Args>(args)...);
   }
 
 
-  template <typename T>
-  template <typename... Args>
-  auto SymbolicExpression<T>::first_derivative(Args&&... args) const -> FirstDerivativeType
+
+  template <typename Number, Core::Utils::CompileTimeString... variables>
+  Core::Utils::SymbolicExpression<Number, variables...>::SymbolicExpression(
+      const Core::Utils::SymbolicExpression<Number, variables...>& other)
+      : impl_value_{std::make_unique<
+            Core::Utils::SymbolicExpressionDetails::Impl<ValueType, variables...>>(
+            *other.impl_value_)},
+        impl_first_deriv_{std::make_unique<
+            Core::Utils::SymbolicExpressionDetails::Impl<FirstDerivativeType, variables...>>(
+            *other.impl_first_deriv_)},
+        impl_second_deriv_{std::make_unique<
+            Core::Utils::SymbolicExpressionDetails::Impl<SecondDerivativeType, variables...>>(
+            *other.impl_second_deriv_)}
   {
-    return parser_for_firstderivative_->evaluate(std::forward<Args>(args)...);
   }
 
 
-  template <typename T>
-  template <typename... Args>
-  auto SymbolicExpression<T>::second_derivative(Args&&... args) const -> SecondDerivativeType
+  template <typename Number, Core::Utils::CompileTimeString... variables>
+  Core::Utils::SymbolicExpression<Number, variables...>&
+  Core::Utils::SymbolicExpression<Number, variables...>::operator=(
+      const Core::Utils::SymbolicExpression<Number, variables...>& other)
   {
-    return parser_for_secondderivative_->evaluate(std::forward<Args>(args)...);
+    impl_value_ =
+        std::make_unique<Core::Utils::SymbolicExpressionDetails::Impl<ValueType, variables...>>(
+            *other.impl_value_);
+    impl_first_deriv_ = std::make_unique<
+        Core::Utils::SymbolicExpressionDetails::Impl<FirstDerivativeType, variables...>>(
+        *other.impl_first_deriv_);
+    impl_second_deriv_ = std::make_unique<
+        Core::Utils::SymbolicExpressionDetails::Impl<SecondDerivativeType, variables...>>(
+        *other.impl_second_deriv_);
+    return *this;
   }
 
 }  // namespace Core::Utils
