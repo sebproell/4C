@@ -47,7 +47,7 @@ if(NOT DEFINED FOUR_C_BUILD_SHARED_LIBS AND DEFINED BUILD_SHARED_LIBS)
 endif()
 
 four_c_process_global_option(
-  FOUR_C_BUILD_SHARED_LIBS "Build shared libraries instead of static ones" OFF
+  FOUR_C_BUILD_SHARED_LIBS "Build shared libraries instead of static ones" ON
   )
 set(BUILD_SHARED_LIBS
     ${FOUR_C_BUILD_SHARED_LIBS}
