@@ -525,7 +525,8 @@ Core::LinAlg::GeneralizedSphericalLinearInterpolator<loc_dim>::gram_schmidt_orth
   gs_basis(2, 3) = -gs_basis(0, 2) * d24 + gs_basis(1, 2) * d14 - gs_basis(3, 2) * d12;
   gs_basis(3, 3) = gs_basis(0, 2) * d23 - gs_basis(1, 2) * d13 + gs_basis(2, 2) * d12;
 
-  assert(gs_basis.determinant() < 1.0 - 1e-8 && gs_basis.determinant() > 1.0 + 1e-8);
+  FOUR_C_ASSERT(
+      std::abs(gs_basis.determinant() - 1.0) < 1e-8, "Determinant of the basis is not 1.");
 
   return gs_basis;
 }
