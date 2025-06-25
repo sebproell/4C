@@ -675,7 +675,7 @@ bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
       return true;
     }
 
-    if (!data.required.value())
+    if (!data.required)
     {
       // Not present and not required.
       match_entry.state = IO::Internal::MatchEntry::State::not_required;
@@ -735,8 +735,7 @@ void Core::IO::Internal::GroupSpec::emit_metadata(YamlNodeRef node) const
   {
     node.node["description"] << data.description;
   }
-  emit_value_as_yaml(node.wrap(node.node["required"]), data.required.value());
-  emit_value_as_yaml(node.wrap(node.node["defaultable"]), data.defaultable);
+  emit_value_as_yaml(node.wrap(node.node["required"]), data.required);
   node.node["specs"] |= ryml::SEQ;
   {
     auto child = node.node["specs"].append_child();
@@ -762,14 +761,14 @@ bool Core::IO::Internal::GroupSpec::emit(YamlNodeRef node, const InputParameterC
       return false;
     }
     // If no children were added, remove the group node as well, unless it is required.
-    if (!data.required.value() && group_node.num_children() == 0)
+    if (!data.required && group_node.num_children() == 0)
     {
       checkpoint.restore();
     }
     return true;
   }
   // If group is not present, success depends on whether it is required.
-  return !data.required.value();
+  return !data.required;
 }
 
 void Core::IO::Internal::AllOfSpec::parse(
@@ -1296,56 +1295,6 @@ Core::IO::InputSpec Core::IO::Internal::wrap_with_all_of(Core::IO::InputSpec spe
     return make_all_of({std::move(spec)});
 }
 
-Core::IO::InputSpec Core::IO::InputSpecBuilders::group(
-    std::string name, std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupData data)
-{
-  auto internal_all_of = make_all_of(std::move(specs));
-
-  if (auto* stores_to = internal_all_of.impl().data.stores_to;
-      stores_to && *stores_to != typeid(InputParameterContainer))
-  {
-    FOUR_C_THROW(
-        "Group '{}' cannot store to type '{}'. Groups can only store to InputParameterContainer.\n"
-        "Did you mean to use a group_struct?",
-        name, Core::Utils::try_demangle(stores_to->name()));
-  }
-
-  if (!data.required.has_value())
-  {
-    data.required = !data.defaultable;
-  }
-  if (data.required.value() && data.defaultable)
-  {
-    FOUR_C_THROW("Group '{}': a group cannot be both required and defaultable.", name);
-  }
-  if (data.defaultable && !internal_all_of.impl().has_default_value())
-  {
-    FOUR_C_THROW(
-        "Group '{}': a group cannot be defaultable if not all of its child specs have default "
-        "values.",
-        name.c_str());
-  }
-
-  InputSpecImpl::CommonData common_data{
-      .name = name,
-      .description = data.description,
-      .required = data.required.value(),
-      .has_default_value = data.defaultable,
-      .n_specs = internal_all_of.impl().data.n_specs + 1,
-      .type = InputSpecType::group,
-      .stores_to = &typeid(InputParameterContainer),
-  };
-
-  return IO::Internal::make_spec(
-      Internal::GroupSpec{
-          .name = name,
-          .data = std::move(data),
-          .spec = std::move(internal_all_of),
-          .init_my_storage = init_storage_with_container,
-          .move_my_storage = store_container_in_container(name),
-      },
-      common_data);
-}
 
 Core::IO::InputSpec Core::IO::InputSpecBuilders::all_of(std::vector<InputSpec> specs)
 {

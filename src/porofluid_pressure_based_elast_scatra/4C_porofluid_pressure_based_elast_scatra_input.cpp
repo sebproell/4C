@@ -63,8 +63,8 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast_scatra(
               {.description = "What to do with time integration when Poromultiphase-Scatra "
                               "iteration failed",
                   .default_value = DivergenceAction::stop})},
-      {.defaultable =
-              true});  // ----------------------------------------------------------------------
+      {.required =
+              false});  // ----------------------------------------------------------------------
   // (2) monolithic parameters
   list["POROMULTIPHASESCATRA DYNAMIC/MONOLITHIC"] = group("POROMULTIPHASESCATRA DYNAMIC/MONOLITHIC",
       {
@@ -123,7 +123,7 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast_scatra(
           parameter<Core::LinAlg::EquilibrationMethod>("EQUILIBRATION",
               {.description = "flag for equilibration of global system of equations",
                   .default_value = Core::LinAlg::EquilibrationMethod::none})},
-      {.defaultable = true});
+      {.required = false});
 
   // ----------------------------------------------------------------------
   // (3) partitioned parameters
@@ -135,7 +135,7 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast_scatra(
               parameter<double>(
                   "CONVTOL", {.description = "tolerance for convergence check of outer iteration",
                                  .default_value = 1e-6})},
-          {.defaultable = true});
+          {.required = false});
 }
 
 void PoroPressureBased::set_valid_conditions_porofluid_elast_scatra(

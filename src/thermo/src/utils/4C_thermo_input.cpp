@@ -168,8 +168,8 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
                   .default_value = no_error_calculation}),
           parameter<int>("CALCERRORFUNCNO",
               {.description = "Function for Error Calculation", .default_value = -1})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   /* parameters for generalised-alpha thermal integrator */
   list["THERMAL DYNAMIC/GENALPHA"] = group("THERMAL DYNAMIC/GENALPHA",
       {
@@ -192,7 +192,7 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
               {.description = "Generalised-alpha factor in [0.5,1)", .default_value = 0.5}),
           parameter<double>("RHO_INF",
               {.description = "Generalised-alpha factor in [0,1]", .default_value = -1.0})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for one-step-theta thermal integrator */
@@ -201,7 +201,7 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
 
           parameter<double>(
               "THETA", {.description = "One-step-theta factor in (0,1]", .default_value = 0.5})},
-      {.defaultable = true});
+      {.required = false});
 
   // vtk runtime output
   {
@@ -235,7 +235,7 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
             // whether to write node GIDs
             parameter<bool>("NODE_GID",
                 {.description = "write 4C internal node GIDs", .default_value = false})},
-        {.defaultable = true});
+        {.required = false});
   }
 
   // csv runtime output
@@ -250,7 +250,7 @@ void Thermo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
             // whether to write energy state
             parameter<bool>(
                 "ENERGY", {.description = "write energy output", .default_value = false})},
-        {.defaultable = true});
+        {.required = false});
   }
 }
 

@@ -72,8 +72,7 @@ void EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
           parameter<bool>("DRY_CONTACT_MODEL",
               {.description = "set unprojectable nodes to zero pressure via Dirichlet condition",
                   .default_value = false})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required = false});
   /* parameters for monolithic EHL */
   list["ELASTO HYDRO DYNAMIC/MONOLITHIC"] = group("ELASTO HYDRO DYNAMIC/MONOLITHIC",
       {
@@ -152,7 +151,7 @@ void EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
 
           parameter<bool>("INFNORMSCALING",
               {.description = "Scale blocks of matrix with row infnorm?", .default_value = true})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for partitioned EHL */
@@ -175,7 +174,7 @@ void EHL::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
               {.description =
                       "tolerance for convergence check of outer iteration within partitioned EHL",
                   .default_value = 1e-6})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

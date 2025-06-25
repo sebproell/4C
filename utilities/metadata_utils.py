@@ -277,7 +277,6 @@ class Group(Collection):
     specs: list = field(default_factory=list)
     name: str = None
     noneable: bool = False
-    defaultable: bool = False
 
     def short_description(self):
         """Create short description."""

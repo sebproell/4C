@@ -189,7 +189,6 @@ def schema_from_group(group):
     # Use All_of to create the schema
     metadata_dict = asdict(group)
     noneable = metadata_dict.pop("noneable", False)
-    metadata_dict.pop("defaultable", False)
     schema = schema_from_all_of(All_Of(**metadata_dict))
     schema["title"] = group.short_description()
 

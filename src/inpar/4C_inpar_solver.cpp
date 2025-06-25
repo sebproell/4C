@@ -149,7 +149,7 @@ namespace Inpar::SOLVER
       std::stringstream ss_description;
       ss_description << "solver parameters for solver block " << i;
       list[ss.str()] = Core::IO::InputSpecBuilders::group(
-          ss.str(), {spec_solver}, {.description = ss_description.str(), .defaultable = true});
+          ss.str(), {spec_solver}, {.description = ss_description.str(), .required = false});
     }
   }
 

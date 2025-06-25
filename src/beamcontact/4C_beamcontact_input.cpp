@@ -189,8 +189,7 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           parameter<int>(
               "BEAMS_BOXESINOCT", {.description = "max number of bounding boxes in any leaf octant",
                                       .default_value = 8})},
-      {.defaultable =
-              true}); /*------------------------------------------------------------------------*/
+      {.required = false});
   /* parameters for visualization of beam contact via output at runtime */
 
   list["BEAM CONTACT/RUNTIME VTK OUTPUT"] = group("BEAM CONTACT/RUNTIME VTK OUTPUT",
@@ -220,7 +219,7 @@ void BeamContact::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
           parameter<bool>(
               "GAPS", {.description = "write visualization output for gap, i.e. penetration",
                           .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 /**

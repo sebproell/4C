@@ -59,7 +59,7 @@ void Inpar::ArtDyn::set_valid_parameters(std::map<std::string, Core::IO::InputSp
               },
               {.description = "Initial Field for artery problem",
                   .default_value = initfield_zero_field})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 
@@ -91,7 +91,7 @@ void Inpar::ArteryNetwork::set_valid_parameters(std::map<std::string, Core::IO::
           parameter<double>("MAXTIME", {.description = "", .default_value = 4.0}),
 
           parameter<double>("NORMAL", {.description = "", .default_value = 1.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 
@@ -258,7 +258,7 @@ void Inpar::BioFilm::set_valid_parameters(std::map<std::string, Core::IO::InputS
           parameter<bool>(
               "OUTPUT_GMSH", {.description = "Do you want to write Gmsh postprocessing files?",
                                  .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

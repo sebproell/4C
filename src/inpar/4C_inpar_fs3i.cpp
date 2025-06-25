@@ -113,7 +113,7 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
                   .default_value = false}),
 
       },
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for partitioned FS3I */
@@ -134,7 +134,7 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 
           parameter<int>("ITEMAX",
               {.description = "Maximum number of outer iterations", .default_value = 10})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------  */
   /* parameters for stabilization of the structure-scalar field             */
@@ -145,7 +145,7 @@ void Inpar::FS3I::set_valid_parameters(std::map<std::string, Core::IO::InputSpec
 
   list["FS3I DYNAMIC/STRUCTURE SCALAR STABILIZATION"] =
       group("FS3I DYNAMIC/STRUCTURE SCALAR STABILIZATION",
-          {Inpar::ScaTra::all_specs_for_scatra_stabilization()}, {.defaultable = true});
+          {Inpar::ScaTra::all_specs_for_scatra_stabilization()}, {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

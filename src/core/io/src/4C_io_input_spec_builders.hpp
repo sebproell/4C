@@ -784,7 +784,7 @@ namespace Core::IO
       StoreFunction<DefaultStorage> transform_data{nullptr};
     };
 
-    //! Additional parameters for a group().
+    template <typename T>
     struct GroupData
     {
       /**
@@ -795,33 +795,7 @@ namespace Core::IO
       /**
        * Whether the Group is required or optional.
        */
-      std::optional<bool> required{};
-
-      /**
-       * Whether the Group will store itself and its children with defaulted values, if the Group
-       * is not encountered in the input. This only works if all children have default values.
-       */
-      bool defaultable{};
-    };
-
-    template <typename T>
-    struct GroupStructData
-    {
-      /**
-       * An optional description of the Group.
-       */
-      std::string description{};
-
-      /**
-       * Whether the Group is required or optional.
-       */
-      std::optional<bool> required{};
-
-      /**
-       * Whether the Group will store itself and its children with defaulted values, if the Group
-       * is not encountered in the input. This only works if all children have default values.
-       */
-      bool defaultable{};
+      bool required{true};
 
       /**
        * An optional function to store a parsed value. See the in_struct() function for more
@@ -992,7 +966,12 @@ namespace Core::IO
     struct GroupSpec
     {
       std::string name;
-      InputSpecBuilders::GroupData data;
+      struct
+      {
+        std::string description;
+        bool required;
+        bool defaultable;
+      } data;
       //! A logical spec with the content of the group.
       InputSpec spec;
 
@@ -1135,7 +1114,7 @@ namespace Core::IO
      * value is stored in an InputParameterContainer. Another powerful way is to use the
      * in_struct() function to attach a struct member to the parameter. In this case, the
      * parsed value will be stored in the struct member. Note that you will need to provide this
-     * struct by using the group_struct() function. See the documentation there for a usage example.
+     * struct by using the group() function. See the documentation there for a usage example.
      *
      * After parsing an InputSpec, the value of the parameter can be retrieved from storage, either
      * an InputParameterContainer or a struct. If `default_value` is set, the parameter is
@@ -1276,31 +1255,9 @@ namespace Core::IO
      * exactly what you need: a group activates a feature which requires certain parameters to
      * be present.
      *
-     * Whether a group can have a default value is determined by the default values of its children.
-     * If all of its children have default values, the group can have a default value. In this case,
-     * you may set the `defaultable` option to guarantee that the default values of the children are
-     * stored under the group name in the container, even if the group is not present in the input.
-     * Obviously, this only makes sense if the group is not required.
-     * This behavior is analogous to the behavior of the parameter() function. While parameters with
-     * default values are often a good idea (if the default value is meaningful), groups with
-     * default values are less common. If you follow the advice to use groups to activate features,
-     * you will usually have required parameters in the group and, consequently, the group cannot be
-     * `defaultable`. Put differently, if you have a group with many default values, you are likely
-     * not using the InputSpecs to their full potential. Consider splitting the group into multiple
-     * smaller groups or use the one_of() function to select between different groups.
-     *
-     * @note If you want to group multiple InputSpecs without creating a new named scope, use the
-     * all_of() function.
-     *
-     * @relatedalso InputSpec
-     */
-    [[nodiscard]] InputSpec group(
-        std::string name, std::vector<InputSpec> specs, GroupData data = {});
-
-    /**
-     * This function shares all the properties of group(), but it allows you to create a group that
-     * stores the parsed values in a struct rather than in a container. You want to use this
-     * function in combination with a parameter() that stores its parsed value into a struct.
+     * An alternative way to use groups is to store the parsed values in a struct. In this case,
+     * you can use the `store` option in the GroupData struct to specify how the parsed values
+     * should be stored.
      *
      * Example:
      *
@@ -1317,10 +1274,10 @@ namespace Core::IO
      *   Data data;
      * };
      *
-     * auto spec = group_struct<TimeIntegration>("time_integration",
+     * auto spec = group<TimeIntegration>("time_integration",
      *     {
      *         parameter<double>("time_step", {.store = in_struct(&TimeIntegration::time_step)}),
-     *         group_struct<Data>("data",
+     *         group<Data>("data",
      *             {
      *                 parameter<double>("alpha_f", {.store = in_struct(&Data::alpha_f)}),
      *                 parameter<double>("alpha_m", {.store = in_struct(&Data::alpha_m)}),
@@ -1330,15 +1287,39 @@ namespace Core::IO
      * @endcode
      *
      * The innermost parameters are stored in a `Data` struct, which is itself stored in the
-     * `data` member of the `TimeIntegration` struct. The outer group_struct() does not specify
+     * `data` member of the `TimeIntegration` struct. The outer group() does not specify
      * any special store behavior, so it stores the parsed value in an InputParameterContainer.
      *
-     * @note Providing inconsistent types for the store functions and group_struct() will cause
+     * @note Providing inconsistent types for the store functions and group() will cause
      * a runtime error.
+     *
+     * Whether a group can have a default value is determined by the default values of its children.
+     * If all of its children have default values, the group can have a default value. In this case,
+     * setting `.required = false` guarantees that the default values of the children are
+     * stored under the group name in the container, even if the group is not present in the input.
+     * This behavior is analogous to the behavior of the parameter() function. While parameters with
+     * default values are often a good idea (if the default value is meaningful), groups with
+     * default values are less common. If you follow the advice to use groups to activate features,
+     * you will usually have required parameters in the group and, consequently, the group will not
+     * be defaultable. Put differently, if you have a group with many default values, you are likely
+     * not using the InputSpecs to their full potential. Consider splitting the group into multiple
+     * smaller groups or use selection() to select between different groups.
+     *
+     * @note If you want to group multiple InputSpecs without creating a new named scope, use the
+     * all_of() function.
+     *
+     * @relatedalso InputSpec
      */
-    template <typename T>
-    [[nodiscard]] InputSpec group_struct(
-        std::string name, std::vector<InputSpec> specs, GroupStructData<T> data = {});
+    template <typename StorageType = DefaultStorage>
+    [[nodiscard]] InputSpec group(
+        std::string name, std::vector<InputSpec> specs, GroupData<StorageType> data = {});
+
+    /**
+     * This function shares all the properties of group(), but it allows you to create a group that
+     * stores the parsed values in a struct rather than in a container. You want to use this
+     * function in combination with a parameter() that stores its parsed value into a struct.
+     *
+     */
 
     /**
      * This function is used to select one of multiple InputSpecs based on the value of an
@@ -1408,13 +1389,13 @@ namespace Core::IO
      *   std::variant<Ost, GenAlpha> parameters;
      * };
      *
-     * auto ost = group_struct<Ost>("ost",
+     * auto ost = group<Ost>("ost",
      *     {
      *         parameter<double>("theta", {.store = in_struct(&Ost::theta)}),
      *     },
      *     {.store = as_variant<Ost>(&TimeIntegrationParameters::parameters)});
      *
-     * auto gen_alpha = group_struct<GenAlpha>("gen_alpha",
+     * auto gen_alpha = group<GenAlpha>("gen_alpha",
      *     {
      *         parameter<double>("alpha_f", {.store = in_struct(&GenAlpha::alpha_f)}),
      *         parameter<double>("alpha_m", {.store = in_struct(&GenAlpha::alpha_m)}),
@@ -1426,8 +1407,8 @@ namespace Core::IO
      *     {.store_selector = in_struct(&TimeIntegrationParameters::scheme)});
      * @endcode
      *
-     * Note that you need to enhance every choice of the selection to be a group_struct(), so that
-     * there is a clear type for the parsed value. Every group_struct() can store to the variant
+     * Note that you need to enhance every choice of the selection to be a group(), so that
+     * there is a clear type for the parsed value. Every group() can store to the variant
      * that encodes the selection in a type.
      */
     template <typename Selector, typename StorageType = DefaultStorage>
@@ -2574,43 +2555,39 @@ auto Core::IO::InputSpecBuilders::store_index_as(std::string name, std::vector<T
   };
 }
 
-
-template <typename T>
-Core::IO::InputSpec Core::IO::InputSpecBuilders::group_struct(std::string name,
-    std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupStructData<T> data)
+template <typename StorageType>
+Core::IO::InputSpec Core::IO::InputSpecBuilders::group(std::string name,
+    std::vector<InputSpec> specs, Core::IO::InputSpecBuilders::GroupData<StorageType> data)
 {
   auto internal_all_of = all_of(std::move(specs));
 
-  if (auto* stores_to = internal_all_of.impl().data.stores_to; stores_to && *stores_to != typeid(T))
+  if (auto* stores_to = internal_all_of.impl().data.stores_to;
+      stores_to && *stores_to != typeid(StorageType))
   {
-    FOUR_C_THROW("Group_struct '{}' of type '{}' contains specs that store to '{}'.", name,
-        Core::Utils::try_demangle(typeid(T).name()), Core::Utils::try_demangle(stores_to->name()));
+    FOUR_C_THROW("Group '{}' is stored as '{}' but contains specs that store to '{}'.", name,
+        Core::Utils::try_demangle(typeid(StorageType).name()),
+        Core::Utils::try_demangle(stores_to->name()));
   }
 
-  if (!data.required.has_value())
-  {
-    data.required = !data.defaultable;
-  }
-  if (data.required.value() && data.defaultable)
-  {
-    FOUR_C_THROW("Group '{}': a group cannot be both required and defaultable.", name);
-  }
-  if (data.defaultable && !internal_all_of.impl().has_default_value())
-  {
-    FOUR_C_THROW(
-        "Group '{}': a group cannot be defaultable if not all of its child specs have default "
-        "values.",
-        name.c_str());
-  }
+  // The group is defaultable if it is not required and all child specs are defaultable.
+  const bool defaultable = !data.required && internal_all_of.impl().has_default_value();
 
-  auto move_my_storage =
-      Internal::wrap_group_in_container<T>(data.store ? data.store : in_container<T>(name));
+  StoreFunction<Storage> move_my_storage;
+  if constexpr (std::is_same_v<StorageType, DefaultStorage>)
+  {
+    move_my_storage = Internal::store_container_in_container(name);
+  }
+  else
+  {
+    move_my_storage = Internal::wrap_group_in_container<StorageType>(
+        data.store ? data.store : in_container<StorageType>(name));
+  }
 
   Internal::InputSpecImpl::CommonData common_data{
       .name = name,
       .description = data.description,
-      .required = data.required.value(),
-      .has_default_value = data.defaultable,
+      .required = data.required,
+      .has_default_value = defaultable,
       .n_specs = internal_all_of.impl().data.n_specs + 1,
       .type = Internal::InputSpecType::group,
       .stores_to = &move_my_storage.stores_to(),
@@ -2623,10 +2600,10 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::group_struct(std::string name,
               {
                   .description = data.description,
                   .required = data.required,
-                  .defaultable = data.defaultable,
+                  .defaultable = defaultable,
               },
           .spec = std::move(internal_all_of),
-          .init_my_storage = [](Storage& storage) { storage.emplace<T>(); },
+          .init_my_storage = [](Storage& storage) { storage.emplace<StorageType>(); },
           .move_my_storage = move_my_storage,
       },
       common_data);

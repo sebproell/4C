@@ -65,7 +65,7 @@ void TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
               },
               {.description = "type of norm for convergence check of primary variables in TSI",
                   .default_value = convnorm_abs})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for monolithic TSI */
@@ -165,7 +165,7 @@ void TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
                   {"or", LS_or},
               },
               {.description = "line-search strategy", .default_value = LS_none})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for partitioned TSI */
@@ -191,7 +191,7 @@ void TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
                       "tolerance for convergence check of outer iteraiton within partitioned TSI",
                   .default_value = 1e-6}),
       },
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for tsi contact */
@@ -227,7 +227,7 @@ void TSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
           parameter<double>("PENALTYPARAM_THERMO",
               {.description = "Penalty parameter for Nitsche solution strategy",
                   .default_value = 0.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

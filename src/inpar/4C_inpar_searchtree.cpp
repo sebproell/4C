@@ -27,7 +27,7 @@ void Inpar::Geo::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
                   {"quadtree2d", Inpar::Geo::Quadtree2D},
               },
               {.description = "set tree type", .default_value = Inpar::Geo::Notree})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -80,7 +80,7 @@ namespace Inpar
                   {.description = "Specify which output writer shall be used to write the "
                                   "visualization data to disk",
                       .default_value = Core::IO::OutputWriter::vtu_per_rank})},
-          {.defaultable = true});
+          {.required = false});
     }
 
 

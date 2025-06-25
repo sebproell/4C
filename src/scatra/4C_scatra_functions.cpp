@@ -49,7 +49,7 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
   using namespace Core::IO::InputSpecBuilders;
   using namespace Core::IO::InputSpecBuilders::Validators;
 
-  auto linear = group_struct<ParticleMagnetization::ModelParameters>("linear",
+  auto linear = group<ParticleMagnetization::ModelParameters>("linear",
       {
           parameter<double>("susceptibility",
               {.description = "Magnetic susceptibility",
@@ -59,7 +59,7 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
       {.store = in_struct(&ParticleMagnetization::particle_magnetization_parameters)});
 
   auto linear_with_saturation =
-      group_struct<ParticleMagnetization::ModelParameters>("linear_with_saturation",
+      group<ParticleMagnetization::ModelParameters>("linear_with_saturation",
           {
               parameter<double>("saturation_magnetization",
                   {.description = "Saturation magnetization",
@@ -73,7 +73,7 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
           },
           {.store = in_struct(&ParticleMagnetization::particle_magnetization_parameters)});
 
-  auto superparamagnetic = group_struct<ParticleMagnetization::ModelParameters>("superparamagnetic",
+  auto superparamagnetic = group<ParticleMagnetization::ModelParameters>("superparamagnetic",
       {
           parameter<double>("saturation_magnetization",
               {.description = "Saturation magnetization",
@@ -99,7 +99,7 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
   auto spec = group("SCATRA_FUNCTION",
       {
           parameter<ScatraFunctionType>("type"),
-          group_struct<CylinderMagnetParameters>("parameters",
+          group<CylinderMagnetParameters>("parameters",
               {
                   parameter<double>("magnet_radius",
                       {.description = "Radius of the cylinder magnet",
@@ -128,7 +128,7 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
                       {.description = "Dynamic viscosity of the fluid",
                           .validator = positive<double>(),
                           .store = in_struct(&CylinderMagnetParameters::dynamic_viscosity_fluid)}),
-                  group_struct<Rotation>("rotation",
+                  group<Rotation>("rotation",
                       {
                           parameter<double>("around_x_axis",
                               {.description = "Rotation of the magnet around the x-axis in degrees",
@@ -142,7 +142,7 @@ void ScaTra::add_valid_scatra_functions(Core::Utils::FunctionManager& function_m
                                   .store = in_struct(&Rotation::y_axis)}),
                       },
                       {.description = "Rotation of the magnet around different axes",
-                          .defaultable = true,
+                          .required = false,
                           .store = in_struct(&CylinderMagnetParameters::magnet_rotation)}),
                   parameter<double>("particle_radius",
                       {.description = "Radius of the magnetic particle",

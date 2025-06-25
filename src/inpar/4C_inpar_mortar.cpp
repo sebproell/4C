@@ -158,8 +158,7 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                       "feature, purely to enhance visualization. Currently, this is limited to "
                       "solid meshtying and contact w/o friction.",
                   .default_value = false})},
-      {.defaultable =
-              true}); /*--------------------------------------------------------------------*/
+      {.required = false}); /*--------------------------------------------------------------------*/
   // parameters for parallel redistribution of mortar interfaces
   list["MORTAR COUPLING/PARALLEL REDISTRIBUTION"] = group("MORTAR COUPLING/PARALLEL REDISTRIBUTION",
       {
@@ -211,7 +210,7 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
               {.description = "Print details of the parallel distribution, i.e. "
                               "number of nodes/elements for each rank.",
                   .default_value = true})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 void Inpar::Mortar::set_valid_conditions(

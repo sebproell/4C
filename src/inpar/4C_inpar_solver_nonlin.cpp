@@ -28,7 +28,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                   "Inexact Trust Region Based", "Tensor Based", "Single Step"},
               {.description = "Choose a nonlinear solver method.",
                   .default_value = "Line Search Based"})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-list direction
   list["STRUCT NOX/Direction"] = group("STRUCT NOX/Direction",
@@ -43,7 +43,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           deprecated_selection<std::string>("User Defined Method", {"Newton", "Modified Newton"},
               {.description = "Choose a user-defined direction method.",
                   .default_value = "Modified Newton"})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-sub-list "Newton"
   list["STRUCT NOX/Direction/Newton"] = group("STRUCT NOX/Direction/Newton",
@@ -67,7 +67,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                       "If set to true, we will use the computed direction even if the linear "
                       "solve does not achieve the tolerance specified by the forcing term",
                   .default_value = true})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-sub-list "Steepest Descent"
   list["STRUCT NOX/Direction/Steepest Descent"] = group("STRUCT NOX/Direction/Steepest Descent",
@@ -76,7 +76,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           deprecated_selection<std::string>("Scaling Type",
               {"2-Norm", "Quadratic Model Min", "F 2-Norm", "None"},
               {.description = "", .default_value = "None"})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-list "Pseudo Transient"
   list["STRUCT NOX/Pseudo Transient"] = group("STRUCT NOX/Pseudo Transient",
@@ -123,7 +123,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
               {"every iter", "every timestep"},
               {.description = "Build scaling operator in every iteration or timestep",
                   .default_value = "every timestep"})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-list "Line Search"
   list["STRUCT NOX/Line Search"] = group("STRUCT NOX/Line Search",
@@ -138,7 +138,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           parameter<::NOX::StatusTest::CheckType>("Inner Status Test Check Type",
               {.description = "Specify the check type for the inner status tests.",
                   .default_value = ::NOX::StatusTest::Minimal})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-sub-list "Full Step"
   list["STRUCT NOX/Line Search/Full Step"] = group("STRUCT NOX/Line Search/Full Step",
@@ -146,7 +146,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
           parameter<double>(
               "Full Step", {.description = "length of a full step", .default_value = 1.0})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-sub-list "Backtrack"
   list["STRUCT NOX/Line Search/Backtrack"] = group("STRUCT NOX/Line Search/Backtrack",
@@ -171,7 +171,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                       "Set to true, if exceptions during the force evaluation and backtracking "
                       "routine should be allowed.",
                   .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-sub-list "Polynomial"
   list["STRUCT NOX/Line Search/Polynomial"] = group("STRUCT NOX/Line Search/Polynomial",
@@ -242,7 +242,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
           parameter<double>(
               "Allowed Relative Increase", {.description = "", .default_value = 100.0})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-sub-list "More'-Thuente"
   list["STRUCT NOX/Line Search/More'-Thuente"] = group("STRUCT NOX/Line Search/More'-Thuente",
@@ -294,7 +294,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
                       "method. Setting this to true eliminates having to compute the Jacobian at "
                       "each inner iteration of the More'-Thuente line search",
                   .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-list "Trust Region"
   list["STRUCT NOX/Trust Region"] = group("STRUCT NOX/Trust Region",
@@ -326,7 +326,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           parameter<double>("Expansion Factor", {.description = "", .default_value = 4.0}),
 
           parameter<double>("Recovery Step", {.description = "", .default_value = 1.0})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-list "Printing"
   list["STRUCT NOX/Printing"] = group("STRUCT NOX/Printing",
@@ -351,7 +351,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           parameter<bool>("Test Details", {.description = "", .default_value = false}),
 
           parameter<bool>("Debug", {.description = "", .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-list "Status Test"
   list["STRUCT NOX/Status Test"] = group("STRUCT NOX/Status Test",
@@ -359,7 +359,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
           Core::IO::InputSpecBuilders::parameter<std::optional<std::filesystem::path>>("XML File",
               {.description = "Filename of XML file with configuration of nox status test"})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-list "Solver Options"
   list["STRUCT NOX/Solver Options"] = group("STRUCT NOX/Solver Options",
@@ -373,7 +373,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
           deprecated_selection<std::string>("Status Test Check Type",
               {"Complete", "Minimal", "None"}, {.description = "", .default_value = "Complete"})},
-      {.defaultable = true});
+      {.required = false});
 
   // sub-sub-sub-list "Linear Solver"
   list["STRUCT NOX/Direction/Newton/Linear Solver"] = group(
@@ -400,7 +400,7 @@ void Inpar::NlnSol::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           parameter<bool>("Output Solver Details",
               {.description = "Switch the linear solver output on and off.",
                   .default_value = true})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

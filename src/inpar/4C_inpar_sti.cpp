@@ -77,8 +77,8 @@ void Inpar::STI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               {.description = "flag for double condensation of linear equations associated with "
                               "temperature field",
                   .default_value = false})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   // valid parameters for monolithic scatra-thermo interaction
   list["STI DYNAMIC/MONOLITHIC"] = group("STI DYNAMIC/MONOLITHIC",
       {
@@ -96,7 +96,7 @@ void Inpar::STI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               },
               {.description = "type of global system matrix in global system of equations",
                   .default_value = Core::LinAlg::MatrixType::block_condition})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   // valid parameters for partitioned scatra-thermo interaction
@@ -110,7 +110,7 @@ void Inpar::STI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           parameter<double>("OMEGAMAX",
               {.description = "maximum value of Aitken relaxation parameter (0.0 = no constraint)",
                   .default_value = 0.})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

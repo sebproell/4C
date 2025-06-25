@@ -180,7 +180,7 @@ void Airway::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& li
           parameter<double>("TRANSPULMPRESS",
               {.description = "Transpulmonary pressure needed for recalculation of acini volumes",
                   .default_value = 800.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 

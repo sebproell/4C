@@ -87,7 +87,7 @@ namespace Inpar
                     },
                     {.description = "Output of an optional quantity",
                         .default_value = Inpar::Solid::optquantity_none})},
-            {.defaultable = true});
+            {.required = false});
       }
 
 

@@ -107,8 +107,8 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               },
               {.description = "Verbosity of the FSI problem.",
                   .default_value = Inpar::FSI::verbosity_full})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   /* parameters for time step size adaptivity in fsi dynamics */
   list["FSI DYNAMIC/TIMEADAPTIVITY"] = group("FSI DYNAMIC/TIMEADAPTIVITY",
       {
@@ -181,7 +181,7 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           parameter<bool>(
               "TIMEADAPTON", {.description = "Activate or deactivate time step size adaptivity",
                                  .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 
   /*--------------------------------------------------------------------------*/
 
@@ -401,7 +401,7 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           parameter<double>("TOL_VEL_INC_INF",
               {.description = "Absolute tolerance for fluid velocity increment in Inf-norm",
                   .default_value = 1e-6})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for partitioned FSI solvers */
@@ -472,7 +472,7 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           parameter<double>(
               "RELAX", {.description = "fixed relaxation parameter for partitioned FSI solvers",
                            .default_value = 1.0})},
-      {.defaultable = true});
+      {.required = false});
 
   /* ----------------------------------------------------------------------- */
   list["FSI DYNAMIC/CONSTRAINT"] = group("FSI DYNAMIC/CONSTRAINT",
@@ -482,7 +482,7 @@ void Inpar::FSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               {.description = "Number of iterations for simple pc", .default_value = 2}),
           parameter<double>(
               "ALPHA", {.description = "alpha parameter for simple pc", .default_value = 0.8})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 /*----------------------------------------------------------------------------*/

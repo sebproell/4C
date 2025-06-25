@@ -195,8 +195,8 @@ void PoroPressureBased::set_valid_parameters_porofluid(
           parameter<std::string>("STARTING_DBC_FUNCT",
               {.description = "Function prescribing the starting Dirichlet BC.",
                   .default_value = "0"})},
-      {.defaultable =
-              true});  // ----------------------------------------------------------------------
+      {.required =
+              false});  // ----------------------------------------------------------------------
   // artery mesh tying
   list["POROFLUIDMULTIPHASE DYNAMIC/ARTERY COUPLING"] = group(
       "POROFLUIDMULTIPHASE DYNAMIC/ARTERY COUPLING",
@@ -305,7 +305,7 @@ void PoroPressureBased::set_valid_parameters_porofluid(
                       "overall network size are additionally deleted (a valid choice of this "
                       "parameter should lie between 0 and 1)",
                   .default_value = -1.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

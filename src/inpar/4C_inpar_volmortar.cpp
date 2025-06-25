@@ -85,7 +85,7 @@ void Inpar::VolMortar::set_valid_parameters(std::map<std::string, Core::IO::Inpu
           parameter<bool>("KEEP_EXTENDEDGHOSTING",
               {.description = "If chosen, extended ghosting is kept for simulation",
                   .default_value = true})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -222,7 +222,7 @@ void CONTACT::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& l
           parameter<double>("REGULARIZATION_STIFFNESS",
               {.description = "initial contact stiffness (i.e. initial \"penalty parameter\")",
                   .default_value = -1.})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

@@ -100,8 +100,8 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           parameter<bool>("REDISTRIBUTE_SOLID",
               {.description = "redistribution by binning of solid mechanics discretization",
                   .default_value = false})},
-      {.defaultable =
-              true}); /*----------------------------------------------------------------------*/
+      {.required =
+              false}); /*----------------------------------------------------------------------*/
   /* parameters for partitioned SSI */
   /*----------------------------------------------------------------------*/
   list["SSI CONTROL/PARTITIONED"] = group("SSI CONTROL/PARTITIONED",
@@ -122,7 +122,7 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               {.description =
                       "tolerance for convergence check of outer iteration within partitioned SSI",
                   .default_value = 1e-6})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for monolithic SSI */
@@ -183,7 +183,7 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               {.description = "relax the tolerance of the linear solver within "
                               "the first RELAX_LIN_SOLVER_STEP steps",
                   .default_value = -1})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for SSI with manifold */
@@ -221,7 +221,7 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
               "OUTPUT_INFLOW", {.description = "write output of inflow of scatra manifold - scatra "
                                                "coupling into scatra manifold to csv file",
                                    .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 
   /*----------------------------------------------------------------------*/
   /* parameters for SSI with elch */
@@ -232,7 +232,7 @@ void Inpar::SSI::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>
           parameter<bool>("INITPOTCALC",
               {.description = "Automatically calculate initial field for electric potential",
                   .default_value = false})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 /*--------------------------------------------------------------------

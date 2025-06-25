@@ -33,7 +33,7 @@ void Inpar::RveMpc::set_valid_parameters(std::map<std::string, Core::IO::InputSp
 
           parameter<double>("PENALTY_PARAM",
               {.description = "Value of the penalty parameter", .default_value = 1e5})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 // set mpc specific conditions

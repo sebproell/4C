@@ -61,8 +61,8 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast(
           // coupling with 1D artery network active
           parameter<bool>("ARTERY_COUPLING",
               {.description = "Coupling with 1D blood vessels.", .default_value = false})},
-      {.defaultable =
-              true});  // ----------------------------------------------------------------------
+      {.required =
+              false});  // ----------------------------------------------------------------------
   // (2) monolithic parameters
   list["POROMULTIPHASE DYNAMIC/MONOLITHIC"] = group("POROMULTIPHASE DYNAMIC/MONOLITHIC",
       {
@@ -121,7 +121,7 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast(
                       "The linear solver shall be this much better than the current nonlinear "
                       "residual in the nonlinear convergence limit",
                   .default_value = 0.001})},
-      {.defaultable = true});
+      {.required = false});
 
   // ----------------------------------------------------------------------
   // (3) partitioned parameters
@@ -152,7 +152,7 @@ void PoroPressureBased::set_valid_parameters_porofluid_elast(
           parameter<double>(
               "MAXOMEGA", {.description = "largest omega allowed for Aitken relaxation",
                               .default_value = 10.0})},
-      {.defaultable = true});
+      {.required = false});
 }
 
 FOUR_C_NAMESPACE_CLOSE

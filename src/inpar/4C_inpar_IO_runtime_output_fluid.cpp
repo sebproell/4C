@@ -62,7 +62,7 @@ namespace Inpar
                 parameter<bool>("NODE_GID",
                     {.description = "write 4C internal node GIDs", .default_value = false}),
             },
-            {.defaultable = true});
+            {.required = false});
       }
     }  // namespace FLUID
   }  // namespace IORuntimeOutput
