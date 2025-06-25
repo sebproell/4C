@@ -213,7 +213,7 @@ namespace Core::LinAlg
         return index_mapping;
       }
 
-      using result_type = TensorInternal<T, TensorStorageType::owning,
+      using result_type = TensorInternal<std::remove_cvref_t<T>, TensorStorageType::owning,
           NoCompression<get_axis(new_order)...>, get_axis(new_order)...>;
     };
   }  // namespace Internal
