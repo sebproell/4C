@@ -506,7 +506,7 @@ namespace Core::Communication
     // export full matrices to the two desired processors
     Core::LinAlg::Import serialimporter(*serialrowmap, rowmap);
     Core::LinAlg::SparseMatrix serialCrsMatrix(*serialrowmap, 0);
-    serialCrsMatrix.import(matrix, serialimporter.get_epetra_import(), Insert);
+    serialCrsMatrix.import(matrix, serialimporter, Insert);
     serialCrsMatrix.complete(*serialdomainmap, *serialrowmap);
 
     // fill data of matrices to container which can be easily communicated via MPI
