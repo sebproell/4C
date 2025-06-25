@@ -83,7 +83,8 @@ MATERIALS:
       DENS: 1e-06
   - MAT: 11
     ELAST_IsoNeoHooke:
-      MUE: 5
+      MUE:
+        constant: 5
   - MAT: 12
     ELAST_VolSussmanBathe:
       KAPPA: 5
@@ -103,7 +104,8 @@ MATERIALS:
       DENS: 1e-06
   - MAT: 21
     ELAST_IsoNeoHooke:
-      MUE: 5
+      MUE:
+        constant: 5
   - MAT: 22
     ELAST_VolSussmanBathe:
       KAPPA: 5
@@ -123,7 +125,8 @@ MATERIALS:
       DENS: 2e-06
   - MAT: 31
     ELAST_IsoNeoHooke:
-      MUE: 10
+      MUE:
+        constant: 10
   - MAT: 32
     ELAST_VolSussmanBathe:
       KAPPA: 50
@@ -134,7 +137,8 @@ MATERIALS:
       DENS: 2e-06
   - MAT: 41
     ELAST_IsoNeoHooke:
-      MUE: 10
+      MUE:
+        constant: 10
   - MAT: 42
     ELAST_VolSussmanBathe:
       KAPPA: 100

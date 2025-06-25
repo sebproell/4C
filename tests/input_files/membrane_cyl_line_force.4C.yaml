@@ -15,7 +15,8 @@ MATERIALS:
       DENS: 1
   - MAT: 2
     ELAST_IsoNeoHooke:
-      MUE: 40
+      MUE:
+        constant: 40
   - MAT: 3
     ELAST_CoupAnisoExpo:
       K1: 100

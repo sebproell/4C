@@ -343,7 +343,7 @@ void Mixture::MixtureConstituentElastHyperElastinMembrane::evaluate_stress_c_mat
   double mue = 0.0;
   for (const auto& summand : potsum_membrane_)
   {
-    mue += summand->mue();
+    mue += summand->mue(eleGID);
   }
 
   // Compute membrane stress

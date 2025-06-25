@@ -139,7 +139,8 @@ namespace Mat
 
       //! add shear modulus equivalent
       virtual void add_shear_mod(bool& haveshearmod,  ///< non-zero shear modulus was added
-          double& shearmod                            ///< variable to add upon
+          double& shearmod,                           ///< variable to add upon
+          int ele_gid                                 ///< element GID
       ) const;
 
       //! add young's modulus equivalent

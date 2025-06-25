@@ -129,7 +129,8 @@ MATERIALS:
       DENS: 1
   - MAT: 11
     ELAST_IsoNeoHooke:
-      MUE: 40
+      MUE:
+        constant: 40
 DESIGN SURFACE PARTICLE WALL:
   - E: 1
     MAT: -1

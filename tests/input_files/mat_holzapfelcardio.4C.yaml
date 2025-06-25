@@ -21,7 +21,8 @@ MATERIALS:
       DENS: 1
   - MAT: 2
     ELAST_IsoNeoHooke:
-      MUE: 0.385
+      MUE:
+        constant: 0.385
   - MAT: 3
     ELAST_VolSussmanBathe:
       KAPPA: 0.833

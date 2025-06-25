@@ -19,7 +19,8 @@ MATERIALS:
       DENS: 0.00105
   - MAT: 2
     ELAST_IsoNeoHooke:
-      MUE: 77700
+      MUE:
+        constant: 77700
   - MAT: 3
     ELAST_VolSussmanBathe:
       KAPPA: 1e+06

@@ -117,10 +117,12 @@ MATERIALS:
       DENS: 1050
   - MAT: 31
     ELAST_IsoNeoHooke:
-      MUE: 72
+      MUE:
+        constant: 72
   - MAT: 41
     ELAST_IsoNeoHooke:
-      MUE: 72
+      MUE:
+        constant: 72
   - MAT: 51
     ELAST_VolSussmanBathe:
       KAPPA: 720

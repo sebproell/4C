@@ -1764,7 +1764,7 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
   {
     known_materials[Core::Materials::mes_isoneohooke] = group("ELAST_IsoNeoHooke",
         {
-            parameter<double>("MUE", {.description = "Shear modulus"}),
+            input_field<double>("MUE", {.description = "Shear modulus"}),
         },
         {.description = "isochoric part of neo-Hooke material acc. to Holzapfel"});
   }

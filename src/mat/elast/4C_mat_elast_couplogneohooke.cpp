@@ -47,7 +47,8 @@ Mat::Elastic::CoupLogNeoHooke::CoupLogNeoHooke(Mat::Elastic::PAR::CoupLogNeoHook
 
 void Mat::Elastic::CoupLogNeoHooke::add_shear_mod(
     bool& haveshearmod,  ///< non-zero shear modulus was added
-    double& shearmod     ///< variable to add upon
+    double& shearmod,    ///< variable to add upon
+    int ele_gid          ///< element GID
 ) const
 {
   haveshearmod = true;

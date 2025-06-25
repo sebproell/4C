@@ -117,10 +117,12 @@ MATERIALS:
       DAMAGE_FUNCT: 2
   - MAT: 161
     ELAST_IsoNeoHooke:
-      MUE: 72
+      MUE:
+        constant: 72
   - MAT: 162
     ELAST_IsoNeoHooke:
-      MUE: 72
+      MUE:
+        constant: 72
   - MAT: 163
     ELAST_VolSussmanBathe:
       KAPPA: 720

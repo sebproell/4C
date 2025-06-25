@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_io_input_field.hpp"
 #include "4C_mat_elast_summand.hpp"
 #include "4C_material_parameter_base.hpp"
 
@@ -23,9 +24,6 @@ namespace Mat
     {
       /*!
        * @brief material parameters for isochoric contribution of a neo-Hooke material
-       *
-       * <h3>Input line</h3>
-       * MAT 1 ELAST_IsoNeoHooke MUE 100
        */
       class IsoNeoHooke : public Core::Mat::PAR::Parameter
       {
@@ -37,7 +35,7 @@ namespace Mat
         //@{
 
         /// Shear modulus
-        double mue_;
+        Core::IO::InputField<double> mue_;
 
         //@}
 
@@ -88,7 +86,8 @@ namespace Mat
 
       /// add shear modulus equivalent
       void add_shear_mod(bool& haveshearmod,  ///< non-zero shear modulus was added
-          double& shearmod                    ///< variable to add upon
+          double& shearmod,                   ///< variable to add upon
+          int ele_gid                         ///< element GID
       ) const override;
 
       //@}
@@ -118,7 +117,7 @@ namespace Mat
 
       /// @name Access methods
       //@{
-      double mue() const { return params_->mue_; }
+      double mue(int ele_gid) const { return params_->mue_.at(ele_gid); }
       //@}
 
       /// Indicator for formulation

@@ -323,7 +323,7 @@ std::shared_ptr<Mat::Elastic::Summand> Mat::Elastic::Summand::factory(int matnum
   return nullptr;
 }
 
-void Mat::Elastic::Summand::add_shear_mod(bool& haveshearmod, double& shearmod) const
+void Mat::Elastic::Summand::add_shear_mod(bool& haveshearmod, double& shearmod, int ele_gid) const
 {
   FOUR_C_THROW("Mat::Elastic::Summand::AddShearMod: Add Shear Modulus not implemented - do so!");
 }

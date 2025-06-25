@@ -38,7 +38,8 @@ MATERIALS:
       DENS: 1
   - MAT: 2
     ELAST_IsoNeoHooke:
-      MUE: 100
+      MUE:
+        constant: 100
 RESULT DESCRIPTION:
   - STRUCTURE:
       SPECIAL: true
