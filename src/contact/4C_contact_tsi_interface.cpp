@@ -72,7 +72,7 @@ void CONTACT::TSIInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linst
   // consistent equation is:
   // mu(d,T)*(z_n-c_n*g)ut = 0
 
-  using _CI = std::map<int, double>::const_iterator;
+  using CI = std::map<int, double>::const_iterator;
   // loop over all stick nodes of the interface
   for (int i = 0; i < sticknodes->NumMyElements(); ++i)
   {
@@ -111,7 +111,7 @@ void CONTACT::TSIInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linst
     cnode->derivFrCoeffTemp(frcoeff_in, dfrdT, dfrdD);
 
     double fac = lm_n - cn * wgap;
-    for (_CI p = dfrdT.begin(); p != dfrdT.end(); ++p)
+    for (CI p = dfrdT.begin(); p != dfrdT.end(); ++p)
     {
       if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         for (int j = 0; j < Dim(); j++)
@@ -127,7 +127,7 @@ void CONTACT::TSIInterface::assemble_lin_stick(Core::LinAlg::SparseMatrix& linst
         linstickTEMPglobal.Assemble(fac * jump_teta * p->second, row[1], p->first);
       }
     }
-    for (_CI p = dfrdD.begin(); p != dfrdD.end(); ++p)
+    for (CI p = dfrdD.begin(); p != dfrdD.end(); ++p)
     {
       if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         for (int j = 0; j < Dim(); j++)
@@ -195,7 +195,7 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
   // consistent equation is:
   // || z_t^tr || z_t - \mu (z_n -c_n*wgap) z_t^tr = 0
 
-  using _CI = std::map<int, double>::const_iterator;
+  using CI = std::map<int, double>::const_iterator;
   // loop over all stick nodes of the interface
   for (int i = 0; i < slipnodes->num_my_elements(); ++i)
   {
@@ -241,7 +241,7 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
     double ct = ct_input;
 
     double fac = lm_n - cn * wgap;
-    for (_CI p = dfrdT.begin(); p != dfrdT.end(); ++p)
+    for (CI p = dfrdT.begin(); p != dfrdT.end(); ++p)
     {
       if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         for (int j = 0; j < n_dim(); ++j)
@@ -257,7 +257,7 @@ void CONTACT::TSIInterface::assemble_lin_slip(Core::LinAlg::SparseMatrix& linsli
         linslipTEMPglobal.assemble(-fac * (lm_teta + ct * jump_teta) * p->second, row[1], p->first);
       }
     }
-    for (_CI p = dfrdD.begin(); p != dfrdD.end(); ++p)
+    for (CI p = dfrdD.begin(); p != dfrdD.end(); ++p)
     {
       if (constr_direction_ == CONTACT::ConstraintDirection::xyz)
         for (int j = 0; j < n_dim(); ++j)

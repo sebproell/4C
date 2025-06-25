@@ -459,7 +459,7 @@ void CONTACT::Coupling2dManager::consistent_dual_shape()
   }
 
   // map iterator
-  using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
+  using CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
   // no overlap: the applied dual shape functions don't matter, as the integration domain is void
   if ((ximax == -1.0 && ximin == 1.0) || (ximax - ximin < 4. * MORTARINTLIM)) return;
@@ -523,9 +523,9 @@ void CONTACT::Coupling2dManager::consistent_dual_shape()
 
     // evaluate the GP slave coordinate derivatives
     Core::Gen::Pairedvector<int, double> dsxigp(linsize + ndof * mnodes);
-    for (_CI p = dximin.begin(); p != dximin.end(); ++p)
+    for (CI p = dximin.begin(); p != dximin.end(); ++p)
       dsxigp[p->first] += 0.5 * (1 - eta[0]) * (p->second);
-    for (_CI p = dximax.begin(); p != dximax.end(); ++p)
+    for (CI p = dximax.begin(); p != dximax.end(); ++p)
       dsxigp[p->first] += 0.5 * (1 + eta[0]) * (p->second);
 
     // evaluate the Jacobian derivative
@@ -541,25 +541,25 @@ void CONTACT::Coupling2dManager::consistent_dual_shape()
 
       // (1) linearization of slave gp coordinates in ansatz function j for derivative of de
       fac = wgt * sderiv(j, 0) * dxdsxi * dsxideta;
-      for (_CI p = dsxigp.begin(); p != dsxigp.end(); ++p)
+      for (CI p = dsxigp.begin(); p != dsxigp.end(); ++p)
         derivde[j][j][p->first] += fac * (p->second);
 
       // (2) linearization dsxideta - segment end coordinates
       fac = 0.5 * wgt * sval[j] * dxdsxi;
-      for (_CI p = dximin.begin(); p != dximin.end(); ++p)
+      for (CI p = dximin.begin(); p != dximin.end(); ++p)
         derivde[j][j][p->first] -= fac * (p->second);
       fac = 0.5 * wgt * sval[j] * dxdsxi;
-      for (_CI p = dximax.begin(); p != dximax.end(); ++p)
+      for (CI p = dximax.begin(); p != dximax.end(); ++p)
         derivde[j][j][p->first] += fac * (p->second);
 
       // (3) linearization dxdsxi - slave GP jacobian
       fac = wgt * sval[j] * dsxideta;
-      for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+      for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
         derivde[j][j][p->first] += fac * (p->second);
 
       // (4) linearization dxdsxi - slave GP coordinates
       fac = wgt * sval[j] * dsxideta * dxdsxidsxi;
-      for (_CI p = dsxigp.begin(); p != dsxigp.end(); ++p)
+      for (CI p = dsxigp.begin(); p != dsxigp.end(); ++p)
         derivde[j][j][p->first] += fac * (p->second);
 
       // me and linearization
@@ -569,7 +569,7 @@ void CONTACT::Coupling2dManager::consistent_dual_shape()
 
         // (1) linearization of slave gp coordinates in ansatz function for derivative of me
         fac = wgt * sval[k] * dxdsxi * dsxideta * sderiv(j, 0);
-        for (_CI p = dsxigp.begin(); p != dsxigp.end(); ++p)
+        for (CI p = dsxigp.begin(); p != dsxigp.end(); ++p)
         {
           derivme[j][k][p->first] += fac * (p->second);
           derivme[k][j][p->first] += fac * (p->second);
@@ -577,20 +577,20 @@ void CONTACT::Coupling2dManager::consistent_dual_shape()
 
         // (2) linearization dsxideta - segment end coordinates
         fac = 0.5 * wgt * sval[j] * sval[k] * dxdsxi;
-        for (_CI p = dximin.begin(); p != dximin.end(); ++p)
+        for (CI p = dximin.begin(); p != dximin.end(); ++p)
           derivme[j][k][p->first] -= fac * (p->second);
         fac = 0.5 * wgt * sval[j] * sval[k] * dxdsxi;
-        for (_CI p = dximax.begin(); p != dximax.end(); ++p)
+        for (CI p = dximax.begin(); p != dximax.end(); ++p)
           derivme[j][k][p->first] += fac * (p->second);
 
         // (3) linearization dxdsxi - slave GP jacobian
         fac = wgt * sval[j] * sval[k] * dsxideta;
-        for (_CI p = derivjac.begin(); p != derivjac.end(); ++p)
+        for (CI p = derivjac.begin(); p != derivjac.end(); ++p)
           derivme[j][k][p->first] += fac * (p->second);
 
         // (4) linearization dxdsxi - slave GP coordinates
         fac = wgt * sval[j] * sval[k] * dsxideta * dxdsxidsxi;
-        for (_CI p = dsxigp.begin(); p != dsxigp.end(); ++p)
+        for (CI p = dsxigp.begin(); p != dsxigp.end(); ++p)
           derivme[j][k][p->first] += fac * (p->second);
       }
     }
@@ -641,12 +641,12 @@ void CONTACT::Coupling2dManager::consistent_dual_shape()
       for (int l = 0; l < nnodes; ++l)  // loop over sum l
       {
         // part1: Lin(De)*Inv(Me)
-        for (_CI p = derivde[i][l].begin(); p != derivde[i][l].end(); ++p)
+        for (CI p = derivde[i][l].begin(); p != derivde[i][l].end(); ++p)
           derivae[p->first](i, j) += meinv(l, j) * (p->second);
 
         // part2: Ae*Lin(Me)*Inv(Me)
         for (int k = 0; k < nnodes; ++k)  // loop over sum k
-          for (_CI p = derivme[k][l].begin(); p != derivme[k][l].end(); ++p)
+          for (CI p = derivme[k][l].begin(); p != derivme[k][l].end(); ++p)
             derivae[p->first](i, j) -= ae(i, k) * meinv(l, j) * (p->second);
       }
     }

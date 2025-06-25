@@ -2726,8 +2726,8 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-        for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
+        using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+        for (CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
           Core::LinAlg::SerialDenseMatrix& pt = (*derivae)[p->first];
@@ -2841,8 +2841,8 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-        for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
+        using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+        for (CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
           Core::LinAlg::SerialDenseMatrix& pt = (*derivae)[p->first];
@@ -3059,8 +3059,8 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Ae * Me = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-        for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
+        using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+        for (CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
           Core::LinAlg::SerialDenseMatrix& pt = (*derivae)[p->first];
@@ -3179,8 +3179,8 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-        for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
+        using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+        for (CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
           Core::LinAlg::SerialDenseMatrix& pt = (*derivae)[p->first];
@@ -3378,8 +3378,8 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-        for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
+        using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+        for (CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
           Core::LinAlg::SerialDenseMatrix& pt = (*derivae)[p->first];
@@ -3570,8 +3570,8 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Me * Ae = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-        for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
+        using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+        for (CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
           Core::LinAlg::SerialDenseMatrix& pt = (*derivae)[p->first];
@@ -4162,8 +4162,8 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Ae * Me = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-        for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
+        using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+        for (CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
           Core::LinAlg::SerialDenseMatrix& pt = (*derivae)[p->first];
@@ -4303,8 +4303,8 @@ void Mortar::Element::shape_function_linearizations(Mortar::Element::ShapeType s
         // (this is done according to a quite complex formula, which
         // we get from the linearization of the biorthogonality condition:
         // Lin (Ae * Me = De) -> Lin(Ae)=Lin(De)*Inv(Me)-Ae*Lin(Me)*Inv(Me) )
-        using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-        for (_CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
+        using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+        for (CIM p = derivde_me.begin(); p != derivde_me.end(); ++p)
         {
           Core::LinAlg::SerialDenseMatrix& dtmp = derivde_me[p->first];
           Core::LinAlg::SerialDenseMatrix& pt = (*derivae)[p->first];
@@ -4837,8 +4837,8 @@ bool Mortar::Element::deriv_shape_dual(
   Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix> dummy(
       nnodes * nnodes * 3 * 10, 0, Core::LinAlg::SerialDenseMatrix(nnodes, nnodes, true));
 
-  using _CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
-  for (_CIM p = derivdual.begin(); p != derivdual.end(); ++p)
+  using CIM = Core::Gen::Pairedvector<int, Core::LinAlg::SerialDenseMatrix>::const_iterator;
+  for (CIM p = derivdual.begin(); p != derivdual.end(); ++p)
   {
     for (int i = 0; i < nnodes; ++i)
     {
@@ -4849,7 +4849,7 @@ bool Mortar::Element::deriv_shape_dual(
     }
   }
 
-  for (_CIM p = dummy.begin(); p != dummy.end(); ++p) derivdual[p->first] = p->second;
+  for (CIM p = dummy.begin(); p != dummy.end(); ++p) derivdual[p->first] = p->second;
 
 
   return true;

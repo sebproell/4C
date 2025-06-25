@@ -571,11 +571,9 @@ double Mat::PlasticGTN::compute_damage_nucleation(const double alpha) const
   const double fN = params_->fn_;
   const double sN = params_->sn_;
   const double eN = params_->en_;
-  constexpr double __sqrt_2pi =
-      2.506628274631000502415765284811;  // sqrt(2*pi) //
-                                         // https://www.mathsisfun.com/calculator-precision.html
+  constexpr double sqrt_2pi = 2.506628274631000502415765284811;
 
-  return fN / (sN * __sqrt_2pi) * exp(-0.5 * ((alpha - eN) / sN) * ((alpha - eN) / sN));
+  return fN / (sN * sqrt_2pi) * exp(-0.5 * ((alpha - eN) / sN) * ((alpha - eN) / sN));
 }
 
 double Mat::PlasticGTN::compute_damage_nucleation_derivative(const double alpha) const

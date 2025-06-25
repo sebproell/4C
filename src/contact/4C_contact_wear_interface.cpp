@@ -396,7 +396,6 @@ void Wear::WearInterface::assemble_lin_t_d(Core::LinAlg::SparseMatrix& lintgloba
     {
       // map iterator
       using CI = std::map<int, double>::const_iterator;
-      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       std::map<int, double>& nmap = fnode->wear_data().get_t()[0];
 
@@ -415,7 +414,7 @@ void Wear::WearInterface::assemble_lin_t_d(Core::LinAlg::SparseMatrix& lintgloba
           double lmu = csnode->mo_data().lm()[u];
 
           // multiply T-column entry with lin n*lambda
-          for (_CI b = numap.begin(); b != numap.end(); ++b)
+          for (auto b = numap.begin(); b != numap.end(); ++b)
           {
             int row = fnode->dofs()[0];
             int col = (b->first);
@@ -539,7 +538,6 @@ void Wear::WearInterface::assemble_lin_t_d_master(Core::LinAlg::SparseMatrix& li
     {
       // map iterator
       using CI = std::map<int, double>::const_iterator;
-      using _CI = Core::Gen::Pairedvector<int, double>::const_iterator;
 
       std::map<int, double>& nmap = fnode->wear_data().get_t()[0];
 
@@ -558,7 +556,7 @@ void Wear::WearInterface::assemble_lin_t_d_master(Core::LinAlg::SparseMatrix& li
           double lmu = csnode->mo_data().lm()[u];
 
           // multiply T-column entry with lin n*lambda
-          for (_CI b = numap.begin(); b != numap.end(); ++b)
+          for (auto b = numap.begin(); b != numap.end(); ++b)
           {
             int row = fnode->dofs()[0];
             int col = (b->first);

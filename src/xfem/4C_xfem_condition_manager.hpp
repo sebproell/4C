@@ -40,29 +40,27 @@ namespace Discret
 namespace XFEM
 {
   template <typename Tp>
-  inline const Tp& argmin(const Tp& __a, const Tp& __b, int& arg)
+  inline const Tp& argmin(const Tp& a, const Tp& b, int& arg)
   {
-    // return __comp(__b, __a) ? __b : __a;
-    if (__b < __a)
+    if (b < a)
     {
       arg = 2;
-      return __b;
+      return b;
     }
     arg = 1;
-    return __a;
+    return a;
   }
 
   template <typename Tp>
-  inline const Tp& argmax(const Tp& __a, const Tp& __b, int& arg)
+  inline const Tp& argmax(const Tp& a, const Tp& b, int& arg)
   {
-    // return __comp(__a, __b) ? __b : __a;
-    if (__a < __b)
+    if (a < b)
     {
       arg = 2;
-      return __b;
+      return b;
     }
     arg = 1;
-    return __a;
+    return a;
   }
 
   /*!
