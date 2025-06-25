@@ -16,6 +16,8 @@
 #include "4C_fem_general_utils_integration.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -353,8 +355,10 @@ namespace Discret::Elements
     template <Core::FE::CellType dt_vol>
     void strains(const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
         const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
-        const Core::LinAlg::Matrix<3, 1>& xi, double& jac, Core::LinAlg::Matrix<3, 3>& defgrd,
-        Core::LinAlg::Matrix<6, 1>& glstrain, Core::LinAlg::Matrix<3, 3>& rcg,
+        const Core::LinAlg::Matrix<3, 1>& xi, double& jac,
+        Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
         Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3>& bop,
         Core::LinAlg::Matrix<3, Core::FE::num_nodes(dt_vol)>& N_XYZ);
 

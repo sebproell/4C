@@ -60,42 +60,23 @@ namespace Mixture
     /// Constructor for the material given the material parameters
     explicit IsotropicCylinderPrestressStrategy(
         Mixture::PAR::IsotropicCylinderPrestressStrategy* params);
+    void setup(Mixture::MixtureConstituent& constituent, const Teuchos::ParameterList& params,
+        int gp, int eleGID) override;
 
-    void setup(Mixture::MixtureConstituent& constituent, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
-
-    /*!
-     * @brief Evaluates the prestretch
-     * @param G (out) :  Prestretch of the constituent
-     * @param params (in) : Container for additional information
-     * @param gp (in) : Gauss-point
-     * @param eleGID (in) : Global element id
-     */
-    void evaluate_prestress(const MixtureRule& mixtureRule,
-        const std::shared_ptr<const Mat::CoordinateSystemProvider> cosy,
-        Mixture::MixtureConstituent& constituent, Core::LinAlg::Matrix<3, 3>& G,
-        Teuchos::ParameterList& params, int gp, int eleGID) override;
-
-    /*!
-     * \brief Ensures equilibrium by adding a spacially variying part of the membrane
-     *
-     * \param mixtureRule Mixture rule
-     * \param anisotropy Cylinder coordinate system
-     * \param constituent Constituent that needs to be prestressed
-     * \param membraneEvaluation Evaluator of the membrane sub-part
-     * \param params Container for additional information
-     * \param gp Gauss point
-     * \param eleGID global Element id
-     * \return double Fraction of the membrane stress contribution to ensure equilibrium
-     */
     double evaluate_mue_frac(MixtureRule& mixtureRule,
         const std::shared_ptr<const Mat::CoordinateSystemProvider> cosy,
         Mixture::MixtureConstituent& constituent, ElastinMembraneEvaluation& membraneEvaluation,
-        Teuchos::ParameterList& params, int gp, int eleGID) const override;
+        const Teuchos::ParameterList& params, int gp, int eleGID) const override;
+
+    void evaluate_prestress(const MixtureRule& mixtureRule,
+        const std::shared_ptr<const Mat::CoordinateSystemProvider> cosy,
+        Mixture::MixtureConstituent& constituent, Core::LinAlg::SymmetricTensor<double, 3, 3>& G,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     void update(const std::shared_ptr<const Mat::CoordinateSystemProvider> anisotropy,
-        Mixture::MixtureConstituent& constituent, const Core::LinAlg::Matrix<3, 3>& F,
-        Core::LinAlg::Matrix<3, 3>& G, Teuchos::ParameterList& params, int gp, int eleGID) override;
+        Mixture::MixtureConstituent& constituent, const Core::LinAlg::Tensor<double, 3, 3>& F,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& G, const Teuchos::ParameterList& params,
+        int gp, int eleGID) override;
 
    private:
     /// Holder for internal parameters

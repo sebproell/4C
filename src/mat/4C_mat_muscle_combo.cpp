@@ -13,10 +13,13 @@
 #include "4C_linalg_fixedsizematrix_tensor_derivatives.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_elast_aniso_structuraltensor_strategy.hpp"
 #include "4C_mat_muscle_utils.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_mat_service.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
 
@@ -172,8 +175,7 @@ Mat::MuscleCombo::MuscleCombo(Mat::PAR::MuscleCombo* params)
   // initialize fiber directions and structural tensor
   anisotropy_extension_.register_needed_tensors(
       Mat::FiberAnisotropyExtension<1>::FIBER_VECTORS |
-      Mat::FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR |
-      Mat::FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR_STRESS);
+      Mat::FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR);
 
   // cannot set activation_function here, because function manager did not yet read functions
 }
@@ -233,16 +235,18 @@ void Mat::MuscleCombo::setup(int numgp, const Core::IO::InputParameterContainer&
   activation_evaluator_ = std::visit(ActivationParamsVisitor(), params_->activationParams_);
 }
 
-void Mat::MuscleCombo::update(Core::LinAlg::Matrix<3, 3> const& defgrd, int const gp,
-    Teuchos::ParameterList& params, int const eleGID)
+void Mat::MuscleCombo::update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd, int const gp,
+    const Teuchos::ParameterList& params, int const eleGID)
 {
 }
 
-void Mat::MuscleCombo::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::MuscleCombo::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+
   Core::LinAlg::Matrix<6, 1> Sc_stress(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<6, 6> ccmat(Core::LinAlg::Initialization::zero);
 
@@ -255,23 +259,27 @@ void Mat::MuscleCombo::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // compute matrices
   // right Cauchy Green tensor C
-  Core::LinAlg::Matrix<3, 3> C(Core::LinAlg::Initialization::uninitialized);   // matrix notation
-  C.multiply_tn(*defgrd, *defgrd);                                             // C = F^T F
+  Core::LinAlg::SymmetricTensor<double, 3, 3> C = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(*defgrad) * *defgrad);  // matrix notation
+  const Core::LinAlg::Matrix<3, 3> C_mat =
+      Core::LinAlg::make_matrix(Core::LinAlg::get_full(C));                    // matrix notation
   Core::LinAlg::Matrix<6, 1> Cv(Core::LinAlg::Initialization::uninitialized);  // Voigt notation
-  Core::LinAlg::Voigt::Stresses::matrix_to_vector(C, Cv);                      // Cv
+  Core::LinAlg::Voigt::Stresses::matrix_to_vector(C_mat, Cv);                  // Cv
 
   // inverse right Cauchy Green tensor C^-1
   Core::LinAlg::Matrix<3, 3> invC(Core::LinAlg::Initialization::uninitialized);   // matrix notation
-  invC.invert(C);                                                                 // invC = C^-1
+  invC.invert(C_mat);                                                             // invC = C^-1
   Core::LinAlg::Matrix<6, 1> invCv(Core::LinAlg::Initialization::uninitialized);  // Voigt notation
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(invC, invCv);                   // invCv
 
   // structural tensor M, i.e. dyadic product of fibre directions
-  Core::LinAlg::Matrix<3, 3> M = anisotropy_extension_.get_structural_tensor(gp, 0);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> M =
+      anisotropy_extension_.get_structural_tensor(gp, 0);
+  const Core::LinAlg::Matrix<3, 3> M_mat = Core::LinAlg::make_matrix(Core::LinAlg::get_full(M));
   Core::LinAlg::Matrix<6, 1> Mv(Core::LinAlg::Initialization::uninitialized);  // Voigt notation
-  Core::LinAlg::Voigt::Stresses::matrix_to_vector(M, Mv);                      // Mv
+  Core::LinAlg::Voigt::Stresses::matrix_to_vector(M_mat, Mv);                  // Mv
   // structural tensor L = omega0/3*Identity + omegap*M
-  Core::LinAlg::Matrix<3, 3> L(M);
+  Core::LinAlg::Matrix<3, 3> L(M_mat);
   L.scale(1.0 - omega0);  // omegap*M
   for (unsigned i = 0; i < 3; ++i) L(i, i) += omega0 / 3.0;
 
@@ -336,23 +344,23 @@ void Mat::MuscleCombo::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // compute helper matrices for further calculation
   Core::LinAlg::Matrix<3, 3> LomegaaM(L);
-  LomegaaM.update(omegaa, M, 1.0);  // LomegaaM = L + omegaa*M
+  LomegaaM.update(omegaa, M_mat, 1.0);  // LomegaaM = L + omegaa*M
   Core::LinAlg::Matrix<6, 1> LomegaaMv(Core::LinAlg::Initialization::uninitialized);
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(LomegaaM, LomegaaMv);
 
   Core::LinAlg::Matrix<3, 3> LfacomegaaM(L);  // LfacomegaaM = L + fac*M
   LfacomegaaM.update((1.0 + omegaa * alpha * std::pow(lambdaM, 2)) / (alpha * std::pow(lambdaM, 2)),
-      M, 1.0);  // + fac*M
+      M_mat, 1.0);  // + fac*M
   Core::LinAlg::Matrix<6, 1> LfacomegaaMv(Core::LinAlg::Initialization::uninitialized);
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(LfacomegaaM, LfacomegaaMv);
 
   Core::LinAlg::Matrix<3, 3> transpCLomegaaM(Core::LinAlg::Initialization::uninitialized);
-  transpCLomegaaM.multiply_tn(1.0, C, LomegaaM);  // C^T*(L+omegaa*M)
+  transpCLomegaaM.multiply_tn(1.0, C_mat, LomegaaM);  // C^T*(L+omegaa*M)
   Core::LinAlg::Matrix<6, 1> transpCLomegaaMv(Core::LinAlg::Initialization::uninitialized);
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(transpCLomegaaM, transpCLomegaaMv);
 
   // generalized invariants including active material properties
-  double detC = C.determinant();  // detC = det(C)
+  double detC = C_mat.determinant();  // detC = det(C)
   // I = C:(L+omegaa*M) = tr(C^T (L+omegaa*M)) since A:B = tr(A^T B) for real matrices
   double I = transpCLomegaaM(0, 0) + transpCLomegaaM(1, 1) + transpCLomegaaM(2, 2);
   // J = cof(C):L = tr(cof(C)^T L) = tr(adj(C) L) = tr(det(C) C^-1 L) = det(C)*tr(C^-1 L)
@@ -366,7 +374,7 @@ void Mat::MuscleCombo::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   stressM.update(expalpha, LomegaaM, 0.0);  // add contributions
   stressM.update(-expbeta * detC, invCLinvC, 1.0);
   stressM.update(J * expbeta - std::pow(detC, -kappa), invC, 1.0);
-  stressM.update(0.5 * eta, M, 1.0);
+  stressM.update(0.5 * eta, M_mat, 1.0);
   stressM.scale(0.5 * gamma);
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(
       stressM, Sc_stress);  // convert to Voigt notation and update stress
@@ -390,18 +398,18 @@ void Mat::MuscleCombo::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   ccmat.scale(gamma);
 
   // update stress and material tangent with the computed stress and cmat values
-  stress->update(1.0, Sc_stress, 1.0);
-  cmat->update(1.0, ccmat, 1.0);
+  Core::LinAlg::make_stress_like_voigt_view(stress).update(1.0, Sc_stress, 1.0);
+  Core::LinAlg::make_stress_like_voigt_view(cmat).update(1.0, ccmat, 1.0);
 }
 
-void Mat::MuscleCombo::evaluate_active_nominal_stress(Teuchos::ParameterList& params,
+void Mat::MuscleCombo::evaluate_active_nominal_stress(const Teuchos::ParameterList& params,
     const int eleGID, const double lambdaM, double& intPa, double& Pa, double& derivPa)
 {
   // save current simulation time
-  double t_tot = params.get<double>("total time", -1);
+  double t_tot = get_or<double>(params, "total time", -1);
   if (abs(t_tot + 1.0) < 1e-14) FOUR_C_THROW("No total time given for muscle Combo material!");
   // save (time) step size
-  double timestep = params.get<double>("delta time", -1);
+  double timestep = get_or<double>(params, "delta time", -1);
   if (abs(timestep + 1.0) < 1e-14)
     FOUR_C_THROW("No time step size given for muscle Combo material!");
 

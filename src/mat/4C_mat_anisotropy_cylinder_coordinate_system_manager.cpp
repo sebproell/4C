@@ -48,7 +48,7 @@ void Mat::CylinderCoordinateSystemManager::read_from_element_line_definition(
 }
 
 void Mat::CylinderCoordinateSystemManager::evaluate_local_coordinate_system(
-    Core::LinAlg::Matrix<3, 3>& cosy) const
+    Core::LinAlg::Tensor<double, 3, 3>& cosy) const
 {
   for (int i = 0; i < 3; ++i)
   {

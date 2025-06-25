@@ -12,6 +12,7 @@
 #include "4C_inpar_scatra.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io_input_spec_builders.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_solid_3D_ele_interface_serializable.hpp"
 #include "4C_solid_3D_ele_line.hpp"
 #include "4C_solid_3D_ele_nullspace.hpp"

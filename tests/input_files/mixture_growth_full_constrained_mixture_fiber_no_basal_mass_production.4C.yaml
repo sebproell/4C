@@ -92,7 +92,7 @@ MATERIALS:
       KAPPA: 100
   - MAT: 139
     MIX_Prestress_Strategy_Constant:
-      PRESTRETCH: [1, 1, 1, 0, 0, 0, 0, 0, 0]
+      PRESTRETCH: [1, 1, 1, 0, 0, 0]
 DESIGN SURF ROBIN SPRING DASHPOT CONDITIONS:
   - E: 1
     NUMDOF: 3

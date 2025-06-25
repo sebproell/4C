@@ -12,6 +12,8 @@
 
 #include "4C_comm_pack_buffer.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_mat_anisotropy.hpp"
 #include "4C_mat_anisotropy_extension_base.hpp"
 #include "4C_mat_anisotropy_fiber_provider.hpp"
@@ -66,8 +68,6 @@ namespace Mat
     static constexpr std::uint_fast8_t FIBER_VECTORS{1U << 0U};
     /// The material evaluation needs the structural tensors
     static constexpr std::uint_fast8_t STRUCTURAL_TENSOR{1U << 1U};
-    /// The material evaluation needs the structural tensors in stress like voigt notation
-    static constexpr std::uint_fast8_t STRUCTURAL_TENSOR_STRESS{1U << 2U};
     /// @}
 
     /*!
@@ -114,7 +114,7 @@ namespace Mat
      * @param i (in) : Id of the fiber
      * @return Reference to the vector of the fiber
      */
-    const Core::LinAlg::Matrix<3, 1>& get_fiber(int gp, int i) const override;
+    const Core::LinAlg::Tensor<double, 3>& get_fiber(int gp, int i) const override;
 
     /**
      * \brief Returns the i-th structural tensor at the Integration point in stress-like Voigt
@@ -126,26 +126,15 @@ namespace Mat
      * @param i (in) : Id of the fiber
      * @return Matrix of the structural tensor in stress-like Voigt notation
      */
-    const Core::LinAlg::Matrix<6, 1>& get_structural_tensor_stress(int gp, int i) const override;
-
-    /**
-     * \brief Returns the i-th structural tensor at the Integration point in tensor notation
-     *
-     * \note Use gp=#GPDEFAULT if element fibers are used
-     *
-     * @param gp (in) : Id of the integration point (use #GPDEFAULT for Element fibers)
-     * @param i (in) : Id of the fiber
-     * @return Reference to Matrix of the structural tensor in tensor notation
-     */
-    const Core::LinAlg::Matrix<3, 3>& get_structural_tensor(int gp, int i) const override;
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& get_structural_tensor(
+        int gp, int i) const override;
     //@}
 
     /*!
      * \brief Needed structural tensors should be registered here before setup so that only needed
      * structural tensors are computed
      *
-     * Use FiberAnisotropyExtension::FIBER_VECTORS, FiberAnisotropyExtension::STRUCTURAL_TENSOR or
-     * FiberAnisotropyExtension::STRUCTURAL_TENSOR_STRESS
+     * Use FiberAnisotropyExtension::FIBER_VECTORS, FiberAnisotropyExtension::STRUCTURAL_TENSOR
      *
      * They can be combined with binary or, hence
      * FiberAnisotropyExtension::FIBER_VECTORS|FiberAnisotropyExtension::STRUCTURAL_TENSOR
@@ -180,7 +169,7 @@ namespace Mat
      * \param gp Gauss point. Use FiberAnisotropyExtension::GPDEFAULT in case of element fibers
      * \param fibers Vector of all fibers
      */
-    void set_fibers(int gp, const std::array<Core::LinAlg::Matrix<3, 1>, numfib>& fibers);
+    void set_fibers(int gp, const std::array<Core::LinAlg::Tensor<double, 3>, numfib>& fibers);
 
     /*!
      * \brief Set all fibers of the element
@@ -188,7 +177,7 @@ namespace Mat
      * \param fibers The first index are the Gauss points, the second index the fibers. In case of
      * element fiebers, the first vector should only contain one element.
      */
-    void set_fibers(const std::vector<std::array<Core::LinAlg::Matrix<3, 1>, numfib>>& fibers);
+    void set_fibers(const std::vector<std::array<Core::LinAlg::Tensor<double, 3>, numfib>>& fibers);
 
     /*!
      * \brief Method that compute all structural tensors. Should be executed after a change of the
@@ -287,18 +276,14 @@ namespace Mat
      * Fibers of the element. The first index is for the Gauss points, the second index is for
      * the fiber id
      */
-    std::vector<std::array<Core::LinAlg::Matrix<3, 1>, numfib>> fibers_;
+    std::vector<std::array<Core::LinAlg::Tensor<double, 3>, numfib>> fibers_;
 
     /**
      * Structural tensors of the fibers in stress like Voigt notation. The ordering is the same as
      * in #fibers_
      */
-    std::vector<std::array<Core::LinAlg::Matrix<6, 1>, numfib>> fiber_structural_tensors_stress_;
-
-    /**
-     * Structural tensors of the fibers. The ordering is the same as in #fibers_
-     */
-    std::vector<std::array<Core::LinAlg::Matrix<3, 3>, numfib>> fiber_structural_tensors_;
+    std::vector<std::array<Core::LinAlg::SymmetricTensor<double, 3, 3>, numfib>>
+        fiber_structural_tensors_;
 
     /// Structural tensor strategy
     const std::shared_ptr<Elastic::StructuralTensorStrategyBase> structural_tensor_strategy_ =

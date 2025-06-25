@@ -212,10 +212,9 @@ namespace Mat
     virtual double get_young();
 
     /// evaluate strain energy function
-    void strain_energy(const Core::LinAlg::Matrix<6, 1>& glstrain,  ///< Green-Lagrange strain
-        double& psi,                                                ///< Strain energy function
-        int gp,                                                     ///< Gauss point
-        int eleGID                                                  ///< Element GID
+    [[nodiscard]] double strain_energy(
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, int gp,
+        int eleGID  ///< Element GID
     ) const override;
 
     /*!
@@ -229,16 +228,15 @@ namespace Mat
      * \param gp(in) : Gauss point
      * \param eleGID(in) : Element GID
      */
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
-    void evaluate_cauchy_n_dir_and_derivatives(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        const Core::LinAlg::Matrix<3, 1>& n, const Core::LinAlg::Matrix<3, 1>& dir,
-        double& cauchy_n_dir, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn,
-        Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir, Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF,
-        Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
+    double evaluate_cauchy_n_dir_and_derivatives(const Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+        const Core::LinAlg::Tensor<double, 3>& n, const Core::LinAlg::Tensor<double, 3>& dir,
+        Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir,
+        Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF, Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
         Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_dn,
         Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_ddir, int gp, int eleGID,
         const double* concentration, const double* temp, double* d_cauchyndir_dT,
@@ -306,13 +304,13 @@ namespace Mat
      * @param params Container for additional information
      * @param eleGID Global element id
      */
-    void post_setup(Teuchos::ParameterList& params, int eleGID) override;
+    void post_setup(const Teuchos::ParameterList& params, int eleGID) override;
 
     /// update
     void update() override;
 
     /// setup patient-specific AAA stuff
-    virtual void setup_aaa(Teuchos::ParameterList& params, int eleGID);
+    virtual void setup_aaa(const Teuchos::ParameterList& params, int eleGID);
 
     /// return if anisotropic not split formulation
     virtual bool anisotropic_principal() const { return summandProperties_.anisoprinc; }
@@ -321,12 +319,12 @@ namespace Mat
     virtual bool anisotropic_modified() const { return summandProperties_.anisomod; }
 
     /// get fiber vectors
-    virtual void get_fiber_vecs(std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs) const;
+    virtual void get_fiber_vecs(std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs) const;
 
     /// evaluate fiber directions from locsys and alignment angle, pull back
-    virtual void evaluate_fiber_vecs(double newgamma,  ///< new angle
-        const Core::LinAlg::Matrix<3, 3>& locsys,      ///< local coordinate system
-        const Core::LinAlg::Matrix<3, 3>& defgrd       ///< deformation gradient
+    virtual void evaluate_fiber_vecs(double newgamma,      ///< new angle
+        const Core::LinAlg::Tensor<double, 3, 3>& locsys,  ///< local coordinate system
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrd   ///< deformation gradient
     );
 
     /// Return potential summand pointer for the given material type
@@ -342,14 +340,6 @@ namespace Mat
     /// Return visualization data
     bool vis_data(
         const std::string& name, std::vector<double>& data, int numgp, int eleID) const override;
-
-    /// Return whether the material requires the deformation gradient for its evaluation
-    bool needs_defgrd() const override
-    {
-      // only the polyconvexity check needs the deformation gradient. Regular materials don't need
-      // it
-      return params_->polyconvex_ != 0;
-    };
 
    protected:
     /// @name Flags to specify the elastic formulations (initialize with false)

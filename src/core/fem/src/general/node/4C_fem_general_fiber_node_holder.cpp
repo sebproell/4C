@@ -14,38 +14,39 @@ FOUR_C_NAMESPACE_OPEN
 
 void Core::Nodes::NodalFiberHolder::set_coordinate_system_direction(
     Core::Nodes::CoordinateSystemDirection type,
-    const std::vector<Core::LinAlg::Matrix<3, 1>>& fiber)
+    const std::vector<Core::LinAlg::Tensor<double, 3>>& fiber)
 {
   coordinate_system_directions_.insert(std::pair<Core::Nodes::CoordinateSystemDirection,
-      const std::vector<Core::LinAlg::Matrix<3, 1>>>(type, fiber));
+      const std::vector<Core::LinAlg::Tensor<double, 3>>>(type, fiber));
 }
 
-const std::vector<Core::LinAlg::Matrix<3, 1>>&
+const std::vector<Core::LinAlg::Tensor<double, 3>>&
 Core::Nodes::NodalFiberHolder::get_coordinate_system_direction(
     Core::Nodes::CoordinateSystemDirection type) const
 {
   return coordinate_system_directions_.at(type);
 }
 
-std::vector<Core::LinAlg::Matrix<3, 1>>&
+std::vector<Core::LinAlg::Tensor<double, 3>>&
 Core::Nodes::NodalFiberHolder::get_coordinate_system_direction_mutual(
     Core::Nodes::CoordinateSystemDirection type)
 {
   return coordinate_system_directions_.at(type);
 }
 
-void Core::Nodes::NodalFiberHolder::add_fiber(const std::vector<Core::LinAlg::Matrix<3, 1>>& fiber)
+void Core::Nodes::NodalFiberHolder::add_fiber(
+    const std::vector<Core::LinAlg::Tensor<double, 3>>& fiber)
 {
   fibers_.emplace_back(fiber);
 }
 
-const std::vector<Core::LinAlg::Matrix<3, 1>>& Core::Nodes::NodalFiberHolder::get_fiber(
+const std::vector<Core::LinAlg::Tensor<double, 3>>& Core::Nodes::NodalFiberHolder::get_fiber(
     std::size_t fiberid) const
 {
   return fibers_.at(fiberid);
 }
 
-std::vector<Core::LinAlg::Matrix<3, 1>>& Core::Nodes::NodalFiberHolder::get_fiber_mutual(
+std::vector<Core::LinAlg::Tensor<double, 3>>& Core::Nodes::NodalFiberHolder::get_fiber_mutual(
     std::size_t fiberid)
 {
   return fibers_.at(fiberid);

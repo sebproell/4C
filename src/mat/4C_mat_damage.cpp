@@ -9,6 +9,7 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_local_newton.hpp"
@@ -266,29 +267,35 @@ void Mat::Damage::update()
 
 
 //  evaluate material (public)
-void Mat::Damage::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* linstrain,  // linear strain vector
-    Teuchos::ParameterList& params,                  // parameter list for communication & HISTORY
-    Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,  // 2nd PK-stress
-    Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat,  // material stiffness matrix
-    int gp,                                                    // Gauss point
-    int eleGID)
+void Mat::Damage::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+  const Core::LinAlg::Matrix<6, 1> glstrain_mat =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
+
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   // in case kinematic hardening is ignored, use implementation according to de
   // Souza Neto, Computational Methods for Plasticity
   if ((params_->kinhard_ == 0.0) and (params_->kinhard_rec_ == 0.0) and (params_->hardexpo_ == 0.0))
-    evaluate_simplified_lemaitre(defgrd, linstrain, params, stress, cmat, gp, eleGID);
+    evaluate_simplified_lemaitre(
+        &defgrd_mat, &glstrain_mat, params, &stress_view, &cmat_view, gp, eleGID);
   // in case full Lemaitre material model is considered, i.e. including
   // kinematic hardening, use implementation according to Doghri
   else
-    evaluate_full_lemaitre(defgrd, linstrain, params, stress, cmat, gp, eleGID);
+    evaluate_full_lemaitre(
+        &defgrd_mat, &glstrain_mat, params, &stress_view, &cmat_view, gp, eleGID);
 }  // Evaluate
 
 
 // evaluate material for pure isotropic hardening
 void Mat::Damage::evaluate_simplified_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgrd,
     const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* linstrain,  // linear strain vector
-    Teuchos::ParameterList& params,                  // parameter list for communication & HISTORY
+    const Teuchos::ParameterList& params,            // parameter list for communication & HISTORY
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,  // 2nd PK-stress
     Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat,  // material stiffness matrix
     const int gp, const int eleGID)
@@ -761,13 +768,6 @@ void Mat::Damage::evaluate_simplified_lemaitre(const Core::LinAlg::Matrix<3, 3>*
   // ( generally C_ep is nonsymmetric )
   setup_cmat_elasto_plastic(*cmat, eleGID, Dgamma, G, bulk, p_tilde, q_tilde, energyrelrate, Ytan,
       sigma_y, Hiso, Nbar, gp, damevolution, active_plasticity);
-
-
-  // ------------------------------- return plastic strains for post-processing
-  params.set<Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1>>("plglstrain", strainplcurr_.at(gp));
-
-  return;
-
 }  // EvaluateSimplifiedLemaitre()
 
 
@@ -918,7 +918,7 @@ std::pair<double, double> Mat::Damage::residuum_and_jacobian_with_damage(
  *----------------------------------------------------------------------*/
 void Mat::Damage::evaluate_full_lemaitre(const Core::LinAlg::Matrix<3, 3>* defgrd,
     const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* linstrain,  // linear strain vector
-    Teuchos::ParameterList& params,                  // parameter list for communication & HISTORY
+    const Teuchos::ParameterList& params,            // parameter list for communication & HISTORY
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,  // 2nd PK-stress
     Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat,  // material stiffness matrix
     const int gp, const int eleGID)

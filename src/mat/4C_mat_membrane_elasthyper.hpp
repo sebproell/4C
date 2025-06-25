@@ -151,14 +151,15 @@ namespace Mat
     /// setup
     void setup(int numgp, const Core::IO::InputParameterContainer& container) override;
 
-    void update_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd, Teuchos::ParameterList& params,
-        const Core::LinAlg::Matrix<3, 3>& Q_trafo, int gp, int eleGID) override
+    void update_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd,
+        const Teuchos::ParameterList& params, const Core::LinAlg::Matrix<3, 3>& Q_trafo, int gp,
+        int eleGID) override
     {
       // nothing to do
     }
 
     void evaluate_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        const Core::LinAlg::Matrix<3, 3>& cauchygreen, Teuchos::ParameterList& params,
+        const Core::LinAlg::Matrix<3, 3>& cauchygreen, const Teuchos::ParameterList& params,
         const Core::LinAlg::Matrix<3, 3>& Q_trafo, Core::LinAlg::Matrix<3, 1>& stress,
         Core::LinAlg::Matrix<3, 3>& cmat, int gp, int eleGID) override;
 
@@ -174,11 +175,11 @@ namespace Mat
     /// calculate anisotropic stress and elasticity tensor
     virtual void evaluate_anisotropic_stress_cmat(Core::LinAlg::Matrix<3, 1>& stress_aniso,
         Core::LinAlg::Matrix<3, 3>& cmat_aniso, const Core::LinAlg::Matrix<3, 3>& Q_trafo,
-        const Core::LinAlg::Matrix<3, 1>& rcg, const double& rcg33, Teuchos::ParameterList& params,
-        int gp, int eleGID);
+        const Core::LinAlg::Matrix<3, 1>& rcg, const double& rcg33,
+        const Teuchos::ParameterList& params, int gp, int eleGID);
 
     /// vector of fiber vectors
-    std::vector<Core::LinAlg::Matrix<3, 1>> fibervecs_;
+    std::vector<Core::LinAlg::Tensor<double, 3>> fibervecs_;
   };
 
 }  // namespace Mat

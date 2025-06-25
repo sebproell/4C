@@ -101,17 +101,18 @@ namespace Mat
        *
        * Computation of the 2nd PK-stress and elasticity tensor with respect to the modified strains
        */
-      void add_stress_aniso_modified(
-          const Core::LinAlg::Matrix<6, 1>& rcg,  ///< right Cauchy Green Tensor
-                                                  ///< in strain-like-voigt-Notation
-          const Core::LinAlg::Matrix<6, 1>& icg,  ///< inverse of right Cauchy Green Tensor
-                                                  ///< in stress-like-voigt-notation
-          Core::LinAlg::Matrix<6, 6>& cmat,       ///< material stiffness matrix
-          Core::LinAlg::Matrix<6, 1>& stress,     ///< 2nd PK-stress
-          double I3,                              ///< third principal invariant
-          int gp,                                 ///< Gauss point
-          int eleGID,                             ///< element GID
-          Teuchos::ParameterList& params          ///< Container for additional information
+      void add_stress_aniso_modified(const Core::LinAlg::SymmetricTensor<double, 3, 3>&
+                                         rcg,  ///< right Cauchy Green Tensor
+                                               ///< in strain-like-voigt-Notation
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>&
+              icg,  ///< inverse of right Cauchy Green Tensor
+                    ///< in stress-like-voigt-notation
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< material stiffness matrix
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,      ///< 2nd PK-stress
+          double I3,                                                ///< third principal invariant
+          int gp,                                                   ///< Gauss point
+          int eleGID,                                               ///< element GID
+          const Teuchos::ParameterList& params  ///< Container for additional information
           ) override;
 
       /// Specify the formulation as anisomod

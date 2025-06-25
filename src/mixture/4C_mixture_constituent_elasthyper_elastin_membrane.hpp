@@ -61,11 +61,11 @@ namespace Mixture
      * \return const Core::LinAlg::Matrix<3, 3>& Reference to the structural tensor of the membrane
      * plane
      */
-    const Core::LinAlg::Matrix<3, 3>& get_orthogonal_structural_tensor(int gp);
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& get_orthogonal_structural_tensor(int gp);
 
    private:
     /// Holder of the internal structural tensors
-    std::vector<Core::LinAlg::Matrix<3, 3>> orthogonal_structural_tensor_;
+    std::vector<Core::LinAlg::SymmetricTensor<double, 3, 3>> orthogonal_structural_tensor_;
   };
 
   namespace PAR
@@ -170,8 +170,8 @@ namespace Mixture
      * @param gp Gauss point
      * @param eleGID Global element identifier
      */
-    void update(Core::LinAlg::Matrix<3, 3> const& defgrd, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    void update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     /*!
      * \brief Method that will be called once before the evaluation process. The elastin material
@@ -182,8 +182,8 @@ namespace Mixture
      * \param gp Gauss point
      * \param eleGID Global element id
      */
-    void pre_evaluate(
-        MixtureRule& mixtureRule, Teuchos::ParameterList& params, int gp, int eleGID) override;
+    void pre_evaluate(MixtureRule& mixtureRule, const Teuchos::ParameterList& params, int gp,
+        int eleGID) override;
 
 
     [[nodiscard]] double get_growth_scalar(int gp) const override;
@@ -200,9 +200,10 @@ namespace Mixture
      * \param gp Gauss point
      * \param eleGID Global element id
      */
-    void evaluate(const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-        Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     /*!
      * \brief Evaluation of the constituent with an inelastic, external part.
@@ -215,10 +216,10 @@ namespace Mixture
      * \param gp Gauss point
      * \param eleGID Global element id
      */
-    void evaluate_elastic_part(const Core::LinAlg::Matrix<3, 3>& F,
-        const Core::LinAlg::Matrix<3, 3>& iFextin, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp,
-        int eleGID) override;
+    void evaluate_elastic_part(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::Tensor<double, 3, 3>& iFextin, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     /*!
      * \brief Evaluation of the membrane stress only
@@ -228,8 +229,8 @@ namespace Mixture
      * \param gp Gauss point
      * \param eleGID Global element id
      */
-    void evaluate_membrane_stress(
-        Core::LinAlg::Matrix<6, 1>& S, Teuchos::ParameterList& params, int gp, int eleGID) override;
+    void evaluate_membrane_stress(Core::LinAlg::SymmetricTensor<double, 3, 3>& S,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
    protected:
     /*!
@@ -243,10 +244,10 @@ namespace Mixture
      * \param gp Gauss point
      * \param eleGID Global element id
      */
-    void evaluate_stress_c_mat_membrane(const Core::LinAlg::Matrix<3, 3>& F,
-        const Core::LinAlg::Matrix<3, 3>& iFin, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp,
-        int eleGID) const;
+    void evaluate_stress_c_mat_membrane(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::Tensor<double, 3, 3>& iFin, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) const;
 
     /*!
      * \brief Evaluates the structural tensors of the radial and membrane plane direction in the

@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_material_parameter_base.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -100,34 +101,8 @@ namespace Mat
        * This is the core functionality of this object.
        * Each derived class has to implement this method (pure virtual).
        */
-      virtual void setup_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber_vector,
-          Core::LinAlg::Matrix<6, 1>& structural_tensor_stress) = 0;
-
-      /*!
-       * @brief Method for computing the structural tensor in matrix notation for anisotropic
-       * materials
-       *
-       * This is the core functionality of this object.
-       * Each derived class has to implement this method (pure virtual).
-       */
-      virtual void setup_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber_vector,
-          Core::LinAlg::Matrix<3, 3>& structural_tensor) = 0;
-
-      /*!
-       * @brief calculate MxM
-       *
-       * @param[in] M vector (e.g. fiber direction)
-       * @param[out] result result of dyadic product
-       */
-      void dyadic_product(const Core::LinAlg::Matrix<3, 1>& M, Core::LinAlg::Matrix<6, 1>& result);
-
-      /*!
-       * @brief calculate MxM
-       *
-       * @param[in] M vector (e.g. fiber direction)
-       * @param[out] result result of dyadic product
-       */
-      void dyadic_product(const Core::LinAlg::Matrix<3, 1>& M, Core::LinAlg::Matrix<3, 3>& result);
+      virtual void setup_structural_tensor(const Core::LinAlg::Tensor<double, 3>& fiber_vector,
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& structural_tensor_stress) = 0;
 
      protected:
       /// return residual tolerance of structural problem
@@ -168,23 +143,8 @@ namespace Mat
        * @param fiber_vector (in) : direction of fiber 'M'
        * @param structural_tensor_stress (out) : structural tensor is 'H' filled inside
        */
-      void setup_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber_vector,
-          Core::LinAlg::Matrix<6, 1>& structural_tensor_stress) override;
-
-      /*!
-       * @brief method for computing the structural tensor for anisotropic materials in tensor
-       * notation
-       *
-       * Simplest variant assuming perfect alignment of fiber with a given fiber direction M.
-       *
-       * <h3>Definition of Structural Tensor H</h3>
-       * H = M x M (x denotes the dyadic product)
-       *
-       * @param fiber_vector (in) : direction of fiber 'M'
-       * @param structural_tensor_stress (out) : structural tensor is 'H' filled inside
-       */
-      void setup_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber_vector,
-          Core::LinAlg::Matrix<3, 3>& structural_tensor) override;
+      void setup_structural_tensor(const Core::LinAlg::Tensor<double, 3>& fiber_vector,
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& structural_tensor_stress) override;
     };  // namespace Elastic
 
 
@@ -282,20 +242,8 @@ namespace Mat
        * @param[out] structural_tensor_stress generalized structural tensor in stress-like Voigt
        * notation
        */
-      void setup_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber_vector,
-          Core::LinAlg::Matrix<6, 1>& structural_tensor_stress) override;
-
-      /*!
-       * @brief Evaluate generalized structural tensor with given distribution function in matrix
-       * notation
-       *
-       * @note This method is not yet implemented
-       *
-       * @param[in] fiber_vector
-       * @param[out] structural_tensor
-       */
-      void setup_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber_vector,
-          Core::LinAlg::Matrix<3, 3>& structural_tensor) override;
+      void setup_structural_tensor(const Core::LinAlg::Tensor<double, 3>& fiber_vector,
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& structural_tensor_stress) override;
     };  // class StructuralTensorStrategyByDistributionFunction
 
 
@@ -336,20 +284,8 @@ namespace Mat
        * if c1 = 0.0 -> same as StructuralTensorStrategyStandard
        * if 0<c1<1/3 -> varying transverse isotropy
        */
-      void setup_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber_vector,
-          Core::LinAlg::Matrix<6, 1>& structural_tensor_stress) override;
-
-      /*!
-       * @brief Evaluates the transversely isotropic structural tensor with dispersin in matrix
-       * notation
-       *
-       * @note: This is not implemented yet.
-       *
-       * @param fiber_vector
-       * @param structural_tensor
-       */
-      void setup_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber_vector,
-          Core::LinAlg::Matrix<3, 3>& structural_tensor) override;
+      void setup_structural_tensor(const Core::LinAlg::Tensor<double, 3>& fiber_vector,
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& structural_tensor_stress) override;
     };  // class StructuralTensorStrategyDispersedTransverselyIsotropic
 
   }  // namespace Elastic

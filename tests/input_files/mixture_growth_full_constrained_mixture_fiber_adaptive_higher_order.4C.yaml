@@ -80,7 +80,7 @@ MATERIALS:
       KAPPA: 100
   - MAT: 129
     MIX_Prestress_Strategy_Constant:
-      PRESTRETCH: [1, 1, 1, 0, 0, 0, 0, 0, 0]
+      PRESTRETCH: [1, 1, 1, 0, 0, 0]
 FUNCT1:
   - COMPONENT: 0
     SYMBOLIC_FUNCTION_OF_SPACE_TIME: "1+0.05*y+0.04*z"

@@ -9,6 +9,7 @@
 
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_material_parameter_base.hpp"
 #include "4C_mixture_constituent.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -64,7 +65,7 @@ Mixture::MapMixtureRule::MapMixtureRule(Mixture::PAR::MapMixtureRule* params)
 {
 }
 
-void Mixture::MapMixtureRule::setup(Teuchos::ParameterList& params, const int eleGID)
+void Mixture::MapMixtureRule::setup(const Teuchos::ParameterList& params, const int eleGID)
 {
   MixtureRule::setup(params, eleGID);
 }
@@ -74,14 +75,14 @@ void Mixture::MapMixtureRule::unpack_mixture_rule(Core::Communication::UnpackBuf
   Mixture::MixtureRule::unpack_mixture_rule(buffer);
 }
 
-void Mixture::MapMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
-    const Core::LinAlg::Matrix<6, 1>& E_strain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, const int gp,
-    const int eleGID)
+void Mixture::MapMixtureRule::evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID)
 {
   // define temporary matrices
-  Core::LinAlg::Matrix<6, 1> cstress;
-  Core::LinAlg::Matrix<6, 6> ccmat;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> cstress;
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> ccmat;
 
   // evaluate the mass fractions at the given element id (one based entries in the csv file)
   auto massfracs = get_validate_mass_fractions(
@@ -91,14 +92,14 @@ void Mixture::MapMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
   for (std::size_t i = 0; i < constituents().size(); ++i)
   {
     MixtureConstituent& constituent = *constituents()[i];
-    cstress.clear();
-    ccmat.clear();
+    cstress = {};
+    ccmat = {};
     constituent.evaluate(F, E_strain, params, cstress, ccmat, gp, eleGID);
 
     // add stress contribution to global stress
     double constituent_density = params_->initial_reference_density_ * massfracs[i];
-    S_stress.update(constituent_density, cstress, 1.0);
-    cmat.update(constituent_density, ccmat, 1.0);
+    S_stress += constituent_density * cstress;
+    cmat += constituent_density * ccmat;
   }
 }
 

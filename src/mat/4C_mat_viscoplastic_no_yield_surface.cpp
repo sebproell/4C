@@ -9,6 +9,7 @@
 
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
@@ -168,18 +169,22 @@ void Mat::ViscoPlasticNoYieldSurface::update()
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Mat::ViscoPlasticNoYieldSurface::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* strain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::ViscoPlasticNoYieldSurface::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   // read input and history variables
   const double dt = params.get<double>("delta time");
   const Core::LinAlg::Matrix<3, 3>& last_iFv = last_plastic_defgrd_inverse_[gp];
 
   // trial (purely elastic) deformation gradient
   static Core::LinAlg::Matrix<3, 3> Fe_trial;
-  Fe_trial.multiply_nn(*defgrd, last_iFv);
+  Fe_trial.multiply_nn(defgrd_mat, last_iFv);
 
   // define variables for eigenvalue analysis
   static Core::LinAlg::Matrix<3, 1> EigenvaluesFe_trial;
@@ -197,12 +202,12 @@ void Mat::ViscoPlasticNoYieldSurface::evaluate(const Core::LinAlg::Matrix<3, 3>*
       EigenvectorsFe_trial, EigenvaluesFe_trial);
 
   // setup elasticity tensor (stress-stress-like)
-  setup_cmat(*cmat);
+  setup_cmat(cmat_view);
 
   // stress-like Voigt notation of stresses conjugated to logarithmic strains
   static Core::LinAlg::Matrix<6, 1> Me_trial_Vstress;
   // trial stress conjugate to logarithmic strain
-  Me_trial_Vstress.multiply_nn(*cmat, Ee_trial_Vstrain);
+  Me_trial_Vstress.multiply_nn(cmat_view, Ee_trial_Vstrain);
 
   // mean normal pressure (p = 1/3 * trace(Me_trial))
   const double p = 1.0 / 3.0 * (Me_trial_Vstress(0) + Me_trial_Vstress(1) + Me_trial_Vstress(2));
@@ -236,7 +241,7 @@ void Mat::ViscoPlasticNoYieldSurface::evaluate(const Core::LinAlg::Matrix<3, 3>*
   Me.update(eta, Me_trial_dev, p, id2);
 
   static Core::LinAlg::Matrix<3, 3> PK2;
-  PK2 = calculate_second_piola_kirchhoff_stresses(defgrd, Re_trial, Me);
+  PK2 = calculate_second_piola_kirchhoff_stresses(&defgrd_mat, Re_trial, Me);
 
   // current inverse plastic deformation gradient
   static Core::LinAlg::Matrix<3, 3> current_iFv;
@@ -248,11 +253,11 @@ void Mat::ViscoPlasticNoYieldSurface::evaluate(const Core::LinAlg::Matrix<3, 3>*
   current_flowres_isotropic_[gp] = x(1);
 
   // transform stresses to stress-like Voigt notation
-  Core::LinAlg::Voigt::Stresses::matrix_to_vector(PK2, *stress);
+  Core::LinAlg::Voigt::Stresses::matrix_to_vector(PK2, stress_view);
 
   auto cmatel = calculate_elastic_stiffness(EigenvectorsFe_trial, EigenvaluesFe_trial);
 
-  *cmat = Mat::pull_back_four_tensor(1.0 / current_iFv.determinant(), current_iFv, cmatel);
+  cmat_view = Mat::pull_back_four_tensor(1.0 / current_iFv.determinant(), current_iFv, cmatel);
 }
 
 /*----------------------------------------------------------------------*

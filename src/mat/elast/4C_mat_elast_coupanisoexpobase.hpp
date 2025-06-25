@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_anisotropy_extension_base.hpp"
 #include "4C_mat_anisotropy_extension_provider.hpp"
 #include "4C_mat_elast_summand.hpp"
@@ -45,15 +46,8 @@ namespace Mat
        * \param gp Gauss point
        * \return const Core::LinAlg::Matrix<3, 3>&
        */
-      virtual const Core::LinAlg::Matrix<3, 3>& get_structural_tensor(int gp) const = 0;
-
-      /*!
-       * \brief Returns the structural tensor in stress like Voigt notation that should be used
-       *
-       * \param gp Gauss point
-       * \return const Core::LinAlg::Matrix<6, 1>&
-       */
-      virtual const Core::LinAlg::Matrix<6, 1>& get_structural_tensor_stress(int gp) const = 0;
+      virtual const Core::LinAlg::SymmetricTensor<double, 3, 3>& get_structural_tensor(
+          int gp) const = 0;
     };
 
     namespace PAR
@@ -126,7 +120,7 @@ namespace Mat
        * \param eleGID (in) : global element id
        */
       void evaluate_first_derivatives_aniso(Core::LinAlg::Matrix<2, 1>& dPI_aniso,
-          const Core::LinAlg::Matrix<3, 3>& rcg, int gp, int eleGID) override;
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg, int gp, int eleGID) override;
 
       /*!
        * \brief Evaluate second derivative of the strain energy function with respect to the
@@ -139,7 +133,7 @@ namespace Mat
        * \param eleGID (in) : global element id
        */
       void evaluate_second_derivatives_aniso(Core::LinAlg::Matrix<3, 1>& ddPII_aniso,
-          const Core::LinAlg::Matrix<3, 3>& rcg, int gp, int eleGID) override;
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg, int gp, int eleGID) override;
 
 
       /*!
@@ -194,16 +188,16 @@ namespace Mat
               ddPII_aniso,  ///< second derivative with respect to invariants
           Core::LinAlg::Matrix<4, 1, T>&
               dddPIII_aniso,  ///< third derivative with respect to invariants
-          Core::LinAlg::Matrix<3, 3, T> const& rcg,  ///< right Cauchy-Green tensor
-          int gp,                                    ///< Gauss point
-          int eleGID) const;                         ///< element GID
+          Core::LinAlg::SymmetricTensor<T, 3, 3> const& rcg,  ///< right Cauchy-Green tensor
+          int gp,                                             ///< Gauss point
+          int eleGID) const;                                  ///< element GID
 
       /// Add anisotropic principal stresses
       void add_stress_aniso_principal(
-          const Core::LinAlg::Matrix<6, 1>& rcg,  ///< right Cauchy Green Tensor
-          Core::LinAlg::Matrix<6, 6>& cmat,       ///< material stiffness matrix
-          Core::LinAlg::Matrix<6, 1>& stress,     ///< 2nd PK-stress
-          Teuchos::ParameterList&
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,   ///< right Cauchy Green Tensor
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< material stiffness matrix
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,      ///< 2nd PK-stress
+          const Teuchos::ParameterList&
               params,  ///< additional parameters for computation of material properties
           int gp,      ///< Gauss point
           int eleGID   ///< element GID
@@ -215,7 +209,7 @@ namespace Mat
               prinv,  ///< principal invariants of right Cauchy-Green tensor
           const Core::LinAlg::Matrix<3, 1>&
               modinv,  ///< modified invariants of right Cauchy-Green tensor
-          const Core::LinAlg::Matrix<6, 1>&
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>&
               glstrain,  ///< Green-Lagrange strain in strain like Voigt notation
           int gp,        //< Gauss point
           int eleGID     ///< element GID
@@ -223,24 +217,24 @@ namespace Mat
 
       /// Evaluates strain energy for automatic differentiation with FAD
       template <typename T>
-      void evaluate_func(T& psi,                   ///< strain energy functions
-          Core::LinAlg::Matrix<3, 3, T> const& C,  ///< Right Cauchy-Green tensor
-          int gp,                                  ///< Gauss point
-          int eleGID) const;                       ///< element GID
+      void evaluate_func(T& psi,                            ///< strain energy functions
+          Core::LinAlg::SymmetricTensor<T, 3, 3> const& C,  ///< Right Cauchy-Green tensor
+          int gp,                                           ///< Gauss point
+          int eleGID) const;                                ///< element GID
 
       /// Set fiber directions
-      void set_fiber_vecs(double newgamma,           ///< new angle
-          const Core::LinAlg::Matrix<3, 3>& locsys,  ///< local coordinate system
-          const Core::LinAlg::Matrix<3, 3>& defgrd   ///< deformation gradient
+      void set_fiber_vecs(double newgamma,                   ///< new angle
+          const Core::LinAlg::Tensor<double, 3, 3>& locsys,  ///< local coordinate system
+          const Core::LinAlg::Tensor<double, 3, 3>& defgrd   ///< deformation gradient
           ) override;
 
       /// Set fiber directions
-      void set_fiber_vecs(const Core::LinAlg::Matrix<3, 1>& fibervec  ///< new fiber vector
+      void set_fiber_vecs(const Core::LinAlg::Tensor<double, 3>& fibervec  ///< new fiber vector
           ) override;
 
       /// Get fiber directions
       void get_fiber_vecs(
-          std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+          std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
       ) const override;
 
       /// Indicator for formulation

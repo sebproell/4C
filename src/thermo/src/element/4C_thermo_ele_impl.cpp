@@ -17,6 +17,9 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_linalg_fixedsizematrix_solver.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_plasticelasthyper.hpp"
 #include "4C_mat_thermoplastichyperelast.hpp"
 #include "4C_mat_thermoplasticlinelast.hpp"
@@ -919,7 +922,8 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
   // ------------------------------------------------ initialise material
 
   // thermal material tangent
-  Core::LinAlg::Matrix<6, 1> ctemp(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> ctemp_t{};
+  Core::LinAlg::Matrix<6, 1> ctemp = Core::LinAlg::make_stress_like_voigt_view(ctemp_t);
   // get scalar-valued element temperature
   // build the product of the shapefunctions and element temperatures T = N . T
   Core::LinAlg::Matrix<1, 1> NT(Core::LinAlg::Initialization::uninitialized);
@@ -970,9 +974,10 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
         std::dynamic_pointer_cast<Mat::Trait::ThermoSolid>(structmat);
     if (thermoSolid != nullptr)
     {
-      Core::LinAlg::Matrix<6, 1> dctemp_dT(Core::LinAlg::Initialization::uninitialized);
-      thermoSolid->reinit(nullptr, nullptr, NT(0), iquad);
-      thermoSolid->stress_temperature_modulus_and_deriv(ctemp, dctemp_dT, iquad);
+      Core::LinAlg::SymmetricTensor<double, 3, 3> dctemp_dT_t{};
+      Core::LinAlg::Matrix<6, 1> dctemp_dT = Core::LinAlg::make_stress_like_voigt_view(dctemp_dT_t);
+      thermoSolid->reinit(nullptr, Core::LinAlg::TensorGenerators::full<3, 3>(0.0), NT(0), iquad);
+      thermoSolid->stress_temperature_modulus_and_deriv(ctemp_t, dctemp_dT_t, iquad);
 
       Core::LinAlg::Matrix<nen_, 6> Ndctemp_dT(
           Core::LinAlg::Initialization::uninitialized);  // (8x1)(1x6)
@@ -988,7 +993,7 @@ void Discret::Elements::TemperImpl<distype>::linear_disp_contribution(
       std::shared_ptr<Mat::ThermoPlasticLinElast> thrpllinelast =
           std::dynamic_pointer_cast<Mat::ThermoPlasticLinElast>(structmat);
       // get the temperature-dependent material tangent
-      thrpllinelast->setup_cthermo(ctemp);
+      thrpllinelast->setup_cthermo(ctemp_t);
 
       // thermoELASTIC heating term f_Td = T . (m . I) : strain',
       // thermoPLASTICITY:               = T . (m . I) : strain_e'
@@ -1068,7 +1073,8 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
   // in case of thermo-elasto-plastic material: elasto-plastic tangent modulus
   Core::LinAlg::Matrix<6, 6> cmat(Core::LinAlg::Initialization::zero);
   // thermal material tangent
-  Core::LinAlg::Matrix<6, 1> ctemp(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> ctemp_t{};
+  Core::LinAlg::Matrix<6, 1> ctemp = Core::LinAlg::make_stress_like_voigt_view(ctemp_t);
   // get scalar-valued element temperature
   // build the product of the shapefunctions and element temperatures T = N . T
   Core::LinAlg::Matrix<1, 1> NT(Core::LinAlg::Initialization::uninitialized);
@@ -1158,9 +1164,9 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
         std::dynamic_pointer_cast<Mat::Trait::ThermoSolid>(structmat);
     if (thermoSolid != nullptr)
     {
-      Core::LinAlg::Matrix<6, 1> dctemp_dT(Core::LinAlg::Initialization::uninitialized);
-      thermoSolid->reinit(nullptr, nullptr, NT(0), iquad);
-      thermoSolid->stress_temperature_modulus_and_deriv(ctemp, dctemp_dT, iquad);
+      Core::LinAlg::SymmetricTensor<double, 3, 3> dctemp_dT;
+      thermoSolid->reinit(nullptr, Core::LinAlg::TensorGenerators::full<3, 3>(0.0), NT(0), iquad);
+      thermoSolid->stress_temperature_modulus_and_deriv(ctemp_t, dctemp_dT, iquad);
     }
     else if (structmat->material_type() == Core::Materials::m_thermopllinelast)
     {
@@ -1168,7 +1174,7 @@ void Discret::Elements::TemperImpl<distype>::linear_coupled_tang(
           std::dynamic_pointer_cast<Mat::ThermoPlasticLinElast>(structmat);
 
       // get the temperature-dependent material tangent
-      thrpllinelast->setup_cthermo(ctemp);
+      thrpllinelast->setup_cthermo(ctemp_t);
     }  // m_thermopllinelast
 
     // N_temp^T . N_temp . temp
@@ -1216,7 +1222,8 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_thermo_disp_contribution(
   // ------------------------------------------------ initialise material
 
   // thermal material tangent
-  Core::LinAlg::Matrix<6, 1> ctemp(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> ctemp_t{};
+  Core::LinAlg::Matrix<6, 1> ctemp = Core::LinAlg::make_stress_like_voigt_view(ctemp_t);
   // get scalar-valued element temperature
   // build the product of the shapefunctions and element temperatures T = N . T
   Core::LinAlg::Matrix<1, 1> NT(Core::LinAlg::Initialization::uninitialized);
@@ -1283,7 +1290,8 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_thermo_disp_contribution(
     Core::LinAlg::Matrix<nsd_, nsd_> Cinv(Core::LinAlg::Initialization::uninitialized);
     // Cinvvct: C^{-1} in Voight-/vector notation
     // C^{-1} = { C11^{-1}, C22^{-1}, C33^{-1}, C12^{-1}, C23^{-1}, C31^{-1} }
-    Core::LinAlg::Matrix<6, 1> Cinvvct(Core::LinAlg::Initialization::uninitialized);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> Cinv_t{};
+    Core::LinAlg::Matrix<6, 1> Cinvvct = Core::LinAlg::make_stress_like_voigt_view(Cinv_t);
     calculate_cauchy_greens(Cratevct, Cinvvct, Cinv, &defgrd, &defgrdrate, &invdefgrd);
 
     // initial heatflux Q = C^{-1} . qintermediate = k_0 . C^{-1} . B_T . T
@@ -1300,9 +1308,10 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_thermo_disp_contribution(
         std::dynamic_pointer_cast<Mat::Trait::ThermoSolid>(structmat);
     if (thermoSolid != nullptr)
     {
-      Core::LinAlg::Matrix<6, 1> dctemp_dT(Core::LinAlg::Initialization::uninitialized);
-      thermoSolid->reinit(nullptr, nullptr, NT(0), iquad);
-      thermoSolid->stress_temperature_modulus_and_deriv(ctemp, dctemp_dT, iquad);
+      Core::LinAlg::SymmetricTensor<double, 3, 3> dctemp_dT_t{};
+      Core::LinAlg::Matrix<6, 1> dctemp_dT = Core::LinAlg::make_stress_like_voigt_view(dctemp_dT_t);
+      thermoSolid->reinit(nullptr, Core::LinAlg::TensorGenerators::full<3, 3>(0.0), NT(0), iquad);
+      thermoSolid->stress_temperature_modulus_and_deriv(ctemp_t, dctemp_dT_t, iquad);
       // scalar product: dctemp_dTCdot = dC_T/dT : 1/2 C'
       double dctemp_dTCdot = 0.0;
       for (int i = 0; i < 6; ++i)
@@ -1338,7 +1347,7 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_thermo_disp_contribution(
 
       // --------------------(non-dissipative) thermoelastic heating term
       // H_e := N_T^T . N_T . T . (-C_T) : 1/2 C'
-      thermoplhyperelast->setup_cthermo(ctemp, defgrd.determinant(), Cinvvct);
+      thermoplhyperelast->setup_cthermo(ctemp_t, defgrd.determinant(), Cinv_t);
 
       // --------------------(non-dissipative) thermoplastic heating term
       // H_p := - N^T_T . N_T . T . dkappa/dT . sqrt(2/3) . Dgamma/Dt
@@ -1563,7 +1572,8 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
   // N_T^T . N_T . T
   Core::LinAlg::Matrix<nen_, 1> NNT(Core::LinAlg::Initialization::uninitialized);
   // thermal material tangent
-  Core::LinAlg::Matrix<6, 1> ctemp(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> ctemp_t{};
+  Core::LinAlg::Matrix<6, 1> ctemp = Core::LinAlg::make_stress_like_voigt_view(ctemp_t);
 
   // ------------------------------------------------ structural material
   std::shared_ptr<Core::Mat::Material> structmat = get_str_material(ele);
@@ -1645,7 +1655,8 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
     Core::LinAlg::Matrix<nsd_, nsd_> Cinv(Core::LinAlg::Initialization::uninitialized);
     // Cinvvct: C^{-1} in Voight-/vector notation
     // C^{-1} = { C11^{-1}, C22^{-1}, C33^{-1}, C12^{-1}, C23^{-1}, C31^{-1} }
-    Core::LinAlg::Matrix<6, 1> Cinvvct(Core::LinAlg::Initialization::uninitialized);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> Cinv_t{};
+    Core::LinAlg::Matrix<6, 1> Cinvvct = Core::LinAlg::make_stress_like_voigt_view(Cinv_t);
     // calculation is done in calculate_cauchy_greens, return C', C^{-1} in vector
     // notation, NO Voigt-notation
     calculate_cauchy_greens(Cratevct, Cinvvct, Cinv, &defgrd, &defgrdrate, &invdefgrd);
@@ -1702,9 +1713,9 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
         std::dynamic_pointer_cast<Mat::Trait::ThermoSolid>(structmat);
     if (thermoSolid != nullptr)
     {
-      Core::LinAlg::Matrix<6, 1> dctemp_dT(Core::LinAlg::Initialization::uninitialized);
-      thermoSolid->reinit(nullptr, nullptr, NT(0), iquad);
-      thermoSolid->stress_temperature_modulus_and_deriv(ctemp, dctemp_dT, iquad);
+      Core::LinAlg::SymmetricTensor<double, 3, 3> dctemp_dT;
+      thermoSolid->reinit(nullptr, Core::LinAlg::TensorGenerators::full<3, 3>(0.0), NT(0), iquad);
+      thermoSolid->stress_temperature_modulus_and_deriv(ctemp_t, dctemp_dT, iquad);
     }
     if (structmat->material_type() == Core::Materials::m_thermoplhyperelast)
     {
@@ -1720,7 +1731,7 @@ void Discret::Elements::TemperImpl<distype>::nonlinear_coupled_tang(
       J = defgrd.determinant();
 
       // H_e := - N_T^T . N_T . T . C_T : 1/2 C'
-      thermoplhyperelast->setup_cthermo(ctemp, J, Cinvvct);
+      thermoplhyperelast->setup_cthermo(ctemp_t, J, Cinv_t);
     }
     // N_T^T . N_T . T . ctemp
     Core::LinAlg::Matrix<nen_, 6> NNTC(Core::LinAlg::Initialization::uninitialized);  // (8x1)(1x6)

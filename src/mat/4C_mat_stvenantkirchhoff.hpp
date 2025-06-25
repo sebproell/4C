@@ -12,6 +12,10 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
+#include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_material_parameter_base.hpp"
 
@@ -120,24 +124,51 @@ namespace Mat
 
     //! @name Evaluation methods
 
-    /// evaluates material law
-    void evaluate(const Core::LinAlg::SerialDenseVector* glstrain_e,
-        Core::LinAlg::SerialDenseMatrix* cmat_e, Core::LinAlg::SerialDenseVector* stress_e);
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int eleGID) override;
-
-    void strain_energy(
-        const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, int gp, int eleGID) const override;
-
-    // computes isotropic elasticity tensor in matrix notion for 3d
-    void setup_cmat(Core::LinAlg::Matrix<6, 6>& cmat) const;
+    [[nodiscard]] double strain_energy(const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        int gp, int eleGID) const override;
     //@}
 
-    //! general setup of constitutive tensor based on Young's and poisson's ratio
-    static void fill_cmat(Core::LinAlg::Matrix<6, 6>& cmat, double Emod, double nu);
+    static constexpr Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_stress(
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, const double E,
+        const double nu)
+    {
+      const double mue = E / (2 * (1 + nu));
+      const double lambda = E * nu / ((1 + nu) * (1 - 2 * nu));
+      return lambda * Core::LinAlg::trace(glstrain) *
+                 Core::LinAlg::TensorGenerators::identity<double, 3, 3> +
+             2 * mue * glstrain;
+    }
+
+    static Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> evaluate_stress_linearization(
+        const double E, const double nu)
+    {
+      Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat{};
+      Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
+      const double mfac = E / ((1.0 + nu) * (1.0 - 2.0 * nu));  // factor
+      // write non-zero components
+      cmat_view(0, 0) = mfac * (1.0 - nu);
+      cmat_view(0, 1) = mfac * nu;
+      cmat_view(0, 2) = mfac * nu;
+      cmat_view(1, 0) = mfac * nu;
+      cmat_view(1, 1) = mfac * (1.0 - nu);
+      cmat_view(1, 2) = mfac * nu;
+      cmat_view(2, 0) = mfac * nu;
+      cmat_view(2, 1) = mfac * nu;
+      cmat_view(2, 2) = mfac * (1.0 - nu);
+      // ~~~
+      cmat_view(3, 3) = mfac * 0.5 * (1.0 - 2.0 * nu);
+      cmat_view(4, 4) = mfac * 0.5 * (1.0 - 2.0 * nu);
+      cmat_view(5, 5) = mfac * 0.5 * (1.0 - 2.0 * nu);
+
+      return cmat;
+    }
+
 
    private:
     /// my material parameters

@@ -158,37 +158,37 @@ RESULT DESCRIPTION:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "p_at_l"
-      VALUE: 0.5598869404858773
+      VALUE: 0.55988571
       TOLERANCE: 1e-06
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "q_vin_l"
-      VALUE: 3565.353054767662
+      VALUE: 3574.1913638
       TOLERANCE: 1e-06
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "q_vout_l"
-      VALUE: -0.8730063903324672
+      VALUE: -0.873007587
       TOLERANCE: 1e-06
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "p_v_l"
-      VALUE: 0.5563215874311097
+      VALUE: 0.556311525756
       TOLERANCE: 1e-06
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "p_ar_sys"
-      VALUE: 9.286385490755782
+      VALUE: 9.286387398
       TOLERANCE: 1e-06
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "q_ar_sys"
-      VALUE: 60020.52871443784
+      VALUE: 60020.543535
       TOLERANCE: 1e-05
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
@@ -200,7 +200,7 @@ RESULT DESCRIPTION:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "q_ven_sys"
-      VALUE: 76552.09310314532
+      VALUE: 76552.11087
       TOLERANCE: 1e-05
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
@@ -212,7 +212,7 @@ RESULT DESCRIPTION:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "q_vin_r"
-      VALUE: 28875.674509027354
+      VALUE: 28880.021112093
       TOLERANCE: 1e-05
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
@@ -224,7 +224,7 @@ RESULT DESCRIPTION:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "p_v_r"
-      VALUE: 0.2564847114876925
+      VALUE: 0.25648007741
       TOLERANCE: 1e-06
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
@@ -236,7 +236,7 @@ RESULT DESCRIPTION:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "q_ar_pul"
-      VALUE: 30912.253197309925
+      VALUE: 30912.2348736889689
       TOLERANCE: 1e-05
   - CARDIOVASCULAR0D:
       DIS: "cardiovascular0d"
@@ -248,13 +248,13 @@ RESULT DESCRIPTION:
       DIS: "cardiovascular0d"
       SPECIAL: true
       QUANTITY: "q_ven_pul"
-      VALUE: 74921.02029228708
+      VALUE: 74921.1357072
       TOLERANCE: 1e-05
   - STRUCTURE:
       DIS: "structure"
       NODE: 226
       QUANTITY: "dispz"
-      VALUE: -0.44972883019266424
+      VALUE: -0.44984750832
       TOLERANCE: 1e-06
 DESIGN SURF NEUMANN CONDITIONS:
   - E: 8

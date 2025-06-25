@@ -75,22 +75,23 @@ namespace Mixture
 
     void read_element(int numgp, const Core::IO::InputParameterContainer& container) override;
 
-    void setup(Teuchos::ParameterList& params, int eleGID) override;
+    void setup(const Teuchos::ParameterList& params, int eleGID) override;
 
-    void update(const Core::LinAlg::Matrix<3, 3>& F, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    void update(const Core::LinAlg::Tensor<double, 3, 3>& F, const Teuchos::ParameterList& params,
+        int gp, int eleGID) override;
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-        Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
-    void evaluate_elastic_part(const Core::LinAlg::Matrix<3, 3>& FM,
-        const Core::LinAlg::Matrix<3, 3>& iFextin, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp,
-        int eleGID) override;
+    void evaluate_elastic_part(const Core::LinAlg::Tensor<double, 3, 3>& FM,
+        const Core::LinAlg::Tensor<double, 3, 3>& iFextin, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     [[nodiscard]] double get_growth_scalar(int gp) const override;
-    [[nodiscard]] Core::LinAlg::Matrix<1, 6> get_d_growth_scalar_d_cg(
+    [[nodiscard]] Core::LinAlg::SymmetricTensor<double, 3, 3> get_d_growth_scalar_d_cg(
         int gp, int eleGID) const override;
 
     void register_output_data_names(
@@ -101,11 +102,14 @@ namespace Mixture
 
    private:
     [[nodiscard]] double evaluate_lambdaf(
-        const Core::LinAlg::Matrix<3, 3>& C, int gp, int eleGID) const;
-    [[nodiscard]] Core::LinAlg::Matrix<1, 6> evaluate_d_lambdafsq_dc(int gp, int eleGID) const;
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& C, int gp, int eleGID) const;
+    [[nodiscard]] Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_d_lambdafsq_dc(
+        int gp, int eleGID) const;
 
-    [[nodiscard]] Core::LinAlg::Matrix<6, 1> evaluate_current_p_k2(int gp, int eleGID) const;
-    [[nodiscard]] Core::LinAlg::Matrix<6, 6> evaluate_current_cmat(int gp, int eleGID) const;
+    [[nodiscard]] Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_current_p_k2(
+        int gp, int eleGID) const;
+    [[nodiscard]] Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> evaluate_current_cmat(
+        int gp, int eleGID) const;
     [[nodiscard]] double evaluate_initial_deposition_stretch(double time) const;
 
     void initialize();

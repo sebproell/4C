@@ -14,6 +14,7 @@
 #include "4C_comm_parobjectfactory.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_thermomechanical.hpp"
 #include "4C_material_parameter_base.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -176,10 +177,10 @@ namespace Mat
     //! update internal stress variables
     void update() override;
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     //! computes Cauchy stress
     void stress(const double p,                                   //!< volumetric stress tensor
@@ -351,15 +352,17 @@ namespace Mat
     //! check if history variables are already initialised
     bool initialized() const { return (isinit_ and (strainplcurr_ != nullptr)); }
 
-    void reinit(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, double temperature, unsigned gp) override;
+    void reinit(const Core::LinAlg::Tensor<double, 3, 3>* defgrd,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, double temperature,
+        unsigned gp) override;
 
-    void stress_temperature_modulus_and_deriv(
-        Core::LinAlg::Matrix<6, 1>& stm, Core::LinAlg::Matrix<6, 1>& stm_dT, int gp) override;
+    void stress_temperature_modulus_and_deriv(Core::LinAlg::SymmetricTensor<double, 3, 3>& stm,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& stm_dT, int gp) override;
 
-    Core::LinAlg::Matrix<6, 1> evaluate_d_stress_d_scalar(const Core::LinAlg::Matrix<3, 3>& defgrad,
-        const Core::LinAlg::Matrix<6, 1>& glstrain, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_d_stress_d_scalar(
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     //! return quick accessible material parameter data
     Core::Mat::PAR::Parameter* parameter() const override { return params_; }

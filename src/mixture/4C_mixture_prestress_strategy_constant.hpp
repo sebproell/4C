@@ -40,7 +40,7 @@ namespace Mixture
 
       /// @name parameters of the prestress strategy
       /// @{
-      std::array<double, 9> prestretch_;
+      std::array<double, 6> prestretch_;
       /// @}
     };
   }  // namespace PAR
@@ -55,17 +55,18 @@ namespace Mixture
     /// Constructor for the material given the material parameters
     explicit ConstantPrestressStrategy(Mixture::PAR::ConstantPrestressStrategy* params);
 
-    void setup(Mixture::MixtureConstituent& constituent, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    void setup(Mixture::MixtureConstituent& constituent, const Teuchos::ParameterList& params,
+        int gp, int eleGID) override;
 
     void evaluate_prestress(const MixtureRule& mixtureRule,
         const std::shared_ptr<const Mat::CoordinateSystemProvider> cosy,
-        Mixture::MixtureConstituent& constituent, Core::LinAlg::Matrix<3, 3>& G,
-        Teuchos::ParameterList& params, int gp, int eleGID) override;
+        Mixture::MixtureConstituent& constituent, Core::LinAlg::SymmetricTensor<double, 3, 3>& G,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     void update(const std::shared_ptr<const Mat::CoordinateSystemProvider> anisotropy,
-        Mixture::MixtureConstituent& constituent, const Core::LinAlg::Matrix<3, 3>& F,
-        Core::LinAlg::Matrix<3, 3>& G, Teuchos::ParameterList& params, int gp, int eleGID) override;
+        Mixture::MixtureConstituent& constituent, const Core::LinAlg::Tensor<double, 3, 3>& F,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& G, const Teuchos::ParameterList& params,
+        int gp, int eleGID) override;
 
    private:
     /// Holder for internal parameters

@@ -17,6 +17,7 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_mat_material_factory.hpp"
 #include "4C_mat_myocard_general.hpp"
 #include "4C_material_base.hpp"
@@ -154,13 +155,13 @@ namespace Mat
 
     /// material call from Discret::Elements::Transport::read_element function
     /// to setup conductivity tensor for each element
-    void setup(const Core::LinAlg::Matrix<3, 1>& fiber1);
-    void setup(const Core::LinAlg::Matrix<2, 1>& fiber1);
+    void setup(const Core::LinAlg::Tensor<double, 3>& fiber1);
+    void setup(const Core::LinAlg::Tensor<double, 2>& fiber1);
     void setup(const Core::IO::InputParameterContainer& container);
 
     void setup_diffusion_tensor(const std::vector<double>& fiber1);
-    void setup_diffusion_tensor(const Core::LinAlg::Matrix<3, 1>& fiber1);
-    void setup_diffusion_tensor(const Core::LinAlg::Matrix<2, 1>& fiber1);
+    void setup_diffusion_tensor(const Core::LinAlg::Tensor<double, 3>& fiber1);
+    void setup_diffusion_tensor(const Core::LinAlg::Tensor<double, 2>& fiber1);
 
     /// diffusivity
     void diffusivity(Core::LinAlg::Matrix<1, 1>& diffus3) const

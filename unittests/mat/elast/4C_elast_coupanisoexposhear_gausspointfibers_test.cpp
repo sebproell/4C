@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_anisotropy.hpp"
 #include "4C_mat_elast_coupanisoexpo.hpp"
 #include "4C_mat_elast_coupanisoexposhear.hpp"
@@ -17,15 +18,15 @@ namespace
 {
   using namespace FourC;
 
-  void setup_single_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber1,
-      const Core::LinAlg::Matrix<3, 1>& fiber2, Core::LinAlg::Matrix<3, 3>& structuralTensor)
+  void setup_single_structural_tensor(const Core::LinAlg::Tensor<double, 3>& fiber1,
+      const Core::LinAlg::Tensor<double, 3>& fiber2,
+      Core::LinAlg::SymmetricTensor<double, 3, 3>& structuralTensor)
   {
     Core::LinAlg::Matrix<3, 3> fiber1fiber2T(Core::LinAlg::Initialization::uninitialized);
 
-    fiber1fiber2T.multiply_nt(fiber1, fiber2);
+    Core::LinAlg::Tensor<double, 3, 3> f1f2 = Core::LinAlg::dyadic(fiber1, fiber2);
 
-    structuralTensor.update(0.5, fiber1fiber2T);
-    structuralTensor.update_t(0.5, fiber1fiber2T, 1.0);
+    structuralTensor = 0.5 * Core::LinAlg::assume_symmetry(f1f2 + Core::LinAlg::transpose(f1f2));
   }
 
   class CoupAnisoExpoShearGaussPointFibersTest
@@ -34,9 +35,8 @@ namespace
    public:
     CoupAnisoExpoShearGaussPointFibersTest()
         : anisotropy_(),
-          gpFibers_(2, std::vector<Core::LinAlg::Matrix<3, 1>>(3)),
+          gpFibers_(2, std::vector<Core::LinAlg::Tensor<double, 3>>(3)),
           gpTensors_(2),
-          gpTensors_stress_(2),
           gpScalarProducts_(2)
     {
       /// initialize dummy fibers
@@ -72,12 +72,9 @@ namespace
         setup_single_structural_tensor(
             gpFibers_[gp][get_fiber_ids()[0]], gpFibers_[gp][get_fiber_ids()[1]], gpTensors_[gp]);
 
-        // Setup structural tensors in stress like Voigt notation
-        Core::LinAlg::Voigt::Stresses::matrix_to_vector(gpTensors_[gp], gpTensors_stress_[gp]);
-
         // setup scalar product
         gpScalarProducts_[gp] =
-            gpFibers_[gp][get_fiber_ids()[0]].dot(gpFibers_[gp][get_fiber_ids()[1]]);
+            gpFibers_[gp][get_fiber_ids()[0]] * gpFibers_[gp][get_fiber_ids()[1]];
       }
 
       setup_anisotropy_extension(get_fiber_ids());
@@ -103,9 +100,8 @@ namespace
     Mat::Anisotropy anisotropy_;
     std::unique_ptr<Mat::Elastic::CoupAnisoExpoShearAnisotropyExtension> anisotropyExtension_;
 
-    std::vector<std::vector<Core::LinAlg::Matrix<3, 1>>> gpFibers_;
-    std::vector<Core::LinAlg::Matrix<3, 3>> gpTensors_;
-    std::vector<Core::LinAlg::Matrix<6, 1>> gpTensors_stress_;
+    std::vector<std::vector<Core::LinAlg::Tensor<double, 3>>> gpFibers_;
+    std::vector<Core::LinAlg::SymmetricTensor<double, 3, 3>> gpTensors_;
     std::vector<double> gpScalarProducts_;
   };
 
@@ -119,12 +115,6 @@ namespace
   {
     FOUR_C_EXPECT_NEAR(anisotropyExtension_->get_structural_tensor(get_gauss_point()),
         gpTensors_[get_gauss_point()], 1e-10);
-  }
-
-  TEST_P(CoupAnisoExpoShearGaussPointFibersTest, get_structural_tensorStress)
-  {
-    FOUR_C_EXPECT_NEAR(anisotropyExtension_->get_structural_tensor_stress(get_gauss_point()),
-        gpTensors_stress_[get_gauss_point()], 1e-10);
   }
 
   INSTANTIATE_TEST_SUITE_P(GaussPoints, CoupAnisoExpoShearGaussPointFibersTest,

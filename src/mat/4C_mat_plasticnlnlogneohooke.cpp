@@ -10,6 +10,7 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
@@ -384,11 +385,13 @@ void Mat::PlasticNlnLogNeoHooke::update()
 /*----------------------------------------------------------------------*
  | calculate stress and constitutive tensor                             |
  *----------------------------------------------------------------------*/
-void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+
   // elastic material data
   // get material parameters
   const double ym = params_->youngs_;                  // Young's modulus
@@ -404,12 +407,7 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   const double visc = params_->visc_;            // viscosity
   const double eps = params_->rate_dependency_;  // rate dependency
 
-  const double detF = defgrd->determinant();
-  if (detF < 0.0)
-  {
-    params.set<bool>("eval_error", true);
-    return;
-  }
+  const double detF = defgrd_mat.determinant();
 
   const double dt = params.get<double>("delta time");
   // check, if errors are tolerated or should throw a FOUR_C_THROW
@@ -420,7 +418,7 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   double Dgamma = 0.0;
   double dy_d_dgamma = 0.0;
 
-  Core::LinAlg::Matrix<3, 3> invdefgrd(*defgrd);
+  Core::LinAlg::Matrix<3, 3> invdefgrd(defgrd_mat);
   invdefgrd.invert();
 
   // matrices for temporary stuff
@@ -453,8 +451,8 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   // elastic left Cauchy-Green deformation tensor (LCG) at trial state
   // Be_trial = b_{e,n+1}^{trial} = F_{n+1} C_{p,n}^{-1} F_{n+1}
   Core::LinAlg::Matrix<3, 3> Be_trial;
-  tmp1.multiply(*defgrd, invplrcglast_.at(gp));
-  Be_trial.multiply_nt(tmp1, *defgrd);
+  tmp1.multiply(defgrd_mat, invplrcglast_.at(gp));
+  Be_trial.multiply_nt(tmp1, defgrd_mat);
 
   // elastic LCG at final state
   Core::LinAlg::Matrix<3, 3> Be;
@@ -548,11 +546,7 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
                                     accplstrainlast_.at(gp), dt, error_tol);
 
     Dgamma = gamma_and_derivative.first;
-    if (Dgamma < 0.0)
-    {
-      params.set<bool>("eval_error", true);
-      return;
-    }
+
     // flow vector (7.77) in de Souza Neta
     Core::LinAlg::Matrix<3, 1> flow_vector(dev_KH_trial);
     flow_vector.scale(1.0 / (sqrt(2.0 / 3.0) * abs_dev_KH_trial));
@@ -593,24 +587,22 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
     PK2.update((dev_KH(i) + pressure), tmp1, 1.0);
   }
 
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   // output stress in Voigt notation
-  (*stress)(0) = PK2(0, 0);
-  (*stress)(1) = PK2(1, 1);
-  (*stress)(2) = PK2(2, 2);
-  (*stress)(3) = 0.5 * (PK2(0, 1) + PK2(1, 0));
-  (*stress)(4) = 0.5 * (PK2(1, 2) + PK2(2, 1));
-  (*stress)(5) = 0.5 * (PK2(2, 0) + PK2(0, 2));
+  stress = Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor_view(PK2));
 
   // ---------------------------------------------------- tangent modulus
   // express coefficients of tangent in Kirchhoff stresses
-  cmat->clear();
+  cmat_view.clear();
   for (int a = 0; a < 3; a++)
   {
     // - sum_1^3 (2 * tau N_aaaa)
     tmp1.multiply_nt(
         material_principal_directions.at(a), material_principal_directions.at(a));  // N_{aa}
     Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
-        *cmat, -2.0 * (dev_KH(a) + pressure), tmp1, tmp1, 1.0);
+        cmat_view, -2.0 * (dev_KH(a) + pressure), tmp1, tmp1, 1.0);
 
     for (int b = 0; b < 3; b++)
     {
@@ -621,7 +613,7 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
       tmp2.multiply_nt(
           material_principal_directions.at(b), material_principal_directions.at(b));  // N_{bb}
       Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
-          *cmat, D_ep_principal(a, b), tmp1, tmp2, 1.0);
+          cmat_view, D_ep_principal(a, b), tmp1, tmp2, 1.0);
 
       if (a != b)
       {
@@ -640,9 +632,9 @@ void Mat::PlasticNlnLogNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
         tmp2.multiply_nt(
             material_principal_directions.at(b), material_principal_directions.at(a));  // N_{ba}
         Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
-            *cmat, fac, tmp1, tmp1, 1.0);  // N_{abab}
+            cmat_view, fac, tmp1, tmp1, 1.0);  // N_{abab}
         Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
-            *cmat, fac, tmp1, tmp2, 1.0);  // N_{abba}
+            cmat_view, fac, tmp1, tmp2, 1.0);  // N_{abba}
       }  // end if (a!=b)
     }  // end loop b
   }  // end loop a

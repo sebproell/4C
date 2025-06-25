@@ -13,6 +13,7 @@
 
 #include "4C_comm_parobjectfactory.hpp"
 #include "4C_linalg_tensor.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_material_parameter_base.hpp"
 
@@ -244,11 +245,10 @@ namespace Mat
     void reset_step() override;
 
     /// Evaluate material
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, const int gp,
-        const int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     /// Return density
     double density() const override { return params_->density_; }

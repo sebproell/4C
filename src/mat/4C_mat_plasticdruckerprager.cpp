@@ -14,6 +14,9 @@
 #include "4C_linalg_FADmatrix_utils.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_material_factory.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_stvenantkirchhoff.hpp"
@@ -156,21 +159,23 @@ void Mat::PlasticDruckerPrager::update()
 }
 
 void Mat::PlasticDruckerPrager::setup_cmat(
-    Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>& cmat) const
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat) const
 {
   double young = params_->youngs_;
 
   double nu = params_->poissonratio_;
 
-  Mat::StVenantKirchhoff::fill_cmat(cmat, young, nu);
+  cmat = Mat::StVenantKirchhoff::evaluate_stress_linearization(young, nu);
 }
 
 void Mat::PlasticDruckerPrager::setup_cmat_elasto_plastic_cone(
-    Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>& cmat, double Dgamma, double G, double Kappa,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, double Dgamma, double G, double Kappa,
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& devstrain, double xi, double Hiso, double eta,
     double etabar) const
 {
-  cmat.clear();
+  Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmat_view =
+      Core::LinAlg::make_stress_like_voigt_view(cmat);
+  cmat_view.clear();
 
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> id2(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Voigt::identity_matrix(id2);
@@ -184,14 +189,14 @@ void Mat::PlasticDruckerPrager::setup_cmat_elasto_plastic_cone(
                    devstrain(5) * devstrain(5)));
   const double epfac = 2 * G * (1 - (Dgamma / sqrt(2) / normdevstrain));
 
-  cmat.update(epfac, id4sharp, 1.0);
+  cmat_view.update(epfac, id4sharp, 1.0);
 
   double epfac1 = 0.0;
   double epfac2 = 0.0;
   double epfac3 = 0.0;
   double epfac4 = 0.0;
   epfac1 = epfac / (-3.0);
-  cmat.multiply_nt(epfac1, id2, id2, 1.0);
+  cmat_view.multiply_nt(epfac1, id2, id2, 1.0);
 
   double A = 0.0;
   A = 1 / (G + Kappa * etabar * eta + xi * xi * Hiso);
@@ -203,7 +208,7 @@ void Mat::PlasticDruckerPrager::setup_cmat_elasto_plastic_cone(
   {
     for (int i = 0; i < 6; ++i)
     {
-      cmat(i, k) += epfac2 * D(i) * D(k);
+      cmat_view(i, k) += epfac2 * D(i) * D(k);
     }
   }
 
@@ -213,7 +218,7 @@ void Mat::PlasticDruckerPrager::setup_cmat_elasto_plastic_cone(
   {
     for (int i = 0; i < 6; ++i)
     {
-      cmat(k, i) += epfac3 * (eta * D(k) * id2(i) + etabar * id2(k) * D(i));
+      cmat_view(k, i) += epfac3 * (eta * D(k) * id2(i) + etabar * id2(k) * D(i));
     }
   }
 
@@ -223,29 +228,32 @@ void Mat::PlasticDruckerPrager::setup_cmat_elasto_plastic_cone(
   {
     for (int i = 0; i < 6; ++i)
     {
-      cmat(i, k) += epfac4 * id2(k) * id2(i);
+      cmat_view(i, k) += epfac4 * id2(k) * id2(i);
     }
   }
 }
 
 void Mat::PlasticDruckerPrager::setup_cmat_elasto_plastic_apex(
-    Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>& cmat, double Kappa,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, double Kappa,
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& devstrain, double xi, double Hiso, double eta,
     double etabar) const
 {
+  Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmat_view =
+      Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> id2(Core::LinAlg::Initialization::zero);
   for (int i = 0; i < 3; i++) id2(i) = 1.0;
   double epfac = 0.0;
   epfac = Kappa * (1 - Kappa / (Kappa + xi / eta * xi / etabar * Hiso));
-  cmat.clear();
-  cmat.multiply_nt(epfac, id2, id2, 0.0);
+  cmat_view.clear();
+  cmat_view.multiply_nt(epfac, id2, id2, 0.0);
 }
 
 template <typename ScalarT>
 void Mat::PlasticDruckerPrager::evaluate_fad(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1, ScalarT>* linstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1, ScalarT>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+    const Core::LinAlg::Matrix<6, 1, ScalarT>& linstrain, const Teuchos::ParameterList& params,
+    Core::LinAlg::Matrix<6, 1, ScalarT>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID)
 {
   Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> plstrain(Core::LinAlg::Initialization::zero);
 
@@ -264,7 +272,7 @@ void Mat::PlasticDruckerPrager::evaluate_fad(const Core::LinAlg::Matrix<3, 3>* d
   kappa = young / (3.0 * (1.0 - 2.0 * nu));
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> id2(Core::LinAlg::Initialization::zero);
   for (int i = 0; i < 3; i++) id2(i) = 1.0;
-  Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT> strain(*linstrain);
+  Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT> strain(linstrain);
   const int tang = std::invoke(
       [tang_str]() -> int
       {
@@ -340,7 +348,7 @@ void Mat::PlasticDruckerPrager::evaluate_fad(const Core::LinAlg::Matrix<3, 3>* d
       p = p_trial - kappa * dstrainv;
       for (int i = 0; i < 6; i++) devstress(i) = 0.0;
     }
-    PlasticDruckerPrager::stress(p, devstress, *stress);
+    PlasticDruckerPrager::stress(p, devstress, stress);
     strain_e.update(1 / G / 2, devstress, p / kappa / 3, id2Scalar);
     for (int i = 3; i < 6; ++i) strain_e(i) *= 2.0;
     for (int i = 3; i < 6; ++i) strain(i) *= 2.0;
@@ -351,7 +359,7 @@ void Mat::PlasticDruckerPrager::evaluate_fad(const Core::LinAlg::Matrix<3, 3>* d
   }
   else
   {
-    PlasticDruckerPrager::stress(p, devstress, *stress);
+    PlasticDruckerPrager::stress(p, devstress, stress);
     strain_e.update(trialstrain_e);
     for (int i = 3; i < 6; ++i) strain_e(i) *= 2.0;
     for (int i = 3; i < 6; ++i) strain(i) *= 2.0;
@@ -365,13 +373,13 @@ void Mat::PlasticDruckerPrager::evaluate_fad(const Core::LinAlg::Matrix<3, 3>* d
         Core::FADUtils::cast_to_double(devstrain);
     if (dstrainv != 0.0)
     {
-      setup_cmat_elasto_plastic_apex(*cmat, Core::FADUtils::cast_to_double(kappa), devstraindouble,
+      setup_cmat_elasto_plastic_apex(cmat, Core::FADUtils::cast_to_double(kappa), devstraindouble,
           Core::FADUtils::cast_to_double(xi), Core::FADUtils::cast_to_double(Hiso),
           Core::FADUtils::cast_to_double(eta), Core::FADUtils::cast_to_double(etabar));
     }
     else
     {
-      setup_cmat_elasto_plastic_cone(*cmat, Core::FADUtils::cast_to_double(Dgamma),
+      setup_cmat_elasto_plastic_cone(cmat, Core::FADUtils::cast_to_double(Dgamma),
           Core::FADUtils::cast_to_double(G), Core::FADUtils::cast_to_double(kappa), devstraindouble,
           Core::FADUtils::cast_to_double(xi), Core::FADUtils::cast_to_double(Hiso),
           Core::FADUtils::cast_to_double(eta), Core::FADUtils::cast_to_double(etabar));
@@ -379,7 +387,7 @@ void Mat::PlasticDruckerPrager::evaluate_fad(const Core::LinAlg::Matrix<3, 3>* d
   }
   else
   {
-    setup_cmat(*cmat);
+    setup_cmat(cmat);
   }
 }
 
@@ -456,11 +464,13 @@ std::pair<T, T> Mat::PlasticDruckerPrager::return_to_apex_funct_and_deriv(
 }
 
 template void Mat::PlasticDruckerPrager::evaluate_fad<double>(const Core::LinAlg::Matrix<3, 3>*,
-    const Core::LinAlg::Matrix<6, 1, double>*, Teuchos::ParameterList&,
-    Core::LinAlg::Matrix<6, 1, double>*, Core::LinAlg::Matrix<6, 6>*, int gp, int eleGID);
+    const Core::LinAlg::Matrix<6, 1, double>&, const Teuchos::ParameterList&,
+    Core::LinAlg::Matrix<6, 1, double>&, Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>&, int gp,
+    int eleGID);
 template void Mat::PlasticDruckerPrager::evaluate_fad<FAD>(const Core::LinAlg::Matrix<3, 3>*,
-    const Core::LinAlg::Matrix<6, 1, FAD>*, Teuchos::ParameterList&,
-    Core::LinAlg::Matrix<6, 1, FAD>*, Core::LinAlg::Matrix<6, 6>*, int gp, int eleGID);
+    const Core::LinAlg::Matrix<6, 1, FAD>&, const Teuchos::ParameterList&,
+    Core::LinAlg::Matrix<6, 1, FAD>&, Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>&, int gp,
+    int eleGID);
 template void Mat::PlasticDruckerPrager::stress<double>(const double p,
     const Core::LinAlg::Matrix<NUM_STRESS_3D, 1, double>& devstress,
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1, double>& stress) const;

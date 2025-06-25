@@ -8,7 +8,9 @@
 #include "4C_mixture_prestress_strategy_isocyl.hpp"
 
 #include "4C_linalg_fixedsizematrix_generators.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
 #include "4C_mat_anisotropy_coordinate_system_provider.hpp"
 #include "4C_mat_anisotropy_cylinder_coordinate_system_provider.hpp"
 #include "4C_mat_elast_isoneohooke.hpp"
@@ -45,16 +47,16 @@ Mixture::IsotropicCylinderPrestressStrategy::IsotropicCylinderPrestressStrategy(
 {
 }
 
-void Mixture::IsotropicCylinderPrestressStrategy::setup(
-    Mixture::MixtureConstituent& constituent, Teuchos::ParameterList& params, int numgp, int eleGID)
+void Mixture::IsotropicCylinderPrestressStrategy::setup(Mixture::MixtureConstituent& constituent,
+    const Teuchos::ParameterList& params, int numgp, int eleGID)
 {
   // nothing to do
 }
 
 void Mixture::IsotropicCylinderPrestressStrategy::evaluate_prestress(const MixtureRule& mixtureRule,
     const std::shared_ptr<const Mat::CoordinateSystemProvider> cosy,
-    Mixture::MixtureConstituent& constituent, Core::LinAlg::Matrix<3, 3>& G,
-    Teuchos::ParameterList& params, int gp, int eleGID)
+    Mixture::MixtureConstituent& constituent, Core::LinAlg::SymmetricTensor<double, 3, 3>& G,
+    const Teuchos::ParameterList& params, int gp, int eleGID)
 {
   // We evaluate the stress in the reference configuration with a prestretch. Hence, the
   // deformation gradient is the identity matrix and the inverse inelastic deformation gradient is
@@ -169,16 +171,15 @@ void Mixture::IsotropicCylinderPrestressStrategy::evaluate_prestress(const Mixtu
   }
 
   // Build prestretch tensor
-  G.multiply_nt(lamb_pre, cylinderCosy->get_rad(), cylinderCosy->get_rad(), 0.0);
-  G.multiply_nt(params_->axial_prestretch_, cylinderCosy->get_axi(), cylinderCosy->get_axi(), 1.0);
-  G.multiply_nt(
-      params_->circumferential_prestretch_, cylinderCosy->get_cir(), cylinderCosy->get_cir(), 1.0);
+  G = lamb_pre * Core::LinAlg::self_dyadic<2>(cylinderCosy->get_rad());
+  G += params_->axial_prestretch_ * Core::LinAlg::self_dyadic<2>(cylinderCosy->get_axi());
+  G += params_->circumferential_prestretch_ * Core::LinAlg::self_dyadic<2>(cylinderCosy->get_cir());
 }
 
 double Mixture::IsotropicCylinderPrestressStrategy::evaluate_mue_frac(MixtureRule& mixtureRule,
     const std::shared_ptr<const Mat::CoordinateSystemProvider> cosy,
     Mixture::MixtureConstituent& constituent, ElastinMembraneEvaluation& membraneEvaluation,
-    Teuchos::ParameterList& params, int gp, int eleGID) const
+    const Teuchos::ParameterList& params, int gp, int eleGID) const
 {
   std::shared_ptr<const Mat::CylinderCoordinateSystemProvider> cylinderCosy =
       cosy->get_cylinder_coordinate_system();
@@ -190,21 +191,17 @@ double Mixture::IsotropicCylinderPrestressStrategy::evaluate_mue_frac(MixtureRul
         "strategy!");
   }
 
-  Core::LinAlg::Matrix<3, 3> F = Core::LinAlg::identity_matrix<3>();
-  Core::LinAlg::Matrix<6, 1> E_strain(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 1> S_stress(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 6> cmat(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::Tensor<double, 3, 3> F =
+      Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> E_strain{};
+  Core::LinAlg::SymmetricTensor<double, 3, 3> S_stress{};
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat{};
 
 
   mixtureRule.evaluate(F, E_strain, params, S_stress, cmat, gp, eleGID);
 
-  Core::LinAlg::Matrix<6, 1> Acir(Core::LinAlg::Initialization::uninitialized);
-  // Compute structural tensor
-  for (int i = 0; i < 3; ++i) Acir(i) = cylinderCosy->get_cir()(i) * cylinderCosy->get_cir()(i);
-  Acir(3) = 2.0 * cylinderCosy->get_cir()(0) * cylinderCosy->get_cir()(1);
-  Acir(4) = 2.0 * cylinderCosy->get_cir()(1) * cylinderCosy->get_cir()(2);
-  Acir(5) = 2.0 * cylinderCosy->get_cir()(0) * cylinderCosy->get_cir()(2);
-
+  Core::LinAlg::SymmetricTensor<double, 3, 3> Acir =
+      Core::LinAlg::self_dyadic(cylinderCosy->get_cir());
 
   // This prestress strategy is only valid for G&R simulations
   const auto& growth_remodel_rule =
@@ -212,12 +209,14 @@ double Mixture::IsotropicCylinderPrestressStrategy::evaluate_mue_frac(MixtureRul
   double initial_constituent_reference_density =
       growth_remodel_rule.get_constituent_initial_reference_mass_density(constituent);
 
-  Core::LinAlg::Matrix<6, 1> Smembrane(Core::LinAlg::Initialization::uninitialized);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> Smembrane;
   membraneEvaluation.evaluate_membrane_stress(Smembrane, params, gp, eleGID);
-  Smembrane.scale(initial_constituent_reference_density);
+  Smembrane *= initial_constituent_reference_density;
 
-  double total_stress = S_stress.dot(Acir);      // stress of all constituents in circular direction
-  double membrane_stress = Smembrane.dot(Acir);  // stress of the membrane in circular direction
+  double total_stress =
+      Core::LinAlg::ddot(S_stress, Acir);  // stress of all constituents in circular direction
+  double membrane_stress =
+      Core::LinAlg::ddot(Smembrane, Acir);  // stress of the membrane in circular direction
 
   // Compute stress as a result of Barlow's formula ("Kesselformel")
   double target_stress = (params_->pressure_ * params_->inner_radius_) /
@@ -228,8 +227,9 @@ double Mixture::IsotropicCylinderPrestressStrategy::evaluate_mue_frac(MixtureRul
 
 void Mixture::IsotropicCylinderPrestressStrategy::update(
     const std::shared_ptr<const Mat::CoordinateSystemProvider> anisotropy,
-    Mixture::MixtureConstituent& constituent, const Core::LinAlg::Matrix<3, 3>& F,
-    Core::LinAlg::Matrix<3, 3>& G, Teuchos::ParameterList& params, int gp, int eleGID)
+    Mixture::MixtureConstituent& constituent, const Core::LinAlg::Tensor<double, 3, 3>& F,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& G, const Teuchos::ParameterList& params, int gp,
+    int eleGID)
 {
 }
 FOUR_C_NAMESPACE_CLOSE

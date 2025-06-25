@@ -13,6 +13,8 @@
 
 #include "4C_linalg_fixedsizematrix.hpp"
 
+#include <Teuchos_ParameterList.hpp>
+
 #include <memory>
 
 FOUR_C_NAMESPACE_OPEN
@@ -185,6 +187,14 @@ namespace Mat
   void setup_linear_isotropic_elastic_tensor(Core::LinAlg::FourTensor<3>& elasticity_tensor,
       const double youngs_modulus, const double poisson_ratio);
 
+  template <typename T>
+  T get_or(const Teuchos::ParameterList& params, const std::string& name, T&& default_value)
+  {
+    if (params.isParameter(name))
+      return params.get<T>(name);
+    else
+      return std::forward<T>(default_value);
+  }
 
 }  // namespace Mat
 

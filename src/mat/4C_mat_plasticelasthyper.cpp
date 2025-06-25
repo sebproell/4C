@@ -11,6 +11,8 @@
 #include "4C_linalg_fixedsizematrix_solver.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_linalg_utils_densematrix_funct.hpp"
 #include "4C_mat_par_bundle.hpp"
@@ -592,22 +594,20 @@ double Mat::PlasticElastHyper::strain_energy_tsi(
   Fe.multiply(defgrd, last_plastic_defgrd_inverse_[gp]);
   Core::LinAlg::Matrix<3, 3> elRCG;
   elRCG.multiply_tn(Fe, Fe);
-  Core::LinAlg::Matrix<6, 1> elRCGv;
-  for (int i = 0; i < 3; ++i) elRCGv(i) = elRCG(i, i);
-  elRCGv(3) = elRCG(0, 1) + elRCG(1, 0);
-  elRCGv(4) = elRCG(2, 1) + elRCG(1, 2);
-  elRCGv(5) = elRCG(0, 2) + elRCG(2, 0);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> elRCGv;
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j) elRCGv(i, j) = elRCG(i, j);
   Core::LinAlg::Matrix<3, 1> prinv;
-  Core::LinAlg::Voigt::Strains::invariants_principal(prinv, elRCGv);
+  Core::LinAlg::Voigt::Stresses::invariants_principal(
+      prinv, Core::LinAlg::make_stress_like_voigt_view(elRCGv));
   Core::LinAlg::Matrix<3, 1> modinv;
   invariants_modified(modinv, prinv);
 
   // loop map of associated potential summands
-  Core::LinAlg::Matrix<6, 1> glstrain(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain{};
   Core::LinAlg::Matrix<6, 1> idv(Core::LinAlg::Initialization::zero);
   for (int i = 0; i < 3; ++i) idv(i) = 1.0;
-  glstrain.update(0.5, elRCGv, 0.0);
-  glstrain.update(-0.5, idv, 1.0);
+  glstrain = 0.5 * elRCGv - Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
   for (unsigned int p = 0; p < potsum_.size(); ++p)
     potsum_[p]->add_strain_energy(psi, prinv, modinv, glstrain, gp, eleGID);
 
@@ -767,12 +767,13 @@ void Mat::PlasticElastHyper::evaluate_gough_joule(
  |  evaluate plastic stress and stiffness                   seitz 05/14 |
  *----------------------------------------------------------------------*/
 void Mat::PlasticElastHyper::evaluate_plast(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<3, 3>* deltaDp, const double* temp, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 6>* dPK2dDp, Core::LinAlg::Matrix<6, 1>* NCP,
-    Core::LinAlg::Matrix<6, 6>* dNCPdC, Core::LinAlg::Matrix<6, 6>* dNCPdDp, bool* active,
-    bool* elast, bool* as_converged, const int gp, Core::LinAlg::Matrix<6, 1>* dNCPdT,
-    Core::LinAlg::Matrix<6, 1>* dHdC, Core::LinAlg::Matrix<6, 1>* dHdDp, const double dt,
-    const int eleGID, Core::LinAlg::Matrix<6, 1>* cauchy, Core::LinAlg::Matrix<6, 6>* d_cauchy_ddp,
+    const Core::LinAlg::Matrix<3, 3>* deltaDp, const double* temp,
+    const Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 6>* dPK2dDp,
+    Core::LinAlg::Matrix<6, 1>* NCP, Core::LinAlg::Matrix<6, 6>* dNCPdC,
+    Core::LinAlg::Matrix<6, 6>* dNCPdDp, bool* active, bool* elast, bool* as_converged,
+    const int gp, Core::LinAlg::Matrix<6, 1>* dNCPdT, Core::LinAlg::Matrix<6, 1>* dHdC,
+    Core::LinAlg::Matrix<6, 1>* dHdDp, const double dt, const int eleGID,
+    Core::LinAlg::Matrix<6, 1>* cauchy, Core::LinAlg::Matrix<6, 6>* d_cauchy_ddp,
     Core::LinAlg::Matrix<6, 6>* d_cauchy_dC, Core::LinAlg::Matrix<6, 9>* d_cauchy_dF,
     Core::LinAlg::Matrix<6, 1>* d_cauchy_dT)
 {
@@ -837,7 +838,7 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
     Core::LinAlg::Matrix<6, 6>* dNCPdC, Core::LinAlg::Matrix<6, 6>* dNCPdDp,
     Core::LinAlg::Matrix<6, 1>* dNCPdT, Core::LinAlg::Matrix<6, 6>* dPK2dDp, bool* active,
     bool* elast, bool* as_converged, Core::LinAlg::Matrix<6, 1>* dHdC,
-    Core::LinAlg::Matrix<6, 1>* dHdDp, Teuchos::ParameterList& params, const double dt,
+    Core::LinAlg::Matrix<6, 1>* dHdDp, const Teuchos::ParameterList& params, const double dt,
     const Core::LinAlg::Matrix<6, 9>* d_cauchy_dFpi, Core::LinAlg::Matrix<6, 6>* d_cauchy_ddp)
 {
   const double sq = sqrt(2. / 3.);
@@ -1301,12 +1302,13 @@ void Mat::PlasticElastHyper::evaluate_ncp(const Core::LinAlg::Matrix<3, 3>* mStr
  |  evaluate plastic stress and stiffness (with pl. spin)   seitz 05/14 |
  *----------------------------------------------------------------------*/
 void Mat::PlasticElastHyper::evaluate_plast(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<3, 3>* deltaLp, const double* temp, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 9>* dPK2dLp, Core::LinAlg::Matrix<9, 1>* NCP,
-    Core::LinAlg::Matrix<9, 6>* dNCPdC, Core::LinAlg::Matrix<9, 9>* dNCPdLp, bool* active,
-    bool* elast, bool* as_converged, const int gp, Core::LinAlg::Matrix<9, 1>* dNCPdT,
-    Core::LinAlg::Matrix<6, 1>* dHdC, Core::LinAlg::Matrix<9, 1>* dHdLp, const double dt,
-    const int eleGID, Core::LinAlg::Matrix<6, 1>* cauchy, Core::LinAlg::Matrix<6, 9>* d_cauchy_ddp,
+    const Core::LinAlg::Matrix<3, 3>* deltaLp, const double* temp,
+    const Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 9>* dPK2dLp,
+    Core::LinAlg::Matrix<9, 1>* NCP, Core::LinAlg::Matrix<9, 6>* dNCPdC,
+    Core::LinAlg::Matrix<9, 9>* dNCPdLp, bool* active, bool* elast, bool* as_converged,
+    const int gp, Core::LinAlg::Matrix<9, 1>* dNCPdT, Core::LinAlg::Matrix<6, 1>* dHdC,
+    Core::LinAlg::Matrix<9, 1>* dHdLp, const double dt, const int eleGID,
+    Core::LinAlg::Matrix<6, 1>* cauchy, Core::LinAlg::Matrix<6, 9>* d_cauchy_ddp,
     Core::LinAlg::Matrix<6, 6>* d_cauchy_dC, Core::LinAlg::Matrix<6, 9>* d_cauchy_dF,
     Core::LinAlg::Matrix<6, 1>* d_cauchy_dT)
 {
@@ -2064,7 +2066,7 @@ void Mat::PlasticElastHyper::evaluate_kin_quant_elast(const Core::LinAlg::Matrix
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 int Mat::PlasticElastHyper::evaluate_kin_quant_plast(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<3, 3>* deltaLp, const int gp, Teuchos::ParameterList& params)
+    const Core::LinAlg::Matrix<3, 3>* deltaLp, const int gp, const Teuchos::ParameterList& params)
 {
   id2_.clear();
   id2V_.clear();
@@ -2165,15 +2167,6 @@ int Mat::PlasticElastHyper::evaluate_kin_quant_plast(const Core::LinAlg::Matrix<
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(tmp, CFpi_);
   tmp33.multiply(tmp, CeM_);
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(tmp33, CFpiCe_);
-
-  double det = CeM_.determinant();
-  if (det > -1e-30 and det < 1e-30)
-    if (params.isParameter("tolerate_errors"))
-      if (params.get<bool>("tolerate_errors") == true)
-      {
-        params.get<bool>("eval_error") = true;
-        return 1;
-      }
 
   tmp.invert(CeM_);
   tmp33.multiply(invpldefgrd_, tmp);

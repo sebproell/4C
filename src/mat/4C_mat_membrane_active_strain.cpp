@@ -11,8 +11,10 @@
 #include "4C_comm_utils_factory.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_utils_densematrix_inverse.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_membrane_elasthyper.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_mat_service.hpp"
 #include "4C_utils_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -232,7 +234,7 @@ void Mat::MembraneActiveStrain::setup(int numgp, const Core::IO::InputParameterC
  |                                                 brandstaeter 05/2018 |
  *----------------------------------------------------------------------*/
 void Mat::MembraneActiveStrain::evaluate_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd,
-    const Core::LinAlg::Matrix<3, 3>& cauchygreen, Teuchos::ParameterList& params,
+    const Core::LinAlg::Matrix<3, 3>& cauchygreen, const Teuchos::ParameterList& params,
     const Core::LinAlg::Matrix<3, 3>& Q_trafo, Core::LinAlg::Matrix<3, 1>& stress,
     Core::LinAlg::Matrix<3, 3>& cmat, const int gp, const int eleGID)
 {
@@ -242,7 +244,7 @@ void Mat::MembraneActiveStrain::evaluate_membrane(const Core::LinAlg::Matrix<3, 
 
   // get pointer to vector containing the scalar states at the gauss points
   std::shared_ptr<std::vector<std::vector<double>>> gpscalar =
-      params.get<std::shared_ptr<std::vector<std::vector<double>>>>("gp_scalar",
+      get_or<std::shared_ptr<std::vector<std::vector<double>>>>(params, "gp_scalar",
           std::make_shared<std::vector<std::vector<double>>>(4, std::vector<double>(4, 0.0)));
 
   const unsigned int scalarid_voltage = params_->scalid_voltage_;

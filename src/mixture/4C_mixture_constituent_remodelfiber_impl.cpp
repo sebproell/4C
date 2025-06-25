@@ -28,11 +28,10 @@ FOUR_C_NAMESPACE_OPEN
 // anonymous namespace for helper classes and functions
 namespace
 {
-  [[nodiscard]] Core::LinAlg::Matrix<3, 3> evaluate_c(const Core::LinAlg::Matrix<3, 3>& F)
+  [[nodiscard]] Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_c(
+      const Core::LinAlg::Tensor<double, 3, 3>& F)
   {
-    Core::LinAlg::Matrix<3, 3> C(Core::LinAlg::Initialization::uninitialized);
-    C.multiply_tn(F, F);
-    return C;
+    return Core::LinAlg::assume_symmetry(Core::LinAlg::transpose(F) * F);
   }
 }  // namespace
 
@@ -68,7 +67,6 @@ Mixture::MixtureConstituentRemodelFiberImpl::MixtureConstituentRemodelFiberImpl(
           {params_->fiber_id_})
 {
   anisotropy_extension_.register_needed_tensors(
-      Mat::FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR_STRESS |
       Mat::FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR);
 }
 
@@ -124,14 +122,16 @@ void Mixture::MixtureConstituentRemodelFiberImpl::read_element(
   initialize();
 }
 
-void Mixture::MixtureConstituentRemodelFiberImpl::setup(Teuchos::ParameterList& params, int eleGID)
+void Mixture::MixtureConstituentRemodelFiberImpl::setup(
+    const Teuchos::ParameterList& params, int eleGID)
 {
   Mixture::MixtureConstituent::setup(params, eleGID);
   update_homeostatic_values(params, eleGID);
 }
 
-void Mixture::MixtureConstituentRemodelFiberImpl::update(const Core::LinAlg::Matrix<3, 3>& F,
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+void Mixture::MixtureConstituentRemodelFiberImpl::update(
+    const Core::LinAlg::Tensor<double, 3, 3>& F, const Teuchos::ParameterList& params, const int gp,
+    const int eleGID)
 {
   MixtureConstituent::update(F, params, gp, eleGID);
 
@@ -189,44 +189,43 @@ bool Mixture::MixtureConstituentRemodelFiberImpl::evaluate_output_data(
   return MixtureConstituent::evaluate_output_data(name, data);
 }
 
-Core::LinAlg::Matrix<1, 6> Mixture::MixtureConstituentRemodelFiberImpl::evaluate_d_lambdafsq_dc(
-    int gp, int eleGID) const
+Core::LinAlg::SymmetricTensor<double, 3, 3>
+Mixture::MixtureConstituentRemodelFiberImpl::evaluate_d_lambdafsq_dc(int gp, int eleGID) const
 {
-  Core::LinAlg::Matrix<1, 6> dLambdafDC(Core::LinAlg::Initialization::uninitialized);
-  dLambdafDC.update_t(anisotropy_extension_.get_structural_tensor_stress(gp, 0));
-  return dLambdafDC;
+  return anisotropy_extension_.get_structural_tensor(gp, 0);
 }
 
-Core::LinAlg::Matrix<6, 1> Mixture::MixtureConstituentRemodelFiberImpl::evaluate_current_p_k2(
-    int gp, int eleGID) const
+Core::LinAlg::SymmetricTensor<double, 3, 3>
+Mixture::MixtureConstituentRemodelFiberImpl::evaluate_current_p_k2(int gp, int eleGID) const
 {
-  Core::LinAlg::Matrix<6, 1> S_stress(Core::LinAlg::Initialization::uninitialized);
   const double fiber_pk2 = remodel_fiber_[gp].evaluate_current_fiber_pk2_stress();
 
-  S_stress.update(fiber_pk2, anisotropy_extension_.get_structural_tensor_stress(gp, 0));
-
-  return S_stress;
+  return fiber_pk2 * anisotropy_extension_.get_structural_tensor(gp, 0);
 }
 
-Core::LinAlg::Matrix<6, 6> Mixture::MixtureConstituentRemodelFiberImpl::evaluate_current_cmat(
+Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>
+Mixture::MixtureConstituentRemodelFiberImpl::evaluate_current_cmat(
     const int gp, const int eleGID) const
 {
   const double dPK2dlambdafsq =
       remodel_fiber_[gp].evaluate_d_current_fiber_pk2_stress_d_lambda_f_sq();
 
-  Core::LinAlg::Matrix<6, 6> cmat(Core::LinAlg::Initialization::uninitialized);
-  cmat.multiply_nt(2.0 * dPK2dlambdafsq, anisotropy_extension_.get_structural_tensor_stress(gp, 0),
-      anisotropy_extension_.get_structural_tensor_stress(gp, 0));
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat;
+  cmat = 2.0 * dPK2dlambdafsq *
+         Core::LinAlg::dyadic(anisotropy_extension_.get_structural_tensor(gp, 0),
+             anisotropy_extension_.get_structural_tensor(gp, 0));
 
   // additional linearization from implicit integration
   if (params_->enable_growth_)
   {
-    Core::LinAlg::Matrix<1, 6> d_lambda_r_d_cauchy_green = evaluate_d_lambdafsq_dc(gp, eleGID);
-    d_lambda_r_d_cauchy_green.scale(remodel_fiber_[gp].evaluate_d_current_lambda_r_d_lambda_f_sq());
+    Core::LinAlg::SymmetricTensor<double, 3, 3> d_lambda_r_d_cauchy_green =
+        remodel_fiber_[gp].evaluate_d_current_lambda_r_d_lambda_f_sq() *
+        evaluate_d_lambdafsq_dc(gp, eleGID);
 
     const double dpk2dlambdar = remodel_fiber_[gp].evaluate_d_current_fiber_pk2_stress_d_lambda_r();
-    cmat.multiply_nn(2.0 * dpk2dlambdar, anisotropy_extension_.get_structural_tensor_stress(gp, 0),
-        d_lambda_r_d_cauchy_green, 1.0);
+    cmat += 2.0 * dpk2dlambdar *
+            Core::LinAlg::dyadic(
+                anisotropy_extension_.get_structural_tensor(gp, 0), d_lambda_r_d_cauchy_green);
   }
 
   return cmat;
@@ -244,27 +243,29 @@ void Mixture::MixtureConstituentRemodelFiberImpl::integrate_local_evolution_equa
       remodel_fiber_[gp].integrate_local_evolution_equations_implicit(dt);
 }
 
-void Mixture::MixtureConstituentRemodelFiberImpl::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
-    const Core::LinAlg::Matrix<6, 1>& E_strain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID)
+void Mixture::MixtureConstituentRemodelFiberImpl::evaluate(
+    const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
   const double dt = params.get<double>("delta time");
 
-  Core::LinAlg::Matrix<3, 3> C = evaluate_c(F);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> C = evaluate_c(F);
 
   const double lambda_f = evaluate_lambdaf(C, gp, eleGID);
   remodel_fiber_[gp].set_state(lambda_f, 1.0);
 
   if (params_->enable_growth_) integrate_local_evolution_equations(dt, gp, eleGID);
 
-  S_stress.update(evaluate_current_p_k2(gp, eleGID));
-  cmat.update(evaluate_current_cmat(gp, eleGID));
+  S_stress = evaluate_current_p_k2(gp, eleGID);
+  cmat = evaluate_current_cmat(gp, eleGID);
 }
 
 void Mixture::MixtureConstituentRemodelFiberImpl::evaluate_elastic_part(
-    const Core::LinAlg::Matrix<3, 3>& FM, const Core::LinAlg::Matrix<3, 3>& iFextin,
-    Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-    Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID)
+    const Core::LinAlg::Tensor<double, 3, 3>& FM, const Core::LinAlg::Tensor<double, 3, 3>& iFextin,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
   FOUR_C_THROW(
       "The implicit remodel fiber cannot be evaluated with an additional inelastic deformation. "
@@ -277,15 +278,12 @@ double Mixture::MixtureConstituentRemodelFiberImpl::get_growth_scalar(int gp) co
   return remodel_fiber_[gp].evaluate_current_growth_scalar();
 }
 
-Core::LinAlg::Matrix<1, 6> Mixture::MixtureConstituentRemodelFiberImpl::get_d_growth_scalar_d_cg(
-    int gp, int eleGID) const
+Core::LinAlg::SymmetricTensor<double, 3, 3>
+Mixture::MixtureConstituentRemodelFiberImpl::get_d_growth_scalar_d_cg(int gp, int eleGID) const
 {
-  if (!params_->enable_growth_)
-    return Core::LinAlg::Matrix<1, 6>(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<1, 6> d_growth_scalar_d_cauchy_green = evaluate_d_lambdafsq_dc(gp, eleGID);
-  d_growth_scalar_d_cauchy_green.scale(
-      remodel_fiber_[gp].evaluate_d_current_growth_scalar_d_lambda_f_sq());
-  return d_growth_scalar_d_cauchy_green;
+  if (!params_->enable_growth_) return {};
+  return remodel_fiber_[gp].evaluate_d_current_growth_scalar_d_lambda_f_sq() *
+         evaluate_d_lambdafsq_dc(gp, eleGID);
 }
 
 double Mixture::MixtureConstituentRemodelFiberImpl::evaluate_deposition_stretch(
@@ -325,8 +323,8 @@ void Mixture::MixtureConstituentRemodelFiberImpl::update_homeostatic_values(
 }
 
 double Mixture::MixtureConstituentRemodelFiberImpl::evaluate_lambdaf(
-    const Core::LinAlg::Matrix<3, 3>& C, const int gp, const int eleGID) const
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& C, const int gp, const int eleGID) const
 {
-  return std::sqrt(C.dot(anisotropy_extension_.get_structural_tensor(gp, 0)));
+  return std::sqrt(Core::LinAlg::ddot(C, anisotropy_extension_.get_structural_tensor(gp, 0)));
 }
 FOUR_C_NAMESPACE_CLOSE

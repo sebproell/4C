@@ -109,7 +109,7 @@ void Mixture::MixtureConstituent::read_element(
 }
 
 // Setup of the mixture constituents and all its subparts
-void Mixture::MixtureConstituent::setup(Teuchos::ParameterList& params, const int eleGID)
+void Mixture::MixtureConstituent::setup(const Teuchos::ParameterList& params, const int eleGID)
 {
   // Setup must be called after init()
   if (!has_read_element_) FOUR_C_THROW("read_element() must be called before setup()");
@@ -141,9 +141,10 @@ void Mixture::MixtureConstituent::unpack_constituent(Core::Communication::Unpack
   extract_from_pack(buffer, is_setup_);
 }
 
-void Mixture::MixtureConstituent::evaluate_elastic_part(const Core::LinAlg::Matrix<3, 3>& F,
-    const Core::LinAlg::Matrix<3, 3>& F_in, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID)
+void Mixture::MixtureConstituent::evaluate_elastic_part(const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::Tensor<double, 3, 3>& F_in, const Teuchos::ParameterList& params,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
   FOUR_C_THROW("This constituent cannot handle an additional inelastic part.");
 }

@@ -35,7 +35,7 @@ namespace Mat
    * @param properties (in) : Properties of the summands of the strain energy function
    */
   void membrane_elast_hyper_evaluate_isotropic_stress_cmat(
-      const Core::LinAlg::Matrix<3, 3>& cauchygreen, Teuchos::ParameterList& params,
+      const Core::LinAlg::Matrix<3, 3>& cauchygreen, const Teuchos::ParameterList& params,
       const Core::LinAlg::Matrix<3, 3>& Q_trafo, Core::LinAlg::Matrix<3, 1>& stress,
       Core::LinAlg::Matrix<3, 3>& cmat, int gp, int eleGID,
       const std::vector<std::shared_ptr<Mat::Elastic::Summand>>& potsum,

@@ -13,6 +13,8 @@
 #include "4C_comm_parobjectfactory.hpp"
 #include "4C_inpar_material.hpp"
 #include "4C_inpar_structure.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_material_parameter_base.hpp"
 #include "4C_utils_local_newton.hpp"
@@ -117,32 +119,43 @@ namespace Mat
      * \param gp :Gauss point
      * \param eleGID :element global identifier
      */
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* linstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID) override
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override
     {
-      this->evaluate_fad(defgrd, linstrain, params, stress, cmat, gp, eleGID);
+      Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+      Core::LinAlg::Matrix<3, 3> defgrad_view;
+      Core::LinAlg::Matrix<3, 3>* defgrd_ptr = nullptr;
+      if (defgrad)
+      {
+        defgrad_view = Core::LinAlg::make_matrix_view(*defgrad);
+        defgrd_ptr = &defgrad_view;
+      }
+      this->evaluate_fad(defgrd_ptr, Core::LinAlg::make_strain_like_voigt_matrix(glstrain), params,
+          stress_view, cmat, gp, eleGID);
     };
 
     template <typename ScalarT>
     void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
         const Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT>* linstrain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT>* stress,
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID)
+        const Teuchos::ParameterList& params,
+        Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT>* stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>* cmat, int gp, int eleGID)
     {
-      this->evaluate_fad(defgrd, linstrain, params, stress, cmat, gp, eleGID);
+      this->evaluate_fad(defgrd, *linstrain, params, *stress, *cmat, gp, eleGID);
     };
     template <typename ScalarT>
     void evaluate_fad(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT>* linstrain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT>* stress,
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID);
+        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT>& linstrain,
+        const Teuchos::ParameterList& params,
+        Core::LinAlg::Matrix<NUM_STRESS_3D, 1, ScalarT>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID);
     template <typename T>
     void stress(const T p, const Core::LinAlg::Matrix<NUM_STRESS_3D, 1, T>& devstress,
         Core::LinAlg::Matrix<NUM_STRESS_3D, 1, T>& stress) const;
 
-    void setup_cmat(Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>& cmat) const;
+    void setup_cmat(Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat) const;
     /**
      * \brief setup the elastoplasticity tensor in matrix notation for 3d return to cone
      *
@@ -156,7 +169,7 @@ namespace Mat
      * \param eta :Mohr-Coulomb parameter
      * \param etabar :Mohr-Coulomb parameter
      */
-    void setup_cmat_elasto_plastic_cone(Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>& cmat,
+    void setup_cmat_elasto_plastic_cone(Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
         double Dgamma, double G, double Kappa, Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& devstrain,
         double xi, double Hiso, double eta, double etabar) const;
     /**
@@ -170,7 +183,7 @@ namespace Mat
      * \param eta :Mohr-Coulomb parameter
      * \param etabar :Mohr-Coulomb parameter
      */
-    void setup_cmat_elasto_plastic_apex(Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>&
+    void setup_cmat_elasto_plastic_apex(Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>&
                                             cmat,           // elasto-plastic tangent modulus (out)
         double Kappa,                                       // Bulk modulus
         Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& devstrain,  // deviatoric strain

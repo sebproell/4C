@@ -13,6 +13,7 @@
 #include "4C_global_data.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -152,10 +153,10 @@ void Mat::AAAneohooke::unpack(Core::Communication::UnpackBuffer& buffer)
      with nu = 0.45  we have K =  20 alpha
 
  */
-void Mat::AAAneohooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::AAAneohooke::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
   // map in GetParameter can now calculate LID, so we do not need it here       05/2017 birzle
   // get element lID incase we have element specific material parameters
@@ -177,7 +178,7 @@ void Mat::AAAneohooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   for (int i = 0; i < 3; i++) identity(i) = 1.0;
 
   // right Cauchy-Green Tensor  C = 2 * E + I
-  Core::LinAlg::Matrix<6, 1> rcg(*glstrain);
+  Core::LinAlg::Matrix<6, 1> rcg(Core::LinAlg::make_strain_like_voigt_matrix(glstrain));
   rcg.scale(2.0);
   rcg += identity;
 
@@ -215,41 +216,14 @@ void Mat::AAAneohooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   double isochor1 = 0.0;
   double isochor2 = 0.0;
 
-  int deriv = params.get<int>("matparderiv", -1);
-  if (deriv == params_->young)
-  {
-    // std::cout << "DERIV YOUNGS" << std::endl;
-    // deriv. w.r.t YOUNG!! -> factor 0.1666666666666666667 in here
-    isochor1 = 2.0 * pow(iiinv, third) * pow(iiinv, -twthi) * 0.1666666666666666667;
-    isochor2 = -twthi * inv * pow(iiinv, third) * pow(iiinv, -twthi) * 0.1666666666666666667;
-
-    // do komp too:
-    komp = 2.0 / (1.0 - 2.0 * nue) * 0.1666666666666666667;
-  }
-  else if (deriv == params_->beta)
-  {
-    // std::cout << "DERIV BETA" << std::endl;
-    // deriv. w.r.t beta
-    isochor1 = 2.0 * (2.0 * inv - 6.0 * pow(iiinv, third)) * pow(iiinv, -twthi);
-    isochor2 = -twthi * inv * (2.0 * inv - 6.0 * pow(iiinv, third)) * pow(iiinv, -twthi);
-
-    // vol part is not a function of beta -> derivative has to be zero
-    komp = 0.0;
-  }
-  else if (deriv == -1)
-  {
-    //--- determine 2nd Piola Kirchhoff stresses pktwo -------------------------------------
-    // 1st step: isochoric part
-    //=========================
-    isochor1 = 2.0 *
-               (alpha * pow(iiinv, third) + 2.0 * beta * inv - 6.0 * beta * pow(iiinv, third)) *
-               pow(iiinv, -twthi);
-    isochor2 = -twthi * inv *
-               (alpha * pow(iiinv, third) + 2.0 * beta * inv - 6.0 * beta * pow(iiinv, third)) *
-               pow(iiinv, -twthi);
-  }
-  else
-    FOUR_C_THROW("give valid parameter for differentiation");
+  //--- determine 2nd Piola Kirchhoff stresses pktwo -------------------------------------
+  // 1st step: isochoric part
+  //=========================
+  isochor1 = 2.0 * (alpha * pow(iiinv, third) + 2.0 * beta * inv - 6.0 * beta * pow(iiinv, third)) *
+             pow(iiinv, -twthi);
+  isochor2 = -twthi * inv *
+             (alpha * pow(iiinv, third) + 2.0 * beta * inv - 6.0 * beta * pow(iiinv, third)) *
+             pow(iiinv, -twthi);
 
   // contribution: Cinv
   Core::LinAlg::Matrix<6, 1> pktwoiso(invc);
@@ -269,8 +243,9 @@ void Mat::AAAneohooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // 3rd step: add everything up
   //============================
-  (*stress) = pktwoiso;
-  (*stress) += pktwovol;
+  auto stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  stress_view = pktwoiso;
+  stress_view += pktwovol;
 
 
   //--- do elasticity matrix -------------------------------------------------------------
@@ -294,22 +269,23 @@ void Mat::AAAneohooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
                   (alpha * pow(iiinv, third) + 2. * beta * inv - 6 * beta * pow(iiinv, third)) *
                   pow(iiinv, -twthi);
 
+  auto cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
   // contribution: I \obtimes I
   for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++) (*cmat)(i, j) = delta1;
+    for (int j = 0; j < 3; j++) cmat_view(i, j) = delta1;
 
   // contribution: Cinv \otimes Cinv
   for (int i = 0; i < 6; i++)
     for (int j = 0; j < 6; j++)
     {
       // contribution: Cinv \otimes I + I \otimes Cinv
-      (*cmat)(i, j) += delta3 * (identity(i) * invc(j) + invc(i) * identity(j));
+      cmat_view(i, j) += delta3 * (identity(i) * invc(j) + invc(i) * identity(j));
       // contribution: Cinv \otimes Cinv
-      (*cmat)(i, j) += delta6 * invc(i) * invc(j);
+      cmat_view(i, j) += delta6 * invc(i) * invc(j);
     }
 
   // contribution: boeppel-product
-  Core::LinAlg::FourTensorOperations::add_holzapfel_product(*cmat, invc, delta7);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmat_view, invc, delta7);
 
   // 2nd step: volumetric part
   //==========================
@@ -318,19 +294,17 @@ void Mat::AAAneohooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // contribution: Cinv \otimes Cinv
   for (int i = 0; i < 6; i++)
-    for (int j = 0; j < 6; j++) (*cmat)(i, j) += delta6 * invc(i) * invc(j);
+    for (int j = 0; j < 6; j++) cmat_view(i, j) += delta6 * invc(i) * invc(j);
 
   // contribution: boeppel-product
-  Core::LinAlg::FourTensorOperations::add_holzapfel_product(*cmat, invc, delta7);
-
-  return;
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmat_view, invc, delta7);
 }
 
 /*----------------------------------------------------------------------*
  |  calculate strain energy                                hemmler 02/17|
  *----------------------------------------------------------------------*/
-void Mat::AAAneohooke::strain_energy(
-    const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, const int gp, const int eleGID) const
+double Mat::AAAneohooke::strain_energy(
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, int gp, int eleGID) const
 {
   // material parameters for isochoric part
   const double youngs = params_->get_parameter(params_->young, eleGID);  // Young's modulus
@@ -347,7 +321,7 @@ void Mat::AAAneohooke::strain_energy(
   for (int i = 0; i < 3; i++) identity(i) = 1.0;
 
   // right Cauchy-Green Tensor  C = 2 * E + I
-  Core::LinAlg::Matrix<6, 1> rcg(glstrain);
+  Core::LinAlg::Matrix<6, 1> rcg(Core::LinAlg::make_strain_like_voigt_matrix(glstrain));
   rcg.scale(2.0);
   rcg += identity;
 
@@ -359,13 +333,14 @@ void Mat::AAAneohooke::strain_energy(
 
   // isochoric part
   // W    = alpha (Ic*IIIc^(-1/3) -3) + beta (Ic*IIIc^(-1/3)-3)^2
+  double psi = 0.0;
   psi += alpha * (inv * pow(iiinv, -1 / 3.) - 3) +
          beta * (inv * pow(iiinv, -1 / 3.) - 3) * (inv * pow(iiinv, -1 / 3.) - 3);
   // volumetric part
   // W_vol = K beta2^(-2) ( beta2 ln (J) + J^(-beta2) -1 )
   psi +=
       komp * pow(beta2, -2.) * (beta2 * log(pow(iiinv, -2.)) + pow(pow(iiinv, -2.), -beta2) - 1.0);
-  return;
+  return psi;
 }
 
 

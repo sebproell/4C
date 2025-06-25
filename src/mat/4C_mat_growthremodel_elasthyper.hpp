@@ -207,13 +207,11 @@ namespace Mat
     double density() const override { return params_->density_; }
 
     /// hyperelastic stress response plus elasticity tensor
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,  ///< Deformation gradient
-        const Core::LinAlg::Matrix<6, 1>* glstrain,          ///< Green-Lagrange strain
-        Teuchos::ParameterList& params,      ///< Container for additional information
-        Core::LinAlg::Matrix<6, 1>* stress,  ///< 2nd Piola-Kirchhoff stresses
-        Core::LinAlg::Matrix<6, 6>* cmat,    ///< Constitutive matrix
-        int gp,                              ///< Gauss point
-        int eleGID) override;                ///< Element ID
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp,
+        int eleGID) override;  ///< Element ID
 
 
     /// setup
@@ -225,16 +223,16 @@ namespace Mat
      * \param params Container for additional information
      * \param eleGID Global element id
      */
-    void post_setup(Teuchos::ParameterList& params, int eleGID) override;
+    void post_setup(const Teuchos::ParameterList& params, int eleGID) override;
 
     /// This material uses the extended update call
     bool uses_extended_update() override { return true; }
 
     /// update
-    void update(Core::LinAlg::Matrix<3, 3> const& defgrd,  ///< Deformation gradient
-        int const gp,                                      ///< Current Gauss-Point
-        Teuchos::ParameterList& params,                    ///< Container for additional information
-        int const eleGID) override;                        ///< Element ID
+    void update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd,  ///< Deformation gradient
+        int const gp,                                              ///< Current Gauss-Point
+        const Teuchos::ParameterList& params,  ///< Container for additional information
+        int const eleGID) override;            ///< Element ID
 
     /// Return quick accessible material parameter data
     Core::Mat::PAR::Parameter* parameter() const override { return params_; }
@@ -243,7 +241,7 @@ namespace Mat
     /// formulation)
     void evaluate_membrane(Core::LinAlg::Matrix<3, 3> const&
                                defgrd_glob,     ///< Deformation gradient in global coordinates
-        Teuchos::ParameterList& params,         ///< Container for additional information
+        const Teuchos::ParameterList& params,   ///< Container for additional information
         Core::LinAlg::Matrix<3, 3>& pk2M_glob,  ///< 2nd Piola-Kirchhoff stress global coordinates
         Core::LinAlg::Matrix<6, 6>& cmat_glob,  ///< Elasticity tensor in global coordinates
         int gp,                                 ///< Gauss point
@@ -253,10 +251,10 @@ namespace Mat
     /// formulation)
     double evaluate_membrane_thickness_stretch(
         Core::LinAlg::Matrix<3, 3> const&
-            defgrd_glob,                 ///< Deformation gradient in global coordinates
-        Teuchos::ParameterList& params,  ///< Container for additional information
-        int gp,                          ///< Gauss point
-        int eleGID) override;            ///< Element ID
+            defgrd_glob,                       ///< Deformation gradient in global coordinates
+        const Teuchos::ParameterList& params,  ///< Container for additional information
+        int gp,                                ///< Gauss point
+        int eleGID) override;                  ///< Element ID
 
     /// Return names of visualization data
     void vis_names(std::map<std::string, int>& names) const override;
@@ -271,16 +269,17 @@ namespace Mat
 
     /// Setup prestretch (optional: setup element axi-, circ-, and rad-directions) for 3D elements
     void setup_g_r_3d(Core::LinAlg::Matrix<3, 3> const* const defgrd,  ///< Deformation gradient
-        Teuchos::ParameterList& params,  ///< Container for additional information
-        const double dt,                 ///< Time step size
-        const int gp,                    ///< Current Gauss-Point
-        const int eleGID);               ///< Element ID
+        const Teuchos::ParameterList& params,  ///< Container for additional information
+        const double dt,                       ///< Time step size
+        const int gp,                          ///< Current Gauss-Point
+        const int eleGID);                     ///< Element ID
 
     /// Setup prestretch (optional: setup element axi-, circ-, and rad-directions) for 2D elements
     /// -> membrane
-    void setup_g_r_2d(Teuchos::ParameterList& params,  ///< Container for additional information
-        const double dt,                               ///< Time step size
-        const int gp);                                 ///< Current Gauss-Point
+    void setup_g_r_2d(
+        const Teuchos::ParameterList& params,  ///< Container for additional information
+        const double dt,                       ///< Time step size
+        const int gp);                         ///< Current Gauss-Point
 
     /// Calculates AXI, CIR and RAD structural tensors and sets new fiber directions in the case of
     /// a cylinder
@@ -507,7 +506,7 @@ namespace Mat
     ///                       (rad_x, axi_x, circ_x)
     /// Cylinder coordinates  (rad_y, axi_y, circ_y)
     ///                       (rad_z, axi_z, circ_z)
-    Core::LinAlg::Matrix<3, 3> radaxicirc_;
+    Core::LinAlg::Tensor<double, 3, 3> radaxicirc_;
 
     /// Axial coordinate of each Gauss-Point
     std::vector<double> gp_ax_;

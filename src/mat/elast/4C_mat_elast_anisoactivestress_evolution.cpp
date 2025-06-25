@@ -47,8 +47,7 @@ Mat::Elastic::AnisoActiveStressEvolution::AnisoActiveStressEvolution(
           params_->structural_tensor_strategy(), {0})
 {
   anisotropy_extension_.register_needed_tensors(
-      FiberAnisotropyExtension<1>::FIBER_VECTORS |
-      FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR_STRESS);
+      FiberAnisotropyExtension<1>::FIBER_VECTORS | FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR);
 }
 
 void Mat::Elastic::AnisoActiveStressEvolution::pack_summand(
@@ -89,30 +88,28 @@ void Mat::Elastic::AnisoActiveStressEvolution::setup(
   }
 }
 
-void Mat::Elastic::AnisoActiveStressEvolution::post_setup(Teuchos::ParameterList& params)
+void Mat::Elastic::AnisoActiveStressEvolution::post_setup(const Teuchos::ParameterList& params)
 {
   Summand::post_setup(params);
 }
 
 void Mat::Elastic::AnisoActiveStressEvolution::add_stress_aniso_principal(
-    const Core::LinAlg::Matrix<6, 1>& rcg, Core::LinAlg::Matrix<6, 6>& cmat,
-    Core::LinAlg::Matrix<6, 1>& stress, Teuchos::ParameterList& params, const int gp,
-    const int eleGID)
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stress, const Teuchos::ParameterList& params,
+    const int gp, const int eleGID)
 {
   // Virtual GP (is zero for element fibers, otherwise it is the current GP)
-  Core::LinAlg::Matrix<6, 1> A = anisotropy_extension_.get_structural_tensor_stress(gp, 0);
+  const Core::LinAlg::SymmetricTensor<double, 3, 3>& A =
+      anisotropy_extension_.get_structural_tensor(gp, 0);
 
-  double dt = params.get("delta time", -1.0);
-  if (dt < 0.0)
-  {
-    FOUR_C_THROW("Parameter 'delta time' could not be read!");
-  }
+  double dt = params.get<double>("delta time");
 
   double activationFunction = 0.0;
   std::shared_ptr<Core::Mat::Material> scatramat;
   if (params_->sourceactiv_ == 0)
   {
-    activationFunction = params.get<double>("scalar", 0.0);
+    activationFunction = params.get<double>("scalar");
   }
   else if (params_->sourceactiv_ == -1)
   {
@@ -134,11 +131,7 @@ void Mat::Elastic::AnisoActiveStressEvolution::add_stress_aniso_principal(
   }
   else
   {
-    double totaltime = params.get<double>("total time", -1.0);
-    if (totaltime < 0.0)
-    {
-      FOUR_C_THROW("Parameter 'total time' could not be read!");
-    }
+    double totaltime = params.get<double>("total time");
     const auto& element_center_coordinates_ref =
         params.get<Core::LinAlg::Tensor<double, 3>>("elecenter_coords_ref");
     activationFunction =
@@ -154,8 +147,7 @@ void Mat::Elastic::AnisoActiveStressEvolution::add_stress_aniso_principal(
   {
     // squared stretch along fiber direction
     double I4;
-    I4 = A(0) * rcg(0) + A(1) * rcg(1) + A(2) * rcg(2) + A(3) * rcg(3) + A(4) * rcg(4) +
-         A(5) * rcg(5);
+    I4 = Core::LinAlg::ddot(A, rcg);
     // stretch along fiber direction
     lambda = sqrt(I4);
     scale = -4. / (pow((params_->lambda_lower_ - params_->lambda_upper_), 2.0));
@@ -175,7 +167,7 @@ void Mat::Elastic::AnisoActiveStressEvolution::add_stress_aniso_principal(
   double abs_u_ = abs(activationFunction);
   double absplus_u_ = abs_u_ * static_cast<double>(activationFunction > 0.0);
   tauc_np_ = (tauc_n_ / dt + n0 * params_->sigma_ * absplus_u_) / (1 / dt + abs_u_);
-  stress.update(tauc_np_, A, 1.0);
+  stress += tauc_np_ * A;
 
   // only contribution to cmat if we have strain dependency!
   if (params_->strain_dep_)
@@ -192,12 +184,12 @@ void Mat::Elastic::AnisoActiveStressEvolution::add_stress_aniso_principal(
     {
       dtauc_np_dC = 0.0;
     }
-    cmat.multiply_nt(dtauc_np_dC, A, A, 1.0);
+    cmat += dtauc_np_dC * Core::LinAlg::dyadic(A, A);
   }
 }
 
 void Mat::Elastic::AnisoActiveStressEvolution::get_fiber_vecs(
-    std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+    std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
 ) const
 {
   if (params_->init_ == DefaultAnisotropyExtension<1>::INIT_MODE_NODAL_FIBERS)
@@ -217,7 +209,8 @@ void Mat::Elastic::AnisoActiveStressEvolution::get_fiber_vecs(
 void Mat::Elastic::AnisoActiveStressEvolution::update() { tauc_n_ = tauc_np_; }
 
 void Mat::Elastic::AnisoActiveStressEvolution::set_fiber_vecs(const double newgamma,
-    const Core::LinAlg::Matrix<3, 3>& locsys, const Core::LinAlg::Matrix<3, 3>& defgrd)
+    const Core::LinAlg::Tensor<double, 3, 3>& locsys,
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd)
 {
   anisotropy_extension_.set_fiber_vecs(newgamma, locsys, defgrd);
 }

@@ -200,9 +200,6 @@ namespace Mat
     bool evaluate_output_data(
         const std::string& name, Core::LinAlg::SerialDenseMatrix& data) const override;
 
-    /// Return whether the material requires the deformation gradient for its evaluation
-    bool needs_defgrd() const override { return true; };
-
     //@}
 
     //! @name Evaluation methods
@@ -214,16 +211,10 @@ namespace Mat
     void update() override;
 
     //! evaluate material law
-    void evaluate(const Core::LinAlg::Matrix<3, 3>*
-                      defgrd,  //!< input deformation gradient for multiplicative sp
-        const Core::LinAlg::Matrix<6, 1>*
-            glstrain,                        //!< input Green-Lagrange strain (redundant with defo
-                                             //   but used for neo-hooke evaluation; maybe remove
-        Teuchos::ParameterList& params,      //!< input parameter list (e.g. Young's, ...)
-        Core::LinAlg::Matrix<6, 1>* stress,  //!< output (mandatory) second Piola-Kirchhoff stress
-        Core::LinAlg::Matrix<6, 6>* cmat,    //!< output (mandatory) material stiffness matrix
-        int gp,                              //!< Gauss point
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
    private:
     //! my material parameters

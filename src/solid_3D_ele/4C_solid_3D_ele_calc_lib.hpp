@@ -825,14 +825,7 @@ namespace Discret::Elements
       Teuchos::ParameterList& params, const int gp, const int eleGID)
   {
     Stress<celltype> stress{};
-
-    auto defgrad_view = Core::LinAlg::make_matrix_view(defgrd);
-    auto gl_strain_data = Core::LinAlg::make_strain_like_voigt_matrix(gl_strain);
-
-    auto pk2_view = Core::LinAlg::make_stress_like_voigt_view(stress.pk2_);
-    auto cmat_view = Core::LinAlg::make_stress_like_voigt_view(stress.cmat_);
-
-    material.evaluate(&defgrad_view, &gl_strain_data, params, &pk2_view, &cmat_view, gp, eleGID);
+    material.evaluate(&defgrd, gl_strain, params, stress.pk2_, stress.cmat_, gp, eleGID);
     return stress;
   }
 

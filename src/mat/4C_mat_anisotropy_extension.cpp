@@ -18,39 +18,26 @@ FOUR_C_NAMESPACE_OPEN
 template <unsigned int numfib>
 Mat::FiberAnisotropyExtension<numfib>::FiberAnisotropyExtension(
     const std::shared_ptr<Elastic::StructuralTensorStrategyBase>& stucturalTensorStrategy)
-    : fibers_(0),
-      fiber_structural_tensors_stress_(0),
-      fiber_structural_tensors_(0),
-      structural_tensor_strategy_(stucturalTensorStrategy)
+    : fibers_(0), fiber_structural_tensors_(0), structural_tensor_strategy_(stucturalTensorStrategy)
 {
 }
 
 template <unsigned int numfib>
 Mat::FiberAnisotropyExtension<numfib>::FiberAnisotropyExtension()
-    : fibers_(0),
-      fiber_structural_tensors_stress_(0),
-      fiber_structural_tensors_(0),
-      structural_tensor_strategy_(nullptr)
+    : fibers_(0), fiber_structural_tensors_(0), structural_tensor_strategy_(nullptr)
 {
-}
-
-template <unsigned int numfib>
-void Mat::FiberAnisotropyExtension<numfib>::compute_structural_tensors_stress()
-{
-  Mat::compute_structural_tensors<Core::LinAlg::Matrix<6, 1>, numfib>(
-      fibers_, fiber_structural_tensors_stress_, structural_tensor_strategy_);
 }
 
 template <unsigned int numfib>
 void Mat::FiberAnisotropyExtension<numfib>::compute_structural_tensors()
 {
-  Mat::compute_structural_tensors<Core::LinAlg::Matrix<3, 3>, numfib>(
+  Mat::compute_structural_tensors<Core::LinAlg::SymmetricTensor<double, 3, 3>, numfib>(
       fibers_, fiber_structural_tensors_, structural_tensor_strategy_);
 }
 
 template <unsigned int numfib>
 void Mat::FiberAnisotropyExtension<numfib>::set_fibers(
-    int gp, const std::array<Core::LinAlg::Matrix<3, 1>, numfib>& fibers)
+    int gp, const std::array<Core::LinAlg::Tensor<double, 3>, numfib>& fibers)
 {
   if (gp >= get_anisotropy()->get_number_of_gauss_points())
   {
@@ -65,9 +52,9 @@ void Mat::FiberAnisotropyExtension<numfib>::set_fibers(
   }
 
   // Store fibers
-  for (std::vector<Core::LinAlg::Matrix<3, 1>>::size_type i = 0; i < fibers.size(); ++i)
+  for (std::vector<Core::LinAlg::Tensor<double, 3>>::size_type i = 0; i < fibers.size(); ++i)
   {
-    fibers_[gp].at(i).update(fibers.at(i));
+    fibers_[gp][i] = fibers[i];
   }
 
   // Compute needed structural tensors
@@ -79,7 +66,7 @@ void Mat::FiberAnisotropyExtension<numfib>::set_fibers(
 
 template <unsigned int numfib>
 void Mat::FiberAnisotropyExtension<numfib>::set_fibers(
-    const std::vector<std::array<Core::LinAlg::Matrix<3, 1>, numfib>>& fibers)
+    const std::vector<std::array<Core::LinAlg::Tensor<double, 3>, numfib>>& fibers)
 {
   fibers_ = fibers;
 
@@ -97,14 +84,10 @@ void Mat::FiberAnisotropyExtension<numfib>::compute_needed_structural_tensors()
   {
     compute_structural_tensors();
   }
-  if (static_cast<bool>(tensor_flags_ & STRUCTURAL_TENSOR_STRESS))
-  {
-    compute_structural_tensors_stress();
-  }
 }
 
 template <unsigned int numfib>
-const Core::LinAlg::Matrix<3, 1>& Mat::FiberAnisotropyExtension<numfib>::get_fiber(
+const Core::LinAlg::Tensor<double, 3>& Mat::FiberAnisotropyExtension<numfib>::get_fiber(
     int gp, int i) const
 {
   switch (fiber_location_)
@@ -123,31 +106,8 @@ const Core::LinAlg::Matrix<3, 1>& Mat::FiberAnisotropyExtension<numfib>::get_fib
 }
 
 template <unsigned int numfib>
-const Core::LinAlg::Matrix<6, 1>&
-Mat::FiberAnisotropyExtension<numfib>::get_structural_tensor_stress(int gp, int i) const
-{
-  if (not static_cast<bool>(tensor_flags_ & STRUCTURAL_TENSOR_STRESS))
-  {
-    FOUR_C_THROW("You have not specified that you need the fiber vector.");
-  }
-  switch (fiber_location_)
-  {
-    case FiberLocation::ElementFibers:
-      return fiber_structural_tensors_stress_[GPDEFAULT][i];
-    case FiberLocation::GPFibers:
-      return fiber_structural_tensors_stress_[gp][i];
-    default:
-      FOUR_C_THROW(
-          "You have not specified, whether you want fibers on GP level or on element level.");
-  }
-
-  // just for compilation reasons. We will never land here because of the FOUR_C_THROW() above
-  std::abort();
-}
-
-template <unsigned int numfib>
-const Core::LinAlg::Matrix<3, 3>& Mat::FiberAnisotropyExtension<numfib>::get_structural_tensor(
-    int gp, int i) const
+const Core::LinAlg::SymmetricTensor<double, 3, 3>&
+Mat::FiberAnisotropyExtension<numfib>::get_structural_tensor(int gp, int i) const
 {
   if (not static_cast<bool>(tensor_flags_ & STRUCTURAL_TENSOR))
   {
@@ -172,9 +132,8 @@ template <unsigned int numfib>
 void Mat::FiberAnisotropyExtension<numfib>::pack_anisotropy(
     Core::Communication::PackBuffer& data) const
 {
-  pack_fiber_array<Core::LinAlg::Matrix<3, 1>, numfib>(data, fibers_);
-  pack_fiber_array<Core::LinAlg::Matrix<6, 1>, numfib>(data, fiber_structural_tensors_stress_);
-  pack_fiber_array<Core::LinAlg::Matrix<3, 3>, numfib>(data, fiber_structural_tensors_);
+  add_to_pack(data, fibers_);
+  add_to_pack(data, fiber_structural_tensors_);
   add_to_pack(data, tensor_flags_);
   add_to_pack(data, fiber_location_);
 }
@@ -183,9 +142,8 @@ template <unsigned int numfib>
 void Mat::FiberAnisotropyExtension<numfib>::unpack_anisotropy(
     Core::Communication::UnpackBuffer& buffer)
 {
-  unpack_fiber_array<Core::LinAlg::Matrix<3, 1>, numfib>(buffer, fibers_);
-  unpack_fiber_array<Core::LinAlg::Matrix<6, 1>, numfib>(buffer, fiber_structural_tensors_stress_);
-  unpack_fiber_array<Core::LinAlg::Matrix<3, 3>, numfib>(buffer, fiber_structural_tensors_);
+  extract_from_pack(buffer, fibers_);
+  extract_from_pack(buffer, fiber_structural_tensors_);
   extract_from_pack(buffer, tensor_flags_);
   extract_from_pack(buffer, fiber_location_);
 }

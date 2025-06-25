@@ -74,7 +74,7 @@ MATERIALS:
       KAPPA: 100
   - MAT: 129
     MIX_Prestress_Strategy_Constant:
-      PRESTRETCH: [1, 1, 1, 0, 0, 0, 0, 0, 0]
+      PRESTRETCH: [1, 1, 1, 0, 0, 0]
   - MAT: 2
     MAT_ElastHyper:
       NUMMAT: 2

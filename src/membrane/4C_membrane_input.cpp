@@ -5,6 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#include "4C_io_input_parameter_container.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_membrane.hpp"
 

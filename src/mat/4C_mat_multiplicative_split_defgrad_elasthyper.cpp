@@ -14,12 +14,16 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_anisotropy.hpp"
 #include "4C_mat_elast_couptransverselyisotropic.hpp"
 #include "4C_mat_elasthyper_service.hpp"
 #include "4C_mat_inelastic_defgrad_factors.hpp"
 #include "4C_mat_multiplicative_split_defgrad_elasthyper_service.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_mat_service.hpp"
 #include "4C_structure_new_enum_lists.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -213,16 +217,21 @@ void Mat::MultiplicativeSplitDefgradElastHyper::unpack(Core::Communication::Unpa
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::MultiplicativeSplitDefgradElastHyper::evaluate(
-    const Core::LinAlg::Matrix<3, 3>* const defgrad, const Core::LinAlg::Matrix<6, 1>* glstrain,
-    Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>* stress,
-    Core::LinAlg::Matrix<6, 6>* cmat, const int gp, const int eleGID)
+    const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   // do all stuff that only has to be done once per evaluate() call
   pre_evaluate(params, gp, eleGID);
 
   // compute kinematic quantities
   KinematicQuantities kinematic_quantities =
-      evaluate_kinematic_quantities(*this, *inelastic_, *defgrad, gp, eleGID);
+      evaluate_kinematic_quantities(*this, *inelastic_, defgrd_mat, gp, eleGID);
 
   // compute stress factors
   StressFactors stress_factors;
@@ -235,41 +244,44 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate(
 
   // right Cauchy-Green deformation tensor
   Core::LinAlg::Matrix<3, 3> CM(Core::LinAlg::Initialization::zero);
-  CM.multiply_tn(1.0, *defgrad, *defgrad, 0.0);
+  CM.multiply_tn(1.0, defgrd_mat, defgrd_mat, 0.0);
 
   /// part of the elasticity tensor as shown in evaluate_stress_cmat_iso
   Core::LinAlg::Matrix<6, 6> cmatiso{Core::LinAlg::Initialization::zero};
 
   // cmat = 2 dS/dC = 2 \frac{\partial S}{\partial C} + 2 \frac{\partial S}{\partial F_{in}^{-1}}
   // : \frac{\partial F_{in}^{-1}}{\partial C} = cmatiso + cmatadd
-  evaluate_stress_cmat_iso(kinematic_quantities, stress_factors, *stress, cmatiso);
+  evaluate_stress_cmat_iso(kinematic_quantities, stress_factors, stress_view, cmatiso);
   // separate update coming from the transversely isotropic components
   if (!(potsumel_transviso_.empty()))
   {
     evaluate_transv_iso_quantities(
-        kinematic_quantities, CM, params, gp, eleGID, *stress, cmatiso, dSdiFin);
+        kinematic_quantities, CM, params, gp, eleGID, stress_view, cmatiso, dSdiFin);
   }
-  cmat->update(1.0, cmatiso, 0.0);
+  cmat_view.update(1.0, cmatiso, 0.0);
 
   // evaluate additional terms for the elasticity tensor
   // cmatadd = 2 \frac{\partial S}{\partial F_{in}^{-1}} : \frac{\partial F_{in}^{-1}}{\partial
   // C}, where F_{in}^{-1} can be multiplicatively composed of several inelastic contributions
   Core::LinAlg::Matrix<6, 6> cmatadd =
-      evaluate_additional_cmat(defgrad, kinematic_quantities.iCV, dSdiFin);
-  cmat->update(1.0, cmatadd, 1.0);
+      evaluate_additional_cmat(&defgrd_mat, kinematic_quantities.iCV, dSdiFin);
+  cmat_view.update(1.0, cmatadd, 1.0);
 }
 
-Core::LinAlg::Matrix<6, 1> Mat::MultiplicativeSplitDefgradElastHyper::evaluate_d_stress_d_scalar(
-    const Core::LinAlg::Matrix<3, 3>& defgrad, const Core::LinAlg::Matrix<6, 1>& glstrain,
-    Teuchos::ParameterList& params, int gp, int eleGID)
+Core::LinAlg::SymmetricTensor<double, 3, 3>
+Mat::MultiplicativeSplitDefgradElastHyper::evaluate_d_stress_d_scalar(
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, int gp, int eleGID)
 {
+  Core::LinAlg::Matrix<3, 3> defgrad_mat = Core::LinAlg::make_matrix_view(defgrad);
   // do all stuff that only has to be done once per evaluate() call
   pre_evaluate(params, gp, eleGID);
 
   // get source of deformation for this OD block depending on the differentiation type
   auto source(PAR::InelasticSource::none);
-  const int differentiationtype =
-      params.get<int>("differentiationtype", static_cast<int>(Solid::DifferentiationType::none));
+  const int differentiationtype = get_or<int>(
+      params, "differentiationtype", static_cast<int>(Solid::DifferentiationType::none));
   if (differentiationtype == static_cast<int>(Solid::DifferentiationType::elch))
     source = PAR::InelasticSource::concentration;
   else if (differentiationtype == static_cast<int>(Solid::DifferentiationType::temp))
@@ -280,25 +292,26 @@ Core::LinAlg::Matrix<6, 1> Mat::MultiplicativeSplitDefgradElastHyper::evaluate_d
 
 
   KinematicQuantities kinematic_quantities =
-      evaluate_kinematic_quantities(*this, *inelastic_, defgrad, gp, eleGID);
+      evaluate_kinematic_quantities(*this, *inelastic_, defgrad_mat, gp, eleGID);
   StressFactors stress_factors;
   Mat::calculate_gamma_delta(stress_factors.gamma, stress_factors.delta, kinematic_quantities.prinv,
       kinematic_quantities.dPIe, kinematic_quantities.ddPIIe);
   Core::LinAlg::Matrix<6, 9> dSdiFin = evaluated_sdi_fin(kinematic_quantities, stress_factors);
 
-  Core::LinAlg::Matrix<6, 1> d_stress_d_scalar(Core::LinAlg::Initialization::zero);
-  evaluate_od_stiff_mat(source, &defgrad, dSdiFin, d_stress_d_scalar);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> d_stress_d_scalar{};
+  Core::LinAlg::Matrix<6, 1> d_stress_d_scalar_view =
+      Core::LinAlg::make_stress_like_voigt_view(d_stress_d_scalar);
+  evaluate_od_stiff_mat(source, &defgrad_mat, dSdiFin, d_stress_d_scalar_view);
   return d_stress_d_scalar;
 }
 
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
-void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_derivatives(
-    const Core::LinAlg::Matrix<3, 3>& defgrd, const Core::LinAlg::Matrix<3, 1>& n,
-    const Core::LinAlg::Matrix<3, 1>& dir, double& cauchy_n_dir,
-    Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir,
-    Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF, Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
-    Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_dn,
+double Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_derivatives(
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd, const Core::LinAlg::Tensor<double, 3>& n,
+    const Core::LinAlg::Tensor<double, 3>& dir, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn,
+    Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir, Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF,
+    Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2, Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_dn,
     Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_ddir, int gp, int eleGID,
     const double* concentration, const double* temp, double* d_cauchyndir_dT,
     Core::LinAlg::Matrix<9, 1>* d2_cauchyndir_dF_dT)
@@ -306,16 +319,19 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_deriva
   if (concentration != nullptr) set_concentration_gp(*concentration);
 
   // reset sigma contracted with n and dir
-  cauchy_n_dir = 0.0;
+  double cauchy_n_dir = 0.0;
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(defgrd);
+  const Core::LinAlg::Matrix<3, 1> n_mat = Core::LinAlg::make_matrix_view<3, 1>(n);
+  const Core::LinAlg::Matrix<3, 1> dir_mat = Core::LinAlg::make_matrix_view<3, 1>(dir);
 
   static Core::LinAlg::Matrix<6, 1> idV(Core::LinAlg::Initialization::zero);
   for (int i = 0; i < 3; ++i) idV(i) = 1.0;
   static Core::LinAlg::Matrix<3, 3> idM(Core::LinAlg::Initialization::zero);
   for (int i = 0; i < 3; ++i) idM(i, i) = 1.0;
   static Core::LinAlg::Matrix<3, 3> iFinM(Core::LinAlg::Initialization::zero);
-  inelastic_->evaluate_inverse_inelastic_def_grad(&defgrd, iFinM);
+  inelastic_->evaluate_inverse_inelastic_def_grad(&defgrd_mat, iFinM);
   static Core::LinAlg::Matrix<3, 3> FeM(Core::LinAlg::Initialization::zero);
-  FeM.multiply_nn(1.0, defgrd, iFinM, 0.0);
+  FeM.multiply_nn(1.0, defgrd_mat, iFinM, 0.0);
 
   // get elastic left cauchy-green tensor and corresponding principal invariants
   static Core::LinAlg::Matrix<3, 3> beM(Core::LinAlg::Initialization::zero);
@@ -328,20 +344,20 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_deriva
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(beM, beV_stress);
 
   static Core::LinAlg::Matrix<3, 1> beMdn(Core::LinAlg::Initialization::zero);
-  beMdn.multiply(1.0, beM, n, 0.0);
-  const double beMdnddir = beMdn.dot(dir);
+  beMdn.multiply(1.0, beM, n_mat, 0.0);
+  const double beMdnddir = beMdn.dot(dir_mat);
   static Core::LinAlg::Matrix<3, 1> beMddir(Core::LinAlg::Initialization::zero);
-  beMddir.multiply(1.0, beM, dir, 0.0);
+  beMddir.multiply(1.0, beM, dir_mat, 0.0);
 
   static Core::LinAlg::Matrix<3, 3> ibeM(Core::LinAlg::Initialization::zero);
   ibeM.invert(beM);
   static Core::LinAlg::Matrix<6, 1> ibeV_stress(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(ibeM, ibeV_stress);
   static Core::LinAlg::Matrix<3, 1> ibeMdn(Core::LinAlg::Initialization::zero);
-  ibeMdn.multiply(1.0, ibeM, n, 0.0);
-  const double ibeMdnddir = ibeMdn.dot(dir);
+  ibeMdn.multiply(1.0, ibeM, n_mat, 0.0);
+  const double ibeMdnddir = ibeMdn.dot(dir_mat);
   static Core::LinAlg::Matrix<3, 1> ibeMddir(Core::LinAlg::Initialization::zero);
-  ibeMddir.multiply(1.0, ibeM, dir, 0.0);
+  ibeMddir.multiply(1.0, ibeM, dir_mat, 0.0);
 
   // derivatives of principle invariants of elastic left cauchy-green tensor
   static Core::LinAlg::Matrix<3, 1> dPI(Core::LinAlg::Initialization::zero);
@@ -349,7 +365,7 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_deriva
   evaluate_invariant_derivatives(prinv, gp, eleGID, dPI, ddPII);
 
   const double detFe = FeM.determinant();
-  const double nddir = n.dot(dir);
+  const double nddir = n * dir;
   const double prefac = 2.0 / detFe;
 
   // calculate \mat{\sigma} \cdot \vec{n} \cdot \vec{v}
@@ -358,7 +374,7 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_deriva
 
   if (d_cauchyndir_dn)
   {
-    d_cauchyndir_dn->update(prinv(1) * dPI(1) + prinv(2) * dPI(2), dir, 0.0);
+    d_cauchyndir_dn->update(prinv(1) * dPI(1) + prinv(2) * dPI(2), dir_mat, 0.0);
     d_cauchyndir_dn->update(dPI(0), beMddir, 1.0);
     d_cauchyndir_dn->update(-prinv(2) * dPI(1), ibeMddir, 1.0);
     d_cauchyndir_dn->scale(prefac);
@@ -366,7 +382,7 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_deriva
 
   if (d_cauchyndir_ddir)
   {
-    d_cauchyndir_ddir->update(prinv(1) * dPI(1) + prinv(2) * dPI(2), n, 0.0);
+    d_cauchyndir_ddir->update(prinv(1) * dPI(1) + prinv(2) * dPI(2), n_mat, 0.0);
     d_cauchyndir_ddir->update(dPI(0), beMdn, 1.0);
     d_cauchyndir_ddir->update(-prinv(2) * dPI(1), ibeMdn, 1.0);
     d_cauchyndir_ddir->scale(prefac);
@@ -432,42 +448,45 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_cauchy_n_dir_and_deriva
     static Core::LinAlg::Matrix<3, 3> FeMiFinTM(Core::LinAlg::Initialization::zero);
     FeMiFinTM.multiply_nt(1.0, FeM, iFinM, 0.0);
     static Core::LinAlg::Matrix<3, 1> tempvec(Core::LinAlg::Initialization::zero);
-    tempvec.multiply_tn(1.0, FeMiFinTM, n, 0.0);
+    tempvec.multiply_tn(1.0, FeMiFinTM, n_mat, 0.0);
     static Core::LinAlg::Matrix<3, 3> d_bednddir_dF(Core::LinAlg::Initialization::zero);
-    d_bednddir_dF.multiply_nt(1.0, dir, tempvec, 0.0);
+    d_bednddir_dF.multiply_nt(1.0, dir_mat, tempvec, 0.0);
     // now reuse tempvec
-    tempvec.multiply_tn(1.0, FeMiFinTM, dir, 0.0);
-    d_bednddir_dF.multiply_nt(1.0, n, tempvec, 1.0);
+    tempvec.multiply_tn(1.0, FeMiFinTM, dir_mat, 0.0);
+    d_bednddir_dF.multiply_nt(1.0, n_mat, tempvec, 1.0);
     static Core::LinAlg::Matrix<9, 1> d_bednddir_dFV(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Voigt::matrix_3x3_to_9x1(d_bednddir_dF, d_bednddir_dFV);
     d_cauchyndir_dF->update(prefac * dPI(0), d_bednddir_dFV, 1.0);
 
     // third part is term arising from \partial b_el^{-1} * n * v / \partial F
     static Core::LinAlg::Matrix<3, 3> iFM(Core::LinAlg::Initialization::zero);
-    iFM.invert(defgrd);
+    iFM.invert(defgrd_mat);
     static Core::LinAlg::Matrix<3, 1> tempvec2(Core::LinAlg::Initialization::zero);
-    tempvec.multiply(1.0, ibeM, dir, 0.0);
-    tempvec2.multiply(1.0, iFM, n, 0.0);
+    tempvec.multiply(1.0, ibeM, dir_mat, 0.0);
+    tempvec2.multiply(1.0, iFM, n_mat, 0.0);
     static Core::LinAlg::Matrix<3, 3> d_ibednddir_dFM(Core::LinAlg::Initialization::zero);
     d_ibednddir_dFM.multiply_nt(1.0, tempvec, tempvec2, 0.0);
     // now reuse tempvecs
-    tempvec.multiply(1.0, ibeM, n, 0.0);
-    tempvec2.multiply(1.0, iFM, dir, 0.0);
+    tempvec.multiply(1.0, ibeM, n_mat, 0.0);
+    tempvec2.multiply(1.0, iFM, dir_mat, 0.0);
     d_ibednddir_dFM.multiply_nt(1.0, tempvec, tempvec2, 1.0);
     d_ibednddir_dFM.scale(-1.0);
     static Core::LinAlg::Matrix<9, 1> d_ibednddir_dFV(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Voigt::matrix_3x3_to_9x1(d_ibednddir_dFM, d_ibednddir_dFV);
     d_cauchyndir_dF->update(-prefac * prinv(2) * dPI(1), d_ibednddir_dFV, 1.0);
   }
+
+  return cauchy_n_dir;
 }
 
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_linearization_od(
-    const Core::LinAlg::Matrix<3, 3>& defgrd, const double concentration,
-    Core::LinAlg::Matrix<9, 1>* d_F_dx)
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd, const double concentration,
+    Core::LinAlg::Matrix<9, 1>& d_F_dx)
 {
   set_concentration_gp(concentration);
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(defgrd);
 
   // References to vector of inelastic contributions and inelastic deformation gradients
   auto facdefgradin = inelastic_->fac_def_grad_in();
@@ -476,31 +495,33 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_linearization_od(
   const int num_contributions = inelastic_->num_inelastic_def_grad();
 
   // build inverse inelastic deformation gradient
-  static Core::LinAlg::Matrix<3, 3> iFinM(Core::LinAlg::Initialization::zero);
-  inelastic_->evaluate_inverse_inelastic_def_grad(&defgrd, iFinM);
+  Core::LinAlg::Tensor<double, 3, 3> iFin{};
+  Core::LinAlg::Matrix<3, 3> iFinM = Core::LinAlg::make_matrix_view(iFin);
 
-  static Core::LinAlg::Matrix<3, 3> idM(Core::LinAlg::Initialization::zero);
-  for (int i = 0; i < 3; ++i) idM(i, i) = 1.0;
-  static Core::LinAlg::Matrix<3, 3> FeM(Core::LinAlg::Initialization::zero);
-  FeM.multiply_nn(1.0, defgrd, iFinM, 0.0);
+  inelastic_->evaluate_inverse_inelastic_def_grad(&defgrd_mat, iFinM);
+
+  Core::LinAlg::Tensor<double, 3, 3> Fe = defgrd * iFin;
 
   // calculate the derivative of the deformation gradient w.r.t. the inelastic deformation gradient
-  static Core::LinAlg::Matrix<9, 9> d_F_dFin(Core::LinAlg::Initialization::zero);
-  d_F_dFin.clear();
-  Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, FeM, idM, d_F_dFin);
+  static Core::LinAlg::Tensor<double, 3, 3, 3, 3> d_F_dFin =
+      Core::LinAlg::reorder_axis<0, 2, 3, 1>(Core::LinAlg::dyadic(
+          Fe, Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>)));
 
-  static Core::LinAlg::Matrix<9, 1> d_Fin_dx(Core::LinAlg::Initialization::zero);
+  static Core::LinAlg::Tensor<double, 3, 3> d_Fin_dx{};
 
   // check number of factors the inelastic deformation gradient consists of and choose
   // implementation accordingly
   if (num_contributions == 1)
   {
-    facdefgradin[0].second->evaluate_inelastic_def_grad_derivative(defgrd.determinant(), d_Fin_dx);
+    facdefgradin[0].second->evaluate_inelastic_def_grad_derivative(
+        Core::LinAlg::det(defgrd), d_Fin_dx);
   }
   else
     FOUR_C_THROW("NOT YET IMPLEMENTED");
 
-  d_F_dx->multiply_nn(1.0, d_F_dFin, d_Fin_dx, 0.0);
+  auto dFdc = Core::LinAlg::ddot(d_F_dFin, d_Fin_dx);
+
+  Core::LinAlg::Voigt::matrix_3x3_to_9x1(Core::LinAlg::make_matrix_view(dFdc), d_F_dx);
 }
 
 /*--------------------------------------------------------------------*
@@ -617,7 +638,8 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_kin_quant_elast(
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(CiFiniCeM, CiFiniCe9x1);
 
   // derivatives of the elastic right CG
-  Mat::elast_hyper_get_derivs_of_elastic_right_cg_tensor(iFinM, CM, dCedC, dCediFin);
+  Mat::elast_hyper_get_derivs_of_elastic_right_cg_tensor(Core::LinAlg::make_tensor(iFinM),
+      Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor(CM)), dCedC, dCediFin);
 }
 
 /*--------------------------------------------------------------------*
@@ -714,7 +736,7 @@ Core::LinAlg::Matrix<6, 9> Mat::MultiplicativeSplitDefgradElastHyper::evaluated_
  *--------------------------------------------------------------------*/
 void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_transv_iso_quantities(
     const Mat::MultiplicativeSplitDefgradElastHyper::KinematicQuantities& kinemat_quant,
-    const Core::LinAlg::Matrix<3, 3>& CM, Teuchos::ParameterList& params, const int gp,
+    const Core::LinAlg::Matrix<3, 3>& CM, const Teuchos::ParameterList& params, const int gp,
     const int eleGID, Core::LinAlg::Matrix<6, 1>& stress, Core::LinAlg::Matrix<6, 6>& cmatiso,
     Core::LinAlg::Matrix<6, 9>& dSdiFin) const
 {
@@ -737,16 +759,13 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_transv_iso_quantities(
   Core::LinAlg::Matrix<3, 3> CeM(Core::LinAlg::Initialization::zero);
   temp3x3.multiply_tn(1.0, iFinM, CM, 0.0);
   CeM.multiply_nn(1.0, temp3x3, iFinM, 0.0);
-  Core::LinAlg::Matrix<6, 1> CeV(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Voigt::VoigtUtils<Core::LinAlg::Voigt::NotationType::strain>::matrix_to_vector(
-      CeM, CeV);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> CeV =
+      Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor(CeM));
 
   // initialize elastic 2nd PK stress elast_stress and elasticity tensor elast_stiffness (associated
   // to the transversely isotropic hyperelastic component)
-  Core::LinAlg::Matrix<6, 1> elast_stress(
-      Core::LinAlg::Initialization::zero);  // Voigt stress notation of SeM
-  Core::LinAlg::Matrix<6, 6> elast_stiffness(
-      Core::LinAlg::Initialization::zero);  // Voigt stress-strain
+  Core::LinAlg::SymmetricTensor<double, 3, 3> elast_stress{};  // Voigt stress notation of SeM
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> elast_stiffness{};  // Voigt stress-strain
 
   // loop through all transversely isotropic parts, and compute the total elastic stress and elastic
   // stiffness
@@ -755,14 +774,16 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_transv_iso_quantities(
     p->add_stress_aniso_principal(CeV, elast_stiffness, elast_stress, params, gp, eleGID);
   }
 
+  Core::LinAlg::Matrix<6, 6> elast_stiffness_6x6(
+      Core::LinAlg::make_stress_like_voigt_view(elast_stiffness));
+
   // convert stiffness to stress-strain notation
-  temp6x6 = elast_stiffness;
-  elast_stiffness = Core::LinAlg::Voigt::modify_voigt_representation(temp6x6, 1.0, 2.0);
+  temp6x6 = elast_stiffness_6x6;
+  elast_stiffness_6x6 = Core::LinAlg::Voigt::modify_voigt_representation(temp6x6, 1.0, 2.0);
 
   // calculate stress from elast_stress
-  Core::LinAlg::Matrix<3, 3> SeM(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Voigt::VoigtUtils<Core::LinAlg::Voigt::NotationType::stress>::vector_to_matrix(
-      elast_stress, SeM);
+  const Core::LinAlg::Matrix<3, 3> SeM =
+      Core::LinAlg::make_matrix(Core::LinAlg::get_full(elast_stress));
   Core::LinAlg::Matrix<3, 3> SM(Core::LinAlg::Initialization::zero);
   temp3x3.multiply_nn(1.0, iFinM, SeM, 0.0);
   SM.multiply_nt(1.0, temp3x3, iFinM, 0.0);
@@ -779,13 +800,13 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_transv_iso_quantities(
 
   // \frac{\partial S_{e}}{\partial F^{-1}_{in}}
   Core::LinAlg::Matrix<6, 9> dSediFin(Core::LinAlg::Initialization::zero);  // Voigt stress-form
-  dSediFin.multiply_nn(1.0, elast_stiffness, dCediFin, 0.0);
+  dSediFin.multiply_nn(1.0, elast_stiffness_6x6, dCediFin, 0.0);
   Core::LinAlg::FourTensor<3> dSediFin_FourTensor(true);
   Core::LinAlg::Voigt::setup_four_tensor_from_6x9_voigt_matrix(dSediFin_FourTensor, dSediFin);
 
   // \frac{\partial S_{e}}{\partial C}
   Core::LinAlg::Matrix<6, 6> dSedC(Core::LinAlg::Initialization::zero);  // Voigt stress-stress-form
-  dSedC.multiply_nn(1.0, elast_stiffness, dCedC, 0.0);
+  dSedC.multiply_nn(1.0, elast_stiffness_6x6, dCedC, 0.0);
   Core::LinAlg::FourTensor<3> dSedC_FourTensor(true);
   Core::LinAlg::Voigt::setup_four_tensor_from_6x6_voigt_matrix(dSedC_FourTensor, dSedC);
 
@@ -1037,7 +1058,7 @@ void Mat::MultiplicativeSplitDefgradElastHyper::evaluate_od_stiff_mat(PAR::Inela
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::MultiplicativeSplitDefgradElastHyper::pre_evaluate(
-    Teuchos::ParameterList& params, const int gp, const int eleGID) const
+    const Teuchos::ParameterList& params, const int gp, const int eleGID) const
 {
   // loop over all inelastic contributions
   for (int p = 0; p < inelastic_->num_inelastic_def_grad(); ++p)

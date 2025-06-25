@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_structporo_reaction.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -131,12 +132,12 @@ namespace Mat
 
     /// evaluate chemical potential
     virtual void chem_potential(
-        const Core::LinAlg::Matrix<6, 1>& glstrain,  ///< (i) green lagrange strain
-        const double porosity,                       ///< (i) porosity
-        const double press,                          ///< (i) pressure at gauss point
-        const double J,                              ///< (i) determinant of jacobian at gauss point
-        int EleID,                                   ///< (i) element GID
-        double& pot,                                 ///< (o) chemical potential
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,  ///< (i) green lagrange strain
+        const double porosity,                                        ///< (i) porosity
+        const double press,  ///< (i) pressure at gauss point
+        const double J,      ///< (i) determinant of jacobian at gauss point
+        int EleID,           ///< (i) element GID
+        double& pot,         ///< (o) chemical potential
         const int gp);
 
     /// Update of GP data (e.g., history variables)
@@ -153,7 +154,8 @@ namespace Mat
 
    protected:
     void reaction(const double porosity, const double J,
-        std::shared_ptr<std::vector<double>> scalars, Teuchos::ParameterList& params) override;
+        std::shared_ptr<std::vector<double>> scalars,
+        const Teuchos::ParameterList& params) override;
 
     /// reference porosity at time step n
     double refporosity_old_;

@@ -59,14 +59,15 @@ namespace Mixture
 
     void read_element(int numgp, const Core::IO::InputParameterContainer& container) override;
 
-    void update(Core::LinAlg::Matrix<3, 3> const& defgrd, Teuchos::ParameterList& params,
-        const int gp, const int eleGID) override;
+    void update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd,
+        const Teuchos::ParameterList& params, const int gp, const int eleGID) override;
 
     void update() override;
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-        Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     void register_output_data_names(
         std::unordered_map<std::string, int>& names_and_size) const override;

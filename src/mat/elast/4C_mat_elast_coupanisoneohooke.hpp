@@ -114,24 +114,24 @@ namespace Mat
 
       /// Add anisotropic principal stresses
       void add_stress_aniso_principal(
-          const Core::LinAlg::Matrix<6, 1>& rcg,  ///< right Cauchy Green Tensor
-          Core::LinAlg::Matrix<6, 6>& cmat,       ///< material stiffness matrix
-          Core::LinAlg::Matrix<6, 1>& stress,     ///< 2nd PK-stress
-          Teuchos::ParameterList&
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,   ///< right Cauchy Green Tensor
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< material stiffness matrix
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,      ///< 2nd PK-stress
+          const Teuchos::ParameterList&
               params,  ///< additional parameters for computation of material properties
           int gp,      ///< Gauss point
           int eleGID   ///< element GID
           ) override;
 
       /// Set fiber directions
-      void set_fiber_vecs(const double newgamma,     ///< new angle
-          const Core::LinAlg::Matrix<3, 3>& locsys,  ///< local coordinate system
-          const Core::LinAlg::Matrix<3, 3>& defgrd   ///< deformation gradient
+      void set_fiber_vecs(const double newgamma,             ///< new angle
+          const Core::LinAlg::Tensor<double, 3, 3>& locsys,  ///< local coordinate system
+          const Core::LinAlg::Tensor<double, 3, 3>& defgrd   ///< deformation gradient
           ) override;
 
       /// Get fiber directions
       void get_fiber_vecs(
-          std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+          std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
       ) const override;
 
       /// Indicator for formulation
@@ -152,9 +152,9 @@ namespace Mat
       Mat::Elastic::PAR::CoupAnisoNeoHooke* params_;
 
       /// fiber direction
-      Core::LinAlg::Matrix<3, 1> a_;
+      Core::LinAlg::Tensor<double, 3> a_;
       /// structural tensors in voigt notation for anisotropy
-      Core::LinAlg::Matrix<6, 1> structural_tensor_;
+      Core::LinAlg::SymmetricTensor<double, 3, 3> structural_tensor_;
     };
 
   }  // namespace Elastic

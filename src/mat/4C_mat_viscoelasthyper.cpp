@@ -11,9 +11,12 @@
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_inverse.hpp"
 #include "4C_mat_elast_summand.hpp"
 #include "4C_mat_elast_visco_generalizedgenmax.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
 #include "4C_utils_enum.hpp"
@@ -502,15 +505,16 @@ void Mat::ViscoElastHyper::update()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
-  Core::LinAlg::Matrix<6, 1> C_strain(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 1> C_stress(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 1> iC_strain(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 1> iC_stress(Core::LinAlg::Initialization::zero);
+  const Core::LinAlg::Matrix<6, 1> glstrain_mat =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   Core::LinAlg::Matrix<6, 1> modC_strain(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<6, 1> id2(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<6, 1> modrcg(Core::LinAlg::Initialization::zero);
@@ -533,11 +537,17 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   Core::LinAlg::Matrix<33, 1> xi(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<33, 1> modxi(Core::LinAlg::Initialization::zero);
 
-  evaluate_right_cauchy_green_strain_like_voigt(*glstrain, C_strain);
-  Core::LinAlg::Voigt::Strains::inverse_tensor(C_strain, iC_strain);
-  Core::LinAlg::Voigt::Strains::to_stress_like(iC_strain, iC_stress);
-  Core::LinAlg::Voigt::Strains::to_stress_like(C_strain, C_stress);
-  Core::LinAlg::Voigt::Strains::invariants_principal(prinv, C_strain);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> C{};
+  evaluate_right_cauchy_green_strain_like_voigt(glstrain, C);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> iC = Core::LinAlg::inv(C);
+
+  Core::LinAlg::Matrix<6, 1> C_stress = Core::LinAlg::make_stress_like_voigt_view(C);
+  Core::LinAlg::Matrix<6, 1> iC_stress = Core::LinAlg::make_stress_like_voigt_view(iC);
+  Core::LinAlg::Matrix<6, 1> C_strain;
+  Core::LinAlg::Voigt::Stresses::to_strain_like(C_stress, C_strain);
+  Core::LinAlg::Matrix<6, 1> iC_strain;
+  Core::LinAlg::Voigt::Stresses::to_strain_like(iC_stress, iC_strain);
+  Core::LinAlg::Voigt::Stresses::invariants_principal(prinv, C_stress);
 
 
   Core::LinAlg::Voigt::identity_matrix(id2);
@@ -566,11 +576,11 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // blank resulting quantities
   // ... even if it is an implicit law that cmat is zero upon input
-  stress->clear();
-  cmat->clear();
+  stress_view.clear();
+  cmat_view.clear();
 
   // add isotropic part
-  elast_hyper_add_isotropic_stress_cmat(*stress, *cmat, C_strain, iC_strain, prinv, dPI, ddPII);
+  elast_hyper_add_isotropic_stress_cmat(stress, cmat, C, iC, prinv, dPI, ddPII);
 
 
   // add viscous part
@@ -590,10 +600,10 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       evaluate_iso_visco_modified(stressisomodisovisco, stressisomodvolvisco, cmatisomodisovisco,
           cmatisomodvolvisco, prinv, modinv, modmu, modxi, C_strain, id2, iC_stress, id4,
           modrcgrate);
-      stress->update(1.0, stressisomodisovisco, 1.0);
-      stress->update(1.0, stressisomodvolvisco, 1.0);
-      cmat->update(1.0, cmatisomodisovisco, 1.0);
-      cmat->update(1.0, cmatisomodvolvisco, 1.0);
+      stress_view.update(1.0, stressisomodisovisco, 1.0);
+      stress_view.update(1.0, stressisomodvolvisco, 1.0);
+      cmat_view.update(1.0, cmatisomodisovisco, 1.0);
+      cmat_view.update(1.0, cmatisomodvolvisco, 1.0);
     }
 
     if (summandProperties_.isoprinc)
@@ -603,8 +613,8 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmatisovisco(
           Core::LinAlg::Initialization::zero);
       evaluate_iso_visco_principal(stressisovisco, cmatisovisco, mu, xi, id4sharp, scgrate);
-      stress->update(1.0, stressisovisco, 1.0);
-      cmat->update(1.0, cmatisovisco, 1.0);
+      stress_view.update(1.0, stressisovisco, 1.0);
+      cmat_view.update(1.0, cmatisovisco, 1.0);
     }
   }
 
@@ -614,9 +624,9 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1> Q(
         Core::LinAlg::Initialization::zero);  // artificial viscous stress
     Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmatq(Core::LinAlg::Initialization::zero);
-    evaluate_visco_gen_max(stress, cmat, Q, cmatq, params, gp);
-    stress->update(1.0, Q, 1.0);
-    cmat->update(1.0, cmatq, 1.0);
+    evaluate_visco_gen_max(&stress_view, &cmat_view, Q, cmatq, params, gp);
+    stress_view.update(1.0, Q, 1.0);
+    cmat_view.update(1.0, cmatq, 1.0);
   }
 
   // add contribution of generalized Maxwell model
@@ -624,9 +634,9 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   {
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1> Q(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmatq(Core::LinAlg::Initialization::zero);
-    evaluate_visco_generalized_gen_max(Q, cmatq, params, glstrain, gp, eleGID);
-    stress->update(1.0, Q, 1.0);
-    cmat->update(1.0, cmatq, 1.0);
+    evaluate_visco_generalized_gen_max(Q, cmatq, params, &glstrain_mat, gp, eleGID);
+    stress_view.update(1.0, Q, 1.0);
+    cmat_view.update(1.0, cmatq, 1.0);
   }
 
   // add contribution of viscofract-material
@@ -635,9 +645,9 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1> Q(
         Core::LinAlg::Initialization::zero);  // artificial viscous stress
     Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmatq(Core::LinAlg::Initialization::zero);
-    evaluate_visco_fract(*stress, *cmat, Q, cmatq, params, gp);
-    stress->update(1.0, Q, 1.);
-    cmat->update(1.0, cmatq, 1.);
+    evaluate_visco_fract(stress_view, cmat_view, Q, cmatq, params, gp);
+    stress_view.update(1.0, Q, 1.);
+    cmat_view.update(1.0, cmatq, 1.);
   }
 
 
@@ -645,23 +655,20 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // coefficients in principal stretches
   if (summandProperties_.coeffStretchesPrinc || summandProperties_.coeffStretchesMod)
   {
-    elast_hyper_add_response_stretches(
-        *cmat, *stress, C_strain, potsum_, summandProperties_, gp, eleGID);
+    elast_hyper_add_response_stretches(cmat, stress, C, potsum_, summandProperties_, gp, eleGID);
   }
 
   /*----------------------------------------------------------------------*/
   // Do all the anisotropic stuff!
   if (summandProperties_.anisoprinc)
   {
-    elast_hyper_add_anisotropic_princ(*stress, *cmat, C_strain, params, gp, eleGID, potsum_);
+    elast_hyper_add_anisotropic_princ(stress, cmat, C, params, gp, eleGID, potsum_);
   }
 
   if (summandProperties_.anisomod)
   {
-    elast_hyper_add_anisotropic_mod(
-        *stress, *cmat, C_strain, iC_strain, prinv, gp, eleGID, params, potsum_);
+    elast_hyper_add_anisotropic_mod(stress, cmat, C, iC, prinv, gp, eleGID, params, potsum_);
   }
-  return;
 }
 
 /*----------------------------------------------------------------------*/
@@ -670,7 +677,7 @@ void Mat::ViscoElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 void Mat::ViscoElastHyper::evaluate_kin_quant_vis(Core::LinAlg::Matrix<6, 1>& rcg,
     Core::LinAlg::Matrix<6, 1>& scg, Core::LinAlg::Matrix<6, 1>& icg,
     Core::LinAlg::Matrix<3, 1>& prinv, Core::LinAlg::Matrix<7, 1>& rateinv,
-    Core::LinAlg::Matrix<6, 1>& modrcg, Teuchos::ParameterList& params,
+    Core::LinAlg::Matrix<6, 1>& modrcg, const Teuchos::ParameterList& params,
     Core::LinAlg::Matrix<6, 1>& scgrate, Core::LinAlg::Matrix<6, 1>& modrcgrate,
     Core::LinAlg::Matrix<7, 1>& modrateinv, const int gp)
 {
@@ -743,7 +750,7 @@ void Mat::ViscoElastHyper::evaluate_mu_xi(Core::LinAlg::Matrix<3, 1>& prinv,
     Core::LinAlg::Matrix<3, 1>& modinv, Core::LinAlg::Matrix<8, 1>& mu,
     Core::LinAlg::Matrix<8, 1>& modmu, Core::LinAlg::Matrix<33, 1>& xi,
     Core::LinAlg::Matrix<33, 1>& modxi, Core::LinAlg::Matrix<7, 1>& rateinv,
-    Core::LinAlg::Matrix<7, 1>& modrateinv, Teuchos::ParameterList& params, const int gp,
+    Core::LinAlg::Matrix<7, 1>& modrateinv, const Teuchos::ParameterList& params, const int gp,
     const int eleGID)
 {
   // principal materials
@@ -856,7 +863,7 @@ void Mat::ViscoElastHyper::evaluate_iso_visco_modified(
 /*----------------------------------------------------------------------*/
 void Mat::ViscoElastHyper::evaluate_visco_gen_max(Core::LinAlg::Matrix<6, 1>* stress,
     Core::LinAlg::Matrix<6, 6>* cmat, Core::LinAlg::Matrix<6, 1>& Q,
-    Core::LinAlg::Matrix<6, 6>& cmatq, Teuchos::ParameterList& params, const int gp)
+    Core::LinAlg::Matrix<6, 6>& cmatq, const Teuchos::ParameterList& params, const int gp)
 {
   // initialize material parameters
   double tau = -1.0;
@@ -965,7 +972,7 @@ void Mat::ViscoElastHyper::evaluate_visco_gen_max(Core::LinAlg::Matrix<6, 1>* st
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Mat::ViscoElastHyper::evaluate_visco_generalized_gen_max(Core::LinAlg::Matrix<6, 1>& Q,
-    Core::LinAlg::Matrix<6, 6>& cmatq, Teuchos::ParameterList& params,
+    Core::LinAlg::Matrix<6, 6>& cmatq, const Teuchos::ParameterList& params,
     const Core::LinAlg::Matrix<6, 1>* glstrain, const int gp, const int eleGID)
 {
   int numbranch = -1;
@@ -1040,15 +1047,28 @@ void Mat::ViscoElastHyper::evaluate_visco_generalized_gen_max(Core::LinAlg::Matr
     if (branchProperties.anisomod)
       FOUR_C_THROW("case anisomod for branch in generalized Maxwell model not yet considered!");
 
-    Core::LinAlg::Matrix<6, 1> C_strain(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> iC_strain(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<6, 1> modrcg(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<3, 1> prinv(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<3, 1> dPI(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<6, 1> ddPII(Core::LinAlg::Initialization::zero);
 
-    evaluate_right_cauchy_green_strain_like_voigt(*glstrain, C_strain);
-    Core::LinAlg::Voigt::Strains::inverse_tensor(C_strain, iC_strain);
+    Core::LinAlg::Matrix<6, 1> gl_stress;
+    Core::LinAlg::Voigt::Strains::to_stress_like(*glstrain, gl_stress);
+
+    Core::LinAlg::SymmetricTensor<double, 3, 3> gl =
+        Core::LinAlg::make_symmetric_tensor_from_stress_like_voigt_matrix(gl_stress);
+
+    Core::LinAlg::SymmetricTensor<double, 3, 3> C;
+    evaluate_right_cauchy_green_strain_like_voigt(gl, C);
+
+    Core::LinAlg::SymmetricTensor<double, 3, 3> iC = Core::LinAlg::inv(C);
+
+    Core::LinAlg::Matrix<6, 1> C_strain(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::Matrix<6, 1> iC_strain(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::Voigt::Stresses::to_strain_like(
+        Core::LinAlg::make_stress_like_voigt_view(C), C_strain);
+    Core::LinAlg::Voigt::Stresses::to_strain_like(
+        Core::LinAlg::make_stress_like_voigt_view(iC), iC_strain);
 
     Core::LinAlg::Voigt::Strains::invariants_principal(prinv, C_strain);
     elast_hyper_evaluate_invariant_derivatives(
@@ -1060,12 +1080,11 @@ void Mat::ViscoElastHyper::evaluate_visco_generalized_gen_max(Core::LinAlg::Matr
     cmatqbranch.clear();
 
     // build stress response and elasticity tensor
-    Core::LinAlg::Matrix<NUM_STRESS_3D, 1> stressiso(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D> cmatiso(Core::LinAlg::Initialization::zero);
-    elast_hyper_add_isotropic_stress_cmat(
-        stressiso, cmatiso, C_strain, iC_strain, prinv, dPI, ddPII);
-    S.at(i).update(1.0, stressiso, 1.0);
-    cmatqbranch.update(1.0, cmatiso, 1.0);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> stressiso{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmatiso{};
+    elast_hyper_add_isotropic_stress_cmat(stressiso, cmatiso, C, iC, prinv, dPI, ddPII);
+    S.at(i).update(1.0, Core::LinAlg::make_stress_like_voigt_view(stressiso), 1.0);
+    cmatqbranch.update(1.0, Core::LinAlg::make_stress_like_voigt_view(cmatiso), 1.0);
 
     // get Parameter of ViscoGeneralizedGenMax
     for (unsigned int q = 0; q < branchpotsum.size(); ++q)
@@ -1153,7 +1172,7 @@ void Mat::ViscoElastHyper::evaluate_visco_generalized_gen_max(Core::LinAlg::Matr
 /*----------------------------------------------------------------------*/
 void Mat::ViscoElastHyper::evaluate_visco_fract(Core::LinAlg::Matrix<6, 1> stress,
     Core::LinAlg::Matrix<6, 6> cmat, Core::LinAlg::Matrix<6, 1>& Q,
-    Core::LinAlg::Matrix<6, 6>& cmatq, Teuchos::ParameterList& params, const int gp)
+    Core::LinAlg::Matrix<6, 6>& cmatq, const Teuchos::ParameterList& params, const int gp)
 {
   // initialize parameters
   double tau(true);

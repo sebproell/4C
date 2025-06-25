@@ -176,13 +176,14 @@ namespace Mat
     virtual double ref_porosity_time_deriv() const { return 0.0; }
 
     //! compute current porosity and save it
-    virtual void compute_porosity(Teuchos::ParameterList& params,  //!< (i) element parameter list
-        double press,                                              //!< (i) pressure at gauss point
-        double J,          //!< (i) determinant of jacobian at gauss point
-        int gp,            //!< (i) number of current gauss point
-        double& porosity,  //!< (o) porosity at gauss point
-        double* dphi_dp,   //!< (o) first derivative of porosity w.r.t. pressure at gauss point
-        double* dphi_dJ,   //!< (o) first derivative of porosity w.r.t. jacobian at gauss point
+    virtual void compute_porosity(
+        const Teuchos::ParameterList& params,  //!< (i) element parameter list
+        double press,                          //!< (i) pressure at gauss point
+        double J,                              //!< (i) determinant of jacobian at gauss point
+        int gp,                                //!< (i) number of current gauss point
+        double& porosity,                      //!< (o) porosity at gauss point
+        double* dphi_dp,  //!< (o) first derivative of porosity w.r.t. pressure at gauss point
+        double* dphi_dJ,  //!< (o) first derivative of porosity w.r.t. jacobian at gauss point
         double*
             dphi_dJdp,  //!< (o) derivative of porosity w.r.t. pressure and jacobian at gauss point
         double* dphi_dJJ,  //!< (o) second derivative of porosity w.r.t. jacobian at gauss point
@@ -190,22 +191,23 @@ namespace Mat
         bool save = true);
 
     //! compute current porosity and save it
-    void compute_porosity(Teuchos::ParameterList& params,  //!< (i) element parameter list
-        double press,                                      //!< (i) pressure at gauss point
+    void compute_porosity(const Teuchos::ParameterList& params,  //!< (i) element parameter list
+        double press,                                            //!< (i) pressure at gauss point
         double J,          //!< (i) determinant of jacobian at gauss point
         int gp,            //!< (i) number of current gauss point
         double& porosity,  //!< (o) porosity at gauss point
         bool save = true);
 
     //! compute current surface porosity and save it
-    void compute_surf_porosity(Teuchos::ParameterList& params,  //!< (i) element parameter list
-        double press,                                           //!< (i) pressure at gauss point
-        double J,           //!< (i) determinant of jacobian at gauss point
-        const int surfnum,  //!< (i) number of surface
-        int gp,             //!< (i) number of current gauss point
-        double& porosity,   //!< (o) porosity at gauss point
-        double* dphi_dp,    //!< (o) first derivative of porosity w.r.t. pressure at gauss point
-        double* dphi_dJ,    //!< (o) first derivative of porosity w.r.t. jacobian at gauss point
+    void compute_surf_porosity(
+        const Teuchos::ParameterList& params,  //!< (i) element parameter list
+        double press,                          //!< (i) pressure at gauss point
+        double J,                              //!< (i) determinant of jacobian at gauss point
+        const int surfnum,                     //!< (i) number of surface
+        int gp,                                //!< (i) number of current gauss point
+        double& porosity,                      //!< (o) porosity at gauss point
+        double* dphi_dp,  //!< (o) first derivative of porosity w.r.t. pressure at gauss point
+        double* dphi_dJ,  //!< (o) first derivative of porosity w.r.t. jacobian at gauss point
         double*
             dphi_dJdp,  //!< (o) derivative of porosity w.r.t. pressure and jacobian at gauss point
         double* dphi_dJJ,  //!< (o) second derivative of porosity w.r.t. jacobian at gauss point
@@ -213,12 +215,13 @@ namespace Mat
         bool save = true);
 
     //! compute current surface porosity and save it
-    void compute_surf_porosity(Teuchos::ParameterList& params,  //!< (i) element parameter list
-        double press,                                           //!< (i) pressure at gauss point
-        double J,           //!< (i) determinant of jacobian at gauss point
-        const int surfnum,  //!< (i) number of surface
-        int gp,             //!< (i) number of current gauss point
-        double& porosity,   //!< (o) porosity at gauss point
+    void compute_surf_porosity(
+        const Teuchos::ParameterList& params,  //!< (i) element parameter list
+        double press,                          //!< (i) pressure at gauss point
+        double J,                              //!< (i) determinant of jacobian at gauss point
+        const int surfnum,                     //!< (i) number of surface
+        int gp,                                //!< (i) number of current gauss point
+        double& porosity,                      //!< (o) porosity at gauss point
         bool save = true);
 
     //! return copy of this material object
@@ -252,19 +255,20 @@ namespace Mat
         Core::LinAlg::Matrix<4, 1>& couplstress) const;
 
     //! evaluate constitutive relation for porosity and compute derivatives
-    virtual void constitutive_derivatives(Teuchos::ParameterList& params,  //!< (i) parameter list
-        double press,        //!< (i) fluid pressure at gauss point
-        double J,            //!< (i) Jacobian determinant at gauss point
-        double porosity,     //!< (i) porosity at gauss point
-        double* dW_dp,       //!< (o) derivative of potential w.r.t. pressure
-        double* dW_dphi,     //!< (o) derivative of potential w.r.t. porosity
-        double* dW_dJ,       //!< (o) derivative of potential w.r.t. jacobian
+    virtual void constitutive_derivatives(
+        const Teuchos::ParameterList& params,  //!< (i) parameter list
+        double press,                          //!< (i) fluid pressure at gauss point
+        double J,                              //!< (i) Jacobian determinant at gauss point
+        double porosity,                       //!< (i) porosity at gauss point
+        double* dW_dp,                         //!< (o) derivative of potential w.r.t. pressure
+        double* dW_dphi,                       //!< (o) derivative of potential w.r.t. porosity
+        double* dW_dJ,                         //!< (o) derivative of potential w.r.t. jacobian
         double* dW_dphiref,  //!< (o) derivative of potential w.r.t. reference porosity
         double* W            //!< (o) inner potential
     );
 
     //! evaluate constitutive relation for porosity and compute derivatives using reference porosity
-    void constitutive_derivatives(Teuchos::ParameterList& params,  //!< (i) parameter list
+    void constitutive_derivatives(const Teuchos::ParameterList& params,  //!< (i) parameter list
         double press,        //!< (i) fluid pressure at gauss point
         double J,            //!< (i) Jacobian determinant at gauss point
         double porosity,     //!< (i) porosity at gauss point
@@ -281,31 +285,30 @@ namespace Mat
 
     //! @name Evaluation methods
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int EleID) override
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override
     {
-      mat_->evaluate(defgrd, glstrain, params, stress, cmat, gp, EleID);
+      mat_->evaluate(defgrad, glstrain, params, stress, cmat, gp, eleGID);
     }
 
-    void strain_energy(const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, const int gp,
-        const int EleID) const override
+    [[nodiscard]] double strain_energy(const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        int gp, int eleGID) const override
     {
-      mat_->strain_energy(glstrain, psi, gp, EleID);
+      return mat_->strain_energy(glstrain, gp, eleGID);
     }
 
-    void evaluate_cauchy_n_dir_and_derivatives(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        const Core::LinAlg::Matrix<3, 1>& n, const Core::LinAlg::Matrix<3, 1>& dir,
-        double& cauchy_n_dir, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn,
-        Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir, Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF,
-        Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
+    double evaluate_cauchy_n_dir_and_derivatives(const Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+        const Core::LinAlg::Tensor<double, 3>& n, const Core::LinAlg::Tensor<double, 3>& dir,
+        Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir,
+        Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF, Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
         Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_dn,
         Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_ddir, int gp, int eleGID,
         const double* concentration, const double* temp, double* d_cauchyndir_dT,
         Core::LinAlg::Matrix<9, 1>* d2_cauchyndir_dF_dT) override
     {
-      mat_->evaluate_cauchy_n_dir_and_derivatives(defgrd, n, dir, cauchy_n_dir, d_cauchyndir_dn,
+      return mat_->evaluate_cauchy_n_dir_and_derivatives(defgrd, n, dir, d_cauchyndir_dn,
           d_cauchyndir_ddir, d_cauchyndir_dF, d2_cauchyndir_dF2, d2_cauchyndir_dF_dn,
           d2_cauchyndir_dF_ddir, gp, eleGID, concentration, temp, d_cauchyndir_dT,
           d2_cauchyndir_dF_dT);
@@ -327,7 +330,7 @@ namespace Mat
       mat_->setup(numgp, container);
     }
 
-    void post_setup(Teuchos::ParameterList& params, const int eleGID) override;
+    void post_setup(const Teuchos::ParameterList& params, const int eleGID) override;
 
     void update() override { mat_->update(); }
 

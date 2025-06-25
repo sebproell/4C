@@ -26,7 +26,7 @@ Mat::Elastic::CoupSimoPister::CoupSimoPister(Mat::Elastic::PAR::CoupSimoPister* 
 
 void Mat::Elastic::CoupSimoPister::add_strain_energy(double& psi,
     const Core::LinAlg::Matrix<3, 1>& prinv, const Core::LinAlg::Matrix<3, 1>& modinv,
-    const Core::LinAlg::Matrix<6, 1>& glstrain, const int gp, const int eleGID)
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, const int gp, const int eleGID)
 {
   // material Constant mu
   const double mue = params_->mue_;

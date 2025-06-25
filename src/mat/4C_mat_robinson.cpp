@@ -12,8 +12,10 @@
 #include "4C_linalg_fixedsizematrix_solver.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_mat_service.hpp"
 #include "4C_utils_enum.hpp"
 
 #include <vector>
@@ -315,16 +317,21 @@ void Mat::Robinson::update()
  | select Robinson's material, integrate internal variables and return  |
  | stress and material tangent                                          |
  *----------------------------------------------------------------------*/
-void Mat::Robinson::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* strain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::Robinson::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
-  Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> straininc(*strain);
+  const Core::LinAlg::Matrix<6, 1> glstrain_mat =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
+  Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> straininc(glstrain_mat);
   straininc.update(-1., strain_last_[gp], 1.);
-  strain_last_[gp] = *strain;
+  strain_last_[gp] = glstrain_mat;
   // if no temperature has been set use the initial value
-  const double scalartemp = params.get<double>("temperature", init_temp());
+  const double scalartemp = get_or(params, "temperature", init_temp());
 
   // update history of the condensed variables plastic strain and back stress
   // iterative update of the current history vectors at current Gauss point gp
@@ -387,13 +394,13 @@ void Mat::Robinson::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> strain_e(Core::LinAlg::Initialization::uninitialized);
 
   // strain^e_{n+1} = strain_n+1 - strain^p_n - strain^t
-  strain_e.update(*strain);
+  strain_e.update(glstrain_mat);
   strain_e.update((-1.0), strain_on, (-1.0), strain_t, 1.0);
 
   // ---------------------------------------------- elasticity tensor
   // cmat = kee = pd(sig)/pd(eps)
   // pass the current temperature to calculate the current youngs modulus
-  setup_cmat(scalartemp, *cmat);
+  setup_cmat(scalartemp, cmat_view);
 
   // ------------------------------------ tangents of stress equation
   // declare single terms of elasto-plastic tangent Cmat_ep
@@ -406,7 +413,7 @@ void Mat::Robinson::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // (i): scale (-1.0)
   // (i): input matrix cmat
   // (o): output matrix kev
-  kev.update((-1.0), *cmat);
+  kev.update((-1.0), cmat_view);
 
   // kea = pd(sigma)/pd(backstress)
   // tangent term resulting from linearisation \frac{\pd sig}{\pd al}
@@ -421,7 +428,7 @@ void Mat::Robinson::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // (i): input vector strain_e
   // (o): output vector stress
   // stress_{n+1} = cmat . strain^e_{n+1}
-  stress->multiply_nn(*cmat, strain_e);
+  stress_view.multiply_nn(cmat_view, strain_e);
 
   // ------------------------------------------------------ devstress
   // deviatoric stress s_{n+1}^i at t_{n+1}
@@ -430,9 +437,9 @@ void Mat::Robinson::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> devstress(
       Core::LinAlg::Initialization::uninitialized);
   // trace of stress vector
-  double tracestress = ((*stress)(0) + (*stress)(1) + (*stress)(2));
-  for (int i = 0; i < 3; i++) devstress(i) = (*stress)(i)-tracestress / 3.0;
-  for (int i = 3; i < Mat::NUM_STRESS_3D; i++) devstress(i) = (*stress)(i);
+  double tracestress = (stress_view(0) + stress_view(1) + stress_view(2));
+  for (int i = 0; i < 3; i++) devstress(i) = stress_view(i) - tracestress / 3.0;
+  for (int i = 3; i < Mat::NUM_STRESS_3D; i++) devstress(i) = stress_view(i);
   // CAUTION: shear stresses (e.g., sigma_12)
   // in Voigt-notation the shear strains (e.g., strain_12) have to be scaled with
   // 1/2 normally considered in material tangent (using id4sharp, instead of id4)
@@ -498,24 +505,17 @@ void Mat::Robinson::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // equation remains
   // ------------------------------------- reduced stress and tangent
   // ==> static condensation
-  calculate_condensed_system(*stress,  // (o): sigma_red --> used to calculate f_int^{e} at GP
-      *cmat,                           // (o): C_red --> used to calculate stiffness k^{e} at GP
+  calculate_condensed_system(stress_view,  // (o): sigma_red --> used to calculate f_int^{e} at GP
+      cmat_view,                           // (o): C_red --> used to calculate stiffness k^{e} at GP
       kev, kea, strain_pres, kve, kvv, kva, backstress_res, kae, kav, kaa, (kvarva_->at(gp)),
       (kvakvae_->at(gp)));
-
-  // pass the current plastic strains to the element (for visualisation)
-  Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> plstrain(Core::LinAlg::Initialization::uninitialized);
-  plstrain.update(strainplcurr_->at(gp));
-  // set in parameter list
-  params.set<Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1>>("plglstrain", plstrain);
-
 }  // evaluate()
 
 /*----------------------------------------------------------------------*
  | Set current quantities for this material                             |
  *----------------------------------------------------------------------*/
-void Mat::Robinson::reinit(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, double temperature, unsigned gp)
+void Mat::Robinson::reinit(const Core::LinAlg::Tensor<double, 3, 3>* defgrd,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, double temperature, unsigned gp)
 {
   reinit(temperature, gp);
 }
@@ -525,21 +525,22 @@ void Mat::Robinson::reinit(const Core::LinAlg::Matrix<3, 3>* defgrd,
  |   for coupled thermomechanics                                        |
  *----------------------------------------------------------------------*/
 void Mat::Robinson::stress_temperature_modulus_and_deriv(
-    Core::LinAlg::Matrix<6, 1>& stm, Core::LinAlg::Matrix<6, 1>& stm_dT, int gp)
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stm,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stm_dT, int gp)
 {
-  stm.clear();
-  stm_dT.clear();
+  stm = {};
+  stm_dT = {};
 }
 
 /*----------------------------------------------------------------------*
  |  Evaluates the added derivatives of the stress w.r.t. all scalars    |
  *----------------------------------------------------------------------*/
-Core::LinAlg::Matrix<6, 1> Mat::Robinson::evaluate_d_stress_d_scalar(
-    const Core::LinAlg::Matrix<3, 3>& defgrad, const Core::LinAlg::Matrix<6, 1>& glstrain,
-    Teuchos::ParameterList& params, int gp, int eleGID)
+Core::LinAlg::SymmetricTensor<double, 3, 3> Mat::Robinson::evaluate_d_stress_d_scalar(
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, int gp, int eleGID)
 {
-  Core::LinAlg::Matrix<6, 1> dS_dT(Core::LinAlg::Initialization::zero);
-  return dS_dT;
+  return {};
 }
 
 /*----------------------------------------------------------------------*

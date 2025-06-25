@@ -11,6 +11,8 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -36,30 +38,18 @@ namespace Mat
      * @param i (in) : Id of the fiber
      * @return Reference to the vector of the fiber
      */
-    virtual const Core::LinAlg::Matrix<3, 1>& get_fiber(int gp, int i) const = 0;
+    virtual const Core::LinAlg::Tensor<double, 3>& get_fiber(int gp, int i) const = 0;
 
     /**
-     * \brief Returns the i-th structural tensor at the Integration point in stress-like Voigt
-     * notation
+     * \brief Returns the i-th structural tensor at the Integration point
      *
      * \note Use gp=#GPDEFAULT if element fibers are used
      *
      * @param gp (in) : Id of the integration point (use #GPDEFAULT for Element fibers)
      * @param i (in) : Id of the fiber
-     * @return Matrix of the structural tensor in stress-like Voigt notation
      */
-    virtual const Core::LinAlg::Matrix<6, 1>& get_structural_tensor_stress(int gp, int i) const = 0;
-
-    /**
-     * \brief Returns the i-th structural tensor at the Integration point in tensor notation
-     *
-     * \note Use gp=#GPDEFAULT if element fibers are used
-     *
-     * @param gp (in) : Id of the integration point (use #GPDEFAULT for Element fibers)
-     * @param i (in) : Id of the fiber
-     * @return Reference to Matrix of the structural tensor in tensor notation
-     */
-    virtual const Core::LinAlg::Matrix<3, 3>& get_structural_tensor(int gp, int i) const = 0;
+    virtual const Core::LinAlg::SymmetricTensor<double, 3, 3>& get_structural_tensor(
+        int gp, int i) const = 0;
     //@}
   };
 

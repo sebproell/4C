@@ -177,7 +177,7 @@ namespace Mat
      *
      * @param params Container for additional information
      */
-    void post_setup(Teuchos::ParameterList& params, const int eleGID) override;
+    void post_setup(const Teuchos::ParameterList& params, const int eleGID) override;
 
     /*!
      * \brief Update of the material
@@ -196,8 +196,8 @@ namespace Mat
      * @param params Container for additional information
      * @param eleGID Global element id
      */
-    void update(Core::LinAlg::Matrix<3, 3> const& defgrd, int gp, Teuchos::ParameterList& params,
-        int eleGID) override;
+    void update(const Core::LinAlg::Tensor<double, 3, 3>& defgrd, int gp,
+        const Teuchos::ParameterList& params, int eleGID) override;
 
     /// \brief This material law uses the extended update method
     bool uses_extended_update() override { return true; }
@@ -214,13 +214,13 @@ namespace Mat
      * @param cmat (out) Linearization of the material law in Voigt notation
      * @param eleGID (in) Global element id
      */
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-        const int eleGID) final;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) final;
 
     /// \brief Return material mass density given by mixture rule
-    double density() const override { return mixture_rule_->return_mass_density(); };
+    [[nodiscard]] double density() const override { return mixture_rule_->return_mass_density(); };
 
     void register_output_data_names(
         std::unordered_map<std::string, int>& names_and_size) const override;

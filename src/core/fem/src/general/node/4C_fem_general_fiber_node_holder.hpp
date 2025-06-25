@@ -12,6 +12,7 @@
 
 #include "4C_fem_general_fiber_node.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_tensor.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -41,7 +42,7 @@ namespace Core::Nodes
      * @param fiber Vector of the coordinate system direction at the Gauss-points
      */
     void set_coordinate_system_direction(
-        CoordinateSystemDirection type, const std::vector<Core::LinAlg::Matrix<3, 1>>& fiber);
+        CoordinateSystemDirection type, const std::vector<Core::LinAlg::Tensor<double, 3>>& fiber);
 
     /*!
      * \brief Returns a reference to coordinate system directions at every Gauss point belonging
@@ -50,7 +51,7 @@ namespace Core::Nodes
      * @param type Type of the coordinate system direction
      * @return Reference to the coordinate system direction
      */
-    const std::vector<Core::LinAlg::Matrix<3, 1>>& get_coordinate_system_direction(
+    const std::vector<Core::LinAlg::Tensor<double, 3>>& get_coordinate_system_direction(
         CoordinateSystemDirection type) const;
 
     /*!
@@ -60,21 +61,21 @@ namespace Core::Nodes
      * @param type Type of the coordinate system direction
      * @return Reference to the coordinate system direction
      */
-    std::vector<Core::LinAlg::Matrix<3, 1>>& get_coordinate_system_direction_mutual(
+    std::vector<Core::LinAlg::Tensor<double, 3>>& get_coordinate_system_direction_mutual(
         CoordinateSystemDirection type);
     /*!
      * \brief Inserts a fiber
      *
      * @param fiber Vector of the fiber at the Gauss-points
      */
-    void add_fiber(const std::vector<Core::LinAlg::Matrix<3, 1>>& fiber);
+    void add_fiber(const std::vector<Core::LinAlg::Tensor<double, 3>>& fiber);
 
     /*!
      * @brief Return the list of all fibers at all Gauss points
      *
      * @return Reference to the list of all fibers at all Gauss points
      */
-    const std::vector<std::vector<Core::LinAlg::Matrix<3, 1>>>& get_fibers() const
+    const std::vector<std::vector<Core::LinAlg::Tensor<double, 3>>>& get_fibers() const
     {
       return fibers_;
     }
@@ -85,7 +86,7 @@ namespace Core::Nodes
      * @param fiberid Id of the fiber (starting from 0)
      * @return Reference to the coordinate system direction
      */
-    const std::vector<Core::LinAlg::Matrix<3, 1>>& get_fiber(std::size_t fiberid) const;
+    const std::vector<Core::LinAlg::Tensor<double, 3>>& get_fiber(std::size_t fiberid) const;
 
     /*!
      * \brief Returns a reference to the specific fiber at every Gauss point
@@ -93,7 +94,7 @@ namespace Core::Nodes
      * @param fiberid Id of the fiber (starting from 0)
      * @return Reference to the fiber
      */
-    std::vector<Core::LinAlg::Matrix<3, 1>>& get_fiber_mutual(std::size_t fiberid);
+    std::vector<Core::LinAlg::Tensor<double, 3>>& get_fiber_mutual(std::size_t fiberid);
 
     /*!
      * \brief Sets a type of angle
@@ -169,11 +170,11 @@ namespace Core::Nodes
 
    private:
     /// Map holding GP coordinate system directions
-    std::map<CoordinateSystemDirection, std::vector<Core::LinAlg::Matrix<3, 1>>>
+    std::map<CoordinateSystemDirection, std::vector<Core::LinAlg::Tensor<double, 3>>>
         coordinate_system_directions_;
 
     /// List of numbered fibers
-    std::vector<std::vector<Core::LinAlg::Matrix<3, 1>>> fibers_;
+    std::vector<std::vector<Core::LinAlg::Tensor<double, 3>>> fibers_;
 
     /// Map holding GP angles of different names
     std::map<AngleType, std::vector<double>> angles_;

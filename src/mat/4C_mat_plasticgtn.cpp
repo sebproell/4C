@@ -17,6 +17,7 @@
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
 #include "4C_linalg_four_tensor.hpp"
 #include "4C_linalg_four_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_inverse.hpp"
 #include "4C_mat_material_factory.hpp"
 #include "4C_mat_par_bundle.hpp"
@@ -233,17 +234,20 @@ void Mat::PlasticGTN::register_output_data_names(
   names_and_size["plastic_strain"] = 6;
 }
 
-void Mat::PlasticGTN::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* linstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,
-    Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID)
+void Mat::PlasticGTN::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   const double TOL = params_->tol_;
 
   // save the strain
   auto& strain_n1 = strain_n1_.at(gp);
-  Core::LinAlg::Voigt::VoigtUtils<Core::LinAlg::Voigt::NotationType::strain>::vector_to_matrix(
-      *linstrain, strain_n1);
+  Core::LinAlg::Voigt::VoigtUtils<Core::LinAlg::Voigt::NotationType::stress>::vector_to_matrix(
+      Core::LinAlg::make_stress_like_voigt_view(glstrain), strain_n1);
 
   // compute incremental strain
   Core::LinAlg::Matrix<3, 3> incremental_strain;
@@ -299,8 +303,8 @@ void Mat::PlasticGTN::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     elastic_strain_n1.update(1.0, elastic_strain_n_.at(gp), 1.0, incremental_strain);
 
     Core::LinAlg::Voigt::VoigtUtils<Core::LinAlg::Voigt::NotationType::stress>::matrix_to_vector(
-        stress_n1, *stress);
-    Core::LinAlg::Voigt::setup_6x6_voigt_matrix_from_four_tensor(*cmat, Ce);
+        stress_n1, stress_view);
+    Core::LinAlg::Voigt::setup_6x6_voigt_matrix_from_four_tensor(cmat_view, Ce);
   }
   else  // plastic state
   {
@@ -354,7 +358,7 @@ void Mat::PlasticGTN::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     stress_n1.update(sqrt(2.0 / 3) * q_n1, nhat, 0.0);
     stress_n1.update(p_n1, eye, 1.0);
     Core::LinAlg::Voigt::VoigtUtils<Core::LinAlg::Voigt::NotationType::stress>::matrix_to_vector(
-        stress_n1, *stress);
+        stress_n1, stress_view);
 
     // update elastic strain
     double fstar = this->compute_fstar(f_n1);
@@ -454,7 +458,7 @@ void Mat::PlasticGTN::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     Core::LinAlg::FourTensorOperations::add_dyadic_product_matrix_matrix(Cep, 1.0, eye, dp_de);
 
     // transform back to matrix
-    Core::LinAlg::Voigt::setup_6x6_voigt_matrix_from_four_tensor(*cmat, Cep);
+    Core::LinAlg::Voigt::setup_6x6_voigt_matrix_from_four_tensor(cmat_view, Cep);
   }
 }
 

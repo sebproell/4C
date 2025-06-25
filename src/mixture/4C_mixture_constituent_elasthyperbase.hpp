@@ -112,8 +112,8 @@ namespace Mixture
      * @param gp Gauss point
      * @param eleGID Global element identifier
      */
-    void update(Core::LinAlg::Matrix<3, 3> const& defgrd, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    void update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     /*!
      * \brief Returns a reference to all summands
@@ -138,7 +138,7 @@ namespace Mixture
      * \param params Container for additional information
      * \param eleGID Global element id
      */
-    void setup(Teuchos::ParameterList& params, int eleGID) override;
+    void setup(const Teuchos::ParameterList& params, int eleGID) override;
 
     /*!
      * \brief Method that is called once for each Gauss point before the first evaluate call
@@ -148,8 +148,8 @@ namespace Mixture
      * \param gp Gauss point
      * \param eleGID Global element id
      */
-    void pre_evaluate(
-        MixtureRule& mixtureRule, Teuchos::ParameterList& params, int gp, int eleGID) override;
+    void pre_evaluate(MixtureRule& mixtureRule, const Teuchos::ParameterList& params, int gp,
+        int eleGID) override;
 
     void register_output_data_names(
         std::unordered_map<std::string, int>& names_and_size) const override;
@@ -164,7 +164,8 @@ namespace Mixture
      * \param gp Gauss point
      * \return const Core::LinAlg::Matrix<3, 3>& Reference to the prestretch tensor
      */
-    [[nodiscard]] const Core::LinAlg::Matrix<3, 3>& prestretch_tensor(const int gp) const
+    [[nodiscard]] const Core::LinAlg::SymmetricTensor<double, 3, 3>& prestretch_tensor(
+        const int gp) const
     {
       return prestretch_[gp];
     }
@@ -195,7 +196,7 @@ namespace Mixture
     std::vector<std::shared_ptr<Mat::Elastic::Summand>> potsum_;
 
     /// Prestretch of the constituent
-    std::vector<Core::LinAlg::Matrix<3, 3>> prestretch_;
+    std::vector<Core::LinAlg::SymmetricTensor<double, 3, 3>> prestretch_;
 
     /// AnisotropyExtension that handles the management of cylinder coordinate systems
     Mat::CylinderCoordinateSystemAnisotropyExtension cosy_anisotropy_extension_;

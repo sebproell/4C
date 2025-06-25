@@ -62,9 +62,10 @@ namespace Mixture
      * @param S_stress 2nd Piola Kirchhoff stress tensor in stress like Voigt-notation
      * @param cmat Constitutive tensor in Voigt notation
      */
-    void evaluate(const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-        Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     /*!
      * @brief Evaluates the stress and material linearization of the constituents with an inelastic
@@ -85,10 +86,10 @@ namespace Mixture
      * @param gp Gauss-point
      * @param eleGID Global element id
      */
-    void evaluate_elastic_part(const Core::LinAlg::Matrix<3, 3>& F,
-        const Core::LinAlg::Matrix<3, 3>& iFextin, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp,
-        int eleGID) override;
+    void evaluate_elastic_part(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::Tensor<double, 3, 3>& iFextin, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
   };
 
 }  // namespace Mixture

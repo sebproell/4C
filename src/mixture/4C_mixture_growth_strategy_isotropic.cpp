@@ -7,6 +7,7 @@
 
 #include "4C_mixture_growth_strategy_isotropic.hpp"
 
+#include "4C_linalg_tensor_generators.hpp"
 #include "4C_mixture_growth_strategy.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -24,25 +25,22 @@ Mixture::PAR::IsotropicGrowthStrategy::create_growth_strategy()
 }
 
 void Mixture::IsotropicGrowthStrategy::evaluate_inverse_growth_deformation_gradient(
-    Core::LinAlg::Matrix<3, 3>& iFgM, const Mixture::MixtureRule& mixtureRule,
+    Core::LinAlg::Tensor<double, 3, 3>& iFgM, const Mixture::MixtureRule& mixtureRule,
     double currentReferenceGrowthScalar, int gp) const
 {
-  iFgM.clear();
-
-  for (int i = 0; i < 3; ++i)
-  {
-    iFgM(i, i) = std::pow(currentReferenceGrowthScalar, -1.0 / 3.0);
-  }
+  iFgM = std::pow(currentReferenceGrowthScalar, -1.0 / 3.0) *
+         Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 }
 
 void Mixture::IsotropicGrowthStrategy::evaluate_growth_stress_cmat(
     const Mixture::MixtureRule& mixtureRule, double currentReferenceGrowthScalar,
-    const Core::LinAlg::Matrix<1, 6>& dCurrentReferenceGrowthScalarDC,
-    const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-    Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-    Core::LinAlg::Matrix<6, 6>& cmat, const int gp, const int eleGID) const
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& dCurrentReferenceGrowthScalarDC,
+    const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID) const
 {
-  S_stress.clear();
-  cmat.clear();
+  S_stress = {};
+  cmat = {};
 }
 FOUR_C_NAMESPACE_CLOSE

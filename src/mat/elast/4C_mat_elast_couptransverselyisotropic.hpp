@@ -163,8 +163,9 @@ namespace Mat
        * \param[in]  eleGID   element global ID
        */
       void add_strain_energy(double& psi, const Core::LinAlg::Matrix<3, 1>& prinv,
-          const Core::LinAlg::Matrix<3, 1>& modinv, const Core::LinAlg::Matrix<6, 1>& glstrain,
-          const int gp, const int eleGID) override;
+          const Core::LinAlg::Matrix<3, 1>& modinv,
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, const int gp,
+          const int eleGID) override;
 
       /*!
        * \brief Add anisotropic principal stresses
@@ -176,9 +177,10 @@ namespace Mat
        * \param[in]  go       Gauss point
        * \param[in]  eleGID element GID
        */
-      void add_stress_aniso_principal(const Core::LinAlg::Matrix<6, 1>& rcg,
-          Core::LinAlg::Matrix<6, 6>& cmat, Core::LinAlg::Matrix<6, 1>& stress,
-          Teuchos::ParameterList& params, const int gp, const int eleGID) override;
+      void add_stress_aniso_principal(const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress, const Teuchos::ParameterList& params,
+          const int gp, const int eleGID) override;
 
       /*!
        * \brief Set fiber directions
@@ -187,12 +189,12 @@ namespace Mat
        * \param[in] locsys    local coordinate system
        * \param[in] defgrd    deformation gradient
        */
-      void set_fiber_vecs(const double newangle, const Core::LinAlg::Matrix<3, 3>& locsys,
-          const Core::LinAlg::Matrix<3, 3>& defgrd) override;
+      void set_fiber_vecs(const double newangle, const Core::LinAlg::Tensor<double, 3, 3>& locsys,
+          const Core::LinAlg::Tensor<double, 3, 3>& defgrd) override;
 
       /// Get fiber directions
       void get_fiber_vecs(
-          std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+          std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
       ) const override;
 
       /*!
@@ -218,8 +220,8 @@ namespace Mat
        * \param[in] rcg   right cauchy green tensor in perturbed Voigt strain notation
        * \param[in] param parameter list pointer (optional)
        */
-      int reset_invariants(
-          const Core::LinAlg::Matrix<6, 1>& rcg, const Teuchos::ParameterList* params = nullptr);
+      int reset_invariants(const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
+          const Teuchos::ParameterList* params = nullptr);
 
       /*!
        * \brief Add the material contributions to the second Piola Kirchhoff stress tensor
@@ -248,8 +250,9 @@ namespace Mat
        * \param[out] rcg_inv_s  Inverse of the right Cauchy green strain tensor
        *                        in perturbed Voigt stress notation
        */
-      void update_second_piola_kirchhoff_stress(Core::LinAlg::Matrix<6, 1>& stress,
-          const Core::LinAlg::Matrix<6, 1>& rcg_s, Core::LinAlg::Matrix<6, 1>& rcg_inv_s) const;
+      void update_second_piola_kirchhoff_stress(Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg_s,
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg_inv_s) const;
 
       /*!
        * \brief Update the elasticity tensor
@@ -285,8 +288,8 @@ namespace Mat
        * \param[in]  rcg_inv_s  right cauchy green tensor in perturbed Voigt
        *                        stress notation
        */
-      void update_elasticity_tensor(
-          Core::LinAlg::Matrix<6, 6>& cmat, const Core::LinAlg::Matrix<6, 1>& rcg_inv_s) const;
+      void update_elasticity_tensor(Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg_inv_s) const;
 
       /// error handling in case of a negative deformation gradient determinant
       void error_handling(const Teuchos::ParameterList* params, std::stringstream& msg) const;
@@ -296,14 +299,14 @@ namespace Mat
       my_params* params_ = nullptr;
 
       /// fiber direction
-      Core::LinAlg::Matrix<3, 1> a_;
+      Core::LinAlg::Tensor<double, 3> a_;
 
       /** \brief outer product of the fiber directions
        * \f$ \underline{A} \otimes \underline{A}\f$
        *
        * \note We are following a perturbed Voigt notation:
        * {11, 22, 33, 12, 23, 13}. */
-      Core::LinAlg::Matrix<6, 1> aa_;
+      Core::LinAlg::SymmetricTensor<double, 3, 3> aa_;
 
       /// pseudo invariant \f$ I_4 \f$ ( strain measure in fiber direction )
       double i4_ = 0.0;

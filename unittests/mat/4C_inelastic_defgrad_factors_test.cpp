@@ -1200,19 +1200,19 @@ namespace
         {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 0.5, 0.3}};
 
     // result of first growth direction
-    Core::LinAlg::Matrix<3, 3> growth_dir_1(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> growth_dir_1{};
     growth_dir_1(0, 0) = 1.0;
 
     // result of second growth direction
-    Core::LinAlg::Matrix<3, 3> growth_dir_2(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> growth_dir_2{};
     growth_dir_2(1, 1) = 1.0;
 
     // result of third growth direction
-    Core::LinAlg::Matrix<3, 3> growth_dir_3(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> growth_dir_3{};
     growth_dir_3(2, 2) = 1.0;
 
     // result of fourth growth direction
-    Core::LinAlg::Matrix<3, 3> growth_dir_4(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> growth_dir_4{};
     // clang-format off
     growth_dir_4(0, 0) = 0.74626865671641791044776119402985; growth_dir_4(0, 1) = 0.37313432835820895522388059701493; growth_dir_4(0, 2) = 0.22388059701492537313432835820896;
     growth_dir_4(1, 0) = growth_dir_4(0,1); growth_dir_4(1, 1) = 0.18656716417910447761194029850746; growth_dir_4(1, 2) = 0.11194029850746268656716417910448;
@@ -1220,7 +1220,7 @@ namespace
     // clang-format on
 
     // put all results together
-    const std::vector<Core::LinAlg::Matrix<3, 3>> growth_direction_solutions{
+    const std::vector<Core::LinAlg::SymmetricTensor<double, 3, 3>> growth_direction_solutions{
         growth_dir_1, growth_dir_2, growth_dir_3, growth_dir_4};
 
     // loop over all growth directions to be tested and perform the test
@@ -1259,49 +1259,49 @@ namespace
   TEST_F(InelasticDefgradFactorsTest, TestEvaluateInelasticDefGradDerivative)
   {
     const double detF = FM_.determinant();
-    Core::LinAlg::Matrix<9, 1> DFinDx(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<9, 1> DFinDx_ref(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::Tensor<double, 3, 3> DFinDx{};
+    Core::LinAlg::Tensor<double, 3, 3> DFinDx_ref{};
 
     lin_scalar_iso_->evaluate_inelastic_def_grad_derivative(detF, DFinDx);
-    DFinDx_ref(0) = DFinDx_ref(1) = DFinDx_ref(2) = 2.977205763668e-07;
+    DFinDx_ref(0, 0) = DFinDx_ref(1, 1) = DFinDx_ref(2, 2) = 2.977205763668e-07;
     FOUR_C_EXPECT_NEAR(DFinDx, DFinDx_ref, 1.0e-10);
 
     // clear variables and next test
-    DFinDx.clear();
-    DFinDx_ref.clear();
+    DFinDx = {};
+    DFinDx_ref = {};
     lin_scalar_aniso_->evaluate_inelastic_def_grad_derivative(detF, DFinDx);
-    DFinDx_ref(0) = 6.734163313433e-07;
-    DFinDx_ref(1) = 1.683540828358e-07;
-    DFinDx_ref(2) = 6.060746982090e-08;
-    DFinDx_ref(3) = DFinDx_ref(6) = 3.367081656716e-07;
-    DFinDx_ref(4) = DFinDx_ref(7) = 1.010124497015e-07;
-    DFinDx_ref(5) = DFinDx_ref(8) = 2.020248994030e-07;
+    DFinDx_ref(0, 0) = 6.734163313433e-07;
+    DFinDx_ref(1, 1) = 1.683540828358e-07;
+    DFinDx_ref(2, 2) = 6.060746982090e-08;
+    DFinDx_ref(0, 1) = DFinDx_ref(1, 0) = 3.367081656716e-07;
+    DFinDx_ref(1, 2) = DFinDx_ref(2, 1) = 1.010124497015e-07;
+    DFinDx_ref(0, 2) = DFinDx_ref(2, 0) = 2.020248994030e-07;
     FOUR_C_EXPECT_NEAR(DFinDx, DFinDx_ref, 1.0e-10);
 
     // clear variables and next test
-    DFinDx.clear();
-    DFinDx_ref.clear();
+    DFinDx = {};
+    DFinDx_ref = {};
     poly_intercal_frac_iso_->evaluate_inelastic_def_grad_derivative(detF, DFinDx);
-    DFinDx_ref(0) = DFinDx_ref(1) = DFinDx_ref(2) = 3.399216373729e-07;
+    DFinDx_ref(0, 0) = DFinDx_ref(1, 1) = DFinDx_ref(2, 2) = 3.399216373729e-07;
     FOUR_C_EXPECT_NEAR(DFinDx, DFinDx_ref, 1.0e-10);
 
     // clear variables and next test
-    DFinDx.clear();
-    DFinDx_ref.clear();
+    DFinDx = {};
+    DFinDx_ref = {};
     poly_intercal_frac_aniso_->evaluate_inelastic_def_grad_derivative(detF, DFinDx);
-    DFinDx_ref(0) = 7.623672134952e-07;
-    DFinDx_ref(1) = 1.905918033738e-07;
-    DFinDx_ref(2) = 6.861304921457e-08;
-    DFinDx_ref(3) = DFinDx_ref(6) = 3.811836067476e-07;
-    DFinDx_ref(4) = DFinDx_ref(7) = 1.143550820243e-07;
-    DFinDx_ref(5) = DFinDx_ref(8) = 2.287101640486e-07;
+    DFinDx_ref(0, 0) = 7.623672134952e-07;
+    DFinDx_ref(1, 1) = 1.905918033738e-07;
+    DFinDx_ref(2, 2) = 6.861304921457e-08;
+    DFinDx_ref(0, 1) = DFinDx_ref(1, 0) = 3.811836067476e-07;
+    DFinDx_ref(1, 2) = DFinDx_ref(2, 1) = 1.143550820243e-07;
+    DFinDx_ref(0, 2) = DFinDx_ref(2, 0) = 2.287101640486e-07;
     FOUR_C_EXPECT_NEAR(DFinDx, DFinDx_ref, 1.0e-10);
 
     // clear variables and next test
-    DFinDx.clear();
-    DFinDx_ref.clear();
+    DFinDx = {};
+    DFinDx_ref = {};
     lin_temp_iso_->evaluate_inelastic_def_grad_derivative(detF, DFinDx);
-    DFinDx_ref(0) = DFinDx_ref(1) = DFinDx_ref(2) = 3.373943094440e-04;
+    DFinDx_ref(0, 0) = DFinDx_ref(1, 1) = DFinDx_ref(2, 2) = 3.373943094440e-04;
     FOUR_C_EXPECT_NEAR(DFinDx, DFinDx_ref, 1.0e-10);
   }
 

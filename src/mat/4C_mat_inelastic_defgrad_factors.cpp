@@ -14,6 +14,10 @@
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
 #include "4C_linalg_four_tensor_generators.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_funct.hpp"
 #include "4C_linalg_utils_scalar_interpolation.hpp"
 #include "4C_linalg_utils_tensor_interpolation.hpp"
@@ -585,7 +589,7 @@ Mat::PAR::InelasticDefgradPolyIntercalFracAniso::InelasticDefgradPolyIntercalFra
  *--------------------------------------------------------------------*/
 Mat::PAR::InelasticDeformationDirection::InelasticDeformationDirection(
     std::vector<double> growthdirection)
-    : growth_dir_mat_(Core::LinAlg::Initialization::zero)
+    : growth_dir_mat_()
 {
   if (growthdirection.size() != 3)
   {
@@ -808,7 +812,7 @@ Mat::InelasticDefgradScalar::InelasticDefgradScalar(Core::Mat::PAR::Parameter* p
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradScalar::pre_evaluate(
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+    const Teuchos::ParameterList& params, const int gp, const int eleGID)
 {
   // store scalars of current gauss point
   concentrations_ = params.get<std::shared_ptr<std::vector<double>>>("scalars");
@@ -973,7 +977,7 @@ void Mat::InelasticDefgradLinScalarIso::evaluate_od_stiff_mat(
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradLinScalarIso::evaluate_inelastic_def_grad_derivative(
-    const double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx)
+    const double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx)
 {
   // get parameters
   const int sc1 = parameter()->scalar1();
@@ -985,12 +989,8 @@ void Mat::InelasticDefgradLinScalarIso::evaluate_inelastic_def_grad_derivative(
   const double scalefac = 1.0 / 3.0 * std::pow(1 + growth_factor, -2.0 / 3.0) *
                           linear_growth_->growth_fac() * detjacobian;
 
-  // prepare identity tensor as 9x1 vector
-  static Core::LinAlg::Matrix<9, 1> id9x1(Core::LinAlg::Initialization::zero);
-  for (int i = 0; i < 3; ++i) id9x1(i) = 1.0;
-
-  // here dFindc is zeroed out and filled with the current value
-  dFindx.update(scalefac, id9x1, 0.0);
+  dFindx =
+      Core::LinAlg::get_full(scalefac * Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 }
 
 /*--------------------------------------------------------------------*
@@ -1019,6 +1019,7 @@ void Mat::InelasticDefgradLinScalarAniso::evaluate_inverse_inelastic_def_grad(
   // init and clear variable
   static Core::LinAlg::Matrix<3, 3> FinM(Core::LinAlg::Initialization::zero);
   FinM.clear();
+  Core::LinAlg::TensorView<double, 3, 3> Fin = Core::LinAlg::make_tensor_view(FinM);
 
   // get parameters
   const int sc1 = parameter()->scalar1();
@@ -1032,7 +1033,7 @@ void Mat::InelasticDefgradLinScalarAniso::evaluate_inverse_inelastic_def_grad(
 
   // finalize inelastic deformation gradient matrix (FinM is calculated, such that the volume
   // change is a linear function of the scalar (mapped to reference frame) that causes it)
-  FinM.update(growth_factor, parameter()->growth_dir_mat(), 1.0);
+  Fin += growth_factor * Core::LinAlg::get_full(parameter()->growth_dir_mat());
 
   // calculate inverse of inelastic deformation gradient matrix
   iFinM.invert(FinM);
@@ -1060,7 +1061,8 @@ void Mat::InelasticDefgradLinScalarAniso::evaluate_additional_cmat(
   const double scalefac = -sc1GrowthFac * concentration * detjacobian / 2.0;
 
   // calculate F_{in,j}^{-1} . G . F_{in,j}^{-1} with F_{in,j}, the j-th factor of F_{in}
-  temp.multiply_nn(1.0, iFinjM, parameter()->growth_dir_mat(), 0.0);
+  temp.multiply_nn(1.0, iFinjM,
+      Core::LinAlg::make_matrix(Core::LinAlg::get_full(parameter()->growth_dir_mat())), 0.0);
   iFinjGiFinj.multiply_nn(1.0, temp, iFinjM, 0.0);
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(iFinjGiFinj, iFinjGiFinj9x1);
 
@@ -1090,7 +1092,8 @@ void Mat::InelasticDefgradLinScalarAniso::evaluate_od_stiff_mat(
   const double scalefac = -sc1GrowthFac * detjacobian;
 
   // calculate diFinjdc
-  tmp.multiply_nn(1.0, iFinjM, parameter()->growth_dir_mat(), 0.0);
+  tmp.multiply_nn(1.0, iFinjM,
+      Core::LinAlg::make_matrix(Core::LinAlg::get_full(parameter()->growth_dir_mat())), 0.0);
   diFinjdcM.multiply_nn(scalefac, tmp, iFinjM, 0.0);
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(diFinjdcM, diFinjdc9x1);
 
@@ -1101,16 +1104,12 @@ void Mat::InelasticDefgradLinScalarAniso::evaluate_od_stiff_mat(
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradLinScalarAniso::evaluate_inelastic_def_grad_derivative(
-    const double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx)
+    const double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx)
 {
   const double scalefac = linear_growth_->growth_fac() * detjacobian;
 
-  // get the growth direction matrix as a 9x1 vector
-  static Core::LinAlg::Matrix<9, 1> growthdirmat9x1(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Voigt::matrix_3x3_to_9x1(parameter()->growth_dir_mat(), growthdirmat9x1);
-
-  // here dFindc is zeroed out and filled with the current value
-  dFindx.update(scalefac, growthdirmat9x1, 0.0);
+  dFindx = Core::LinAlg::get_full(parameter()->growth_dir_mat());
+  dFindx *= scalefac;
 }
 
 /*--------------------------------------------------------------------*
@@ -1214,12 +1213,8 @@ void Mat::InelasticDefgradPolyIntercalFracIso::evaluate_od_stiff_mat(
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradPolyIntercalFracIso::evaluate_inelastic_def_grad_derivative(
-    const double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx)
+    const double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx)
 {
-  static Core::LinAlg::Matrix<9, 1> id9x1(Core::LinAlg::Initialization::zero);
-  // prepare id9x1 (identity matrix written as a 9x1 vector)
-  for (int i = 0; i < 3; ++i) id9x1(i) = 1.0;
-
   // get parameters
   const int sc1 = parameter()->scalar1();
   const double concentration = get_concentration_gp().at(sc1 - 1);
@@ -1238,7 +1233,8 @@ void Mat::InelasticDefgradPolyIntercalFracIso::evaluate_inelastic_def_grad_deriv
       1.0 / 3.0 * std::pow(base, -2.0 / 3.0) * polynomDerivativeValue * denominator * dChidc;
 
   // here dFindc is zeroed out and filled with the current value
-  dFindx.update(scalefac, id9x1, 0.0);
+  dFindx =
+      Core::LinAlg::get_full(scalefac * Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 }
 
 /*--------------------------------------------------------------------*
@@ -1275,7 +1271,8 @@ void Mat::InelasticDefgradPolyIntercalFracAniso::evaluate_inverse_inelastic_def_
   for (int i = 0; i < 3; ++i) FinM(i, i) = 1.0;
 
   // add the growth part
-  FinM.update(growth_factor, parameter()->growth_dir_mat(), 1.0);
+  FinM.update(growth_factor,
+      Core::LinAlg::make_matrix(Core::LinAlg::get_full(parameter()->growth_dir_mat())), 1.0);
 
   // calculate inverse of inelastic deformation gradient matrix
   iFinM.invert(FinM);
@@ -1309,7 +1306,8 @@ void Mat::InelasticDefgradPolyIntercalFracAniso::evaluate_additional_cmat(
                           (2.0 * c_max * (polynomReferenceValue + 1.0));
 
   // calculate F_{in,j}^{-1} . G . F_{in,j}^{-1} with F_{in,j}, the j-th factor of F_{in}
-  temp.multiply_nn(1.0, iFinjM, parameter()->growth_dir_mat(), 0.0);
+  temp.multiply_nn(1.0, iFinjM,
+      Core::LinAlg::make_matrix(Core::LinAlg::get_full(parameter()->growth_dir_mat())), 0.0);
   iFinjGiFinj.multiply_nn(1.0, temp, iFinjM, 0.0);
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(iFinjGiFinj, iFinjGiFinj9x1);
 
@@ -1346,7 +1344,8 @@ void Mat::InelasticDefgradPolyIntercalFracAniso::evaluate_od_stiff_mat(
   const double scalefac = -polynomDerivativeValue / (polynomReferenceValue + 1.0) * dChidc;
 
   // calculate diFinjdc
-  tmp.multiply_nn(1.0, iFinjM, parameter()->growth_dir_mat(), 0.0);
+  tmp.multiply_nn(1.0, iFinjM,
+      Core::LinAlg::make_matrix(Core::LinAlg::get_full(parameter()->growth_dir_mat())), 0.0);
   diFinjdcM.multiply_nn(scalefac, tmp, iFinjM, 0.0);
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(diFinjdcM, diFinjdc9x1);
 
@@ -1357,7 +1356,7 @@ void Mat::InelasticDefgradPolyIntercalFracAniso::evaluate_od_stiff_mat(
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradPolyIntercalFracAniso::evaluate_inelastic_def_grad_derivative(
-    const double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx)
+    const double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx)
 {
   // get parameters
   const int sc1 = parameter()->scalar1();
@@ -1371,12 +1370,8 @@ void Mat::InelasticDefgradPolyIntercalFracAniso::evaluate_inelastic_def_grad_der
       parameter()->chimax(), parameter()->cmax(), detjacobian);
   const double scalefac = polynomDerivativeValue / (polynomReferenceValue + 1.0) * dChidc;
 
-  // get the growth direction matrix as a 9x1 vector
-  static Core::LinAlg::Matrix<9, 1> growthdirmat9x1(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Voigt::matrix_3x3_to_9x1(parameter()->growth_dir_mat(), growthdirmat9x1);
-
   // here dFindc is zeroed out and filled with the current value
-  dFindx.update(scalefac, growthdirmat9x1, 0.0);
+  dFindx = Core::LinAlg::get_full(scalefac * parameter()->growth_dir_mat());
 }
 
 /*--------------------------------------------------------------------*
@@ -1462,7 +1457,7 @@ Mat::InelasticDefgradLinTempIso::InelasticDefgradLinTempIso(Core::Mat::PAR::Para
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradLinTempIso::pre_evaluate(
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+    const Teuchos::ParameterList& params, const int gp, const int eleGID)
 {
   temperature_ = params.get<double>("temperature");
 }
@@ -1488,7 +1483,7 @@ void Mat::InelasticDefgradLinTempIso::evaluate_inverse_inelastic_def_grad(
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradLinTempIso::evaluate_inelastic_def_grad_derivative(
-    double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx)
+    double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx)
 {
   // get parameters
   const double tempgrowthfac = parameter()->get_temp_growth_fac();
@@ -1497,12 +1492,9 @@ void Mat::InelasticDefgradLinTempIso::evaluate_inelastic_def_grad_derivative(
   const double growthfactor = 1.0 + tempgrowthfac * (temperature_ - reftemp);
   const double scalefac = tempgrowthfac / 3.0 * std::pow(growthfactor, -2.0 / 3.0);
 
-  // prepare identity tensor as 9x1 vector
-  static Core::LinAlg::Matrix<9, 1> id9x1(Core::LinAlg::Initialization::zero);
-  for (int i = 0; i < 3; ++i) id9x1(i) = 1.0;
-
   // here dFindT is zeroed out and filled with the current value
-  dFindx.update(scalefac, id9x1, 0.0);
+  dFindx =
+      Core::LinAlg::get_full(scalefac * Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 }
 
 /*--------------------------------------------------------------------*
@@ -1558,7 +1550,7 @@ void Mat::InelasticDefgradNoGrowth::evaluate_additional_cmat(
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradNoGrowth::evaluate_inelastic_def_grad_derivative(
-    double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx)
+    double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx)
 {
 }
 
@@ -1598,7 +1590,7 @@ Mat::InelasticDefgradNoGrowth::InelasticDefgradNoGrowth(Core::Mat::PAR::Paramete
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradNoGrowth::pre_evaluate(
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+    const Teuchos::ParameterList& params, const int gp, const int eleGID)
 {
 }
 
@@ -1634,7 +1626,7 @@ Mat::InelasticDefgradTimeFunct::InelasticDefgradTimeFunct(Core::Mat::PAR::Parame
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradTimeFunct::pre_evaluate(
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+    const Teuchos::ParameterList& params, const int gp, const int eleGID)
 {
   // evaluate function value for current time step.
   auto& funct = Global::Problem::instance()->function_by_id<Core::Utils::FunctionOfTime>(
@@ -1694,7 +1686,7 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::InelasticDefgradTransvIsotrop
 /*--------------------------------------------------------------------*
  *--------------------------------------------------------------------*/
 void Mat::InelasticDefgradTransvIsotropElastViscoplast::pre_evaluate(
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+    const Teuchos::ParameterList& params, const int gp, const int eleGID)
 {
   // set Gauss Point
   gp_ = gp;
@@ -1767,12 +1759,8 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantities(
   // compute right elastic CG tensor
   temp3x3.multiply_nn(1.0, CM, iFinM, 0.0);
   state_quantities.curr_CeM_.multiply_tn(1.0, iFinM, temp3x3, 0.0);
-  Core::LinAlg::Matrix<6, 1> CeV;
-  Core::LinAlg::Voigt::VoigtUtils<Core::LinAlg::Voigt::NotationType::stress>::matrix_to_vector(
-      state_quantities.curr_CeM_, CeV);
-  CeV(3) *= 2.0;  // we need the strain form of Ce
-  CeV(4) *= 2.0;
-  CeV(5) *= 2.0;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> CeV =
+      Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor(state_quantities.curr_CeM_));
 
   // compose isotropic elastic coefficients (Holzapfel, Nonlinear Solid Mechanics, 2000)
   calculate_gamma_delta(
@@ -1788,13 +1776,16 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantities(
 
     // loop through all transversely isotropic parts, and compute the additional elastic stress
     // and elastic stiffness
-    Core::LinAlg::Matrix<6, 1> SeV(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> SeV{};
+
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> dSedCe{};
     for (auto& p : potsumel_transviso_)
     {
-      p->add_stress_aniso_principal(
-          CeV, state_quantities.curr_dSedCe_, SeV, param_list, gp_, ele_gid_);
+      p->add_stress_aniso_principal(CeV, dSedCe, SeV, param_list, gp_, ele_gid_);
     }
-    Core::LinAlg::Voigt::Stresses::vector_to_matrix(SeV, state_quantities.curr_SeM_);
+    state_quantities.curr_dSedCe_.clear();
+    state_quantities.curr_dSedCe_ += Core::LinAlg::make_stress_like_voigt_view(dSedCe);
+    state_quantities.curr_SeM_ = Core::LinAlg::make_matrix(Core::LinAlg::get_full(SeV));
   }
 
   // Ce * Ce tensor
@@ -1986,8 +1977,9 @@ Mat::InelasticDefgradTransvIsotropElastViscoplast::evaluate_state_quantity_deriv
 
 
   // compute the relevant derivatives of the elastic right Cauchy-Green deformation tensor
-  Mat::elast_hyper_get_derivs_of_elastic_right_cg_tensor(
-      iFinM, CM, state_quantity_derivatives.curr_dCedC_, state_quantity_derivatives.curr_dCediFin_);
+  Mat::elast_hyper_get_derivs_of_elastic_right_cg_tensor(Core::LinAlg::make_tensor(iFinM),
+      Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor(CM)),
+      state_quantity_derivatives.curr_dCedC_, state_quantity_derivatives.curr_dCediFin_);
   // save these also as four tensors
   Core::LinAlg::FourTensor<3> dCediFin_FourTensor(true);
   Core::LinAlg::Voigt::setup_four_tensor_from_6x9_voigt_matrix(
@@ -2560,7 +2552,7 @@ void Mat::InelasticDefgradTransvIsotropElastViscoplast::setup(
     const int numgp, const Core::IO::InputParameterContainer& container)
 {
   // auxiliaries
-  std::vector<Core::LinAlg::Matrix<3, 1>> temp_vec;
+  std::vector<Core::LinAlg::Tensor<double, 3>> temp_vec;
   Core::LinAlg::Matrix<6, 1> temp_6x1(Core::LinAlg::Initialization::zero);
 
   // default values of the inverse plastic deformation gradient for ALL Gauss Points
@@ -2596,7 +2588,7 @@ void Mat::InelasticDefgradTransvIsotropElastViscoplast::setup(
     // read fiber via the fiber reader (hyperelastic transversely isotropic material)
     fiber_reader_.setup(numgp, container);
     fiber_reader_.get_fiber_vecs(temp_vec);
-    m_ = temp_vec.back();
+    m_ = Core::LinAlg::make_matrix<3, 1>(temp_vec.back());
   }
   else
   {

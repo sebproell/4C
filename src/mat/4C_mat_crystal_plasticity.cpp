@@ -11,6 +11,7 @@
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_generators.hpp"
 #include "4C_linalg_fixedsizematrix_solver.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
 #include "4C_utils_enum.hpp"
@@ -525,10 +526,10 @@ void Mat::CrystalPlasticity::update()
 /*-------------------------------------------------------------------------------*
  | calculate stress, material stiffness matrix and evolution internal variables  |
  *-------------------------------------------------------------------------------*/
-void Mat::CrystalPlasticity::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::CrystalPlasticity::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
   // simulation parameters
   //---------------------------------------------------------------
@@ -538,7 +539,7 @@ void Mat::CrystalPlasticity::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   dt_ = params.get<double>("delta time");
 
   // get current deformation gradient
-  (*deform_grad_current_)[gp] = *defgrd;
+  (*deform_grad_current_)[gp] = Core::LinAlg::make_matrix(*defgrad);
 
   // local Newton-Raphson to determine plastic shears
   //--------------------------------------------------------------------------
@@ -552,16 +553,7 @@ void Mat::CrystalPlasticity::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       (*plastic_deform_grad_current_)[gp]);
 
   // update stress results
-  (*stress)(0) = second_pk_stress_result(0, 0);
-  (*stress)(1) = second_pk_stress_result(1, 1);
-  (*stress)(2) = second_pk_stress_result(2, 2);
-  (*stress)(3) = second_pk_stress_result(0, 1);
-  (*stress)(4) = second_pk_stress_result(1, 2);
-  (*stress)(5) = second_pk_stress_result(0, 2);
-  //!!!!!!
-  // TODO!!! USE NEW VOIGHT NOTATION METHOD!!!!
-  // !!!!!!
-  return;
+  stress = Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor_view(second_pk_stress_result));
 }  // evaluate()
 
 /*---------------------------------------------------------------------------------*

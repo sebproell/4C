@@ -12,8 +12,11 @@
 
 #include "4C_inpar_structure.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
-#include "4C_mat_material_factory.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_material_base.hpp"
+
+#include <Teuchos_ParameterList.hpp>
 
 #include <unordered_map>
 
@@ -42,26 +45,10 @@ namespace Mat
      * @param[in] gp       Current Gauss point
      * @param[in] eleGID   Global element ID
      */
-    virtual void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrad,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int eleGID) = 0;
-
-    /*!
-     * @brief Evaluate the nonlinear mass matrix
-     *
-     * @param[in] defgrad       Deformation gradient
-     * @param[in] glstrain      Green-Lagrange strain
-     * @param[in] params        Container for additional information
-     * @param[out] linmass_disp Linear mass displacement
-     * @param[out] linmass_vel  Linear mass velocity
-     * @param[in] gp            Current Gauss point
-     * @param[in] eleGID        Global element ID
-     */
-    virtual void evaluate_non_lin_mass(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* linmass_disp, Core::LinAlg::Matrix<6, 1>* linmass_vel, int gp,
-        int eleGID);
+    virtual void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) = 0;
 
     /*!
      * @brief Evaluate the strain energy function (for hyperelastic materials only)
@@ -71,8 +58,8 @@ namespace Mat
      * @param[in] gp       Current Gauss point
      * @param[in] eleGID   Global element ID
      */
-    virtual void strain_energy(
-        const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, int gp, int eleGID) const;
+    [[nodiscard]] virtual double strain_energy(
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, int gp, int eleGID) const;
 
     /*!
      * @brief Evaluate the Cauchy stress contracted with normal and direction vector and
@@ -86,8 +73,6 @@ namespace Mat
      * @param[in] n                   Normal vector (\f[\mathbf{n}\f])
      * @param[in] dir                 Direction vector (\f[\mathbf{v}\f]),
      *                                can be either normal or tangential vector
-     * @param[out] cauchy_n_dir       Cauchy stress tensor contracted using the vectors n and dir
-     *                                (\f[ \mathbf{\sigma} \cdot \mathbf{n} \cdot \mathbf{v} \f])
      * @param[out] d_cauchyndir_dn    Derivative of cauchy_n_dir w.r.t. vector n
      *                                (\f[ \frac{ \mathrm{d} \mathbf{\sigma} \cdot \mathbf{n}
      *                                \cdot \mathbf{v}}{\mathrm{d} \mathbf{n}} \f])
@@ -121,10 +106,13 @@ namespace Mat
      *                                   gradient and temperature (\f[ \frac{\mathrm{d}^2
      *                                   \mathbf{\sigma} \cdot \mathbf{n} \cdot
      *                                   \mathbf{v}}{\mathrm{d} \mathbf{F} \mathrm{d} T } \f])
+     *
+     * @return Cauchy stress tensor contracted using the vectors n and dir
+     *                                (\f[ \mathbf{\sigma} \cdot \mathbf{n} \cdot \mathbf{v} \f])
      */
-    virtual void evaluate_cauchy_n_dir_and_derivatives(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        const Core::LinAlg::Matrix<3, 1>& n, const Core::LinAlg::Matrix<3, 1>& dir,
-        double& cauchy_n_dir, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn,
+    virtual double evaluate_cauchy_n_dir_and_derivatives(
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrd, const Core::LinAlg::Tensor<double, 3>& n,
+        const Core::LinAlg::Tensor<double, 3>& dir, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn,
         Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir, Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF,
         Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
         Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_dn,
@@ -139,8 +127,8 @@ namespace Mat
      * @param[in] concentration Concentration at Gauss point
      * @param[out] d_F_dx       Derivative of deformation gradient w.r.t. degree of freedom x
      */
-    virtual void evaluate_linearization_od(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        double concentration, Core::LinAlg::Matrix<9, 1>* d_F_dx);
+    virtual void evaluate_linearization_od(const Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+        double concentration, Core::LinAlg::Matrix<9, 1>& d_F_dx);
     //@}
 
     /*!
@@ -172,7 +160,7 @@ namespace Mat
      * @param[in] params Container for additional information passed from the element
      * @param[in] eleGID Global element ID
      */
-    virtual void post_setup(Teuchos::ParameterList& params, const int eleGID) {}
+    virtual void post_setup(const Teuchos::ParameterList& params, const int eleGID) {}
 
     /*!
      * @brief Update of GP data (e.g., history variables)
@@ -200,8 +188,8 @@ namespace Mat
      * @param[in] params Container for additional information
      * @param[in] eleGID Global element ID
      */
-    virtual void update(Core::LinAlg::Matrix<3, 3> const& defgrd, int const gp,
-        Teuchos::ParameterList& params, int const eleGID)
+    virtual void update(const Core::LinAlg::Tensor<double, 3, 3>& defgrd, int const gp,
+        const Teuchos::ParameterList& params, int const eleGID)
     {
     }
 
@@ -285,14 +273,6 @@ namespace Mat
     {
       return false;
     }
-    //@}
-
-
-    //! @name Query methods
-    /*!
-     * @brief Return whether the material requires the deformation gradient for its evaluation
-     */
-    virtual bool needs_defgrd() const { return false; }
     //@}
   };
 

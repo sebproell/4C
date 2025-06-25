@@ -11,6 +11,7 @@
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_fem_general_utils_nurbs_shapefunctions.hpp"
 #include "4C_fem_nurbs_discretization.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_multiply.hpp"
 #include "4C_mat_elasthyper.hpp"
 #include "4C_mat_stvenantkirchhoff.hpp"
@@ -1190,9 +1191,17 @@ void Discret::Elements::Ale2::material_response3d(Core::LinAlg::Matrix<6, 1>* st
       std::dynamic_pointer_cast<Mat::So3Material>(material());
   if (so3mat == nullptr) FOUR_C_THROW("cast to So3Material failed!");
 
-  so3mat->evaluate(nullptr, glstrain, params, stress, cmat, gp, id());
+  Core::LinAlg::Matrix<6, 1> stress_like_glstrain;
+  Core::LinAlg::Voigt::Strains::to_stress_like(*glstrain, stress_like_glstrain);
 
-  return;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> stress_t{};
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat_t{};
+  so3mat->evaluate(nullptr,
+      Core::LinAlg::make_symmetric_tensor_from_stress_like_voigt_matrix(stress_like_glstrain),
+      params, stress_t, cmat_t, gp, id());
+
+  *stress = Core::LinAlg::Matrix<6, 1>(Core::LinAlg::make_stress_like_voigt_view(stress_t));
+  *cmat = Core::LinAlg::Matrix<6, 6>(Core::LinAlg::make_stress_like_voigt_view(cmat_t));
 }
 
 /*-----------------------------------------------------------------------------*

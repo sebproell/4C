@@ -14,6 +14,7 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_thermomechanical.hpp"
 #include "4C_material_parameter_base.hpp"
 
@@ -194,15 +195,17 @@ namespace Mat
     //! initial, reference temperature
     virtual double init_temp() const { return params_->inittemp_; }
 
-    void reinit(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, double temperature, unsigned gp) override;
+    void reinit(const Core::LinAlg::Tensor<double, 3, 3>* defgrd,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, double temperature,
+        unsigned gp) override;
 
-    void stress_temperature_modulus_and_deriv(
-        Core::LinAlg::Matrix<6, 1>& stm, Core::LinAlg::Matrix<6, 1>& stm_dT, int gp) override;
+    void stress_temperature_modulus_and_deriv(Core::LinAlg::SymmetricTensor<double, 3, 3>& stm,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& stm_dT, int gp) override;
 
-    Core::LinAlg::Matrix<6, 1> evaluate_d_stress_d_scalar(const Core::LinAlg::Matrix<3, 3>& defgrad,
-        const Core::LinAlg::Matrix<6, 1>& glstrain, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_d_stress_d_scalar(
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     //! return quick accessible material parameter data
     Core::Mat::PAR::Parameter* parameter() const override { return params_; }
@@ -244,7 +247,10 @@ namespace Mat
 
     //! linearisation of material tangent w.r.t. temperatures T_{n+1}
     //! contribution to K_dT
-    Core::LinAlg::Matrix<NUM_STRESS_3D, 1> c_mat_kd_t(int gp) const { return (cmat_kd_t_->at(gp)); }
+    Core::LinAlg::SymmetricTensor<double, 3, 3> c_mat_kd_t(int gp) const
+    {
+      return (cmat_kd_t_->at(gp));
+    }
 
     //! check if history variables are already initialised
     bool initialized() const { return (isinit_ and (defgrdcurr_ != nullptr)); }
@@ -267,18 +273,10 @@ namespace Mat
     void update() override;
 
     //! evaluate material law
-    void evaluate(const Core::LinAlg::Matrix<3, 3>*
-                      defgrd,  //!< input deformation gradient for multiplicative sp
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>*
-            glstrain,                    //!< input Green-Lagrange strain (redundant with defo
-                                         //   but used for neo-hooke evaluation; maybe remove
-        Teuchos::ParameterList& params,  //!< input parameter list (e.g. Young's, ...)
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>*
-            stress,  //!< output (mandatory) second Piola-Kirchhoff stress
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>*
-            cmat,  //!< output (mandatory) material stiffness matrix
-        int gp,    ///< Gauss point
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     //! evaluate the elasto-plastic tangent
     void setup_cmat_elasto_plastic(Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>&
@@ -303,30 +301,19 @@ namespace Mat
         int gp                                  //!< current Gauss-point
     );
 
-    //! main 3D material call to determine stress and constitutive tensor ctemp
-    //  originally method of fourier with const!!!
-    void evaluate(const Core::LinAlg::Matrix<1, 1>& Ntemp,  //!< temperature of element
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& ctemp,  //!< temperature-dependent material tangent
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>&
-            cmat_T,                                          //!< temperature-dependent mechanical
-                                                             //!< material tangent
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& stresstemp,  //!< temperature-dependent stress term
-        Teuchos::ParameterList& params                       //!< parameter list
-    );
-
     //! computes temperature-dependent isotropic thermal elasticity tensor in
     //! matrix notion for 3d
-    void setup_cthermo(
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& ctemp,  //!< temperature dependent material tangent
-        const double J,                                 //!< determinant of deformation gradient
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>&
-            Cinv_vct  //!< inverse of Cauchy-Green tensor (vector)
+    void setup_cthermo(Core::LinAlg::SymmetricTensor<double, 3, 3>&
+                           ctemp,  //!< temperature dependent material tangent
+        const double J,            //!< determinant of deformation gradient
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& Cinv  //!< inverse of Cauchy-Green tensor
     ) const;
 
     //! computes temperature-dependent isotropic mechanical elasticity tensor in
     //! matrix notion for 3d
-    void setup_cmat_thermo(const double temperature, Core::LinAlg::Matrix<6, 6>& cmat_T,
-        const Core::LinAlg::Matrix<3, 3>& defgrd) const;
+    void setup_cmat_thermo(const double temperature,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat_T,
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrd) const;
 
     //! calculates stress-temperature modulus
     double st_modulus() const;
@@ -340,9 +327,6 @@ namespace Mat
         const double temperature,             // scalar-valued current temperature
         const Teuchos::ParameterList& params  // parameter list including F,C^{-1},...
     ) const;
-
-    /// Return whether the material requires the deformation gradient for its evaluation
-    bool needs_defgrd() const override { return true; };
 
     //@}
 
@@ -391,9 +375,9 @@ namespace Mat
 
     //! plastic history variables
     //! old (i.e. at t_n)  deformation gradient at each Gauss-point
-    std::shared_ptr<std::vector<Core::LinAlg::Matrix<3, 3>>> defgrdlast_;
+    std::shared_ptr<std::vector<Core::LinAlg::Tensor<double, 3, 3>>> defgrdlast_;
     //! current (i.e. at t_n+1) deformation gradient at each Gauss-point
-    std::shared_ptr<std::vector<Core::LinAlg::Matrix<3, 3>>> defgrdcurr_;
+    std::shared_ptr<std::vector<Core::LinAlg::Tensor<double, 3, 3>>> defgrdcurr_;
 
     //! old (i.e. at t_n) elastic, isochoric right Cauchy-Green tensor
     std::shared_ptr<std::vector<Core::LinAlg::Matrix<3, 3>>> bebarlast_;
@@ -427,7 +411,7 @@ namespace Mat
     //! @name Linearisation terms for structural equation
 
     //! current (i.e. at t_n+1) linearised material tangent w.r.t. T_{n+1}
-    std::shared_ptr<std::vector<Core::LinAlg::Matrix<6, 1>>> cmat_kd_t_;
+    std::shared_ptr<std::vector<Core::LinAlg::SymmetricTensor<double, 3, 3>>> cmat_kd_t_;
 
     //@}
 

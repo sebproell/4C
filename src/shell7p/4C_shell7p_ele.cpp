@@ -12,6 +12,7 @@
 #include "4C_fem_discretization.hpp"
 #include "4C_fem_general_cell_type.hpp"
 #include "4C_io_input_spec_builders.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_shell7p_ele_factory.hpp"
 #include "4C_shell7p_ele_interface_serializable.hpp"

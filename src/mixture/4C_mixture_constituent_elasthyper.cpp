@@ -9,6 +9,7 @@
 
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_mixture.hpp"
 #include "4C_mat_multiplicative_split_defgrad_elasthyper_service.hpp"
 #include "4C_mat_par_bundle.hpp"
@@ -46,15 +47,19 @@ Core::Materials::MaterialType Mixture::MixtureConstituentElastHyper::material_ty
 }
 
 // Evaluates the stress of the constituent
-void Mixture::MixtureConstituentElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
-    const Core::LinAlg::Matrix<6, 1>& E_strain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, const int gp,
-    const int eleGID)
+void Mixture::MixtureConstituentElastHyper::evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID)
 {
   if (prestress_strategy() != nullptr)
   {
-    Mat::elast_hyper_evaluate_elastic_part(
-        F, prestretch_tensor(gp), S_stress, cmat, summands(), summand_properties(), gp, eleGID);
+    Core::LinAlg::Matrix<6, 1> S_view = Core::LinAlg::make_stress_like_voigt_view(S_stress);
+    Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
+    Mat::elast_hyper_evaluate_elastic_part(Core::LinAlg::make_matrix_view(F),
+        Core::LinAlg::make_matrix(Core::LinAlg::get_full(prestretch_tensor(gp))), S_view, cmat_view,
+        summands(), summand_properties(), gp, eleGID);
   }
   else
   {
@@ -66,14 +71,17 @@ void Mixture::MixtureConstituentElastHyper::evaluate(const Core::LinAlg::Matrix<
 
 // Compute the stress resultant with incorporating an elastic and inelastic part of the deformation
 void Mixture::MixtureConstituentElastHyper::evaluate_elastic_part(
-    const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<3, 3>& iFextin,
-    Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-    Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID)
+    const Core::LinAlg::Tensor<double, 3, 3>& F, const Core::LinAlg::Tensor<double, 3, 3>& iFextin,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
-  static Core::LinAlg::Matrix<3, 3> iFin(Core::LinAlg::Initialization::uninitialized);
-  iFin.multiply_nn(iFextin, prestretch_tensor(gp));
+  Core::LinAlg::Tensor<double, 3, 3> iFin = iFextin * prestretch_tensor(gp);
 
-  Mat::elast_hyper_evaluate_elastic_part(
-      F, iFin, S_stress, cmat, summands(), summand_properties(), gp, eleGID);
+  Core::LinAlg::Matrix<6, 1> S_view = Core::LinAlg::make_stress_like_voigt_view(S_stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
+  Mat::elast_hyper_evaluate_elastic_part(Core::LinAlg::make_matrix_view(F),
+      Core::LinAlg::make_matrix_view(iFin), S_view, cmat_view, summands(), summand_properties(), gp,
+      eleGID);
 }
 FOUR_C_NAMESPACE_CLOSE

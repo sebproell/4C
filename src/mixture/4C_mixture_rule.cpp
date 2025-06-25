@@ -123,7 +123,7 @@ void Mixture::MixtureRule::read_element(
 }
 
 // Setup the mixture rule
-void Mixture::MixtureRule::setup(Teuchos::ParameterList& params, const int eleGID)
+void Mixture::MixtureRule::setup(const Teuchos::ParameterList& params, const int eleGID)
 {
   // Setup must be called after read_element()
   if (!has_read_element_) FOUR_C_THROW("read_element() must be called before setup()!");

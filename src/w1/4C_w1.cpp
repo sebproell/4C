@@ -307,16 +307,15 @@ std::vector<std::shared_ptr<Core::Elements::Element>> Discret::Elements::Wall1::
 | Map plane Green-Lagrange strains to 3d                       mayr.mt 05/2014 |
 *-----------------------------------------------------------------------------*/
 void Discret::Elements::Wall1::green_lagrange_plane3d(
-    const Core::LinAlg::SerialDenseVector& glplane, Core::LinAlg::Matrix<6, 1>& gl3d)
+    const Core::LinAlg::SerialDenseVector& glplane,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& gl3d)
 {
-  gl3d(0) = glplane(0);               // E_{11}
-  gl3d(1) = glplane(1);               // E_{22}
-  gl3d(2) = 0.0;                      // E_{33}
-  gl3d(3) = glplane(2) + glplane(3);  // 2*E_{12}=E_{12}+E_{21}
-  gl3d(4) = 0.0;                      // 2*E_{23}
-  gl3d(5) = 0.0;                      // 2*E_{31}
-
-  return;
+  gl3d(0, 0) = glplane(0);                       // E_{11}
+  gl3d(1, 1) = glplane(1);                       // E_{22}
+  gl3d(2, 2) = 0.0;                              // E_{33}
+  gl3d(0, 1) = 0.5 * (glplane(2) + glplane(3));  // 2*E_{12}=E_{12}+E_{21}
+  gl3d(1, 2) = 0.0;                              // 2*E_{23}
+  gl3d(0, 2) = 0.0;                              // 2*E_{31}
 }
 
 void Discret::Elements::Wall1::set_params_interface_ptr(const Teuchos::ParameterList& p)

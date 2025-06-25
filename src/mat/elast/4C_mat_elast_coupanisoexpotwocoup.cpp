@@ -8,6 +8,7 @@
 #include "4C_mat_elast_coupanisoexpotwocoup.hpp"
 
 #include "4C_comm_pack_helpers.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_anisotropy_extension.hpp"
 #include "4C_mat_service.hpp"
 #include "4C_material_parameter_base.hpp"
@@ -35,8 +36,7 @@ Mat::Elastic::CoupAnisoExpoTwoCoup::CoupAnisoExpoTwoCoup(
     : params_(params), anisotropy_extension_(params_)
 {
   anisotropy_extension_.register_needed_tensors(
-      FiberAnisotropyExtension<2>::FIBER_VECTORS |
-      FiberAnisotropyExtension<2>::STRUCTURAL_TENSOR_STRESS);
+      FiberAnisotropyExtension<2>::FIBER_VECTORS | FiberAnisotropyExtension<2>::STRUCTURAL_TENSOR);
 }
 
 void Mat::Elastic::CoupAnisoExpoTwoCoup::pack_summand(Core::Communication::PackBuffer& data) const
@@ -50,21 +50,20 @@ void Mat::Elastic::CoupAnisoExpoTwoCoup::unpack_summand(Core::Communication::Unp
 }
 
 void Mat::Elastic::CoupAnisoExpoTwoCoup::add_stress_aniso_principal(
-    const Core::LinAlg::Matrix<6, 1>& rcg, Core::LinAlg::Matrix<6, 6>& cmat,
-    Core::LinAlg::Matrix<6, 1>& stress, Teuchos::ParameterList& params, const int gp,
-    const int eleGID)
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stress, const Teuchos::ParameterList& params,
+    const int gp, const int eleGID)
 {
-  Core::LinAlg::Matrix<6, 1> A1 = anisotropy_extension_.get_structural_tensor_stress(gp, 0);
-  Core::LinAlg::Matrix<6, 1> A2 = anisotropy_extension_.get_structural_tensor_stress(gp, 1);
-  Core::LinAlg::Matrix<6, 1> A1A2 = anisotropy_extension_.get_coupled_structural_tensor_stress(gp);
+  const auto& A1 = anisotropy_extension_.get_structural_tensor(gp, 0);
+  const auto& A2 = anisotropy_extension_.get_structural_tensor(gp, 1);
+  const auto& A1A2 = anisotropy_extension_.get_coupled_structural_tensor(gp);
 
   double a1a2 = anisotropy_extension_.get_coupled_scalar_product(gp);
 
-  double I4 = A1.dot(rcg);
-  double I6 = A2.dot(rcg);
-  double I8;
-  I8 = A1A2(0) * rcg(0) + A1A2(1) * rcg(1) + A1A2(2) * rcg(2) + A1A2(3) * rcg(3) +
-       A1A2(4) * rcg(4) + A1A2(5) * rcg(5);
+  double I4 = Core::LinAlg::ddot(A1, rcg);
+  double I6 = Core::LinAlg::ddot(A2, rcg);
+  double I8 = Core::LinAlg::ddot(A1A2, rcg);
 
   double A4 = params_->A4_;
   double B4 = params_->B4_;
@@ -83,25 +82,25 @@ void Mat::Elastic::CoupAnisoExpoTwoCoup::add_stress_aniso_principal(
   }
 
   double gamma = 2.0 * A4 * (I4 - 1.0) * exp(B4 * (I4 - 1.0) * (I4 - 1.0));
-  stress.update(gamma, A1, 1.0);
+  stress += gamma * A1;
   gamma = 2.0 * A6 * (I6 - 1.0) * exp(B6 * (I6 - 1.0) * (I6 - 1.0));
-  stress.update(gamma, A2, 1.0);
+  stress += gamma * A2;
   gamma = 2.0 * A8 * (I8 - a1a2) * exp(B8 * (I8 - a1a2) * (I8 - a1a2));
-  stress.update(gamma, A1A2, 1.0);
+  stress += gamma * A1A2;
 
   double delta = 2.0 * (1.0 + 2.0 * B4 * (I4 - 1.0) * (I4 - 1.0)) * 2.0 * A4 *
                  exp(B4 * (I4 - 1.0) * (I4 - 1.0));
-  cmat.multiply_nt(delta, A1, A1, 1.0);
+  cmat += delta * Core::LinAlg::dyadic(A1, A1);
   delta = 2.0 * (1.0 + 2.0 * B6 * (I6 - 1.0) * (I6 - 1.0)) * 2.0 * A6 *
           exp(B6 * (I6 - 1.0) * (I6 - 1.0));
-  cmat.multiply_nt(delta, A2, A2, 1.0);
+  cmat += delta * Core::LinAlg::dyadic(A2, A2);
   delta =
       4.0 * A8 * exp(B8 * (I8 - a1a2) * (I8 - a1a2)) * (1 + 2.0 * B8 * (I8 - a1a2) * (I8 - a1a2));
-  cmat.multiply_nt(delta, A1A2, A1A2, 1.0);
+  cmat += delta * Core::LinAlg::dyadic(A1A2, A1A2);
 }
 
 void Mat::Elastic::CoupAnisoExpoTwoCoup::get_fiber_vecs(
-    std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+    std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
 ) const
 {
   if (params_->init_ == DefaultAnisotropyExtension<2>::INIT_MODE_NODAL_FIBERS)
@@ -119,7 +118,8 @@ void Mat::Elastic::CoupAnisoExpoTwoCoup::get_fiber_vecs(
 }
 
 void Mat::Elastic::CoupAnisoExpoTwoCoup::set_fiber_vecs(const double newgamma,
-    const Core::LinAlg::Matrix<3, 3>& locsys, const Core::LinAlg::Matrix<3, 3>& defgrd)
+    const Core::LinAlg::Tensor<double, 3, 3>& locsys,
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd)
 {
   anisotropy_extension_.set_fiber_vecs(newgamma, locsys, defgrd);
 }
@@ -164,14 +164,10 @@ void Mat::Elastic::CoupAnisoExpoTwoCoupAnisoExtension::on_fibers_initialized()
 
   for (int gp = 0; gp < fibersperele; ++gp)
   {
-    Core::LinAlg::Matrix<3, 1> a1 = get_fiber(gp, 0);
-    Core::LinAlg::Matrix<3, 1> a2 = get_fiber(gp, 1);
-    a1_a2_[gp](0) = a1(0) * a2(0);
-    a1_a2_[gp](1) = a1(1) * a2(1);
-    a1_a2_[gp](2) = a1(2) * a2(2);
-    a1_a2_[gp](3) = 0.5 * (a1(0) * a2(1) + a1(1) * a2(0));
-    a1_a2_[gp](4) = 0.5 * (a1(1) * a2(2) + a1(2) * a2(1));
-    a1_a2_[gp](5) = 0.5 * (a1(0) * a2(2) + a1(2) * a2(0));
+    Core::LinAlg::Tensor<double, 3> a1 = get_fiber(gp, 0);
+    Core::LinAlg::Tensor<double, 3> a2 = get_fiber(gp, 1);
+    const auto a1a2 = Core::LinAlg::dyadic(a1, a2);
+    a1_a2_[gp] = 0.5 * Core::LinAlg::assume_symmetry(a1a2 + Core::LinAlg::transpose(a1a2));
 
     a1a2_[gp] = 0.0;
     for (int i = 0; i < 3; ++i)
@@ -181,8 +177,8 @@ void Mat::Elastic::CoupAnisoExpoTwoCoupAnisoExtension::on_fibers_initialized()
   }
 }
 
-const Core::LinAlg::Matrix<6, 1>&
-Mat::Elastic::CoupAnisoExpoTwoCoupAnisoExtension::get_coupled_structural_tensor_stress(int gp) const
+const Core::LinAlg::SymmetricTensor<double, 3, 3>&
+Mat::Elastic::CoupAnisoExpoTwoCoupAnisoExtension::get_coupled_structural_tensor(int gp) const
 {
   switch (this->get_fiber_location())
   {

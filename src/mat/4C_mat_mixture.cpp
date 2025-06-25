@@ -241,7 +241,7 @@ void Mat::Mixture::setup(const int numgp, const Core::IO::InputParameterContaine
 }
 
 // Post setup routine -> Call Setup of constituents and mixture rule
-void Mat::Mixture::post_setup(Teuchos::ParameterList& params, const int eleGID)
+void Mat::Mixture::post_setup(const Teuchos::ParameterList& params, const int eleGID)
 {
   So3Material::post_setup(params, eleGID);
   anisotropy_.read_anisotropy_from_parameter_list(params);
@@ -273,8 +273,8 @@ void Mat::Mixture::update()
 }
 
 // This method is called between two timesteps
-void Mat::Mixture::update(Core::LinAlg::Matrix<3, 3> const& defgrd, const int gp,
-    Teuchos::ParameterList& params, const int eleGID)
+void Mat::Mixture::update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd, const int gp,
+    const Teuchos::ParameterList& params, const int eleGID)
 {
   // Update all constituents
   for (const auto& constituent : *constituents_)
@@ -286,10 +286,10 @@ void Mat::Mixture::update(Core::LinAlg::Matrix<3, 3> const& defgrd, const int gp
 }
 
 // Evaluates the material
-void Mat::Mixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::Mixture::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
   // check, whether the post_setup method was already called
   if (!setup_) FOUR_C_THROW("The material's post_setup() method has not been called yet.");
@@ -306,7 +306,7 @@ void Mat::Mixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   }
 
   // Evaluate mixturerule
-  mixture_rule_->evaluate(*defgrd, *glstrain, params, *stress, *cmat, gp, eleGID);
+  mixture_rule_->evaluate(*defgrad, glstrain, params, stress, cmat, gp, eleGID);
 }
 
 void Mat::Mixture::register_output_data_names(

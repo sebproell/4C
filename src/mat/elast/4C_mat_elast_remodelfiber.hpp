@@ -244,7 +244,11 @@ namespace Mat
       std::vector<double> cur_rho;    ///< Mass density (in reference configuration) at time t_{n+1}
       std::vector<double> last_rho;   ///< Mass density (in reference configuration) at time t_{n}
       std::vector<double> cur_lambr;  ///< Inelastic stretch in fiber direction at time t_{n+1}
-      std::vector<double> last_lambr;      ///< Inelastic stretch in fiber direction at time t_{n}
+      std::vector<double> last_lambr;  ///< Inelastic stretch in fiber direction at time t_{n}
+      Core::LinAlg::SymmetricTensor<double, 3, 3>
+          A;  ///< Structural tensor representing the fiber direction
+      Core::LinAlg::SymmetricTensor<double, 3, 3>
+          A_orth;  ///< Orthogonal structural tensor representing the fiber direction
       Core::LinAlg::Matrix<3, 3> AM;       ///< Structural tensor: represents fiber direction
       Core::LinAlg::Matrix<3, 3> AM_orth;  ///< Orthogonal structural tensor ( 1_{ij} - A_{ij} )
       std::vector<Core::LinAlg::Matrix<3, 3>>
@@ -403,8 +407,9 @@ namespace Mat
           int numgp, double rho_tot, const Core::IO::InputParameterContainer& container);
 
       /// Update fiber directions with new local coordinate system (radaxicirc_)
-      void update_fiber_dirs(Core::LinAlg::Matrix<3, 3> const& locsys,  ///< local coordinate system
-          const double& dt);                                            ///< time step size
+      void update_fiber_dirs(
+          Core::LinAlg::Tensor<double, 3, 3> const& locsys,  ///< local coordinate system
+          const double& dt);                                 ///< time step size
 
       /// Update cauchy prestress of new mass which is deposited during G&R
       void update_sig_h();

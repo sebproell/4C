@@ -44,7 +44,7 @@ namespace Mat
      * @param eleGID (in) : Global element id
      */
     virtual void update_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        Teuchos::ParameterList& params, const Core::LinAlg::Matrix<3, 3>& Q_trafo, int gp,
+        const Teuchos::ParameterList& params, const Core::LinAlg::Matrix<3, 3>& Q_trafo, int gp,
         int eleGID) = 0;
 
     /*!
@@ -63,7 +63,7 @@ namespace Mat
      * @param eleGID (in) : Global element id
      */
     virtual void evaluate_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        const Core::LinAlg::Matrix<3, 3>& cauchygreen, Teuchos::ParameterList& params,
+        const Core::LinAlg::Matrix<3, 3>& cauchygreen, const Teuchos::ParameterList& params,
         const Core::LinAlg::Matrix<3, 3>& Q_trafo, Core::LinAlg::Matrix<3, 1>& stress,
         Core::LinAlg::Matrix<3, 3>& cmat, int gp, int eleGID) = 0;
   };
@@ -94,7 +94,7 @@ namespace Mat
      * @param eleGID (in) : Global element id
      */
     virtual void evaluate_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<3, 3>& stress,
+        const Teuchos::ParameterList& params, Core::LinAlg::Matrix<3, 3>& stress,
         Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID) = 0;
   };
 
@@ -126,7 +126,7 @@ namespace Mat
      * @return Adapted stretch in thickness direction
      */
     virtual double evaluate_membrane_thickness_stretch(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        Teuchos::ParameterList& params, int gp, int eleGID) = 0;
+        const Teuchos::ParameterList& params, int gp, int eleGID) = 0;
   };
 
 }  // namespace Mat

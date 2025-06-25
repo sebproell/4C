@@ -660,18 +660,20 @@ namespace Discret
 
       /// Generic 3D stress response
       ///
-      void material_response3d(
-          Core::LinAlg::Matrix<6, 1>* stress,          ///< 3D 2nd Piola-Kirchhoff stress vector
-          Core::LinAlg::Matrix<6, 6>* cmat,            ///< 3D elasticity matrix
-          const Core::LinAlg::Matrix<6, 1>* glstrain,  ///< 3D Green-Lagrange strain vector
-          Teuchos::ParameterList& params,              ///< element parameter list
-          int gp                                       ///< Gauss point
+      void material_response3d(Core::LinAlg::SymmetricTensor<double, 3, 3>&
+                                   stress,  ///< 3D 2nd Piola-Kirchhoff stress vector
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< 3D elasticity matrix
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>&
+              glstrain,                    ///< 3D Green-Lagrange strain vector
+          Teuchos::ParameterList& params,  ///< element parameter list
+          int gp                           ///< Gauss point
       );
 
       /// Map plane Green-Lagrange strains to 3d
       void green_lagrange_plane3d(const Core::LinAlg::SerialDenseVector&
                                       glplane,  ///< 2d version of GL strain (Voigt notation)
-          Core::LinAlg::Matrix<6, 1>& gl3d      ///< 3d version of GL strain (Voigt notation)
+          Core::LinAlg::SymmetricTensor<double, 3, 3>&
+              gl3d  ///< 3d version of GL strain (Voigt notation)
       );
 
       /// Internal/strain energy
