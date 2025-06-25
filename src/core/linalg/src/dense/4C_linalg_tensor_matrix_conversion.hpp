@@ -13,6 +13,7 @@
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
 #include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_internals.hpp"
 
 #include <type_traits>
 
@@ -120,7 +121,8 @@ namespace Core::LinAlg
    * @brief Creates a matrix that views a 2-tensor
    */
   auto make_matrix_view(auto& tensor)
-    requires(std::remove_cvref_t<decltype(tensor)>::rank() == 2)
+    requires(std::remove_cvref_t<decltype(tensor)>::rank() == 2 &&
+             !is_compressed_tensor<decltype(tensor)>)
   {
     using ValueType = std::remove_cvref_t<decltype(tensor)>::value_type;
     constexpr std::size_t n1 = std::remove_cvref_t<decltype(tensor)>::template extent<0>();
@@ -134,7 +136,8 @@ namespace Core::LinAlg
   template <std::size_t n1, std::size_t n2>
   auto make_matrix_view(auto& tensor)
     requires(std::remove_cvref_t<decltype(tensor)>::rank() == 1 &&
-             n1 * n2 == std::remove_cvref_t<decltype(tensor)>::template extent<0>())
+             n1 * n2 == std::remove_cvref_t<decltype(tensor)>::template extent<0>() &&
+             !is_compressed_tensor<decltype(tensor)>)
   {
     using ValueType = std::remove_cvref_t<decltype(tensor)>::value_type;
     return Core::LinAlg::Matrix<n1, n2, ValueType>{tensor.data(), true};

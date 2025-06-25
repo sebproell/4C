@@ -33,9 +33,6 @@ namespace Core::LinAlg
     view
   };
 
-  template <typename Tensor>
-  constexpr bool is_compressed_tensor = std::remove_cvref_t<Tensor>::is_compressed;
-
   /*!
    * @brief General tensor class for dense tensors of arbitrary rank
    *
@@ -161,7 +158,7 @@ namespace Core::LinAlg
      * @endcode
      *
      */
-    TensorInternal(const Internal::TensorInitializerList<Number, n...>::type& lst)
+    constexpr TensorInternal(const Internal::TensorInitializerList<Number, n...>::type& lst)
       requires(std::is_default_constructible_v<ContainerType> && !is_compressed);
 
     /*!
@@ -324,6 +321,10 @@ namespace Core::LinAlg
   template <typename T>
   static constexpr bool is_tensor = Internal::HasTensorBase<std::remove_cvref_t<T>>::value;
 
+  template <typename Tensor>
+  constexpr bool is_compressed_tensor =
+      is_tensor<Tensor> && std::remove_cvref_t<Tensor>::is_compressed;
+
   /*!
    * @brief A check whether a type is a admissible scalar type for a tensor
    */
@@ -338,7 +339,7 @@ namespace Core::LinAlg
   // actual implementations
 
   template <typename Number, TensorStorageType storage_type, typename Compression, std::size_t... n>
-  TensorInternal<Number, storage_type, Compression, n...>::TensorInternal(
+  constexpr TensorInternal<Number, storage_type, Compression, n...>::TensorInternal(
       const Internal::TensorInitializerList<Number, n...>::type& lst)
     requires(std::is_default_constructible_v<ContainerType> && !is_compressed)
   {
