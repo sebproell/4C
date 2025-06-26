@@ -157,7 +157,7 @@ namespace BeamInteraction
      *         using double length specific potential with approximation for large separations
      *
      */
-    void evaluate_fpotand_stiffpot_large_sep_approx(
+    void evaluate_fpotand_stiffpot_double_length_specific_large_sep_approx(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot1,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot2,
         Core::LinAlg::SerialDenseMatrix* stiffmat11, Core::LinAlg::SerialDenseMatrix* stiffmat12,
