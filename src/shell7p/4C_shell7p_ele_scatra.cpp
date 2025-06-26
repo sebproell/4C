@@ -79,7 +79,6 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   defsgeneral["QUAD4"] = all_of({
-      parameter<std::vector<int>>("QUAD4", {.size = 4}),
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
@@ -95,7 +94,6 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
   });
 
   defsgeneral["QUAD8"] = all_of({
-      parameter<std::vector<int>>("QUAD8", {.size = 8}),
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
@@ -111,7 +109,6 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
   });
 
   defsgeneral["QUAD9"] = all_of({
-      parameter<std::vector<int>>("QUAD9", {.size = 9}),
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
@@ -127,7 +124,6 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
   });
 
   defsgeneral["TRI3"] = all_of({
-      parameter<std::vector<int>>("TRI3", {.size = 3}),
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<double>("SDC"),
@@ -141,7 +137,6 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
   });
 
   defsgeneral["TRI6"] = all_of({
-      parameter<std::vector<int>>("TRI6", {.size = 6}),
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<double>("SDC"),
