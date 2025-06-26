@@ -609,16 +609,16 @@ namespace Core::LinAlg
 
     /** \name Import / Export methods */
     //@{
-    int import(
-        const SparseMatrix& A, const Epetra_Import& importer, Epetra_CombineMode combine_mode)
+    int import(const SparseMatrix& A, const Core::LinAlg::Import& importer,
+        Epetra_CombineMode combine_mode)
     {
-      return sysmat_->Import(*A.epetra_matrix(), importer, combine_mode);
+      return sysmat_->Import(*A.epetra_matrix(), importer.get_epetra_import(), combine_mode);
     }
 
-    int import(
-        const SparseMatrix& A, const Epetra_Export& exporter, Epetra_CombineMode combine_mode)
+    int import(const SparseMatrix& A, const Core::LinAlg::Export& exporter,
+        Epetra_CombineMode combine_mode)
     {
-      return sysmat_->Import(*A.epetra_matrix(), exporter, combine_mode);
+      return sysmat_->Import(*A.epetra_matrix(), exporter.get_epetra_export(), combine_mode);
     }
 
     //@}
