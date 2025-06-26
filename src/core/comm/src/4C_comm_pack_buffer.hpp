@@ -117,7 +117,9 @@ namespace Core::Communication
           "Type mismatch during unpacking. Tried to extract type {}", typeid(T).name());
 #endif
 
-      memcpy(&stuff, &data_[position_], sizeof(T));
+      // We know that stuff is trivially copyable, so we can safely use memcpy. We cast to void* to
+      // circumvent a GCC warning
+      std::memcpy(static_cast<void*>(&stuff), &data_[position_], sizeof(T));
       position_ += sizeof(T);
     }
 
@@ -142,7 +144,9 @@ namespace Core::Communication
 #endif
 
 
-      memcpy(stuff, &data_[position_], stuff_size);
+      // We know that stuff is trivially copyable, so we can safely use memcpy. We cast to void* to
+      // circumvent a GCC warning
+      std::memcpy(static_cast<void*>(stuff), &data_[position_], stuff_size);
       position_ += stuff_size;
     }
 
