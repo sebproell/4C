@@ -149,7 +149,7 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::eval
   {
     case BeamPotential::Strategy::double_length_specific_large_separations:
     {
-      evaluate_fpotand_stiffpot_large_sep_approx(
+      evaluate_fpotand_stiffpot_double_length_specific_large_sep_approx(
           force_pot1, force_pot2, stiffmat11, stiffmat12, stiffmat21, stiffmat22);
       break;
     }
@@ -195,7 +195,7 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::eval
  *-----------------------------------------------------------------------------------------------*/
 template <unsigned int numnodes, unsigned int numnodalvalues, typename T>
 void BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues, T>::
-    evaluate_fpotand_stiffpot_large_sep_approx(
+    evaluate_fpotand_stiffpot_double_length_specific_large_sep_approx(
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot1,
         Core::LinAlg::Matrix<3 * numnodes * numnodalvalues, 1, T>& force_pot2,
         Core::LinAlg::SerialDenseMatrix* stiffmat11, Core::LinAlg::SerialDenseMatrix* stiffmat12,
@@ -3490,38 +3490,47 @@ bool BeamInteraction::BeamToBeamPotentialPair<numnodes, numnodalvalues,
     // loop over dimensions
     for (unsigned int jdim = 0; jdim < 3; ++jdim)
     {
+      // slave beam => axial pull-off force
       force_pot_slave_GP(3 * idofperdim + jdim) +=
           N_i_slave(idofperdim) * pot_red_fac_deriv_xi_master * interaction_potential_GP *
           xi_master_partial_r_slave(jdim);
 
+      // slave beam => radial (attractive / repulsive) force
       force_pot_slave_GP(3 * idofperdim + jdim) += N_i_slave(idofperdim) *
                                                    potential_reduction_factor_GP *
                                                    pot_ia_deriv_gap_ul * gap_ul_deriv_r_slave(jdim);
 
+      // slave beam => force arising from not parallel beams
       force_pot_slave_GP(3 * idofperdim + jdim) +=
           N_i_slave(idofperdim) * potential_reduction_factor_GP * pot_ia_deriv_cos_alpha *
           cos_alpha_deriv_r_slave(jdim);
 
+      // slave beam => moment arising from not parallel beams
       force_pot_slave_GP(3 * idofperdim + jdim) +=
           N_i_xi_slave(idofperdim) * potential_reduction_factor_GP * pot_ia_deriv_cos_alpha *
           cos_alpha_deriv_r_xi_slave(jdim);
 
+      // master beam => axial pull-off force
       force_pot_master_GP(3 * idofperdim + jdim) +=
           N_i_master(idofperdim) * pot_red_fac_deriv_xi_master * interaction_potential_GP *
           xi_master_partial_r_master(jdim);
 
+      // master beam => end point moment
       force_pot_master_GP(3 * idofperdim + jdim) +=
           N_i_xi_master(idofperdim) * pot_red_fac_deriv_xi_master * interaction_potential_GP *
           xi_master_partial_r_xi_master(jdim);
 
+      // master beam => radial (attractive / repulsive) force
       force_pot_master_GP(3 * idofperdim + jdim) +=
           N_i_master(idofperdim) * potential_reduction_factor_GP * pot_ia_deriv_gap_ul *
           gap_ul_deriv_r_master(jdim);
 
+      // master beam => force arising from not parallel beams
       force_pot_master_GP(3 * idofperdim + jdim) +=
           N_i_master(idofperdim) * potential_reduction_factor_GP * pot_ia_deriv_cos_alpha *
           cos_alpha_deriv_r_master(jdim);
 
+      // master beam => moment due to not parallel beams
       force_pot_master_GP(3 * idofperdim + jdim) +=
           N_i_xi_master(idofperdim) * potential_reduction_factor_GP * pot_ia_deriv_cos_alpha *
           cos_alpha_deriv_r_xi_master(jdim);
