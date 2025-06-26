@@ -66,12 +66,6 @@ namespace Core::Communication
     */
     Exporter(const Exporter& old) = default;
 
-    /*!
-    \brief Destructor (default)
-    */
-    virtual ~Exporter() = default;
-
-
     //! @name Access methods
 
     /*!
@@ -114,87 +108,19 @@ namespace Core::Communication
     template <typename T>
     void do_export(std::map<int, std::shared_ptr<T>>& parobjects);
 
-    /*!
-    \brief Communicate a map of vectors of some basic data type T
-
-    This method takes a map of vectors and redistributes them according to
-    the send and receive plans. It is implicitly assumed, that the key in
-    the map of vectors pointwise matches SourceMap().
-
-    \note T can be int, double or char. The method will not compile will other
-          then these basic data types (and will give a rater kryptic error message)
-
-    \param data (in/out): A map of vectors<T>. On input, the map
-                          has a distribution matching SourceMap().
-                          On output, the map has a distribution of
-                          TargetMap().
-    */
+    /**
+     * @brief Communicate a map of objects that are Packable and Unpackable.
+     *
+     * This method takes a map of objects and redistributes them according to
+     * the send and receive plans. It is implicitly assumed, that the
+     * key in the map of objects pointwise matches source_map().
+     *
+     * @note Since the objects are constructed in-place in @p data, T also needs to be
+     * default-initializable.
+     */
     template <typename T>
-    void do_export(std::map<int, std::vector<T>>& data);
-
-    /*!
-    \brief Communicate a map of sets of some basic data type T (currently only int)
-
-    This method takes a map of sets and redistributes them according to
-    the send and receive plans. It is implicitly assumed, that the key in
-    the map of sets pointwise matches SourceMap().
-
-    \note T can be int. The method will not compile will other
-          then these basic data types (and will give a rater kryptic error message)
-
-    \param data (in/out): A map of sets<T>. On input, the map
-                          has a distribution matching SourceMap().
-                          On output, the map has a distribution of
-                          TargetMap().
-    */
-    template <typename T>
-    void do_export(std::map<int, std::set<T>>& data);
-
-    //                                                             nagler 07/2012
-    /*!
-    \brief Communicate a map of sets of some basic data type T and U
-
-    This method takes a map of sets and redistributes them according to
-    the send and receive plans. It is implicitly assumed, that the key in
-    the map of sets pointwise matches SourceMap().
-
-    \note T and U can have arbitrarily types
-
-    \param data (in/out): A map of maps<T,U>. On input, the map
-                          has a distribution matching SourceMap().
-                          On output, the map has a distribution of
-                          TargetMap().
-    */
-    template <typename T, typename U>
-    void do_export(std::map<int, std::map<T, U>>& data);
-
-    /*!
-    \brief Communicate a map of int values
-
-    This method takes a map of ints and redistributes them according to
-    the send and receive plans. It is implicitly assumed, that the key in
-    the map of objects pointwise matches SourceMap().
-
-    \param parobjects (in/out): A map of ints. On input, the map
-                                has a distribution matching SourceMap().
-                                On output, the map has a distribution of
-                                TargetMap().
-    */
-    void do_export(std::map<int, int>& data);
-
-    /*!
-    \brief Communicate a map of double values
-
-    This method takes a map of doubles and redistributes them according to
-    the send and receive plans. It is implicitly assumed, that the key in
-    the map of objects pointwise matches SourceMap().
-
-    \param parobjects (in/out): A map of doubles. On input, the map
-                                has a distribution matching SourceMap().
-                                On output, the map has a distribution of
-                                TargetMap().
-    */
-    void do_export(std::map<int, double>& data);
+      requires Packable<T> && Unpackable<T> && std::default_initializable<T>
+    void do_export(std::map<int, T>& data);
 
     /*!
     \brief Communicate a map of serial dense matrices
@@ -486,9 +412,6 @@ namespace Core::Communication
       /// have a virtual destructor
       virtual ~ExporterHelper() = default;
 
-      /// validations performed before the communication
-      virtual void pre_export_test(Exporter* exporter) = 0;
-
       /// Pack one object
       /*!
         Get the object by gid, pack it and append it to the sendblock. We only
@@ -511,26 +434,13 @@ namespace Core::Communication
 
     /// Concrete helper class that handles std::shared_ptrs to ParObjects
     template <typename T>
+      requires std::derived_from<T, ParObject>
     class ParObjectExporterHelper : public ExporterHelper
     {
      public:
       explicit ParObjectExporterHelper(std::map<int, std::shared_ptr<T>>& parobjects)
           : parobjects_(parobjects)
       {
-      }
-
-      void pre_export_test(Exporter* exporter) override
-      {
-        // test whether type T implements ParObject
-        typename std::map<int, std::shared_ptr<T>>::iterator curr = parobjects_.begin();
-        if (curr != parobjects_.end())
-        {
-          T* ptr = curr->second.get();
-          auto* tester = dynamic_cast<ParObject*>(ptr);
-          if (!tester)
-            FOUR_C_THROW(
-                "typename T in template does not implement class ParObject (dynamic_cast failed)");
-        }
       }
 
       bool pack_object(int gid, PackBuffer& sendblock) override
@@ -580,6 +490,7 @@ namespace Core::Communication
        cast to the concrete ParObject type prevents that.
      */
     template <typename T>
+      requires std::default_initializable<T> && Packable<T> && Unpackable<T>
     class AnyObjectExporterHelper : public ExporterHelper
     {
      public:
@@ -587,8 +498,6 @@ namespace Core::Communication
           : objects_(objects)
       {
       }
-
-      void pre_export_test(Exporter* exporter) override {}
 
       bool pack_object(int gid, PackBuffer& sendblock) override
       {
@@ -626,17 +535,15 @@ namespace Core::Communication
 
 
 
-    /// Concrete helper class that handles plain old data (POD) objects
+    /**
+     * Export anything that is default-initializable, Packable and Unpackable.
+     */
     template <typename T>
-    class PODExporterHelper : public ExporterHelper
+      requires std::default_initializable<T> && Packable<T> && Unpackable<T>
+    class DefaultExporterHelper : public ExporterHelper
     {
      public:
-      explicit PODExporterHelper(std::map<int, T>& objects) : objects_(objects) {}
-
-      void pre_export_test(Exporter* exporter) override
-      {
-        // Nothing to do. We do not check for T to be POD.
-      }
+      explicit DefaultExporterHelper(std::map<int, T>& objects) : objects_(objects) {}
 
       bool pack_object(int gid, PackBuffer& sendblock) override
       {
@@ -667,138 +574,7 @@ namespace Core::Communication
      private:
       std::map<int, T>& objects_;
     };
-
-
-    /// Concrete helper class that handles vectors of plain old data (POD) objects
-    template <typename T>
-    class PODVectorExporterHelper : public ExporterHelper
-    {
-     public:
-      explicit PODVectorExporterHelper(std::map<int, std::vector<T>>& objects) : objects_(objects)
-      {
-      }
-
-      void pre_export_test(Exporter* exporter) override
-      {
-        // Nothing to do. We do not check for T to be POD.
-      }
-
-      bool pack_object(int gid, PackBuffer& sendblock) override
-      {
-        typename std::map<int, std::vector<T>>::const_iterator curr = objects_.find(gid);
-        if (curr != objects_.end())
-        {
-          add_to_pack(sendblock, curr->second);
-          return true;
-        }
-        return false;
-      }
-
-      void unpack_object(int gid, UnpackBuffer& buffer) override
-      {
-        extract_from_pack(buffer, objects_[gid]);
-      }
-
-      void post_export_cleanup(Exporter* exporter) override
-      {
-        // loop map and kick out everything that's not in TargetMap()
-        std::map<int, std::vector<T>> newmap;
-        typename std::map<int, std::vector<T>>::iterator fool;
-        for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().my_gid(fool->first)) swap(newmap[fool->first], fool->second);
-        swap(newmap, objects_);
-      }
-
-     private:
-      std::map<int, std::vector<T>>& objects_;
-    };
-
-    /// Concrete helper class that handles sets of plain old data (POD) objects
-    template <typename T>
-    class PODSetExporterHelper : public ExporterHelper
-    {
-     public:
-      explicit PODSetExporterHelper(std::map<int, std::set<T>>& objects) : objects_(objects) {}
-
-      void pre_export_test(Exporter* exporter) override
-      {
-        // Nothing to do. We do not check for T to be POD.
-      }
-
-      bool pack_object(int gid, PackBuffer& sendblock) override
-      {
-        typename std::map<int, std::set<T>>::const_iterator curr = objects_.find(gid);
-        if (curr != objects_.end())
-        {
-          add_to_pack(sendblock, curr->second);
-          return true;
-        }
-        return false;
-      }
-
-      void unpack_object(int gid, UnpackBuffer& buffer) override
-      {
-        extract_from_pack(buffer, objects_[gid]);
-      }
-
-      void post_export_cleanup(Exporter* exporter) override
-      {
-        // loop map and kick out everything that's not in TargetMap()
-        std::map<int, std::set<T>> newmap;
-        typename std::map<int, std::set<T>>::iterator fool;
-        for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().my_gid(fool->first)) swap(newmap[fool->first], fool->second);
-        swap(newmap, objects_);
-      }
-
-     private:
-      std::map<int, std::set<T>>& objects_;
-    };
-
-    /// Concrete helper class that handles maps of plain old data (POD) objects
-    ///                                                          nagler 07/2012
-    template <typename T, typename U>
-    class PODMapExporterHelper : public ExporterHelper
-    {
-     public:
-      explicit PODMapExporterHelper(std::map<int, std::map<T, U>>& objects) : objects_(objects) {}
-
-      void pre_export_test(Exporter* exporter) override
-      {
-        // Nothing to do. We do not check for T to be POD.
-      }
-
-      bool pack_object(int gid, PackBuffer& sendblock) override
-      {
-        typename std::map<int, std::map<T, U>>::const_iterator curr = objects_.find(gid);
-        if (curr != objects_.end())
-        {
-          add_to_pack(sendblock, curr->second);
-          return true;
-        }
-        return false;
-      }
-
-      void unpack_object(int gid, UnpackBuffer& buffer) override
-      {
-        extract_from_pack(buffer, objects_[gid]);
-      }
-
-      void post_export_cleanup(Exporter* exporter) override
-      {
-        // loop map and kick out everything that's not in TargetMap()
-        std::map<int, std::map<T, U>> newmap;
-        typename std::map<int, std::map<T, U>>::iterator fool;
-        for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().my_gid(fool->first)) swap(newmap[fool->first], fool->second);
-        swap(newmap, objects_);
-      }
-
-     private:
-      std::map<int, std::map<T, U>>& objects_;
-    };
-
-  };  // class Exporter
+  };
 }  // namespace Core::Communication
 
 /*----------------------------------------------------------------------*
@@ -812,25 +588,14 @@ void Core::Communication::Exporter::do_export(std::map<int, std::shared_ptr<T>>&
 }
 
 template <typename T>
-void Core::Communication::Exporter::do_export(std::map<int, std::vector<T>>& data)
+  requires Core::Communication::Packable<T> && Core::Communication::Unpackable<T> &&
+           std::default_initializable<T>
+void Core::Communication::Exporter::do_export(std::map<int, T>& data)
 {
-  PODVectorExporterHelper<T> helper(data);
+  DefaultExporterHelper<T> helper(data);
   generic_export(helper);
 }
 
-template <typename T>
-void Core::Communication::Exporter::do_export(std::map<int, std::set<T>>& data)
-{
-  PODSetExporterHelper<T> helper(data);
-  generic_export(helper);
-}
-
-template <typename T, typename U>
-void Core::Communication::Exporter::do_export(std::map<int, std::map<T, U>>& data)
-{
-  PODMapExporterHelper<T, U> helper(data);
-  generic_export(helper);
-}
 
 FOUR_C_NAMESPACE_CLOSE
 

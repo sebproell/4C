@@ -221,8 +221,6 @@ void Core::Communication::Exporter::generic_export(ExporterHelper& helper)
   if (send_plan().size() == 0) return;
   // if (SourceMap().SameAs(TargetMap())) return;
 
-  helper.pre_export_test(this);
-
   //------------------------------------------------ do the send/recv loop
   for (int i = 0; i < num_proc() - 1; ++i)
   {
@@ -304,18 +302,6 @@ void Core::Communication::Exporter::generic_export(ExporterHelper& helper)
   }
 
   helper.post_export_cleanup(this);
-}
-
-void Core::Communication::Exporter::do_export(std::map<int, int>& data)
-{
-  PODExporterHelper<int> helper(data);
-  generic_export(helper);
-}
-
-void Core::Communication::Exporter::do_export(std::map<int, double>& data)
-{
-  PODExporterHelper<double> helper(data);
-  generic_export(helper);
 }
 
 void Core::Communication::Exporter::do_export(
