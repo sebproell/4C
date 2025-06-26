@@ -11,6 +11,8 @@
 
 #include "4C_linalg_tensor.hpp"
 
+#include "4C_comm_pack_buffer.hpp"
+#include "4C_comm_pack_helpers.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_unittest_utils_assertions_test.hpp"
 
@@ -24,6 +26,23 @@ namespace
   {
     // Tensor should be default constructible
     static_assert(std::is_default_constructible_v<Core::LinAlg::Tensor<double, 3>>);
+  }
+
+  TEST(TensorTest, TestPackability)
+  {
+    static_assert(Core::Communication::Packable<Core::LinAlg::Tensor<double, 3>>);
+    static_assert(Core::Communication::Unpackable<Core::LinAlg::Tensor<double, 3>>);
+
+    Core::LinAlg::Tensor<double, 3> t = {{1.0, 2.0, 3.0}};
+
+    Core::Communication::PackBuffer pack_buffer;
+    Core::Communication::add_to_pack(pack_buffer, t);
+
+    Core::Communication::UnpackBuffer unpack_buffer(pack_buffer());
+    Core::LinAlg::Tensor<double, 3> t2;
+    Core::Communication::extract_from_pack(unpack_buffer, t2);
+
+    EXPECT_EQ(t.container(), t2.container());
   }
 
   TEST(TensorTest, DefaultConstruct1Tensor)
