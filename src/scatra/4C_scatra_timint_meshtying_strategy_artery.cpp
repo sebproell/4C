@@ -9,9 +9,9 @@
 
 #include "4C_adapter_art_net.hpp"
 #include "4C_adapter_scatra_base_algorithm.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_bio.hpp"
 #include "4C_linear_solver_method.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 #include "4C_linear_solver_method_parameters.hpp"
@@ -90,12 +90,11 @@ void ScaTra::MeshtyingStrategyArtery::init_meshtying()
   const std::string couplingcondname = std::invoke(
       [&]()
       {
-        if (Teuchos::getIntegralValue<
-                Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
+        if (Teuchos::getIntegralValue<ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
                 Global::Problem::instance()->poro_fluid_multi_phase_dynamic_params().sublist(
                     "ARTERY COUPLING"),
                 "ARTERY_COUPLING_METHOD") ==
-            Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
+            ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
         {
           return "ArtScatraCouplConNodeToPoint";
         }

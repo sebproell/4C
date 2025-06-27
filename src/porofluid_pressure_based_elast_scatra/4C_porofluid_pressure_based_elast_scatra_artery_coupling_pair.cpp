@@ -32,7 +32,7 @@ PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery, dis_t
     dim>::PorofluidElastScatraArteryCouplingPair()
     : PorofluidElastScatraArteryCouplingPairBase(),
       coupling_type_(CouplingType::undefined),
-      coupling_method_(Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none),
+      coupling_method_(ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none),
       condition_name_(""),
       is_init_(false),
       is_pre_evaluated_(false),
@@ -92,7 +92,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
     const double penalty_parameter, const std::string coupling_type, const int eta_ntp)
 {
   coupling_method_ =
-      Teuchos::getIntegralValue<Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
+      Teuchos::getIntegralValue<ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
           coupling_params, "ARTERY_COUPLING_METHOD");
 
   condition_name_ = condition_name;
@@ -129,7 +129,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
         artery_element_->element_type().name(), homogenized_element_->element_type().name());
   }
 
-  if (coupling_method_ == Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
+  if (coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
   {
     // set eta
     gp_coords_artery_.resize(1);
@@ -533,7 +533,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
 {
   if (!is_init_) FOUR_C_THROW("MeshTying Pair has not yet been initialized.");
 
-  if (coupling_method_ == Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
+  if (coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
   {
     pre_evaluate_node_to_point_coupling();
   }
@@ -984,7 +984,7 @@ double PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery
 
   switch (coupling_method_)
   {
-    case Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::gpts:
+    case ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::gpts:
     {
       // initialize Gauss point coordinates
       current_gp_coord_artery.assign(num_gp_, double{});
@@ -1002,7 +1002,7 @@ double PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery
       integrated_diameter = artery_diameter_ref_ * segment_lengths[segment_id_];
       break;
     }
-    case Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp:
+    case ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp:
     {
       // initialize Gauss point coordinates
       current_gp_coord_artery.assign(num_gp_, double{});
@@ -1018,7 +1018,7 @@ double PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery
       integrated_diameter = artery_diameter_ref_ * segment_lengths[segment_id_];
       break;
     }
-    case Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp:
+    case ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp:
     {
       // define Gauss point coordinates
       current_gp_coord_artery = gp_coords_artery_;
@@ -1652,7 +1652,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingPair<dis_type_artery,
     const double& artery_segment_end)
 {
   if (evaluate_in_ref_config_ || coupling_type_ == CouplingType::scatra ||
-      coupling_method_ == Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
+      coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
     return;
 
   // Vectors for shape functions and their derivatives

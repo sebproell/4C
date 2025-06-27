@@ -8,6 +8,7 @@
 #include "4C_global_legacy_module_validparameters.hpp"
 
 #include "4C_ale_input.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_beam3_discretization_runtime_output_input.hpp"
 #include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_potential_input.hpp"
@@ -230,8 +231,8 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
   ALE::set_valid_parameters(specs);
   Inpar::FSI::set_valid_parameters(specs);
 
-  Inpar::ArtDyn::set_valid_parameters(specs);
-  Inpar::ArteryNetwork::set_valid_parameters(specs);
+  ArtDyn::set_valid_parameters(specs);
+  ArteryNetwork::set_valid_parameters(specs);
   Inpar::BioFilm::set_valid_parameters(specs);
   Airway::set_valid_parameters(specs);
   Inpar::Cardiovascular0D::set_valid_parameters(specs);

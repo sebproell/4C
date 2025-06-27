@@ -11,8 +11,8 @@
 #include "4C_config.hpp"
 
 #include "4C_adapter_art_net.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_fem_discretization.hpp"
-#include "4C_inpar_bio.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 #include <Teuchos_TimeMonitor.hpp>
@@ -90,9 +90,8 @@ namespace Arteries
     void time_loop(bool CoupledTo3D, std::shared_ptr<Teuchos::ParameterList> CouplingTo3DParams);
 
     //! set the initial field on the artery discretization
-    virtual void set_initial_field(
-        const Inpar::ArtDyn::InitialField init,  //!< type of initial field
-        const int startfuncno                    //!< number of spatial function
+    virtual void set_initial_field(const ArtDyn::InitialField init,  //!< type of initial field
+        const int startfuncno                                        //!< number of spatial function
     )
     {
       // each artery integration should overwrite this if used

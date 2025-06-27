@@ -18,7 +18,7 @@ FOUR_C_NAMESPACE_OPEN
  | (public) kremheller                                                03/18 |
  *--------------------------------------------------------------------------*/
 Discret::Elements::ArteryEleInterface* Discret::Elements::ArtNetFactory::provide_impl(
-    Core::FE::CellType distype, Inpar::ArtDyn::ImplType problem, const std::string& disname)
+    Core::FE::CellType distype, ArtDyn::ImplType problem, const std::string& disname)
 {
   switch (distype)
   {
@@ -48,17 +48,17 @@ Discret::Elements::ArteryEleInterface* Discret::Elements::ArtNetFactory::provide
  *--------------------------------------------------------------------------*/
 template <Core::FE::CellType distype>
 Discret::Elements::ArteryEleInterface* Discret::Elements::ArtNetFactory::define_problem_type(
-    Inpar::ArtDyn::ImplType problem, const std::string& disname)
+    ArtDyn::ImplType problem, const std::string& disname)
 {
   switch (problem)
   {
-    case Inpar::ArtDyn::ImplType::impltype_lin_exp:
+    case ArtDyn::ImplType::impltype_lin_exp:
     {
       // 2 dofs per node
       return Discret::Elements::ArteryEleCalcLinExp<distype>::instance(2, disname);
       break;
     }
-    case Inpar::ArtDyn::ImplType::impltype_pressure_based:
+    case ArtDyn::ImplType::impltype_pressure_based:
     {
       // 1 dof per node (only pressure)
       return Discret::Elements::ArteryEleCalcPresBased<distype>::instance(1, disname);

@@ -11,8 +11,8 @@
 #include "4C_config.hpp"
 
 #include "4C_art_net_artery_ele_interface.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_fem_general_element.hpp"
-#include "4C_inpar_bio.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -33,13 +33,13 @@ namespace Discret
       virtual ~ArtNetFactory() = default;
       //! ProvideImpl
       static ArteryEleInterface* provide_impl(
-          Core::FE::CellType distype, Inpar::ArtDyn::ImplType problem, const std::string& disname);
+          Core::FE::CellType distype, ArtDyn::ImplType problem, const std::string& disname);
 
      private:
       //! define ArteryEle instances dependent on problem
       template <Core::FE::CellType distype>
       static ArteryEleInterface* define_problem_type(
-          Inpar::ArtDyn::ImplType problem, const std::string& disname);
+          ArtDyn::ImplType problem, const std::string& disname);
 
 
     };  // end class ArtNetFactory

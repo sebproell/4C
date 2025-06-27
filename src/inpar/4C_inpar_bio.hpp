@@ -25,67 +25,6 @@ namespace Core::Conditions
 
 namespace Inpar
 {
-  namespace ArtDyn
-  {
-    enum TimeIntegrationScheme
-    {
-      tay_gal,
-      stationary
-    };
-
-    /// initial field for artery problem
-    enum InitialField
-    {
-      initfield_zero_field,
-      initfield_field_by_function,
-      initfield_field_by_condition
-    };
-
-    //! element implementation type
-    enum ImplType
-    {
-      impltype_undefined,
-      impltype_lin_exp,
-      impltype_pressure_based
-    };
-
-    /// set the arterial dynamic parameters
-    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
-  }  // namespace ArtDyn
-
-  namespace ArteryNetwork
-  {
-    /*!----------------------------------------------------------------------
-    \brief enum of reduced dimensional relaxation type
-    This is the enumeration of all types of different relaxation types
-
-    *-----------------------------------------------------------------------*/
-    enum Relaxtype3D0D
-    {
-      norelaxation,
-      fixedrelaxation,
-      Aitken,
-      SD
-    };
-
-    //! coupling between artery network and pressure-based porofluid-elasticity-scatra problem
-    enum class ArteryPorofluidElastScatraCouplingMethod
-    {
-      none,   // none
-      nodal,  // nodal
-      gpts,   // Gauss-point-to-segment
-      mp,     // mortar-penalty
-      ntp     // 1D node-to-point in 2D/3D
-    };
-
-    /// set the artnet parameters
-    void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
-
-    /// set specific artnet conditions
-    void set_valid_conditions(std::vector<Core::Conditions::ConditionDefinition>& condlist);
-
-  }  // namespace ArteryNetwork
-
   namespace BioFilm
   {
     /// set the biofilm parameters

@@ -102,8 +102,8 @@ namespace Arteries
     void reconstruct_flow();
 
     //! set the initial field on the artery discretization
-    void set_initial_field(const Inpar::ArtDyn::InitialField init,  //!< type of initial field
-        const int startfuncno                                       //!< number of spatial function
+    void set_initial_field(const ArtDyn::InitialField init,  //!< type of initial field
+        const int startfuncno                                //!< number of spatial function
         ) override;
 
     // prepare the loop

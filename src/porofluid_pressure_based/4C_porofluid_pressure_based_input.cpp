@@ -7,7 +7,7 @@
 
 #include "4C_porofluid_pressure_based_input.hpp"
 
-#include "4C_inpar_bio.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_io_input_spec_builders.hpp"
 
 #include <Teuchos_Time.hpp>
@@ -213,18 +213,17 @@ void PoroPressureBased::set_valid_parameters_porofluid(
                                            .default_value = 1000.0}),
 
 
-          deprecated_selection<Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
+          deprecated_selection<ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
               "ARTERY_COUPLING_METHOD",
               {
-                  {"None", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none},
-                  {"Nodal", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::nodal},
-                  {"GPTS", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::gpts},
-                  {"MP", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp},
-                  {"NTP", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp},
+                  {"None", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none},
+                  {"Nodal", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::nodal},
+                  {"GPTS", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::gpts},
+                  {"MP", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp},
+                  {"NTP", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp},
               },
               {.description = "Coupling method for artery coupling.",
-                  .default_value =
-                      Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none}),
+                  .default_value = ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none}),
 
           // coupled artery dofs for mesh tying
           parameter<std::string>("COUPLEDDOFS_ART",

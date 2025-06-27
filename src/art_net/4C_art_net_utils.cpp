@@ -21,10 +21,9 @@ FOUR_C_NAMESPACE_OPEN
  | create algorithm                                                      |
  *----------------------------------------------------------------------*/
 std::shared_ptr<Adapter::ArtNet> Arteries::Utils::create_algorithm(
-    Inpar::ArtDyn::TimeIntegrationScheme timintscheme,
-    std::shared_ptr<Core::FE::Discretization> dis, const int linsolvernumber,
-    const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& artparams,
-    Core::IO::DiscretizationWriter& output)
+    ArtDyn::TimeIntegrationScheme timintscheme, std::shared_ptr<Core::FE::Discretization> dis,
+    const int linsolvernumber, const Teuchos::ParameterList& probparams,
+    const Teuchos::ParameterList& artparams, Core::IO::DiscretizationWriter& output)
 {
   // Creation of Coupled Problem algorithm.
   std::shared_ptr<Adapter::ArtNet> algo = nullptr;
@@ -36,14 +35,14 @@ std::shared_ptr<Adapter::ArtNet> Arteries::Utils::create_algorithm(
 
   switch (timintscheme)
   {
-    case Inpar::ArtDyn::TimeIntegrationScheme::tay_gal:
+    case ArtDyn::TimeIntegrationScheme::tay_gal:
     {
       // create algorithm
       algo = std::make_shared<Arteries::ArtNetExplicitTimeInt>(
           dis, linsolvernumber, probparams, artparams, output);
       break;
     }
-    case Inpar::ArtDyn::TimeIntegrationScheme::stationary:
+    case ArtDyn::TimeIntegrationScheme::stationary:
     {
       // create algorithm
       algo = std::make_shared<Arteries::ArtNetImplStationary>(
@@ -102,7 +101,7 @@ bool Arteries::ArteryScatraCloneStrategy::determine_ele_type(
   // clone the element
   Discret::Elements::Artery* myele = static_cast<Discret::Elements::Artery*>(actele);
   // only the pressure based artery supports this function so far
-  if (myele->impl_type() == Inpar::ArtDyn::impltype_pressure_based)
+  if (myele->impl_type() == ArtDyn::impltype_pressure_based)
   {
     // we only support transport elements here
     eletype.push_back("TRANSP");
