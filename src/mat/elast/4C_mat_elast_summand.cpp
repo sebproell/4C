@@ -337,7 +337,7 @@ void Mat::Elastic::Summand::unpack(Core::Communication::UnpackBuffer& buffer) { 
 
 // Function which reads in the given fiber value due to the FIBER1 nomenclature
 void Mat::Elastic::Summand::read_fiber(const Core::IO::InputParameterContainer& container,
-    const std::string& specifier, Core::LinAlg::Matrix<3, 1>& fiber_vector)
+    const std::string& specifier, Core::LinAlg::Tensor<double, 3>& fiber_vector)
 {
   const auto& fiber_opt = container.get<std::optional<std::vector<double>>>(specifier);
   FOUR_C_ASSERT(fiber_opt.has_value(), "Internal error: fiber vector not found.");
@@ -357,13 +357,13 @@ void Mat::Elastic::Summand::read_fiber(const Core::IO::InputParameterContainer& 
 
 // Function which reads in the given fiber value due to the CIR-AXI-RAD nomenclature
 void Mat::Elastic::Summand::read_rad_axi_cir(
-    const Core::IO::InputParameterContainer& container, Core::LinAlg::Matrix<3, 3>& locsys)
+    const Core::IO::InputParameterContainer& container, Core::LinAlg::Tensor<double, 3, 3>& locsys)
 {
   // read local (cylindrical) cosy-directions at current element
   // basis is local cosy with third vec e3 = circumferential dir and e2 = axial dir
-  Core::LinAlg::Matrix<3, 1> fiber_rad;
-  Core::LinAlg::Matrix<3, 1> fiber_axi;
-  Core::LinAlg::Matrix<3, 1> fiber_cir;
+  Core::LinAlg::Tensor<double, 3> fiber_rad;
+  Core::LinAlg::Tensor<double, 3> fiber_axi;
+  Core::LinAlg::Tensor<double, 3> fiber_cir;
 
   read_fiber(container, "RAD", fiber_rad);
   read_fiber(container, "AXI", fiber_axi);
@@ -378,7 +378,7 @@ void Mat::Elastic::Summand::read_rad_axi_cir(
 }
 
 void Mat::Elastic::Summand::evaluate_first_derivatives_aniso(Core::LinAlg::Matrix<2, 1>& dPI_aniso,
-    Core::LinAlg::Matrix<3, 3> const& rcg, int gp, int eleGID)
+    Core::LinAlg::SymmetricTensor<double, 3, 3> const& rcg, int gp, int eleGID)
 {
   bool isoprinc, isomod, anisoprinc, anisomod, viscogeneral;
   specify_formulation(isoprinc, isomod, anisoprinc, anisomod, viscogeneral);
@@ -391,8 +391,8 @@ void Mat::Elastic::Summand::evaluate_first_derivatives_aniso(Core::LinAlg::Matri
 }
 
 void Mat::Elastic::Summand::evaluate_second_derivatives_aniso(
-    Core::LinAlg::Matrix<3, 1>& ddPII_aniso, Core::LinAlg::Matrix<3, 3> const& rcg, int gp,
-    int eleGID)
+    Core::LinAlg::Matrix<3, 1>& ddPII_aniso, Core::LinAlg::SymmetricTensor<double, 3, 3> const& rcg,
+    int gp, int eleGID)
 {
   bool isoprinc, isomod, anisoprinc, anisomod, viscogeneral;
   specify_formulation(isoprinc, isomod, anisoprinc, anisomod, viscogeneral);

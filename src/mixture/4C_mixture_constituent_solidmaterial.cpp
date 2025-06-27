@@ -9,6 +9,7 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_mixture.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
@@ -140,18 +141,19 @@ void Mixture::MixtureConstituentSolidMaterial::read_element(
 
 void Mixture::MixtureConstituentSolidMaterial::update() { material_->update(); }
 
-void Mixture::MixtureConstituentSolidMaterial::update(Core::LinAlg::Matrix<3, 3> const& defgrd,
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+void Mixture::MixtureConstituentSolidMaterial::update(
+    Core::LinAlg::Tensor<double, 3, 3> const& defgrd, const Teuchos::ParameterList& params,
+    const int gp, const int eleGID)
 {
   material_->update(defgrd, gp, params, eleGID);
 }
 
-void Mixture::MixtureConstituentSolidMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
-    const Core::LinAlg::Matrix<6, 1>& E_strain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, const int gp,
-    const int eleGID)
+void Mixture::MixtureConstituentSolidMaterial::evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID)
 {
-  material_->evaluate(&F, &E_strain, params, &S_stress, &cmat, gp, eleGID);
+  material_->evaluate(&F, E_strain, params, S_stress, cmat, gp, eleGID);
 }
 
 void Mixture::MixtureConstituentSolidMaterial::register_output_data_names(

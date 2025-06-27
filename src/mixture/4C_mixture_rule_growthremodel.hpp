@@ -95,14 +95,15 @@ namespace Mixture
 
     void register_anisotropy_extensions(Mat::Anisotropy& anisotropy) override;
 
-    void setup(Teuchos::ParameterList& params, int eleGID) override;
+    void setup(const Teuchos::ParameterList& params, int eleGID) override;
 
-    void update(Core::LinAlg::Matrix<3, 3> const& F, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    void update(Core::LinAlg::Tensor<double, 3, 3> const& F, const Teuchos::ParameterList& params,
+        int gp, int eleGID) override;
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-        Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     /*!
      * \brief Returns the initial reference mass denstity of the constituent

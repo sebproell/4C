@@ -11,6 +11,8 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_material_parameter_base.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -136,8 +138,8 @@ namespace Mixture
      * @param numgp (in) : number of Gauss points
      * @param eleGID (in) : global element id
      */
-    virtual void setup(Mixture::MixtureConstituent& constituent, Teuchos::ParameterList& params,
-        int numgp, int eleGID) {};
+    virtual void setup(Mixture::MixtureConstituent& constituent,
+        const Teuchos::ParameterList& params, int numgp, int eleGID) {};
 
     /*!
      * @brief
@@ -150,8 +152,8 @@ namespace Mixture
      */
     virtual void evaluate_prestress(const MixtureRule& mixtureRule,
         const std::shared_ptr<const Mat::CoordinateSystemProvider> anisotropy,
-        Mixture::MixtureConstituent& constituent, Core::LinAlg::Matrix<3, 3>& G,
-        Teuchos::ParameterList& params, int gp, int eleGID) = 0;
+        Mixture::MixtureConstituent& constituent, Core::LinAlg::SymmetricTensor<double, 3, 3>& G,
+        const Teuchos::ParameterList& params, int gp, int eleGID) = 0;
 
     /*!
      * \brief Update prestretch tensor during update
@@ -165,8 +167,9 @@ namespace Mixture
      * \param eleGID (in) : Global element id
      */
     virtual void update(const std::shared_ptr<const Mat::CoordinateSystemProvider> anisotropy,
-        Mixture::MixtureConstituent& constituent, const Core::LinAlg::Matrix<3, 3>& F,
-        Core::LinAlg::Matrix<3, 3>& G, Teuchos::ParameterList& params, int gp, int eleGID) = 0;
+        Mixture::MixtureConstituent& constituent, const Core::LinAlg::Tensor<double, 3, 3>& F,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& G, const Teuchos::ParameterList& params,
+        int gp, int eleGID) = 0;
   };
 }  // namespace Mixture
 

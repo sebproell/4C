@@ -10,6 +10,7 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -213,11 +214,17 @@ void Mat::ViscoNeoHooke::update()
 /*----------------------------------------------------------------------*
  |  Evaluate Material                             (public)         05/08|
  *----------------------------------------------------------------------*/
-void Mat::ViscoNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,
-    Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, const int gp, const int eleGID)
+void Mat::ViscoNeoHooke::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<6, 1> glstrain_mat =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
+
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   // get material parameters
   const double E_s = params_->youngs_slow_;
   const double nue = params_->poisson_;
@@ -302,7 +309,7 @@ void Mat::ViscoNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> Id;
   for (int i = 0; i < 3; i++) Id(i) = 1.0;
   for (int i = 3; i < 6; i++) Id(i) = 0.0;
-  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> C(*glstrain);
+  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> C(glstrain_mat);
   C.scale(2.0);
   C += Id;
 
@@ -332,7 +339,7 @@ void Mat::ViscoNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // Volumetric part of PK2 stress
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> SVol(Cinv);
   SVol.scale(kappa * (J - 1.0) * J);
-  *stress += SVol;
+  stress_view += SVol;
 
   // Deviatoric elastic part (2 d W^dev/d C)
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> SDevEla(Cinv);
@@ -359,9 +366,9 @@ void Mat::ViscoNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // add visco PK2 stress, weighted with alphas
   SDevEla.scale(alpha0);
-  *stress += SDevEla;
+  stress_view += SDevEla;
   Q.scale(alpha1);
-  *stress += Q;
+  stress_view += Q;
   // elasticity matrix
   double scalar1 = 2.0 * kappa * J * J - kappa * J;
   double scalar2 = -2.0 * kappa * J * J + 2.0 * kappa * J;
@@ -370,24 +377,24 @@ void Mat::ViscoNeoHooke::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // add volumetric elastic part 1
   // add scalar2 Cinv o Cinv (see Holzapfel p. 254)
-  Core::LinAlg::FourTensorOperations::add_holzapfel_product((*cmat), Cinv, scalar2);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmat_view, Cinv, scalar2);
 
   // add visco-elastic deviatoric part 1
-  Core::LinAlg::FourTensorOperations::add_holzapfel_product(*cmat, Cinv, scalarvisco * scalar3);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmat_view, Cinv, scalarvisco * scalar3);
 
   for (int i = 0; i < 6; ++i)
   {
     for (int j = 0; j < 6; ++j)
     {
       // add volumetric elastic part 2
-      (*cmat)(i, j) += scalar1 * Cinv(i) * Cinv(j)  // add scalar Cinv x Cinv
-                                                    // add visco-elastic deviatoric part 2
-                       + scalarvisco * (-scalar4) * Id(i) * Cinv(j)        // add scalar Id x Cinv
-                       + scalarvisco * (-scalar4) * Id(j) * Cinv(i)        // add scalar Cinv x Id
-                       + scalarvisco * (scalar3)*Cinv(i) * Cinv(j) / 3.0;  // add scalar Cinv x Cinv
+      cmat_view(i, j) += scalar1 * Cinv(i) * Cinv(j)  // add scalar Cinv x Cinv
+                                                      // add visco-elastic deviatoric part 2
+                         + scalarvisco * (-scalar4) * Id(i) * Cinv(j)  // add scalar Id x Cinv
+                         + scalarvisco * (-scalar4) * Id(j) * Cinv(i)  // add scalar Cinv x Id
+                         +
+                         scalarvisco * (scalar3)*Cinv(i) * Cinv(j) / 3.0;  // add scalar Cinv x Cinv
     }
   }
-  return;
 }
 
 FOUR_C_NAMESPACE_CLOSE

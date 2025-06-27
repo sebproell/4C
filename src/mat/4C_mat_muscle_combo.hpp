@@ -167,13 +167,13 @@ namespace Mat
 
     bool uses_extended_update() override { return true; };
 
-    void update(Core::LinAlg::Matrix<3, 3> const& defgrd, int const gp,
-        Teuchos::ParameterList& params, int const eleGID) override;
+    void update(const Core::LinAlg::Tensor<double, 3, 3>& defgrd, int const gp,
+        const Teuchos::ParameterList& params, int const eleGID) override;
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     using ActivationEvaluatorVariant =
         std::variant<std::monostate, const Core::Utils::FunctionOfSpaceTime*,
@@ -191,7 +191,7 @@ namespace Mat
      * \param[out] Pa Active nominal stress
      * \param[out] derivPa Derivative of active nominal stress w.r.t. the fiber stretch
      */
-    void evaluate_active_nominal_stress(Teuchos::ParameterList& params, const int eleGID,
+    void evaluate_active_nominal_stress(const Teuchos::ParameterList& params, const int eleGID,
         const double lambdaM, double& intPa, double& Pa, double& derivPa);
 
     /*!

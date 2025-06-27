@@ -11,6 +11,7 @@
 
 #include "4C_fem_general_node.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
+#include "4C_linalg_tensor.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -51,7 +52,7 @@ namespace Core::Nodes
   void project_quantity_with_shape_functions(
       const std::array<std::array<double, dim>, Core::FE::num_nodes(distype)> quantity,
       const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>>& shapefcts,
-      std::vector<Core::LinAlg::Matrix<dim, 1>>& quantityProjected);
+      std::vector<Core::LinAlg::Tensor<double, dim>>& quantityProjected);
 
   /*!
    * @brief Projectsd a double from the nodes with the shapefunctions into the innder of the

@@ -76,7 +76,7 @@ MATERIALS:
       KAPPA: 100
   - MAT: 129
     MIX_Prestress_Strategy_Constant:
-      PRESTRETCH: [1, 1, 1, 0, 0, 0, 0, 0, 0]
+      PRESTRETCH: [1, 1, 1, 0, 0, 0]
   - MAT: 2
     MAT_ElastHyper:
       NUMMAT: 2
@@ -372,24 +372,6 @@ RESULT DESCRIPTION:
       TOLERANCE: 1e-08
   - STRUCTURE:
       DIS: "structure"
-      NODE: 1
-      QUANTITY: "mixture_constituent_1_elasthyper_prestretch_7"
-      VALUE: 0
-      TOLERANCE: 1e-08
-  - STRUCTURE:
-      DIS: "structure"
-      NODE: 1
-      QUANTITY: "mixture_constituent_1_elasthyper_prestretch_8"
-      VALUE: 0
-      TOLERANCE: 1e-08
-  - STRUCTURE:
-      DIS: "structure"
-      NODE: 1
-      QUANTITY: "mixture_constituent_1_elasthyper_prestretch_9"
-      VALUE: 0
-      TOLERANCE: 1e-08
-  - STRUCTURE:
-      DIS: "structure"
       NODE: 13
       QUANTITY: "mixture_constituent_1_elasthyper_prestretch_1"
       VALUE: 0
@@ -422,24 +404,6 @@ RESULT DESCRIPTION:
       DIS: "structure"
       NODE: 13
       QUANTITY: "mixture_constituent_1_elasthyper_prestretch_6"
-      VALUE: 0
-      TOLERANCE: 1e-08
-  - STRUCTURE:
-      DIS: "structure"
-      NODE: 13
-      QUANTITY: "mixture_constituent_1_elasthyper_prestretch_7"
-      VALUE: 0
-      TOLERANCE: 1e-08
-  - STRUCTURE:
-      DIS: "structure"
-      NODE: 13
-      QUANTITY: "mixture_constituent_1_elasthyper_prestretch_8"
-      VALUE: 0
-      TOLERANCE: 1e-08
-  - STRUCTURE:
-      DIS: "structure"
-      NODE: 13
-      QUANTITY: "mixture_constituent_1_elasthyper_prestretch_9"
       VALUE: 0
       TOLERANCE: 1e-08
 PROBLEM SIZE:

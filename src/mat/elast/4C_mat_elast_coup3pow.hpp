@@ -83,14 +83,15 @@ namespace Mat
       //@}
 
       // add strain energy
-      virtual void add_strain_energy(double& psi,  ///< strain energy function
+      void add_strain_energy(double& psi,  ///< strain energy function
           const Core::LinAlg::Matrix<3, 1>&
               prinv,  ///< principal invariants of right Cauchy-Green tensor
           const Core::LinAlg::Matrix<3, 1>&
               modinv,  ///< modified invariants of right Cauchy-Green tensor
-          const Core::LinAlg::Matrix<6, 1> glstrain,  ///< Green-Lagrange strain
-          const int eleGID                            ///< element GID
-      );
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,  ///< Green-Lagrange strain
+          const int gp,
+          const int eleGID  ///< element GID
+          ) override;
 
       void add_derivatives_principal(
           Core::LinAlg::Matrix<3, 1>& dPI,    ///< first derivative with respect to invariants

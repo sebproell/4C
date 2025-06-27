@@ -239,15 +239,10 @@ namespace Mat
     void update() override;
 
     //! evaluate material law
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,      //!< [IN] deformation gradient
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* glstrain,  //!< [IN] Green-Lagrange strain
-        Teuchos::ParameterList& params,                          //!< [IN] model parameter list
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>*
-            stress,  //!< [OUT] (mandatory) second Piola-Kirchhoff stress
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>*
-            cmat,  //!< [OUT] (mandatory) material stiffness matrix
-        int gp,    //!< [IN ]Gauss point
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     //! transform Miller Bravais index notation of hexagonal lattices to Miller index notation
     void miller_bravais_to_miller(
@@ -298,9 +293,6 @@ namespace Mat
         Core::LinAlg::Matrix<3, 3>& second_pk_stress_trial,  //!< [OUT] 2nd Piola-Kirchhoff stress
         std::vector<double>& residuals_trial                 //!< [OUT] vector of slip residuals
     );
-
-    //! Return whether or not the material requires the deformation gradient for its evaluation
-    bool needs_defgrd() const override { return true; };
 
 
     //-----------------------------------------------------------------------------

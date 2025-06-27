@@ -1600,7 +1600,7 @@ void Discret::Elements::Membrane<distype>::update_element(
       }
       else if (material_global_coordinates != nullptr)
       {
-        solid_material()->update(defgrd_glob, gp, params, id());
+        solid_material()->update(Core::LinAlg::make_tensor(defgrd_glob), gp, params, id());
       }
     }
   }

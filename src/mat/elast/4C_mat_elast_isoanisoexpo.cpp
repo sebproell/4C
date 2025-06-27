@@ -9,6 +9,8 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_elast_aniso_structuraltensor_strategy.hpp"
 #include "4C_mat_material_factory.hpp"
 #include "4C_material_base.hpp"
@@ -51,9 +53,9 @@ void Mat::Elastic::IsoAnisoExpo::setup(
   if (params_->init_ == 0)
   {
     // fibers aligned in YZ-plane with gamma around Z in global cartesian cosy
-    Core::LinAlg::Matrix<3, 3> Id(Core::LinAlg::Initialization::zero);
-    for (int i = 0; i < 3; i++) Id(i, i) = 1.0;
-    set_fiber_vecs(-1.0, Id, Id);
+    constexpr auto id =
+        Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
+    set_fiber_vecs(-1.0, id, id);
   }
 
   // path if fibers are given in input file
@@ -65,13 +67,13 @@ void Mat::Elastic::IsoAnisoExpo::setup(
         container.get<std::optional<std::vector<double>>>("CIR").has_value())
     {
       // Read in of data
-      Core::LinAlg::Matrix<3, 3> locsys(Core::LinAlg::Initialization::zero);
+      Core::LinAlg::Tensor<double, 3, 3> locsys{};
       read_rad_axi_cir(container, locsys);
 
-      Core::LinAlg::Matrix<3, 3> Id(Core::LinAlg::Initialization::zero);
-      for (int i = 0; i < 3; i++) Id(i, i) = 1.0;
+      constexpr auto id =
+          Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
       // final setup of fiber data
-      set_fiber_vecs(0.0, locsys, Id);
+      set_fiber_vecs(0.0, locsys, id);
     }
 
     // FIBER1 nomenclature
@@ -92,17 +94,16 @@ void Mat::Elastic::IsoAnisoExpo::setup(
     FOUR_C_THROW("INIT mode not implemented");
 }
 
-void Mat::Elastic::IsoAnisoExpo::add_stress_aniso_modified(const Core::LinAlg::Matrix<6, 1>& rcg,
-    const Core::LinAlg::Matrix<6, 1>& icg, Core::LinAlg::Matrix<6, 6>& cmat,
-    Core::LinAlg::Matrix<6, 1>& stress, double I3, const int gp, const int eleGID,
-    Teuchos::ParameterList& params)
+void Mat::Elastic::IsoAnisoExpo::add_stress_aniso_modified(
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& icg,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stress, double I3, const int gp, const int eleGID,
+    const Teuchos::ParameterList& params)
 {
   double incJ = std::pow(I3, -1.0 / 3.0);  // J^{-2/3}
 
-  double J4 = incJ * (structural_tensor_(0) * rcg(0) + structural_tensor_(1) * rcg(1) +
-                         structural_tensor_(2) * rcg(2) + structural_tensor_(3) * rcg(3) +
-                         structural_tensor_(4) * rcg(4) +
-                         structural_tensor_(5) * rcg(5));  // J4 = J^{-2/3} I4
+  double J4 = incJ * Core::LinAlg::ddot(structural_tensor_, rcg);  // J4 = J^{-2/3} I4
 
   double k1 = params_->k1_;
   double k2 = params_->k2_;
@@ -113,32 +114,32 @@ void Mat::Elastic::IsoAnisoExpo::add_stress_aniso_modified(const Core::LinAlg::M
     k2 = params_->k2comp_;
   }
 
-  Core::LinAlg::Matrix<6, 1> Saniso(structural_tensor_);  // first compute Sfbar = 2 dW/dJ4 A_
   double gammabar = 2. * (k1 * (J4 - 1.) * exp(k2 * (J4 - 1.) * (J4 - 1.)));  // 2 dW/dJ4
-  Saniso.scale(gammabar);                                                     // Sfbar
+  auto Saniso = gammabar * structural_tensor_;                                // Sfbar
 
-  double traceCSfbar = Saniso(0) * rcg(0) + Saniso(1) * rcg(1) + Saniso(2) * rcg(2) +
-                       1. * (Saniso(3) * rcg(3) + Saniso(4) * rcg(4) + Saniso(5) * rcg(5));
-  Saniso.update(-incJ / 3. * traceCSfbar, icg, incJ);
+  double traceCSfbar = Core::LinAlg::ddot(Saniso, rcg);
+  Saniso = -incJ / 3. * traceCSfbar * icg + incJ * Saniso;
 
+  Core::LinAlg::Matrix<6, 1> incJvec = Core::LinAlg::make_strain_like_voigt_matrix(icg);
   Core::LinAlg::Matrix<6, 6> Psl(
       Core::LinAlg::Initialization::zero);  // Psl = Cinv o Cinv - 1/3 Cinv x Cinv
-  Core::LinAlg::FourTensorOperations::add_holzapfel_product(Psl, icg, 1.0);
-  Psl.multiply_nt(-1. / 3., icg, icg, 1.0);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(Psl, incJvec, 1.0);
+  Psl.multiply_nt(-1. / 3., incJvec, incJvec, 1.0);
 
-  Core::LinAlg::Matrix<6, 1> Aiso(structural_tensor_);
-  Aiso.update(-J4 / 3.0, icg, incJ);
-  Core::LinAlg::Matrix<6, 6> cmataniso(
-      Core::LinAlg::Initialization::zero);  // isochoric elastic cmat
+  Core::LinAlg::SymmetricTensor<double, 3, 3> Aiso = -J4 / 3.0 * icg + incJ * structural_tensor_;
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmataniso{};  // isochoric elastic cmat
   double deltabar = 2. * (1. + 2. * k2 * (J4 - 1.) * (J4 - 1.)) * 2. * k1 *
                     exp(k2 * (J4 - 1.) * (J4 - 1.));  // 4 d^2Wf/dJ4dJ4
-  cmataniso.multiply_nt(deltabar, Aiso, Aiso);
-  cmataniso.update(2. / 3. * incJ * traceCSfbar, Psl, 1.0);
-  cmataniso.multiply_nt(-2. / 3., icg, Saniso, 1.0);
-  cmataniso.multiply_nt(-2. / 3., Saniso, icg, 1.0);
+  cmataniso += deltabar * Core::LinAlg::dyadic(Aiso, Aiso);
 
-  stress.update(1.0, Saniso, 1.0);
-  cmat.update(1.0, cmataniso, 1.0);
+  Core::LinAlg::make_stress_like_voigt_view(cmataniso).update(
+      2. / 3. * incJ * traceCSfbar, Psl, 1.0);
+
+
+  cmataniso += -2.0 / 3.0 * (Core::LinAlg::dyadic(icg, Saniso) + Core::LinAlg::dyadic(Saniso, icg));
+
+  stress += Saniso;
+  cmat += cmataniso;
 }
 
 void Mat::Elastic::IsoAnisoExpo::get_derivatives_aniso(Core::LinAlg::Matrix<2, 1>& dPI_aniso,
@@ -165,14 +166,15 @@ void Mat::Elastic::IsoAnisoExpo::get_derivatives_aniso(Core::LinAlg::Matrix<2, 1
 };
 
 void Mat::Elastic::IsoAnisoExpo::get_fiber_vecs(
-    std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+    std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
 ) const
 {
   fibervecs.push_back(a_);
 }
 
 void Mat::Elastic::IsoAnisoExpo::set_fiber_vecs(const double newgamma,
-    const Core::LinAlg::Matrix<3, 3>& locsys, const Core::LinAlg::Matrix<3, 3>& defgrd)
+    const Core::LinAlg::Tensor<double, 3, 3>& locsys,
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd)
 {
   if ((params_->gamma_ < -90) || (params_->gamma_ > 90))
     FOUR_C_THROW("Fiber angle not in [-90,90]");
@@ -187,19 +189,18 @@ void Mat::Elastic::IsoAnisoExpo::set_fiber_vecs(const double newgamma,
       gamma = newgamma;
   }
 
-  Core::LinAlg::Matrix<3, 1> ca(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::Tensor<double, 3> ca{};
   for (int i = 0; i < 3; ++i)
   {
     // a = cos gamma e3 + sin gamma e2
     ca(i) = cos(gamma) * locsys(i, 2) + sin(gamma) * locsys(i, 1);
   }
   // pull back in reference configuration
-  Core::LinAlg::Matrix<3, 1> a_0(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<3, 3> idefgrd(Core::LinAlg::Initialization::zero);
-  idefgrd.invert(defgrd);
+  Core::LinAlg::Tensor<double, 3, 3> idefgrd = Core::LinAlg::inv(defgrd);
 
-  a_0.multiply(idefgrd, ca);
-  a_.update(1. / a_0.norm2(), a_0);
+  Core::LinAlg::Tensor<double, 3> a_0 = idefgrd * ca;
+
+  a_ = 1.0 / Core::LinAlg::norm2(a_0) * a_0;
 
   params_->structural_tensor_strategy()->setup_structural_tensor(a_, structural_tensor_);
 }

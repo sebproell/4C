@@ -114,14 +114,15 @@ namespace Mat
 
       /// Add anisotropic modified stresses
       void add_stress_aniso_modified(
-          const Core::LinAlg::Matrix<6, 1>& rcg,  ///< right Cauchy Green Tensor
-          const Core::LinAlg::Matrix<6, 1>& icg,  ///< inverse of right Cauchy Green Tensor
-          Core::LinAlg::Matrix<6, 6>& cmat,       ///< material stiffness matrix
-          Core::LinAlg::Matrix<6, 1>& stress,     ///< 2nd PK-stress
-          double I3,                              ///< third principal invariant
-          int gp,                                 ///< Gauss point
-          int eleGID,                             ///< element GID
-          Teuchos::ParameterList& params          ///< Container for additional information
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,  ///< right Cauchy Green Tensor
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>&
+              icg,  ///< inverse of right Cauchy Green Tensor
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< material stiffness matrix
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,      ///< 2nd PK-stress
+          double I3,                                                ///< third principal invariant
+          int gp,                                                   ///< Gauss point
+          int eleGID,                                               ///< element GID
+          const Teuchos::ParameterList& params  ///< Container for additional information
           ) override;
 
       /// retrieve coefficients of first, second and third derivative
@@ -137,14 +138,14 @@ namespace Mat
           int eleGID);        ///< element GID
 
       /// Set fiber directions
-      void set_fiber_vecs(const double newgamma,     ///< new angle
-          const Core::LinAlg::Matrix<3, 3>& locsys,  ///< local coordinate system
-          const Core::LinAlg::Matrix<3, 3>& defgrd   ///< deformation gradient
+      void set_fiber_vecs(const double newgamma,             ///< new angle
+          const Core::LinAlg::Tensor<double, 3, 3>& locsys,  ///< local coordinate system
+          const Core::LinAlg::Tensor<double, 3, 3>& defgrd   ///< deformation gradient
           ) override;
 
       /// Get fiber directions
       void get_fiber_vecs(
-          std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+          std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
       ) const override;
 
       /// Indicator for formulation
@@ -165,9 +166,9 @@ namespace Mat
       Mat::Elastic::PAR::IsoAnisoExpo* params_;
 
       /// fiber direction
-      Core::LinAlg::Matrix<3, 1> a_;
+      Core::LinAlg::Tensor<double, 3> a_;
       /// structural tensors in voigt notation for anisotropy
-      Core::LinAlg::Matrix<6, 1> structural_tensor_;
+      Core::LinAlg::SymmetricTensor<double, 3, 3> structural_tensor_;
     };
 
   }  // namespace Elastic

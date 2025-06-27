@@ -10,6 +10,8 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_fixedsizematrix_generators.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_anisotropy.hpp"
 #include "4C_mat_elast_coupanisoexpo.hpp"
 #include "4C_mat_service.hpp"
@@ -26,8 +28,8 @@ namespace
     CoupAnisoExpoBaseInterfaceFake()
     {
       /// initialize dummy fibers
-      std::array<Core::LinAlg::Matrix<3, 1>, 2> fibersa;
-      std::array<Core::LinAlg::Matrix<3, 1>, 2> fibersb;
+      std::array<Core::LinAlg::Tensor<double, 3>, 2> fibersa;
+      std::array<Core::LinAlg::Tensor<double, 3>, 2> fibersb;
       // gp 0
       fibersa[0](0) = 0.469809238649817;
       fibersa[0](1) = 0.872502871778232;
@@ -49,32 +51,24 @@ namespace
       // compute norm of fibers
       for (std::size_t i = 0; i < fibersa.size(); ++i)
       {
-        scalar_products_[i] = fibersa[i].dot(fibersb[i]);
-        Core::LinAlg::Matrix<3, 3> tmp;
-        tmp.multiply_nt(fibersa[i], fibersb[i]);
-        tensors_[i].update(0.5, tmp);
-        tensors_[i].update_t(0.5, tmp, 1.0);
-        Core::LinAlg::Voigt::Stresses::matrix_to_vector(tensors_[i], tensors_stress_[i]);
+        scalar_products_[i] = fibersa[i] * fibersb[i];
+        Core::LinAlg::Tensor<double, 3, 3> f1f2 = Core::LinAlg::dyadic(fibersa[i], fibersb[i]);
+
+        tensors_[i] = 0.5 * Core::LinAlg::assume_symmetry(f1f2 + Core::LinAlg::transpose(f1f2));
       }
     }
 
     [[nodiscard]] double get_scalar_product(int gp) const override { return scalar_products_[gp]; }
 
-    [[nodiscard]] const Core::LinAlg::Matrix<3, 3>& get_structural_tensor(int gp) const override
+    [[nodiscard]] const Core::LinAlg::SymmetricTensor<double, 3, 3>& get_structural_tensor(
+        int gp) const override
     {
       return tensors_.at(gp);
     }
 
-    [[nodiscard]] const Core::LinAlg::Matrix<6, 1>& get_structural_tensor_stress(
-        int gp) const override
-    {
-      return tensors_stress_.at(gp);
-    }
-
    private:
     std::array<double, 2> scalar_products_;
-    std::array<Core::LinAlg::Matrix<3, 3>, 2> tensors_;
-    std::array<Core::LinAlg::Matrix<6, 1>, 2> tensors_stress_;
+    std::array<Core::LinAlg::SymmetricTensor<double, 3, 3>, 2> tensors_;
   };
 
   class CoupAnisoExpoFake : public Mat::Elastic::CoupAnisoExpoBase
@@ -134,28 +128,18 @@ namespace
       C2_(1, 2) = C2_(2, 1) = 0.03214;
       C2_(0, 2) = C2_(2, 0) = 0.0523;
 
-      E1_.update(0.5, C1_, -0.5, Id);
-      E2_.update(0.5, C2_, -0.5, Id);
-
-      Core::LinAlg::Voigt::Strains::matrix_to_vector(C1_, C1_strain_);
-      Core::LinAlg::Voigt::Strains::matrix_to_vector(C2_, C2_strain_);
-      Core::LinAlg::Voigt::Strains::matrix_to_vector(E1_, E1_strain_);
-      Core::LinAlg::Voigt::Strains::matrix_to_vector(E2_, E2_strain_);
+      E1_ = 0.5 * (C1_ - Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
+      E2_ = 0.5 * (C2_ - Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
     }
 
 
     Mat::Elastic::PAR::CoupAnisoExpoBase parameters_;
     CoupAnisoExpoFake summand_;
 
-    Core::LinAlg::Matrix<3, 3> C1_;
-    Core::LinAlg::Matrix<3, 3> C2_;
-    Core::LinAlg::Matrix<3, 3> E1_;
-    Core::LinAlg::Matrix<3, 3> E2_;
-
-    Core::LinAlg::Matrix<6, 1> C1_strain_;
-    Core::LinAlg::Matrix<6, 1> C2_strain_;
-    Core::LinAlg::Matrix<6, 1> E1_strain_;
-    Core::LinAlg::Matrix<6, 1> E2_strain_;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> C1_;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> C2_;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> E1_;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> E2_;
   };
 
 
@@ -165,19 +149,19 @@ namespace
     Core::LinAlg::Matrix<3, 1> modinv(Core::LinAlg::Initialization::zero);
 
     double psi = 3.3;
-    summand_.add_strain_energy(psi, prinv, modinv, E1_strain_, 0, 0);
+    summand_.add_strain_energy(psi, prinv, modinv, E1_, 0, 0);
     EXPECT_NEAR(psi, 3.3970087043259376, 1e-10);
 
     psi = 3.3;
-    summand_.add_strain_energy(psi, prinv, modinv, E2_strain_, 0, 0);
+    summand_.add_strain_energy(psi, prinv, modinv, E2_, 0, 0);
     EXPECT_NEAR(psi, 3.308930242120174, 1e-10);
 
     psi = 3.3;
-    summand_.add_strain_energy(psi, prinv, modinv, E1_strain_, 1, 0);
+    summand_.add_strain_energy(psi, prinv, modinv, E1_, 1, 0);
     EXPECT_NEAR(psi, 3.358837786011725, 1e-10);
 
     psi = 3.3;
-    summand_.add_strain_energy(psi, prinv, modinv, E2_strain_, 1, 0);
+    summand_.add_strain_energy(psi, prinv, modinv, E2_, 1, 0);
     EXPECT_NEAR(psi, 3.3088538178019045, 1e-10);
   }
 
@@ -326,190 +310,195 @@ namespace
 
   TEST_F(CoupAnisoExpoBaseTest, add_stress_aniso_principal)
   {
-    Core::LinAlg::Matrix<6, 1> S_stress;
-    Core::LinAlg::Matrix<6, 6> cmat;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> S_stress{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat{};
     Teuchos::ParameterList dummyParams{};
 
-    summand_.add_stress_aniso_principal(C1_strain_, cmat, S_stress, dummyParams, 0, 0);
-    EXPECT_NEAR(S_stress(0), 0.04027188481644165, 1e-10);
-    EXPECT_NEAR(S_stress(1), 0.14958128646107013, 1e-10);
-    EXPECT_NEAR(S_stress(2), 0.03451875841409305, 1e-10);
-    EXPECT_NEAR(S_stress(3), 0.0776672064317092, 1e-10);
-    EXPECT_NEAR(S_stress(4), 0.12369221765050004, 1e-10);
-    EXPECT_NEAR(S_stress(5), 0.06616095362701158, 1e-10);
-    EXPECT_NEAR(cmat(0, 0), 0.01049446655089949, 1e-10);
-    EXPECT_NEAR(cmat(0, 1), 0.03897944718905555, 1e-10);
-    EXPECT_NEAR(cmat(0, 2), 0.008995257043628187, 1e-10);
-    EXPECT_NEAR(cmat(0, 3), 0.020239328348163384, 1e-10);
-    EXPECT_NEAR(cmat(0, 4), 0.03223300440633433, 1e-10);
-    EXPECT_NEAR(cmat(0, 5), 0.017240909333620668, 1e-10);
-    EXPECT_NEAR(cmat(1, 0), 0.03897944718905555, 1e-10);
-    EXPECT_NEAR(cmat(1, 1), 0.1447808038450646, 1e-10);
-    EXPECT_NEAR(cmat(1, 2), 0.03341095473347638, 1e-10);
-    EXPECT_NEAR(cmat(1, 3), 0.07517464815032171, 1e-10);
-    EXPECT_NEAR(cmat(1, 4), 0.11972258779495701, 1e-10);
-    EXPECT_NEAR(cmat(1, 5), 0.06403766323916298, 1e-10);
-    EXPECT_NEAR(cmat(2, 0), 0.008995257043628187, 1e-10);
-    EXPECT_NEAR(cmat(2, 1), 0.03341095473347638, 1e-10);
-    EXPECT_NEAR(cmat(2, 2), 0.007710220323109921, 1e-10);
-    EXPECT_NEAR(cmat(2, 3), 0.01734799572699729, 1e-10);
-    EXPECT_NEAR(cmat(2, 4), 0.027628289491143872, 1e-10);
-    EXPECT_NEAR(cmat(2, 5), 0.01477792228596066, 1e-10);
-    EXPECT_NEAR(cmat(3, 0), 0.020239328348163384, 1e-10);
-    EXPECT_NEAR(cmat(3, 1), 0.07517464815032171, 1e-10);
-    EXPECT_NEAR(cmat(3, 2), 0.01734799572699729, 1e-10);
-    EXPECT_NEAR(cmat(3, 3), 0.03903299038574383, 1e-10);
-    EXPECT_NEAR(cmat(3, 4), 0.0621636513550736, 1e-10);
-    EXPECT_NEAR(cmat(3, 5), 0.033250325143411426, 1e-10);
-    EXPECT_NEAR(cmat(4, 0), 0.03223300440633433, 1e-10);
-    EXPECT_NEAR(cmat(4, 1), 0.11972258779495701, 1e-10);
-    EXPECT_NEAR(cmat(4, 2), 0.027628289491143872, 1e-10);
-    EXPECT_NEAR(cmat(4, 3), 0.0621636513550736, 1e-10);
-    EXPECT_NEAR(cmat(4, 4), 0.09900137067659885, 1e-10);
-    EXPECT_NEAR(cmat(4, 5), 0.052954221524692355, 1e-10);
-    EXPECT_NEAR(cmat(5, 0), 0.017240909333620668, 1e-10);
-    EXPECT_NEAR(cmat(5, 1), 0.06403766323916298, 1e-10);
-    EXPECT_NEAR(cmat(5, 2), 0.01477792228596066, 1e-10);
-    EXPECT_NEAR(cmat(5, 3), 0.033250325143411426, 1e-10);
-    EXPECT_NEAR(cmat(5, 4), 0.052954221524692355, 1e-10);
-    EXPECT_NEAR(cmat(5, 5), 0.028324351048091223, 1e-10);
+    summand_.add_stress_aniso_principal(C1_, cmat, S_stress, dummyParams, 0, 0);
 
-    S_stress.clear();
-    cmat.clear();
-    summand_.add_stress_aniso_principal(C2_strain_, cmat, S_stress, dummyParams, 0, 0);
-    EXPECT_NEAR(S_stress(0), -0.010764777955497356, 1e-10);
-    EXPECT_NEAR(S_stress(1), -0.03998346097756192, 1e-10);
-    EXPECT_NEAR(S_stress(2), -0.009226952533283502, 1e-10);
-    EXPECT_NEAR(S_stress(3), -0.02076064319988784, 1e-10);
-    EXPECT_NEAR(S_stress(4), -0.03306324657759921, 1e-10);
-    EXPECT_NEAR(S_stress(5), -0.017684992355460023, 1e-10);
-    EXPECT_NEAR(cmat(0, 0), 0.0066706378981432205, 1e-10);
-    EXPECT_NEAR(cmat(0, 1), 0.02477665505024644, 1e-10);
-    EXPECT_NEAR(cmat(0, 2), 0.005717689626979938, 1e-10);
-    EXPECT_NEAR(cmat(0, 3), 0.012864801660704837, 1e-10);
-    EXPECT_NEAR(cmat(0, 4), 0.02048838783001144, 1e-10);
-    EXPECT_NEAR(cmat(0, 5), 0.0109589051183782, 1e-10);
-    EXPECT_NEAR(cmat(1, 0), 0.02477665505024644, 1e-10);
-    EXPECT_NEAR(cmat(1, 1), 0.09202757590091606, 1e-10);
-    EXPECT_NEAR(cmat(1, 2), 0.021237132900211363, 1e-10);
-    EXPECT_NEAR(cmat(1, 3), 0.047783549025475464, 1e-10);
-    EXPECT_NEAR(cmat(1, 4), 0.07609972622575735, 1e-10);
-    EXPECT_NEAR(cmat(1, 5), 0.04070450472540505, 1e-10);
-    EXPECT_NEAR(cmat(2, 0), 0.005717689626979938, 1e-10);
-    EXPECT_NEAR(cmat(2, 1), 0.021237132900211363, 1e-10);
-    EXPECT_NEAR(cmat(2, 2), 0.00490087682312569, 1e-10);
-    EXPECT_NEAR(cmat(2, 3), 0.011026972852032782, 1e-10);
-    EXPECT_NEAR(cmat(2, 4), 0.01756147528286705, 1e-10);
-    EXPECT_NEAR(cmat(2, 5), 0.009393347244324226, 1e-10);
-    EXPECT_NEAR(cmat(3, 0), 0.012864801660704837, 1e-10);
-    EXPECT_NEAR(cmat(3, 1), 0.047783549025475464, 1e-10);
-    EXPECT_NEAR(cmat(3, 2), 0.011026972852032782, 1e-10);
-    EXPECT_NEAR(cmat(3, 3), 0.024810688917073713, 1e-10);
-    EXPECT_NEAR(cmat(3, 4), 0.03951331938645079, 1e-10);
-    EXPECT_NEAR(cmat(3, 5), 0.02113503129972947, 1e-10);
-    EXPECT_NEAR(cmat(4, 0), 0.02048838783001144, 1e-10);
-    EXPECT_NEAR(cmat(4, 1), 0.07609972622575735, 1e-10);
-    EXPECT_NEAR(cmat(4, 2), 0.01756147528286705, 1e-10);
-    EXPECT_NEAR(cmat(4, 3), 0.03951331938645079, 1e-10);
-    EXPECT_NEAR(cmat(4, 4), 0.0629286197636069, 1e-10);
-    EXPECT_NEAR(cmat(4, 5), 0.0336594942921618, 1e-10);
-    EXPECT_NEAR(cmat(5, 0), 0.0109589051183782, 1e-10);
-    EXPECT_NEAR(cmat(5, 1), 0.04070450472540505, 1e-10);
-    EXPECT_NEAR(cmat(5, 2), 0.009393347244324226, 1e-10);
-    EXPECT_NEAR(cmat(5, 3), 0.02113503129972947, 1e-10);
-    EXPECT_NEAR(cmat(5, 4), 0.0336594942921618, 1e-10);
-    EXPECT_NEAR(cmat(5, 5), 0.018003915551621407, 1e-10);
+    EXPECT_NEAR(S_stress(0, 0), 0.04027188481644165, 1e-10);
+    EXPECT_NEAR(S_stress(1, 1), 0.14958128646107013, 1e-10);
+    EXPECT_NEAR(S_stress(2, 2), 0.03451875841409305, 1e-10);
+    EXPECT_NEAR(S_stress(0, 1), 0.0776672064317092, 1e-10);
+    EXPECT_NEAR(S_stress(1, 2), 0.12369221765050004, 1e-10);
+    EXPECT_NEAR(S_stress(0, 2), 0.06616095362701158, 1e-10);
 
-    S_stress.clear();
-    cmat.clear();
-    summand_.add_stress_aniso_principal(C1_strain_, cmat, S_stress, dummyParams, 1, 0);
-    EXPECT_NEAR(S_stress(0), 0.015011340776480562, 1e-10);
-    EXPECT_NEAR(S_stress(1), 0.07880953907652338, 1e-10);
-    EXPECT_NEAR(S_stress(2), 0.055041582847095864, 1e-10);
-    EXPECT_NEAR(S_stress(3), 0.03752835194120148, 1e-10);
-    EXPECT_NEAR(S_stress(4), 0.07318028628534329, 1e-10);
-    EXPECT_NEAR(S_stress(5), 0.028771736488254537, 1e-10);
-    EXPECT_NEAR(cmat(0, 0), 0.00223441356538121, 1e-10);
-    EXPECT_NEAR(cmat(0, 1), 0.011730671218251415, 1e-10);
-    EXPECT_NEAR(cmat(0, 2), 0.00819284973973117, 1e-10);
-    EXPECT_NEAR(cmat(0, 3), 0.005586033913453035, 1e-10);
-    EXPECT_NEAR(cmat(0, 4), 0.010892766131233479, 1e-10);
-    EXPECT_NEAR(cmat(0, 5), 0.0042826260003140035, 1e-10);
-    EXPECT_NEAR(cmat(1, 0), 0.011730671218251415, 1e-10);
-    EXPECT_NEAR(cmat(1, 1), 0.06158602389582026, 1e-10);
-    EXPECT_NEAR(cmat(1, 2), 0.043012461133588885, 1e-10);
-    EXPECT_NEAR(cmat(1, 3), 0.02932667804562859, 1e-10);
-    EXPECT_NEAR(cmat(1, 4), 0.057187022188976075, 1e-10);
-    EXPECT_NEAR(cmat(1, 5), 0.02248378650164864, 1e-10);
-    EXPECT_NEAR(cmat(2, 0), 0.00819284973973117, 1e-10);
-    EXPECT_NEAR(cmat(2, 1), 0.043012461133588885, 1e-10);
-    EXPECT_NEAR(cmat(2, 2), 0.030040449045681216, 1e-10);
-    EXPECT_NEAR(cmat(2, 3), 0.02048212434932797, 1e-10);
-    EXPECT_NEAR(cmat(2, 4), 0.03994014248118976, 1e-10);
-    EXPECT_NEAR(cmat(2, 5), 0.01570296200115148, 1e-10);
-    EXPECT_NEAR(cmat(3, 0), 0.005586033913453035, 1e-10);
-    EXPECT_NEAR(cmat(3, 1), 0.02932667804562859, 1e-10);
-    EXPECT_NEAR(cmat(3, 2), 0.02048212434932797, 1e-10);
-    EXPECT_NEAR(cmat(3, 3), 0.013965084783632613, 1e-10);
-    EXPECT_NEAR(cmat(3, 4), 0.027231915328083747, 1e-10);
-    EXPECT_NEAR(cmat(3, 5), 0.01070656500078503, 1e-10);
-    EXPECT_NEAR(cmat(4, 0), 0.010892766131233479, 1e-10);
-    EXPECT_NEAR(cmat(4, 1), 0.057187022188976075, 1e-10);
-    EXPECT_NEAR(cmat(4, 2), 0.03994014248118976, 1e-10);
-    EXPECT_NEAR(cmat(4, 3), 0.027231915328083747, 1e-10);
-    EXPECT_NEAR(cmat(4, 4), 0.0531022348897636, 1e-10);
-    EXPECT_NEAR(cmat(4, 5), 0.020877801751530922, 1e-10);
-    EXPECT_NEAR(cmat(5, 0), 0.0042826260003140035, 1e-10);
-    EXPECT_NEAR(cmat(5, 1), 0.02248378650164864, 1e-10);
-    EXPECT_NEAR(cmat(5, 2), 0.01570296200115148, 1e-10);
-    EXPECT_NEAR(cmat(5, 3), 0.01070656500078503, 1e-10);
-    EXPECT_NEAR(cmat(5, 4), 0.020877801751530922, 1e-10);
-    EXPECT_NEAR(cmat(5, 5), 0.008208366500601876, 1e-10);
+    Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+    EXPECT_NEAR(cmat_view(0, 0), 0.01049446655089949, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 1), 0.03897944718905555, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 2), 0.008995257043628187, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 3), 0.020239328348163384, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 4), 0.03223300440633433, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 5), 0.017240909333620668, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 0), 0.03897944718905555, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 1), 0.1447808038450646, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 2), 0.03341095473347638, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 3), 0.07517464815032171, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 4), 0.11972258779495701, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 5), 0.06403766323916298, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 0), 0.008995257043628187, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 1), 0.03341095473347638, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 2), 0.007710220323109921, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 3), 0.01734799572699729, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 4), 0.027628289491143872, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 5), 0.01477792228596066, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 0), 0.020239328348163384, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 1), 0.07517464815032171, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 2), 0.01734799572699729, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 3), 0.03903299038574383, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 4), 0.0621636513550736, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 5), 0.033250325143411426, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 0), 0.03223300440633433, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 1), 0.11972258779495701, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 2), 0.027628289491143872, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 3), 0.0621636513550736, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 4), 0.09900137067659885, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 5), 0.052954221524692355, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 0), 0.017240909333620668, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 1), 0.06403766323916298, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 2), 0.01477792228596066, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 3), 0.033250325143411426, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 4), 0.052954221524692355, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 5), 0.028324351048091223, 1e-10);
 
-    S_stress.clear();
-    cmat.clear();
-    summand_.add_stress_aniso_principal(C2_strain_, cmat, S_stress, dummyParams, 1, 0);
-    EXPECT_NEAR(S_stress(0), -0.005404127647681264, 1e-10);
-    EXPECT_NEAR(S_stress(1), -0.028371670150326794, 1e-10);
-    EXPECT_NEAR(S_stress(2), -0.019815134708164803, 1e-10);
-    EXPECT_NEAR(S_stress(3), -0.013510319119203187, 1e-10);
-    EXPECT_NEAR(S_stress(4), -0.02634512228244636, 1e-10);
-    EXPECT_NEAR(S_stress(5), -0.010357911324722469, 1e-10);
-    EXPECT_NEAR(cmat(0, 0), 0.001695279628708896, 1e-10);
-    EXPECT_NEAR(cmat(0, 1), 0.008900218050721753, 1e-10);
-    EXPECT_NEAR(cmat(0, 2), 0.0062160253052660035, 1e-10);
-    EXPECT_NEAR(cmat(0, 3), 0.004238199071772248, 1e-10);
-    EXPECT_NEAR(cmat(0, 4), 0.00826448818995593, 1e-10);
-    EXPECT_NEAR(cmat(0, 5), 0.003249285955025398, 1e-10);
-    EXPECT_NEAR(cmat(1, 0), 0.008900218050721753, 1e-10);
-    EXPECT_NEAR(cmat(1, 1), 0.04672614476628945, 1e-10);
-    EXPECT_NEAR(cmat(1, 2), 0.0326341328526467, 1e-10);
-    EXPECT_NEAR(cmat(1, 3), 0.02225054512680442, 1e-10);
-    EXPECT_NEAR(cmat(1, 4), 0.04338856299726886, 1e-10);
-    EXPECT_NEAR(cmat(1, 5), 0.017058751263883433, 1e-10);
-    EXPECT_NEAR(cmat(2, 0), 0.0062160253052660035, 1e-10);
-    EXPECT_NEAR(cmat(2, 1), 0.0326341328526467, 1e-10);
-    EXPECT_NEAR(cmat(2, 2), 0.02279209278597554, 1e-10);
-    EXPECT_NEAR(cmat(2, 3), 0.015540063263165042, 1e-10);
-    EXPECT_NEAR(cmat(2, 4), 0.030303123363171994, 1e-10);
-    EXPECT_NEAR(cmat(2, 5), 0.011914048501759892, 1e-10);
-    EXPECT_NEAR(cmat(3, 0), 0.004238199071772248, 1e-10);
-    EXPECT_NEAR(cmat(3, 1), 0.02225054512680442, 1e-10);
-    EXPECT_NEAR(cmat(3, 2), 0.015540063263165042, 1e-10);
-    EXPECT_NEAR(cmat(3, 3), 0.010595497679430639, 1e-10);
-    EXPECT_NEAR(cmat(3, 4), 0.02066122047488986, 1e-10);
-    EXPECT_NEAR(cmat(3, 5), 0.008123214887563509, 1e-10);
-    EXPECT_NEAR(cmat(4, 0), 0.00826448818995593, 1e-10);
-    EXPECT_NEAR(cmat(4, 1), 0.04338856299726886, 1e-10);
-    EXPECT_NEAR(cmat(4, 2), 0.030303123363171994, 1e-10);
-    EXPECT_NEAR(cmat(4, 3), 0.02066122047488986, 1e-10);
-    EXPECT_NEAR(cmat(4, 4), 0.04028937992603545, 1e-10);
-    EXPECT_NEAR(cmat(4, 5), 0.015840269030748932, 1e-10);
-    EXPECT_NEAR(cmat(5, 0), 0.003249285955025398, 1e-10);
-    EXPECT_NEAR(cmat(5, 1), 0.017058751263883433, 1e-10);
-    EXPECT_NEAR(cmat(5, 2), 0.011914048501759892, 1e-10);
-    EXPECT_NEAR(cmat(5, 3), 0.008123214887563509, 1e-10);
-    EXPECT_NEAR(cmat(5, 4), 0.015840269030748932, 1e-10);
-    EXPECT_NEAR(cmat(5, 5), 0.006227798080465372, 1e-10);
+    S_stress = {};
+    cmat = {};
+    summand_.add_stress_aniso_principal(C2_, cmat, S_stress, dummyParams, 0, 0);
+    EXPECT_NEAR(S_stress(0, 0), -0.010764777955497356, 1e-10);
+    EXPECT_NEAR(S_stress(1, 1), -0.03998346097756192, 1e-10);
+    EXPECT_NEAR(S_stress(2, 2), -0.009226952533283502, 1e-10);
+    EXPECT_NEAR(S_stress(0, 1), -0.02076064319988784, 1e-10);
+    EXPECT_NEAR(S_stress(1, 2), -0.03306324657759921, 1e-10);
+    EXPECT_NEAR(S_stress(0, 2), -0.017684992355460023, 1e-10);
+
+    EXPECT_NEAR(cmat_view(0, 0), 0.0066706378981432205, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 1), 0.02477665505024644, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 2), 0.005717689626979938, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 3), 0.012864801660704837, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 4), 0.02048838783001144, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 5), 0.0109589051183782, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 0), 0.02477665505024644, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 1), 0.09202757590091606, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 2), 0.021237132900211363, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 3), 0.047783549025475464, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 4), 0.07609972622575735, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 5), 0.04070450472540505, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 0), 0.005717689626979938, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 1), 0.021237132900211363, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 2), 0.00490087682312569, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 3), 0.011026972852032782, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 4), 0.01756147528286705, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 5), 0.009393347244324226, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 0), 0.012864801660704837, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 1), 0.047783549025475464, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 2), 0.011026972852032782, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 3), 0.024810688917073713, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 4), 0.03951331938645079, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 5), 0.02113503129972947, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 0), 0.02048838783001144, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 1), 0.07609972622575735, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 2), 0.01756147528286705, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 3), 0.03951331938645079, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 4), 0.0629286197636069, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 5), 0.0336594942921618, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 0), 0.0109589051183782, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 1), 0.04070450472540505, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 2), 0.009393347244324226, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 3), 0.02113503129972947, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 4), 0.0336594942921618, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 5), 0.018003915551621407, 1e-10);
+
+    S_stress = {};
+    cmat = {};
+    summand_.add_stress_aniso_principal(C1_, cmat, S_stress, dummyParams, 1, 0);
+    EXPECT_NEAR(S_stress(0, 0), 0.015011340776480562, 1e-10);
+    EXPECT_NEAR(S_stress(1, 1), 0.07880953907652338, 1e-10);
+    EXPECT_NEAR(S_stress(2, 2), 0.055041582847095864, 1e-10);
+    EXPECT_NEAR(S_stress(0, 1), 0.03752835194120148, 1e-10);
+    EXPECT_NEAR(S_stress(1, 2), 0.07318028628534329, 1e-10);
+    EXPECT_NEAR(S_stress(0, 2), 0.028771736488254537, 1e-10);
+
+    EXPECT_NEAR(cmat_view(0, 0), 0.00223441356538121, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 1), 0.011730671218251415, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 2), 0.00819284973973117, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 3), 0.005586033913453035, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 4), 0.010892766131233479, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 5), 0.0042826260003140035, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 0), 0.011730671218251415, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 1), 0.06158602389582026, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 2), 0.043012461133588885, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 3), 0.02932667804562859, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 4), 0.057187022188976075, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 5), 0.02248378650164864, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 0), 0.00819284973973117, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 1), 0.043012461133588885, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 2), 0.030040449045681216, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 3), 0.02048212434932797, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 4), 0.03994014248118976, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 5), 0.01570296200115148, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 0), 0.005586033913453035, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 1), 0.02932667804562859, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 2), 0.02048212434932797, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 3), 0.013965084783632613, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 4), 0.027231915328083747, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 5), 0.01070656500078503, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 0), 0.010892766131233479, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 1), 0.057187022188976075, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 2), 0.03994014248118976, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 3), 0.027231915328083747, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 4), 0.0531022348897636, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 5), 0.020877801751530922, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 0), 0.0042826260003140035, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 1), 0.02248378650164864, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 2), 0.01570296200115148, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 3), 0.01070656500078503, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 4), 0.020877801751530922, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 5), 0.008208366500601876, 1e-10);
+
+    S_stress = {};
+    cmat = {};
+    summand_.add_stress_aniso_principal(C2_, cmat, S_stress, dummyParams, 1, 0);
+    EXPECT_NEAR(S_stress(0, 0), -0.005404127647681264, 1e-10);
+    EXPECT_NEAR(S_stress(1, 1), -0.028371670150326794, 1e-10);
+    EXPECT_NEAR(S_stress(2, 2), -0.019815134708164803, 1e-10);
+    EXPECT_NEAR(S_stress(0, 1), -0.013510319119203187, 1e-10);
+    EXPECT_NEAR(S_stress(1, 2), -0.02634512228244636, 1e-10);
+    EXPECT_NEAR(S_stress(0, 2), -0.010357911324722469, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 0), 0.001695279628708896, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 1), 0.008900218050721753, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 2), 0.0062160253052660035, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 3), 0.004238199071772248, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 4), 0.00826448818995593, 1e-10);
+    EXPECT_NEAR(cmat_view(0, 5), 0.003249285955025398, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 0), 0.008900218050721753, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 1), 0.04672614476628945, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 2), 0.0326341328526467, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 3), 0.02225054512680442, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 4), 0.04338856299726886, 1e-10);
+    EXPECT_NEAR(cmat_view(1, 5), 0.017058751263883433, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 0), 0.0062160253052660035, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 1), 0.0326341328526467, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 2), 0.02279209278597554, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 3), 0.015540063263165042, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 4), 0.030303123363171994, 1e-10);
+    EXPECT_NEAR(cmat_view(2, 5), 0.011914048501759892, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 0), 0.004238199071772248, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 1), 0.02225054512680442, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 2), 0.015540063263165042, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 3), 0.010595497679430639, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 4), 0.02066122047488986, 1e-10);
+    EXPECT_NEAR(cmat_view(3, 5), 0.008123214887563509, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 0), 0.00826448818995593, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 1), 0.04338856299726886, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 2), 0.030303123363171994, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 3), 0.02066122047488986, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 4), 0.04028937992603545, 1e-10);
+    EXPECT_NEAR(cmat_view(4, 5), 0.015840269030748932, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 0), 0.003249285955025398, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 1), 0.017058751263883433, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 2), 0.011914048501759892, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 3), 0.008123214887563509, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 4), 0.015840269030748932, 1e-10);
+    EXPECT_NEAR(cmat_view(5, 5), 0.006227798080465372, 1e-10);
   }
 }  // namespace

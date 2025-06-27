@@ -184,8 +184,9 @@ void Mixture::MixtureConstituentElastHyperBase::read_element(
 }
 
 // Updates all summands
-void Mixture::MixtureConstituentElastHyperBase::update(Core::LinAlg::Matrix<3, 3> const& defgrd,
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+void Mixture::MixtureConstituentElastHyperBase::update(
+    Core::LinAlg::Tensor<double, 3, 3> const& defgrd, const Teuchos::ParameterList& params,
+    const int gp, const int eleGID)
 {
   MixtureConstituent::update(defgrd, params, gp, eleGID);
 
@@ -201,7 +202,7 @@ void Mixture::MixtureConstituentElastHyperBase::update(Core::LinAlg::Matrix<3, 3
 }
 
 void Mixture::MixtureConstituentElastHyperBase::setup(
-    Teuchos::ParameterList& params, const int eleGID)
+    const Teuchos::ParameterList& params, const int eleGID)
 {
   MixtureConstituent::setup(params, eleGID);
   if (params_->get_prestressing_mat_id() > 0)
@@ -213,7 +214,7 @@ void Mixture::MixtureConstituentElastHyperBase::setup(
 }
 
 void Mixture::MixtureConstituentElastHyperBase::pre_evaluate(
-    MixtureRule& mixtureRule, Teuchos::ParameterList& params, int gp, int eleGID)
+    MixtureRule& mixtureRule, const Teuchos::ParameterList& params, int gp, int eleGID)
 {
   // do nothing in the default case
   if (params_->get_prestressing_mat_id() > 0)
@@ -229,7 +230,7 @@ void Mixture::MixtureConstituentElastHyperBase::register_output_data_names(
 {
   if (prestress_strategy_ != nullptr)
   {
-    names_and_size["mixture_constituent_" + std::to_string(id()) + "_elasthyper_prestretch"] = 9;
+    names_and_size["mixture_constituent_" + std::to_string(id()) + "_elasthyper_prestretch"] = 6;
   }
 }
 
@@ -241,13 +242,9 @@ bool Mixture::MixtureConstituentElastHyperBase::evaluate_output_data(
   {
     for (int gp = 0; gp < num_gp(); ++gp)
     {
-      static Core::LinAlg::Matrix<9, 1> tmp(Core::LinAlg::Initialization::uninitialized);
-      tmp.clear();
-      Core::LinAlg::Voigt::matrix_3x3_to_9x1(prestretch_[gp], tmp);
-
-      for (int i = 0; i < 9; ++i)
+      for (int i = 0; i < 6; ++i)
       {
-        data(gp, i) = tmp(i, 0);
+        data(gp, i) = prestretch_[gp].container()[i];
       }
     }
     return true;

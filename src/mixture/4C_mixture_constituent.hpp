@@ -12,6 +12,8 @@
 
 #include "4C_comm_pack_buffer.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_material_parameter_base.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
@@ -144,7 +146,7 @@ namespace Mixture
      * @param params Container for additional information
      * @param eleGID Global element id
      */
-    virtual void setup(Teuchos::ParameterList& params, int eleGID);
+    virtual void setup(const Teuchos::ParameterList& params, int eleGID);
 
     /*!
      * \brief Update of the internal variables
@@ -157,8 +159,8 @@ namespace Mixture
      * @param gp Gauss point
      * @param eleGID Global element identifier
      */
-    virtual void update(Core::LinAlg::Matrix<3, 3> const& defgrd, Teuchos::ParameterList& params,
-        const int gp, const int eleGID)
+    virtual void update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd,
+        const Teuchos::ParameterList& params, const int gp, const int eleGID)
     {
     }
 
@@ -182,9 +184,9 @@ namespace Mixture
      * @param gp Gauss-point
      * @param eleGID Global element id
      */
-    virtual void update_elastic_part(const Core::LinAlg::Matrix<3, 3>& F,
-        const Core::LinAlg::Matrix<3, 3>& iFext, Teuchos::ParameterList& params, const double dt,
-        const int gp, const int eleGID)
+    virtual void update_elastic_part(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::Tensor<double, 3, 3>& iFext, const Teuchos::ParameterList& params,
+        const double dt, const int gp, const int eleGID)
     {
       // do nothing
     }
@@ -198,7 +200,7 @@ namespace Mixture
      * @param eleGID (in) : Global element id
      */
     virtual void pre_evaluate(
-        MixtureRule& mixtureRule, Teuchos::ParameterList& params, int gp, int eleGID)
+        MixtureRule& mixtureRule, const Teuchos::ParameterList& params, int gp, int eleGID)
     {
       // do nothing in the default case
     }
@@ -222,11 +224,10 @@ namespace Mixture
      * @return Core::LinAlg::Matrix<1, 6> Derivative of the growth scalar w.r.t. Cauchy-Green
      * deformation tensor
      */
-    [[nodiscard]] virtual Core::LinAlg::Matrix<1, 6> get_d_growth_scalar_d_cg(
+    [[nodiscard]] virtual Core::LinAlg::SymmetricTensor<double, 3, 3> get_d_growth_scalar_d_cg(
         int gp, int eleGID) const
     {
-      const Core::LinAlg::Matrix<1, 6> dGrowthScalarDC(Core::LinAlg::Initialization::zero);
-      return dGrowthScalarDC;
+      return {};
     };
 
     /*!
@@ -251,9 +252,10 @@ namespace Mixture
      * @param gp Gauss-point
      * @param eleGID Global element id
      */
-    virtual void evaluate_elastic_part(const Core::LinAlg::Matrix<3, 3>& F,
-        const Core::LinAlg::Matrix<3, 3>& iF_in, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID);
+    virtual void evaluate_elastic_part(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::Tensor<double, 3, 3>& iF_in, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID);
 
     /*!
      * Evaluates the constituents. Needs to compute the stress contribution of the constituent out
@@ -271,10 +273,10 @@ namespace Mixture
      * @param gp (in) : Number of Gauss point
      * @param eleGID (in) : Global element id
      */
-    virtual void evaluate(const Core::LinAlg::Matrix<3, 3>& F,
-        const Core::LinAlg::Matrix<6, 1>& E_strain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp,
-        int eleGID) = 0;
+    virtual void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) = 0;
 
     /// Returns the reference mass density. Needs to be implemented by the deriving class.
 

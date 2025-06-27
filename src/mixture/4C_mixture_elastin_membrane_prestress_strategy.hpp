@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 // forward declarations
@@ -56,7 +57,7 @@ namespace Mixture
     virtual double evaluate_mue_frac(MixtureRule& mixtureRule,
         const std::shared_ptr<const Mat::CoordinateSystemProvider> cosy,
         Mixture::MixtureConstituent& constituent, ElastinMembraneEvaluation& membraneEvaluation,
-        Teuchos::ParameterList& params, int gp, int eleGID) const = 0;
+        const Teuchos::ParameterList& params, int gp, int eleGID) const = 0;
   };
 
   /*!
@@ -78,8 +79,8 @@ namespace Mixture
      * \param gp (in)     : Gauss point
      * \param eleGID (in) : Global element id
      */
-    virtual void evaluate_membrane_stress(
-        Core::LinAlg::Matrix<6, 1>& S, Teuchos::ParameterList& params, int gp, int eleGID) = 0;
+    virtual void evaluate_membrane_stress(Core::LinAlg::SymmetricTensor<double, 3, 3>& S,
+        const Teuchos::ParameterList& params, int gp, int eleGID) = 0;
   };
 }  // namespace Mixture
 FOUR_C_NAMESPACE_CLOSE

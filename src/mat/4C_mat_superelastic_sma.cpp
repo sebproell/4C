@@ -11,6 +11,7 @@
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_mat_par_bundle.hpp"
@@ -299,11 +300,14 @@ void Mat::SuperElasticSMA::update()
 /*----------------------------------------------------------------------*
  | calculate stress and constitutive tensor               hemmler 09/16 |
  *----------------------------------------------------------------------*/
-void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   /*
    **********************************************************
    * Step 0.1 * Load material data from the input file        *
@@ -358,7 +362,7 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     FOUR_C_THROW("No sma-model given. Use 1 for the exponential model and 2 for the linear model.");
   }
 
-  Core::LinAlg::Matrix<3, 3> deformation_gradient_invert(*defgrd);
+  Core::LinAlg::Matrix<3, 3> deformation_gradient_invert(defgrd_mat);
   deformation_gradient_invert.invert();
 
   /*
@@ -378,7 +382,7 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
    */
   // b = F * F^T
   Core::LinAlg::Matrix<3, 3> cauchy_green_tensor(Core::LinAlg::Initialization::zero);
-  cauchy_green_tensor.multiply_nt(*defgrd, *defgrd);
+  cauchy_green_tensor.multiply_nt(defgrd_mat, defgrd_mat);
 
   // To compute the spectral decomposition, the Cauchy-Green tensor
   Core::LinAlg::SerialDenseMatrix cauchy_green_eigenvectors(3, 3);
@@ -665,23 +669,8 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
     if (!converged)
     {
-      // local newton method unconverged
-      bool error_tol = false;
-      if (params.isParameter("tolerate_errors"))
-      {
-        error_tol = params.get<bool>("tolerate_errors");
-      }
-
-
-      if (error_tol)
-      {
-        params.set<bool>("eval_error", true);
-      }
-      else
-      {
-        FOUR_C_THROW("Local Newton iteration unconverged in {} iterations. Residual: {} Tol: {}",
-            maxiter, fp, tol);
-      }
+      FOUR_C_THROW("Local Newton iteration unconverged in {} iterations. Residual: {} Tol: {}",
+          maxiter, fp, tol);
     }
 
     lambda_AS = lambda_S(0);
@@ -716,12 +705,7 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   PK2.multiply_nt(tmp, deformation_gradient_invert);
 
   // Convert PK2 into Voigt-Notation
-  (*stress)(0) = PK2(0, 0);
-  (*stress)(1) = PK2(1, 1);
-  (*stress)(2) = PK2(2, 2);
-  (*stress)(3) = 0.5 * (PK2(0, 1) + PK2(1, 0));
-  (*stress)(4) = 0.5 * (PK2(1, 2) + PK2(2, 1));
-  (*stress)(5) = 0.5 * (PK2(2, 0) + PK2(0, 2));
+  stress = Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor_view(PK2));
 
   // compute strain energy
   if (gp == 0) strainenergy_ = 0.0;
@@ -876,8 +860,8 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     cmat_eul.update(1.0, cmat_eul_3, 1.0);
     cmat_eul.update(1.0, cmat_eul_4, 1.0);
 
-    *cmat =
-        Mat::pull_back_four_tensor(defgrd->determinant(), deformation_gradient_invert, cmat_eul);
+    cmat_view =
+        Mat::pull_back_four_tensor(defgrd_mat.determinant(), deformation_gradient_invert, cmat_eul);
   }
   else
   {
@@ -929,14 +913,14 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     }
 
     // express coefficients of tangent in Kirchhoff stresses
-    cmat->clear();
+    cmat_view.clear();
     for (int a = 0; a < 3; a++)
     {
       // - sum_1^3 (2 * tau N_aaaa)
       tmp1.multiply_nt(
           material_principal_directions.at(a), material_principal_directions.at(a));  // N_{aa}
       Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
-          *cmat, -2.0 * (dev_KH(a) + pressure), tmp1, tmp1, 1.0);
+          cmat_view, -2.0 * (dev_KH(a) + pressure), tmp1, tmp1, 1.0);
 
       for (int b = 0; b < 3; b++)
       {
@@ -947,7 +931,7 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
         tmp2.multiply_nt(
             material_principal_directions.at(b), material_principal_directions.at(b));  // N_{bb}
         Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
-            *cmat, D_ep_principal(a, b), tmp1, tmp2, 1.0);
+            cmat_view, D_ep_principal(a, b), tmp1, tmp2, 1.0);
 
         if (a != b)
         {
@@ -971,9 +955,9 @@ void Mat::SuperElasticSMA::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
           tmp2.multiply_nt(
               material_principal_directions.at(b), material_principal_directions.at(a));  // N_{ba}
           Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
-              *cmat, fac, tmp1, tmp1, 1.0);  // N_{abab}
+              cmat_view, fac, tmp1, tmp1, 1.0);  // N_{abab}
           Core::LinAlg::FourTensorOperations::add_elasticity_tensor_product(
-              *cmat, fac, tmp1, tmp2, 1.0);  // N_{abba}
+              cmat_view, fac, tmp1, tmp2, 1.0);  // N_{abba}
 
         }  // end if (a!=b)
       }  // end loop b
@@ -1134,11 +1118,11 @@ bool Mat::SuperElasticSMA::vis_data(
 /*----------------------------------------------------------------------*
  |  calculate strain energy                                hemmler 11/16|
  *----------------------------------------------------------------------*/
-void Mat::SuperElasticSMA::strain_energy(
-    const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, const int gp, const int eleGID) const
+double Mat::SuperElasticSMA::strain_energy(
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, const int gp,
+    const int eleGID) const
 {
-  psi = strainenergy_;
-  return;
+  return strainenergy_;
 }
 
 

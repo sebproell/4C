@@ -73,23 +73,24 @@ namespace Mixture
 
     void read_element(int numgp, const Core::IO::InputParameterContainer& container) override;
 
-    void setup(Teuchos::ParameterList& params, int eleGID) override;
+    void setup(const Teuchos::ParameterList& params, int eleGID) override;
 
-    void update(const Core::LinAlg::Matrix<3, 3>& F, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    void update(const Core::LinAlg::Tensor<double, 3, 3>& F, const Teuchos::ParameterList& params,
+        int gp, int eleGID) override;
 
-    void update_elastic_part(const Core::LinAlg::Matrix<3, 3>& F,
-        const Core::LinAlg::Matrix<3, 3>& iFext, Teuchos::ParameterList& params, double dt, int gp,
-        int eleGID) override;
+    void update_elastic_part(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::Tensor<double, 3, 3>& iFext, const Teuchos::ParameterList& params,
+        double dt, int gp, int eleGID) override;
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-        Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
-    void evaluate_elastic_part(const Core::LinAlg::Matrix<3, 3>& FM,
-        const Core::LinAlg::Matrix<3, 3>& iFextin, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp,
-        int eleGID) override;
+    void evaluate_elastic_part(const Core::LinAlg::Tensor<double, 3, 3>& FM,
+        const Core::LinAlg::Tensor<double, 3, 3>& iFextin, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     [[nodiscard]] double get_growth_scalar(int gp) const override;
 
@@ -101,12 +102,14 @@ namespace Mixture
 
    private:
     [[nodiscard]] double evaluate_lambdaf(
-        const Core::LinAlg::Matrix<3, 3>& C, int gp, int eleGID) const;
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& C, int gp, int eleGID) const;
     [[nodiscard]] double evaluate_lambda_ext(
-        const Core::LinAlg::Matrix<3, 3>& iFext, int gp, int eleGID) const;
+        const Core::LinAlg::Tensor<double, 3, 3>& iFext, int gp, int eleGID) const;
 
-    [[nodiscard]] Core::LinAlg::Matrix<6, 1> evaluate_current_p_k2(int gp, int eleGID) const;
-    [[nodiscard]] Core::LinAlg::Matrix<6, 6> evaluate_current_cmat(int gp, int eleGID) const;
+    [[nodiscard]] Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_current_p_k2(
+        int gp, int eleGID) const;
+    [[nodiscard]] Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> evaluate_current_cmat(
+        int gp, int eleGID) const;
 
     [[nodiscard]] double evaluate_deposition_stretch(double time) const;
     void update_homeostatic_values(const Teuchos::ParameterList& params, int eleGID);

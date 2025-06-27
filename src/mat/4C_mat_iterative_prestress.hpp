@@ -84,21 +84,21 @@ namespace Mat
 
     [[nodiscard]] double density() const override { return child_material_->density(); }
 
-    void strain_energy(
-        const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, int gp, int eleGID) const override;
+    [[nodiscard]] double strain_energy(const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        int gp, int eleGID) const override;
 
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
-    void post_setup(Teuchos::ParameterList& params, int eleGID) override;
+    void post_setup(const Teuchos::ParameterList& params, int eleGID) override;
 
     void update() override;
 
-    void update(Core::LinAlg::Matrix<3, 3> const& defgrd, const int gp,
-        Teuchos::ParameterList& params, const int eleGID) override;
+    void update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd, const int gp,
+        const Teuchos::ParameterList& params, const int eleGID) override;
 
     void vis_names(std::map<std::string, int>& names) const override;
 
@@ -116,7 +116,7 @@ namespace Mat
 
     PAR::IterativePrestressMaterial* params_ = nullptr;
 
-    std::vector<Core::LinAlg::Matrix<3, 3>> prestretch_tensor_ = {};
+    std::vector<Core::LinAlg::SymmetricTensor<double, 3, 3>> prestretch_tensor_ = {};
   };
 }  // namespace Mat
 

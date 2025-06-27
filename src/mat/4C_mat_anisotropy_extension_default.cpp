@@ -10,6 +10,7 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_comm_parobject.hpp"
 #include "4C_linalg_fixedsizematrix_generators.hpp"
+#include "4C_linalg_tensor_generators.hpp"
 #include "4C_mat_anisotropy_extension.hpp"
 #include "4C_mat_service.hpp"
 
@@ -60,10 +61,11 @@ void Mat::DefaultAnisotropyExtension<numfib>::unpack_anisotropy(
 
 template <unsigned int numfib>
 void Mat::DefaultAnisotropyExtension<numfib>::set_fiber_vecs(const double newgamma,
-    const Core::LinAlg::Matrix<3, 3>& locsys, const Core::LinAlg::Matrix<3, 3>& defgrd)
+    const Core::LinAlg::Tensor<double, 3, 3>& locsys,
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd)
 {
-  Core::LinAlg::Matrix<3, 1> ca1(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<3, 1> ca2(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::Tensor<double, 3> ca1{};
+  Core::LinAlg::Tensor<double, 3> ca2{};
 
   // Fiber direction derived from local cosy
   if (init_mode_ == INIT_MODE_ELEMENT_EXTERNAL || init_mode_ == INIT_MODE_ELEMENT_FIBERS)
@@ -103,21 +105,20 @@ void Mat::DefaultAnisotropyExtension<numfib>::set_fiber_vecs(const double newgam
   // pull back in reference configuration
   Core::LinAlg::Matrix<3, 1> a1_0(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<3, 1> a2_0(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<3, 3> idefgrd(Core::LinAlg::Initialization::zero);
-  idefgrd.invert(defgrd);
+  Core::LinAlg::Tensor<double, 3, 3> idefgrd = Core::LinAlg::inv(defgrd);
 
 
-  std::array<Core::LinAlg::Matrix<3, 1>, numfib> fibers;
+  std::array<Core::LinAlg::Tensor<double, 3>, numfib> fibers;
 
   if (numfib >= 1)
   {
-    fibers[0].multiply(idefgrd, ca1);
-    fibers[0].scale(1.0 / fibers[0].norm2());
+    fibers[0] = idefgrd * ca1;
+    fibers[0] *= 1.0 / Core::LinAlg::norm2(fibers[0]);
   }
   if (numfib >= 2)
   {
-    fibers[1].multiply(idefgrd, ca2);
-    fibers[1].scale(1.0 / fibers[1].norm2());
+    fibers[1] = idefgrd * ca1;
+    fibers[1] *= 1.0 / Core::LinAlg::norm2(fibers[1]);
   }
   if (numfib >= 3)
   {
@@ -131,10 +132,10 @@ void Mat::DefaultAnisotropyExtension<numfib>::set_fiber_vecs(const double newgam
 
 template <unsigned int numfib>
 void Mat::DefaultAnisotropyExtension<numfib>::set_fiber_vecs(
-    const Core::LinAlg::Matrix<3, 1>& fibervec)
+    const Core::LinAlg::Tensor<double, 3>& fibervec)
 {
-  std::array<Core::LinAlg::Matrix<3, 1>, numfib> fibers;
-  fibers[0].update(fibervec);
+  std::array<Core::LinAlg::Tensor<double, 3>, numfib> fibers;
+  fibers[0] = fibervec;
 
   if (numfib >= 2)
   {
@@ -158,8 +159,9 @@ bool Mat::DefaultAnisotropyExtension<numfib>::do_element_fiber_initialization()
       if (this->get_anisotropy()->has_element_cylinder_coordinate_system())
       {
         // initialize fiber vector with local coordinate system
-        Core::LinAlg::Matrix<3, 3> locsys(Core::LinAlg::Initialization::zero);
-        const Core::LinAlg::Matrix<3, 3> Id = Core::LinAlg::identity_matrix<3>();
+        Core::LinAlg::Tensor<double, 3, 3> locsys{};
+        const Core::LinAlg::Tensor<double, 3, 3> Id =
+            Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
         this->get_anisotropy()
             ->get_element_cylinder_coordinate_system()
             .evaluate_local_coordinate_system(locsys);
@@ -169,10 +171,10 @@ bool Mat::DefaultAnisotropyExtension<numfib>::do_element_fiber_initialization()
       else if (this->get_anisotropy()->get_number_of_element_fibers() > 0)
       {
         // initialize fibers from global given fibers
-        std::array<Core::LinAlg::Matrix<3, 1>, numfib> fibers;
+        std::array<Core::LinAlg::Tensor<double, 3>, numfib> fibers;
         for (unsigned int i = 0; i < numfib; ++i)
         {
-          fibers.at(i) = this->get_anisotropy()->get_element_fibers().at(fiber_ids_.at(i));
+          fibers[i] = this->get_anisotropy()->get_element_fibers().at(fiber_ids_.at(i));
         }
         this->set_fibers(BaseAnisotropyExtension::GPDEFAULT, fibers);
       }
@@ -210,7 +212,7 @@ bool Mat::DefaultAnisotropyExtension<numfib>::do_gp_fiber_initialization()
         int gp = 0;
         for (const auto& fiberList : this->get_anisotropy()->get_gauss_point_fibers())
         {
-          std::array<Core::LinAlg::Matrix<3, 1>, numfib> fibers;
+          std::array<Core::LinAlg::Tensor<double, 3>, numfib> fibers;
 
           int i = 0;
           for (int id : fiber_ids_)
@@ -236,7 +238,8 @@ bool Mat::DefaultAnisotropyExtension<numfib>::do_gp_fiber_initialization()
 template <unsigned int numfib>
 void Mat::DefaultAnisotropyExtension<numfib>::do_external_fiber_initialization()
 {
-  const Core::LinAlg::Matrix<3, 3> Id = Core::LinAlg::identity_matrix<3>();
+  const Core::LinAlg::Tensor<double, 3, 3> Id =
+      Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
   set_fiber_vecs(-1.0, Id, Id);
 }
 

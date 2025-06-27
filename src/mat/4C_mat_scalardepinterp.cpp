@@ -10,6 +10,8 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_comm_utils_factory.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -93,24 +95,24 @@ void Mat::ScalarDepInterp::setup(int numgp, const Core::IO::InputParameterContai
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::ScalarDepInterp::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::ScalarDepInterp::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
   // evaluate elastic material corresponding to zero concentration
-  Core::LinAlg::Matrix<6, 1> stress_lambda_zero = *stress;
-  Core::LinAlg::Matrix<6, 6> cmat_zero_conc = *cmat;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> stress_lambda_zero{};
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat_zero_conc{};
 
   lambda_zero_mat_->evaluate(
-      defgrd, glstrain, params, &stress_lambda_zero, &cmat_zero_conc, gp, eleGID);
+      defgrad, glstrain, params, stress_lambda_zero, cmat_zero_conc, gp, eleGID);
 
   // evaluate elastic material corresponding to infinite concentration
-  Core::LinAlg::Matrix<6, 1> stress_lambda_unit = *stress;
-  Core::LinAlg::Matrix<6, 6> cmat_infty_conc = *cmat;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> stress_lambda_unit{};
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat_infty_conc{};
 
   lambda_unit_mat_->evaluate(
-      defgrd, glstrain, params, &stress_lambda_unit, &cmat_infty_conc, gp, eleGID);
+      defgrad, glstrain, params, stress_lambda_unit, cmat_infty_conc, gp, eleGID);
 
   double lambda;
   // get the ratio of interpolation
@@ -142,12 +144,14 @@ void Mat::ScalarDepInterp::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // * \Psi_1(\mym C) \right) = ...
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   // do the linear interpolation between stresses:
   // ... = (1-\lambda(C)) * 2* \frac{\partial}{\partial \mym C} \Psi_0) + \lambda(C) * 2 *
   // \frac{\partial}{\partial \mym C} \Psi_1
-  stress->update(1.0 - lambda, stress_lambda_zero, lambda, stress_lambda_unit, 0.0);
-
-  cmat->update(1.0 - lambda, cmat_zero_conc, lambda, cmat_infty_conc, 0.0);
+  stress = (1 - lambda) * stress_lambda_zero + lambda * stress_lambda_unit;
+  cmat = (1 - lambda) * cmat_zero_conc + lambda * cmat_infty_conc;
 
   if (params.isParameter("dlambda_dC"))
   {
@@ -156,16 +160,15 @@ void Mat::ScalarDepInterp::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
         params.get<std::shared_ptr<Core::LinAlg::Matrix<6, 1>>>("dlambda_dC");
 
     // evaluate strain energy functions
-    double psi_lambda_zero = 0.0;
-    lambda_zero_mat_->strain_energy(*glstrain, psi_lambda_zero, gp, eleGID);
+    double psi_lambda_zero = lambda_zero_mat_->strain_energy(glstrain, gp, eleGID);
 
-    double psi_lambda_unit = 0.0;
-    lambda_unit_mat_->strain_energy(*glstrain, psi_lambda_unit, gp, eleGID);
+    double psi_lambda_unit = lambda_unit_mat_->strain_energy(glstrain, gp, eleGID);
 
     // and add the stresses due to possible dependency of the ratio w.r.t. to C
     // ... - 2 * \Psi_0 * \frac{\partial}{\partial \mym C} \lambda(C) ) + * 2 * \Psi_1 *
     // \frac{\partial}{\partial \mym C} \lambda(C)
-    stress->update(-2.0 * psi_lambda_zero, *dlambda_dC, +2.0 * psi_lambda_unit, *dlambda_dC, 1.0);
+    stress_view.update(
+        -2.0 * psi_lambda_zero, *dlambda_dC, +2.0 * psi_lambda_unit, *dlambda_dC, 1.0);
 
     // Note: for the linearization we do neglect the derivatives of the ratio w.r.t. glstrain
   }
@@ -326,24 +329,23 @@ bool Mat::ScalarDepInterp::vis_data(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::ScalarDepInterp::strain_energy(
-    const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, const int gp, const int eleGID) const
+double Mat::ScalarDepInterp::strain_energy(
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, const int gp,
+    const int eleGID) const
 {
   // evaluate strain energy functions
-  double psi_lambda_zero = 0.0;
-  lambda_zero_mat_->strain_energy(glstrain, psi_lambda_zero, gp, eleGID);
+  double psi_lambda_zero = lambda_zero_mat_->strain_energy(glstrain, gp, eleGID);
 
-  double psi_lambda_unit = 0.0;
-  lambda_unit_mat_->strain_energy(glstrain, psi_lambda_unit, gp, eleGID);
+  double psi_lambda_unit = lambda_unit_mat_->strain_energy(glstrain, gp, eleGID);
 
   double lambda = 0.0;
-  for (unsigned gp = 0; gp < lambda_.size(); gp++)
+  for (double gp : lambda_)
   {
-    lambda += lambda_.at(gp);
+    lambda += gp;
   }
   lambda = lambda / (lambda_.size());
 
-  psi += (1 - lambda) * psi_lambda_zero + lambda * psi_lambda_unit;
+  return (1 - lambda) * psi_lambda_zero + lambda * psi_lambda_unit;
 }
 
 FOUR_C_NAMESPACE_CLOSE

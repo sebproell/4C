@@ -24,7 +24,7 @@ Mat::Elastic::VolSussmanBathe::VolSussmanBathe(Mat::Elastic::PAR::VolSussmanBath
 
 void Mat::Elastic::VolSussmanBathe::add_strain_energy(double& psi,
     const Core::LinAlg::Matrix<3, 1>& prinv, const Core::LinAlg::Matrix<3, 1>& modinv,
-    const Core::LinAlg::Matrix<6, 1>& glstrain, const int gp, const int eleGID)
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, const int gp, const int eleGID)
 {
   const double kappa = params_->kappa_;
 

@@ -11,7 +11,11 @@
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_fem_general_utils_nurbs_shapefunctions.hpp"
 #include "4C_fem_nurbs_discretization.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_elasthyper.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_stvenantkirchhoff.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_exceptions.hpp"
@@ -1465,13 +1469,9 @@ void Discret::Elements::Ale3Impl<distype>::static_ke_nonlinear(Ale3* ele,
     cauchygreen.multiply_tn(defgrd, defgrd);
     // Green-Lagrange strains matrix E = 0.5 * (Cauchygreen - Identity)
     // GL strain vector glstrain={E11,E22,E33,2*E12,2*E23,2*E31}
-    Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> glstrain;
-    glstrain(0) = 0.5 * (cauchygreen(0, 0) - 1.0);
-    glstrain(1) = 0.5 * (cauchygreen(1, 1) - 1.0);
-    glstrain(2) = 0.5 * (cauchygreen(2, 2) - 1.0);
-    glstrain(3) = cauchygreen(0, 1);
-    glstrain(4) = cauchygreen(1, 2);
-    glstrain(5) = cauchygreen(2, 0);
+    const Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain =
+        0.5 * (Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor_view(cauchygreen)) -
+                  Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 
     /* non-linear B-operator (may so be called, meaning
     ** of B-operator is not so sharp in the non-linear realm) *
@@ -1517,29 +1517,29 @@ void Discret::Elements::Ale3Impl<distype>::static_ke_nonlinear(Ale3* ele,
       bop(5, NODDOF_ALE3 * i + 2) = defgrd(2, 2) * N_XYZ(0, i) + defgrd(2, 0) * N_XYZ(2, i);
     }
     // call material law cccccccccccccccccccccccccccccccccccccccccccccccccccccc
-    Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, Mat::NUM_STRESS_3D> cmat_f(
-        Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> stress_f(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> glstrain_f(glstrain.data());
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat_f{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3> stress_f{};
     // QUICK HACK until so_disp exclusively uses Core::LinAlg::Matrix!!!!!
-    Core::LinAlg::Matrix<NUMDIM_ALE3, NUMDIM_ALE3> fixed_defgrd(defgrd);
+    Core::LinAlg::Tensor<double, 3, 3> fixed_defgrd = Core::LinAlg::make_tensor(defgrd);
     std::shared_ptr<Mat::So3Material> so3mat =
         std::dynamic_pointer_cast<Mat::So3Material>(ele->material());
-    so3mat->evaluate(&fixed_defgrd, &glstrain_f, params, &stress_f, &cmat_f, iquad, ele->id());
+    so3mat->evaluate(&fixed_defgrd, glstrain, params, stress_f, cmat_f, iquad, ele->id());
     // end of call material law ccccccccccccccccccccccccccccccccccccccccccccccc
 
     // integrate internal force vector f = f + (B^T . sigma) * detJ * w(gp)
     Core::LinAlg::Matrix<numdof, 1> residual(element_residual, true);
-    residual.multiply_tn(detJ * intpoints.qwgt[iquad], bop, stress_f, 1.0);
+    Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> stress_view =
+        Core::LinAlg::make_stress_like_voigt_view(stress_f);
+    residual.multiply_tn(detJ * intpoints.qwgt[iquad], bop, stress_view, 1.0);
 
     // integrate `elastic' and `initial-displacement' stiffness matrix
     // keu = keu + (B^T . C . B) * detJ * w(gp)
     Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, numdof> cb;
-    cb.multiply_nn(cmat_f, bop);  // temporary C . B
+    cb.multiply_nn(Core::LinAlg::make_stress_like_voigt_view(cmat_f), bop);  // temporary C . B
     sys_mat.multiply_tn(detJ * intpoints.qwgt[iquad], bop, cb, 1.0);
 
     // integrate `geometric' stiffness matrix and add to keu *****************
-    Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> sfac(stress_f);  // auxiliary integrated stress
+    Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> sfac(stress_view);  // auxiliary integrated stress
     sfac.scale(detJ * intpoints.qwgt[iquad]);  // detJ*w(gp)*[S11,S22,S33,S12=S21,S23=S32,S13=S31]
     double SmB_L[NUMDIM_ALE3];                 // intermediate Sm.B_L
     // kgeo += (B_L^T . sigma . B_L) * detJ * w(gp)  with B_L = Ni,Xj see NiliFEM-Skript

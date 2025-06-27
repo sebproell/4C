@@ -26,7 +26,7 @@ namespace
   {
    public:
     CoupAnisoExpoAnisotropyExtensionElementFiberTest()
-        : anisotropy_(), eleFibers_(2), eleTensors_(2), eleTensors_stress_(2)
+        : anisotropy_(), eleFibers_(2), eleTensors_(2)
     {
       /// initialize dummy fibers
       // Element fibers
@@ -39,8 +39,7 @@ namespace
       eleFibers_[1](2) = 0.068965517241379;
       for (std::size_t i = 0; i < 2; ++i)
       {
-        eleTensors_[i].multiply_nt(eleFibers_[i], eleFibers_[i]);
-        Core::LinAlg::Voigt::Stresses::matrix_to_vector(eleTensors_[i], eleTensors_stress_[i]);
+        eleTensors_[i] = Core::LinAlg::self_dyadic(eleFibers_[i]);
       }
 
       setup_anisotropy_extension();
@@ -54,7 +53,6 @@ namespace
           1, 0.0, false, strategy, fiber_id);
       anisotropyExtension_->register_needed_tensors(
           Mat::FiberAnisotropyExtension<1>::FIBER_VECTORS |
-          Mat::FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR_STRESS |
           Mat::FiberAnisotropyExtension<1>::STRUCTURAL_TENSOR);
       anisotropy_.register_anisotropy_extension(*anisotropyExtension_);
       anisotropy_.set_number_of_gauss_points(2);
@@ -70,9 +68,8 @@ namespace
     Mat::Anisotropy anisotropy_;
     std::unique_ptr<Mat::Elastic::CoupAnisoExpoAnisotropyExtension> anisotropyExtension_;
 
-    std::vector<Core::LinAlg::Matrix<3, 1>> eleFibers_;
-    std::vector<Core::LinAlg::Matrix<3, 3>> eleTensors_;
-    std::vector<Core::LinAlg::Matrix<6, 1>> eleTensors_stress_;
+    std::vector<Core::LinAlg::Tensor<double, 3>> eleFibers_;
+    std::vector<Core::LinAlg::SymmetricTensor<double, 3, 3>> eleTensors_;
   };
 
   TEST_P(CoupAnisoExpoAnisotropyExtensionElementFiberTest, GetScalarProduct)
@@ -90,12 +87,6 @@ namespace
   {
     FOUR_C_EXPECT_NEAR(anisotropyExtension_->get_structural_tensor(get_gauss_point()),
         eleTensors_.at(get_fiber_id() - 1), 1e-10);
-  }
-
-  TEST_P(CoupAnisoExpoAnisotropyExtensionElementFiberTest, get_structural_tensorStress)
-  {
-    FOUR_C_EXPECT_NEAR(anisotropyExtension_->get_structural_tensor_stress(get_gauss_point()),
-        eleTensors_stress_.at(get_fiber_id() - 1), 1e-10);
   }
 
   INSTANTIATE_TEST_SUITE_P(GaussPoints, CoupAnisoExpoAnisotropyExtensionElementFiberTest,

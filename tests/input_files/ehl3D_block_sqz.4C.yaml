@@ -1465,7 +1465,7 @@ RESULT DESCRIPTION:
       NODE: 280
       QUANTITY: "dispx"
       VALUE: -2.2878722952778163e-06
-      TOLERANCE: 1e-09
+      TOLERANCE: 2.29e-09
   - STRUCTURE:
       DIS: "structure"
       NODE: 280

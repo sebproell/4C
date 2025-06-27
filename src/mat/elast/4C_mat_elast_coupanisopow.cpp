@@ -8,6 +8,8 @@
 #include "4C_mat_elast_coupanisopow.hpp"
 
 #include "4C_comm_pack_helpers.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
 #include "4C_mat_elast_aniso_structuraltensor_strategy.hpp"
 #include "4C_material_parameter_base.hpp"
 
@@ -49,9 +51,9 @@ void Mat::Elastic::CoupAnisoPow::setup(
   if (params_->init_ == 0)
   {
     // fibers aligned in YZ-plane with gamma around Z in global cartesian cosy
-    Core::LinAlg::Matrix<3, 3> Id(Core::LinAlg::Initialization::zero);
-    for (int i = 0; i < 3; i++) Id(i, i) = 1.0;
-    set_fiber_vecs(-1.0, Id, Id);
+    constexpr auto id =
+        Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
+    set_fiber_vecs(-1.0, id, id);
   }
 
   // path if fibers are given in input file
@@ -66,12 +68,12 @@ void Mat::Elastic::CoupAnisoPow::setup(
         container.get<std::optional<std::vector<double>>>("CIR").has_value())
     {
       // Read in of data
-      Core::LinAlg::Matrix<3, 3> locsys(Core::LinAlg::Initialization::zero);
+      Core::LinAlg::Tensor<double, 3, 3> locsys{};
       read_rad_axi_cir(container, locsys);
-      Core::LinAlg::Matrix<3, 3> Id(Core::LinAlg::Initialization::zero);
-      for (int i = 0; i < 3; i++) Id(i, i) = 1.0;
+      constexpr auto id =
+          Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
       // final setup of fiber data
-      set_fiber_vecs(0.0, locsys, Id);
+      set_fiber_vecs(0.0, locsys, id);
     }
     // FIBERi nomenclature
     else if (container.get<std::optional<std::vector<double>>>(fibername).has_value())
@@ -91,9 +93,11 @@ void Mat::Elastic::CoupAnisoPow::setup(
     FOUR_C_THROW("INIT mode not implemented");
 }
 
-void Mat::Elastic::CoupAnisoPow::add_stress_aniso_principal(const Core::LinAlg::Matrix<6, 1>& rcg,
-    Core::LinAlg::Matrix<6, 6>& cmat, Core::LinAlg::Matrix<6, 1>& stress,
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+void Mat::Elastic::CoupAnisoPow::add_stress_aniso_principal(
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stress, const Teuchos::ParameterList& params,
+    const int gp, const int eleGID)
 {
   // load params
   double k = params_->k_;
@@ -110,9 +114,7 @@ void Mat::Elastic::CoupAnisoPow::add_stress_aniso_principal(const Core::LinAlg::
 
   // calc invariant I4
   double I4 = 0.0;
-  I4 = structural_tensor_(0) * rcg(0) + structural_tensor_(1) * rcg(1) +
-       structural_tensor_(2) * rcg(2) + structural_tensor_(3) * rcg(3) +
-       structural_tensor_(4) * rcg(4) + structural_tensor_(5) * rcg(5);
+  I4 = Core::LinAlg::ddot(structural_tensor_, rcg);
 
   double lambda4 = pow(I4, 0.5);
   double pow_I4_d1 = pow(I4, d1);
@@ -146,19 +148,20 @@ void Mat::Elastic::CoupAnisoPow::add_stress_aniso_principal(const Core::LinAlg::
               4.0 * k * d2 * d1 * (d1 - 1.0) * pow_I4_d1m2 * pow(1.0 - pow_I4_d1, d2 - 1.0);
     }
   }
-  stress.update(gamma, structural_tensor_, 1.0);
-  cmat.multiply_nt(delta, structural_tensor_, structural_tensor_, 1.0);
+  stress += gamma * structural_tensor_;
+  cmat += delta * Core::LinAlg::dyadic(structural_tensor_, structural_tensor_);
 }
 
 void Mat::Elastic::CoupAnisoPow::get_fiber_vecs(
-    std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+    std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
 ) const
 {
   fibervecs.push_back(a_);
 }
 
 void Mat::Elastic::CoupAnisoPow::set_fiber_vecs(const double newgamma,
-    const Core::LinAlg::Matrix<3, 3>& locsys, const Core::LinAlg::Matrix<3, 3>& defgrd)
+    const Core::LinAlg::Tensor<double, 3, 3>& locsys,
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd)
 {
   if ((params_->gamma_ < -90) || (params_->gamma_ > 90))
     FOUR_C_THROW("Fiber angle not in [-90,90]");
@@ -173,20 +176,18 @@ void Mat::Elastic::CoupAnisoPow::set_fiber_vecs(const double newgamma,
       gamma = newgamma;
   }
 
-  Core::LinAlg::Matrix<3, 1> ca(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::Tensor<double, 3> ca{};
   for (int i = 0; i < 3; ++i)
   {
     // a = cos gamma e3 + sin gamma e2
     ca(i) = cos(gamma) * locsys(i, 2) + sin(gamma) * locsys(i, 1);
   }
   // pull back in reference configuration
-  Core::LinAlg::Matrix<3, 1> a_0(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<3, 3> idefgrd(Core::LinAlg::Initialization::zero);
-  idefgrd.invert(defgrd);
+  Core::LinAlg::Tensor<double, 3, 3> idefgrd = Core::LinAlg::inv(defgrd);
 
-  a_0.multiply(idefgrd, ca);
-  a_.update(1. / a_0.norm2(), a_0);
+  Core::LinAlg::Tensor<double, 3> a_0 = idefgrd * ca;
 
+  a_ = 1.0 / Core::LinAlg::norm2(a_0) * a_0;
   params_->structural_tensor_strategy()->setup_structural_tensor(a_, structural_tensor_);
 }
 FOUR_C_NAMESPACE_CLOSE

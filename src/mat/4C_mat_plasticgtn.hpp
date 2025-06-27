@@ -137,10 +137,10 @@ namespace Mat
     void setup(int numgp, const Core::IO::InputParameterContainer& container) override;
     void update() override;
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* linstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat, int gp, int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     Core::Mat::PAR::Parameter* parameter() const override { return params_; }
     double density() const override { return params_->density_; }

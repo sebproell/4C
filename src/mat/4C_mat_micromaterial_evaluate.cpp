@@ -11,6 +11,7 @@
 #include "4C_comm_utils.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_svd.hpp"
 #include "4C_mat_micromaterial.hpp"
 #include "4C_mat_micromaterialgp_static.hpp"
@@ -34,11 +35,15 @@ FOUR_C_NAMESPACE_OPEN
 // corresponding prototype in src/filter_common/filter_evaluation.cpp is adapted, too!!
 
 // evaluate for master procs
-void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::MicroMaterial::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   if (eleGID == -1) FOUR_C_THROW("no element ID provided in material");
 
   // activate microscale material
@@ -75,9 +80,9 @@ void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   };
 
   MultiScale::MicroStaticParObject::MicroStaticData microdata{};
-  microdata.defgrd_ = convert_to_serial_dense_matrix(*defgrd);
-  microdata.cmat_ = convert_to_serial_dense_matrix(*cmat);
-  microdata.stress_ = convert_to_serial_dense_matrix(*stress);
+  microdata.defgrd_ = convert_to_serial_dense_matrix(defgrd_mat);
+  microdata.cmat_ = convert_to_serial_dense_matrix(cmat_view);
+  microdata.stress_ = convert_to_serial_dense_matrix(stress_view);
   microdata.gp_ = gp;
   microdata.microdisnum_ = microdisnum;
   microdata.initial_volume_ = initial_volume;
@@ -105,7 +110,7 @@ void Mat::MicroMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // perform microscale simulation and homogenization (if fint and stiff/mass or stress calculation
   // is required)
-  actmicromatgp->perform_micro_simulation(defgrd, stress, cmat);
+  actmicromatgp->perform_micro_simulation(&defgrd_mat, &stress_view, &cmat_view);
 
   // reactivate macroscale material
   Global::Problem::instance()->materials()->reset_read_from_problem();

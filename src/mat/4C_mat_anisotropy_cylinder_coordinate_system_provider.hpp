@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_tensor.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -29,7 +30,7 @@ namespace Mat
      *
      * \return unit vector pointing in radial direction
      */
-    virtual const Core::LinAlg::Matrix<3, 1>& get_rad() const = 0;
+    virtual const Core::LinAlg::Tensor<double, 3>& get_rad() const = 0;
 
     /*!
      * \brief Returns a reference to the unit vector pointing in axial direction
@@ -37,7 +38,7 @@ namespace Mat
      * \return const Core::LinAlg::Matrix<3, 1>& Reference to the unit vector pointing in axial
      * direction
      */
-    virtual const Core::LinAlg::Matrix<3, 1>& get_axi() const = 0;
+    virtual const Core::LinAlg::Tensor<double, 3>& get_axi() const = 0;
 
     /*!
      * \brief Returns a reference to the unit vector pointing in circumferential direction
@@ -45,7 +46,7 @@ namespace Mat
      * \return const Core::LinAlg::Matrix<3, 1>& Reference to the unit vector pointing in
      * circumferential direction
      */
-    virtual const Core::LinAlg::Matrix<3, 1>& get_cir() const = 0;
+    virtual const Core::LinAlg::Tensor<double, 3>& get_cir() const = 0;
   };
 
 }  // namespace Mat

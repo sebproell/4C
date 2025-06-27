@@ -169,8 +169,12 @@ double Discret::Elements::Shell7pEleCalc<distype>::calculate_internal_energy(
           auto strains = evaluate_strains(g_reference, g_current);
 
           // call material for evaluation of strain energy function
-          double psi = 0.0;
-          solid_material.strain_energy(strains.gl_strain_, psi, gp, ele.id());
+          Core::LinAlg::Matrix<6, 1> gl_stress;
+          Core::LinAlg::Voigt::Strains::to_stress_like(strains.gl_strain_, gl_stress);
+
+          Core::LinAlg::SymmetricTensor<double, 3, 3> gl_strain =
+              Core::LinAlg::make_symmetric_tensor_from_stress_like_voigt_matrix(gl_stress);
+          double psi = solid_material.strain_energy(gl_strain, gp, ele.id());
 
           double thickness = 0.0;
           for (int i = 0; i < Shell::Internal::num_node<distype>; ++i)
@@ -410,14 +414,11 @@ void Discret::Elements::Shell7pEleCalc<distype>::evaluate_nonlinear_force_stiffn
           auto strains = evaluate_strains(g_reference, g_current);
 
           // update the deformation gradient (if needed?)
-          if (solid_material.needs_defgrd())
-          {
-            Core::LinAlg::Matrix<Shell::Internal::num_dim, Shell::Internal::num_dim> defgrd_enh(
-                Core::LinAlg::Initialization::uninitialized);
-            Shell::calc_consistent_defgrd<Shell::Internal::num_dim>(
-                strains.defgrd_, strains.gl_strain_, defgrd_enh);
-            strains.defgrd_ = defgrd_enh;
-          }
+          Core::LinAlg::Matrix<Shell::Internal::num_dim, Shell::Internal::num_dim> defgrd_enh(
+              Core::LinAlg::Initialization::uninitialized);
+          Shell::calc_consistent_defgrd<Shell::Internal::num_dim>(
+              strains.defgrd_, strains.gl_strain_, defgrd_enh);
+          strains.defgrd_ = defgrd_enh;
 
           auto stress = Shell::evaluate_material_stress_cartesian_system<Shell::Internal::num_dim>(
               solid_material, strains, params, gp, ele.id());
@@ -557,16 +558,14 @@ void Discret::Elements::Shell7pEleCalc<distype>::update(Core::Elements::Element&
             auto strains = evaluate_strains(g_reference, g_current);
 
             // calculate deformation gradient consistent with modified GL strain tensor
-            if (solid_material.needs_defgrd())
-            {
-              // update the deformation gradient (if needed?)
-              Core::LinAlg::Matrix<Shell::Internal::num_dim, Shell::Internal::num_dim> defgrd_enh(
-                  Core::LinAlg::Initialization::uninitialized);
-              Shell::calc_consistent_defgrd<Shell::Internal::num_dim>(
-                  strains.defgrd_, strains.gl_strain_, defgrd_enh);
-              strains.defgrd_ = defgrd_enh;
-            }
-            solid_material.update(strains.defgrd_, gp, params, ele.id());
+            // update the deformation gradient (if needed?)
+            Core::LinAlg::Matrix<Shell::Internal::num_dim, Shell::Internal::num_dim> defgrd_enh(
+                Core::LinAlg::Initialization::uninitialized);
+            Shell::calc_consistent_defgrd<Shell::Internal::num_dim>(
+                strains.defgrd_, strains.gl_strain_, defgrd_enh);
+            strains.defgrd_ = defgrd_enh;
+            Core::LinAlg::Tensor<double, 3, 3> defgrd = Core::LinAlg::make_tensor(strains.defgrd_);
+            solid_material.update(defgrd, gp, params, ele.id());
           }
         });
   }

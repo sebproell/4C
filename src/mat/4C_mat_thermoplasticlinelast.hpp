@@ -15,6 +15,8 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_thermomechanical.hpp"
 #include "4C_material_parameter_base.hpp"
 
@@ -157,18 +159,15 @@ namespace Mat
     void reset();
 
     //! evaluate material
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* glstrain,
-        Teuchos::ParameterList& params,                  //!< parameter list for communication
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,  //!< 2nd PK-stress
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat,  //!< material stiffness matrix
-        int gp,                                                    ///< Gauss point
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     // computes stress
-    void stress(const double p,                                   //!< volumetric stress tensor
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& devstress,  //!< deviatoric stress tensor
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& stress            //!< 2nd PK-stress
+    void stress(const double p,                                        //!< volumetric stress tensor
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& devstress,  //!< deviatoric stress tensor
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& stress            //!< 2nd PK-stress
     ) const;
 
     //! calculate relative/over stress
@@ -244,15 +243,17 @@ namespace Mat
     //! check if history variables are already initialised
     bool initialized() const { return (isinit_ and (strainplcurr_ != nullptr)); }
 
-    void reinit(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, double temperature, unsigned gp) override;
+    void reinit(const Core::LinAlg::Tensor<double, 3, 3>* defgrd,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, double temperature,
+        unsigned gp) override;
 
-    void stress_temperature_modulus_and_deriv(
-        Core::LinAlg::Matrix<6, 1>& stm, Core::LinAlg::Matrix<6, 1>& stm_dT, int gp) override;
+    void stress_temperature_modulus_and_deriv(Core::LinAlg::SymmetricTensor<double, 3, 3>& stm,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& stm_dT, int gp) override;
 
-    Core::LinAlg::Matrix<6, 1> evaluate_d_stress_d_scalar(const Core::LinAlg::Matrix<3, 3>& defgrad,
-        const Core::LinAlg::Matrix<6, 1>& glstrain, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_d_stress_d_scalar(
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     //! return quick accessible material parameter data
     Core::Mat::PAR::Parameter* parameter() const override { return params_; }
@@ -263,14 +264,16 @@ namespace Mat
     //! main 3D material call to determine stress and constitutive tensor ctemp
     //  originally method of fourier with const!!!
     void evaluate(const Core::LinAlg::Matrix<1, 1>& Ntemp,  //!< temperature of element
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& ctemp,  //!< temperature dependent material tangent
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& stresstemp  //!< temperature dependent stress term
+        Core::LinAlg::SymmetricTensor<double, 3, 3>&
+            ctemp,  //!< temperature dependent material tangent
+        Core::LinAlg::SymmetricTensor<double, 3, 3>&
+            stresstemp  //!< temperature dependent stress term
     );
 
     //! computes temperature dependent isotropic elasticity tensor in matrix
     //! notion for 3d
-    void setup_cthermo(
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& ctemp  //!< temperature dependent material tangent
+    void setup_cthermo(Core::LinAlg::SymmetricTensor<double, 3, 3>&
+            ctemp  //!< temperature dependent material tangent
     ) const;
 
     //! calculates stress-temperature modulus

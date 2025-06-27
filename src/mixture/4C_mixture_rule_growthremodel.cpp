@@ -79,13 +79,14 @@ void Mixture::GrowthRemodelMixtureRule::register_anisotropy_extensions(Mat::Anis
   growth_strategy_->register_anisotropy_extensions(anisotropy);
 }
 
-void Mixture::GrowthRemodelMixtureRule::setup(Teuchos::ParameterList& params, const int eleGID)
+void Mixture::GrowthRemodelMixtureRule::setup(
+    const Teuchos::ParameterList& params, const int eleGID)
 {
   MixtureRule::setup(params, 0);
 }
 
-void Mixture::GrowthRemodelMixtureRule::update(Core::LinAlg::Matrix<3, 3> const& F,
-    Teuchos::ParameterList& params, const int gp, const int eleGID)
+void Mixture::GrowthRemodelMixtureRule::update(Core::LinAlg::Tensor<double, 3, 3> const& F,
+    const Teuchos::ParameterList& params, const int gp, const int eleGID)
 {
   // Update base mixture rule, which also updates the constituents.
   MixtureRule::update(F, params, gp, eleGID);
@@ -94,14 +95,10 @@ void Mixture::GrowthRemodelMixtureRule::update(Core::LinAlg::Matrix<3, 3> const&
   // Evaluate inverse growth deformation gradient
   if (growth_strategy_->has_inelastic_growth_deformation_gradient())
   {
-    const double dt = params.get<double>("delta time", -1.0);
-    if (dt < 0.0)
-    {
-      FOUR_C_THROW("The element does not write the timestep, which is fatal.");
-    }
+    const double dt = params.get<double>("delta time");
 
     // Evaluate inverse growth deformation gradient
-    static Core::LinAlg::Matrix<3, 3> iFg;
+    Core::LinAlg::Tensor<double, 3, 3> iFg;
     growth_strategy_->evaluate_inverse_growth_deformation_gradient(
         iFg, *this, compute_current_reference_growth_scalar(gp), gp);
 
@@ -112,12 +109,12 @@ void Mixture::GrowthRemodelMixtureRule::update(Core::LinAlg::Matrix<3, 3> const&
   }
 }
 
-void Mixture::GrowthRemodelMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
-    const Core::LinAlg::Matrix<6, 1>& E_strain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, const int gp,
-    const int eleGID)
+void Mixture::GrowthRemodelMixtureRule::evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID)
 {
-  Core::LinAlg::Matrix<3, 3> iF_gM;  // growth deformation gradient
+  Core::LinAlg::Tensor<double, 3, 3> iF_gM;  // growth deformation gradient
 
   if (growth_strategy_->has_inelastic_growth_deformation_gradient())
   {
@@ -129,15 +126,15 @@ void Mixture::GrowthRemodelMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3
   }
 
   // define temporary matrices
-  Core::LinAlg::Matrix<6, 1> cstress;
-  Core::LinAlg::Matrix<6, 6> ccmat;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> cstress;
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> ccmat;
 
   // Iterate over all constituents and apply their contributions to the stress and linearization
   for (std::size_t i = 0; i < constituents().size(); ++i)
   {
     MixtureConstituent& constituent = *constituents()[i];
-    cstress.clear();
-    ccmat.clear();
+    cstress = {};
+    ccmat = {};
     if (growth_strategy_->has_inelastic_growth_deformation_gradient())
       constituent.evaluate_elastic_part(F, iF_gM, params, cstress, ccmat, gp, eleGID);
     else
@@ -149,33 +146,33 @@ void Mixture::GrowthRemodelMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3
                                                    params_->mass_fractions_[i] *
                                                    constituent.get_growth_scalar(gp);
 
-    const Core::LinAlg::Matrix<1, 6> dGrowthScalarDC =
+    const Core::LinAlg::SymmetricTensor<double, 3, 3> dGrowthScalarDC =
         constituent.get_d_growth_scalar_d_cg(gp, eleGID);
 
-    S_stress.update(current_ref_constituent_density, cstress, 1.0);
-    cmat.update(current_ref_constituent_density, ccmat, 1.0);
+    S_stress += current_ref_constituent_density * cstress;
+    cmat += current_ref_constituent_density * ccmat;
 
-    cmat.multiply_nn(2.0 * params_->initial_reference_density_ * params_->mass_fractions_[i],
-        cstress, dGrowthScalarDC, 1.0);
+    cmat += 2.0 * params_->initial_reference_density_ * params_->mass_fractions_[i] *
+            Core::LinAlg::dyadic(cstress, dGrowthScalarDC);
   }
 
-  cstress.clear();
-  ccmat.clear();
+  cstress = {};
+  ccmat = {};
 
 
   const auto [currentReferenceGrowthScalar, dCurrentReferenceGrowthScalarDC] = std::invoke(
       [&]()
       {
         double growthScalar = 0.0;
-        Core::LinAlg::Matrix<1, 6> dGrowthScalarDC(Core::LinAlg::Initialization::zero);
+        Core::LinAlg::SymmetricTensor<double, 3, 3> dGrowthScalarDC{};
 
         for (std::size_t i = 0; i < constituents().size(); ++i)
         {
           MixtureConstituent& constituent = *constituents()[i];
 
           growthScalar += params_->mass_fractions_[i] * constituent.get_growth_scalar(gp);
-          dGrowthScalarDC.update(
-              params_->mass_fractions_[i], constituent.get_d_growth_scalar_d_cg(gp, eleGID), 1.0);
+          dGrowthScalarDC +=
+              params_->mass_fractions_[i] * constituent.get_d_growth_scalar_d_cg(gp, eleGID);
         }
 
         return std::make_tuple(growthScalar, dGrowthScalarDC);
@@ -184,8 +181,8 @@ void Mixture::GrowthRemodelMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3
   growth_strategy_->evaluate_growth_stress_cmat(*this, currentReferenceGrowthScalar,
       dCurrentReferenceGrowthScalarDC, F, E_strain, params, cstress, ccmat, gp, eleGID);
 
-  S_stress.update(1.0, cstress, 1.0);
-  cmat.update(1.0, ccmat, 1.0);
+  S_stress += cstress;
+  cmat += ccmat;
 }
 
 double Mixture::GrowthRemodelMixtureRule::compute_current_reference_growth_scalar(int gp) const

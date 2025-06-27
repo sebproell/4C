@@ -10,6 +10,7 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_io_input_field.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_linalg_tensor.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_function.hpp"
@@ -401,16 +402,15 @@ double Mat::Utils::Muscle::evaluate_time_space_dependent_active_stress_by_map(
   return sigma_max_ft;
 }
 
-double Mat::Utils::Muscle::fiber_stretch(
-    const Core::LinAlg::Matrix<3, 3>& C, const Core::LinAlg::Matrix<3, 3>& M)
+double Mat::Utils::Muscle::fiber_stretch(const Core::LinAlg::SymmetricTensor<double, 3, 3>& C,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& M)
 {
   // product C^T*M
-  Core::LinAlg::Matrix<3, 3> transpCM(Core::LinAlg::Initialization::uninitialized);
-  transpCM.multiply_tn(C, M);  // C^TM = C^T*M
+  auto CM = C * M;  // C^TM = C^T*M
 
   // stretch in fibre direction lambdaM
   // lambdaM = sqrt(C:M) = sqrt(tr(C^T M)), see Holzapfel2000, p.14
-  double lambdaM = std::sqrt(transpCM(0, 0) + transpCM(1, 1) + transpCM(2, 2));
+  double lambdaM = std::sqrt(Core::LinAlg::trace(CM));
 
   return lambdaM;
 }

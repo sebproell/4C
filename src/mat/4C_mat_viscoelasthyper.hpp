@@ -14,6 +14,7 @@
 
 #include "4C_comm_parobjectfactory.hpp"
 #include "4C_mat_elasthyper.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_material_parameter_base.hpp"
 
@@ -174,13 +175,11 @@ namespace Mat
     }
 
     /// hyperelastic stress response plus elasticity tensor
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,  ///< Deformation gradient
-        const Core::LinAlg::Matrix<6, 1>* glstrain,          ///< Green-Lagrange strain
-        Teuchos::ParameterList& params,      ///< Container for additional information
-        Core::LinAlg::Matrix<6, 1>* stress,  ///< 2nd Piola-Kirchhoff stresses
-        Core::LinAlg::Matrix<6, 6>* cmat,
-        int gp,                      ///< Gauss point
-        const int eleGID) override;  ///< Constitutive matrix
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp,
+        int eleGID) override;  ///< Constitutive matrix
 
     /// setup material description
     void setup(int numgp, const Core::IO::InputParameterContainer& container) override;
@@ -193,7 +192,7 @@ namespace Mat
     virtual void evaluate_kin_quant_vis(Core::LinAlg::Matrix<6, 1>& rcg,
         Core::LinAlg::Matrix<6, 1>& scg, Core::LinAlg::Matrix<6, 1>& icg,
         Core::LinAlg::Matrix<3, 1>& prinv, Core::LinAlg::Matrix<7, 1>& rateinv,
-        Core::LinAlg::Matrix<6, 1>& modrcg, Teuchos::ParameterList& params,
+        Core::LinAlg::Matrix<6, 1>& modrcg, const Teuchos::ParameterList& params,
         Core::LinAlg::Matrix<6, 1>& scgrate, Core::LinAlg::Matrix<6, 1>& modrcgrate,
         Core::LinAlg::Matrix<7, 1>& modrateinv, int gp);
 
@@ -202,7 +201,7 @@ namespace Mat
         Core::LinAlg::Matrix<8, 1>& mu, Core::LinAlg::Matrix<8, 1>& modmu,
         Core::LinAlg::Matrix<33, 1>& xi, Core::LinAlg::Matrix<33, 1>& modxi,
         Core::LinAlg::Matrix<7, 1>& rateinv, Core::LinAlg::Matrix<7, 1>& modrateinv,
-        Teuchos::ParameterList& params, int gp, int eleGID);
+        const Teuchos::ParameterList& params, int gp, int eleGID);
 
     /// calculates the isotropic stress and elasticity tensor for viscous principal configuration
     virtual void evaluate_iso_visco_principal(Core::LinAlg::Matrix<6, 1>& stress,
@@ -226,11 +225,11 @@ namespace Mat
     /// tensors are added
     virtual void evaluate_visco_gen_max(Core::LinAlg::Matrix<6, 1>* stress,
         Core::LinAlg::Matrix<6, 6>* cmat, Core::LinAlg::Matrix<6, 1>& Q,
-        Core::LinAlg::Matrix<6, 6>& cmatq, Teuchos::ParameterList& params, int gp);
+        Core::LinAlg::Matrix<6, 6>& cmatq, const Teuchos::ParameterList& params, int gp);
 
     /// calculates the stress and elasticitiy tensor for the GeneneralizedMax-material
     virtual void evaluate_visco_generalized_gen_max(Core::LinAlg::Matrix<6, 1>& Q,
-        Core::LinAlg::Matrix<6, 6>& cmatq, Teuchos::ParameterList& params,
+        Core::LinAlg::Matrix<6, 6>& cmatq, const Teuchos::ParameterList& params,
         const Core::LinAlg::Matrix<6, 1>* glstrain, int gp, int eleGID);
 
     /// calculates the stress and elasticity tensor for the viscos Fract-material
@@ -239,7 +238,7 @@ namespace Mat
     /// tensors are added
     virtual void evaluate_visco_fract(Core::LinAlg::Matrix<6, 1> stress,
         Core::LinAlg::Matrix<6, 6> cmat, Core::LinAlg::Matrix<6, 1>& Q,
-        Core::LinAlg::Matrix<6, 6>& cmatq, Teuchos::ParameterList& params, int gp);
+        Core::LinAlg::Matrix<6, 6>& cmatq, const Teuchos::ParameterList& params, int gp);
 
     /// @name Flags to specify the viscous formulations
     //@{

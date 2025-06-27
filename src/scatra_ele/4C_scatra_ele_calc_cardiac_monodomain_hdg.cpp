@@ -17,6 +17,7 @@
 #include "4C_fem_general_utils_integration.hpp"
 #include "4C_fem_general_utils_polynomial.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_multiply.hpp"
 #include "4C_mat_list.hpp"
 #include "4C_mat_myocard.hpp"
@@ -125,7 +126,7 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::pre
     Core::Nodes::NodalFiberHolder gpFiberHolder;
     Core::Nodes::project_fibers_to_gauss_points<distype>(ele->nodes(), shapefcns, gpFiberHolder);
 
-    std::vector<Core::LinAlg::Matrix<probdim, 1>> fibergp(shapes->nqpoints_);
+    std::vector<Core::LinAlg::Tensor<double, probdim>> fibergp(shapes->nqpoints_);
     setup_cardiac_fibers<probdim>(gpFiberHolder, fibergp);
 
     for (unsigned int q = 0; q < shapes->nqpoints_; ++q) actmat->setup_diffusion_tensor(fibergp[q]);
@@ -212,7 +213,7 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::pre
     Core::Nodes::NodalFiberHolder gpFiberHolder;
     Core::Nodes::project_fibers_to_gauss_points<distype>(ele->nodes(), shapefcns, gpFiberHolder);
 
-    std::vector<Core::LinAlg::Matrix<probdim, 1>> fibergp(numgp);
+    std::vector<Core::LinAlg::Tensor<double, probdim>> fibergp(numgp);
     setup_cardiac_fibers<probdim>(gpFiberHolder, fibergp);
 
     for (unsigned int q = 0; q < numgp; ++q) actmat->setup_diffusion_tensor(fibergp[q]);
@@ -783,11 +784,11 @@ int Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype,
 template <Core::FE::CellType distype, int probdim>
 template <std::size_t dim>
 void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::setup_cardiac_fibers(
-    const Core::Nodes::NodalFiberHolder& fibers, std::vector<Core::LinAlg::Matrix<dim, 1>>& f)
+    const Core::Nodes::NodalFiberHolder& fibers, std::vector<Core::LinAlg::Tensor<double, dim>>& f)
 {
   if (fibers.fibers_size() > 0)
   {
-    const std::vector<Core::LinAlg::Matrix<3, 1>>& fib = fibers.get_fiber(0);
+    const std::vector<Core::LinAlg::Tensor<double, 3>>& fib = fibers.get_fiber(0);
     f.resize(fib.size());
     for (std::size_t gp = 0; gp < fib.size(); ++gp)
     {
@@ -802,9 +803,9 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::set
            fibers.contains_coordinate_system_direction(
                Core::Nodes::CoordinateSystemDirection::Tangential))
   {
-    const std::vector<Core::LinAlg::Matrix<3, 1>>& cir =
+    const std::vector<Core::LinAlg::Tensor<double, 3>>& cir =
         fibers.get_coordinate_system_direction(Core::Nodes::CoordinateSystemDirection::Circular);
-    const std::vector<Core::LinAlg::Matrix<3, 1>>& tan =
+    const std::vector<Core::LinAlg::Tensor<double, 3>>& tan =
         fibers.get_coordinate_system_direction(Core::Nodes::CoordinateSystemDirection::Tangential);
     const std::vector<double>& helix = fibers.get_angle(Core::Nodes::AngleType::Helix);
     const std::vector<double>& transverse = fibers.get_angle(Core::Nodes::AngleType::Transverse);
@@ -814,17 +815,18 @@ void Discret::Elements::ScaTraEleCalcHDGCardiacMonodomain<distype, probdim>::set
     for (unsigned int gp = 0; gp < cir.size(); ++gp)
     {
       Core::LinAlg::Matrix<3, 1> rad(Core::LinAlg::Initialization::uninitialized);
-      rad.cross_product(cir[gp], tan[gp]);
+      rad.cross_product(Core::LinAlg::make_matrix_view<3, 1>(cir[gp]),
+          Core::LinAlg::make_matrix_view<3, 1>(tan[gp]));
 
       double tmp1 = cos(helix[gp] * deg2rad) * cos(transverse[gp] * deg2rad);
       double tmp2 = sin(helix[gp] * deg2rad) * cos(transverse[gp] * deg2rad);
       double tmp3 = sin(transverse[gp] * deg2rad);
 
-      for (unsigned int i = 0; i < 3; ++i)
+      for (unsigned int i = 0; i < dim; ++i)
       {
-        f[gp](i) = tmp1 * cir[gp](i, 0) + tmp2 * tan[gp](i, 0) + tmp3 * rad(i, 0);
+        f[gp](i) = tmp1 * cir[gp](i) + tmp2 * tan[gp](i) + tmp3 * rad(i);
       }
-      f[gp].scale(1.0 / f[gp].norm2());
+      f[gp] *= 1.0 / Core::LinAlg::norm2(f[gp]);
     }
   }
   else

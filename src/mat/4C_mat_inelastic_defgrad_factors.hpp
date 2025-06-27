@@ -52,11 +52,14 @@ namespace Mat
       explicit InelasticDeformationDirection(std::vector<double> growthdirection);
 
       /// reference to matrix that determines growth direction
-      const Core::LinAlg::Matrix<3, 3>& growth_dir_mat() const { return growth_dir_mat_; }
+      const Core::LinAlg::SymmetricTensor<double, 3, 3>& growth_dir_mat() const
+      {
+        return growth_dir_mat_;
+      }
 
      private:
       /// matrix that determines growth direction
-      Core::LinAlg::Matrix<3, 3> growth_dir_mat_;
+      Core::LinAlg::SymmetricTensor<double, 3, 3> growth_dir_mat_;
     };
 
     /*----------------------------------------------------------------------
@@ -159,7 +162,10 @@ namespace Mat
       explicit InelasticDefgradLinScalarAniso(const Core::Mat::PAR::Parameter::Data& matdata);
 
       /// reference to matrix that determines growth direction
-      const Core::LinAlg::Matrix<3, 3>& growth_dir_mat() { return growth_dir_->growth_dir_mat(); }
+      const Core::LinAlg::SymmetricTensor<double, 3, 3>& growth_dir_mat()
+      {
+        return growth_dir_->growth_dir_mat();
+      }
 
      private:
       /// calculation of direction of inelastic deformation
@@ -248,7 +254,7 @@ namespace Mat
           const Core::Mat::PAR::Parameter::Data& matdata);
 
       /// return reference to matrix that determines growth direction
-      const Core::LinAlg::Matrix<3, 3>& growth_dir_mat() const
+      const Core::LinAlg::SymmetricTensor<double, 3, 3>& growth_dir_mat() const
       {
         return growth_dir_->growth_dir_mat();
       };
@@ -534,7 +540,7 @@ namespace Mat
      *                         of different field
      */
     virtual void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) = 0;
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) = 0;
 
     /*!
      * @brief evaluate off-diagonal stiffness matrix for monolithic systems to get the
@@ -560,7 +566,7 @@ namespace Mat
      * @param[in] gp      Gauss point
      * @param[in] eleGID  Element ID
      */
-    virtual void pre_evaluate(Teuchos::ParameterList& params, int gp, int eleGID) = 0;
+    virtual void pre_evaluate(const Teuchos::ParameterList& params, int gp, int eleGID) = 0;
 
     /*!
      * @brief set gauss point concentration to parameter class
@@ -624,7 +630,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override;
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override;
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override;
 
     void evaluate_inverse_inelastic_def_grad(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFin_other, Core::LinAlg::Matrix<3, 3>& iFinM) override;
@@ -640,7 +646,7 @@ namespace Mat
       return Core::Materials::mfi_no_growth;
     }
 
-    void pre_evaluate(Teuchos::ParameterList& params, int gp, int eleGID) override;
+    void pre_evaluate(const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     void update() override {};
 
@@ -673,7 +679,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override {};
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override {};
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override {};
 
     void evaluate_inverse_inelastic_def_grad(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFin_other, Core::LinAlg::Matrix<3, 3>& iFinM) override;
@@ -695,7 +701,7 @@ namespace Mat
           Mat::InelasticDefgradFactors::parameter());
     }
 
-    void pre_evaluate(Teuchos::ParameterList& params, int gp, int eleGID) override;
+    void pre_evaluate(const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     void update() override {};
 
@@ -740,7 +746,7 @@ namespace Mat
 
     Core::Materials::MaterialType material_type() const override = 0;
 
-    void pre_evaluate(Teuchos::ParameterList& params, int gp, int eleGID) override;
+    void pre_evaluate(const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     void set_concentration_gp(double concentration) override;
 
@@ -822,7 +828,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override = 0;
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override = 0;
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override = 0;
 
     void evaluate_od_stiff_mat(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFinjM, const Core::LinAlg::Matrix<6, 9>& dSdiFinj,
@@ -885,7 +891,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override;
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override;
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override;
 
     void evaluate_od_stiff_mat(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFinjM, const Core::LinAlg::Matrix<6, 9>& dSdiFinj,
@@ -955,7 +961,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override;
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override;
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override;
 
     void evaluate_od_stiff_mat(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFinjM, const Core::LinAlg::Matrix<6, 9>& dSdiFinj,
@@ -1020,7 +1026,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override;
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override;
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override;
 
     void evaluate_od_stiff_mat(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFinjM, const Core::LinAlg::Matrix<6, 9>& dSdiFinj,
@@ -1084,7 +1090,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override;
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override;
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override;
 
     void evaluate_od_stiff_mat(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFinjM, const Core::LinAlg::Matrix<6, 9>& dSdiFinj,
@@ -1124,7 +1130,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override;
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override;
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override;
 
     void evaluate_inverse_inelastic_def_grad(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFin_other, Core::LinAlg::Matrix<3, 3>& iFinM) override;
@@ -1146,7 +1152,7 @@ namespace Mat
           Mat::InelasticDefgradFactors::parameter());
     }
 
-    void pre_evaluate(Teuchos::ParameterList& params, int gp, int eleGID) override;
+    void pre_evaluate(const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     void update() override {};
 
@@ -1335,7 +1341,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>& cmatadd) override;
 
     void evaluate_inelastic_def_grad_derivative(
-        double detjacobian, Core::LinAlg::Matrix<9, 1>& dFindx) override {};
+        double detjacobian, Core::LinAlg::Tensor<double, 3, 3>& dFindx) override {};
 
     void evaluate_inverse_inelastic_def_grad(const Core::LinAlg::Matrix<3, 3>* defgrad,
         const Core::LinAlg::Matrix<3, 3>& iFin_other, Core::LinAlg::Matrix<3, 3>& iFinM) override;
@@ -1354,7 +1360,7 @@ namespace Mat
 
     void setup(const int numgp, const Core::IO::InputParameterContainer& container) override;
 
-    void pre_evaluate(Teuchos::ParameterList& params, int gp, int eleGID) override;
+    void pre_evaluate(const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
     void update() override;
 

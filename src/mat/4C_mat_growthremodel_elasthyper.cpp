@@ -19,6 +19,7 @@
 #include "4C_mat_elast_summand.hpp"
 #include "4C_mat_elast_volsussmanbathe.hpp"
 #include "4C_mat_elasthyper_service.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
 #include "4C_utils_enum.hpp"
@@ -451,7 +452,8 @@ void Mat::GrowthRemodelElastHyper::setup(
   for (auto& p : potsumrf_) nr_rf_tot_ += p->get_num_fibers();
 }
 
-void Mat::GrowthRemodelElastHyper::post_setup(Teuchos::ParameterList& params, const int eleGID)
+void Mat::GrowthRemodelElastHyper::post_setup(
+    const Teuchos::ParameterList& params, const int eleGID)
 {
   anisotropy_.read_anisotropy_from_parameter_list(params);
 }
@@ -549,7 +551,7 @@ void Mat::GrowthRemodelElastHyper::setup_axi_cir_rad_cylinder(
     Core::LinAlg::Tensor<double, 3> elecenter, double const dt)
 {
   // Clear dummy directions
-  radaxicirc_.clear();
+  radaxicirc_ = {};
   Core::LinAlg::Matrix<3, 1> axdir;
   Core::LinAlg::Matrix<3, 1> raddir;
   Core::LinAlg::Matrix<3, 1> cirdir;
@@ -578,8 +580,8 @@ void Mat::GrowthRemodelElastHyper::setup_axi_cir_rad_cylinder(
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::GrowthRemodelElastHyper::update(Core::LinAlg::Matrix<3, 3> const& defgrd, int const gp,
-    Teuchos::ParameterList& params, int const eleGID)
+void Mat::GrowthRemodelElastHyper::update(const Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+    int const gp, const Teuchos::ParameterList& params, int const eleGID)
 {
   // Update individual volume of elastin
   static double dt_pre = params.get<double>("delta time");
@@ -616,7 +618,8 @@ void Mat::GrowthRemodelElastHyper::update(Core::LinAlg::Matrix<3, 3> const& defg
   {
     case 0:
       for (auto& p : potsumrf_)
-        p->evaluate_growth_and_remodeling_expl(defgrd, dt, iFgM, gp, eleGID);
+        p->evaluate_growth_and_remodeling_expl(
+            Core::LinAlg::make_matrix_view(defgrd), dt, iFgM, gp, eleGID);
       break;
     case 1:  // do nothing
       break;
@@ -743,7 +746,7 @@ void Mat::GrowthRemodelElastHyper::evaluate_prestretch(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Mat::GrowthRemodelElastHyper::setup_g_r_3d(Core::LinAlg::Matrix<3, 3> const* const defgrd,
-    Teuchos::ParameterList& params, const double dt, const int gp, const int eleGID)
+    const Teuchos::ParameterList& params, const double dt, const int gp, const int eleGID)
 {
   Core::LinAlg::Tensor<double, 3> axdir{};
   Core::LinAlg::Tensor<double, 3> raddir{};
@@ -781,11 +784,18 @@ void Mat::GrowthRemodelElastHyper::setup_g_r_3d(Core::LinAlg::Matrix<3, 3> const
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::GrowthRemodelElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::GrowthRemodelElastHyper::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+  const Core::LinAlg::Matrix<6, 1> glstrain_mat =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
+
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   // save current simulation time (used for the evaluation of elastin degradation)
   t_tot_ = params.get<double>("total time");
 
@@ -794,14 +804,14 @@ void Mat::GrowthRemodelElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* de
 
   if (setup_[gp] == 1)
   {
-    setup_g_r_3d(defgrd, params, dt, gp, eleGID);
+    setup_g_r_3d(&defgrd_mat, params, dt, gp, eleGID);
     setup_[gp] = 0;
   }
 
   // blank resulting quantities
   // ... even if it is an implicit law that cmat is zero upon input
-  stress->clear();
-  cmat->clear();
+  stress_view.clear();
+  cmat_view.clear();
 
   // some static variables
   static Core::LinAlg::Matrix<NUM_STRESS_3D, 1> stressaniso(Core::LinAlg::Initialization::zero);
@@ -811,7 +821,7 @@ void Mat::GrowthRemodelElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* de
       Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> iFinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> CM(Core::LinAlg::Initialization::zero);
-  CM.multiply_tn(1.0, *defgrd, *defgrd, 0.0);
+  CM.multiply_tn(1.0, defgrd_mat, defgrd_mat, 0.0);
   static Core::LinAlg::Matrix<6, 1> stressmem(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<6, 6> cmatmem(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<6, 9> dSdiFgmem(Core::LinAlg::Initialization::zero);
@@ -837,22 +847,20 @@ void Mat::GrowthRemodelElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* de
     for (auto& p : potsumrf_)
     {
       p->evaluate_anisotropic_stress_cmat(CM, iFgM, cmataniso, stressaniso, gp, dt, eleGID);
-      stress->update(1.0, stressaniso, 1.0);
-      cmat->update(1.0, cmataniso, 1.0);
+      stress_view.update(1.0, stressaniso, 1.0);
+      cmat_view.update(1.0, cmataniso, 1.0);
     }
 
     // build stress response and elasticity tensor of 3D material
     iFinM.multiply_nn(1.0, iFgM, gm_[gp], 0.0);
-    evaluate_stress_cmat_iso(defgrd, iFinM, stressiso, cmatiso, dSdiFgiso, gp, eleGID);
-    stress->update(1.0, stressiso, 1.0);
-    cmat->update(1.0, cmatiso, 1.0);
+    evaluate_stress_cmat_iso(&defgrd_mat, iFinM, stressiso, cmatiso, dSdiFgiso, gp, eleGID);
+    stress_view.update(1.0, stressiso, 1.0);
+    cmat_view.update(1.0, cmatiso, 1.0);
 
     // build stress response and elasticity tensor of membrane material
     evaluate_stress_cmat_membrane(CM, iFgM, stressmem, cmatmem, dSdiFgmem, gp, eleGID);
-    stress->update(1.0, stressmem, 1.0);
-    cmat->update(1.0, cmatmem, 1.0);
-
-    return;
+    stress_view.update(1.0, stressmem, 1.0);
+    cmat_view.update(1.0, cmatmem, 1.0);
   }
   // Growth and Remodeling
   else
@@ -865,27 +873,27 @@ void Mat::GrowthRemodelElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* de
         for (auto& p : potsumrf_)
         {
           p->evaluate_anisotropic_stress_cmat(CM, iFgM, cmataniso, stressaniso, gp, dt, eleGID);
-          stress->update(1.0, stressaniso, 1.0);
-          cmat->update(1.0, cmataniso, 1.0);
+          stress_view.update(1.0, stressaniso, 1.0);
+          cmat_view.update(1.0, cmataniso, 1.0);
         }
 
         // build stress response and elasticity tensor of 3D material
         iFinM.multiply_nn(1.0, iFgM, gm_[gp], 0.0);
-        evaluate_stress_cmat_iso(defgrd, iFinM, stressiso, cmatiso, dSdiFgiso, gp, eleGID);
-        stress->update(1.0, stressiso, 1.0);
-        cmat->update(1.0, cmatiso, 1.0);
+        evaluate_stress_cmat_iso(&defgrd_mat, iFinM, stressiso, cmatiso, dSdiFgiso, gp, eleGID);
+        stress_view.update(1.0, stressiso, 1.0);
+        cmat_view.update(1.0, cmatiso, 1.0);
 
         // build stress response and elasticity tensor of membrane material
         evaluate_stress_cmat_membrane(CM, iFgM, stressmem, cmatmem, dSdiFgmem, gp, eleGID);
-        stress->update(1.0, stressmem, 1.0);
-        cmat->update(1.0, cmatmem, 1.0);
+        stress_view.update(1.0, stressmem, 1.0);
+        cmat_view.update(1.0, cmatmem, 1.0);
 
         break;
       }
       case 1:
       {
         static Core::LinAlg::SerialDenseMatrix K_T(2 * nr_rf_tot_, 2 * nr_rf_tot_, true);
-        solve_for_rho_lambr(K_T, FgM, iFgM, dFgdrhoM, diFgdrhoM, defgrd, dt, gp, eleGID);
+        solve_for_rho_lambr(K_T, FgM, iFgM, dFgdrhoM, diFgdrhoM, &defgrd_mat, dt, gp, eleGID);
 
         // split solution vector in dlambda_r/dC and drho/dC
         static std::vector<Core::LinAlg::Matrix<1, 6>> drhodC(
@@ -893,38 +901,39 @@ void Mat::GrowthRemodelElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* de
         static std::vector<Core::LinAlg::Matrix<1, 6>> dlambrdC(
             nr_rf_tot_, Core::LinAlg::Matrix<1, 6>(Core::LinAlg::Initialization::zero));
         static Core::LinAlg::Matrix<1, 6> sum_drhodC(Core::LinAlg::Initialization::zero);
-        solve_fordrhod_cdlambrd_c(drhodC, dlambrdC, sum_drhodC, K_T, iFgM, defgrd, dt, gp, eleGID);
+        solve_fordrhod_cdlambrd_c(
+            drhodC, dlambrdC, sum_drhodC, K_T, iFgM, &defgrd_mat, dt, gp, eleGID);
 
         // Evaluate anisotropic remodel fibers
         int nr_grf_proc = 0;
         for (auto& p : potsumrf_)
         {
           p->evaluate_anisotropic_stress_cmat(CM, iFgM, cmataniso, stressaniso, gp, dt, eleGID);
-          stress->update(1.0, stressaniso, 1.0);
-          cmat->update(1.0, cmataniso, 1.0);
-          p->evaluate_additional_growth_remodel_cmat(
-              defgrd, nr_grf_proc, iFgM, diFgdrhoM, drhodC, dlambrdC, cmatanisoadd, gp, eleGID);
-          cmat->update(1.0, cmatanisoadd, 1.0);
+          stress_view.update(1.0, stressaniso, 1.0);
+          cmat_view.update(1.0, cmataniso, 1.0);
+          p->evaluate_additional_growth_remodel_cmat(&defgrd_mat, nr_grf_proc, iFgM, diFgdrhoM,
+              drhodC, dlambrdC, cmatanisoadd, gp, eleGID);
+          cmat_view.update(1.0, cmatanisoadd, 1.0);
           nr_grf_proc += p->get_num_fibers();
         }
 
         // Evaluate 3D elastin material
         iFinM.multiply_nn(1.0, iFgM, gm_[gp], 0.0);
-        evaluate_stress_cmat_iso(defgrd, iFinM, stressiso, cmatiso, dSdiFgiso, gp, eleGID);
-        stress->update(1.0, stressiso, 1.0);
-        cmat->update(1.0, cmatiso, 1.0);
+        evaluate_stress_cmat_iso(&defgrd_mat, iFinM, stressiso, cmatiso, dSdiFgiso, gp, eleGID);
+        stress_view.update(1.0, stressiso, 1.0);
+        cmat_view.update(1.0, cmatiso, 1.0);
 
         // Build stress response and elasticity tensor of membrane material
         evaluate_stress_cmat_membrane(CM, iFgM, stressmem, cmatmem, dSdiFgmem, gp, eleGID);
-        stress->update(1.0, stressmem, 1.0);
-        cmat->update(1.0, cmatmem, 1.0);
+        stress_view.update(1.0, stressmem, 1.0);
+        cmat_view.update(1.0, cmatmem, 1.0);
 
         // Evaluate additional terms for the elasticity tensor
         static Core::LinAlg::Matrix<6, 9> dSdiFg_sum(Core::LinAlg::Initialization::zero);
         dSdiFg_sum.update(1.0, dSdiFgiso, 0.0);
         dSdiFg_sum.update(1.0, dSdiFgmem, 1.0);
         evaluate_additional_cmat(cmatadd, diFgdrhoM, sum_drhodC, dSdiFg_sum, gp);
-        cmat->update(1.0, cmatadd, 1.0);
+        cmat_view.update(1.0, cmatadd, 1.0);
 
         break;
       }
@@ -1585,7 +1594,7 @@ void Mat::GrowthRemodelElastHyper::evaluate_growth_def_grad(Core::LinAlg::Matrix
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Mat::GrowthRemodelElastHyper::setup_g_r_2d(
-    Teuchos::ParameterList& params, const double dt, const int gp)
+    const Teuchos::ParameterList& params, const double dt, const int gp)
 {
   Core::LinAlg::Tensor<double, 3> axdir{};
   const auto& gp_coords_ref = params.get<Core::LinAlg::Tensor<double, 3>>("gp_coords_ref");
@@ -1615,7 +1624,7 @@ void Mat::GrowthRemodelElastHyper::setup_g_r_2d(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Mat::GrowthRemodelElastHyper::evaluate_membrane(Core::LinAlg::Matrix<3, 3> const& defgrd_glob,
-    Teuchos::ParameterList& params, Core::LinAlg::Matrix<3, 3>& pk2M_glob,
+    const Teuchos::ParameterList& params, Core::LinAlg::Matrix<3, 3>& pk2M_glob,
     Core::LinAlg::Matrix<6, 6>& cmat_glob, const int gp, const int eleGID)
 {
   // time step size
@@ -1662,8 +1671,8 @@ void Mat::GrowthRemodelElastHyper::evaluate_membrane(Core::LinAlg::Matrix<3, 3> 
 
 
 double Mat::GrowthRemodelElastHyper::evaluate_membrane_thickness_stretch(
-    Core::LinAlg::Matrix<3, 3> const& defgrd_glob, Teuchos::ParameterList& params, const int gp,
-    const int eleGID)
+    Core::LinAlg::Matrix<3, 3> const& defgrd_glob, const Teuchos::ParameterList& params,
+    const int gp, const int eleGID)
 {
   // save current simulation time (used for the evaluation of elastin degradation)
   t_tot_ = params.get<double>("total time");

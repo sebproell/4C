@@ -13,9 +13,12 @@
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
 #include "4C_linalg_four_tensor.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_elast_aniso_structuraltensor_strategy.hpp"
 #include "4C_mat_muscle_utils.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_mat_service.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_local_newton.hpp"
 
@@ -393,28 +396,32 @@ void Mat::MuscleGiantesio::setup(int numgp, const Core::IO::InputParameterContai
   anisotropy_.read_anisotropy_from_element(container);
 }
 
-void Mat::MuscleGiantesio::update(Core::LinAlg::Matrix<3, 3> const& defgrd, int const gp,
-    Teuchos::ParameterList& params, int const eleGID)
+void Mat::MuscleGiantesio::update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd, int const gp,
+    const Teuchos::ParameterList& params, int const eleGID)
 {
   // compute the current fibre stretch using the deformation gradient and the structural tensor
   // right Cauchy Green tensor C= F^T F
-  Core::LinAlg::Matrix<3, 3> C(Core::LinAlg::Initialization::uninitialized);
-  C.multiply_tn(defgrd, defgrd);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> C =
+      Core::LinAlg::assume_symmetry(Core::LinAlg::transpose(defgrd) * defgrd);
 
   // structural tensor M, i.e. dyadic product of fibre directions
-  const Core::LinAlg::Matrix<3, 3>& M = anisotropy_extension_.get_structural_tensor(gp, 0);
+  const Core::LinAlg::SymmetricTensor<double, 3, 3>& M =
+      anisotropy_extension_.get_structural_tensor(gp, 0);
 
   // save the current fibre stretch in lambdaMOld_
   lambda_m_old_ = Mat::Utils::Muscle::fiber_stretch(C, M);
 }
 
-void Mat::MuscleGiantesio::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::MuscleGiantesio::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrd,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID)
 {
-  stress->clear();
-  cmat->clear();
+  Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrd);
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+  stress_view.clear();
+  cmat_view.clear();
 
   // get passive material parameters
   const double alpha = params_->alpha_;
@@ -424,37 +431,41 @@ void Mat::MuscleGiantesio::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   const double omega0 = params_->omega0_;
 
   // save current simulation time
-  double currentTime = params.get<double>("total time", -1);
+  double currentTime = get_or<double>(params, "total time", -1);
   if (std::abs(currentTime + 1.0) < 1e-14)
     FOUR_C_THROW("No total time given for muscle Giantesio material!");
 
   // save (time) step size
-  double timeStepSize = params.get<double>("delta time", -1);
+  double timeStepSize = get_or<double>(params, "delta time", -1);
   if (std::abs(timeStepSize + 1.0) < 1e-14)
     FOUR_C_THROW("No time step size given for muscle Giantesio material!");
 
   // compute matrices
   // right Cauchy Green tensor C
-  Core::LinAlg::Matrix<3, 3> C(Core::LinAlg::Initialization::uninitialized);  // matrix notation
-  C.multiply_tn(*defgrd, *defgrd);                                            // C = F^T F
+  Core::LinAlg::SymmetricTensor<double, 3, 3> C =
+      Core::LinAlg::assume_symmetry(Core::LinAlg::transpose(*defgrd) * *defgrd);
+  const Core::LinAlg::Matrix<3, 3> C_mat = Core::LinAlg::make_matrix(Core::LinAlg::get_full(C));
 
   // determinant of C
-  double detC = C.determinant();
+  double detC = Core::LinAlg::det(C);
 
   // derivative of C w.r.t C
   Core::LinAlg::FourTensor<3> dCdC = compute_dcdc();
 
   // inverse right Cauchy Green tensor C^-1
   Core::LinAlg::Matrix<3, 3> invC(Core::LinAlg::Initialization::zero);   // matrix notation
-  invC.invert(C);                                                        // invC = C^-1
+  invC.invert(C_mat);                                                    // invC = C^-1
   Core::LinAlg::Matrix<6, 1> invCv(Core::LinAlg::Initialization::zero);  // Voigt notation
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(invC, invCv);          // invCv
 
   // structural tensor M, i.e. dyadic product of fibre directions
-  Core::LinAlg::Matrix<3, 3> M = anisotropy_extension_.get_structural_tensor(gp, 0);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> M =
+      anisotropy_extension_.get_structural_tensor(gp, 0);
+  const Core::LinAlg::Matrix<3, 3> M_mat = Core::LinAlg::make_matrix(Core::LinAlg::get_full(M));
   double lambdaM = Mat::Utils::Muscle::fiber_stretch(C, M);
   // derivative of lambdaM w.r.t. C
-  Core::LinAlg::Matrix<3, 3> dlambdaMdC = Mat::Utils::Muscle::d_fiber_stretch_dc(lambdaM, C, M);
+  Core::LinAlg::Matrix<3, 3> dlambdaMdC =
+      Mat::Utils::Muscle::d_fiber_stretch_dc(lambdaM, C_mat, M_mat);
   Core::LinAlg::Matrix<6, 1> dlambdaMdCv(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(dlambdaMdC, dlambdaMdCv);
 
@@ -493,14 +504,15 @@ void Mat::MuscleGiantesio::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // --------------------------------------------------------------
   // active deformation gradient Fa
-  Core::LinAlg::Matrix<3, 3> Fa = act_def_grad(omegaaAndDerivs.val_funct, M);
+  Core::LinAlg::Matrix<3, 3> Fa = act_def_grad(omegaaAndDerivs.val_funct, M_mat);
 
   // first derivative of Fa w.r.t. omegaa
-  Core::LinAlg::Matrix<3, 3> dFadomegaa = d_act_def_grad_d_act_level(omegaaAndDerivs.val_funct, M);
+  Core::LinAlg::Matrix<3, 3> dFadomegaa =
+      d_act_def_grad_d_act_level(omegaaAndDerivs.val_funct, M_mat);
 
   // second derivative of Fa w.r.t. omegaa
   Core::LinAlg::Matrix<3, 3> ddFaddomegaa =
-      dd_act_def_grad_dd_act_level(omegaaAndDerivs.val_funct, M);
+      dd_act_def_grad_dd_act_level(omegaaAndDerivs.val_funct, M_mat);
 
   // determinant of Fa
   double detFa = Fa.determinant();
@@ -521,7 +533,7 @@ void Mat::MuscleGiantesio::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // --------------------------------------------------------------
   // elastic second Piola Kirchhoff stress tensor Se and its derivative w.r.t C
   StressAndDeriv Se_dSedC =
-      compute_se_and_d_sed_c(alpha, beta, gamma, omega0, M, invFa, dinvFadC, C, dCdC);
+      compute_se_and_d_sed_c(alpha, beta, gamma, omega0, M_mat, invFa, dinvFadC, C_mat, dCdC);
 
   // --------------------------------------------------------------
   // compute second Piola Kirchhoff stress components S1, S2, Svol
@@ -538,7 +550,7 @@ void Mat::MuscleGiantesio::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // or: S2 = -2 S1 : (C Fa^-1 dFadomegaa) domegaadC
   // in index notation: S2_sl = -2 S1_ij (C Fa^-1 dFadomegaa)_ij domegaadC_sl
   Core::LinAlg::Matrix<3, 3> CinvFadFadomegaa(Core::LinAlg::Initialization::zero);
-  multiply_nnn(CinvFadFadomegaa, 1.0, C, invFa, dFadomegaa);
+  multiply_nnn(CinvFadFadomegaa, 1.0, C_mat, invFa, dFadomegaa);
 
   Core::LinAlg::Matrix<6, 1> S2v(domegaadCv);
   double scalar_contraction =
@@ -578,7 +590,7 @@ void Mat::MuscleGiantesio::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   H.multiply_nn(dinvFadomegaa, dFadomegaa);
   H.multiply_nn(1.0, invFa, ddFaddomegaa, 1.0);
   Core::LinAlg::Matrix<3, 3> CH(Core::LinAlg::Initialization::zero);
-  CH.multiply_nn(C, H);
+  CH.multiply_nn(C_mat, H);
   double helper = Core::LinAlg::FourTensorOperations::contract_matrix_matrix(S1, CH);
 
   Core::LinAlg::Matrix<3, 3> dscalardC(domegaadC);
@@ -602,13 +614,13 @@ void Mat::MuscleGiantesio::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // --------------------------------------------------------------
   // update constituent stress and material tangent
-  stress->update(1.0, S1v, 1.0);
-  stress->update(1.0, S2v, 1.0);
-  stress->update(1.0, Svolv, 1.0);
+  stress_view.update(1.0, S1v, 1.0);
+  stress_view.update(1.0, S2v, 1.0);
+  stress_view.update(1.0, Svolv, 1.0);
 
-  cmat->update(1.0, cmat1v, 1.0);
-  cmat->update(1.0, cmat2v, 1.0);
-  cmat->update(1.0, cmatvolv, 1.0);
+  cmat_view.update(1.0, cmat1v, 1.0);
+  cmat_view.update(1.0, cmat2v, 1.0);
+  cmat_view.update(1.0, cmatvolv, 1.0);
 }
 
 Core::Utils::ValuesFunctAndFunctDerivs

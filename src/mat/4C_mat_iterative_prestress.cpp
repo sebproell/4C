@@ -16,7 +16,11 @@
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_fixedsizematrix_generators.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
-#include "4C_linalg_utils_densematrix_svd.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
+#include "4C_linalg_tensor_svd.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
 #include "4C_mat_so3_material.hpp"
@@ -48,53 +52,34 @@ namespace
     return child_material3d;
   }
 
-  Core::LinAlg::Matrix<3, 3> get_elastic_deformation_gradient(
-      const Core::LinAlg::Matrix<3, 3>& deformation_gradient,
-      const Core::LinAlg::Matrix<3, 3>& prestretch_tensor)
+  Core::LinAlg::Tensor<double, 3, 3> get_elastic_deformation_gradient(
+      const Core::LinAlg::Tensor<double, 3, 3>& deformation_gradient,
+      const Core::LinAlg::SymmetricTensor<double, 3, 3>& prestretch_tensor)
   {
-    Core::LinAlg::Matrix<3, 3> elastic_deformation_gradient(
-        Core::LinAlg::Initialization::uninitialized);
-    elastic_deformation_gradient.multiply_nn(deformation_gradient, prestretch_tensor);
-
-    return elastic_deformation_gradient;
+    return deformation_gradient * prestretch_tensor;
   }
 
-  Core::LinAlg::Matrix<6, 1> get_green_lagrange_strain(
-      const Core::LinAlg::Matrix<3, 3>& deformation_gradient)
+  Core::LinAlg::SymmetricTensor<double, 3, 3> get_green_lagrange_strain(
+      const Core::LinAlg::Tensor<double, 3, 3>& deformation_gradient)
   {
-    Core::LinAlg::Matrix<3, 3> green_lagrange;
-    Core::LinAlg::Matrix<6, 1> green_lagrange_strain;
-
-    green_lagrange.multiply_tn(deformation_gradient, deformation_gradient);
-    green_lagrange.update(-0.5, Core::LinAlg::identity_matrix<3>(), 0.5);
-
-    Core::LinAlg::Voigt::Strains::matrix_to_vector(green_lagrange, green_lagrange_strain);
-
-    return green_lagrange_strain;
+    return 0.5 * (Core::LinAlg::assume_symmetry(
+                      Core::LinAlg::transpose(deformation_gradient) * deformation_gradient) -
+                     Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
   }
 
-  Core::LinAlg::Matrix<3, 3> compute_updated_prestretch_tensor(
-      const Core::LinAlg::Matrix<3, 3>& deformation_gradient,
-      const Core::LinAlg::Matrix<3, 3>& prestretch_tensor)
+  Core::LinAlg::SymmetricTensor<double, 3, 3> compute_updated_prestretch_tensor(
+      const Core::LinAlg::Tensor<double, 3, 3>& deformation_gradient,
+      const Core::LinAlg::SymmetricTensor<double, 3, 3>& prestretch_tensor)
   {
-    Core::LinAlg::Matrix<3, 3> pre_deformation_gradinet;
-
-    pre_deformation_gradinet.multiply_nn(deformation_gradient, prestretch_tensor);
+    Core::LinAlg::Tensor<double, 3, 3> pre_deformation_gradient =
+        deformation_gradient * prestretch_tensor;
 
     // Singular value decomposition of F = RU
-    Core::LinAlg::Matrix<3, 3> Q(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<3, 3> S(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<3, 3> VT(Core::LinAlg::Initialization::zero);
-
-    Core::LinAlg::svd<3, 3>(pre_deformation_gradinet, Q, S, VT);
+    const auto [Q, S, VT] = Core::LinAlg::svd(pre_deformation_gradient);
 
     // Compute stretch tensor G = U = V * S * VT
-    Core::LinAlg::Matrix<3, 3> VS;
-    Core::LinAlg::Matrix<3, 3> updated_prestretch_tensor;
-    VS.multiply_tn(VT, S);
-    updated_prestretch_tensor.multiply_nn(VS, VT);
-
-    return updated_prestretch_tensor;
+    return Core::LinAlg::assume_symmetry(
+        Core::LinAlg::transpose(VT) * Core::LinAlg::TensorGenerators::diagonal(S) * VT);
   }
 }  // namespace
 
@@ -183,22 +168,22 @@ void Mat::IterativePrestressMaterial::unpack(Core::Communication::UnpackBuffer& 
   }
 }
 
-void Mat::IterativePrestressMaterial::post_setup(Teuchos::ParameterList& params, int eleGID)
+void Mat::IterativePrestressMaterial::post_setup(const Teuchos::ParameterList& params, int eleGID)
 {
   child_material_->post_setup(params, eleGID);
 }
 
 void Mat::IterativePrestressMaterial::update() { child_material_->update(); }
 
-void Mat::IterativePrestressMaterial::update(Core::LinAlg::Matrix<3, 3> const& defgrd, const int gp,
-    Teuchos::ParameterList& params, const int eleGID)
+void Mat::IterativePrestressMaterial::update(Core::LinAlg::Tensor<double, 3, 3> const& defgrd,
+    const int gp, const Teuchos::ParameterList& params, const int eleGID)
 {
   if (params_->is_prestress_active_)
   {
     prestretch_tensor_[gp] = compute_updated_prestretch_tensor(defgrd, prestretch_tensor_[gp]);
   }
 
-  Core::LinAlg::Matrix<3, 3> elastic_deformation_gradient =
+  Core::LinAlg::Tensor<double, 3, 3> elastic_deformation_gradient =
       get_elastic_deformation_gradient(defgrd, prestretch_tensor_[gp]);
 
   child_material_->update(elastic_deformation_gradient, gp, params, eleGID);
@@ -207,7 +192,7 @@ void Mat::IterativePrestressMaterial::update(Core::LinAlg::Matrix<3, 3> const& d
 void Mat::IterativePrestressMaterial::setup(
     const int numgp, const Core::IO::InputParameterContainer& container)
 {
-  prestretch_tensor_.resize(numgp, Core::LinAlg::identity_matrix<3>());
+  prestretch_tensor_.resize(numgp, Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 
   child_material_->setup(numgp, container);
 }
@@ -235,36 +220,41 @@ bool Mat::IterativePrestressMaterial::evaluate_output_data(
   return child_material_->evaluate_output_data(name, data);
 }
 
-void Mat::IterativePrestressMaterial::strain_energy(
-    const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, int gp, int eleGID) const
+double Mat::IterativePrestressMaterial::strain_energy(
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, int gp, int eleGID) const
 {
   FOUR_C_THROW("Strain energy computation is currently not implemented for prestressing materials");
 }
 
-void Mat::IterativePrestressMaterial::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp, int eleGID)
+void Mat::IterativePrestressMaterial::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
-  Core::LinAlg::Matrix<3, 3> elastic_deformation_gradient =
-      get_elastic_deformation_gradient(*defgrd, prestretch_tensor_[gp]);
+  Core::LinAlg::Tensor<double, 3, 3> elastic_deformation_gradient =
+      get_elastic_deformation_gradient(*defgrad, prestretch_tensor_[gp]);
 
   // Evaluate green Lagrange strain
-  const Core::LinAlg::Matrix<6, 1> elastic_gl_strain =
+  const Core::LinAlg::SymmetricTensor<double, 3, 3> elastic_gl_strain =
       get_green_lagrange_strain(elastic_deformation_gradient);
 
-  Core::LinAlg::Matrix<6, 1> elastic_stress(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 6> elastic_cmat(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> elastic_stress{};
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> elastic_cmat{};
 
 
   // evaluate child material
-  child_material_->evaluate(&elastic_deformation_gradient, &elastic_gl_strain, params,
-      &elastic_stress, &elastic_cmat, gp, eleGID);
+  child_material_->evaluate(&elastic_deformation_gradient, elastic_gl_strain, params,
+      elastic_stress, elastic_cmat, gp, eleGID);
 
   // push-forward operation
-  *stress = Mat::push_forward_stress_tensor_voigt(elastic_stress, prestretch_tensor_[gp]);
-
-  *cmat = Mat::push_forward_four_tensor(
-      prestretch_tensor_[gp].determinant(), prestretch_tensor_[gp], elastic_cmat);
+  const double det_pre = Core::LinAlg::det(prestretch_tensor_[gp]);
+  stress = 1.0 / det_pre *
+           Core::LinAlg::assume_symmetry(prestretch_tensor_[gp] * elastic_stress *
+                                         Core::LinAlg::transpose(prestretch_tensor_[gp]));
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+  cmat_view += Mat::push_forward_four_tensor(det_pre,
+      Core::LinAlg::make_matrix(Core::LinAlg::get_full(prestretch_tensor_[gp])),
+      Core::LinAlg::make_stress_like_voigt_view(elastic_cmat));
 }
 
 

@@ -57,16 +57,17 @@ namespace Mixture
     /// Constructor for mixture rule given the input parameters
     explicit FunctionMixtureRule(Mixture::PAR::FunctionMixtureRule* params);
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-        Core::LinAlg::Matrix<6, 6>& cmat, int gp, int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     [[nodiscard]] double return_mass_density() const override
     {
       return params_->initial_reference_density_;
     };
 
-    void setup(Teuchos::ParameterList& params, const int eleGID) override;
+    void setup(const Teuchos::ParameterList& params, const int eleGID) override;
 
     void unpack_mixture_rule(Core::Communication::UnpackBuffer& buffer) override;
 

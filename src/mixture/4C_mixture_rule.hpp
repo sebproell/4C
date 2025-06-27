@@ -11,6 +11,8 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_material_parameter_base.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -165,7 +167,7 @@ namespace Mixture
      * @param params (in/out) : Container for additional information
      * @param eleGID (in) : global element id
      */
-    virtual void setup(Teuchos::ParameterList& params, int eleGID);
+    virtual void setup(const Teuchos::ParameterList& params, int eleGID);
 
     /*!
      * \brief Update of the material law
@@ -177,8 +179,8 @@ namespace Mixture
      * @param gp (in) : Gauss point
      * @param eleGID (in) : Global element id
      */
-    virtual void update(Core::LinAlg::Matrix<3, 3> const& F, Teuchos::ParameterList& params,
-        const int gp, const int eleGID)
+    virtual void update(Core::LinAlg::Tensor<double, 3, 3> const& F,
+        const Teuchos::ParameterList& params, const int gp, const int eleGID)
     {
       // Nothing needs to be updated in this simple mixture rule
     }
@@ -199,7 +201,7 @@ namespace Mixture
      * @param gp (in) : Gauss point
      * @param eleGID (in) : Global element id
      */
-    virtual void pre_evaluate(Teuchos::ParameterList& params, const int gp, const int eleGID)
+    virtual void pre_evaluate(const Teuchos::ParameterList& params, const int gp, const int eleGID)
     {
       // do nothing in the default case
     }
@@ -209,17 +211,17 @@ namespace Mixture
      * of the displacements. Will be called for each Gauss point
      *
      * @param F (in) : Deformation gradient
-     * @param E_strain (in) : Green-Lagrange strain tensor in strain-like Voigt notation
+     * @param E_strain (in) : Green-Lagrange strain tensor
      * @param params (in/out) : Container for additional parameters
-     * @param S_stress (out) : 2nd Piola Kirchhoff stress tensor in stress like Voigt-notation
-     * @param cmat (out) : Constitutive tensor in Voigt notation
+     * @param S_stress (out) : 2nd Piola Kirchhoff stress tensor
+     * @param cmat (out) : Constitutive tensor
      * @param gp (in) : Gauss point
      * @param eleGID (in) : Global element id
      */
-    virtual void evaluate(const Core::LinAlg::Matrix<3, 3>& F,
-        const Core::LinAlg::Matrix<6, 1>& E_strain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, int gp,
-        int eleGID) = 0;
+    virtual void evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E, const Teuchos::ParameterList& params,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& S,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) = 0;
 
     /*!
      * @brief Returns the material mass density

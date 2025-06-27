@@ -17,6 +17,7 @@
 #include "4C_fluid_ele_poro.hpp"
 #include "4C_fluid_rotsym_periodicbc.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_elasthyper.hpp"
 #include "4C_mat_fluidporo.hpp"
 #include "4C_mat_structporo.hpp"
@@ -6465,8 +6466,7 @@ void Discret::Elements::FluidEleCalcPoro<distype>::compute_mixture_strong_residu
   if (Base::is_higher_order_ele_)
   {
     // GL strain vector glstrain={E11,E22,E33,2*E12,2*E23,2*E31}
-    static Core::LinAlg::Matrix<6, 1> glstrain(Core::LinAlg::Initialization::zero);
-    glstrain.clear();
+    Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain{};
     if (kintype_ == Inpar::Solid::KinemType::nonlinearTotLag)
     {
       // Right Cauchy-Green tensor = F^T * F
@@ -6474,23 +6474,20 @@ void Discret::Elements::FluidEleCalcPoro<distype>::compute_mixture_strong_residu
       cauchygreen.multiply_tn(defgrd, defgrd);
       // Green-Lagrange strains matrix E = 0.5 * (Cauchygreen - Identity)
       // GL strain vector glstrain={E11,E22,E33,2*E12,2*E23,2*E31}
-      if (nsd_ == 3)
+      if constexpr (nsd_ == 3)
       {
-        glstrain(0) = 0.5 * (cauchygreen(0, 0) - 1.0);
-        glstrain(1) = 0.5 * (cauchygreen(1, 1) - 1.0);
-        glstrain(2) = 0.5 * (cauchygreen(2, 2) - 1.0);
-        glstrain(3) = cauchygreen(0, 1);
-        glstrain(4) = cauchygreen(1, 2);
-        glstrain(5) = cauchygreen(2, 0);
+        glstrain =
+            0.5 * (Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor_view(cauchygreen)) -
+                      Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
       }
-      else if (nsd_ == 2)
+      else if constexpr (nsd_ == 2)
       {
-        glstrain(0) = 0.5 * (cauchygreen(0, 0) - 1.0);
-        glstrain(1) = 0.5 * (cauchygreen(1, 1) - 1.0);
-        glstrain(2) = 0.0;
-        glstrain(3) = cauchygreen(0, 1);
-        glstrain(4) = 0.0;
-        glstrain(5) = 0.0;
+        glstrain(0, 0) = 0.5 * (cauchygreen(0, 0) - 1.0);
+        glstrain(1, 1) = 0.5 * (cauchygreen(1, 1) - 1.0);
+        glstrain(2, 2) = 0.0;
+        glstrain(0, 1) = 0.5 * cauchygreen(0, 1);
+        glstrain(1, 2) = 0.0;
+        glstrain(0, 2) = 0.0;
       }
     }
     else
@@ -6526,21 +6523,22 @@ void Discret::Elements::FluidEleCalcPoro<distype>::compute_mixture_strong_residu
         for (int j = 0; j < nsd_; ++j)
         {
           const int dof = i * nsd_ + j;
-          glstrain(0) += bop(0, dof) * edispnp(j, i);
-          glstrain(1) += bop(1, dof) * edispnp(j, i);
-          glstrain(2) += bop(2, dof) * edispnp(j, i);
-          glstrain(3) += bop(3, dof) * edispnp(j, i);
-          glstrain(4) += bop(4, dof) * edispnp(j, i);
-          glstrain(5) += bop(5, dof) * edispnp(j, i);
+          glstrain(0, 0) += bop(0, dof) * edispnp(j, i);
+          glstrain(1, 1) += bop(1, dof) * edispnp(j, i);
+          glstrain(2, 2) += bop(2, dof) * edispnp(j, i);
+          glstrain(0, 1) += 0.5 * bop(3, dof) * edispnp(j, i);
+          glstrain(1, 2) += 0.5 * bop(4, dof) * edispnp(j, i);
+          glstrain(0, 2) += 0.5 * bop(5, dof) * edispnp(j, i);
         }
       }
     }
 
-    static Core::LinAlg::Matrix<6, 1> stress_vec(Core::LinAlg::Initialization::zero);
-    static Core::LinAlg::Matrix<6, 6> cmat(Core::LinAlg::Initialization::zero);
-    stress_vec.clear();
-    cmat.clear();
-    struct_mat_->evaluate(nullptr, &glstrain, params, &stress_vec, &cmat, gp, Base::eid_);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> stress{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat{};
+
+    Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+    Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+    struct_mat_->evaluate(nullptr, glstrain, params, stress, cmat, gp, Base::eid_);
 
     static Core::LinAlg::Matrix<6, nsd_> E_X(Core::LinAlg::Initialization::zero);
     E_X.clear();
@@ -6607,7 +6605,7 @@ void Discret::Elements::FluidEleCalcPoro<distype>::compute_mixture_strong_residu
     }
 
     static Core::LinAlg::Matrix<6, nsd_> cmat_E_X(Core::LinAlg::Initialization::zero);
-    cmat_E_X.multiply(cmat, E_X);
+    cmat_E_X.multiply(cmat_view, E_X);
     static Core::LinAlg::Matrix<nsd_, 1> cmat_E_X_vec(Core::LinAlg::Initialization::zero);
     if (nsd_ == 3)
     {
@@ -6619,27 +6617,6 @@ void Discret::Elements::FluidEleCalcPoro<distype>::compute_mixture_strong_residu
     {
       cmat_E_X_vec(0) = cmat_E_X(0, 0) + cmat_E_X(3, 1);
       cmat_E_X_vec(1) = cmat_E_X(3, 0) + cmat_E_X(1, 1);
-    }
-
-    static Core::LinAlg::Matrix<nsd_, nsd_> stress(Core::LinAlg::Initialization::uninitialized);
-    if (nsd_ == 3)
-    {
-      stress(0, 0) = stress_vec(0);
-      stress(0, 1) = stress_vec(3);
-      stress(0, 2) = stress_vec(4);
-      stress(1, 0) = stress_vec(3);
-      stress(1, 1) = stress_vec(1);
-      stress(1, 2) = stress_vec(5);
-      stress(2, 0) = stress_vec(4);
-      stress(2, 1) = stress_vec(5);
-      stress(2, 2) = stress_vec(2);
-    }
-    else if (nsd_ == 2)
-    {
-      stress(0, 0) = stress_vec(0);
-      stress(0, 1) = stress_vec(3);
-      stress(1, 0) = stress_vec(3);
-      stress(1, 1) = stress_vec(1);
     }
 
     for (int i = 0; i < nsd_; ++i)
@@ -6734,7 +6711,7 @@ void Discret::Elements::FluidEleCalcPoro<distype>::compute_mixture_strong_residu
             const int dof = k * nsd_ + j;
             for (int l = 0; l < 6; ++l)
               for (int m = 0; m < 6; ++m)
-                cmat_E_X_Lin(i * 6 + m, dof) += cmat(m, l) * E_X_Lin(i * 6 + l, dof);
+                cmat_E_X_Lin(i * 6 + m, dof) += cmat_view(m, l) * E_X_Lin(i * 6 + l, dof);
           }
         }
       }

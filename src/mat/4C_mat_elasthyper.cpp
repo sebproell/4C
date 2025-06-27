@@ -10,6 +10,7 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_elasthyper_service.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
@@ -225,7 +226,7 @@ double Mat::ElastHyper::get_young()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::ElastHyper::setup_aaa(Teuchos::ParameterList& params, const int eleGID)
+void Mat::ElastHyper::setup_aaa(const Teuchos::ParameterList& params, const int eleGID)
 {
   // loop map of associated potential summands
   for (auto& p : potsum_)
@@ -258,7 +259,7 @@ void Mat::ElastHyper::setup(int numgp, const Core::IO::InputParameterContainer& 
   }
 }
 
-void Mat::ElastHyper::post_setup(Teuchos::ParameterList& params, const int eleGID)
+void Mat::ElastHyper::post_setup(const Teuchos::ParameterList& params, const int eleGID)
 {
   anisotropy_.read_anisotropy_from_parameter_list(params);
 
@@ -282,7 +283,7 @@ void Mat::ElastHyper::update()
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::ElastHyper::get_fiber_vecs(std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs) const
+void Mat::ElastHyper::get_fiber_vecs(std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs) const
 {
   if (summandProperties_.anisoprinc || summandProperties_.anisomod)
   {
@@ -296,7 +297,8 @@ void Mat::ElastHyper::get_fiber_vecs(std::vector<Core::LinAlg::Matrix<3, 1>>& fi
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Mat::ElastHyper::evaluate_fiber_vecs(const double newgamma,
-    const Core::LinAlg::Matrix<3, 3>& locsys, const Core::LinAlg::Matrix<3, 3>& defgrd)
+    const Core::LinAlg::Tensor<double, 3, 3>& locsys,
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd)
 {
   if (summandProperties_.anisoprinc || summandProperties_.anisomod)
   {
@@ -309,39 +311,42 @@ void Mat::ElastHyper::evaluate_fiber_vecs(const double newgamma,
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::ElastHyper::strain_energy(
-    const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, const int gp, const int eleGID) const
+double Mat::ElastHyper::strain_energy(const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const int gp, const int eleGID) const
 {
-  static Core::LinAlg::Matrix<6, 1> C_strain(Core::LinAlg::Initialization::zero);
-  C_strain.clear();
+  Core::LinAlg::SymmetricTensor<double, 3, 3> C_strain{};
   static Core::LinAlg::Matrix<3, 1> prinv(Core::LinAlg::Initialization::zero);
   prinv.clear();
   static Core::LinAlg::Matrix<3, 1> modinv(Core::LinAlg::Initialization::zero);
   modinv.clear();
 
   evaluate_right_cauchy_green_strain_like_voigt(glstrain, C_strain);
-  Core::LinAlg::Voigt::Strains::invariants_principal(prinv, C_strain);
+  Core::LinAlg::Voigt::Stresses::invariants_principal(
+      prinv, Core::LinAlg::make_stress_like_voigt_view(C_strain));
   invariants_modified(modinv, prinv);
 
+  double psi = 0.0;
   // loop map of associated potential summands
   for (const auto& p : potsum_)
   {
     p->add_strain_energy(psi, prinv, modinv, glstrain, gp, eleGID);
   }
+
+  return psi;
 }
 
 
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::ElastHyper::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::ElastHyper::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
   bool checkpolyconvexity = (params_ != nullptr and params_->polyconvex_ != 0);
 
-  elast_hyper_evaluate(*defgrd, *glstrain, params, *stress, *cmat, gp, eleGID, potsum_,
+  elast_hyper_evaluate(*defgrad, glstrain, params, stress, cmat, gp, eleGID, potsum_,
       summandProperties_, checkpolyconvexity);
 }
 
@@ -365,34 +370,38 @@ void Mat::ElastHyper::evaluate_cauchy_derivs(const Core::LinAlg::Matrix<3, 1>& p
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
-    const Core::LinAlg::Matrix<3, 3>& defgrd, const Core::LinAlg::Matrix<3, 1>& n,
-    const Core::LinAlg::Matrix<3, 1>& dir, double& cauchy_n_dir,
-    Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir,
-    Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF, Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
-    Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_dn,
+double Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd, const Core::LinAlg::Tensor<double, 3>& n,
+    const Core::LinAlg::Tensor<double, 3>& dir, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn,
+    Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir, Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF,
+    Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2, Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_dn,
     Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_ddir, int gp, int eleGID,
     const double* concentration, const double* temp, double* d_cauchyndir_dT,
     Core::LinAlg::Matrix<9, 1>* d2_cauchyndir_dF_dT)
 {
-  cauchy_n_dir = 0.0;
+  double cauchy_n_dir = 0.0;
+
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(defgrd);
+  const Core::LinAlg::Matrix<3, 1> n_mat = Core::LinAlg::make_matrix_view<3, 1>(n);
+  const Core::LinAlg::Matrix<3, 1> dir_mat = Core::LinAlg::make_matrix_view<3, 1>(dir);
+
 
   static Core::LinAlg::Matrix<3, 3> b(Core::LinAlg::Initialization::zero);
-  b.multiply_nt(1.0, defgrd, defgrd, 0.0);
+  b.multiply_nt(1.0, defgrd_mat, defgrd_mat, 0.0);
   static Core::LinAlg::Matrix<3, 1> bdn(Core::LinAlg::Initialization::zero);
-  bdn.multiply(1.0, b, n, 0.0);
+  bdn.multiply(1.0, b, n_mat, 0.0);
   static Core::LinAlg::Matrix<3, 1> bddir(Core::LinAlg::Initialization::zero);
-  bddir.multiply(1.0, b, dir, 0.0);
-  const double bdnddir = bdn.dot(dir);
+  bddir.multiply(1.0, b, dir_mat, 0.0);
+  const double bdnddir = bdn.dot(dir_mat);
 
   static Core::LinAlg::Matrix<3, 3> ib(Core::LinAlg::Initialization::zero);
   ib.invert(b);
   static Core::LinAlg::Matrix<3, 1> ibdn(Core::LinAlg::Initialization::zero);
-  ibdn.multiply(1.0, ib, n, 0.0);
+  ibdn.multiply(1.0, ib, n_mat, 0.0);
   static Core::LinAlg::Matrix<3, 1> ibddir(Core::LinAlg::Initialization::zero);
-  ibddir.multiply(1.0, ib, dir, 0.0);
-  const double ibdnddir = ibdn.dot(dir);
-  const double nddir = n.dot(dir);
+  ibddir.multiply(1.0, ib, dir_mat, 0.0);
+  const double ibdnddir = ibdn.dot(dir_mat);
+  const double nddir = n * dir;
 
   static Core::LinAlg::Matrix<6, 1> bV_strain(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Voigt::Strains::matrix_to_vector(b, bV_strain);
@@ -414,7 +423,7 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
 
   if (d_cauchyndir_dn != nullptr)
   {
-    d_cauchyndir_dn->update(prinv(1) * dPI(1) + prinv(2) * dPI(2), dir, 0.0);
+    d_cauchyndir_dn->update(prinv(1) * dPI(1) + prinv(2) * dPI(2), dir_mat, 0.0);
     d_cauchyndir_dn->update(dPI(0), bddir, 1.0);
     d_cauchyndir_dn->update(-prinv(2) * dPI(1), ibddir, 1.0);
     d_cauchyndir_dn->scale(prefac);
@@ -422,7 +431,7 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
 
   if (d_cauchyndir_ddir != nullptr)
   {
-    d_cauchyndir_ddir->update(prinv(1) * dPI(1) + prinv(2) * dPI(2), n, 0.0);
+    d_cauchyndir_ddir->update(prinv(1) * dPI(1) + prinv(2) * dPI(2), n_mat, 0.0);
     d_cauchyndir_ddir->update(dPI(0), bdn, 1.0);
     d_cauchyndir_ddir->update(-prinv(2) * dPI(1), ibdn, 1.0);
     d_cauchyndir_ddir->scale(prefac);
@@ -430,9 +439,9 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
 
   // calculate stuff that is needed for evaluations of derivatives w.r.t. F
   static Core::LinAlg::Matrix<9, 1> FV(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Voigt::matrix_3x3_to_9x1(defgrd, FV);
+  Core::LinAlg::Voigt::matrix_3x3_to_9x1(defgrd_mat, FV);
   static Core::LinAlg::Matrix<3, 3> iF(Core::LinAlg::Initialization::zero);
-  iF.invert(defgrd);
+  iF.invert(defgrd_mat);
   static Core::LinAlg::Matrix<3, 3> iFT(Core::LinAlg::Initialization::zero);
   iFT.update_t(iF);
   static Core::LinAlg::Matrix<9, 1> iFTV(Core::LinAlg::Initialization::zero);
@@ -440,11 +449,11 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
 
   // calculation of dI_i/dF (derivatives of invariants of b w.r.t. deformation gradient)
   static Core::LinAlg::Matrix<3, 3> bdF(Core::LinAlg::Initialization::zero);
-  bdF.multiply(1.0, b, defgrd, 0.0);
+  bdF.multiply(1.0, b, defgrd_mat, 0.0);
   static Core::LinAlg::Matrix<9, 1> bdFV(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(bdF, bdFV);
   static Core::LinAlg::Matrix<3, 3> ibdF(Core::LinAlg::Initialization::zero);
-  ibdF.multiply(1.0, ib, defgrd, 0.0);
+  ibdF.multiply(1.0, ib, defgrd_mat, 0.0);
   static Core::LinAlg::Matrix<9, 1> ibdFV(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(ibdF, ibdFV);
   static Core::LinAlg::Matrix<9, 1> d_I1_dF(Core::LinAlg::Initialization::zero);
@@ -459,21 +468,21 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
   // calculate d(b \cdot n \cdot t)/dF
   static Core::LinAlg::Matrix<3, 1> tempvec3x1(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<1, 3> tempvec1x3(Core::LinAlg::Initialization::zero);
-  tempvec1x3.multiply_tn(1.0, dir, defgrd, 0.0);
+  tempvec1x3.multiply_tn(1.0, dir_mat, defgrd_mat, 0.0);
   static Core::LinAlg::Matrix<3, 3> d_bdnddir_dF(Core::LinAlg::Initialization::zero);
-  d_bdnddir_dF.multiply_nn(1.0, n, tempvec1x3, 0.0);
-  tempvec1x3.multiply_tn(1.0, n, defgrd, 0.0);
-  d_bdnddir_dF.multiply_nn(1.0, dir, tempvec1x3, 1.0);
+  d_bdnddir_dF.multiply_nn(1.0, n_mat, tempvec1x3, 0.0);
+  tempvec1x3.multiply_tn(1.0, n_mat, defgrd_mat, 0.0);
+  d_bdnddir_dF.multiply_nn(1.0, dir_mat, tempvec1x3, 1.0);
   static Core::LinAlg::Matrix<9, 1> d_bdnddir_dFV(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(d_bdnddir_dF, d_bdnddir_dFV);
 
   // calculate d(b^{-1} \cdot n \cdot t)/dF
   static Core::LinAlg::Matrix<1, 3> dirdibdF(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<1, 3> ndibdF(Core::LinAlg::Initialization::zero);
-  dirdibdF.multiply_tn(1.0, dir, ibdF, 0.0);
+  dirdibdF.multiply_tn(1.0, dir_mat, ibdF, 0.0);
   static Core::LinAlg::Matrix<3, 3> d_ibdnddir_dF(Core::LinAlg::Initialization::zero);
   d_ibdnddir_dF.multiply_nn(1.0, ibdn, dirdibdF, 0.0);
-  ndibdF.multiply_tn(1.0, n, ibdF, 0.0);
+  ndibdF.multiply_tn(1.0, n_mat, ibdF, 0.0);
   d_ibdnddir_dF.multiply_nn(1.0, ibddir, ndibdF, 1.0);
   d_ibdnddir_dF.scale(-1.0);
   static Core::LinAlg::Matrix<9, 1> d_ibdnddir_dFV(Core::LinAlg::Initialization::zero);
@@ -514,14 +523,14 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
   {
     // next three blocks add d/dn(d(\sigma * n * v)/dF) for constant invariants
     // first part is term arising from d/dn(dJ^{-1}/dF)
-    tempvec3x1.update(prinv(1) * dPI(1) + prinv(2) * dPI(2), dir, 0.0);
+    tempvec3x1.update(prinv(1) * dPI(1) + prinv(2) * dPI(2), dir_mat, 0.0);
     tempvec3x1.update(dPI(0), bddir, 1.0);
     tempvec3x1.update(-prinv(2) * dPI(1), ibddir, 1.0);
     d2_cauchyndir_dF_dn->multiply_nt(-prefac, iFTV, tempvec3x1, 0.0);
 
     // second part is term arising from d/dn(d(b * n * v)/dF
     const double fac = prefac * dPI(0);
-    tempvec1x3.multiply_tn(1.0, dir, defgrd, 0.0);
+    tempvec1x3.multiply_tn(1.0, dir_mat, defgrd_mat, 0.0);
     for (int k = 0; k < 3; ++k)
     {
       for (int l = 0; l < 3; ++l)
@@ -529,7 +538,7 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
         for (int z = 0; z < 3; ++z)
           (*d2_cauchyndir_dF_dn)(
               Core::LinAlg::Voigt::IndexMappings::non_symmetric_tensor_to_voigt9_index(k, l), z) +=
-              fac * (dir(k, 0) * defgrd(z, l) + static_cast<double>(k == z) * tempvec1x3(0, l));
+              fac * (dir(k) * defgrd(z, l) + static_cast<double>(k == z) * tempvec1x3(0, l));
       }
     }
 
@@ -547,19 +556,19 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
     }
 
     // add parts originating from d/dn(d(sigma * n * t)/dI1 \otimes dI1/dF)
-    tempvec3x1.update(prinv(1) * ddPII(5) + prinv(2) * ddPII(4), dir, 0.0);
+    tempvec3x1.update(prinv(1) * ddPII(5) + prinv(2) * ddPII(4), dir_mat, 0.0);
     tempvec3x1.update(ddPII(0), bddir, 1.0);
     tempvec3x1.update(-prinv(2) * ddPII(5), ibddir, 1.0);
     d2_cauchyndir_dF_dn->multiply_nt(prefac, d_I1_dF, tempvec3x1, 1.0);
 
     // add parts originating from d/dn(d(sigma * n * t)/dI2 \otimes dI2/dF)
-    tempvec3x1.update(dPI(1) + prinv(1) * ddPII(1) + prinv(2) * ddPII(3), dir, 0.0);
+    tempvec3x1.update(dPI(1) + prinv(1) * ddPII(1) + prinv(2) * ddPII(3), dir_mat, 0.0);
     tempvec3x1.update(ddPII(5), bddir, 1.0);
     tempvec3x1.update(-prinv(2) * ddPII(1), ibddir, 1.0);
     d2_cauchyndir_dF_dn->multiply_nt(prefac, d_I2_dF, tempvec3x1, 1.0);
 
     // add parts originating from d/dn(d(sigma * n * t)/dI3 \otimes dI3/dF)
-    tempvec3x1.update(prinv(1) * ddPII(3) + dPI(2) + prinv(2) * ddPII(2), dir, 0.0);
+    tempvec3x1.update(prinv(1) * ddPII(3) + dPI(2) + prinv(2) * ddPII(2), dir_mat, 0.0);
     tempvec3x1.update(ddPII(4), bddir, 1.0);
     tempvec3x1.update(-dPI(1) - prinv(2) * ddPII(3), ibddir, 1.0);
     d2_cauchyndir_dF_dn->multiply_nt(prefac, d_I3_dF, tempvec3x1, 1.0);
@@ -569,14 +578,14 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
   {
     // next three blocks add d/dt(d(\sigma * n * v)/dF) for constant invariants
     // first part is term arising from d/dt(dJ^{-1}/dF)
-    tempvec3x1.update(prinv(1) * dPI(1) + prinv(2) * dPI(2), n, 0.0);
+    tempvec3x1.update(prinv(1) * dPI(1) + prinv(2) * dPI(2), n_mat, 0.0);
     tempvec3x1.update(dPI(0), bdn, 1.0);
     tempvec3x1.update(-prinv(2) * dPI(1), ibdn, 1.0);
     d2_cauchyndir_dF_ddir->multiply_nt(-prefac, iFTV, tempvec3x1, 0.0);
 
     // second part is term arising from d/dt(d(b * n * v)/dF
     const double fac = prefac * dPI(0);
-    tempvec1x3.multiply_tn(1.0, n, defgrd, 0.0);
+    tempvec1x3.multiply_tn(1.0, n_mat, defgrd_mat, 0.0);
     for (int k = 0; k < 3; ++k)
     {
       for (int l = 0; l < 3; ++l)
@@ -584,7 +593,7 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
         for (int z = 0; z < 3; ++z)
           (*d2_cauchyndir_dF_ddir)(
               Core::LinAlg::Voigt::IndexMappings::non_symmetric_tensor_to_voigt9_index(k, l), z) +=
-              fac * (n(k, 0) * defgrd(z, l) + static_cast<double>(k == z) * tempvec1x3(0, l));
+              fac * (n_mat(k, 0) * defgrd(z, l) + static_cast<double>(k == z) * tempvec1x3(0, l));
       }
     }
 
@@ -602,19 +611,19 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
     }
 
     // add parts originating from d/dt(d(sigma * n * v)/dI1 \otimes dI1/dF)
-    tempvec3x1.update(prinv(1) * ddPII(5) + prinv(2) * ddPII(4), n, 0.0);
+    tempvec3x1.update(prinv(1) * ddPII(5) + prinv(2) * ddPII(4), n_mat, 0.0);
     tempvec3x1.update(ddPII(0), bdn, 1.0);
     tempvec3x1.update(-prinv(2) * ddPII(5), ibdn, 1.0);
     d2_cauchyndir_dF_ddir->multiply_nt(prefac, d_I1_dF, tempvec3x1, 1.0);
 
     // add parts originating from d/dt(d(sigma * n * v)/dI2 \otimes dI2/dF)
-    tempvec3x1.update(dPI(1) + prinv(1) * ddPII(1) + prinv(2) * ddPII(3), n, 0.0);
+    tempvec3x1.update(dPI(1) + prinv(1) * ddPII(1) + prinv(2) * ddPII(3), n_mat, 0.0);
     tempvec3x1.update(ddPII(5), bdn, 1.0);
     tempvec3x1.update(-prinv(2) * ddPII(1), ibdn, 1.0);
     d2_cauchyndir_dF_ddir->multiply_nt(prefac, d_I2_dF, tempvec3x1, 1.0);
 
     // add parts originating from d/dt(d(sigma * n * v)/dI3 \otimes dI3/dF)
-    tempvec3x1.update(prinv(1) * ddPII(3) + dPI(2) + prinv(2) * ddPII(2), n, 0.0);
+    tempvec3x1.update(prinv(1) * ddPII(3) + dPI(2) + prinv(2) * ddPII(2), n_mat, 0.0);
     tempvec3x1.update(ddPII(4), bdn, 1.0);
     tempvec3x1.update(-dPI(1) - prinv(2) * ddPII(3), ibdn, 1.0);
     d2_cauchyndir_dF_ddir->multiply_nt(prefac, d_I3_dF, tempvec3x1, 1.0);
@@ -637,7 +646,7 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
     d2_I3_dF2.clear();
 
     static Core::LinAlg::Matrix<3, 3> C(Core::LinAlg::Initialization::zero);
-    C.multiply_tn(1.0, defgrd, defgrd, 0.0);
+    C.multiply_tn(1.0, defgrd_mat, defgrd_mat, 0.0);
 
     using map = Core::LinAlg::Voigt::IndexMappings;
 
@@ -653,7 +662,7 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
                 map::non_symmetric_tensor_to_voigt9_index(m, a)) = -iF(l, m) * iF(a, k);
             d2_bdnddir_dF2(map::non_symmetric_tensor_to_voigt9_index(k, l),
                 map::non_symmetric_tensor_to_voigt9_index(m, a)) =
-                (dir(k, 0) * n(m, 0) + dir(m, 0) * n(k, 0)) * static_cast<double>(l == a);
+                (dir(k) * n(m) + dir(m) * n(k)) * static_cast<double>(l == a);
             d2_ibdnddir_dF2(map::non_symmetric_tensor_to_voigt9_index(k, l),
                 map::non_symmetric_tensor_to_voigt9_index(m, a)) =
                 ibdF(k, a) * (ibddir(m, 0) * ndibdF(0, l) + ibdn(m, 0) * dirdibdF(0, l)) +
@@ -790,6 +799,8 @@ void Mat::ElastHyper::evaluate_cauchy_n_dir_and_derivatives(
                      2.0 * ddPII(3) * ibdnddir - prinv(2) * dddPIII(8) * ibdnddir),
         d_I3_dF, d_I3_dF, 1.0);
   }
+
+  return cauchy_n_dir;
 }
 
 /*----------------------------------------------------------------------*/
@@ -798,7 +809,7 @@ void Mat::ElastHyper::vis_names(std::map<std::string, int>& names) const
 {
   if (anisotropic_principal() or anisotropic_modified())
   {
-    std::vector<Core::LinAlg::Matrix<3, 1>> fibervecs;
+    std::vector<Core::LinAlg::Tensor<double, 3>> fibervecs;
     get_fiber_vecs(fibervecs);
     int vissize = fibervecs.size();
     std::string fiber;
@@ -827,7 +838,7 @@ bool Mat::ElastHyper::vis_data(
   int return_val = 0;
   if (anisotropic_principal() or anisotropic_modified())
   {
-    std::vector<Core::LinAlg::Matrix<3, 1>> fibervecs;
+    std::vector<Core::LinAlg::Tensor<double, 3>> fibervecs;
     get_fiber_vecs(fibervecs);
     int vissize = fibervecs.size();
     for (int i = 0; i < vissize; i++)

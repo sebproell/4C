@@ -257,27 +257,27 @@ namespace Mat
 
     Core::Mat::PAR::Parameter* parameter() const override { return params_; }
 
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrad,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
-    Core::LinAlg::Matrix<6, 1> evaluate_d_stress_d_scalar(const Core::LinAlg::Matrix<3, 3>& defgrad,
-        const Core::LinAlg::Matrix<6, 1>& glstrain, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_d_stress_d_scalar(
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
-    void evaluate_cauchy_n_dir_and_derivatives(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        const Core::LinAlg::Matrix<3, 1>& n, const Core::LinAlg::Matrix<3, 1>& dir,
-        double& cauchy_n_dir, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn,
-        Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir, Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF,
-        Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
+    double evaluate_cauchy_n_dir_and_derivatives(const Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+        const Core::LinAlg::Tensor<double, 3>& n, const Core::LinAlg::Tensor<double, 3>& dir,
+        Core::LinAlg::Matrix<3, 1>* d_cauchyndir_dn, Core::LinAlg::Matrix<3, 1>* d_cauchyndir_ddir,
+        Core::LinAlg::Matrix<9, 1>* d_cauchyndir_dF, Core::LinAlg::Matrix<9, 9>* d2_cauchyndir_dF2,
         Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_dn,
         Core::LinAlg::Matrix<9, 3>* d2_cauchyndir_dF_ddir, int gp, int eleGID,
         const double* concentration, const double* temp, double* d_cauchyndir_dT,
         Core::LinAlg::Matrix<9, 1>* d2_cauchyndir_dF_dT) override;
 
-    void evaluate_linearization_od(const Core::LinAlg::Matrix<3, 3>& defgrd, double concentration,
-        Core::LinAlg::Matrix<9, 1>* d_F_dx) override;
+    void evaluate_linearization_od(const Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+        double concentration, Core::LinAlg::Matrix<9, 1>& d_F_dx) override;
 
     void setup(int numgp, const Core::IO::InputParameterContainer& container) override;
 
@@ -342,7 +342,7 @@ namespace Mat
      * deformation gradient
      */
     void evaluate_transv_iso_quantities(const KinematicQuantities& kinemat_quant,
-        const Core::LinAlg::Matrix<3, 3>& CM, Teuchos::ParameterList& params, const int gp,
+        const Core::LinAlg::Matrix<3, 3>& CM, const Teuchos::ParameterList& params, const int gp,
         const int eleGID, Core::LinAlg::Matrix<6, 1>& stress, Core::LinAlg::Matrix<6, 6>& cmatiso,
         Core::LinAlg::Matrix<6, 9>& dSdiFin) const;
 
@@ -431,7 +431,7 @@ namespace Mat
      * @param[in] gp      current gauss point
      * @param[in] eleGID  Element ID
      */
-    void pre_evaluate(Teuchos::ParameterList& params, int gp, int eleGID) const;
+    void pre_evaluate(const Teuchos::ParameterList& params, int gp, int eleGID) const;
 
     /*!
      * @brief set the gauss point concentration to the respective parameter class of the inelastic

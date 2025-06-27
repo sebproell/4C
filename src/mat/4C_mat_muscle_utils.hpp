@@ -12,6 +12,7 @@
 
 #include "4C_io_input_field.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_linalg_tensor.hpp"
 #include "4C_utils_function.hpp"
 
@@ -302,7 +303,8 @@ namespace Mat::Utils::Muscle
    *  @param[in] M Structural tensor of fiber directions
    *  @param[out] lambdaM Fiber stretch
    */
-  double fiber_stretch(const Core::LinAlg::Matrix<3, 3>& C, const Core::LinAlg::Matrix<3, 3>& M);
+  double fiber_stretch(const Core::LinAlg::SymmetricTensor<double, 3, 3>& C,
+      const Core::LinAlg::SymmetricTensor<double, 3, 3>& M);
 
   /*!
    *  @brief Returns the derivative of the fiber stretch w.r.t. the Cauchy-Green strain

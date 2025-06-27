@@ -113,7 +113,8 @@ namespace Mat
        * \return const Core::LinAlg::Matrix<6, 1>& Reference to the coupled structural tensor in
        * stress like Voigt notation
        */
-      const Core::LinAlg::Matrix<6, 1>& get_coupled_structural_tensor_stress(int gp) const;
+      const Core::LinAlg::SymmetricTensor<double, 3, 3>& get_coupled_structural_tensor(
+          int gp) const;
 
       /*!
        * \brief Returns the coupled scalar product at the Gauss point
@@ -129,7 +130,7 @@ namespace Mat
 
       /// mixed structural tensor (symmetric) \f$\frac{1}{2}(a1 \otimes a2 + a2 \otimes a1)\f$ in
       /// stress like Voigt notation
-      std::vector<Core::LinAlg::Matrix<6, 1>> a1_a2_;
+      std::vector<Core::LinAlg::SymmetricTensor<double, 3, 3>> a1_a2_;
     };
 
     /*!
@@ -183,24 +184,24 @@ namespace Mat
 
       /// Add anisotropic principal stresses
       void add_stress_aniso_principal(
-          const Core::LinAlg::Matrix<6, 1>& rcg,  ///< right Cauchy Green Tensor
-          Core::LinAlg::Matrix<6, 6>& cmat,       ///< material stiffness matrix
-          Core::LinAlg::Matrix<6, 1>& stress,     ///< 2nd PK-stress
-          Teuchos::ParameterList&
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,   ///< right Cauchy Green Tensor
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< material stiffness matrix
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,      ///< 2nd PK-stress
+          const Teuchos::ParameterList&
               params,  ///< additional parameters for computation of material properties
           int gp,      ///< Gauss point
           int eleGID   ///< element GID
           ) override;
 
       /// Set fiber directions
-      void set_fiber_vecs(double newgamma,           ///< new angle
-          const Core::LinAlg::Matrix<3, 3>& locsys,  ///< local coordinate system
-          const Core::LinAlg::Matrix<3, 3>& defgrd   ///< deformation gradient
+      void set_fiber_vecs(double newgamma,                   ///< new angle
+          const Core::LinAlg::Tensor<double, 3, 3>& locsys,  ///< local coordinate system
+          const Core::LinAlg::Tensor<double, 3, 3>& defgrd   ///< deformation gradient
           ) override;
 
       /// Get fiber directions
       void get_fiber_vecs(
-          std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+          std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
       ) const override;
 
       /// Indicator for formulation

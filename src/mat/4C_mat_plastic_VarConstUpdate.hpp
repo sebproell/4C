@@ -137,13 +137,11 @@ namespace Mat
 
     /// hyperelastic stress response plus elasticity tensor
     /// (pure virtual in material base class. Not allowed here)
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,  ///< Deformation gradient
-        const Core::LinAlg::Matrix<6, 1>* glstrain,          ///< Green-Lagrange strain
-        Teuchos::ParameterList& params,      ///< Container for additional information
-        Core::LinAlg::Matrix<6, 1>* stress,  ///< 2nd Piola-Kirchhoff stresses
-        Core::LinAlg::Matrix<6, 6>* cmat,    ///< Constitutive matrix
-        int gp,                              ///< Gauss point
-        int eleGID) override;                ///< Element GID
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp,
+        int eleGID) override;  ///< Element GID
 
     /// setup material data
     void setup(int numgp, const Core::IO::InputParameterContainer& container) override;
@@ -168,7 +166,7 @@ namespace Mat
     /// evaluate quantities for elastic stiffness matrix
     /// in consideration of plastic history/deformation
     virtual void evaluate_elast(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<3, 3>* deltaLp, Teuchos::ParameterList& params,
+        const Core::LinAlg::Matrix<3, 3>* deltaLp, const Teuchos::ParameterList& params,
         Core::LinAlg::Matrix<6, 1>* pk2, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
         const int eleGID)
     {
@@ -178,7 +176,7 @@ namespace Mat
     /// evaluate stresses and stiffness contribution
     /// due to thermal expansion
     virtual void evaluate_thermal_stress(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const double temp, Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>* pk2,
+        const double temp, const Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>* pk2,
         Core::LinAlg::Matrix<6, 6>* cmat, const int gp, const int eleGID)
     {
       FOUR_C_THROW("Don't need this for Variationally consistent constitutive update");
@@ -187,7 +185,7 @@ namespace Mat
     /// evaluate stresses and stiffness contribution
     /// due to thermal expansion
     virtual void evaluate_c_tvol(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>* cTvol,
+        const Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>* cTvol,
         Core::LinAlg::Matrix<6, 6>* dCTvoldE, const int gp, const int eleGID)
     {
       FOUR_C_THROW("Don't need this for Variationally consistent constitutive update");
@@ -198,7 +196,7 @@ namespace Mat
     virtual void evaluate_plast(const Core::LinAlg::Matrix<3, 3>* defgrd,  ///< Deformation gradient
         const Core::LinAlg::Matrix<3, 3>* deltaDp,  ///< symmetric part of plastic flow increment
         const double temp,                          ///< current temperature
-        Teuchos::ParameterList& params,             ///< Container for additional information
+        const Teuchos::ParameterList& params,       ///< Container for additional information
         Core::LinAlg::Matrix<6, 6>* dPK2dDp,        ///< derivative of PK2 w.r.t. F_p^{-1}
         Core::LinAlg::Matrix<6, 1>* NCP,            ///< NCP function
         Core::LinAlg::Matrix<6, 6>* dNCPdC,         ///< derivative of NCP function w.r.t. RCG
@@ -223,15 +221,15 @@ namespace Mat
     /// at element level. (with plastic spin)
     virtual void evaluate_plast(const Core::LinAlg::Matrix<3, 3>* defgrd,  ///< Deformation gradient
         const Core::LinAlg::Matrix<3, 3>*
-            deltaLp,                          ///< plastic deformation gradient (non-symmetric)
-        const double temp,                    ///< current temperature
-        Teuchos::ParameterList& params,       ///< Container for additional information
-        Core::LinAlg::Matrix<6, 9>* dPK2dLp,  ///< derivative of PK2 w.r.t. F_p^{-1}
-        Core::LinAlg::Matrix<9, 1>* NCP,      ///< NCP function
-        Core::LinAlg::Matrix<9, 6>* dNCPdC,   ///< derivative of NCP function w.r.t. RCG
-        Core::LinAlg::Matrix<9, 9>* dNCPdLp,  ///< derivative of NCP function w.r.t. deltaLp
-        bool* active,                         ///< gauss point is active
-        bool* elast,                          ///< gauss point needs condensation if it is not elast
+            deltaLp,                           ///< plastic deformation gradient (non-symmetric)
+        const double temp,                     ///< current temperature
+        const Teuchos::ParameterList& params,  ///< Container for additional information
+        Core::LinAlg::Matrix<6, 9>* dPK2dLp,   ///< derivative of PK2 w.r.t. F_p^{-1}
+        Core::LinAlg::Matrix<9, 1>* NCP,       ///< NCP function
+        Core::LinAlg::Matrix<9, 6>* dNCPdC,    ///< derivative of NCP function w.r.t. RCG
+        Core::LinAlg::Matrix<9, 9>* dNCPdLp,   ///< derivative of NCP function w.r.t. deltaLp
+        bool* active,                          ///< gauss point is active
+        bool* elast,         ///< gauss point needs condensation if it is not elast
         bool* as_converged,  ///< convergence of active set (false, if as has changed)
         const int gp,        ///< gauss point
         Core::LinAlg::Matrix<9, 1>*
@@ -305,7 +303,7 @@ namespace Mat
         Core::LinAlg::Matrix<6, 6>* dNCPdC, Core::LinAlg::Matrix<6, 6>* dNCPdDp,
         Core::LinAlg::Matrix<6, 1>* dNCPdT, Core::LinAlg::Matrix<6, 6>* dPK2dDp, bool* active,
         bool* elast, bool* as_converged, Core::LinAlg::Matrix<6, 1>* dHdC,
-        Core::LinAlg::Matrix<6, 1>* dHdDp, Teuchos::ParameterList& params, const double dt)
+        Core::LinAlg::Matrix<6, 1>* dHdDp, const Teuchos::ParameterList& params, const double dt)
     {
       FOUR_C_THROW("Don't need this for Variationally consistent constitutive update");
     }
@@ -331,10 +329,10 @@ namespace Mat
 
 
     virtual void evaluate_rhs(const int gp, const Core::LinAlg::Matrix<3, 3> dLp,
-        const Core::LinAlg::Matrix<3, 3> defgrd, Core::LinAlg::Matrix<6, 1>& eeOut,
+        const Core::LinAlg::Matrix<3, 3> defgrd, Core::LinAlg::SymmetricTensor<double, 3, 3>& eeOut,
         Core::LinAlg::Matrix<5, 1>& rhs, Core::LinAlg::Matrix<5, 1>& rhsElast,
         Core::LinAlg::Matrix<6, 6>& dcedlp, Core::LinAlg::Matrix<9, 6>& dFpiDdeltaDp,
-        Teuchos::ParameterList& params, const int eleGID);
+        const Teuchos::ParameterList& params, const int eleGID);
 
 
     virtual void yield_function(const double last_ai, const double norm_dLp,
@@ -344,7 +342,7 @@ namespace Mat
 
     virtual void comp_elast_quant(const Core::LinAlg::Matrix<3, 3>* defgrd,
         const Core::LinAlg::Matrix<3, 3> fpi, const Core::LinAlg::Matrix<3, 3> MatExp,
-        Core::LinAlg::Matrix<3, 3>* cetrial, Core::LinAlg::Matrix<6, 1>* Ee);
+        Core::LinAlg::Matrix<3, 3>* cetrial, Core::LinAlg::SymmetricTensor<double, 3, 3>& Ee);
 
     virtual void evaluate_plast(Core::LinAlg::Matrix<6, 9>& dPK2dFpinvIsoprinc,
         const Core::LinAlg::Matrix<3, 1>& gamma, const Core::LinAlg::Matrix<8, 1>& delta,

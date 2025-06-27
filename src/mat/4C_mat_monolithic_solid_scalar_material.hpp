@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -32,9 +33,10 @@ namespace Mat
      * @param eleGID (in) : global element id
      * @return std::vector<std::optional<Core::LinAlg::Matrix<6, 1>>>
      */
-    virtual Core::LinAlg::Matrix<6, 1> evaluate_d_stress_d_scalar(
-        const Core::LinAlg::Matrix<3, 3>& defgrad, const Core::LinAlg::Matrix<6, 1>& glstrain,
-        Teuchos::ParameterList& params, int gp, int eleGID) = 0;
+    virtual Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_d_stress_d_scalar(
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, int gp, int eleGID) = 0;
   };
 }  // namespace Mat
 

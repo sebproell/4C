@@ -49,9 +49,6 @@ namespace
   }
 
   template <Core::FE::CellType celltype>
-  inline static constexpr int num_str = Core::FE::dim<celltype> * (Core::FE::dim<celltype> + 1) / 2;
-
-  template <Core::FE::CellType celltype>
   Core::LinAlg::SymmetricTensor<double, Core::FE::dim<celltype>, Core::FE::dim<celltype>>
   evaluate_d_material_stress_d_scalar(Mat::So3Material& solid_material,
       const Core::LinAlg::Tensor<double, Core::FE::dim<celltype>, Core::FE::dim<celltype>>&
@@ -67,10 +64,8 @@ namespace
 
     // The derivative of the solid stress w.r.t. the scalar is implemented in the normal
     // material Evaluate call by not passing the linearization matrix.
-    return Core::LinAlg::make_symmetric_tensor_from_stress_like_voigt_matrix(
-        monolithic_material->evaluate_d_stress_d_scalar(
-            Core::LinAlg::make_matrix_view(deformation_gradient),
-            Core::LinAlg::make_strain_like_voigt_matrix(gl_strain), params, gp, eleGID));
+    return monolithic_material->evaluate_d_stress_d_scalar(
+        deformation_gradient, gl_strain, params, gp, eleGID);
   }
 
   template <Core::FE::CellType celltype>
@@ -216,10 +211,8 @@ namespace
         Discret::Elements::get_initialized_cauchy_n_dir_linearization_dependencies(
             evaluator, linearizations);
 
-    double cauchy_n_dir = 0;
-    mat.evaluate_cauchy_n_dir_and_derivatives(Core::LinAlg::make_matrix_view(deformation_gradient),
-        Core::LinAlg::make_matrix_view<3, 1>(n), Core::LinAlg::make_matrix_view<3, 1>(dir),
-        cauchy_n_dir, linearizations.solid.d_cauchyndir_dn, linearizations.solid.d_cauchyndir_ddir,
+    double cauchy_n_dir = mat.evaluate_cauchy_n_dir_and_derivatives(deformation_gradient, n, dir,
+        linearizations.solid.d_cauchyndir_dn, linearizations.solid.d_cauchyndir_ddir,
         get_ptr(linearization_dependencies.d_cauchyndir_dF),
         get_ptr(linearization_dependencies.d2_cauchyndir_dF2),
         get_ptr(linearization_dependencies.d2_cauchyndir_dF_dn),
@@ -236,9 +229,8 @@ namespace
       FOUR_C_ASSERT(linearization_dependencies.d_cauchyndir_dF, "Not all tensors are computed!");
       linearizations.d_cauchyndir_ds->shape(Core::FE::num_nodes(celltype), 1);
 
-      static Core::LinAlg::Matrix<9, 1> d_F_dc(Core::LinAlg::Initialization::zero);
-      mat.evaluate_linearization_od(
-          Core::LinAlg::make_matrix_view(deformation_gradient), (scalars_at_xi)[0], &d_F_dc);
+      static Core::LinAlg::Matrix<9, 1> d_F_dc{};
+      mat.evaluate_linearization_od(deformation_gradient, (scalars_at_xi)[0], d_F_dc);
 
       double d_cauchyndir_ds_gp = (*linearization_dependencies.d_cauchyndir_dF).dot(d_F_dc);
 
@@ -573,10 +565,7 @@ void Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::update(
                     Core::FE::dim<celltype>>& deformation_gradient,
                 const Core::LinAlg::SymmetricTensor<double, 3, 3>& gl_strain,
                 const auto& linearization)
-            {
-              solid_material.update(
-                  Core::LinAlg::make_matrix_view(deformation_gradient), gp, params, ele.id());
-            });
+            { solid_material.update(deformation_gradient, gp, params, ele.id()); });
       });
 
   solid_material.update();
@@ -627,9 +616,7 @@ double Discret::Elements::SolidScatraEleCalc<celltype, SolidFormulation>::calcul
                     Core::FE::dim<celltype>>& gl_strain,
                 const auto& linearization)
             {
-              double psi = 0.0;
-              solid_material.strain_energy(
-                  Core::LinAlg::make_strain_like_voigt_matrix(gl_strain), psi, gp, ele.id());
+              double psi = solid_material.strain_energy(gl_strain, gp, ele.id());
               intenergy += psi * integration_factor;
             });
       });

@@ -15,6 +15,7 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_mat_thermomechanical.hpp"
 #include "4C_material_parameter_base.hpp"
@@ -145,20 +146,16 @@ namespace Mat
     }
 
     //! evaluates stresses for 3d
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,  //!< deformation gradient
-        const Core::LinAlg::Matrix<6, 1>* glstrain,          //!< Green-Lagrange strain
-        Teuchos::ParameterList& params,                      //!< parameter list
-        Core::LinAlg::Matrix<6, 1>* stress,                  //!< stress
-        Core::LinAlg::Matrix<6, 6>* cmat,                    //!< elastic material tangent
-        int gp,                                              ///< Gauss point
-        int eleGID                                           //!< element GID
-        ) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     /// add strain energy
-    void strain_energy(const Core::LinAlg::Matrix<6, 1>& glstrain,  ///< Green-Lagrange strain
-        double& psi,                                                ///< strain energy functions
-        int gp,                                                     ///< Gauss point
-        int eleGID                                                  ///< element GID
+    [[nodiscard]] double strain_energy(
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,  ///< Green-Lagrange strain
+        int gp,                                                       ///< Gauss point
+        int eleGID                                                    ///< element GID
     ) const override;
 
     //! return true if Young's modulus is temperature dependent
@@ -200,26 +197,28 @@ namespace Mat
 
     void commit_current_state() override;
 
-    void reinit(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, double temperature, unsigned gp) override;
+    void reinit(const Core::LinAlg::Tensor<double, 3, 3>* defgrd,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, double temperature,
+        unsigned gp) override;
 
-    Core::LinAlg::Matrix<6, 1> evaluate_d_stress_d_scalar(const Core::LinAlg::Matrix<3, 3>& defgrad,
-        const Core::LinAlg::Matrix<6, 1>& glstrain, Teuchos::ParameterList& params, int gp,
-        int eleGID) override;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> evaluate_d_stress_d_scalar(
+        const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, int gp, int eleGID) override;
 
-    void stress_temperature_modulus_and_deriv(
-        Core::LinAlg::Matrix<6, 1>& stm, Core::LinAlg::Matrix<6, 1>& stm_dT, int gp) override;
+    void stress_temperature_modulus_and_deriv(Core::LinAlg::SymmetricTensor<double, 3, 3>& stm,
+        Core::LinAlg::SymmetricTensor<double, 3, 3>& stm_dT, int gp) override;
 
     //! general thermal tangent of material law depending on stress-temperature modulus
-    static void fill_cthermo(Core::LinAlg::Matrix<6, 1>& ctemp, double m);
+    static void fill_cthermo(Core::LinAlg::SymmetricTensor<double, 3, 3>& ctemp, double m);
 
    private:
     //! computes isotropic elasticity tensor in matrix notion for 3d
-    void setup_cmat(Core::LinAlg::Matrix<6, 6>& cmat) const;
+    void setup_cmat(Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat) const;
 
     //! computes temperature dependent isotropic elasticity tensor in matrix
     //! notion for 3d
-    void setup_cthermo(Core::LinAlg::Matrix<6, 1>& ctemp) const;
+    void setup_cthermo(Core::LinAlg::SymmetricTensor<double, 3, 3>& ctemp) const;
 
     //! calculates stress-temperature modulus
     double st_modulus() const;
@@ -229,12 +228,12 @@ namespace Mat
 
     //! calculates derivative of Cmat with respect to current temperatures
     //! only in case of temperature-dependent material parameters
-    void get_cmat_at_tempnp_t(Core::LinAlg::Matrix<6, 6>& derivcmat) const;
+    void get_cmat_at_tempnp_t(Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& derivcmat) const;
 
     //! calculates derivative of Cmat with respect to current temperatures
     //! only in case of temperature-dependent material parameters
-    void get_cthermo_at_tempnp_t(
-        Core::LinAlg::Matrix<6, 1>& derivctemp  //!< linearisation of ctemp w.r.t. T
+    void get_cthermo_at_tempnp_t(Core::LinAlg::SymmetricTensor<double, 3, 3>&
+            derivctemp  //!< linearisation of ctemp w.r.t. T
     ) const;
 
     //! calculate temperature dependent material parameter and return value

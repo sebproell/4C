@@ -51,16 +51,18 @@ namespace Mixture
 
     [[nodiscard]] bool has_inelastic_growth_deformation_gradient() const override { return false; };
 
-    void evaluate_inverse_growth_deformation_gradient(Core::LinAlg::Matrix<3, 3>& iFgM,
+    void evaluate_inverse_growth_deformation_gradient(Core::LinAlg::Tensor<double, 3, 3>& iFgM,
         const Mixture::MixtureRule& mixtureRule, double currentReferenceGrowthScalar,
         int gp) const override;
 
     void evaluate_growth_stress_cmat(const Mixture::MixtureRule& mixtureRule,
         double currentReferenceGrowthScalar,
-        const Core::LinAlg::Matrix<1, 6>& dCurrentReferenceGrowthScalarDC,
-        const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-        Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-        Core::LinAlg::Matrix<6, 6>& cmat, const int gp, const int eleGID) const override;
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& dCurrentReferenceGrowthScalarDC,
+        const Core::LinAlg::Tensor<double, 3, 3>& F,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp,
+        const int eleGID) const override;
 
    private:
     ///! growth parameters as defined in the input file

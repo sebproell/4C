@@ -11,6 +11,7 @@
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_comm_utils.hpp"
 #include "4C_global_data.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_micromaterial.hpp"
 #include "4C_stru_multi_microstatic.hpp"
 #include "4C_utils_enum.hpp"

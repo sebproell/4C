@@ -8,7 +8,9 @@
 #include "4C_mixture_prestress_strategy_iterative.hpp"
 
 #include "4C_linalg_fixedsizematrix_generators.hpp"
-#include "4C_linalg_utils_densematrix_svd.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_svd.hpp"
 #include "4C_mat_anisotropy.hpp"
 #include "4C_mat_elast_isoneohooke.hpp"
 #include "4C_mat_elast_volsussmanbathe.hpp"
@@ -41,58 +43,45 @@ Mixture::IterativePrestressStrategy::IterativePrestressStrategy(
 {
 }
 
-void Mixture::IterativePrestressStrategy::setup(
-    Mixture::MixtureConstituent& constituent, Teuchos::ParameterList& params, int numgp, int eleGID)
+void Mixture::IterativePrestressStrategy::setup(Mixture::MixtureConstituent& constituent,
+    const Teuchos::ParameterList& params, int numgp, int eleGID)
 {
   // nothing to do
 }
 
 void Mixture::IterativePrestressStrategy::evaluate_prestress(const MixtureRule& mixtureRule,
-    const std::shared_ptr<const Mat::CoordinateSystemProvider> anisotropy,
-    Mixture::MixtureConstituent& constituent, Core::LinAlg::Matrix<3, 3>& G,
-    Teuchos::ParameterList& params, int gp, int eleGID)
+    const std::shared_ptr<const Mat::CoordinateSystemProvider> cosy,
+    Mixture::MixtureConstituent& constituent, Core::LinAlg::SymmetricTensor<double, 3, 3>& G,
+    const Teuchos::ParameterList& params, int gp, int eleGID)
 {
   // Start with zero prestretch
-  G = Core::LinAlg::identity_matrix<3>();
+  G = Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
 }
 
 void Mixture::IterativePrestressStrategy::update(
     const std::shared_ptr<const Mat::CoordinateSystemProvider> anisotropy,
-    Mixture::MixtureConstituent& constituent, const Core::LinAlg::Matrix<3, 3>& F,
-    Core::LinAlg::Matrix<3, 3>& G, Teuchos::ParameterList& params, int gp, int eleGID)
+    Mixture::MixtureConstituent& constituent, const Core::LinAlg::Tensor<double, 3, 3>& F,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& G, const Teuchos::ParameterList& params, int gp,
+    int eleGID)
 {
   // only update prestress if it is active
   if (!params_->is_active_) return;
 
   // Compute isochoric part of the deformation
-  Core::LinAlg::Matrix<3, 3> F_bar;
+  Core::LinAlg::Tensor<double, 3, 3> F_bar;
   if (params_->isochoric_)
   {
-    F_bar.update(std::pow(F.determinant(), -1.0 / 3.0), F);
+    F_bar = std::pow(Core::LinAlg::det(F), -1.0 / 3.0) * F;
   }
   else
   {
-    F_bar.update(F);
+    F_bar = F;
   }
-
-  // Compute new predeformation gradient
-  Core::LinAlg::Matrix<3, 3> G_old(G);
-  G.multiply_nn(F_bar, G_old);
-
-
-  // Compute polar decomposition of the prestretch deformation gradient
-
   // Singular value decomposition of F = RU
-  Core::LinAlg::Matrix<3, 3> Q(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<3, 3> S(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<3, 3> VT(Core::LinAlg::Initialization::zero);
-
-  Core::LinAlg::svd<3, 3>(G, Q, S, VT);
+  const auto [Q, s, VT] = Core::LinAlg::svd(F_bar * G);
 
   // Compute stretch tensor G = U = V * S * VT
-  Core::LinAlg::Matrix<3, 3> VS;
-
-  VS.multiply_tn(VT, S);
-  G.multiply_nn(VS, VT);
+  G = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(VT) * Core::LinAlg::make_rectangular_diagonal_matrix<3, 3>(s) * VT);
 }
 FOUR_C_NAMESPACE_CLOSE

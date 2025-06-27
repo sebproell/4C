@@ -152,9 +152,9 @@ void Mat::StructPoroReactionECM::unpack(Core::Communication::UnpackBuffer& buffe
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Mat::StructPoroReactionECM::reaction(const double porosity, const double J,
-    std::shared_ptr<std::vector<double>> scalars, Teuchos::ParameterList& params)
+    std::shared_ptr<std::vector<double>> scalars, const Teuchos::ParameterList& params)
 {
-  double dt = params.get<double>("delta time", -1.0);
+  double dt = params.get<double>("delta time");
   // double time = params.get<double>("total time",-1.0);
 
   // concentration C1
@@ -207,12 +207,12 @@ bool Mat::StructPoroReactionECM::vis_data(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Mat::StructPoroReactionECM::chem_potential(
-    const Core::LinAlg::Matrix<6, 1>& glstrain,  ///< (i) green lagrange strain
-    const double porosity,                       ///< (i) porosity
-    const double press,                          ///< (i) pressure at gauss point
-    const double J,                              ///< (i) determinant of jacobian at gauss point
-    int EleID,                                   ///< (i) element GID
-    double& pot,                                 ///< (o) chemical potential
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,  ///< (i) green lagrange strain
+    const double porosity,                                        ///< (i) porosity
+    const double press,                                           ///< (i) pressure at gauss point
+    const double J,  ///< (i) determinant of jacobian at gauss point
+    int EleID,       ///< (i) element GID
+    double& pot,     ///< (o) chemical potential
     const int gp)
 {
   FOUR_C_ASSERT(gp < (int)chempot_.size(),
@@ -223,9 +223,7 @@ void Mat::StructPoroReactionECM::chem_potential(
   // dummy parameter list
   Teuchos::ParameterList params;
 
-  double psi = 0.0;
-  // evaluate strain energy
-  mat_->strain_energy(glstrain, psi, gp, EleID);
+  double psi = mat_->strain_energy(glstrain, gp, EleID);
 
   // derivative of
   double dpsidphiref = 0.0;

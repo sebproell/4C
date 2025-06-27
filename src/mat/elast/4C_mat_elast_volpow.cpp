@@ -22,8 +22,8 @@ Mat::Elastic::PAR::VolPow::VolPow(const Core::Mat::PAR::Parameter::Data& matdata
 Mat::Elastic::VolPow::VolPow(Mat::Elastic::PAR::VolPow* params) : params_(params) {}
 
 void Mat::Elastic::VolPow::add_strain_energy(double& psi, const Core::LinAlg::Matrix<3, 1>& prinv,
-    const Core::LinAlg::Matrix<3, 1>& modinv, const Core::LinAlg::Matrix<6, 1>& glstrain,
-    const int gp, const int eleGID)
+    const Core::LinAlg::Matrix<3, 1>& modinv,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, const int gp, const int eleGID)
 {
   const double a = params_->a_;
   const double expon = params_->expon_;

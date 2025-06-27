@@ -12,6 +12,7 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_material_parameter_base.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -154,14 +155,10 @@ namespace Mat
     void update_fiber_dirs(const int numgp, Core::LinAlg::Matrix<3, 3>* defgrad);
 
     /// Evaluate material
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,      ///< deformation gradient
-        const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* glstrain,  ///< green lagrange strain
-        Teuchos::ParameterList& params,                  ///< parameter list for communication
-        Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,  ///< 2nd PK-stress
-        Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat,  ///< material stiffness matrix
-        int gp,                                                    ///< Gauss point
-        int eleGID                                                 ///< element GID
-        ) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     /// Return density
     double density() const override { return params_->density_; };

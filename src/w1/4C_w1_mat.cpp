@@ -189,13 +189,13 @@ void Discret::Elements::Wall1::material_response3d_plane(Core::LinAlg::SerialDen
     Teuchos::ParameterList& params, const int gp)
 {
   // make 3d equivalent of Green-Lagrange strain
-  Core::LinAlg::Matrix<6, 1> gl(Core::LinAlg::Initialization::uninitialized);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> gl{};
   green_lagrange_plane3d(strain, gl);
 
   // call 3d stress response
-  Core::LinAlg::Matrix<6, 1> pk2(Core::LinAlg::Initialization::zero);   // must be zerofied!!!
-  Core::LinAlg::Matrix<6, 6> cmat(Core::LinAlg::Initialization::zero);  // must be zerofied!!!
-  material_response3d(&pk2, &cmat, &gl, params, gp);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> pk2{};         // must be zerofied!!!
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat{};  // must be zerofied!!!
+  material_response3d(pk2, cmat, gl, params, gp);
 
   // dimension reduction type
   if (wtype_ == plane_strain)
@@ -208,7 +208,7 @@ void Discret::Elements::Wall1::material_response3d_plane(Core::LinAlg::SerialDen
     // strain vector above bears initial guesses on: E_{33},E_{23},E_{31}
 
     // initial plane stress error
-    double pserr = std::sqrt(pk2(2) * pk2(2) + pk2(4) * pk2(4) + pk2(5) * pk2(5));
+    double pserr = std::sqrt(pk2(2, 2) * pk2(2, 2) + pk2(1, 2) * pk2(1, 2) + pk2(0, 2) * pk2(0, 2));
 
     // make Newton-Raphson iteration to identify
     // E_{33},E_{23},E_{31} which satisfy S_{33}=S_{23}=S_{31}=0
@@ -230,34 +230,34 @@ void Discret::Elements::Wall1::material_response3d_plane(Core::LinAlg::SerialDen
     while ((pserr > tol) and (i < n))
     {
       // build sub-system a.b=c to solve
-      crr(0, 0) = cmat(2, 2);
-      crr(0, 1) = cmat(2, 4);
-      crr(0, 2) = cmat(2, 5);
-      crr(1, 0) = cmat(4, 2);
-      crr(1, 1) = cmat(4, 4);
-      crr(1, 2) = cmat(4, 5);
-      crr(2, 0) = cmat(5, 2);
-      crr(2, 1) = cmat(5, 4);
-      crr(2, 2) = cmat(5, 5);
-      rr(0) = -pk2(2);
-      rr(1) = -pk2(4);
-      rr(2) = -pk2(5);
+      crr(0, 0) = cmat(2, 2, 2, 2);
+      crr(0, 1) = cmat(2, 2, 1, 2);
+      crr(0, 2) = cmat(2, 2, 0, 2);
+      crr(1, 0) = cmat(1, 2, 2, 2);
+      crr(1, 1) = cmat(1, 2, 1, 2);
+      crr(1, 2) = cmat(1, 2, 0, 2);
+      crr(2, 0) = cmat(0, 2, 2, 2);
+      crr(2, 1) = cmat(0, 2, 1, 2);
+      crr(2, 2) = cmat(0, 2, 0, 2);
+      rr(0) = -pk2(2, 2);
+      rr(1) = -pk2(1, 2);
+      rr(2) = -pk2(0, 2);
       // solution
       // an in-place inversion is used, 'coz the inverse is needed below
       crr.invert();
       ir.multiply(crr, rr);
       // update
-      gl(2) += ir(0);
-      gl(4) += 2.0 * ir(1);  // NOT SURE ABOUT 2.0, LACKED TESTING MATERIAL
-      gl(5) += 2.0 * ir(2);  // NOT SURE ABOUT 2.0, LACKED TESTING MATERIAL
+      gl(2, 2) += ir(0);
+      gl(1, 2) += ir(1);
+      gl(0, 2) += ir(2);
 
       // call for new 3d stress response
-      pk2.clear();   // must be blanked!!
-      cmat.clear();  // must be blanked!!
-      material_response3d(&pk2, &cmat, &gl, params, gp);
+      pk2 = {};
+      cmat = {};
+      material_response3d(pk2, cmat, gl, params, gp);
 
       // current plane stress error
-      pserr = std::sqrt(pk2(2) * pk2(2) + pk2(4) * pk2(4) + pk2(5) * pk2(5));
+      pserr = std::sqrt(pk2(2, 2) * pk2(2, 2) + pk2(1, 2) * pk2(1, 2) + pk2(0, 2) * pk2(0, 2));
 
       // increment loop index
       i += 1;
@@ -277,29 +277,29 @@ void Discret::Elements::Wall1::material_response3d_plane(Core::LinAlg::SerialDen
       // Thus the effect of the linearisation with respect to the
       // dependent strains must be added onto the free strains.
       Core::LinAlg::Matrix<3, 3> cfr(Core::LinAlg::Initialization::uninitialized);
-      cfr(0, 0) = cmat(0, 2);
-      cfr(0, 1) = cmat(0, 4);
-      cfr(0, 2) = cmat(0, 5);
-      cfr(1, 0) = cmat(1, 2);
-      cfr(1, 1) = cmat(1, 4);
-      cfr(1, 2) = cmat(1, 5);
-      cfr(2, 0) = cmat(3, 2);
-      cfr(2, 1) = cmat(3, 4);
-      cfr(2, 2) = cmat(3, 5);
+      cfr(0, 0) = cmat(0, 0, 2, 2);
+      cfr(0, 1) = cmat(0, 0, 1, 2);
+      cfr(0, 2) = cmat(0, 0, 0, 2);
+      cfr(1, 0) = cmat(1, 1, 2, 2);
+      cfr(1, 1) = cmat(1, 1, 1, 2);
+      cfr(1, 2) = cmat(1, 1, 0, 2);
+      cfr(2, 0) = cmat(0, 1, 2, 2);
+      cfr(2, 1) = cmat(0, 1, 1, 2);
+      cfr(2, 2) = cmat(0, 1, 0, 2);
       Core::LinAlg::Matrix<3, 3> crrrf(Core::LinAlg::Initialization::uninitialized);
       crrrf.multiply_nt(crr, cfr);
       Core::LinAlg::Matrix<3, 3> cfrrrrf(Core::LinAlg::Initialization::uninitialized);
       cfrrrrf.multiply_nn(cfr, crrrf);
       // update constitutive matrix of free components
-      cmat(0, 0) -= cfrrrrf(0, 0);
-      cmat(0, 1) -= cfrrrrf(0, 1);
-      cmat(0, 3) -= cfrrrrf(0, 2);
-      cmat(1, 0) -= cfrrrrf(1, 0);
-      cmat(1, 1) -= cfrrrrf(1, 1);
-      cmat(1, 3) -= cfrrrrf(1, 2);
-      cmat(3, 0) -= cfrrrrf(2, 0);
-      cmat(3, 1) -= cfrrrrf(2, 1);
-      cmat(3, 3) -= cfrrrrf(2, 2);
+      cmat(0, 0, 0, 0) -= cfrrrrf(0, 0);
+      cmat(0, 0, 1, 1) -= cfrrrrf(0, 1);
+      cmat(0, 0, 0, 1) -= cfrrrrf(0, 2);
+      cmat(1, 1, 0, 0) -= cfrrrrf(1, 0);
+      cmat(1, 1, 1, 1) -= cfrrrrf(1, 1);
+      cmat(1, 1, 0, 1) -= cfrrrrf(1, 2);
+      cmat(0, 1, 0, 0) -= cfrrrrf(2, 0);
+      cmat(0, 1, 1, 1) -= cfrrrrf(2, 1);
+      cmat(0, 1, 0, 1) -= cfrrrrf(2, 2);
     }
   }
   else
@@ -308,31 +308,31 @@ void Discret::Elements::Wall1::material_response3d_plane(Core::LinAlg::SerialDen
   }
 
   // transform 2nd Piola--Kirchhoff stress back to 2d stress matrix
-  stress.putScalar(0.0);                                               // zerofy
-  stress(0, 0) = stress(3, 3) = pk2(0);                                // S_{11}
-  stress(1, 1) = stress(2, 2) = pk2(1);                                // S_{22}
-  stress(0, 2) = stress(1, 3) = stress(3, 1) = stress(2, 0) = pk2(3);  // S_{12}
+  stress.putScalar(0.0);                                                  // zerofy
+  stress(0, 0) = stress(3, 3) = pk2(0, 0);                                // S_{11}
+  stress(1, 1) = stress(2, 2) = pk2(1, 1);                                // S_{22}
+  stress(0, 2) = stress(1, 3) = stress(3, 1) = stress(2, 0) = pk2(0, 1);  // S_{12}
 
   // transform elasticity matrix  back to 2d matrix
-  C(0, 0) = cmat(0, 0);  // C_{1111}
-  C(0, 1) = cmat(0, 1);  // C_{1122}
-  C(0, 2) = cmat(0, 3);  // C_{1112}
-  C(0, 3) = cmat(0, 3);  // C_{1112} = C_{1121}
+  C(0, 0) = cmat(0, 0, 0, 0);  // C_{1111}
+  C(0, 1) = cmat(0, 0, 1, 1);  // C_{1122}
+  C(0, 2) = cmat(0, 0, 0, 1);  // C_{1112}
+  C(0, 3) = cmat(0, 0, 0, 1);  // C_{1112} = C_{1121}
 
-  C(1, 0) = cmat(1, 0);  // C_{2211}
-  C(1, 1) = cmat(1, 1);  // C_{2222}
-  C(1, 2) = cmat(1, 3);  // C_{2212}
-  C(1, 3) = cmat(1, 3);  // C_{2221} = C_{2212}
+  C(1, 0) = cmat(1, 1, 0, 0);  // C_{2211}
+  C(1, 1) = cmat(1, 1, 1, 1);  // C_{2222}
+  C(1, 2) = cmat(1, 1, 0, 1);  // C_{2212}
+  C(1, 3) = cmat(1, 1, 0, 1);  // C_{2221} = C_{2212}
 
-  C(2, 0) = cmat(3, 0);  // C_{1211}
-  C(2, 1) = cmat(3, 1);  // C_{1222}
-  C(2, 2) = cmat(3, 3);  // C_{1212}
-  C(2, 3) = cmat(3, 3);  // C_{1221} = C_{1212}
+  C(2, 0) = cmat(0, 1, 0, 0);  // C_{1211}
+  C(2, 1) = cmat(0, 1, 1, 1);  // C_{1222}
+  C(2, 2) = cmat(0, 1, 0, 1);  // C_{1212}
+  C(2, 3) = cmat(0, 1, 0, 1);  // C_{1221} = C_{1212}
 
-  C(3, 0) = cmat(3, 0);  // C_{2111} = C_{1211}
-  C(3, 1) = cmat(3, 1);  // C_{2122} = C_{1222}
-  C(3, 2) = cmat(3, 3);  // C_{2112} = C_{1212}
-  C(3, 3) = cmat(3, 3);  // C_{2121} = C_{1212}
+  C(3, 0) = cmat(0, 1, 0, 0);  // C_{2111} = C_{1211}
+  C(3, 1) = cmat(0, 1, 1, 1);  // C_{2122} = C_{1222}
+  C(3, 2) = cmat(0, 1, 0, 1);  // C_{2112} = C_{1212}
+  C(3, 3) = cmat(0, 1, 0, 1);  // C_{2121} = C_{1212}
 
   // leave this dump
   return;
@@ -340,9 +340,11 @@ void Discret::Elements::Wall1::material_response3d_plane(Core::LinAlg::SerialDen
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
-void Discret::Elements::Wall1::material_response3d(Core::LinAlg::Matrix<6, 1>* stress,
-    Core::LinAlg::Matrix<6, 6>* cmat, const Core::LinAlg::Matrix<6, 1>* glstrain,
-    Teuchos::ParameterList& params, const int gp)
+void Discret::Elements::Wall1::material_response3d(
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, Teuchos::ParameterList& params,
+    const int gp)
 {
   solid_material()->evaluate(nullptr, glstrain, params, stress, cmat, gp, id());
 
@@ -374,14 +376,11 @@ double Discret::Elements::Wall1::energy_internal(
     case Core::Materials::m_elasthyper:
     {
       // transform the 2d Green-Lagrange strains into 3d notation
-      Core::LinAlg::Matrix<6, 1> glstrain(Core::LinAlg::Initialization::zero);
+      Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain{};
       green_lagrange_plane3d(Ev, glstrain);
 
       // strain energy
-      double psi = 0.0;
-
-      // call material for evaluation of strain energy function
-      solid_material()->strain_energy(glstrain, psi, gp, id());
+      double psi = solid_material()->strain_energy(glstrain, gp, id());
 
       return psi;
     }
@@ -391,14 +390,11 @@ double Discret::Elements::Wall1::energy_internal(
     case Core::Materials::m_structpororeactionECM:
     {
       // transform the 2d Green-Lagrange strains into 3d notation
-      Core::LinAlg::Matrix<6, 1> glstrain(Core::LinAlg::Initialization::zero);
+      Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain{};
       green_lagrange_plane3d(Ev, glstrain);
 
       // strain energy
-      double psi = 0.0;
-
-      // call material for evaluation of strain energy function
-      solid_material()->strain_energy(glstrain, psi, gp, id());
+      double psi = solid_material()->strain_energy(glstrain, gp, id());
 
       return psi;
     }

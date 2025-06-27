@@ -697,14 +697,14 @@ int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
           double detA;
           surface_integration(detA, normal, xcn, deriv);
 
-          Core::LinAlg::SerialDenseVector tangent(3);
+          Core::LinAlg::Tensor<double, 3> tangent;
           if (aletype == Inpar::FSI::ALEprojection_rot_z ||
               aletype == Inpar::FSI::ALEprojection_rot_zsphere)
           {
             // compute tangential direction in xy-plane from normal
-            tangent[0] = -normal[1];
-            tangent[1] = normal[0];
-            tangent[2] = 0.0;
+            tangent(0) = -normal[1];
+            tangent(1) = normal[0];
+            tangent(2) = 0.0;
           }
           else
           {
@@ -713,7 +713,7 @@ int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
 
           if (Core::LinAlg::norm2(tangent) > tol)
           {
-            tangent.scale(1.0 / (Core::LinAlg::norm2(tangent)));
+            tangent *= 1.0 / (Core::LinAlg::norm2(tangent));
           }
           elevector2[0] +=
               sqrt(normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]);
@@ -721,7 +721,7 @@ int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
           for (int node = 0; node < numnode; ++node)
           {
             double scalarprod =
-                tangent[0] * edispincr[node * numdf] + tangent[1] * edispincr[node * numdf + 1];
+                tangent(0) * edispincr[node * numdf] + tangent(1) * edispincr[node * numdf + 1];
             if (aletype == Inpar::FSI::ALEprojection_rot_zsphere)
             {
               double circ(0.0);
@@ -785,14 +785,14 @@ int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
 
         surface_integration(normal, xcn, deriv);
 
-        Core::LinAlg::SerialDenseVector tangent(3);
+        Core::LinAlg::Tensor<double, 3> tangent;
         if (aletype == Inpar::FSI::ALEprojection_rot_z ||
             aletype == Inpar::FSI::ALEprojection_rot_zsphere)
         {
           // compute tangential direction in xy-plane from normal
-          tangent[0] = -normal[1];
-          tangent[1] = normal[0];
-          tangent[2] = 0.0;
+          tangent(0) = -normal[1];
+          tangent(1) = normal[0];
+          tangent(2) = 0.0;
         }
         else
         {
@@ -801,7 +801,7 @@ int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
 
         if (Core::LinAlg::norm2(tangent) > tol)
         {
-          tangent.scale(1.0 / (Core::LinAlg::norm2(tangent) * nodes()[node]->num_element()));
+          tangent *= 1.0 / (Core::LinAlg::norm2(tangent) * nodes()[node]->num_element());
         }
 
         if (aletype == Inpar::FSI::ALEprojection_rot_zsphere)
@@ -823,12 +823,12 @@ int Discret::Elements::SolidSurface::evaluate(Teuchos::ParameterList& params,
           }
           if (circ > tol)
           {
-            for (int dof = 0; dof < 2; dof++) elevector1[node * numdf + dof] = tangent[dof] * circ;
+            for (int dof = 0; dof < 2; dof++) elevector1[node * numdf + dof] = tangent(dof) * circ;
           }
         }
         else
         {
-          for (int dof = 0; dof < 2; dof++) elevector1[node * numdf + dof] = tangent[dof];
+          for (int dof = 0; dof < 2; dof++) elevector1[node * numdf + dof] = tangent(dof);
         }
       }
     }

@@ -7,6 +7,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_monolithic_solid_scalar_material.hpp"
 #include "4C_mat_trait_solid.hpp"
 #include "4C_mat_trait_thermo.hpp"
@@ -33,8 +34,9 @@ namespace Mat
        * @param gp
        *
        */
-      virtual void reinit(const Core::LinAlg::Matrix<3, 3>* defgrd,
-          const Core::LinAlg::Matrix<6, 1>* glstrain, double temperature, unsigned gp) = 0;
+      virtual void reinit(const Core::LinAlg::Tensor<double, 3, 3>* defgrd,
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, double temperature,
+          unsigned gp) = 0;
 
       /*!
        * Return stress-temperature modulus and thermal derivative for coupled thermomechanics
@@ -43,7 +45,8 @@ namespace Mat
        * @param stm_deriv tensor to be filled with derivatives
        */
       virtual void stress_temperature_modulus_and_deriv(
-          Core::LinAlg::Matrix<6, 1>& stm, Core::LinAlg::Matrix<6, 1>& stm_dT, int gp) = 0;
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stm,
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stm_dT, int gp) = 0;
     };
   }  // namespace Trait
 }  // namespace Mat

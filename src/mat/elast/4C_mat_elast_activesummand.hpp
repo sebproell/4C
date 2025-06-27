@@ -9,6 +9,7 @@
 #define FOUR_C_MAT_ELAST_ACTIVESUMMAND_HPP
 #include "4C_config.hpp"
 
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_elast_summand.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -35,11 +36,11 @@ namespace Mat
        * \param eleGID global element id
        */
       virtual void add_active_stress_cmat_aniso(
-          const Core::LinAlg::Matrix<3, 3>& CM,  ///< right Cauchy Green tensor
-          Core::LinAlg::Matrix<6, 6>& cmat,      ///< material stiffness matrix
-          Core::LinAlg::Matrix<6, 1>& stress,    ///< 2nd PK-stress
-          int gp,                                ///< Gauss point
-          int eleGID) const = 0;                 ///< element GID
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& CM,    ///< right Cauchy Green tensor
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< material stiffness matrix
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,      ///< 2nd PK-stress
+          int gp,                                                   ///< Gauss point
+          int eleGID) const = 0;                                    ///< element GID
 
       /*!
        * \brief Evaluates the first derivative of active fiber potential w.r.t. the active fiber

@@ -10,6 +10,7 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_comm_utils_factory.hpp"  // for function Factory in Unpack
 #include "4C_global_data.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_poro_law.hpp"
 #include "4C_mat_so3_material.hpp"
@@ -210,7 +211,7 @@ void Mat::StructPoro::unpack(Core::Communication::UnpackBuffer& buffer)
   is_initialized_ = true;
 }
 
-void Mat::StructPoro::post_setup(Teuchos::ParameterList& params, const int eleGID)
+void Mat::StructPoro::post_setup(const Teuchos::ParameterList& params, const int eleGID)
 {
   // Forward post_setup call to actual solid material
   mat_->post_setup(params, eleGID);
@@ -241,7 +242,7 @@ void Mat::StructPoro::compute_porosity(const double& refporosity, const double& 
   if (save) porosity_->at(gp) = porosity;
 }
 
-void Mat::StructPoro::compute_porosity(Teuchos::ParameterList& params, double press, double J,
+void Mat::StructPoro::compute_porosity(const Teuchos::ParameterList& params, double press, double J,
     int gp, double& porosity, double* dphi_dp, double* dphi_dJ, double* dphi_dJdp, double* dphi_dJJ,
     double* dphi_dpp, bool save)
 {
@@ -253,15 +254,15 @@ void Mat::StructPoro::compute_porosity(Teuchos::ParameterList& params, double pr
       save);
 }
 
-void Mat::StructPoro::compute_porosity(
-    Teuchos::ParameterList& params, double press, double J, int gp, double& porosity, bool save)
+void Mat::StructPoro::compute_porosity(const Teuchos::ParameterList& params, double press, double J,
+    int gp, double& porosity, bool save)
 {
   compute_porosity(
       params, press, J, gp, porosity, nullptr, nullptr, nullptr, nullptr, nullptr, save);
 }
 
-void Mat::StructPoro::compute_surf_porosity(Teuchos::ParameterList& params, double press, double J,
-    const int surfnum, int gp, double& porosity, double* dphi_dp, double* dphi_dJ,
+void Mat::StructPoro::compute_surf_porosity(const Teuchos::ParameterList& params, double press,
+    double J, const int surfnum, int gp, double& porosity, double* dphi_dp, double* dphi_dJ,
     double* dphi_dJdp, double* dphi_dJJ, double* dphi_dpp, bool save)
 {
   compute_porosity(
@@ -276,8 +277,8 @@ void Mat::StructPoro::compute_surf_porosity(Teuchos::ParameterList& params, doub
   }
 }
 
-void Mat::StructPoro::compute_surf_porosity(Teuchos::ParameterList& params, double press, double J,
-    const int surfnum, int gp, double& porosity, bool save)
+void Mat::StructPoro::compute_surf_porosity(const Teuchos::ParameterList& params, double press,
+    double J, const int surfnum, int gp, double& porosity, bool save)
 {
   compute_surf_porosity(
       params, press, J, surfnum, gp, porosity, nullptr, nullptr, nullptr, nullptr, nullptr, save);
@@ -344,7 +345,7 @@ void Mat::StructPoro::coupl_stress(const Core::LinAlg::Matrix<2, 2>& defgrd, con
   couplstress(3) = -1.0 * J * press * C_inv_vec(2);
 }
 
-void Mat::StructPoro::constitutive_derivatives(Teuchos::ParameterList& params, double press,
+void Mat::StructPoro::constitutive_derivatives(const Teuchos::ParameterList& params, double press,
     double J, double porosity, double* dW_dp, double* dW_dphi, double* dW_dJ, double* dW_dphiref,
     double* W)
 {
@@ -354,7 +355,7 @@ void Mat::StructPoro::constitutive_derivatives(Teuchos::ParameterList& params, d
       params, press, J, porosity, params_->init_porosity_, dW_dp, dW_dphi, dW_dJ, dW_dphiref, W);
 }
 
-void Mat::StructPoro::constitutive_derivatives(Teuchos::ParameterList& params, double press,
+void Mat::StructPoro::constitutive_derivatives(const Teuchos::ParameterList& params, double press,
     double J, double porosity, double refporosity, double* dW_dp, double* dW_dphi, double* dW_dJ,
     double* dW_dphiref, double* W)
 {

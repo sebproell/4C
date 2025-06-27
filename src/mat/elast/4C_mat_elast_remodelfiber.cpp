@@ -11,6 +11,8 @@
 #include "4C_linalg_FADmatrix_utils.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_material_parameter_base.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -63,6 +65,8 @@ void Mat::Elastic::RemodelFiber::pack_summand(Core::Communication::PackBuffer& d
     add_to_pack(data, potsumfiber_[i]->last_lambr);
     add_to_pack(data, potsumfiber_[i]->cur_rho);
     add_to_pack(data, potsumfiber_[i]->last_rho);
+    add_to_pack(data, potsumfiber_[i]->A);
+    add_to_pack(data, potsumfiber_[i]->A_orth);
     add_to_pack(data, potsumfiber_[i]->AM);
     add_to_pack(data, potsumfiber_[i]->AM_orth);
     add_to_pack(data, potsumfiber_[i]->FrnM);
@@ -107,6 +111,8 @@ void Mat::Elastic::RemodelFiber::unpack_summand(Core::Communication::UnpackBuffe
     extract_from_pack(buffer, potsumfiber_[k]->last_lambr);
     extract_from_pack(buffer, potsumfiber_[k]->cur_rho);
     extract_from_pack(buffer, potsumfiber_[k]->last_rho);
+    extract_from_pack(buffer, potsumfiber_[k]->A);
+    extract_from_pack(buffer, potsumfiber_[k]->A_orth);
     extract_from_pack(buffer, potsumfiber_[k]->AM);
     extract_from_pack(buffer, potsumfiber_[k]->AM_orth);
     extract_from_pack(buffer, potsumfiber_[k]->FrnM);
@@ -172,14 +178,15 @@ void Mat::Elastic::RemodelFiber::setup(
   Core::LinAlg::Matrix<2, 1> dPI(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<3, 1> ddPII(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<4, 1> dddPIII(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 1> stressactv(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 6> cmatactive(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> stressactv{};
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmatactive{};
   Core::LinAlg::Matrix<3, 3> stressactM(Core::LinAlg::Initialization::zero);
 
   setup_structural_tensors_gr();
 
   // quadratic prestretch in tensor notation
-  Core::LinAlg::Matrix<3, 3> CpreM(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> Cpre{};
+  const Core::LinAlg::Matrix<3, 3> CpreM = Core::LinAlg::make_matrix(Core::LinAlg::get_full(Cpre));
 
   // temporary pointers to check the type of the remodelfiber (active or passive)
   std::shared_ptr<Mat::Elastic::CoupAnisoExpo> t1;
@@ -194,8 +201,8 @@ void Mat::Elastic::RemodelFiber::setup(
   {
     if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(potsumfiber_[k]->fiber)).get())
     {
-      CpreM.update(potsumfiber_[k]->G * potsumfiber_[k]->G, potsumfiber_[k]->AM, 0.0);
-      t1->get_derivatives_aniso(dPI, ddPII, dddPIII, CpreM, 0, 0);
+      Cpre = potsumfiber_[k]->G * potsumfiber_[k]->G * potsumfiber_[k]->A;
+      t1->get_derivatives_aniso(dPI, ddPII, dddPIII, Cpre, 0, 0);
       sig_pre = 2.0 * dPI(0) * potsumfiber_[k]->G * potsumfiber_[k]->G;
       for (int gp = 0; gp < numgp; ++gp) cauchystress_[k][gp] = sig_pre;
       potsumfiber_[k]->growth = std::make_shared<GrowthEvolution>(params_->k_growth_, sig_pre);
@@ -206,11 +213,13 @@ void Mat::Elastic::RemodelFiber::setup(
                   potsumfiber_[k]->fiber))
                  .get())
     {
-      CpreM.update(potsumfiber_[k]->G * potsumfiber_[k]->G, potsumfiber_[k]->AM, 0.0);
-      t2->get_derivatives_aniso(dPI, ddPII, dddPIII, CpreM, 0, 0);
+      Cpre = potsumfiber_[k]->G * potsumfiber_[k]->G * potsumfiber_[k]->A;
+      t2->get_derivatives_aniso(dPI, ddPII, dddPIII, Cpre, 0, 0);
       sig_pre = 2.0 * dPI(0) * potsumfiber_[k]->G * potsumfiber_[k]->G;
-      t2->evaluate_active_stress_cmat_aniso(id, cmatactive, stressactv, 0, 0);
-      Core::LinAlg::Voigt::Stresses::vector_to_matrix(stressactv, stressactM);
+      t2->evaluate_active_stress_cmat_aniso(
+          Core::LinAlg::TensorGenerators::identity<double, 3, 3>, cmatactive, stressactv, 0, 0);
+      Core::LinAlg::Voigt::Stresses::vector_to_matrix(
+          Core::LinAlg::make_stress_like_voigt_view(stressactv), stressactM);
       sig_pre += stressactM.dot(potsumfiber_[k]->AM);
       for (int gp = 0; gp < numgp; ++gp) cauchystress_[k][gp] = sig_pre;
       potsumfiber_[k]->growth = std::make_shared<GrowthEvolution>(params_->k_growth_, sig_pre);
@@ -236,7 +245,7 @@ void Mat::Elastic::RemodelFiber::setup_structural_tensors_gr()
   for (int i = 0; i < 3; ++i) id(i, i) = 1.0;
 
   // fiber directions
-  std::vector<Core::LinAlg::Matrix<3, 1>> fibervecs;
+  std::vector<Core::LinAlg::Tensor<double, 3>> fibervecs;
 
   for (unsigned k = 0; k < potsumfiber_.size(); ++k)
   {
@@ -244,7 +253,11 @@ void Mat::Elastic::RemodelFiber::setup_structural_tensors_gr()
     potsumfiber_[k]->fiber->get_fiber_vecs(fibervecs);
 
     // build structural tensor in matrix notation
-    potsumfiber_[k]->AM.multiply_nt(1.0, fibervecs[k], fibervecs[k], 0.0);
+    potsumfiber_[k]->A = Core::LinAlg::self_dyadic(fibervecs[k]);
+    potsumfiber_[k]->A_orth =
+        Core::LinAlg::TensorGenerators::identity<double, 3, 3> - potsumfiber_[k]->A;
+    potsumfiber_[k]->AM.multiply_nt(1.0, Core::LinAlg::make_matrix_view<3, 1>(fibervecs[k]),
+        Core::LinAlg::make_matrix_view<3, 1>(fibervecs[k]), 0.0);
     // orthogonal structural tensor ( 1_{ij} - A_{ij} )
     potsumfiber_[k]->AM_orth.update(1.0, potsumfiber_[k]->AM, 0.0);
     potsumfiber_[k]->AM_orth.update(1.0, id, -1.0);
@@ -259,10 +272,10 @@ void Mat::Elastic::RemodelFiber::update()
 }
 
 void Mat::Elastic::RemodelFiber::update_fiber_dirs(
-    Core::LinAlg::Matrix<3, 3> const& locsys, const double& dt)
+    Core::LinAlg::Tensor<double, 3, 3> const& locsys, const double& dt)
 {
-  Core::LinAlg::Matrix<3, 3> id(Core::LinAlg::Initialization::zero);
-  for (int i = 0; i < 3; ++i) id(i, i) = 1.0;
+  constexpr Core::LinAlg::Tensor<double, 3, 3> id =
+      Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 
   for (auto& k : potsumfiber_) k->fiber->set_fiber_vecs(-1.0, locsys, id);
 
@@ -277,12 +290,12 @@ void Mat::Elastic::RemodelFiber::update_fiber_dirs(
 void Mat::Elastic::RemodelFiber::update_sig_h()
 {
   // some variables
-  Core::LinAlg::Matrix<3, 3> CpreM(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> Cpre{};
   Core::LinAlg::Matrix<2, 1> dPI(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<3, 1> ddPII(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Matrix<4, 1> dddPIII(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 1> stressactv(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<6, 6> cmatactive(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> stressactv{};
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmatactive;
   Core::LinAlg::Matrix<3, 3> stressactM(Core::LinAlg::Initialization::zero);
 
   // temporary pointers to check the type of the remodelfiber (active or passive)
@@ -298,19 +311,21 @@ void Mat::Elastic::RemodelFiber::update_sig_h()
   {
     if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(k->fiber)).get())
     {
-      CpreM.update(k->G * k->G, k->AM, 0.0);
-      t1->get_derivatives_aniso(dPI, ddPII, dddPIII, CpreM, 0, 0);
+      Cpre = k->G * k->G * k->A;
+      t1->get_derivatives_aniso(dPI, ddPII, dddPIII, Cpre, 0, 0);
       sig = 2.0 * dPI(0) * k->G * k->G;
       k->growth->set_sig_h(sig);
       k->remodel->set_sig_h(sig);
     }
     else if ((t2 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpoActive>(k->fiber)).get())
     {
-      CpreM.update(k->G * k->G, k->AM, 0.0);
-      t2->get_derivatives_aniso(dPI, ddPII, dddPIII, CpreM, 0, 0);
+      Cpre = k->G * k->G * k->A;
+      t2->get_derivatives_aniso(dPI, ddPII, dddPIII, Cpre, 0, 0);
       sig = 2.0 * dPI(0) * k->G * k->G;
-      t2->evaluate_active_stress_cmat_aniso(id, cmatactive, stressactv, 0, 0);
-      Core::LinAlg::Voigt::Stresses::vector_to_matrix(stressactv, stressactM);
+      t2->evaluate_active_stress_cmat_aniso(
+          Core::LinAlg::TensorGenerators::identity<double, 3, 3>, cmatactive, stressactv, 0, 0);
+      Core::LinAlg::Voigt::Stresses::vector_to_matrix(
+          Core::LinAlg::make_stress_like_voigt_view(stressactv), stressactM);
       sig += stressactM.dot(k->AM);
       k->growth->set_sig_h(sig);
       k->remodel->set_sig_h(sig);
@@ -484,20 +499,19 @@ void Mat::Elastic::RemodelFiber::derivd_c(Core::LinAlg::Matrix<3, 3, T> const& C
   dfuncdC.clear();
 
   // elastic right Cauchy-Green in matrix notation
-  static Core::LinAlg::Matrix<3, 3, T> tmp(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3, T> CeM(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<T, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
   static Core::LinAlg::Matrix<3, 3, T> FinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3, T> CinM(Core::LinAlg::Initialization::zero);
   FinM.invert(iFinM);
   CinM.multiply_tn(1.0, FinM, FinM, 0.0);
-  tmp.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp, 0.0);
 
   // get derivatives of strain energy function w.r.t. I4
   static Core::LinAlg::Matrix<2, 1, T> dPIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 1, T> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1, T> dddPIIIe(Core::LinAlg::Initialization::zero);
-  func.get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+  func.get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
 
   dfuncdC.update(dPIe(0) / CinM.dot(AM), AM, 0.0);
 }
@@ -545,20 +559,19 @@ void Mat::Elastic::RemodelFiber::derivd_cd_c(Core::LinAlg::Matrix<3, 3, T> const
   dfuncdCdC.clear();
 
   // elastic right Cauchy-Green in matrix notation
-  static Core::LinAlg::Matrix<3, 3, T> tmp(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3, T> CeM(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<T, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
   static Core::LinAlg::Matrix<3, 3, T> FinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3, T> CinM(Core::LinAlg::Initialization::zero);
   FinM.invert(iFinM);
   CinM.multiply_tn(1.0, FinM, FinM, 0.0);
-  tmp.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp, 0.0);
 
   // get derivatives of strain energy function w.r.t. I4
   static Core::LinAlg::Matrix<2, 1, T> dPIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 1, T> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1, T> dddPIIIe(Core::LinAlg::Initialization::zero);
-  func.get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+  func.get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
 
   static Core::LinAlg::Matrix<6, 1, T> Av(Core::LinAlg::Initialization::zero);
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(AM, Av);
@@ -579,8 +592,8 @@ void Mat::Elastic::RemodelFiber::add_stress_cmat(Core::LinAlg::Matrix<3, 3> cons
   static Core::LinAlg::Matrix<3, 3> firstderivM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<6, 1> firstderivv(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<6, 6> secderiv(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<6, 1> stressactv(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<6, 6> cmatact(Core::LinAlg::Initialization::zero);
+  static Core::LinAlg::SymmetricTensor<double, 3, 3> stressactv{};
+  static Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmatact{};
   if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(fiberdat.fiber)).get() !=
       nullptr)
   {
@@ -592,9 +605,11 @@ void Mat::Elastic::RemodelFiber::add_stress_cmat(Core::LinAlg::Matrix<3, 3> cons
   {
     derivd_c(CM, iFinM, fiberdat.AM, *t2, gp, eleGID, firstderivM);
     derivd_cd_c(CM, iFinM, fiberdat.AM, *t2, gp, eleGID, secderiv);
-    t2->evaluate_active_stress_cmat_aniso(CM, cmatact, stressactv, gp, eleGID);
-    stress.update(fiberdat.cur_rho[gp], stressactv, 1.0);
-    cmat.update(fiberdat.cur_rho[gp], cmatact, 1.0);
+    t2->evaluate_active_stress_cmat_aniso(
+        Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor(CM)), cmatact, stressactv, gp,
+        eleGID);
+    stress.update(fiberdat.cur_rho[gp], Core::LinAlg::make_stress_like_voigt_view(stressactv), 1.0);
+    cmat.update(fiberdat.cur_rho[gp], Core::LinAlg::make_stress_like_voigt_view(cmatact), 1.0);
   }
 
   Core::LinAlg::Voigt::Stresses::matrix_to_vector(firstderivM, firstderivv);
@@ -612,25 +627,26 @@ void Mat::Elastic::RemodelFiber::evaluate_local_cauchy_stress(
   std::shared_ptr<Mat::Elastic::CoupAnisoExpo> t1;
   std::shared_ptr<Mat::Elastic::CoupAnisoExpoActive> t2;
 
-  static Core::LinAlg::Matrix<3, 3, T> tmp(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3, T> CeM(Core::LinAlg::Initialization::zero);
+  // const Core::LinAlg::Matrix<3, 3, T> CeM =
+  // Core::LinAlg::make_matrix(Core::LinAlg::get_full(Ce));
   static Core::LinAlg::Matrix<3, 3, T> FinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3, T> CinM(Core::LinAlg::Initialization::zero);
   FinM.invert(iFinM);
   CinM.multiply_tn(1.0, FinM, FinM, 0.0);
-  tmp.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp, 0.0);
+  const Core::LinAlg::SymmetricTensor<T, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
   static Core::LinAlg::Matrix<2, 1, T> dPIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 1, T> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1, T> dddPIIIe(Core::LinAlg::Initialization::zero);
   T dPIact = 0.0;
   if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(fiber)).get())
   {
-    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   }
   else if ((t2 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpoActive>(fiber)).get())
   {
-    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
     t2->get_derivative_aniso_active(dPIact);
   }
 
@@ -651,7 +667,6 @@ void Mat::Elastic::RemodelFiber::evaluatedsigd_ce(Core::LinAlg::Matrix<3, 3, T> 
   std::shared_ptr<Mat::Elastic::CoupAnisoExpoActive> t2;
 
   static Core::LinAlg::Matrix<3, 3, T> tmp(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3, T> CeM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3, T> FinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3, T> CinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3, T> iFinM(Core::LinAlg::Initialization::zero);
@@ -662,20 +677,24 @@ void Mat::Elastic::RemodelFiber::evaluatedsigd_ce(Core::LinAlg::Matrix<3, 3, T> 
   tmp.multiply_nn(1.0, FinM, AM, 0.0);
   AgrM.multiply_nt(1.0 / CinM.dot(AM), tmp, FinM, 0.0);
   tmp.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp, 0.0);
+  const Core::LinAlg::SymmetricTensor<T, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
   static Core::LinAlg::Matrix<2, 1, T> dPIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 1, T> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1, T> dddPIIIe(Core::LinAlg::Initialization::zero);
   if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(fiber)).get())
   {
-    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   }
   else if ((t2 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpoActive>(fiber)).get())
   {
-    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   }
 
-  dsigdCe.update(2.0 * (ddPIIe(0) * CeM.dot(AgrM) + dPIe(0)), AgrM, 0.0);
+  dsigdCe.update(
+      2.0 * (ddPIIe(0) * Core::LinAlg::make_matrix(Core::LinAlg::get_full(Ce)).dot(AgrM) + dPIe(0)),
+      AgrM, 0.0);
 }
 
 template <typename ForceAnalytical>
@@ -736,7 +755,6 @@ void Mat::Elastic::RemodelFiber::evaluatedsigd_ced_c(Core::LinAlg::Matrix<3, 3> 
   std::shared_ptr<Mat::Elastic::CoupAnisoExpoActive> t2;
 
   static Core::LinAlg::Matrix<3, 3> tmp(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3> CeM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> FinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> CinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> iFinM(Core::LinAlg::Initialization::zero);
@@ -746,18 +764,19 @@ void Mat::Elastic::RemodelFiber::evaluatedsigd_ced_c(Core::LinAlg::Matrix<3, 3> 
   CinM.multiply_tn(1.0, FinM, FinM, 0.0);
   tmp.multiply_nn(1.0, FinM, AM, 0.0);
   AgrM.multiply_nt(1.0 / CinM.dot(AM), tmp, FinM, 0.0);
-  tmp.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp, 0.0);
+  const Core::LinAlg::SymmetricTensor<double, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
   static Core::LinAlg::Matrix<2, 1> dPIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 1> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1> dddPIIIe(Core::LinAlg::Initialization::zero);
   if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(fiber)).get())
   {
-    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   }
   else if ((t2 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpoActive>(fiber)).get())
   {
-    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   }
 
   static Core::LinAlg::Matrix<6, 1> Agrv(Core::LinAlg::Initialization::zero);
@@ -833,7 +852,6 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives_cauchy_growth(
   static Core::LinAlg::Matrix<3, 3> CAM(Core::LinAlg::Initialization::zero);
   CAM.multiply_nn(1.0, CM, fiberdat.AM, 0.0);
   static Core::LinAlg::Matrix<3, 3> tmp(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3> CeM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> iFinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> FgM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> FinM(Core::LinAlg::Initialization::zero);
@@ -845,7 +863,12 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives_cauchy_growth(
   CinM.multiply_tn(1.0, FinM, FinM, 0.0);
   CinAM.multiply_tn(1.0, CinM, fiberdat.AM, 0.0);
   tmp.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp, 0.0);
+
+  const Core::LinAlg::SymmetricTensor<double, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
+
+  Core::LinAlg::Matrix<3, 3> CeM = Core::LinAlg::make_matrix(Core::LinAlg::get_full(Ce));
 
   // temporary pointers to check the type of the remodelfiber (active or passive)
   std::shared_ptr<Mat::Elastic::CoupAnisoExpo> t1;
@@ -855,10 +878,10 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives_cauchy_growth(
   static Core::LinAlg::Matrix<3, 1> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1> dddPIIIe(Core::LinAlg::Initialization::zero);
   if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(fiberdat.fiber)).get())
-    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   else if ((t2 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpoActive>(fiberdat.fiber))
                .get())
-    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
 
   static Core::LinAlg::Matrix<3, 3> dsigdiFgM(Core::LinAlg::Initialization::zero);
   dsigdiFgM.multiply_nt(
@@ -959,7 +982,6 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives_cauchy_remodel(
 
   static Core::LinAlg::Matrix<3, 3> CAFinTM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> tmp1(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3> CeM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> iFinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> FgM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> FrM(Core::LinAlg::Initialization::zero);
@@ -978,7 +1000,12 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives_cauchy_remodel(
   CinM.multiply_tn(1.0, FinM, FinM, 0.0);
   CinAM.multiply_tn(1.0, CinM, fiberdat.AM, 0.0);
   tmp1.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp1, 0.0);
+
+  const Core::LinAlg::SymmetricTensor<double, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
+
+  const Core::LinAlg::Matrix<3, 3> CeM = Core::LinAlg::make_matrix(Core::LinAlg::get_full(Ce));
 
   // temporary pointers to check the type of the remodelfiber (active or passive)
   std::shared_ptr<Mat::Elastic::CoupAnisoExpo> t1;
@@ -987,10 +1014,10 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives_cauchy_remodel(
   static Core::LinAlg::Matrix<3, 1> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1> dddPIIIe(Core::LinAlg::Initialization::zero);
   if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(fiberdat.fiber)).get())
-    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   else if ((t2 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpoActive>(fiberdat.fiber))
                .get())
-    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
 
   static Core::LinAlg::Matrix<3, 3> dsigdiFrM(Core::LinAlg::Initialization::zero);
   dsigdiFrM.multiply_tn(
@@ -1073,18 +1100,19 @@ void Mat::Elastic::RemodelFiber::evaluatedsigd_c(Core::LinAlg::Matrix<3, 3, T> c
   FinM.invert(iFinM);
   static Core::LinAlg::Matrix<3, 3, T> CinM(Core::LinAlg::Initialization::zero);
   CinM.multiply_tn(1.0, FinM, FinM, 0.0);
-  static Core::LinAlg::Matrix<3, 3, T> CeM(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3, T> tmp(Core::LinAlg::Initialization::zero);
-  tmp.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp, 0.0);
+  const Core::LinAlg::SymmetricTensor<double, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
+
+  const Core::LinAlg::Matrix<3, 3> CeM = Core::LinAlg::make_matrix(Core::LinAlg::get_full(Ce));
 
   static Core::LinAlg::Matrix<2, 1> dPIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 1> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1> dddPIIIe(Core::LinAlg::Initialization::zero);
   if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(fiber)).get())
-    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   else if ((t2 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpoActive>(fiber)).get())
-    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
 
   dsigdC.update(2.0 / CinM.dot(AM) * (ddPIIe(0) * CM.dot(AM) / CinM.dot(AM) + dPIe(0)), AM, 0.0);
 }
@@ -1358,7 +1386,6 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives2nd_piola_kirchhoff_growth_
 
   // Derivative w.r.t. the mass density
   static Core::LinAlg::Matrix<3, 3> tmp(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<3, 3> CeM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> iFinM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> FgM(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 3> FinM(Core::LinAlg::Initialization::zero);
@@ -1373,8 +1400,10 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives2nd_piola_kirchhoff_growth_
   CinAFgTM.multiply_nt(1.0, tmp, FgM, 0.0);
   tmp.multiply_tn(1.0, CM, fiberdat.AM, 0.0);
   CAFgTM.multiply_nt(1.0, tmp, FgM, 0.0);
-  tmp.multiply_nn(1.0, CM, iFinM, 0.0);
-  CeM.multiply_tn(1.0, iFinM, tmp, 0.0);
+
+  const Core::LinAlg::SymmetricTensor<double, 3, 3> Ce = Core::LinAlg::assume_symmetry(
+      Core::LinAlg::transpose(Core::LinAlg::make_tensor_view(iFinM)) *
+      Core::LinAlg::make_tensor_view(CM) * Core::LinAlg::make_tensor_view(iFinM));
 
   // temporary pointers to check the type of the remodelfiber (active or passive)
   std::shared_ptr<Mat::Elastic::CoupAnisoExpo> t1;
@@ -1383,16 +1412,18 @@ void Mat::Elastic::RemodelFiber::evaluate_derivatives2nd_piola_kirchhoff_growth_
   static Core::LinAlg::Matrix<2, 1> dPIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<3, 1> ddPIIe(Core::LinAlg::Initialization::zero);
   static Core::LinAlg::Matrix<4, 1> dddPIIIe(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<6, 1> stressactv(Core::LinAlg::Initialization::zero);
-  static Core::LinAlg::Matrix<6, 6> cmatact(Core::LinAlg::Initialization::zero);
+  static Core::LinAlg::SymmetricTensor<double, 3, 3> stressactv{};
+  static Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmatact{};
   if ((t1 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpo>(fiberdat.fiber)).get())
-    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
+    t1->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
   else if ((t2 = std::dynamic_pointer_cast<Mat::Elastic::CoupAnisoExpoActive>(fiberdat.fiber))
                .get())
   {
-    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, CeM, gp, eleGID);
-    t2->evaluate_active_stress_cmat_aniso(CM, cmatact, stressactv, gp, eleGID);
-    dSidrhoi.update(1.0, stressactv, 0.0);
+    t2->get_derivatives_aniso(dPIe, ddPIIe, dddPIIIe, Ce, gp, eleGID);
+    t2->evaluate_active_stress_cmat_aniso(
+        Core::LinAlg::assume_symmetry(Core::LinAlg::make_tensor(CM)), cmatact, stressactv, gp,
+        eleGID);
+    dSidrhoi.update(1.0, Core::LinAlg::make_stress_like_voigt_view(stressactv), 0.0);
   }
 
   static Core::LinAlg::Matrix<6, 1> Av(Core::LinAlg::Initialization::zero);

@@ -11,6 +11,7 @@
 #include "4C_inpar_ssi.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_mat_elasthyper_service.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_multiplicative_split_defgrad_elasthyper.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_material_parameter_base.hpp"
@@ -26,6 +27,8 @@ namespace
    protected:
     void SetUp() override
     {
+      F_ = {{{1.1, 0.01, 0.03}, {0.04, 1.2, 0.02}, {0.06, 0.05, 1.3}}};
+
       // set up the deformation gradient
       FM_(0, 0) = 1.1;
       FM_(0, 1) = 0.01;
@@ -383,6 +386,7 @@ namespace
     }
 
     // defined input quantities
+    Core::LinAlg::Tensor<double, 3, 3> F_;
     Core::LinAlg::Matrix<3, 3> FM_;
     Core::LinAlg::Matrix<3, 3> iFinM_;
     double detFin_;
@@ -474,24 +478,21 @@ namespace
     set_concentration_to_inelastic_material(dummy_conc);
 
     // input variables
-    Core::LinAlg::Matrix<3, 1> n, dir;
-    n(0) = 1.0 / std::sqrt(2.0);
-    n(1) = 0.0;
-    n(2) = -1.0 / std::sqrt(2.0);
-    dir(0) = 1.0 / std::sqrt(3.0);
-    dir(1) = -1.0 / std::sqrt(3.0);
-    dir(2) = -1.0 / std::sqrt(3.0);
+    const Core::LinAlg::Tensor<double, 3> n = {
+        {1.0 / std::numbers::sqrt2, 0, -1.0 / std::numbers::sqrt2}};
+    const Core::LinAlg::Tensor<double, 3> dir = {
+        {std::numbers::inv_sqrt3, -1.0 / std::numbers::sqrt3, -1.0 / std::numbers::sqrt3}};
     const double concentration(1.0);
 
     // output variables
-    double cauchy_n_dir(0.0);
     Core::LinAlg::Matrix<3, 1> d_cauchyndir_dn(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<3, 1> d_cauchyndir_ddir(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<9, 1> d_cauchyndir_dF(Core::LinAlg::Initialization::zero);
 
-    multiplicative_split_defgrad_->evaluate_cauchy_n_dir_and_derivatives(FM_, n, dir, cauchy_n_dir,
-        &d_cauchyndir_dn, &d_cauchyndir_ddir, &d_cauchyndir_dF, nullptr, nullptr, nullptr, 0, 0,
-        &concentration, nullptr, nullptr, nullptr);
+    const double cauchy_n_dir =
+        multiplicative_split_defgrad_->evaluate_cauchy_n_dir_and_derivatives(F_, n, dir,
+            &d_cauchyndir_dn, &d_cauchyndir_ddir, &d_cauchyndir_dF, nullptr, nullptr, nullptr, 0, 0,
+            &concentration, nullptr, nullptr, nullptr);
 
     const double cauchy_n_dir_ref(6.019860168755);
     Core::LinAlg::Matrix<3, 1> d_cauchyndir_dn_ref(Core::LinAlg::Initialization::zero);
@@ -592,7 +593,7 @@ namespace
     // actual material call
     const double concentration(1.0);
     Core::LinAlg::Matrix<9, 1> DFDx(Core::LinAlg::Initialization::zero);
-    multiplicative_split_defgrad_->evaluate_linearization_od(FM_, concentration, &DFDx);
+    multiplicative_split_defgrad_->evaluate_linearization_od(F_, concentration, DFDx);
 
     // define the reference solution
     Core::LinAlg::Matrix<9, 1> DFDx_ref;

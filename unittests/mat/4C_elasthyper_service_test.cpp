@@ -82,24 +82,24 @@ namespace
 
   TEST_F(ElastHyperServiceTest, TestEvaluateRightCauchyGreenStrainLikeVoigt)
   {
-    // Green-Lagrange tensor in strain-like voigt notation as input
-    Core::LinAlg::Matrix<6, 1> E_VoigtStrain;
+    // Green-Lagrange tensor as input
+    Core::LinAlg::SymmetricTensor<double, 3, 3> E_VoigtStrain;
     E_VoigtStrain(0, 0) = 0.1;
-    E_VoigtStrain(1, 0) = 0.2;
-    E_VoigtStrain(2, 0) = 0.3;
-    E_VoigtStrain(3, 0) = 0.01;
-    E_VoigtStrain(4, 0) = 0.02;
-    E_VoigtStrain(5, 0) = 0.03;
+    E_VoigtStrain(1, 1) = 0.2;
+    E_VoigtStrain(2, 2) = 0.3;
+    E_VoigtStrain(0, 1) = 0.01;
+    E_VoigtStrain(1, 2) = 0.02;
+    E_VoigtStrain(0, 2) = 0.03;
 
-    Core::LinAlg::Matrix<6, 1> C_VoigtStrain(Core::LinAlg::Initialization::zero);
-    // set up reference solution for Cauchy-Green tensor in strain-like voigt notation
-    Core::LinAlg::Matrix<6, 1> C_VoigtStrain_ref(Core::LinAlg::Initialization::zero);
-    C_VoigtStrain_ref(0) = 1.2;
-    C_VoigtStrain_ref(1) = 1.4;
-    C_VoigtStrain_ref(2) = 1.6;
-    C_VoigtStrain_ref(3) = 0.02;
-    C_VoigtStrain_ref(4) = 0.04;
-    C_VoigtStrain_ref(5) = 0.06;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> C_VoigtStrain{};
+    // set up reference solution for Cauchy-Green tensor
+    Core::LinAlg::SymmetricTensor<double, 3, 3> C_VoigtStrain_ref{};
+    C_VoigtStrain_ref(0, 0) = 1.2;
+    C_VoigtStrain_ref(1, 1) = 1.4;
+    C_VoigtStrain_ref(2, 2) = 1.6;
+    C_VoigtStrain_ref(0, 1) = 0.02;
+    C_VoigtStrain_ref(1, 2) = 0.04;
+    C_VoigtStrain_ref(0, 2) = 0.06;
 
     Mat::evaluate_right_cauchy_green_strain_like_voigt(E_VoigtStrain, C_VoigtStrain);
 

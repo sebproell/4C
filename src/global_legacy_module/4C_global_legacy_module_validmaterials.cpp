@@ -3937,7 +3937,9 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
         group("MIX_Prestress_Strategy_Constant",
             {
                 parameter<std::vector<double>>("PRESTRETCH",
-                    {.description = "Definition of the prestretch as a 9x1 vector", .size = 9}),
+                    {.description =
+                            "Definition of the prestretch as a 6x1 vector [xx, yy, zz, xy, yz, xz]",
+                        .size = 6}),
             },
             {.description = "Simple predefined prestress"});
   }

@@ -10,24 +10,22 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor_eigen.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_mat_service.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
-void Mat::elast_hyper_evaluate(const Core::LinAlg::Matrix<3, 3>& defgrd,
-    const Core::LinAlg::Matrix<6, 1>& glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>& stress, Core::LinAlg::Matrix<6, 6>& cmat, const int gp, int eleGID,
+void Mat::elast_hyper_evaluate(const Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, int eleGID,
     const std::vector<std::shared_ptr<Mat::Elastic::Summand>>& potsum,
     const SummandProperties& properties, bool checkpolyconvexity)
 {
-  static Core::LinAlg::Matrix<6, 1> id2(Core::LinAlg::Initialization::uninitialized);
-  id2.clear();
-  static Core::LinAlg::Matrix<6, 1> C_strain(Core::LinAlg::Initialization::uninitialized);
-  C_strain.clear();
-  static Core::LinAlg::Matrix<6, 1> iC_strain(Core::LinAlg::Initialization::uninitialized);
-  iC_strain.clear();
   static Core::LinAlg::Matrix<3, 1> prinv(Core::LinAlg::Initialization::uninitialized);
   prinv.clear();
   static Core::LinAlg::Matrix<3, 1> dPI(Core::LinAlg::Initialization::uninitialized);
@@ -35,17 +33,15 @@ void Mat::elast_hyper_evaluate(const Core::LinAlg::Matrix<3, 3>& defgrd,
   static Core::LinAlg::Matrix<6, 1> ddPII(Core::LinAlg::Initialization::uninitialized);
   ddPII.clear();
 
-  // Evaluate identity tensor
-  Core::LinAlg::Voigt::identity_matrix(id2);
-
   // Evaluate Right Cauchy-Green strain tensor in strain-like Voigt notation
+  Core::LinAlg::SymmetricTensor<double, 3, 3> C_strain;
   evaluate_right_cauchy_green_strain_like_voigt(glstrain, C_strain);
 
-  // invert Right Cauchy Green Strain tensor
-  Core::LinAlg::Voigt::Strains::inverse_tensor(C_strain, iC_strain);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> iC = Core::LinAlg::inv(C_strain);
 
   // Evaluate principle invariants
-  Core::LinAlg::Voigt::Strains::invariants_principal(prinv, C_strain);
+  Core::LinAlg::Voigt::Stresses::invariants_principal(
+      prinv, Core::LinAlg::make_stress_like_voigt_view(C_strain));
 
   // Evaluate derivatives of potsum w.r.t the principal invariants
   elast_hyper_evaluate_invariant_derivatives(prinv, dPI, ddPII, potsum, properties, gp, eleGID);
@@ -56,11 +52,11 @@ void Mat::elast_hyper_evaluate(const Core::LinAlg::Matrix<3, 3>& defgrd,
 
 
   // clear stress and cmat (for safety reasons)
-  stress.clear();
-  cmat.clear();
+  stress = {};
+  cmat = {};
 
   // Evaluate isotropic stress response
-  elast_hyper_add_isotropic_stress_cmat(stress, cmat, C_strain, iC_strain, prinv, dPI, ddPII);
+  elast_hyper_add_isotropic_stress_cmat(stress, cmat, C_strain, iC, prinv, dPI, ddPII);
 
   if (properties.coeffStretchesPrinc || properties.coeffStretchesMod)
   {
@@ -73,18 +69,14 @@ void Mat::elast_hyper_evaluate(const Core::LinAlg::Matrix<3, 3>& defgrd,
 
   // Evaluate anisotropic stress response from summands with modified invariants formulation
   if (properties.anisomod)
-    elast_hyper_add_anisotropic_mod(
-        stress, cmat, C_strain, iC_strain, prinv, gp, eleGID, params, potsum);
+    elast_hyper_add_anisotropic_mod(stress, cmat, C_strain, iC, prinv, gp, eleGID, params, potsum);
 }
 
 void Mat::evaluate_right_cauchy_green_strain_like_voigt(
-    const Core::LinAlg::Matrix<6, 1>& E_strain, Core::LinAlg::Matrix<6, 1>& C_strain)
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& C_strain)
 {
-  // C = 2*E+I
-  C_strain.update(2.0, E_strain, 0.0);
-
-  // Add Identity
-  for (unsigned i = 0; i < 3; ++i) C_strain(i) += 1.0;
+  C_strain = 2 * E_strain + Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
 }
 
 void Mat::elast_hyper_evaluate_invariant_derivatives(const Core::LinAlg::Matrix<3, 1>& prinv,
@@ -159,70 +151,74 @@ void Mat::convert_mod_to_princ(const Core::LinAlg::Matrix<3, 1>& prinv,
   ddPII(5) += std::pow(prinv(2), -1.) * ddPmodII(5);
 }
 
-void Mat::elast_hyper_add_isotropic_stress_cmat(Core::LinAlg::Matrix<6, 1>& S_stress,
-    Core::LinAlg::Matrix<6, 6>& cmat, const Core::LinAlg::Matrix<6, 1>& C_strain,
-    const Core::LinAlg::Matrix<6, 1>& iC_strain, const Core::LinAlg::Matrix<3, 1>& prinv,
-    const Core::LinAlg::Matrix<3, 1>& dPI, const Core::LinAlg::Matrix<6, 1>& ddPII)
+void Mat::elast_hyper_add_isotropic_stress_cmat(
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& C_strain,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& iC_strain,
+    const Core::LinAlg::Matrix<3, 1>& prinv, const Core::LinAlg::Matrix<3, 1>& dPI,
+    const Core::LinAlg::Matrix<6, 1>& ddPII)
 {
   // 2nd Piola Kirchhoff stress factors (according to Holzapfel-Nonlinear Solid Mechanics p. 216)
   static Core::LinAlg::Matrix<3, 1> gamma(Core::LinAlg::Initialization::zero);
   // constitutive tensor factors (according to Holzapfel-Nonlinear Solid Mechanics p. 261)
   static Core::LinAlg::Matrix<8, 1> delta(Core::LinAlg::Initialization::zero);
-  // 2nd order identity tensor
-  static Core::LinAlg::Matrix<6, 1> id2(Core::LinAlg::Initialization::uninitialized);
-  // Right Cauchy-Green tensor in stress-like Voigt notation
-  static Core::LinAlg::Matrix<6, 1> C_stress(Core::LinAlg::Initialization::uninitialized);
-  // Inverse Right Cauchy-Green tensor in stress-like Voigt notation
-  static Core::LinAlg::Matrix<6, 1> iC_stress(Core::LinAlg::Initialization::uninitialized);
   // 4th order identity tensor (rows and columns are stress-like)
   static Core::LinAlg::Matrix<6, 6> id4sharp(Core::LinAlg::Initialization::uninitialized);
   Core::LinAlg::Voigt::fourth_order_identity_matrix<Core::LinAlg::Voigt::NotationType::stress,
       Core::LinAlg::Voigt::NotationType::stress>(id4sharp);
 
-  // initialize matrices
-  Core::LinAlg::Voigt::identity_matrix(id2);
-  Core::LinAlg::Voigt::Strains::to_stress_like(C_strain, C_stress);
-  Core::LinAlg::Voigt::Strains::to_stress_like(iC_strain, iC_stress);
-
   // compose coefficients
   calculate_gamma_delta(gamma, delta, prinv, dPI, ddPII);
 
   // 2nd Piola Kirchhoff stress
-  S_stress.update(gamma(0), id2, 1.0);
-  S_stress.update(gamma(1), C_stress, 1.0);
-  S_stress.update(gamma(2), iC_stress, 1.0);
+  S_stress += gamma(0) * Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
+  S_stress += gamma(1) * C_strain;
+  S_stress += gamma(2) * iC_strain;
 
   // constitutive tensor
   // contribution: Id \otimes Id
-  cmat.multiply_nt(delta(0), id2, id2, 1.0);
+  cmat += delta(0) * Core::LinAlg::dyadic(Core::LinAlg::TensorGenerators::identity<double, 3, 3>,
+                         Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
   // contribution: Id \otimes C + C \otimes Id
-  cmat.multiply_nt(delta(1), id2, C_stress, 1.0);
-  cmat.multiply_nt(delta(1), C_stress, id2, 1.0);
+  cmat +=
+      delta(1) *
+      (Core::LinAlg::dyadic(Core::LinAlg::TensorGenerators::identity<double, 3, 3>, C_strain) +
+          Core::LinAlg::dyadic(C_strain, Core::LinAlg::TensorGenerators::identity<double, 3, 3>));
   // contribution: Id \otimes Cinv + Cinv \otimes Id
-  cmat.multiply_nt(delta(2), id2, iC_stress, 1.0);
-  cmat.multiply_nt(delta(2), iC_stress, id2, 1.0);
+  cmat +=
+      delta(2) *
+      (Core::LinAlg::dyadic(Core::LinAlg::TensorGenerators::identity<double, 3, 3>, iC_strain) +
+          Core::LinAlg::dyadic(iC_strain, Core::LinAlg::TensorGenerators::identity<double, 3, 3>));
   // contribution: C \otimes C
-  cmat.multiply_nt(delta(3), C_stress, C_stress, 1.0);
+  cmat += delta(3) * Core::LinAlg::dyadic(C_strain, C_strain);
   // contribution: C \otimes Cinv + Cinv \otimes C
-  cmat.multiply_nt(delta(4), C_stress, iC_stress, 1.0);
-  cmat.multiply_nt(delta(4), iC_stress, C_stress, 1.0);
+  cmat += delta(4) *
+          (Core::LinAlg::dyadic(C_strain, iC_strain) + Core::LinAlg::dyadic(iC_strain, C_strain));
   // contribution: Cinv \otimes Cinv
-  cmat.multiply_nt(delta(5), iC_stress, iC_stress, 1.0);
+  cmat += delta(5) * Core::LinAlg::dyadic(iC_strain, iC_strain);
   // contribution: Cinv \odot Cinv
-  Core::LinAlg::FourTensorOperations::add_holzapfel_product(cmat, iC_stress, delta(6));
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+  Core::LinAlg::FourTensorOperations::add_holzapfel_product(
+      cmat_view, Core::LinAlg::make_stress_like_voigt_view(iC_strain), delta(6));
   // contribution: Id4^#
-  cmat.update(delta(7), id4sharp, 1.0);
+  cmat_view.update(delta(7), id4sharp, 1.0);
 }
 
-void Mat::elast_hyper_add_response_stretches(Core::LinAlg::Matrix<6, 6>& cmat,
-    Core::LinAlg::Matrix<6, 1>& S_stress, const Core::LinAlg::Matrix<6, 1>& C_strain,
+void Mat::elast_hyper_add_response_stretches(
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& C_strain,
     const std::vector<std::shared_ptr<Mat::Elastic::Summand>>& potsum,
     const SummandProperties& properties, const int gp, int eleGID)
 {
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(S_stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
   // get principal stretches and directions
+  const auto [eigenvalues, eigenvectors] = Core::LinAlg::eig(C_strain);
   Core::LinAlg::Matrix<3, 1> prstr;
-  Core::LinAlg::Matrix<3, 3> prdir;
-  stretches_principal(prstr, prdir, C_strain);
+  std::transform(eigenvalues.begin(), eigenvalues.end(), prstr.data(),
+      [](double val) { return std::sqrt(val); });
   // modified stretches
   Core::LinAlg::Matrix<3, 1> modstr;
   stretches_modified(modstr, prstr);
@@ -321,12 +317,12 @@ void Mat::elast_hyper_add_response_stretches(Core::LinAlg::Matrix<6, 6>& cmat,
     // PK2 principal stresses
     prsts(al) = gamma_(al) / prstr(al);
     // PK2 tensor in Voigt notation
-    S_stress(0) += prsts(al) * prdir(0, al) * prdir(0, al);  // S^11
-    S_stress(1) += prsts(al) * prdir(1, al) * prdir(1, al);  // S^22
-    S_stress(2) += prsts(al) * prdir(2, al) * prdir(2, al);  // S^33
-    S_stress(3) += prsts(al) * prdir(0, al) * prdir(1, al);  // S^12
-    S_stress(4) += prsts(al) * prdir(1, al) * prdir(2, al);  // S^23
-    S_stress(5) += prsts(al) * prdir(2, al) * prdir(0, al);  // S^31
+    stress_view(0) += prsts(al) * eigenvectors(0, al) * eigenvectors(0, al);  // S^11
+    stress_view(1) += prsts(al) * eigenvectors(1, al) * eigenvectors(1, al);  // S^22
+    stress_view(2) += prsts(al) * eigenvectors(2, al) * eigenvectors(2, al);  // S^33
+    stress_view(3) += prsts(al) * eigenvectors(0, al) * eigenvectors(1, al);  // S^12
+    stress_view(4) += prsts(al) * eigenvectors(1, al) * eigenvectors(2, al);  // S^23
+    stress_view(5) += prsts(al) * eigenvectors(2, al) * eigenvectors(0, al);  // S^31
   }
 
   using map = Core::LinAlg::Voigt::IndexMappings;
@@ -367,25 +363,32 @@ void Mat::elast_hyper_add_response_stretches(Core::LinAlg::Matrix<6, 6>& cmat,
         const int al = map::voigt6_to_matrix_row_index(albe);
         const int be = map::voigt6_to_matrix_column_index(albe);
         const double fact1 = prfact1(albe);
-        c_ijkl += fact1 * prdir(i, al) * prdir(j, al) * prdir(k, be) * prdir(l, be);
+        c_ijkl += fact1 * eigenvectors(i, al) * eigenvectors(j, al) * eigenvectors(k, be) *
+                  eigenvectors(l, be);
         if (albe >= 3)
         {  // al!=be
-          c_ijkl += fact1 * prdir(i, be) * prdir(j, be) * prdir(k, al) * prdir(l, al);
+          c_ijkl += fact1 * eigenvectors(i, be) * eigenvectors(j, be) * eigenvectors(k, al) *
+                    eigenvectors(l, al);
           const double fact2 = prfact2(albe);
-          c_ijkl += fact2 * prdir(i, al) * prdir(j, be) * prdir(k, al) * prdir(l, be) +
-                    fact2 * prdir(i, al) * prdir(j, be) * prdir(k, be) * prdir(l, al) +
-                    fact2 * prdir(i, be) * prdir(j, al) * prdir(k, be) * prdir(l, al) +
-                    fact2 * prdir(i, be) * prdir(j, al) * prdir(k, al) * prdir(l, be);
+          c_ijkl += fact2 * eigenvectors(i, al) * eigenvectors(j, be) * eigenvectors(k, al) *
+                        eigenvectors(l, be) +
+                    fact2 * eigenvectors(i, al) * eigenvectors(j, be) * eigenvectors(k, be) *
+                        eigenvectors(l, al) +
+                    fact2 * eigenvectors(i, be) * eigenvectors(j, al) * eigenvectors(k, be) *
+                        eigenvectors(l, al) +
+                    fact2 * eigenvectors(i, be) * eigenvectors(j, al) * eigenvectors(k, al) *
+                        eigenvectors(l, be);
         }
       }
-      cmat(ij, kl) += c_ijkl;
+      cmat_view(ij, kl) += c_ijkl;
     }
   }
 }
 
-void Mat::elast_hyper_add_anisotropic_princ(Core::LinAlg::Matrix<6, 1>& S_stress,
-    Core::LinAlg::Matrix<6, 6>& cmat, const Core::LinAlg::Matrix<6, 1>& C_strain,
-    Teuchos::ParameterList& params, const int gp, int eleGID,
+void Mat::elast_hyper_add_anisotropic_princ(Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& C_strain,
+    const Teuchos::ParameterList& params, const int gp, int eleGID,
     const std::vector<std::shared_ptr<Mat::Elastic::Summand>>& potsum)
 {
   // Loop over all summands and add aniso stress
@@ -395,19 +398,19 @@ void Mat::elast_hyper_add_anisotropic_princ(Core::LinAlg::Matrix<6, 1>& S_stress
     p->add_stress_aniso_principal(C_strain, cmat, S_stress, params, gp, eleGID);
 }
 
-void Mat::elast_hyper_add_anisotropic_mod(Core::LinAlg::Matrix<6, 1>& S_stress,
-    Core::LinAlg::Matrix<6, 6>& cmat, const Core::LinAlg::Matrix<6, 1>& C_strain,
-    const Core::LinAlg::Matrix<6, 1>& iC_strain, const Core::LinAlg::Matrix<3, 1>& prinv,
-    const int gp, int eleGID, Teuchos::ParameterList& params,
+void Mat::elast_hyper_add_anisotropic_mod(Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& C_strain,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& iC_strain,
+    const Core::LinAlg::Matrix<3, 1>& prinv, const int gp, int eleGID,
+    const Teuchos::ParameterList& params,
     const std::vector<std::shared_ptr<Mat::Elastic::Summand>>& potsum)
 {
-  static Core::LinAlg::Matrix<6, 1> iC_stress(Core::LinAlg::Initialization::uninitialized);
-  Core::LinAlg::Voigt::Strains::to_stress_like(iC_strain, iC_stress);
   // Loop over all summands and add aniso stress
   // ToDo: This should be solved in analogy to the solution in elast_remodelfiber.cpp
   // ToDo: i.e. by evaluating the derivatives of the potsum w.r.t. the anisotropic invariants
   for (auto& p : potsum)
-    p->add_stress_aniso_modified(C_strain, iC_stress, cmat, S_stress, prinv(2), gp, eleGID, params);
+    p->add_stress_aniso_modified(C_strain, iC_strain, cmat, S_stress, prinv(2), gp, eleGID, params);
 }
 
 void Mat::calculate_gamma_delta(Core::LinAlg::Matrix<3, 1>& gamma,
@@ -443,11 +446,12 @@ void Mat::elast_hyper_properties(const std::vector<std::shared_ptr<Mat::Elastic:
   }
 }
 
-void Mat::elast_hyper_check_polyconvexity(const Core::LinAlg::Matrix<3, 3>& defgrd,
+void Mat::elast_hyper_check_polyconvexity(const Core::LinAlg::Tensor<double, 3, 3>& defgrd,
     const Core::LinAlg::Matrix<3, 1>& prinv, const Core::LinAlg::Matrix<3, 1>& dPI,
-    const Core::LinAlg::Matrix<6, 1>& ddPII, Teuchos::ParameterList& params, const int gp,
+    const Core::LinAlg::Matrix<6, 1>& ddPII, const Teuchos::ParameterList& params, const int gp,
     const int eleGID, const SummandProperties& properties)
 {
+  Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(defgrd);
   // This polyconvexity-test is just implemented for isotropic hyperelastic-materials
   // --> error if anisotropic material is tested (plastic and viscoelastic materials should not get
   // in here)
@@ -466,14 +470,14 @@ void Mat::elast_hyper_check_polyconvexity(const Core::LinAlg::Matrix<3, 3>& defg
   // defgrd = F (i)
   // dfgrd = F in Voigt - Notation
   static Core::LinAlg::Matrix<9, 1> dfgrd(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Voigt::matrix_3x3_to_9x1(defgrd, dfgrd);
+  Core::LinAlg::Voigt::matrix_3x3_to_9x1(defgrd_mat, dfgrd);
 
   // Cof(F) = J*F^(-T)
   static Core::LinAlg::Matrix<3, 3> CoFacF(
       Core::LinAlg::Initialization::zero);  // Cof(F) in Matrix-Notation
   static Core::LinAlg::Matrix<9, 1> CofF(
       Core::LinAlg::Initialization::zero);  // Cof(F) in Voigt-Notation
-  CoFacF.invert(defgrd);
+  CoFacF.invert(defgrd_mat);
   CoFacF.scale(J);
   // sort in Voigt-Notation and invert!
   Core::LinAlg::Voigt::matrix_3x3_to_9x1(CoFacF, CofF);
@@ -571,29 +575,29 @@ void Mat::elast_hyper_check_polyconvexity(const Core::LinAlg::Matrix<3, 3>& defg
         }
 }
 
-void Mat::elast_hyper_get_derivs_of_elastic_right_cg_tensor(const Core::LinAlg::Matrix<3, 3>& iFinM,
-    const Core::LinAlg::Matrix<3, 3>& CM, Core::LinAlg::Matrix<6, 6>& dCedC,
+void Mat::elast_hyper_get_derivs_of_elastic_right_cg_tensor(
+    const Core::LinAlg::Tensor<double, 3, 3>& iFinM,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& CM, Core::LinAlg::Matrix<6, 6>& dCedC,
     Core::LinAlg::Matrix<6, 9>& dCediFin)
-{  // auxiliaries
+{
+  Core::LinAlg::Matrix<3, 3> iFinM_mat = Core::LinAlg::make_matrix_view(iFinM);
+  const Core::LinAlg::Matrix<3, 3> C_mat = Core::LinAlg::make_matrix(Core::LinAlg::get_full(CM));
+  // auxiliaries
   Core::LinAlg::Matrix<3, 3> id3x3(Core::LinAlg::Initialization::zero);
   for (int i = 0; i < 3; ++i) id3x3(i, i) = 1.0;
   Core::LinAlg::Matrix<9, 9> temp9x9(Core::LinAlg::Initialization::zero);
   Core::LinAlg::FourTensor<3> tempFourTensor(true);
 
-  // C * F_{in}^{-1}
-  static Core::LinAlg::Matrix<3, 3> CiFinM(Core::LinAlg::Initialization::zero);
-  CiFinM.multiply_nn(1.0, CM, iFinM, 0.0);
-
   // \frac{\partial C^e}{\partial C}
   dCedC.clear();
   Core::LinAlg::Matrix<3, 3> iFinTM(Core::LinAlg::Initialization::zero);
-  iFinTM.multiply_nt(1.0, id3x3, iFinM, 0.0);
+  iFinTM.multiply_nt(1.0, id3x3, iFinM_mat, 0.0);
   Core::LinAlg::FourTensorOperations::add_kronecker_tensor_product(dCedC, 1.0, iFinTM, iFinTM, 0.0);
 
   // \frac{\partial C^e}{\partial F_{in}^{-1}}
   dCediFin.clear();
   Core::LinAlg::Matrix<3, 3> iFinTCM(Core::LinAlg::Initialization::zero);
-  iFinTCM.multiply_tn(1.0, iFinM, CM, 0.0);
+  iFinTCM.multiply_tn(1.0, iFinM_mat, C_mat, 0.0);
   temp9x9.clear();
   Core::LinAlg::FourTensorOperations::add_adbc_tensor_product(1.0, id3x3, iFinTCM, temp9x9);
   Core::LinAlg::FourTensorOperations::add_non_symmetric_product(1.0, iFinTCM, id3x3, temp9x9);

@@ -12,6 +12,8 @@
 #include "4C_comm_pack_buffer.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_FADmatrix_utils.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_material_factory.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_plasticdruckerprager.hpp"
@@ -65,26 +67,38 @@ namespace
   {
     Core::IO::InputParameterContainer container;
     druckprag_->setup(1, container);
-    Core::LinAlg::Matrix<6, 1> input_strain;
-    for (int i = 0; i < 6; ++i) input_strain(i) = .1;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> input_strain =
+        Core::LinAlg::TensorGenerators::full<3, 3>(0.05) +
+        0.05 * Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
+
     Teuchos::ParameterList paras;
-    Core::LinAlg::Matrix<3, 3> defgrad(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> ref_stress(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> ref_stress{};
+
     for (int i = 0; i < 3; ++i)
-      ref_stress(i) =
-          (1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - 0.25) + 0.25 + 0.25) * .1;
-    for (int i = 3; i < 6; ++i)
-      ref_stress(i) =
-          (1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - (2.0 * 0.25)) / 2.0) * .1;
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> result_stress(Core::LinAlg::Initialization::zero);
+    {
+      for (int j = 0; j < 3; ++j)
+      {
+        if (i == j)
+        {
+          ref_stress(i, j) =
+              (1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - 0.25) + 0.25 + 0.25) * .1;
+        }
+        else
+        {
+          ref_stress(i, j) =
+              (1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - (2.0 * 0.25)) / 2.0) * .1;
+        }
+      }
+    }
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3> result_stress{};
     druckprag_->pack(data);
     std::vector<char> dataSend;
     swap(dataSend, data());
     FourC::Mat::PlasticDruckerPrager plastic;
     Core::Communication::UnpackBuffer buffer(dataSend);
     plastic.unpack(buffer);
-    plastic.evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
+    plastic.evaluate(nullptr, input_strain, paras, result_stress, result_cmat, 0, 0);
     FOUR_C_EXPECT_NEAR(result_stress, ref_stress, 1.0e-12);
   };
 
@@ -93,20 +107,31 @@ namespace
   {
     Core::IO::InputParameterContainer container;
     druckprag_->setup(1, container);
-    Core::LinAlg::Matrix<6, 1> input_strain;
-    for (int i = 0; i < 6; ++i) input_strain(i) = .1;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> input_strain =
+        Core::LinAlg::TensorGenerators::full<3, 3>(0.05) +
+        0.05 * Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
     Teuchos::ParameterList paras;
-    Core::LinAlg::Matrix<3, 3> defgrad(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> ref_stress(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> ref_stress{};
+
     for (int i = 0; i < 3; ++i)
-      ref_stress(i) =
-          (1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - 0.25) + 0.25 + 0.25) * .1;
-    for (int i = 3; i < 6; ++i)
-      ref_stress(i) =
-          (1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - (2.0 * 0.25)) / 2.0) * .1;
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> result_stress(Core::LinAlg::Initialization::zero);
-    druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
+    {
+      for (int j = 0; j < 3; ++j)
+      {
+        if (i == j)
+        {
+          ref_stress(i, j) =
+              (1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - 0.25) + 0.25 + 0.25) * .1;
+        }
+        else
+        {
+          ref_stress(i, j) =
+              (1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - (2.0 * 0.25)) / 2.0) * .1;
+        }
+      }
+    }
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3> result_stress{};
+    druckprag_->evaluate(nullptr, input_strain, paras, result_stress, result_cmat, 0, 0);
     FOUR_C_EXPECT_NEAR(result_stress, ref_stress, 1.0e-12);
   };
 
@@ -115,20 +140,18 @@ namespace
   {
     Core::IO::InputParameterContainer container;
     druckprag_->setup(1, container);
-    Core::LinAlg::Matrix<6, 1> input_strain;
-    for (int i = 0; i < 3; ++i) input_strain(i) = 0.0;
-    for (int i = 3; i < 6; ++i) input_strain(i) = 2.2;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> input_strain{};
+    input_strain(0, 1) = input_strain(0, 2) = input_strain(1, 2) = 1.1;
     Teuchos::ParameterList paras;
-    Core::LinAlg::Matrix<3, 3> defgrad(Core::LinAlg::Initialization::zero);
     double Dgamma = (2.2 * sqrt(3) / 2.5 - 1.0) / 31.0 * 15.0;
-    Core::LinAlg::Matrix<6, 1> ref_stress;
-    for (int i = 0; i < 3; ++i) ref_stress(i) = -(Dgamma * (1.0 / (3.0 * (1.0 - (2.0 * 0.25)))));
-    for (int i = 3; i < 6; ++i)
-      ref_stress(i) = (1.0 / (2 * (1.0 + 0.25))) *
-                      (1 - ((1.0 / (2 * (1.0 + 0.25))) * Dgamma / (2.2 * sqrt(3) / 2.5))) * 2.2;
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> result_stress(Core::LinAlg::Initialization::zero);
-    druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> ref_stress;
+    for (int i = 0; i < 3; ++i) ref_stress(i, i) = -(Dgamma * (1.0 / (3.0 * (1.0 - (2.0 * 0.25)))));
+    ref_stress(0, 1) = ref_stress(0, 2) = ref_stress(1, 2) =
+        (1.0 / (2 * (1.0 + 0.25))) *
+        (1 - ((1.0 / (2 * (1.0 + 0.25))) * Dgamma / (2.2 * sqrt(3) / 2.5))) * 2.2;
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3> result_stress{};
+    druckprag_->evaluate(nullptr, input_strain, paras, result_stress, result_cmat, 0, 0);
     FOUR_C_EXPECT_NEAR(result_stress, ref_stress, 1.0e-12);
   };
 
@@ -137,16 +160,14 @@ namespace
   {
     Core::IO::InputParameterContainer container;
     druckprag_->setup(1, container);
-    Core::LinAlg::Matrix<6, 1> input_strain;
-    for (int i = 0; i < 3; ++i) input_strain(i) = 1.0;
-    for (int i = 3; i < 6; ++i) input_strain(i) = 0.0;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> input_strain =
+        Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
     Teuchos::ParameterList paras;
-    Core::LinAlg::Matrix<3, 3> defgrad(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> ref_stress(Core::LinAlg::Initialization::zero);
-    for (int i = 0; i < 3; ++i) ref_stress(i) = 2.0 - (10. / 15.) * (3. / 5.);
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> result_stress(Core::LinAlg::Initialization::zero);
-    druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> ref_stress{};
+    for (int i = 0; i < 3; ++i) ref_stress(i, i) = 2.0 - (10. / 15.) * (3. / 5.);
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3> result_stress{};
+    druckprag_->evaluate(nullptr, input_strain, paras, result_stress, result_cmat, 0, 0);
     FOUR_C_EXPECT_NEAR(result_stress, ref_stress, 1.0e-12);
   };
 
@@ -161,7 +182,9 @@ namespace
     Teuchos::ParameterList paras;
     Core::LinAlg::Matrix<3, 3> defgrad(Core::LinAlg::Initialization::zero);
     Core::LinAlg::Matrix<6, 1, FAD> ref_stress(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::Matrix<6, 6> result_cmat_view =
+        Core::LinAlg::make_stress_like_voigt_view(result_cmat);
     Core::LinAlg::Matrix<6, 1, FAD> result_stress(Core::LinAlg::Initialization::zero);
     druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
     Core::LinAlg::Matrix<6, 6> ref_cmat(Core::LinAlg::Initialization::zero);
@@ -172,7 +195,7 @@ namespace
         ref_cmat(i, j) = result_stress(i).dx(j);
       }
     }
-    FOUR_C_EXPECT_NEAR(result_cmat, ref_cmat, 1.0e-12);
+    FOUR_C_EXPECT_NEAR(result_cmat_view, ref_cmat, 1.0e-12);
     druckprag_->update();
     for (int i = 0; i < 3; ++i) input_strain(i) = FAD(6, i, 1.0);
     for (int i = 3; i < 6; ++i) input_strain(i) = FAD(6, i, 0.0);
@@ -184,7 +207,7 @@ namespace
         ref_cmat(i, j) = result_stress(i).dx(j);
       }
     }
-    FOUR_C_EXPECT_NEAR(result_cmat, ref_cmat, 1.0e-12);
+    FOUR_C_EXPECT_NEAR(result_cmat_view, ref_cmat, 1.0e-12);
     druckprag_->update();
     for (int i = 0; i < 3; ++i) input_strain(i) = FAD(6, i, 0.2);
     for (int i = 3; i < 6; ++i) input_strain(i) = FAD(6, i, 0.0);
@@ -205,25 +228,24 @@ namespace
   {
     Core::IO::InputParameterContainer container;
     druckprag_->setup(1, container);
-    Core::LinAlg::Matrix<6, 1> input_strain;
-    input_strain(0) = 1.1;
-    input_strain(1) = 2.0;
-    input_strain(2) = 0.1;
-    input_strain(3) = 2.5;
-    input_strain(4) = 1.4;
-    input_strain(5) = 1.0;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> input_strain;
+    input_strain(0, 0) = 1.1;
+    input_strain(1, 1) = 2.0;
+    input_strain(2, 2) = 0.1;
+    input_strain(0, 1) = 2.5 / 2;
+    input_strain(1, 2) = 1.4 / 2;
+    input_strain(0, 2) = 1.0 / 2;
     Teuchos::ParameterList paras;
-    Core::LinAlg::Matrix<3, 3> defgrad(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> ref_stress(Core::LinAlg::Initialization::zero);
-    ref_stress(0) = 1.3231031817668;
-    ref_stress(1) = 1.7934880206154;
-    ref_stress(2) = 0.8004533608238;
-    ref_stress(3) = 0.6533122761787;
-    ref_stress(4) = 0.3658548746601;
-    ref_stress(5) = 0.2613249104715;
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> result_stress(Core::LinAlg::Initialization::zero);
-    druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> ref_stress;
+    ref_stress(0, 0) = 1.3231031817668;
+    ref_stress(1, 1) = 1.7934880206154;
+    ref_stress(2, 2) = 0.8004533608238;
+    ref_stress(0, 1) = 0.6533122761787;
+    ref_stress(1, 2) = 0.3658548746601;
+    ref_stress(0, 2) = 0.2613249104715;
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3> result_stress{};
+    druckprag_->evaluate(nullptr, input_strain, paras, result_stress, result_cmat, 0, 0);
     FOUR_C_EXPECT_NEAR(result_stress, ref_stress, 1.0e-12);
   };
 
@@ -243,7 +265,9 @@ namespace
     for (int i = 3; i < 6; ++i)
       ref_stress(i) =
           FAD((1.0 / ((1.0 + 0.25) * (1.0 - (2.0 * 0.25)))) * ((1.0 - (2.0 * 0.25)) / 2.0) * .1);
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::Matrix<6, 6> result_cmat_view =
+        Core::LinAlg::make_stress_like_voigt_view(result_cmat);
     Core::LinAlg::Matrix<6, 1, FAD> result_stress(Core::LinAlg::Initialization::zero);
     druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
     Core::LinAlg::Matrix<6, 6> ref_cmat(Core::LinAlg::Initialization::zero);
@@ -254,7 +278,7 @@ namespace
         ref_cmat(i, j) = result_stress(i).dx(j);
       }
     }
-    FOUR_C_EXPECT_NEAR(result_cmat, ref_cmat, 1.0e-12);
+    FOUR_C_EXPECT_NEAR(result_cmat_view, ref_cmat, 1.0e-12);
   };
 
   //! test CMAT matrix for Return to Cone
@@ -267,7 +291,9 @@ namespace
     for (int i = 3; i < 6; ++i) input_strain(i) = FAD(6, i, 2.2 * i);
     Teuchos::ParameterList paras;
     Core::LinAlg::Matrix<3, 3> defgrad(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::Matrix<6, 6> result_cmat_view =
+        Core::LinAlg::make_stress_like_voigt_view(result_cmat);
     Core::LinAlg::Matrix<6, 1, FAD> result_stress(Core::LinAlg::Initialization::zero);
     druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
     Core::LinAlg::Matrix<6, 6> ref_cmat(Core::LinAlg::Initialization::zero);
@@ -278,7 +304,7 @@ namespace
         ref_cmat(i, j) = result_stress(i).dx(j);
       }
     }
-    FOUR_C_EXPECT_NEAR(result_cmat, ref_cmat, 1.0e-12);
+    FOUR_C_EXPECT_NEAR(result_cmat_view, ref_cmat, 1.0e-12);
   };
   TEST_F(DruckerPragerTest, TestEvaluateReturnToApexCmat)
   {
@@ -289,7 +315,9 @@ namespace
     for (int i = 3; i < 6; ++i) input_strain(i) = FAD(6, i, 0.0);
     Teuchos::ParameterList paras;
     Core::LinAlg::Matrix<3, 3> defgrad(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::Matrix<6, 6> result_cmat_view =
+        Core::LinAlg::make_stress_like_voigt_view(result_cmat);
     Core::LinAlg::Matrix<6, 1, FAD> result_stress(Core::LinAlg::Initialization::zero);
     druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
     Core::LinAlg::Matrix<6, 6> ref_cmat(Core::LinAlg::Initialization::zero);
@@ -300,7 +328,7 @@ namespace
         ref_cmat(i, j) = result_stress(i).dx(j);
       }
     }
-    FOUR_C_EXPECT_NEAR(result_cmat, ref_cmat, 1.0e-12);
+    FOUR_C_EXPECT_NEAR(result_cmat_view, ref_cmat, 1.0e-12);
   };
 
   //! test CMAT matrix for Return to Apex
@@ -324,7 +352,9 @@ namespace
     ref_stress(3) = FAD(0.6151602543789);
     ref_stress(4) = FAD(0.3444897424522);
     ref_stress(5) = FAD(0.2460641017516);
-    Core::LinAlg::Matrix<6, 6> result_cmat(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> result_cmat{};
+    Core::LinAlg::Matrix<6, 6> result_cmat_view =
+        Core::LinAlg::make_stress_like_voigt_view(result_cmat);
     Core::LinAlg::Matrix<6, 1, FAD> result_stress(Core::LinAlg::Initialization::zero);
     druckprag_->evaluate(&defgrad, &input_strain, paras, &result_stress, &result_cmat, 0, 0);
     Core::LinAlg::Matrix<6, 6> ref_cmat(Core::LinAlg::Initialization::zero);
@@ -335,6 +365,6 @@ namespace
         ref_cmat(i, j) = result_stress(i).dx(j);
       }
     }
-    FOUR_C_EXPECT_NEAR(result_cmat, ref_cmat, 1.0e-12);
+    FOUR_C_EXPECT_NEAR(result_cmat_view, ref_cmat, 1.0e-12);
   };
 }  // namespace

@@ -119,8 +119,8 @@ namespace Mat
     double ref_porosity_time_deriv() const override { return dphiDphiref_ * refporositydot_; }
 
     /// compute current porosity and save it
-    void compute_porosity(Teuchos::ParameterList& params,  ///< (i) element parameter list
-        double press,                                      ///< (i) pressure at gauss point
+    void compute_porosity(const Teuchos::ParameterList& params,  ///< (i) element parameter list
+        double press,                                            ///< (i) pressure at gauss point
         double J,          ///< (i) determinant of jacobian at gauss point
         int gp,            ///< (i) number of current gauss point
         double& porosity,  ///< (o) porosity at gauss point
@@ -133,7 +133,7 @@ namespace Mat
         bool save = true) override;
 
     //! evaluate constitutive relation for porosity and compute derivatives
-    void constitutive_derivatives(Teuchos::ParameterList& params,  ///< (i) parameter list
+    void constitutive_derivatives(const Teuchos::ParameterList& params,  ///< (i) parameter list
         double press,        ///< (i) fluid pressure at gauss point
         double J,            ///< (i) Jacobian determinant at gauss point
         double porosity,     ///< (i) porosity at gauss point
@@ -163,13 +163,10 @@ namespace Mat
     //! @name Evaluation methods
 
     /// evaluate material law
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,  ///< (i) deformation gradient
-        const Core::LinAlg::Matrix<6, 1>* glstrain,          ///< (i) green lagrange strain
-        Teuchos::ParameterList& params,                      ///< (i) parameter list
-        Core::LinAlg::Matrix<6, 1>* stress,                  ///< (o) second piola kirchhoff stress
-        Core::LinAlg::Matrix<6, 6>* cmat,                    ///< (o) constitutive matrix
-        int gp,                                              ///< (i) Gauss point
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     //@}
 
@@ -186,7 +183,7 @@ namespace Mat
 
    protected:
     virtual void reaction(const double porosity, const double J,
-        std::shared_ptr<std::vector<double>> scalars, Teuchos::ParameterList& params);
+        std::shared_ptr<std::vector<double>> scalars, const Teuchos::ParameterList& params);
 
     /// my material parameters
     Mat::PAR::StructPoroReaction* params_;

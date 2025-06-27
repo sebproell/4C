@@ -24,6 +24,7 @@
 #include "4C_linalg_utils_densematrix_multiply.hpp"
 #include "4C_mat_constraintmixture_history.hpp"
 #include "4C_mat_par_bundle.hpp"
+#include "4C_mat_service.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_function_of_time.hpp"
 
@@ -725,20 +726,27 @@ void Mat::ConstraintMixture::reset_step()
 /*----------------------------------------------------------------------*
  |  Evaluate                                      (public)         12/10|
  *----------------------------------------------------------------------*/
-void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+  const Core::LinAlg::Matrix<6, 1> glstrain_mat =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
+
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   // map in GetParameter can now calculate LID, so we do not need it here   05/2017 birzle
   // get element lID incase we have element specific material parameters
   // int eleID = Global::Problem::instance()->GetDis("structure")->ElementColMap()->LID(eleGID);
   const double growthfactor = params_->get_parameter(params_->growthfactor, eleGID);
 
   // get variables from params
-  double dt = params.get<double>("delta time", -1.0);
-  double time = params.get<double>("total time", -1.0);
-  std::string action = params.get<std::string>("action", "none");
+  double dt = Mat::get_or<double>(params, "delta time", -1.0);
+  double time = Mat::get_or<double>(params, "total time", -1.0);
+  std::string action = Mat::get_or<std::string>(params, "action", "none");
   bool output = false;
   if (action == "calc_struct_stress") output = true;
   // int eleid = params.get<int>("eleID",0);
@@ -897,7 +905,7 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     Core::LinAlg::Matrix<NUM_STRESS_3D, 1> Id(Core::LinAlg::Initialization::zero);
     for (int i = 0; i < 3; i++) Id(i) = 1.0;
     // right Cauchy-Green Tensor  C = 2 * E + I
-    Core::LinAlg::Matrix<NUM_STRESS_3D, 1> C(*glstrain);
+    Core::LinAlg::Matrix<NUM_STRESS_3D, 1> C(glstrain_mat);
     C.scale(2.0);
     C += Id;
 
@@ -1018,7 +1026,7 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     //    massprodstart(3) = massprodstart(3)*4;
     history_->back().set_mass(gp, massprodstart);
 
-    evaluate_stress(glstrain, gp, cmat, stress, firstiter, time, elastin_survival);
+    evaluate_stress(&glstrain_mat, gp, &cmat_view, &stress_view, firstiter, time, elastin_survival);
 
     //--------------------------------------------------------------------------------------
     // compute new deposition rates
@@ -1027,7 +1035,9 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     Core::LinAlg::Matrix<4, 1> massprodcomp(Core::LinAlg::Initialization::zero);
     if (params_->growthforce_ == "All")
     {
-      mass_production(gp, *defgrd, *stress, &massstress, inner_radius, &massprodcomp, growthfactor);
+      mass_production(gp, Core::LinAlg::make_matrix_view(*defgrad),
+          Core::LinAlg::make_stress_like_voigt_view(stress), &massstress, inner_radius,
+          &massprodcomp, growthfactor);
     }
     else if (params_->growthforce_ == "ElaCol")
     {
@@ -1056,8 +1066,8 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       evaluate_fiber_family(
           C, gp, &cmattemp, &stresstemp, a4_->at(gp), &masstemp, firstiter, time, 3);
 
-      mass_production(
-          gp, *defgrd, stresstemp, &massstress, inner_radius, &massprodcomp, growthfactor);
+      mass_production(gp, Core::LinAlg::make_matrix_view(*defgrad), stresstemp, &massstress,
+          inner_radius, &massprodcomp, growthfactor);
     }
     else
     {
@@ -1069,29 +1079,29 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       double masstemp = 0.0;
       evaluate_fiber_family(
           C, gp, &cmattemp, &stresstemp, a1_->at(gp), &masstemp, firstiter, time, 0);
-      mass_production_single_fiber(gp, *defgrd, stresstemp, &massstresstemp, inner_radius,
-          &massprodtemp, a1_->at(gp), 0, growthfactor);
+      mass_production_single_fiber(gp, Core::LinAlg::make_matrix_view(*defgrad), stresstemp,
+          &massstresstemp, inner_radius, &massprodtemp, a1_->at(gp), 0, growthfactor);
       massstress(0) = massstresstemp;
       massprodcomp(0) = massprodtemp;
       stresstemp.put_scalar(0.0);
       evaluate_fiber_family(
           C, gp, &cmattemp, &stresstemp, a2_->at(gp), &masstemp, firstiter, time, 1);
-      mass_production_single_fiber(gp, *defgrd, stresstemp, &massstresstemp, inner_radius,
-          &massprodtemp, a2_->at(gp), 1, growthfactor);
+      mass_production_single_fiber(gp, Core::LinAlg::make_matrix_view(*defgrad), stresstemp,
+          &massstresstemp, inner_radius, &massprodtemp, a2_->at(gp), 1, growthfactor);
       massstress(1) = massstresstemp;
       massprodcomp(1) = massprodtemp;
       stresstemp.put_scalar(0.0);
       evaluate_fiber_family(
           C, gp, &cmattemp, &stresstemp, a3_->at(gp), &masstemp, firstiter, time, 2);
-      mass_production_single_fiber(gp, *defgrd, stresstemp, &massstresstemp, inner_radius,
-          &massprodtemp, a3_->at(gp), 2, growthfactor);
+      mass_production_single_fiber(gp, Core::LinAlg::make_matrix_view(*defgrad), stresstemp,
+          &massstresstemp, inner_radius, &massprodtemp, a3_->at(gp), 2, growthfactor);
       massstress(2) = massstresstemp;
       massprodcomp(2) = massprodtemp;
       stresstemp.put_scalar(0.0);
       evaluate_fiber_family(
           C, gp, &cmattemp, &stresstemp, a4_->at(gp), &masstemp, firstiter, time, 3);
-      mass_production_single_fiber(gp, *defgrd, stresstemp, &massstresstemp, inner_radius,
-          &massprodtemp, a4_->at(gp), 3, growthfactor);
+      mass_production_single_fiber(gp, Core::LinAlg::make_matrix_view(*defgrad), stresstemp,
+          &massstresstemp, inner_radius, &massprodtemp, a4_->at(gp), 3, growthfactor);
       massstress(3) = massstresstemp;
       massprodcomp(3) = massprodtemp;
     }
@@ -1124,13 +1134,14 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
               "initstretch\n is not implemented in implicit time integration");
         if (params_->growthforce_ == "All")
         {
-          evaluate_implicit_all(*defgrd, glstrain, gp, cmat, stress, dt, time, massprodcomp,
-              massstress, elastin_survival, growthfactor);
+          evaluate_implicit_all(Core::LinAlg::make_matrix_view(*defgrad), &glstrain_mat, gp,
+              &cmat_view, &stress_view, dt, time, massprodcomp, massstress, elastin_survival,
+              growthfactor);
         }
         else if (params_->growthforce_ == "Single")
         {
-          evaluate_implicit_single(
-              *defgrd, glstrain, gp, cmat, stress, dt, time, elastin_survival, growthfactor);
+          evaluate_implicit_single(Core::LinAlg::make_matrix_view(*defgrad), &glstrain_mat, gp,
+              &cmat_view, &stress_view, dt, time, elastin_survival, growthfactor);
         }
         else if (params_->growthforce_ == "ElaCol")
         {
@@ -1165,7 +1176,8 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       {
         int size = history_->size();
         history_->at(size - 2).get_time(&temptime, &tempdt);
-        evaluate_stress(glstrain, gp, cmat, stress, firstiter, temptime, elastin_survival);
+        evaluate_stress(
+            &glstrain_mat, gp, &cmat_view, &stress_view, firstiter, temptime, elastin_survival);
         FOUR_C_THROW("has to be checked, update called before output");
       }
       else
@@ -1174,7 +1186,8 @@ void Mat::ConstraintMixture::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     }
     else
     {
-      evaluate_stress(glstrain, gp, cmat, stress, firstiter, time, elastin_survival);
+      evaluate_stress(
+          &glstrain_mat, gp, &cmat_view, &stress_view, firstiter, time, elastin_survival);
     }
   }
 }  // Evaluate

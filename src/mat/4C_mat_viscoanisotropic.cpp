@@ -10,6 +10,7 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -397,11 +398,16 @@ void Mat::ViscoAnisotropic::update_fiber_dirs(const int gp, Core::LinAlg::Matrix
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  const Core::LinAlg::Matrix<6, 1> glstrain_mat =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   const double mue = params_->mue_;
   const double kappa = params_->kappa_;
   const double k1 = params_->k1_;
@@ -412,7 +418,7 @@ void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   // build identity tensor I
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> Id(Core::LinAlg::Initialization::zero);
   for (int i = 0; i < 3; i++) Id(i) = 1.0;
-  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> C(*glstrain);
+  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> C(glstrain_mat);
   C.scale(2.0);
   C += Id;
 
@@ -449,7 +455,7 @@ void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   const double p = kappa * (J - 1);
   for (int i = 0; i < 6; ++i)
   {
-    (*stress)(i) = J * p * Cinv(i);  // volumetric part, not affected by viscosity
+    stress_view(i) = J * p * Cinv(i);  // volumetric part, not affected by viscosity
     SisoEla_nh(i) = incJ * (mue * Id(i) - third * mue * I1 * Cinv(i));
   }
 
@@ -463,7 +469,7 @@ void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
       Core::LinAlg::Initialization::zero);  // isochoric elastic C from NeoHooke
 
   Core::LinAlg::FourTensorOperations::add_holzapfel_product(
-      (*cmat), Cinv, (-2 * J * p));  // -2 J p Cinv o Cinv
+      cmat_view, Cinv, (-2 * J * p));  // -2 J p Cinv o Cinv
 
   const double fac = 2 * third * incJ * mue * I1;  // 2/3 J^{-2/3} Sbar:C
   // fac Psl = fac (Cinv o Cinv) - fac/3 (Cinv x Cinv)
@@ -479,7 +485,7 @@ void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     {
       double Siso_i = incJ * (mue * Id(i) - third * mue * I1 * Cinv(i));
       double Siso_j = incJ * (mue * Id(j) - third * mue * I1 * Cinv(j));
-      (*cmat)(i, j) += J * (p + J * kappa) * Cinv(i) * Cinv(j);  // J(p + J dp/dJ) Cinv x Cinv
+      cmat_view(i, j) += J * (p + J * kappa) * Cinv(i) * Cinv(j);  // J(p + J dp/dJ) Cinv x Cinv
       Psl(i, j) += (-third) * Cinv(i) * Cinv(j);          // on the fly complete Psl needed later
       CisoEla_nh(i, j) = fac * Psl(i, j)                  // fac Psl
                          - 2 * third * Cinv(i) * Siso_j   // -2/3 Cinv x Siso
@@ -623,7 +629,7 @@ void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   const double tau_fib = params_->relax_[1];  // assume same tau for both fibers
 
   // get time algorithmic parameters
-  double dt = params.get("delta time", -1.0);
+  double dt = params.get<double>("delta time");
 
 
   /* Time integration according Zien/Taylor and the viscoNeoHooke */
@@ -654,22 +660,22 @@ void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   /* evaluate current stress */
 
   // elastic part
-  (*stress) += SisoEla_nh;  // S_{n+1} = S_vol^ela + S_iso^ela
-  (*stress) += SisoEla_fib1;
-  (*stress) += SisoEla_fib2;  // S_{n+1} = S_vol^ela + S_iso^ela
+  stress_view += SisoEla_nh;  // S_{n+1} = S_vol^ela + S_iso^ela
+  stress_view += SisoEla_fib1;
+  stress_view += SisoEla_fib2;  // S_{n+1} = S_vol^ela + S_iso^ela
 
   // viscous part
   Q_nh += Q_nh_old;
   Q_nh += SisoEla_nh_old;  // H_nh = Q_nh_old + S_nh_old
-  (*stress) += Q_nh;       // S_{n+1} += H_nh + Q_nh_{n+1}
+  stress_view += Q_nh;     // S_{n+1} += H_nh + Q_nh_{n+1}
 
   Q_fib1 += Q_fib1_old;
   Q_fib1 += SisoEla_fib1_old;  // H_fib1 = Q_fib1_old + S_fib1_old
-  (*stress) += Q_fib1;         // S_{n+1} += H_fib1 + Q_fib1_{n+1}
+  stress_view += Q_fib1;       // S_{n+1} += H_fib1 + Q_fib1_{n+1}
 
   Q_fib2 += Q_fib2_old;
   Q_fib2 += SisoEla_fib2_old;  // H_fib2 = Q_fib2_old + S_fib2_old
-  (*stress) += Q_fib2;         // S_{n+1} += H_fib2 + Q_fib2_{n+1}
+  stress_view += Q_fib2;       // S_{n+1} += H_fib2 + Q_fib2_{n+1}
 
   /* evaluate current C-mat */
 
@@ -687,9 +693,9 @@ void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   CisoEla_fib2.scale(1 + beta_fib * artscalar2_fib);
 
 
-  (*cmat) += CisoEla_nh;
-  (*cmat) += CisoEla_fib1;
-  (*cmat) += CisoEla_fib2;
+  cmat_view += CisoEla_nh;
+  cmat_view += CisoEla_fib1;
+  cmat_view += CisoEla_fib2;
 
   // update history
   histstresscurr_->at(numst * gp + 0) = SisoEla_nh;
@@ -698,8 +704,6 @@ void Mat::ViscoAnisotropic::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   artstresscurr_->at(numst * gp + 0) = Q_nh;
   artstresscurr_->at(numst * gp + 1) = Q_fib1;
   artstresscurr_->at(numst * gp + 2) = Q_fib2;
-
-  return;
 }
 
 /*----------------------------------------------------------------------*

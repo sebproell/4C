@@ -59,7 +59,7 @@ Mixture::FunctionMixtureRule::FunctionMixtureRule(Mixture::PAR::FunctionMixtureR
   // from input
 }
 
-void Mixture::FunctionMixtureRule::setup(Teuchos::ParameterList& params, const int eleGID)
+void Mixture::FunctionMixtureRule::setup(const Teuchos::ParameterList& params, const int eleGID)
 {
   MixtureRule::setup(params, eleGID);
 
@@ -75,14 +75,14 @@ void Mixture::FunctionMixtureRule::unpack_mixture_rule(Core::Communication::Unpa
       create_functions_from_function_ids(params_->mass_fractions_funct_ids_);
 }
 
-void Mixture::FunctionMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
-    const Core::LinAlg::Matrix<6, 1>& E_strain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>& S_stress, Core::LinAlg::Matrix<6, 6>& cmat, const int gp,
-    const int eleGID)
+void Mixture::FunctionMixtureRule::evaluate(const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID)
 {
   // define temporary matrices
-  Core::LinAlg::Matrix<6, 1> cstress;
-  Core::LinAlg::Matrix<6, 6> ccmat;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> cstress;
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> ccmat;
 
   // initialize sum of mass fractions for validity check
   double sum = 0.0;
@@ -106,12 +106,12 @@ void Mixture::FunctionMixtureRule::evaluate(const Core::LinAlg::Matrix<3, 3>& F,
 
     // add stress contribution to global stress
     MixtureConstituent& constituent = *constituents()[i];
-    cstress.clear();
-    ccmat.clear();
+    cstress = {};
+    ccmat = {};
     constituent.evaluate(F, E_strain, params, cstress, ccmat, gp, eleGID);
 
-    S_stress.update(constituent_density, cstress, 1.0);
-    cmat.update(constituent_density, ccmat, 1.0);
+    S_stress += constituent_density * cstress;
+    cmat += constituent_density * ccmat;
   }
 
   // validity check whether mass fractions summed up to 1

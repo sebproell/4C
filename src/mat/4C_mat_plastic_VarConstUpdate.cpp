@@ -12,6 +12,7 @@
 #include "4C_linalg_fixedsizematrix_solver.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_funct.hpp"
 #include "4C_linalg_utils_densematrix_inverse.hpp"
 #include "4C_mat_elast_summand.hpp"
@@ -187,11 +188,15 @@ void Mat::PlasticElastHyperVCU::setup(int numgp, const Core::IO::InputParameterC
 }
 
 // MAIN
-void Mat::PlasticElastHyperVCU::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)  ///< Element GID
+void Mat::PlasticElastHyperVCU::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)  ///< Element GID
 {
+  const Core::LinAlg::Matrix<3, 3> defgrd_mat = Core::LinAlg::make_matrix_view(*defgrad);
+
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
   double last_ai = last_alpha_isotropic_[gp];
   Core::LinAlg::Matrix<3, 3> empty;
 
@@ -200,39 +205,37 @@ void Mat::PlasticElastHyperVCU::evaluate(const Core::LinAlg::Matrix<3, 3>* defgr
   for (int i = 0; i < 3; i++) id2(i, i) = 1.0;
 
   Core::LinAlg::Matrix<3, 3> cetrial;
-  Core::LinAlg::Matrix<6, 1> ee_test;
-  comp_elast_quant(defgrd, last_plastic_defgrd_inverse_[gp], id2, &cetrial, &ee_test);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> ee_test;
+  comp_elast_quant(&defgrd_mat, last_plastic_defgrd_inverse_[gp], id2, &cetrial, ee_test);
 
   // get 2pk stresses
-  Core::LinAlg::Matrix<6, 1> etstr;
-  Core::LinAlg::Matrix<6, 6> etcmat;
-  ElastHyper::evaluate(nullptr, &ee_test, params, &etstr, &etcmat, gp, eleGID);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> etstr;
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> etcmat;
+  ElastHyper::evaluate(nullptr, ee_test, params, etstr, etcmat, gp, eleGID);
 
   double yf;
   double normZero = 0.0;
 
   Core::LinAlg::Matrix<3, 3> mandelStr;
   Core::LinAlg::Matrix<3, 3> devMandelStr;
-  yield_function(last_ai, normZero, id2, cetrial, etstr, &yf, devMandelStr, mandelStr);
+  yield_function(last_ai, normZero, id2, cetrial, Core::LinAlg::make_stress_like_voigt_view(etstr),
+      &yf, devMandelStr, mandelStr);
 
   if (yf <= 0)
   {
     // step is elastic
-    stress->clear();
-    cmat->clear();
+    stress_view.clear();
+    cmat_view.clear();
 
-    Core::LinAlg::Matrix<6, 1> checkStr;
-    Core::LinAlg::Matrix<6, 6> checkCmat;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> checkStr;
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> checkCmat;
     Core::LinAlg::Matrix<3, 3> emptymat;
-    PlasticElastHyper::evaluate_elast(defgrd, &emptymat, stress, cmat, gp, eleGID);
-    ElastHyper::evaluate(defgrd, &ee_test, params, &checkStr, &checkCmat, gp, eleGID);
+    PlasticElastHyper::evaluate_elast(&defgrd_mat, &emptymat, &stress_view, &cmat_view, gp, eleGID);
+    ElastHyper::evaluate(defgrad, ee_test, params, checkStr, checkCmat, gp, eleGID);
 
     // push back
-    Core::LinAlg::Matrix<3, 3> checkStrMat;
-    for (int i = 0; i < 3; i++) checkStrMat(i, i) = checkStr(i);
-    checkStrMat(0, 1) = checkStrMat(1, 0) = checkStr(3);
-    checkStrMat(1, 2) = checkStrMat(2, 1) = checkStr(4);
-    checkStrMat(0, 2) = checkStrMat(2, 0) = checkStr(5);
+    const Core::LinAlg::Matrix<3, 3> checkStrMat =
+        Core::LinAlg::make_matrix(Core::LinAlg::get_full(checkStr));
 
     Core::LinAlg::Matrix<3, 3> tmp33;
     Core::LinAlg::Matrix<3, 3> strWithPlast;
@@ -292,21 +295,25 @@ void Mat::PlasticElastHyperVCU::evaluate(const Core::LinAlg::Matrix<3, 3>* defgr
       dLp(0, 2) = dLp(2, 0) = beta(4);
 
       Core::LinAlg::Matrix<5, 1> rhsElast;
-      Core::LinAlg::Matrix<6, 1> eeOut;
-      evaluate_rhs(gp, dLp, *defgrd, eeOut, rhs, rhsElast, dcedlp, dFpiDdeltaDp, params, eleGID);
+      Core::LinAlg::SymmetricTensor<double, 3, 3> eeOut;
+      evaluate_rhs(gp, dLp, defgrd_mat, eeOut, rhs, rhsElast, dcedlp, dFpiDdeltaDp, params, eleGID);
 
       // Hessian matrix elastic component
-      Core::LinAlg::Matrix<6, 1> elastStress;
-      Core::LinAlg::Matrix<6, 6> elastCmat;
+      Core::LinAlg::SymmetricTensor<double, 3, 3> elastStress;
+      Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> elastCmat;
+      Core::LinAlg::Matrix<6, 1> elastStress_view =
+          Core::LinAlg::make_stress_like_voigt_view(elastStress);
+      Core::LinAlg::Matrix<6, 6> elastCmat_view =
+          Core::LinAlg::make_stress_like_voigt_view(elastCmat);
       Core::LinAlg::Matrix<6, 1> elastStressDummy;
       Core::LinAlg::Matrix<6, 6> elastCmatDummy;
-      ElastHyper::evaluate(nullptr, &eeOut, params, &elastStress, &elastCmat, gp, eleGID);
+      ElastHyper::evaluate(nullptr, eeOut, params, elastStress, elastCmat, gp, eleGID);
 
       Core::LinAlg::Matrix<6, 6> d2ced2lpVoigt[6];
-      ce2nd_deriv(defgrd, last_plastic_defgrd_inverse_[gp], dLp, d2ced2lpVoigt);
+      ce2nd_deriv(&defgrd_mat, last_plastic_defgrd_inverse_[gp], dLp, d2ced2lpVoigt);
 
       Core::LinAlg::Matrix<6, 6> cpart_tmp;
-      cpart_tmp.multiply(elastCmat, dcedlp);
+      cpart_tmp.multiply(elastCmat_view, dcedlp);
       Core::LinAlg::Matrix<6, 6> cpart;
       cpart.multiply_tn(.25, dcedlp, cpart_tmp);
 
@@ -315,9 +322,9 @@ void Mat::PlasticElastHyperVCU::evaluate(const Core::LinAlg::Matrix<3, 3>* defgr
         for (int B = 0; B < 6; ++B)
           for (int C = 0; C < 6; ++C)
             if (A < 3)
-              spart6x6(B, C) += 0.5 * elastStress(A) * d2ced2lpVoigt[A](B, C);
+              spart6x6(B, C) += 0.5 * elastStress_view(A) * d2ced2lpVoigt[A](B, C);
             else
-              spart6x6(B, C) += 1. * elastStress(A) * d2ced2lpVoigt[A](B, C);
+              spart6x6(B, C) += 1. * elastStress_view(A) * d2ced2lpVoigt[A](B, C);
 
       Core::LinAlg::Matrix<6, 6> hessElast6x6(spart6x6);
       hessElast6x6.update(1., cpart, 1.);
@@ -436,10 +443,10 @@ void Mat::PlasticElastHyperVCU::evaluate(const Core::LinAlg::Matrix<3, 3>* defgr
 
     // Compute the total stresses
     Core::LinAlg::Matrix<6, 6> tangent_elast;
-    PlasticElastHyper::evaluate_elast(defgrd, &dLp, stress, &tangent_elast, gp, eleGID);
+    PlasticElastHyper::evaluate_elast(&defgrd_mat, &dLp, &stress_view, &tangent_elast, gp, eleGID);
 
     Core::LinAlg::Matrix<6, 9> dPK2dFpinvIsoprinc;
-    dpk2d_fpi(gp, eleGID, defgrd, &plastic_defgrd_inverse_[gp], dPK2dFpinvIsoprinc);
+    dpk2d_fpi(gp, eleGID, &defgrd_mat, &plastic_defgrd_inverse_[gp], dPK2dFpinvIsoprinc);
 
     Core::LinAlg::Matrix<6, 6> mixedDeriv;
     mixedDeriv.multiply(dPK2dFpinvIsoprinc, dFpiDdeltaDp);
@@ -456,10 +463,8 @@ void Mat::PlasticElastHyperVCU::evaluate(const Core::LinAlg::Matrix<3, 3>* defgr
     Core::LinAlg::Matrix<6, 6> cmat_summand2;
     cmat_summand2.multiply_nt(-1., mixDerivInvHess, tmp2);
 
-    cmat->update(cmat_summand1, cmat_summand2);
+    cmat_view.update(cmat_summand1, cmat_summand2);
   }
-
-  return;
 }
 
 
@@ -580,7 +585,7 @@ void Mat::PlasticElastHyperVCU::yield_function(const double last_ai,
 // Get elastic quantities Cetrial and Ee_n+1
 void Mat::PlasticElastHyperVCU::comp_elast_quant(const Core::LinAlg::Matrix<3, 3>* defgrd,
     const Core::LinAlg::Matrix<3, 3> fpi, const Core::LinAlg::Matrix<3, 3> MatExp,
-    Core::LinAlg::Matrix<3, 3>* cetrial, Core::LinAlg::Matrix<6, 1>* Ee)
+    Core::LinAlg::Matrix<3, 3>* cetrial, Core::LinAlg::SymmetricTensor<double, 3, 3>& Ee)
 
 {
   Core::LinAlg::Matrix<3, 3> fetrial;
@@ -599,13 +604,9 @@ void Mat::PlasticElastHyperVCU::comp_elast_quant(const Core::LinAlg::Matrix<3, 3
   for (int i = 0; i < 3; i++) id2int(i, i) = 1.0;
   Core::LinAlg::Matrix<3, 3> next_ee3x3;
   next_ee3x3.update(0.5, next_ce, -0.5, id2int);
-  Core::LinAlg::Matrix<6, 1> next_ee;
-  for (int i = 0; i < 3; i++) next_ee(i) = next_ee3x3(i, i);
-  next_ee(3) = 2. * next_ee3x3(0, 1);
-  next_ee(4) = 2. * next_ee3x3(1, 2);
-  next_ee(5) = 2. * next_ee3x3(0, 2);
 
-  *Ee = next_ee;
+  for (int i = 0; i < 3; i++)
+    for (int j = 0; j < 3; j++) Ee(i, j) = next_ee3x3(i, j);
 
   return;
 }
@@ -640,10 +641,10 @@ bool Mat::PlasticElastHyperVCU::vis_data(
 
 
 void Mat::PlasticElastHyperVCU::evaluate_rhs(const int gp, const Core::LinAlg::Matrix<3, 3> dLp,
-    const Core::LinAlg::Matrix<3, 3> defgrd, Core::LinAlg::Matrix<6, 1>& eeOut,
+    const Core::LinAlg::Matrix<3, 3> defgrd, Core::LinAlg::SymmetricTensor<double, 3, 3>& eeOut,
     Core::LinAlg::Matrix<5, 1>& rhs, Core::LinAlg::Matrix<5, 1>& rhsElast,
     Core::LinAlg::Matrix<6, 6>& dcedlp, Core::LinAlg::Matrix<9, 6>& dFpiDdeltaDp,
-    Teuchos::ParameterList& params, const int eleGID)
+    const Teuchos::ParameterList& params, const int eleGID)
 {
   Core::LinAlg::Matrix<3, 3> zeros;
   Core::LinAlg::Matrix<6, 6> zeros66;
@@ -683,14 +684,14 @@ void Mat::PlasticElastHyperVCU::evaluate_rhs(const int gp, const Core::LinAlg::M
   Core::LinAlg::Matrix<3, 3> ce;
   ce.multiply_tn(fe, fe);
 
-  for (int i = 0; i < 3; ++i) eeOut(i) = 0.5 * (ce(i, i) - 1.);
-  eeOut(3) = ce(0, 1);
-  eeOut(4) = ce(1, 2);
-  eeOut(5) = ce(0, 2);
+  for (int i = 0; i < 3; ++i) eeOut(i, i) = 0.5 * (ce(i, i) - 1.);
+  eeOut(0, 1) = 0.5 * ce(0, 1);
+  eeOut(1, 2) = 0.5 * ce(1, 2);
+  eeOut(0, 2) = 0.5 * ce(0, 2);
 
-  Core::LinAlg::Matrix<6, 1> se;
-  Core::LinAlg::Matrix<6, 6> dummy;
-  ElastHyper::evaluate(nullptr, &eeOut, params, &se, &dummy, gp, eleGID);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> se;
+  Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> dummy;
+  ElastHyper::evaluate(nullptr, eeOut, params, se, dummy, gp, eleGID);
 
   eval_dce_dlp(last_plastic_defgrd_inverse_[gp], &defgrd, dexpOut_mat, cetrial, expOut, dcedlp,
       dFpiDdeltaDp);
@@ -716,7 +717,8 @@ void Mat::PlasticElastHyperVCU::evaluate_rhs(const int gp, const Core::LinAlg::M
 
   rhs6.update((inityield() * sqrt(2. / 3.)) / dLp.norm2(), dLp_vec, 1.);  // dissipative component
 
-  rhs6.multiply_tn(0.5, dcedlp, se, 1.);  // elastic component
+  rhs6.multiply_tn(
+      0.5, dcedlp, Core::LinAlg::make_stress_like_voigt_view(se), 1.);  // elastic component
   Core::LinAlg::Matrix<6, 1> rhs6Elast(
       rhs6);  // rhs6Elast is the elastic part of the right hand side. We
               // need this to build the hessian numerically

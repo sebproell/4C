@@ -94,7 +94,7 @@ namespace Mat
               prinv,  ///< principal invariants of right Cauchy-Green tensor
           const Core::LinAlg::Matrix<3, 1>&
               modinv,  ///< modified invariants of right Cauchy-Green tensor
-          const Core::LinAlg::Matrix<6, 1>&
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>&
               glstrain,  ///< Green-Lagrange strain in strain like Voigt notation
           int gp,        ///< Gauss point
           int eleGID     ///< element GID

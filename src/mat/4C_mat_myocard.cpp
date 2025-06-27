@@ -9,6 +9,7 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_mat_myocard_fitzhugh_nagumo.hpp"
 #include "4C_mat_myocard_inada.hpp"
 #include "4C_mat_myocard_minimal.hpp"
@@ -236,12 +237,12 @@ void Mat::Myocard::unpack_material(Core::Communication::UnpackBuffer& buffer)
 /*----------------------------------------------------------------------*
  |  Setup conductivity tensor                                cbert 02/13 |
  *----------------------------------------------------------------------*/
-void Mat::Myocard::setup(const Core::LinAlg::Matrix<3, 1>& fiber1)
+void Mat::Myocard::setup(const Core::LinAlg::Tensor<double, 3>& fiber1)
 {
   setup_diffusion_tensor(fiber1);
 }
 
-void Mat::Myocard::setup(const Core::LinAlg::Matrix<2, 1>& fiber1)
+void Mat::Myocard::setup(const Core::LinAlg::Tensor<double, 2>& fiber1)
 {
   setup_diffusion_tensor(fiber1);
 }
@@ -288,7 +289,7 @@ void Mat::Myocard::setup_diffusion_tensor(const std::vector<double>& fiber1)
   return;
 }
 
-void Mat::Myocard::setup_diffusion_tensor(const Core::LinAlg::Matrix<3, 1>& fiber1)
+void Mat::Myocard::setup_diffusion_tensor(const Core::LinAlg::Tensor<double, 3>& fiber1)
 {
   // Normalize fiber1
   double fiber1normS = fiber1(0) * fiber1(0) + fiber1(1) * fiber1(1) + fiber1(2) * fiber1(2);
@@ -320,7 +321,7 @@ void Mat::Myocard::setup_diffusion_tensor(const Core::LinAlg::Matrix<3, 1>& fibe
   return;
 }
 
-void Mat::Myocard::setup_diffusion_tensor(const Core::LinAlg::Matrix<2, 1>& fiber1)
+void Mat::Myocard::setup_diffusion_tensor(const Core::LinAlg::Tensor<double, 2>& fiber1)
 {
   // Normalize fiber1
   double fiber1normS = fiber1(0) * fiber1(0) + fiber1(1) * fiber1(1);

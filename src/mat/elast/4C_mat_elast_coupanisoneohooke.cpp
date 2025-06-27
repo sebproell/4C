@@ -8,6 +8,7 @@
 #include "4C_mat_elast_coupanisoneohooke.hpp"
 
 #include "4C_comm_pack_helpers.hpp"
+#include "4C_linalg_tensor_generators.hpp"
 #include "4C_mat_elast_aniso_structuraltensor_strategy.hpp"
 #include "4C_material_parameter_base.hpp"
 FOUR_C_NAMESPACE_OPEN
@@ -52,7 +53,9 @@ void Mat::Elastic::CoupAnisoNeoHooke::setup(
     // fibers aligned in YZ-plane with gamma around Z in global cartesian cosy
     Core::LinAlg::Matrix<3, 3> Id(Core::LinAlg::Initialization::zero);
     for (int i = 0; i < 3; i++) Id(i, i) = 1.0;
-    set_fiber_vecs(-1.0, Id, Id);
+    set_fiber_vecs(-1.0,
+        Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>),
+        Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>));
   }
 
   // path if fibers are given in input file
@@ -64,12 +67,11 @@ void Mat::Elastic::CoupAnisoNeoHooke::setup(
         container.get<std::optional<std::vector<double>>>("CIR").has_value())
     {
       // Read in of data
-      Core::LinAlg::Matrix<3, 3> locsys(Core::LinAlg::Initialization::zero);
+      Core::LinAlg::Tensor<double, 3, 3> locsys{};
       read_rad_axi_cir(container, locsys);
-      Core::LinAlg::Matrix<3, 3> Id(Core::LinAlg::Initialization::zero);
-      for (int i = 0; i < 3; i++) Id(i, i) = 1.0;
       // final setup of fiber data
-      set_fiber_vecs(0.0, locsys, Id);
+      set_fiber_vecs(0.0, locsys,
+          Core::LinAlg::get_full(Core::LinAlg::TensorGenerators::identity<double, 3, 3>));
     }
 
     // FIBER1 nomenclature
@@ -91,14 +93,15 @@ void Mat::Elastic::CoupAnisoNeoHooke::setup(
 }
 
 void Mat::Elastic::CoupAnisoNeoHooke::add_stress_aniso_principal(
-    const Core::LinAlg::Matrix<6, 1>& rcg, Core::LinAlg::Matrix<6, 6>& cmat,
-    Core::LinAlg::Matrix<6, 1>& stress, Teuchos::ParameterList& params, const int gp,
-    const int eleGID)
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stress, const Teuchos::ParameterList& params,
+    const int gp, const int eleGID)
 {
   double c = params_->c_;
 
   double gamma = 2. * c;
-  stress.update(gamma, structural_tensor_, 1.0);
+  stress += gamma * structural_tensor_;
 
   // no contribution to cmat
   // double delta = 0.0;
@@ -106,14 +109,15 @@ void Mat::Elastic::CoupAnisoNeoHooke::add_stress_aniso_principal(
 }
 
 void Mat::Elastic::CoupAnisoNeoHooke::get_fiber_vecs(
-    std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+    std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
 ) const
 {
   fibervecs.push_back(a_);
 }
 
 void Mat::Elastic::CoupAnisoNeoHooke::set_fiber_vecs(const double newgamma,
-    const Core::LinAlg::Matrix<3, 3>& locsys, const Core::LinAlg::Matrix<3, 3>& defgrd)
+    const Core::LinAlg::Tensor<double, 3, 3>& locsys,
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrd)
 {
   if ((params_->gamma_ < -90) || (params_->gamma_ > 90))
     FOUR_C_THROW("Fiber angle not in [-90,90]");
@@ -128,19 +132,18 @@ void Mat::Elastic::CoupAnisoNeoHooke::set_fiber_vecs(const double newgamma,
       gamma = newgamma;
   }
 
-  Core::LinAlg::Matrix<3, 1> ca(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::Tensor<double, 3> ca{};
   for (int i = 0; i < 3; ++i)
   {
     // a = cos gamma e3 + sin gamma e2
     ca(i) = cos(gamma) * locsys(i, 2) + sin(gamma) * locsys(i, 1);
   }
   // pull back in reference configuration
-  Core::LinAlg::Matrix<3, 1> a_0(Core::LinAlg::Initialization::zero);
-  Core::LinAlg::Matrix<3, 3> idefgrd(Core::LinAlg::Initialization::zero);
-  idefgrd.invert(defgrd);
+  Core::LinAlg::Tensor<double, 3> a_0{};
+  Core::LinAlg::Tensor<double, 3, 3> idefgrd = Core::LinAlg::inv(defgrd);
 
-  a_0.multiply(idefgrd, ca);
-  a_.update(1. / a_0.norm2(), a_0);
+  a_0 = idefgrd * ca;
+  a_ = 1.0 / Core::LinAlg::norm2(a_0) * a_0;
 
   params_->structural_tensor_strategy()->setup_structural_tensor(a_, structural_tensor_);
 }

@@ -14,6 +14,11 @@
 #include "4C_fem_nurbs_discretization.hpp"
 #include "4C_global_data.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_products.hpp"
+#include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_linalg_utils_densematrix_determinant.hpp"
 #include "4C_linalg_utils_densematrix_eigen.hpp"
 #include "4C_mat_fourier.hpp"
@@ -114,8 +119,9 @@ void Discret::Elements::SolidSurface::trace_estimate_vol_matrix(
   const int dim = Core::FE::dim<dt_vol>;
 
   double jac;
-  Core::LinAlg::Matrix<3, 3> defgrd, rcg;
-  Core::LinAlg::Matrix<6, 1> glstrain;
+  Core::LinAlg::Tensor<double, 3, 3> defgrd;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> rcg;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain;
   Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3> bop;
   Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> bc;
   Core::LinAlg::Matrix<dim, Core::FE::num_nodes(dt_vol)> N_XYZ;
@@ -127,8 +133,8 @@ void Discret::Elements::SolidSurface::trace_estimate_vol_matrix(
     const Core::LinAlg::Matrix<3, 1> xi(ip.ip().qxg[gp], false);
     strains<dt_vol>(xrefe, xcurr, xi, jac, defgrd, glstrain, rcg, bop, N_XYZ);
 
-    Core::LinAlg::Matrix<6, 6> cmat(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> stress(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3> stress{};
     Teuchos::ParameterList params;
     if (not parent_scalar.empty())
     {
@@ -139,8 +145,8 @@ void Discret::Elements::SolidSurface::trace_estimate_vol_matrix(
       params.set("scalars", scalar_values_at_xi);
     }
     std::dynamic_pointer_cast<Mat::So3Material>(parent_element()->material())
-        ->evaluate(&defgrd, &glstrain, params, &stress, &cmat, gp, parent_element()->id());
-    bc.multiply_tn(bop, cmat);
+        ->evaluate(&defgrd, glstrain, params, stress, cmat, gp, parent_element()->id());
+    bc.multiply_tn(bop, Core::LinAlg::make_stress_like_voigt_view(cmat));
     vol.multiply(ip.ip().qwgt[gp] * jac, bc, bop, 1.);
   }
 }
@@ -165,8 +171,10 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
   std::vector<double> n(3);
   Core::LinAlg::Matrix<3, 1> n_v(n.data(), true);
   double detA, jac;
-  Core::LinAlg::Matrix<3, 3> defgrd, rcg, nn;
-  Core::LinAlg::Matrix<6, 1> glstrain;
+  Core::LinAlg::Tensor<double, 3, 3> defgrd;
+  Core::LinAlg::Matrix<3, 3> nn;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain, rcg;
+
   Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3> bop;
   Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> bc;
   Core::LinAlg::Matrix<dim, Core::FE::num_nodes(dt_vol)> N_XYZ;
@@ -192,8 +200,8 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
     for (int i = 0; i < 3; ++i) xi(i) = pqxg(0, i);
     strains<dt_vol>(xrefe, xcurr, xi, jac, defgrd, glstrain, rcg, bop, N_XYZ);
 
-    Core::LinAlg::Matrix<6, 6> cmat(Core::LinAlg::Initialization::zero);
-    Core::LinAlg::Matrix<6, 1> stress(Core::LinAlg::Initialization::zero);
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat{};
+    Core::LinAlg::SymmetricTensor<double, 3, 3> stress{};
     Teuchos::ParameterList params;
     if (not parent_scalar.empty())
     {
@@ -204,7 +212,7 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
       params.set("scalars", scalar_values_at_xi);
     }
     std::dynamic_pointer_cast<Mat::So3Material>(parent_element()->material())
-        ->evaluate(&defgrd, &glstrain, params, &stress, &cmat, gp, parent_element()->id());
+        ->evaluate(&defgrd, glstrain, params, stress, cmat, gp, parent_element()->id());
 
     double normalfac = 1.0;
     if (shape() == Core::FE::CellType::nurbs9)
@@ -239,13 +247,15 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix(
     nn.multiply_nt(n_v, n_v);
 
     Core::LinAlg::Matrix<6, 6> cn;
-    Core::LinAlg::FourTensorOperations::add_symmetric_holzapfel_product(cn, rcg, nn, 0.25);
+    Core::LinAlg::FourTensorOperations::add_symmetric_holzapfel_product(
+        cn, Core::LinAlg::make_matrix<3, 3>(Core::LinAlg::get_full(rcg)), nn, 0.25);
 
+    Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
     Core::LinAlg::Matrix<6, 6> tmp1, tmp2;
-    tmp1.multiply(cmat, id4);
+    tmp1.multiply(cmat_view, id4);
     tmp2.multiply(tmp1, cn);
     tmp1.multiply(tmp2, id4);
-    tmp2.multiply(tmp1, cmat);
+    tmp2.multiply(tmp1, cmat_view);
 
     Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> tmp3;
     tmp3.multiply_tn(bop, tmp2);
@@ -259,8 +269,9 @@ template <Core::FE::CellType dt_vol>
 void Discret::Elements::SolidSurface::strains(
     const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xrefe,
     const Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol), 3>& xcurr,
-    const Core::LinAlg::Matrix<3, 1>& xi, double& jac, Core::LinAlg::Matrix<3, 3>& defgrd,
-    Core::LinAlg::Matrix<6, 1>& glstrain, Core::LinAlg::Matrix<3, 3>& rcg,
+    const Core::LinAlg::Matrix<3, 1>& xi, double& jac, Core::LinAlg::Tensor<double, 3, 3>& defgrd,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,
     Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3>& bop,
     Core::LinAlg::Matrix<3, Core::FE::num_nodes(dt_vol)>& N_XYZ)
 {
@@ -289,18 +300,14 @@ void Discret::Elements::SolidSurface::strains(
   }
 
   Core::LinAlg::Matrix<dim, dim> invJ;
+  Core::LinAlg::Matrix<dim, dim> F_mat_view = Core::LinAlg::make_matrix_view(defgrd);
   invJ.multiply(deriv, xrefe);
   jac = invJ.invert();
   N_XYZ.multiply(invJ, deriv);
-  defgrd.multiply_tt(xcurr, N_XYZ);
+  F_mat_view.multiply_tt(xcurr, N_XYZ);
 
-  rcg.multiply_tn(defgrd, defgrd);
-  glstrain(0) = 0.5 * (rcg(0, 0) - 1.0);
-  glstrain(1) = 0.5 * (rcg(1, 1) - 1.0);
-  glstrain(2) = 0.5 * (rcg(2, 2) - 1.0);
-  glstrain(3) = rcg(0, 1);
-  glstrain(4) = rcg(1, 2);
-  glstrain(5) = rcg(2, 0);
+  rcg = Core::LinAlg::assume_symmetry(Core::LinAlg::transpose(defgrd) * defgrd);
+  glstrain = 0.5 * (rcg - Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 
   for (int i = 0; i < num_node; ++i)
   {
@@ -489,9 +496,9 @@ void Discret::Elements::SolidSurface::trace_estimate_vol_matrix_tsi(
   const int num_node = Core::FE::num_nodes(dt_vol);
 
   double jac;
-  Core::LinAlg::Matrix<3, 3> defgrd;
-  Core::LinAlg::Matrix<3, 3> rcg;
-  Core::LinAlg::Matrix<6, 1> glstrain;
+  Core::LinAlg::Tensor<double, 3, 3> defgrd;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> rcg;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain;
   Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3> bop;
   Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> bc;
   Core::LinAlg::Matrix<dim, num_node> N_XYZ, iC_N_XYZ;
@@ -511,7 +518,8 @@ void Discret::Elements::SolidSurface::trace_estimate_vol_matrix_tsi(
     strains<dt_vol>(xrefe, xcurr, xi, jac, defgrd, glstrain, rcg, bop, N_XYZ);
 
     Core::LinAlg::Matrix<3, 3> iC;
-    iC.multiply_tn(defgrd, defgrd);
+    Core::LinAlg::Matrix<3, 3> F_view = Core::LinAlg::make_matrix_view(defgrd);
+    iC.multiply_tn(F_view, F_view);
     iC.invert();
 
     iC_N_XYZ.multiply(iC, N_XYZ);
@@ -532,9 +540,9 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix_tsi(
   const int num_node = Core::FE::num_nodes(dt_vol);
 
   double jac;
-  Core::LinAlg::Matrix<3, 3> defgrd;
-  Core::LinAlg::Matrix<3, 3> rcg;
-  Core::LinAlg::Matrix<6, 1> glstrain;
+  Core::LinAlg::Tensor<double, 3, 3> defgrd;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> rcg;
+  Core::LinAlg::SymmetricTensor<double, 3, 3> glstrain;
   Core::LinAlg::Matrix<6, Core::FE::num_nodes(dt_vol) * 3> bop;
   Core::LinAlg::Matrix<Core::FE::num_nodes(dt_vol) * 3, 6> bc;
   Core::LinAlg::Matrix<dim, num_node> N_XYZ;
@@ -581,7 +589,8 @@ void Discret::Elements::SolidSurface::trace_estimate_surf_matrix_tsi(
     strains<dt_vol>(xrefe, xcurr, xi, jac, defgrd, glstrain, rcg, bop, N_XYZ);
 
     Core::LinAlg::Matrix<3, 3> iC;
-    iC.multiply_tn(defgrd, defgrd);
+    Core::LinAlg::Matrix<3, 3> F_view = Core::LinAlg::make_matrix_view(defgrd);
+    iC.multiply_tn(F_view, F_view);
     iC.invert();
     iCn.multiply(iC, n_v);
 

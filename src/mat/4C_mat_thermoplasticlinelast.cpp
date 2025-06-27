@@ -9,6 +9,9 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -324,14 +327,14 @@ void Mat::ThermoPlasticLinElast::update()
 /*----------------------------------------------------------------------*
  | evaluate material (public)                                dano 08/11 |
  *----------------------------------------------------------------------*/
-void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* glstrain,
-    Teuchos::ParameterList& params,                  // parameter list for communication & HISTORY
-    Core::LinAlg::Matrix<NUM_STRESS_3D, 1>* stress,  // 2nd PK-stress
-    Core::LinAlg::Matrix<NUM_STRESS_3D, NUM_STRESS_3D>* cmat,  // material stiffness matrix
-    int gp,                                                    ///< Gauss point
-    int eleGID)
+void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> plstrain(Core::LinAlg::Initialization::zero);
   if (eleGID == -1) FOUR_C_THROW("no element provided in material");
 
@@ -365,7 +368,8 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   //  strain^e: definition of additive decomposition:
   //  strain^e = strain - strain^p
   // REMARK: stress-like 6-Voigt vector
-  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> strain(*glstrain);
+  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> strain =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
 
   //---------------------------------------------------------------------------
   // elastic predictor (trial values)
@@ -424,8 +428,10 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   double p = kappa * tracestrain;
 
   // deviatoric stress = 2 . G . devstrain
-  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> devstress(Core::LinAlg::Initialization::uninitialized);
-  devstress.update((2.0 * G), devstrain);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> devstress;
+  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> devstress_view =
+      Core::LinAlg::make_stress_like_voigt_view(devstress);
+  devstress_view.update((2.0 * G), devstrain);
   // be careful for shear stresses (sigma_12)
   // in Voigt-notation the shear strains have to be scaled with 1/2
   // normally done in the material tangent (cf. id4sharp)
@@ -433,7 +439,7 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   // ------------------------------------------ relative effective stress
   // eta^{trial}_{n+1} = s^{trial}_{n+1} - beta^{trial}_{n+1}
   Core::LinAlg::Matrix<NUM_STRESS_3D, 1> eta(Core::LinAlg::Initialization::zero);
-  rel_dev_stress(devstress, beta, eta);
+  rel_dev_stress(devstress_view, beta, eta);
 
   // J2 = 1/2 ( (eta11^{trial})^2 + (eta22^{trial})^2 + (eta33^{trial})^2
   //      + 2 . (eta12^{trial})^2 + 2 . (eta23^{trial})^2 + 2 . (eta13^{trial})^2)
@@ -658,12 +664,12 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
     // deviatoric stress
     // s = s_{n+1}^{trial} - 2 . G . Delta gamma . N
     const double facdevstress = (-2.0) * G * Dgamma;
-    devstress.update(facdevstress, N, 1.0);
+    devstress_view.update(facdevstress, N, 1.0);
 
     // total stress
     // sigma_{n+1} = s_{n+1} + p_{n+1} . id2
     // pressure/volumetric stress no influence due to plasticity
-    ThermoPlasticLinElast::stress(p, devstress, *stress);
+    ThermoPlasticLinElast::stress(p, devstress, stress);
 
     // total strains
     // strain^e_{n+1} = strain^(e,trial)_{n+1} - Dgamma . N
@@ -697,7 +703,7 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   {
     // trial state vectors = result vectors of time step n+1
     // sigma^e_{n+1} = sigma^{e,trial}_{n+1} = s^{trial}_{n+1} + p . id2
-    ThermoPlasticLinElast::stress(p, devstress, *stress);
+    ThermoPlasticLinElast::stress(p, devstress, stress);
 
     // total strains
     // strain^e_{n+1} = strain^(e,trial)_{n+1}
@@ -754,11 +760,9 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
 
   // temperature dependent stress
   // sigma = C_theta * Delta T = (m*I) * Delta T
-  Core::LinAlg::Matrix<6, 1> ctemp(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> ctemp{};
   setup_cthermo(ctemp);
-  Core::LinAlg::Matrix<6, 1> stresstemp(Core::LinAlg::Initialization::uninitialized);
-  stresstemp.multiply_nn(ctemp, deltaT);
-  stress->update(1.0, stresstemp, 1.0);
+  stress += deltaT(0, 0) * ctemp;
 
   //---------------------------------------------------------------------------
   // --------------------------------- consistent elastoplastic tangent modulus
@@ -775,7 +779,7 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
 
   // using an associative flow rule: C_ep is symmetric
   // ( generally C_ep is nonsymmetric )
-  setup_cmat_elasto_plastic(*cmat, Dgamma, G, qbar, N, Nbar, heaviside, Hiso, Hkin);
+  setup_cmat_elasto_plastic(cmat_view, Dgamma, G, qbar, N, Nbar, heaviside, Hiso, Hkin);
 
 
   //---------------------------------------------------------------------------
@@ -794,7 +798,7 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
 
   // ------------------------------------------------ dissipation for r_T
   // calculate mechanical dissipation required for thermo balance equation
-  dissipation(gp, sigma_yiso, Dgamma, N, *stress);
+  dissipation(gp, sigma_yiso, Dgamma, N, stress_view);
 
   // --------------------------------------- kinematic hardening for k_TT
   // temperature-dependent dissipated mechanical power
@@ -805,21 +809,14 @@ void Mat::ThermoPlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defg
   if (tracestrainp > 1.0E-8) FOUR_C_THROW("trace of plastic strains is not equal to zero!");
 
   // ----------------------------------- linearisation of D_mech for k_Td
-  dissipation_coupl_cond(*cmat, gp, G, Hiso, Hkin, heaviside, etanorm, Dgamma, N, *stress);
-
-  // ----------------------------------------------------- postprocessing
-
-  // plastic strain
-  plstrain = strainplcurr_->at(gp);
-  // save the plastic strain for postprocessing
-  params.set<Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1>>("plglstrain", plstrain);
+  dissipation_coupl_cond(cmat_view, gp, G, Hiso, Hkin, heaviside, etanorm, Dgamma, N, stress_view);
 }  // evaluate()
 
 /*----------------------------------------------------------------------*
  | Set current quantities for this material                             |
  *----------------------------------------------------------------------*/
-void Mat::ThermoPlasticLinElast::reinit(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* glstrain, double temperature, unsigned gp)
+void Mat::ThermoPlasticLinElast::reinit(const Core::LinAlg::Tensor<double, 3, 3>* defgrd,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain, double temperature, unsigned gp)
 {
   reinit(temperature, gp);
 }
@@ -829,44 +826,39 @@ void Mat::ThermoPlasticLinElast::reinit(const Core::LinAlg::Matrix<3, 3>* defgrd
  |   for coupled thermomechanics                                        |
  *----------------------------------------------------------------------*/
 void Mat::ThermoPlasticLinElast::stress_temperature_modulus_and_deriv(
-    Core::LinAlg::Matrix<6, 1>& stm, Core::LinAlg::Matrix<6, 1>& stm_dT, int gp)
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stm,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stm_dT, int gp)
 {
   setup_cthermo(stm);
-  stm_dT.clear();
+  stm_dT = Core::LinAlg::TensorGenerators::full<3, 3>(0.0);
 }
 
 /*----------------------------------------------------------------------*
  |  Evaluates the added derivatives of the stress w.r.t. all scalars    |
  *----------------------------------------------------------------------*/
-Core::LinAlg::Matrix<6, 1> Mat::ThermoPlasticLinElast::evaluate_d_stress_d_scalar(
-    const Core::LinAlg::Matrix<3, 3>& defgrad, const Core::LinAlg::Matrix<6, 1>& glstrain,
-    Teuchos::ParameterList& params, int gp, int eleGID)
+Core::LinAlg::SymmetricTensor<double, 3, 3> Mat::ThermoPlasticLinElast::evaluate_d_stress_d_scalar(
+    const Core::LinAlg::Tensor<double, 3, 3>& defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, int gp, int eleGID)
 {
-  Core::LinAlg::Matrix<6, 1> dS_dT(Core::LinAlg::Initialization::zero);
-
   // get the temperature-dependent material tangent
-  Core::LinAlg::Matrix<6, 1> ctemp(Core::LinAlg::Initialization::zero);
+  Core::LinAlg::SymmetricTensor<double, 3, 3> ctemp;
   setup_cthermo(ctemp);
 
-  // add the derivatives of thermal stress w.r.t temperature
-  dS_dT.update(1.0, ctemp, 1.0);
-
-  return dS_dT;
+  return ctemp;
 }
 
 /*----------------------------------------------------------------------*
  | computes linear stress tensor                             dano 05/11 |
  *----------------------------------------------------------------------*/
-void Mat::ThermoPlasticLinElast::stress(const double p,       // volumetric stress
-    const Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& devstress,  // deviatoric stress tensor
-    Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& stress            // 2nd PK-stress
+void Mat::ThermoPlasticLinElast::stress(const double p,            // volumetric stress
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& devstress,  // deviatoric stress tensor
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stress            // 2nd PK-stress
 ) const
 {
   // total stress = deviatoric + hydrostatic pressure . I
   // sigma = s + p . I
-  stress.update(devstress);
-  for (int i = 0; i < 3; ++i) stress(i) += p;
-
+  stress = devstress + p * Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
 }  // Stress()
 
 
@@ -1265,7 +1257,8 @@ void Mat::ThermoPlasticLinElast::dissipation_coupl_cond(
  *----------------------------------------------------------------------*/
 void Mat::ThermoPlasticLinElast::evaluate(
     const Core::LinAlg::Matrix<1, 1>& Ntemp,  // shapefcts . temperatures
-    Core::LinAlg::Matrix<6, 1>& ctemp, Core::LinAlg::Matrix<6, 1>& stresstemp)
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& ctemp,
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& stresstemp)
 {
   setup_cthermo(ctemp);
 
@@ -1278,7 +1271,7 @@ void Mat::ThermoPlasticLinElast::evaluate(
 
   // temperature dependent stress
   // sigma = C_theta * Delta T = (m*I) * Delta T
-  stresstemp.multiply_nn(ctemp, deltaT);
+  stresstemp = ctemp * deltaT(0, 0);
 
   // if stresstemp(i,i)=const.: (sigma_T : strainp' == 0), because (tr(strainp') == 0)
   // for different thermal stresses, term has to be considered!!!
@@ -1299,7 +1292,8 @@ void Mat::ThermoPlasticLinElast::evaluate(
  | computes temperature dependent isotropic                  dano 05/10 |
  | elasticity tensor in matrix notion for 3d, second(!) order tensor    |
  *----------------------------------------------------------------------*/
-void Mat::ThermoPlasticLinElast::setup_cthermo(Core::LinAlg::Matrix<NUM_STRESS_3D, 1>& ctemp) const
+void Mat::ThermoPlasticLinElast::setup_cthermo(
+    Core::LinAlg::SymmetricTensor<double, 3, 3>& ctemp) const
 {
   double m = st_modulus();
 
@@ -1316,12 +1310,7 @@ void Mat::ThermoPlasticLinElast::setup_cthermo(Core::LinAlg::Matrix<NUM_STRESS_3
   // write non-zero components
 
   // clear the material tangent
-  ctemp.clear();
-
-  // loop over the element nodes
-  for (int i = 0; i < 3; ++i) ctemp(i, 0) = m;  // non-zero entries only in main directions
-  // remaining terms zero
-
+  ctemp = m * Core::LinAlg::TensorGenerators::identity<double, 3, 3>;
 }  // setup_cthermo()
 
 

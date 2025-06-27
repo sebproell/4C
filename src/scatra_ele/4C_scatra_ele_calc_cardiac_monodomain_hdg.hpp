@@ -130,7 +130,7 @@ namespace Discret
        */
       template <std::size_t dim>
       void setup_cardiac_fibers(const Core::Nodes::NodalFiberHolder& fibers,
-          std::vector<Core::LinAlg::Matrix<dim, 1>>& f);
+          std::vector<Core::LinAlg::Tensor<double, dim>>& f);
 
       /// polynomial space for element interior for various Gauss Points for the evaluation of the
       /// material

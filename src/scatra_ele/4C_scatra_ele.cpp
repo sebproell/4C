@@ -542,7 +542,7 @@ void Discret::Elements::Transport::set_material(int matnum, Core::Elements::Elem
 
     // copy fiber information from solid material to scatra material (for now, only one fiber
     // vector)
-    std::vector<Core::LinAlg::Matrix<3, 1>> fibervecs;
+    std::vector<Core::LinAlg::Tensor<double, 3>> fibervecs;
     somat->get_fiber_vecs(fibervecs);
     actmat->setup(fibervecs[0]);
   }

@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_anisotropy_extension_default.hpp"
 #include "4C_mat_anisotropy_extension_provider.hpp"
 #include "4C_mat_elast_coupanisoexpobase.hpp"
@@ -55,15 +56,14 @@ namespace Mat
        * \param gp Gauss point
        * \return const Core::LinAlg::Matrix<3, 1>& Constant reference to the fiber
        */
-      const Core::LinAlg::Matrix<3, 1>& get_fiber(int gp) const;
-      const Core::LinAlg::Matrix<3, 3>& get_structural_tensor(int gp) const override;
-      const Core::LinAlg::Matrix<6, 1>& get_structural_tensor_stress(int gp) const override;
+      const Core::LinAlg::Tensor<double, 3>& get_fiber(int gp) const;
+      const Core::LinAlg::SymmetricTensor<double, 3, 3>& get_structural_tensor(
+          int gp) const override;
 
       // Tell the compiler that we still want the methods from FiberAnisotropyExtension with a
       // different signature
       using FiberAnisotropyExtension<1>::get_fiber;
       using FiberAnisotropyExtension<1>::get_structural_tensor;
-      using FiberAnisotropyExtension<1>::get_structural_tensor_stress;
     };
 
     namespace PAR
@@ -150,18 +150,18 @@ namespace Mat
       void register_anisotropy_extensions(Mat::Anisotropy& anisotropy) override;
 
       /// Set fiber directions
-      void set_fiber_vecs(double newgamma,           ///< new angle
-          const Core::LinAlg::Matrix<3, 3>& locsys,  ///< local coordinate system
-          const Core::LinAlg::Matrix<3, 3>& defgrd   ///< deformation gradient
+      void set_fiber_vecs(double newgamma,                   ///< new angle
+          const Core::LinAlg::Tensor<double, 3, 3>& locsys,  ///< local coordinate system
+          const Core::LinAlg::Tensor<double, 3, 3>& defgrd   ///< deformation gradient
           ) override;
 
       /// Set fiber directions
-      void set_fiber_vecs(const Core::LinAlg::Matrix<3, 1>& fibervec  ///< new fiber vector
+      void set_fiber_vecs(const Core::LinAlg::Tensor<double, 3>& fibervec  ///< new fiber vector
           ) override;
 
       /// Get fiber directions
       void get_fiber_vecs(
-          std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+          std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
       ) const override;
 
       /*!

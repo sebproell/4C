@@ -69,10 +69,8 @@ namespace
         Discret::Elements::get_initialized_cauchy_n_dir_linearization_dependencies(
             evaluator, linearizations);
 
-    double cauchy_n_dir = 0;
-    mat.evaluate_cauchy_n_dir_and_derivatives(Core::LinAlg::make_matrix_view(deformation_gradient),
-        Core::LinAlg::make_matrix_view<3, 1>(n), Core::LinAlg::make_matrix_view<3, 1>(dir),
-        cauchy_n_dir, linearizations.d_cauchyndir_dn, linearizations.d_cauchyndir_ddir,
+    double cauchy_n_dir = mat.evaluate_cauchy_n_dir_and_derivatives(deformation_gradient, n, dir,
+        linearizations.d_cauchyndir_dn, linearizations.d_cauchyndir_ddir,
         get_ptr(linearization_dependencies.d_cauchyndir_dF),
         get_ptr(linearization_dependencies.d2_cauchyndir_dF2),
         get_ptr(linearization_dependencies.d2_cauchyndir_dF_dn),
@@ -307,10 +305,7 @@ void Discret::Elements::SolidEleCalc<celltype, ElementFormulation>::update(
                 const Core::LinAlg::SymmetricTensor<double, Core::FE::dim<celltype>,
                     Core::FE::dim<celltype>>& gl_strain,
                 const auto& linearization)
-            {
-              solid_material.update(
-                  Core::LinAlg::make_matrix_view(deformation_gradient), gp, params, ele.id());
-            });
+            { solid_material.update(deformation_gradient, gp, params, ele.id()); });
       });
 
   solid_material.update();
@@ -346,9 +341,7 @@ double Discret::Elements::SolidEleCalc<celltype, ElementFormulation>::calculate_
                     Core::FE::dim<celltype>>& gl_strain,
                 const auto& linearization)
             {
-              double psi = 0.0;
-              solid_material.strain_energy(
-                  Core::LinAlg::make_strain_like_voigt_matrix(gl_strain), psi, gp, ele.id());
+              double psi = solid_material.strain_energy(gl_strain, gp, ele.id());
               intenergy += psi * integration_factor;
             });
       });

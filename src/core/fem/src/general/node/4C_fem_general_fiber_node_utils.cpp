@@ -61,13 +61,13 @@ void Core::Nodes::project_fibers_to_gauss_points(const Core::Nodes::Node* const*
   // project fibers
   for (const auto& fiber : fibers)
   {
-    std::vector<Core::LinAlg::Matrix<3, 1>> gpQuantity;
+    std::vector<Core::LinAlg::Tensor<double, 3>> gpQuantity;
     project_quantity_with_shape_functions<distype, 3>(fiber, shapefcts, gpQuantity);
 
     // normalize fiber vectors
-    for (Core::LinAlg::Matrix<3, 1>& quantity : gpQuantity)
+    for (Core::LinAlg::Tensor<double, 3>& quantity : gpQuantity)
     {
-      quantity.scale(1.0 / quantity.norm2());
+      quantity *= 1.0 / Core::LinAlg::norm2(quantity);
     }
 
     // add quantity to the fiber holder
@@ -79,13 +79,13 @@ void Core::Nodes::project_fibers_to_gauss_points(const Core::Nodes::Node* const*
   for (const auto& pair : coordinateSystemDirections)
   {
     const Core::Nodes::CoordinateSystemDirection type = pair.first;
-    std::vector<Core::LinAlg::Matrix<3, 1>> gpQuantity;
+    std::vector<Core::LinAlg::Tensor<double, 3>> gpQuantity;
     project_quantity_with_shape_functions<distype, 3>(pair.second, shapefcts, gpQuantity);
 
     // normalize fiber vectors
-    for (Core::LinAlg::Matrix<3, 1>& quantity : gpQuantity)
+    for (Core::LinAlg::Tensor<double, 3>& quantity : gpQuantity)
     {
-      quantity.scale(1.0 / quantity.norm2());
+      quantity *= 1.0 / Core::LinAlg::norm2(quantity);
     }
 
     // add quantity to the fiber holder
@@ -108,31 +108,31 @@ void Core::Nodes::project_fibers_to_gauss_points(const Core::Nodes::Node* const*
   if (gpFiberHolder.contains_coordinate_system_direction(CoordinateSystemDirection::Circular) &&
       gpFiberHolder.contains_coordinate_system_direction(CoordinateSystemDirection::Tangential))
   {
-    const std::vector<Core::LinAlg::Matrix<3, 1>>& cir =
+    const std::vector<Core::LinAlg::Tensor<double, 3>>& cir =
         gpFiberHolder.get_coordinate_system_direction(CoordinateSystemDirection::Circular);
-    std::vector<Core::LinAlg::Matrix<3, 1>>& tan =
+    std::vector<Core::LinAlg::Tensor<double, 3>>& tan =
         gpFiberHolder.get_coordinate_system_direction_mutual(CoordinateSystemDirection::Tangential);
 
     // orthogonalize tangential vector, preserve circular direction
     for (std::size_t gp = 0; gp < tan.size(); ++gp)
     {
-      double tancir = tan[gp].dot(cir[gp]);
-      tan[gp].update(-tancir, cir[gp], 1.0);
-      tan[gp].scale(1.0 / tan[gp].norm2());
+      double tancir = tan[gp] * cir[gp];
+      tan[gp] += -tancir * cir[gp];
+      tan[gp] *= 1.0 / Core::LinAlg::norm2(tan[gp]);
     }
 
     // orthogonalize radial vector, preserve circular and tangential direction
     if (gpFiberHolder.contains_coordinate_system_direction(CoordinateSystemDirection::Radial))
     {
-      std::vector<Core::LinAlg::Matrix<3, 1>>& rad =
+      std::vector<Core::LinAlg::Tensor<double, 3>>& rad =
           gpFiberHolder.get_coordinate_system_direction_mutual(CoordinateSystemDirection::Radial);
       for (std::size_t gp = 0; gp < tan.size(); ++gp)
       {
-        double radcir = rad[gp].dot(cir[gp]);
-        double radtan = rad[gp].dot(tan[gp]);
+        double radcir = rad[gp] * cir[gp];
+        double radtan = rad[gp] * tan[gp];
         // double
-        rad[gp].update(-radcir, cir[gp], -radtan, tan[gp], 1.0);
-        rad[gp].scale(1.0 / rad[gp].norm2());
+        rad[gp] += -radcir * cir[gp] - radtan * tan[gp];
+        rad[gp] *= 1.0 / Core::LinAlg::norm2(rad[gp]);
       }
     }
   }
@@ -142,7 +142,7 @@ template <Core::FE::CellType distype, std::size_t dim>
 void Core::Nodes::project_quantity_with_shape_functions(
     const std::array<std::array<double, dim>, Core::FE::num_nodes(distype)> quantity,
     const std::vector<Core::LinAlg::Matrix<Core::FE::num_nodes(distype), 1>>& shapefcts,
-    std::vector<Core::LinAlg::Matrix<dim, 1>>& quantityProjected)
+    std::vector<Core::LinAlg::Tensor<double, dim>>& quantityProjected)
 {
   quantityProjected.resize(shapefcts.size());
 
@@ -155,9 +155,9 @@ void Core::Nodes::project_quantity_with_shape_functions(
   // number of gauss points
   const std::size_t ngp = shapefcts.size();
 
-  for (Core::LinAlg::Matrix<dim, 1>& quantity : quantityProjected)
+  for (Core::LinAlg::Tensor<double, dim>& quantity : quantityProjected)
   {
-    quantity.clear();
+    quantity = {};
   }
 
   for (std::size_t i = 0; i < nsd; ++i)

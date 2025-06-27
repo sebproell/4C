@@ -9,6 +9,8 @@
 
 #include "4C_linalg_fixedsizematrix_generators.hpp"
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor_generators.hpp"
 #include "4C_mat_elast_aniso_structuraltensor_strategy.hpp"
 #include "4C_mat_service.hpp"
 #include "4C_material_parameter_base.hpp"
@@ -63,23 +65,25 @@ void Mixture::AnisotropicGrowthStrategy::register_anisotropy_extensions(Mat::Ani
 }
 
 void Mixture::AnisotropicGrowthStrategy::evaluate_inverse_growth_deformation_gradient(
-    Core::LinAlg::Matrix<3, 3>& iFgM, const Mixture::MixtureRule& mixtureRule,
+    Core::LinAlg::Tensor<double, 3, 3>& iFgM, const Mixture::MixtureRule& mixtureRule,
     double currentReferenceGrowthScalar, int gp) const
 {
   const Core::LinAlg::Matrix<3, 3> Id = Core::LinAlg::identity_matrix<3>();
 
-  iFgM.update(1.0 / currentReferenceGrowthScalar - 1.0,
-      anisotropy_extension_.get_structural_tensor(gp, 0), 1.0, Id);
+  iFgM = Core::LinAlg::get_full((1.0 / currentReferenceGrowthScalar - 1.0) *
+                                    anisotropy_extension_.get_structural_tensor(gp, 0) +
+                                Core::LinAlg::TensorGenerators::identity<double, 3, 3>);
 }
 
 void Mixture::AnisotropicGrowthStrategy::evaluate_growth_stress_cmat(
     const Mixture::MixtureRule& mixtureRule, double currentReferenceGrowthScalar,
-    const Core::LinAlg::Matrix<1, 6>& dCurrentReferenceGrowthScalarDC,
-    const Core::LinAlg::Matrix<3, 3>& F, const Core::LinAlg::Matrix<6, 1>& E_strain,
-    Teuchos::ParameterList& params, Core::LinAlg::Matrix<6, 1>& S_stress,
-    Core::LinAlg::Matrix<6, 6>& cmat, const int gp, const int eleGID) const
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& dCurrentReferenceGrowthScalarDC,
+    const Core::LinAlg::Tensor<double, 3, 3>& F,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& E_strain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& S_stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, const int gp, const int eleGID) const
 {
-  S_stress.clear();
-  cmat.clear();
+  S_stress = {};
+  cmat = {};
 }
 FOUR_C_NAMESPACE_CLOSE

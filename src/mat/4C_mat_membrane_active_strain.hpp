@@ -163,25 +163,24 @@ namespace Mat
     void setup(int numgp, const Core::IO::InputParameterContainer& container) override;
 
     /// Standard SO3 evaluate (not meant to be used)
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,  ///< Deformation gradient
-        const Core::LinAlg::Matrix<6, 1>* glstrain,          ///< Green-Lagrange strain
-        Teuchos::ParameterList& params,      ///< Container for additional information
-        Core::LinAlg::Matrix<6, 1>* stress,  ///< 2nd Piola-Kirchhoff stresses
-        Core::LinAlg::Matrix<6, 6>* cmat,    ///< Constitutive matrix
-        int gp,                              ///< Gauss point
-        int eleGID) override                 ///< Element ID
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp,
+        int eleGID) override  ///< Element ID
     {
       FOUR_C_THROW("This a membrane material. Calling So3 evaluate does not make sense.");
     };
 
-    void update_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd, Teuchos::ParameterList& params,
-        const Core::LinAlg::Matrix<3, 3>& Q_trafo, int gp, int eleGID) override
+    void update_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd,
+        const Teuchos::ParameterList& params, const Core::LinAlg::Matrix<3, 3>& Q_trafo, int gp,
+        int eleGID) override
     {
       // nothing to do
     }
 
     void evaluate_membrane(const Core::LinAlg::Matrix<3, 3>& defgrd,
-        const Core::LinAlg::Matrix<3, 3>& cauchygreen, Teuchos::ParameterList& params,
+        const Core::LinAlg::Matrix<3, 3>& cauchygreen, const Teuchos::ParameterList& params,
         const Core::LinAlg::Matrix<3, 3>& Q_trafo, Core::LinAlg::Matrix<3, 1>& stress,
         Core::LinAlg::Matrix<3, 3>& cmat, int gp, int eleGID) override;
 

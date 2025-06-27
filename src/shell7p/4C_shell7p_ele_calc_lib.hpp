@@ -15,6 +15,11 @@
 #include "4C_fem_general_node.hpp"
 #include "4C_fem_general_utils_fem_shapefunctions.hpp"
 #include "4C_linalg_fixedsizematrix_tensor_transformation.hpp"
+#include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
+#include "4C_mat_material_factory.hpp"
 #include "4C_mat_so3_material.hpp"
 #include "4C_shell7p_ele.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
@@ -157,8 +162,20 @@ namespace Discret::Elements::Shell
     if (dim != 3) FOUR_C_THROW("stop: this currently only works for 3D");
     Discret::Elements::Shell::Stress<Mat::NUM_STRESS_3D> stress;
 
-    material.evaluate(
-        &strains.defgrd_, &strains.gl_strain_, params, &stress.pk2_, &stress.cmat_, gp, eleGID);
+    Core::LinAlg::SymmetricTensor<double, 3, 3> pk2;
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3> cmat;
+    Core::LinAlg::Tensor<double, 3, 3> defgrd = Core::LinAlg::make_tensor(strains.defgrd_);
+    Core::LinAlg::Matrix<6, 1> gl_stress;
+    Core::LinAlg::Voigt::Strains::to_stress_like(strains.gl_strain_, gl_stress);
+
+    Core::LinAlg::SymmetricTensor<double, 3, 3> gl_strain =
+        Core::LinAlg::make_symmetric_tensor_from_stress_like_voigt_matrix(gl_stress);
+
+
+    material.evaluate(&defgrd, gl_strain, params, pk2, cmat, gp, eleGID);
+
+    stress.pk2_ = {Core::LinAlg::make_stress_like_voigt_view(pk2), false};
+    stress.cmat_ = {Core::LinAlg::make_stress_like_voigt_view(cmat), false};
 
     return stress;
   }

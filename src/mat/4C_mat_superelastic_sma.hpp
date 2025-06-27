@@ -192,9 +192,6 @@ namespace Mat
     bool vis_data(
         const std::string& name, std::vector<double>& data, int numgp, int eleID) const override;
 
-    /// Return whether the material requires the deformation gradient for its evaluation
-    bool needs_defgrd() const override { return true; };
-
     //@}
 
     //! @name Evaluation methods
@@ -206,14 +203,14 @@ namespace Mat
     void update() override;
 
     //! evaluate material law
-    void evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-        const Core::LinAlg::Matrix<6, 1>* glstrain, Teuchos::ParameterList& params,
-        Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, int gp,
-        int eleGID) override;
+    void evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+        const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+        Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID) override;
 
     /// evaluate strain energy function
-    void strain_energy(
-        const Core::LinAlg::Matrix<6, 1>& glstrain, double& psi, int gp, int eleGID) const override;
+    [[nodiscard]] double strain_energy(const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+        int gp, int eleGID) const override;
 
     //@}
 

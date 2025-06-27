@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "4C_linalg_fixedsizematrix_voigt_notation.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
 #include "4C_mat_anisotropy.hpp"
 #include "4C_mat_elast_coupanisoexpo.hpp"
 #include "4C_mat_elast_coupanisoexposhear.hpp"
@@ -17,15 +18,14 @@ namespace
 {
   using namespace FourC;
 
-  void setup_single_structural_tensor(const Core::LinAlg::Matrix<3, 1>& fiber1,
-      const Core::LinAlg::Matrix<3, 1>& fiber2, Core::LinAlg::Matrix<3, 3>& structuralTensor)
+  void setup_single_structural_tensor(const Core::LinAlg::Tensor<double, 3>& fiber1,
+      const Core::LinAlg::Tensor<double, 3>& fiber2,
+      Core::LinAlg::SymmetricTensor<double, 3, 3>& structuralTensor)
   {
-    Core::LinAlg::Matrix<3, 3> fiber1fiber2T(Core::LinAlg::Initialization::uninitialized);
+    Core::LinAlg::Tensor<double, 3, 3> fiber1fiber2T = Core::LinAlg::dyadic(fiber1, fiber2);
 
-    fiber1fiber2T.multiply_nt(fiber1, fiber2);
-
-    structuralTensor.update(0.5, fiber1fiber2T);
-    structuralTensor.update_t(0.5, fiber1fiber2T, 1.0);
+    structuralTensor =
+        0.5 * Core::LinAlg::assume_symmetry(fiber1fiber2T + Core::LinAlg::transpose(fiber1fiber2T));
   }
 
   class CoupAnisoExpoShearElementFibersTest
@@ -33,11 +33,7 @@ namespace
   {
    public:
     CoupAnisoExpoShearElementFibersTest()
-        : anisotropy_(),
-          eleFibers_(3),
-          eleTensors_(Core::LinAlg::Initialization::uninitialized),
-          eleTensors_stress_(Core::LinAlg::Initialization::uninitialized),
-          eleScalarProducts_(0.0)
+        : anisotropy_(), eleFibers_(3), eleTensors_(), eleScalarProducts_(0.0)
     {
       // setup fibers fibers
       eleFibers_[0](0) = 0.858753861115007;
@@ -56,11 +52,9 @@ namespace
       setup_single_structural_tensor(
           eleFibers_[get_fiber_ids()[0]], eleFibers_[get_fiber_ids()[1]], eleTensors_);
 
-      // Setup structural tensors in stress like Voigt notation
-      Core::LinAlg::Voigt::Stresses::matrix_to_vector(eleTensors_, eleTensors_stress_);
-
       // setup scalar product
-      eleScalarProducts_ = eleFibers_[get_fiber_ids()[0]].dot(eleFibers_[get_fiber_ids()[1]]);
+      eleScalarProducts_ =
+          Core::LinAlg::dot(eleFibers_[get_fiber_ids()[0]], eleFibers_[get_fiber_ids()[1]]);
 
       setup_anisotropy_extension(get_fiber_ids());
     }
@@ -85,9 +79,8 @@ namespace
     Mat::Anisotropy anisotropy_;
     std::unique_ptr<Mat::Elastic::CoupAnisoExpoShearAnisotropyExtension> anisotropyExtension_;
 
-    std::vector<Core::LinAlg::Matrix<3, 1>> eleFibers_;
-    Core::LinAlg::Matrix<3, 3> eleTensors_;
-    Core::LinAlg::Matrix<6, 1> eleTensors_stress_;
+    std::vector<Core::LinAlg::Tensor<double, 3>> eleFibers_;
+    Core::LinAlg::SymmetricTensor<double, 3, 3> eleTensors_;
     double eleScalarProducts_;
   };
 
@@ -101,12 +94,6 @@ namespace
   {
     FOUR_C_EXPECT_NEAR(
         anisotropyExtension_->get_structural_tensor(get_gauss_point()), eleTensors_, 1e-10);
-  }
-
-  TEST_P(CoupAnisoExpoShearElementFibersTest, get_structural_tensorStress)
-  {
-    FOUR_C_EXPECT_NEAR(anisotropyExtension_->get_structural_tensor_stress(get_gauss_point()),
-        eleTensors_stress_, 1e-10);
   }
 
   INSTANTIATE_TEST_SUITE_P(GaussPoints, CoupAnisoExpoShearElementFibersTest,

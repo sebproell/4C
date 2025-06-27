@@ -15,6 +15,8 @@
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_legacy_enum_definitions_materials.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
+#include "4C_linalg_symmetric_tensor.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_linalg_vector.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -110,14 +112,14 @@ namespace Mat
       virtual void setup(int numgp, const Core::IO::InputParameterContainer& container) {};
 
       //! Dummy routine for setup of patient-specific materials
-      virtual void setup_aaa(Teuchos::ParameterList& params, const int eleGID) {};
+      virtual void setup_aaa(const Teuchos::ParameterList& params, const int eleGID) {};
 
       /*!
        * @brief Post setup routine for summands. It will be called once after everything is set up.
        *
        * @param params Container for additional information
        */
-      virtual void post_setup(Teuchos::ParameterList& params) {};
+      virtual void post_setup(const Teuchos::ParameterList& params) {};
 
       //! Dummy routine for setup update of summand
       virtual void update() {};
@@ -128,7 +130,7 @@ namespace Mat
               prinv,  ///< principal invariants of right Cauchy-Green tensor
           const Core::LinAlg::Matrix<3, 1>&
               modinv,  ///< modified invariants of right Cauchy-Green tensor
-          const Core::LinAlg::Matrix<6, 1>&
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>&
               glstrain,  ///< Green-Lagrange strain in strain like Voigt notation
           int gp,        ///< Gauss point
           int eleGID     ///< element GID
@@ -379,7 +381,7 @@ namespace Mat
        * @param eleGID Global element id
        */
       virtual void evaluate_first_derivatives_aniso(Core::LinAlg::Matrix<2, 1>& dPI_aniso,
-          Core::LinAlg::Matrix<3, 3> const& rcg, int gp, int eleGID);
+          Core::LinAlg::SymmetricTensor<double, 3, 3> const& rcg, int gp, int eleGID);
 
       /*!
        * @brief Retrieve second derivative of the summand with respect to the anisotropic invariants
@@ -406,7 +408,7 @@ namespace Mat
        * @param eleGID Global element id
        */
       virtual void evaluate_second_derivatives_aniso(Core::LinAlg::Matrix<3, 1>& ddPII_aniso,
-          Core::LinAlg::Matrix<3, 3> const& rcg, int gp, int eleGID);
+          Core::LinAlg::SymmetricTensor<double, 3, 3> const& rcg, int gp, int eleGID);
 
       /*!
        * @brief retrieve coefficients of first and second derivative
@@ -545,11 +547,11 @@ namespace Mat
        * \f]
        */
       virtual void add_stress_aniso_principal(
-          const Core::LinAlg::Matrix<6, 1>& rcg,  ///< right Cauchy Green Tensor
-          Core::LinAlg::Matrix<6, 6>& cmat,       ///< material stiffness matrix
-          Core::LinAlg::Matrix<6, 1>& stress,     ///< 2nd PK-stress
-          Teuchos::ParameterList& params,         ///< Container for additional information
-          int gp,                                 ///< Gauss point
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,   ///< right Cauchy Green Tensor
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< material stiffness matrix
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,      ///< 2nd PK-stress
+          const Teuchos::ParameterList& params,  ///< Container for additional information
+          int gp,                                ///< Gauss point
           int eleGID)
       {
         return;  // do nothing
@@ -560,8 +562,8 @@ namespace Mat
           Core::LinAlg::Matrix<8, 1>& mu,         ///< see above
           Core::LinAlg::Matrix<33, 1>& xi,        ///< see above
           Core::LinAlg::Matrix<7, 1>& rateinv,
-          Teuchos::ParameterList& params,  ///< Container for additional information
-          int gp,                          ///< Gauss point
+          const Teuchos::ParameterList& params,  ///< Container for additional information
+          int gp,                                ///< Gauss point
           int eleGID)
       {
         return;  // do nothing
@@ -572,7 +574,7 @@ namespace Mat
               modinv,                          ///< modified invariants of right Cauchy-Green tensor
           Core::LinAlg::Matrix<8, 1>& modmu,   ///< see above
           Core::LinAlg::Matrix<33, 1>& modxi,  ///< see above
-          Core::LinAlg::Matrix<7, 1>& modrateinv, Teuchos::ParameterList& params,
+          Core::LinAlg::Matrix<7, 1>& modrateinv, const Teuchos::ParameterList& params,
           int gp,  ///< Gauss point
           int eleGID)
       {
@@ -609,14 +611,15 @@ namespace Mat
 
       /// Retrieve stress and cmat of summand for fiber directions with respect to modified strains
       virtual void add_stress_aniso_modified(
-          const Core::LinAlg::Matrix<6, 1>& rcg,  ///< right Cauchy Green Tensor
-          const Core::LinAlg::Matrix<6, 1>& icg,  ///< inverse of right Cauchy Green Tensor
-          Core::LinAlg::Matrix<6, 6>& cmat,       ///< material stiffness matrix
-          Core::LinAlg::Matrix<6, 1>& stress,     ///< 2nd PK-stress
-          double I3,                              ///< third principal invariant
-          int gp,                                 ///< Gauss point
-          int eleGID,                             ///< element GID
-          Teuchos::ParameterList& params          ///< Container for additional information
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>& rcg,  ///< right Cauchy Green Tensor
+          const Core::LinAlg::SymmetricTensor<double, 3, 3>&
+              icg,  ///< inverse of right Cauchy Green Tensor
+          Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat,  ///< material stiffness matrix
+          Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,      ///< 2nd PK-stress
+          double I3,                                                ///< third principal invariant
+          int gp,                                                   ///< Gauss point
+          int eleGID,                                               ///< element GID
+          const Teuchos::ParameterList& params  ///< Container for additional information
       )
       {
         return;  // do nothing
@@ -688,16 +691,17 @@ namespace Mat
       }
 
       //! Set fiber directions
-      virtual void set_fiber_vecs(const double newgamma,  ///< new angle
-          const Core::LinAlg::Matrix<3, 3>& locsys,       ///< local coordinate system
-          const Core::LinAlg::Matrix<3, 3>& defgrd        ///< deformation gradient
+      virtual void set_fiber_vecs(const double newgamma,     ///< new angle
+          const Core::LinAlg::Tensor<double, 3, 3>& locsys,  ///< local coordinate system
+          const Core::LinAlg::Tensor<double, 3, 3>& defgrd   ///< deformation gradient
       )
       {
         return;  // do nothing
       };
 
       //! Set fiber directions
-      virtual void set_fiber_vecs(const Core::LinAlg::Matrix<3, 1>& fibervec  ///< new fiber vector
+      virtual void set_fiber_vecs(
+          const Core::LinAlg::Tensor<double, 3>& fibervec  ///< new fiber vector
       )
       {
         FOUR_C_THROW("Not implemented yet for this type of anisotropic material;");
@@ -705,16 +709,16 @@ namespace Mat
 
       //! Get fiber directions
       virtual void get_fiber_vecs(
-          std::vector<Core::LinAlg::Matrix<3, 1>>& fibervecs  ///< vector of all fiber vectors
+          std::vector<Core::LinAlg::Tensor<double, 3>>& fibervecs  ///< vector of all fiber vectors
       ) const {};
 
       //! Read FIBERn
       void read_fiber(const Core::IO::InputParameterContainer& container,
-          const std::string& specifier, Core::LinAlg::Matrix<3, 1>& fiber_vector);
+          const std::string& specifier, Core::LinAlg::Tensor<double, 3>& fiber_vector);
 
       //! Read RAD-AXI-CIR
-      void read_rad_axi_cir(
-          const Core::IO::InputParameterContainer& container, Core::LinAlg::Matrix<3, 3>& locsys);
+      void read_rad_axi_cir(const Core::IO::InputParameterContainer& container,
+          Core::LinAlg::Tensor<double, 3, 3>& locsys);
 
       //! Indicator for the chosen formulations
       virtual void specify_formulation(

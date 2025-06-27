@@ -9,6 +9,7 @@
 
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_global_data.hpp"
+#include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -266,11 +267,14 @@ void Mat::PlasticLinElast::update()
 /*----------------------------------------------------------------------*
  | evaluate material (public)                                dano 08/11 |
  *----------------------------------------------------------------------*/
-void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
-    const Core::LinAlg::Matrix<6, 1>* linstrain, Teuchos::ParameterList& params,
-    Core::LinAlg::Matrix<6, 1>* stress, Core::LinAlg::Matrix<6, 6>* cmat, const int gp,
-    const int eleGID)
+void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Tensor<double, 3, 3>* defgrad,
+    const Core::LinAlg::SymmetricTensor<double, 3, 3>& glstrain,
+    const Teuchos::ParameterList& params, Core::LinAlg::SymmetricTensor<double, 3, 3>& stress,
+    Core::LinAlg::SymmetricTensor<double, 3, 3, 3, 3>& cmat, int gp, int eleGID)
 {
+  Core::LinAlg::Matrix<6, 1> stress_view = Core::LinAlg::make_stress_like_voigt_view(stress);
+  Core::LinAlg::Matrix<6, 6> cmat_view = Core::LinAlg::make_stress_like_voigt_view(cmat);
+
   Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1> plstrain(Core::LinAlg::Initialization::zero);
 
   // get material parameters
@@ -303,7 +307,8 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   //  strain^e: definition of additive decomposition:
   //  strain^e = strain - strain^p
   // REMARK: stress-like 6-Voigt vector
-  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> strain(*linstrain);
+  Core::LinAlg::Matrix<NUM_STRESS_3D, 1> strain =
+      Core::LinAlg::make_strain_like_voigt_matrix(glstrain);
 
   //---------------------------------------------------------------------------
   // elastic predictor (trial values)
@@ -563,7 +568,7 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
     // total stress
     // sigma_{n+1} = s_{n+1} + p_{n+1} . id2
     // pressure/volumetric stress no influence due to plasticity
-    PlasticLinElast::stress(p, devstress, *stress);
+    PlasticLinElast::stress(p, devstress, stress_view);
 
     // total strains
     // strain^e_{n+1} = strain^(e,trial)_{n+1} - Dgamma . N
@@ -600,7 +605,7 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
   {
     // trial state vectors = result vectors of time step n+1
     // sigma^e_{n+1} = sigma^{e,trial}_{n+1} = s^{trial}_{n+1} + p . id2
-    PlasticLinElast::stress(p, devstress, *stress);
+    PlasticLinElast::stress(p, devstress, stress_view);
 
     // total strains
     // strain^e_{n+1} = strain^(e,trial)_{n+1}
@@ -651,16 +656,7 @@ void Mat::PlasticLinElast::evaluate(const Core::LinAlg::Matrix<3, 3>* defgrd,
 
   // using an associative flow rule: C_ep is symmetric
   // ( generally C_ep is nonsymmetric )
-  setup_cmat_elasto_plastic(*cmat, Dgamma, G, qbar, Nbar, heaviside, Hiso, Hkin);
-
-  // ------------------------- return plastic strains for post-processing
-  // plastic strain
-  plstrain = strainplcurr_->at(gp);
-  // save the plastic strain for postprocessing
-  params.set<Core::LinAlg::Matrix<Mat::NUM_STRESS_3D, 1>>("plglstrain", plstrain);
-
-  return;
-
+  setup_cmat_elasto_plastic(cmat_view, Dgamma, G, qbar, Nbar, heaviside, Hiso, Hkin);
 }  // evaluate()
 
 

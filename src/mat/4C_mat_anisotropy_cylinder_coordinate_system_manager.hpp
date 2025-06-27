@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_io_input_parameter_container.hpp"
+#include "4C_linalg_tensor.hpp"
 #include "4C_mat_anisotropy_cylinder_coordinate_system_provider.hpp"
 
 FOUR_C_NAMESPACE_OPEN
@@ -69,7 +70,7 @@ namespace Mat
      */
     bool is_defined() const { return is_defined_; }
 
-    const Core::LinAlg::Matrix<3, 1>& get_rad() const override
+    const Core::LinAlg::Tensor<double, 3>& get_rad() const override
     {
       if (!is_defined_)
       {
@@ -78,7 +79,7 @@ namespace Mat
       return radial_;
     };
 
-    const Core::LinAlg::Matrix<3, 1>& get_axi() const override
+    const Core::LinAlg::Tensor<double, 3>& get_axi() const override
     {
       if (!is_defined_)
       {
@@ -87,7 +88,7 @@ namespace Mat
       return axial_;
     }
 
-    const Core::LinAlg::Matrix<3, 1>& get_cir() const override
+    const Core::LinAlg::Tensor<double, 3>& get_cir() const override
     {
       if (!is_defined_)
       {
@@ -101,7 +102,7 @@ namespace Mat
      *
      * \param cosy
      */
-    void evaluate_local_coordinate_system(Core::LinAlg::Matrix<3, 3>& cosy) const;
+    void evaluate_local_coordinate_system(Core::LinAlg::Tensor<double, 3, 3>& cosy) const;
 
    private:
     /// Flag whether coordinate system is already set
@@ -110,18 +111,18 @@ namespace Mat
     /*!
      * \brief Unit vector in radial direction
      */
-    Core::LinAlg::Matrix<3, 1> radial_;
+    Core::LinAlg::Tensor<double, 3> radial_;
 
     /*!
      * \brief unit vector in axial direction
      */
-    Core::LinAlg::Matrix<3, 1> axial_;
+    Core::LinAlg::Tensor<double, 3> axial_;
 
 
     /*!
      * \brief unit vector in circumferential direction
      */
-    Core::LinAlg::Matrix<3, 1> circumferential_;
+    Core::LinAlg::Tensor<double, 3> circumferential_;
   };
 }  // namespace Mat
 
