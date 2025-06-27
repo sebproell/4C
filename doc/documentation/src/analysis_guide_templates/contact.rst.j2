@@ -44,7 +44,6 @@ The further parameters are:
    FrCoeffOrBound: 0.0
    AdhesionBound: 0.0
    Application: [Solidcontact | Beamtosolidcontact | Beamtosolidmeshtying]
-   DbcHandling: [DoNothing | RemoveDBCSlaveNodes]
    TwoHalfPass: 0|1
    RefConfCheckNonSmoothSelfContactSurface: 0|1
    ConstitutiveLawID: <num>
@@ -73,17 +72,13 @@ When a contact surface touches a symmetry plane or some other dirichlet boundary
 one has three possibilities to overcome the clashing of two contstrains at the common line/point.
 One can
 
-#. remove the contact condition,
 #. remove the boundary condition,
 #. declare a specific condition to allow both conditions.
 
-For the first option, on can use the optional parameter ``RemoveDBCSlaveNodes``
-in the Slave definition as shown above.
-
-For option two, one can simply define a line dirichlet condition,
+For option one, one can simply define a line dirichlet condition,
 where all dirichlet boundary conditions are removed.
 
-For the third option one can tell |FOURC| that a line belongs to the symmetry plane / dirichlet boundary condition *and* the contact surface.
+For the second option one can tell |FOURC| that a line belongs to the symmetry plane / dirichlet boundary condition *and* the contact surface.
 This is done using the so-called mortar symmetry conditions (Note that the word *symmetry* does not mean that it must be a symmetry condition,
 it can be any any dirichlet boundary condition, even with non-zero displacement value).
 See the symmetry conditions from the example {{input_file3}}:
