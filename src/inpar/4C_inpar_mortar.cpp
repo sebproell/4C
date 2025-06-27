@@ -98,7 +98,6 @@ void Inpar::Mortar::set_valid_parameters(std::map<std::string, Core::IO::InputSp
           deprecated_selection<Inpar::Mortar::MeshRelocation>("MESH_RELOCATION",
               {
                   {"Initial", relocation_initial},
-                  {"Every_Timestep", relocation_timestep},
                   {"None", relocation_none},
               },
               {.description = "Type of mesh relocation", .default_value = relocation_initial}),

@@ -534,12 +534,6 @@ void Solid::TimInt::prepare_contact_meshtying(const Teuchos::ParameterList& sdyn
       // (3) apply result of mesh initialization to underlying problem discretization
       apply_mesh_initialization(Xslavemod);
     }
-    else if (mesh_relocation_parameter == Inpar::Mortar::relocation_timestep)
-    {
-      FOUR_C_THROW(
-          "Meshtying with MESH_RELOCATION every_timestep not permitted. Change to MESH_RELOCATION "
-          "initial or MESH_RELOCATION no.");
-    }
   }
 
   // initialization of contact

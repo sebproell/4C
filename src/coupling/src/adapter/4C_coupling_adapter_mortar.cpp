@@ -853,37 +853,6 @@ void Coupling::Adapter::CouplingMortar::mesh_relocation(Core::FE::Discretization
           const_cast<double&>(alenode->x()[k]) = Xnewglobal[k];
       }
     }
-    else if (Teuchos::getIntegralValue<Inpar::Mortar::MeshRelocation>(
-                 mortar_coupling_params_, "MESH_RELOCATION") == Inpar::Mortar::relocation_timestep)
-    {
-      // modification of ALE displacements
-      if (isininterfacecolmap and idisp != nullptr)
-      {
-        // insertion solely done by owner processor of this node
-        if (Core::Communication::my_mpi_rank(comm) == node->owner())
-        {
-          // define error variable
-          int err(0);
-
-          // get all degrees of freedom of this node
-          std::vector<int> gdofs = interface_->discret().dof(node);
-
-          // loop over spatial directions
-          for (int k = 0; k < dim; ++k)
-          {
-            // get global ID of degree of freedom for this spatial direction
-            int dofgid = (idisp->get_map()).lid(gdofs[k]);
-            // get new coordinate value for this spatial direction
-            const double value = Xnewglobal[k] - node->x()[k];
-            // replace respective value in displacement vector
-            err = idisp->replace_local_value(dofgid, value);
-            // check whether there was a problem in the replacement process
-            if (err != 0)
-              FOUR_C_THROW("error while inserting a value into ALE displacement vector!");
-          }
-        }
-      }
-    }
     else
       FOUR_C_THROW("wrong input parameter for mortar-based MESH_RELOCATION!");
   }
@@ -1257,18 +1226,6 @@ void Coupling::Adapter::CouplingMortar::evaluate_with_mesh_relocation(
   Dinv_->replace_diagonal_values(*diag);
   Dinv_->complete(D_->range_map(), D_->domain_map());
   P_ = Core::LinAlg::matrix_multiply(*Dinv_, false, *M_, false, false, false, true);
-
-  // mesh relocation if required:
-  // For curved internal or fsi coupling interfaces, a mesh relocation is critical,
-  // since the integration over curved interface (generation of mortar coupling
-  // matrices) results in inaccuracies. These inaccuracies may lead to undesired node
-  // displacements.
-  // Example: nodes at the interface are also moved for matching discretizations
-  // (P should be "unity matrix")!
-  if (Teuchos::getIntegralValue<Inpar::Mortar::MeshRelocation>(
-          mortar_coupling_params_, "MESH_RELOCATION") == Inpar::Mortar::relocation_timestep)
-    mesh_relocation(
-        *slavedis, aledis, masterdofrowmap_, slavedofrowmap_, idisp, comm, slavewithale);
 
   // only for parallel redistribution case
   matrix_row_col_transform();
