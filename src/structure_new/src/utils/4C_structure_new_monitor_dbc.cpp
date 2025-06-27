@@ -25,8 +25,6 @@
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
 
-#include "magic_enum/magic_enum.hpp"
-
 FOUR_C_NAMESPACE_OPEN
 
 /*----------------------------------------------------------------------------*

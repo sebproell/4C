@@ -47,8 +47,8 @@ void Solid::TimeInt::ParamsMonitorDBC::init(
   os_precision_ = IO_monitor_dbc_structure_paramslist.get<int>("PRECISION_SCREEN");
 
   // file type
-  file_type_ =
-      std::string(EnumTools::enum_name(Teuchos::getIntegralValue<Solid::IOMonitorStructureDBC::FileType>(
+  file_type_ = std::string(
+      EnumTools::enum_name(Teuchos::getIntegralValue<Solid::IOMonitorStructureDBC::FileType>(
           IO_monitor_dbc_structure_paramslist, "FILE_TYPE")));
 
   // write header in csv file

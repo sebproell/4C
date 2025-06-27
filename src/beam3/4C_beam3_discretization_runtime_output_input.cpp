@@ -123,7 +123,7 @@ namespace Beam
                       .default_value = 5})},
           {.required = false});
     }
-  }  // namespace Beam
-}  // namespace IORuntimeOutput
+  }  // namespace IORuntimeOutput
+}  // namespace Beam
 
 FOUR_C_NAMESPACE_CLOSE

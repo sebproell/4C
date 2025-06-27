@@ -29,8 +29,8 @@ namespace Beam
     /// set the valid parameters related to writing of output at runtime
     void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
-  }  // namespace Beam
-}  // namespace IORuntimeOutput
+  }  // namespace IORuntimeOutput
+}  // namespace Beam
 
 FOUR_C_NAMESPACE_CLOSE
 

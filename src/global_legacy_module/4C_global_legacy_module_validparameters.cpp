@@ -11,6 +11,7 @@
 #include "4C_beam3_discretization_runtime_output_input.hpp"
 #include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_potential_input.hpp"
+#include "4C_binstrategy_input.hpp"
 #include "4C_browniandyn_input.hpp"
 #include "4C_contact_input.hpp"
 #include "4C_cut_input.hpp"
@@ -19,7 +20,6 @@
 #include "4C_fbi_input.hpp"
 #include "4C_geometric_search_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
-#include "4C_inpar_binningstrategy.hpp"
 #include "4C_inpar_bio.hpp"
 #include "4C_inpar_cardiac_monodomain.hpp"
 #include "4C_inpar_cardiovascular0d.hpp"
@@ -241,7 +241,7 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
   Inpar::PARTICLE::set_valid_parameters(specs);
 
   Inpar::Geo::set_valid_parameters(specs);
-  Inpar::BINSTRATEGY::set_valid_parameters(specs);
+  Core::Binstrategy::set_valid_parameters(specs);
   Core::GeometricSearch::set_valid_parameters(specs);
   Inpar::PaSI::set_valid_parameters(specs);
 
