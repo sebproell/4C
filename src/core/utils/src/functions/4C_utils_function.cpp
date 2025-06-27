@@ -201,21 +201,6 @@ std::shared_ptr<Core::Utils::FunctionOfSpaceTime>
 Core::Utils::try_create_symbolic_function_of_space_time(
     const std::vector<Core::IO::InputParameterContainer>& parameters)
 {
-  // Work around a design flaw in the input line for SymbolicFunctionOfSpaceTime.
-  // This line accepts optional components in the beginning although this is not directly supported
-  // by LineDefinition. Thus, we need to ignore read errors when reading these first line
-  // components.
-  const auto ignore_errors_in = [](const auto& call)
-  {
-    try
-    {
-      call();
-    }
-    catch (const Core::Exception& e)
-    {
-    }
-  };
-
   // evaluate the maximum component and the number of variables
   int maxcomp = 0;
   int maxvar = -1;
@@ -227,7 +212,7 @@ Core::Utils::try_create_symbolic_function_of_space_time(
     auto* comp = ith_function_lin_def.get_if<std::optional<int>>("COMPONENT");
     if (comp) maxcomp = comp->value_or(maxcomp);
 
-    ignore_errors_in([&]() { maxvar = ith_function_lin_def.get<int>("VARIABLE"); });
+    maxvar = ith_function_lin_def.get_or<int>("VARIABLE", maxvar);
     if (ith_function_lin_def.get_if<std::string>("SYMBOLIC_FUNCTION_OF_SPACE_TIME") != nullptr)
       found_function_of_space_time = true;
   }
@@ -264,8 +249,7 @@ Core::Utils::try_create_symbolic_function_of_space_time(
     const auto& line = parameters[maxcomp + j];
 
     // read the number of the variable
-    int varid;
-    ignore_errors_in([&]() { varid = line.get<int>("VARIABLE"); });
+    const int varid = line.get<int>("VARIABLE");
 
     const auto variable = std::invoke(
         [&]() -> std::shared_ptr<Core::Utils::FunctionVariable>
