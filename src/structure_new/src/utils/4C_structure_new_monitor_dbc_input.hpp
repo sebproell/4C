@@ -5,8 +5,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef FOUR_C_INPAR_IO_MONITOR_STRUCTURE_DBC_HPP
-#define FOUR_C_INPAR_IO_MONITOR_STRUCTURE_DBC_HPP
+#ifndef FOUR_C_STRUCTURE_NEW_MONITOR_DBC_INPUT_HPP
+#define FOUR_C_STRUCTURE_NEW_MONITOR_DBC_INPUT_HPP
 
 
 /*----------------------------------------------------------------------*/
@@ -21,8 +21,8 @@
 
 FOUR_C_NAMESPACE_OPEN
 
-/*----------------------------------------------------------------------*/
-namespace Inpar
+namespace Solid
+
 {
   namespace IOMonitorStructureDBC
   {
@@ -33,13 +33,11 @@ namespace Inpar
       data
     };
 
-    std::string to_string(FileType type);
-
     /// set the valid parameters related to writing of output at runtime
     void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
   }  // namespace IOMonitorStructureDBC
-}  // namespace Inpar
+}  // namespace Solid
 
 FOUR_C_NAMESPACE_CLOSE
 

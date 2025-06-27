@@ -11,19 +11,21 @@
 #include "4C_fem_general_extract_values.hpp"
 #include "4C_fem_geometry_element_volume.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_IO_monitor_structure_dbc.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_io_every_iteration_writer.hpp"
 #include "4C_io_pstream.hpp"
 #include "4C_linalg_utils_sparse_algebra_manipulation.hpp"
 #include "4C_structure_new_dbc.hpp"
+#include "4C_structure_new_monitor_dbc_input.hpp"
 #include "4C_structure_new_timint_basedataglobalstate.hpp"
 #include "4C_structure_new_timint_basedataio.hpp"
 #include "4C_structure_new_timint_basedataio_monitor_dbc.hpp"
 #include "4C_utils_enum.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>
+
+#include "magic_enum/magic_enum.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -129,7 +131,7 @@ void Solid::MonitorDbc::setup()
   const Teuchos::ParameterList& sublist_IO_monitor_structure_dbc =
       Global::Problem::instance()->io_params().sublist("MONITOR STRUCTURE DBC");
 
-  auto filetype = Teuchos::getIntegralValue<Inpar::IOMonitorStructureDBC::FileType>(
+  auto filetype = Teuchos::getIntegralValue<Solid::IOMonitorStructureDBC::FileType>(
       sublist_IO_monitor_structure_dbc, "FILE_TYPE");
   if (isempty_)
   {
@@ -158,8 +160,8 @@ void Solid::MonitorDbc::setup()
       Global::Problem::instance()->output_control_file()->file_name_only_prefix());
   Core::IO::create_directory(full_dirpath, Core::Communication::my_mpi_rank(get_comm()));
   // ... create files paths ...
-  full_filepaths_ =
-      create_file_paths(rconds, full_dirpath, filename_only_prefix, to_string(filetype));
+  full_filepaths_ = create_file_paths(
+      rconds, full_dirpath, filename_only_prefix, std::string(EnumTools::enum_name(filetype)));
   // ... clear them and write header
   clear_files_and_write_header(
       rconds, full_filepaths_, sublist_IO_monitor_structure_dbc.get<bool>("WRITE_HEADER"));
@@ -172,8 +174,9 @@ void Solid::MonitorDbc::setup()
     const std::string filename_restart_only_prefix(Core::IO::extract_file_name(
         Global::Problem::instance()->output_control_file()->restart_name()));
 
-    std::vector<std::string> full_restart_filepaths = create_file_paths(
-        rconds, full_restart_dirpath, filename_restart_only_prefix, to_string(filetype));
+    std::vector<std::string> full_restart_filepaths =
+        create_file_paths(rconds, full_restart_dirpath, filename_restart_only_prefix,
+            std::string(EnumTools::enum_name(filetype)));
 
     read_results_prior_restart_step_and_write_to_file(
         full_restart_filepaths, gstate_ptr_->get_step_n());

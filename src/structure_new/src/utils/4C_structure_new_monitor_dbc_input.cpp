@@ -5,17 +5,18 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "4C_inpar_IO_monitor_structure_dbc.hpp"
+#include "4C_structure_new_monitor_dbc_input.hpp"
 
 #include "4C_io_input_spec_builders.hpp"
 
 
 FOUR_C_NAMESPACE_OPEN
 
-namespace Inpar
+namespace Solid
 {
   namespace IOMonitorStructureDBC
   {
+
     /*----------------------------------------------------------------------*
      *----------------------------------------------------------------------*/
     void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list)
@@ -40,17 +41,9 @@ namespace Inpar
                   {.description = "precision for written screen output", .default_value = 5}),
 
               // type of written output file
-              deprecated_selection<Inpar::IOMonitorStructureDBC::FileType>("FILE_TYPE",
-                  {
-                      {"csv", Inpar::IOMonitorStructureDBC::csv},
-                      {"CSV", Inpar::IOMonitorStructureDBC::csv},
-                      {"Csv", Inpar::IOMonitorStructureDBC::csv},
-                      {"data", Inpar::IOMonitorStructureDBC::data},
-                      {"Data", Inpar::IOMonitorStructureDBC::data},
-                      {"DATA", Inpar::IOMonitorStructureDBC::data},
-                  },
-                  {.description = "type of written output file",
-                      .default_value = Inpar::IOMonitorStructureDBC::csv}),
+              parameter<IOMonitorStructureDBC::FileType>(
+                  "FILE_TYPE", {.description = "type of written output file",
+                                   .default_value = IOMonitorStructureDBC::csv}),
 
               // whether to write output in every iteration of the nonlinear solver
               parameter<bool>("WRITE_HEADER",
@@ -59,20 +52,7 @@ namespace Inpar
                       .default_value = false})},
           {.required = false});
     }
-
-    std::string to_string(FileType type)
-    {
-      switch (type)
-      {
-        case FileType::csv:
-          return "csv";
-        case FileType::data:
-          return "data";
-        default:
-          FOUR_C_THROW("Unknown file type");
-      }
-    }
   }  // namespace IOMonitorStructureDBC
-}  // namespace Inpar
+}  // namespace Solid
 
 FOUR_C_NAMESPACE_CLOSE

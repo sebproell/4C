@@ -28,7 +28,6 @@
 #include "4C_inpar_fs3i.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_inpar_io.hpp"
-#include "4C_inpar_IO_monitor_structure_dbc.hpp"
 #include "4C_inpar_IO_runtime_output.hpp"
 #include "4C_inpar_IO_runtime_output_fluid.hpp"
 #include "4C_inpar_IO_runtime_output_structure_beams.hpp"
@@ -65,6 +64,7 @@
 #include "4C_porofluid_pressure_based_elast_scatra_input.hpp"
 #include "4C_porofluid_pressure_based_input.hpp"
 #include "4C_red_airways_input.hpp"
+#include "4C_structure_new_monitor_dbc_input.hpp"
 #include "4C_thermo_input.hpp"
 #include "4C_tsi_input.hpp"
 
@@ -183,7 +183,7 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
 
   Inpar::Solid::set_valid_parameters(specs);
   Inpar::IO::set_valid_parameters(specs);
-  Inpar::IOMonitorStructureDBC::set_valid_parameters(specs);
+  Solid::IOMonitorStructureDBC::set_valid_parameters(specs);
   Inpar::IORuntimeOutput::set_valid_parameters(specs);
   Inpar::IORuntimeVTPStructure::set_valid_parameters(specs);
   Inpar::Mortar::set_valid_parameters(specs);
