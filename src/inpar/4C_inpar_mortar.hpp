@@ -76,9 +76,8 @@ namespace Inpar
     /// (this enum represents the input file parameter MESH_RELOCATION)
     enum MeshRelocation
     {
-      relocation_initial,   ///< only initial mesh relocation
-      relocation_timestep,  ///< mesh relocation in every time step, but no initial mesh relocation
-      relocation_none       ///< no mesh relocation
+      relocation_initial,  ///< only initial mesh relocation
+      relocation_none      ///< no mesh relocation
     };
 
     /// Type of ghosting of interface values
