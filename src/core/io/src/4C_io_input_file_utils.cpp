@@ -128,29 +128,27 @@ void Core::IO::read_design(InputFile& input, const std::string& name,
   // Store lines that need special treatment
   std::vector<std::string> box_face_conditions;
 
+  const auto error_scope = "While reading design nodes in section '" + marker + "': ";
   for (const auto& l : input.in_section_rank_0_only(marker))
   {
-    int dobj;
-    int nodeid;
-    std::string nname;
-    std::string dname;
-    std::istringstream stream{std::string(l.get_as_dat_style_string())};
-    stream >> nname;
-    if (not stream)
-    {
-      auto s = l.get_as_dat_style_string();
-      FOUR_C_THROW("Illegal line in section '{}': '{}'", marker, s);
-    }
+    ValueParser parser{l.get_as_dat_style_string(), {.user_scope_message = error_scope}};
+    const std::string parsed_name = parser.read<std::string>();
 
-    if (nname == "NODE")  // plain old reading of the design nodes from the input file
+    if (parsed_name == "NODE")  // plain old reading of the design nodes from the input file
     {
-      stream >> nodeid >> dname >> dobj;
+      const int nodeid = parser.read<int>();
+      const std::string dname = parser.read<std::string>();
+      const int dobj = parser.read<int>();
 
       FOUR_C_ASSERT_ALWAYS(name == dname || (name == "DSURF" && dname == "DSURFACE") ||
                                (name == "DVOL" && dname == "DVOLUME"),
           "Wrong design node name: {}. Expected {}.", dname, name);
 
       topology[dobj - 1].insert(nodeid - 1);
+
+      FOUR_C_ASSERT_ALWAYS(parser.at_end(),
+          "Illegal line in section '{}': '{}' has unparsed remainder '{}'", marker,
+          l.get_as_dat_style_string(), parser.get_unparsed_remainder());
     }
     else  // fancy specification of the design nodes by specifying min or max of the domain
     {     // works best on rectangular domains ;)
