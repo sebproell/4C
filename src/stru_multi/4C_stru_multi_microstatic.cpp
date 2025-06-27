@@ -911,7 +911,7 @@ void MultiScale::MicroStatic::read_restart(const int step,
 
   Core::Communication::Exporter exporter(
       read_in_ele_row_map, *discret_->element_col_map(), discret_->get_comm());
-  exporter.do_export<char>(mapdata);
+  exporter.do_export(mapdata);
 
   for (const auto& [ele_id, data] : mapdata)
   {
