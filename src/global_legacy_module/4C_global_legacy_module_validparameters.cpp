@@ -8,6 +8,7 @@
 #include "4C_global_legacy_module_validparameters.hpp"
 
 #include "4C_ale_input.hpp"
+#include "4C_beam3_discretization_runtime_output_input.hpp"
 #include "4C_beamcontact_input.hpp"
 #include "4C_beaminteraction_potential_input.hpp"
 #include "4C_browniandyn_input.hpp"
@@ -30,7 +31,6 @@
 #include "4C_inpar_io.hpp"
 #include "4C_inpar_IO_runtime_output.hpp"
 #include "4C_inpar_IO_runtime_output_fluid.hpp"
-#include "4C_inpar_IO_runtime_output_structure_beams.hpp"
 #include "4C_inpar_IO_runtime_vtk_output_structure.hpp"
 #include "4C_inpar_IO_runtime_vtp_output_structure.hpp"
 #include "4C_inpar_levelset.hpp"
@@ -192,7 +192,7 @@ std::map<std::string, Core::IO::InputSpec> Global::valid_parameters()
   Inpar::Wear::set_valid_parameters(specs);
   Inpar::IORuntimeOutput::FLUID::set_valid_parameters(specs);
   Inpar::IORuntimeOutput::Solid::set_valid_parameters(specs);
-  Inpar::IORuntimeOutput::Beam::set_valid_parameters(specs);
+  Beam::IORuntimeOutput::set_valid_parameters(specs);
   BeamContact::set_valid_parameters(specs);
   BeamPotential::set_valid_parameters(specs);
   Inpar::BeamInteraction::set_valid_parameters(specs);
