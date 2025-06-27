@@ -1,4 +1,4 @@
-.. _toolsAndScripts:
+.. _tools:
 
 =====
 Tools
