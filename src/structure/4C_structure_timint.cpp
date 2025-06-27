@@ -285,6 +285,14 @@ void Solid::TimInt::setup()
   // Check for porosity dofs within the structure and build a map extractor if necessary
   porositysplitter_ = PoroElast::Utils::build_poro_splitter(*discret_);
 
+  // ensure that no runtime output is activated because it is not implemented
+  FOUR_C_ASSERT_ALWAYS(not Global::Problem::instance()
+                           ->io_params()
+                           .sublist("RUNTIME VTK OUTPUT")
+                           .sublist("STRUCTURE")
+                           .get<bool>("OUTPUT_STRUCTURE"),
+      "Runtime output is not available in the old structure time integration! You need to take the "
+      "new one, i.e. set `INT_STRATEGY: Standard`!");
 
   // we have successfully set up this class
   set_is_setup(true);
