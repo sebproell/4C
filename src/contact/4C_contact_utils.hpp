@@ -116,53 +116,6 @@ namespace CONTACT
     void write_conservation_data_to_file(const int mypid, const int interface_id,
         const int nln_iter, const Core::LinAlg::SerialDenseMatrix& conservation_data,
         const std::string& ofile_path, const std::string& prefix);
-
-    /** \brief Detect DBC slave nodes and elements
-     *
-     *  Check all slave contact conditions. If the optional condition tag
-     *  "RemoveDBCSlaveNodes" can be found in the slave condition line,
-     *  all slave nodes and adjacent elements are added to the corresponding
-     *  sets.
-     *
-     *  A possible condition line can look like
-     *  E 7 - InterfaceID 1 Side Slave Inactive FrCoeffOrBound 0.0 AdhesionBound 0.0 Solidcontact
-     * RemoveDBCSlaveNodes
-     *
-     *  */
-    class DbcHandler
-    {
-     public:
-      /// remove constructor and destructor
-      DbcHandler() = delete;
-      ~DbcHandler() = delete;
-
-      /** \brief Detect all slave nodes and elements which hold Dbc information
-       *
-       *  \param(in)  str_discret: structural discretization
-       *  \param(in)  ccond_grps:  contact condition groups
-       *  \param(out) dbc_slave_nodes: set containing all slave nodes which hold
-       *                               DBC information
-       *  \param(out) dbc_slave_eles: set containing all slave elements which
-       *                              contain at least one DBC slave node
-       *
-       *  */
-      static void detect_dbc_slave_nodes_and_elements(const Core::FE::Discretization& str_discret,
-          const std::vector<std::vector<const Core::Conditions::Condition*>>& ccond_grps,
-          std::set<const Core::Nodes::Node*>& dbc_slave_nodes,
-          std::set<const Core::Elements::Element*>& dbc_slave_eles);
-
-     private:
-      static void detect_dbc_slave_nodes(
-          std::map<const Core::Nodes::Node*, int>& dbc_slave_node_map,
-          const Core::FE::Discretization& str_discret,
-          const std::vector<const Core::Conditions::Condition*>& sl_conds);
-
-      static void detect_dbc_slave_elements(
-          std::set<const Core::Elements::Element*>& dbc_slave_eles,
-          const std::map<const Core::Nodes::Node*, int>& dbc_slave_nodes,
-          const std::vector<const Core::Conditions::Condition*>& sl_conds);
-    };  // class DbcHandler
-
   }  // namespace Utils
 }  // namespace CONTACT
 

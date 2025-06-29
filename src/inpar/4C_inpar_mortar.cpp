@@ -244,9 +244,6 @@ void Inpar::Mortar::set_valid_conditions(
         {"Solidcontact", "Beamtosolidcontact", "Beamtosolidmeshtying"},
         {.description = "application", .default_value = "Solidcontact"}));
 
-    // optional DBC handling
-    cond.add_component(parameter<DBCHandling>(
-        "DbcHandling", {.description = "DbcHandling", .default_value = DBCHandling::DoNothing}));
     cond.add_component(parameter<double>(
         "TwoHalfPass", {.description = "optional two half pass approach", .default_value = 0.0}));
     cond.add_component(parameter<double>("RefConfCheckNonSmoothSelfContactSurface",

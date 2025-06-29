@@ -637,11 +637,6 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
   std::vector<std::vector<const Core::Conditions::Condition*>> ccond_grps;
   CONTACT::Utils::get_contact_condition_groups(ccond_grps, discret());
 
-  std::set<const Core::Nodes::Node*> dbc_slave_nodes;
-  std::set<const Core::Elements::Element*> dbc_slave_eles;
-  CONTACT::Utils::DbcHandler::detect_dbc_slave_nodes_and_elements(
-      discret(), ccond_grps, dbc_slave_nodes, dbc_slave_eles);
-
   // maximum dof number in discretization
   // later we want to create NEW Lagrange multiplier degrees of
   // freedom, which of course must not overlap with displacement dofs
@@ -863,10 +858,6 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
           }
         }
 
-        // skip dbc slave nodes ( if the corresponding option is set for
-        // the slave condition )
-        if (dbc_slave_nodes.find(node) != dbc_slave_nodes.end()) continue;
-
         // store initial active node gids
         if (isactive[j]) initialactive_nodeids.push_back(gid);
 
@@ -1072,10 +1063,6 @@ void CONTACT::STRATEGY::Factory::build_interfaces(const Teuchos::ParameterList& 
               "discretizations on one side of the interface is currently "
               "unsupported.");
         }
-
-        // skip dbc slave elements ( if the corresponding option is set for
-        // the slave condition )
-        if (dbc_slave_eles.find(ele.get()) != dbc_slave_eles.end()) continue;
 
         std::shared_ptr<CONTACT::Element> cele =
             std::make_shared<CONTACT::Element>(ele->id() + ggsize, ele->owner(), ele->shape(),

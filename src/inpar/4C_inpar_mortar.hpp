@@ -137,13 +137,6 @@ namespace Inpar
       consistent_all,       ///< use triangulation GPs for all elements
     };
 
-    /// Enum to encode handling of Dirichlet boundary conditions at contact interfaces
-    enum class DBCHandling : int
-    {
-      DoNothing,
-      RemoveDBCSlaveNodes  // ToDo (mayr.mt) Remove? Do not change DBCs at runtime!
-    };
-
     /// set the mortar parameters
     void set_valid_parameters(std::map<std::string, Core::IO::InputSpec>& list);
 
