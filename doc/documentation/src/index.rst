@@ -56,8 +56,8 @@ This guide to |FOURC| is structured as follows:
    A comprehensive list of all input parameters, elements, materials, and boundary conditions
    with short descriptions for each option
 
-:ref:`Tools and Scripts<toolsAndScripts>`
-   A collection of useful scripts for working with |FOURC|
+:ref:`Tools<tools>`
+   A collection of useful tools for working with |FOURC|
 
 :ref:`Appendix<appendix>`
    Information on contributing to this documentation as well as selected topics of interest

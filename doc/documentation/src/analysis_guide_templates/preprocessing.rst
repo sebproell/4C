@@ -6,15 +6,28 @@ Preprocessing
 |FOURC| reads the mesh, boundary conditions, materials and simulation parameters from a central
 input file.
 
-.. admonition:: Under development
 
-    A large refactoring effort is currently in progress to improve |FOURC|'s input files.
-    The information in this section is not fully updated to reflect these changes.
+Working with |FOURC| input files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are not so many means to create a valid input file. At this point, we know of the following
-different ways to create an input file. In general, you'll have two options:
+|FOURC| input files are text files in the YAML format. Since YAML is a superset of JSON,
+you may also use JSON syntax although we tend to prefer YAML for human-readability.
+By convention, |FOURC| input files have the extension ``.4C.yaml`` or ``.4C.json``.
 
-#. Either you create the mesh in |FOURC|'s native format directly,
+We build a schema called ``4C_schema.json`` which is located in the root build directory. This
+schema describes the structure of a valid |FOURC| input file.
+If you want to write and edit |FOURC| input files, we recommend to set up schema validation in your editor
+(see :ref:`installation` for details). Doing so provides documentation and autocompletion
+for all parameters.
+
+
+Creating meshes for |FOURC|
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+|FOURC| can read meshes in two different ways:
+
+#. Either you create the mesh in |FOURC|'s native format directly. Refer to the :ref:`tools` section
+   to find tools that can help you to create |FOURC| input files.
 #. or you create a mesh file in a general binary format for finite element information, called EXODUS II, develeloped by `Sandia National Laboratories
    <https://www.sandia.gov/files/cubit/15.8/help_manual/WebHelp/finite_element_model/exodus/exodus2_file_specification.htm>`_.
    This can be read into |FOURC| via its input file.
@@ -71,8 +84,8 @@ So the steps are
 
 .. _create4Cinput:
 
-Other ways to create a |FOURC| input directly
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Other ways to create meshes for |FOURC|
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _abaqus:
 
@@ -125,14 +138,3 @@ Default parameters for a structural analysis can be obtained using
 
    params_step_1 = abaqus_meshio.GenerateDefaultParams()
 
-
-Modify |FOURC| input files
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-|FOURC| input files are text files so you can modify them using your
-favorite text editor. You can see all possible parameters and keywords in the
-:ref:`reference part <inputparameterreference>`.
-
-.. However, sometimes you might want some more
-.. modifications (e.g. modifying many nodes coordinates) that might be better
-.. done by a script. And indeed there is a python script that can help you editing input files.
