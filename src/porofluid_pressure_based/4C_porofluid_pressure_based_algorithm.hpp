@@ -16,6 +16,7 @@
 #include "4C_adapter_porofluid_pressure_based.hpp"
 #include "4C_fem_discretization.hpp"
 #include "4C_io_discretization_visualization_writer_mesh.hpp"
+#include "4C_io_runtime_csv_writer.hpp"
 #include "4C_linalg_map.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_porofluid_pressure_based_input.hpp"
@@ -305,6 +306,10 @@ namespace PoroPressureBased
     {
       return meshtying_;
     }
+
+   protected:
+    //! runtime CSV-writer for domain integrals
+    std::optional<Core::IO::RuntimeCsvWriter> runtime_csvwriter_domain_integrals_;
 
    private:
     /// set time parameter for element evaluation (called before every time step)
@@ -691,7 +696,7 @@ namespace PoroPressureBased
     //! time factor for one-step-theta time integration
     double theta_;
 
-   private:
+    //! pointer to visualization writer object
     std::unique_ptr<Core::IO::DiscretizationVisualizationWriterMesh> visualization_writer_;
 
     /*========================================================================*/

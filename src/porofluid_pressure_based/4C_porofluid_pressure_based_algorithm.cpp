@@ -271,6 +271,18 @@ void PoroPressureBased::PorofluidAlgorithm::init(bool isale, int nds_disp, int n
   // the values of the integrals
   domain_integrals_ = std::make_shared<Core::LinAlg::SerialDenseVector>(num_domainint_funct_);
 
+  if (num_domainint_funct_ > 0)
+  {
+    // setup csv writer for domain integrals
+    runtime_csvwriter_domain_integrals_.emplace(
+        myrank_, *Global::Problem::instance()->output_control_file(), "domain_integrals");
+    for (int funct_i = 0; funct_i < num_domainint_funct_; funct_i++)
+    {
+      runtime_csvwriter_domain_integrals_->register_data_vector(
+          "Function ID " + std::to_string(domainint_funct_[funct_i]), 1, 14);
+    }
+  }
+
   set_element_general_parameters();
 
   // build mesh tying strategy
@@ -572,6 +584,12 @@ void PoroPressureBased::PorofluidAlgorithm::collect_runtime_output_data()
     }
   }
 
+  // write artery output if active
+  if (artery_coupling_active_)
+  {
+    meshtying_->output();
+  }
+
   const int numdof = discret_->num_dof(0, discret_->l_row_node(0));
   std::vector<std::optional<std::string>> context(numdof);
   {
@@ -717,13 +735,6 @@ void PoroPressureBased::PorofluidAlgorithm::output()
   // solution output and potentially restart data and/or flux data
   if (do_output())
   {
-    // TODO this is the artery output, arteries still need to be migrated to vtk-based output, then
-    // this method should be moved to collect_runtime_output_data()
-    if (artery_coupling_active_)
-    {
-      meshtying_->output();
-    }
-
     // reconstruct porosity for output; porosity is only needed for output and does not have to be
     // transferred between fields
     if (output_porosity_) reconstruct_porosity();
@@ -1553,42 +1564,17 @@ void PoroPressureBased::PorofluidAlgorithm::evaluate_domain_integrals()
   // evaluate
   discret_->evaluate_scalars(eleparams, domain_integrals_);
 
-  if (myrank_ == 0)  // only one core should do output
+  // check for csv writer
+  FOUR_C_ASSERT(runtime_csvwriter_domain_integrals_.has_value(),
+      "internal error: runtime csv writer not created.");
+
+  // fill csv-output with functions
+  std::map<std::string, std::vector<double>> output_data;
+  for (int i = 0; i < num_domainint_funct_; i++)
   {
-    // set filename and file
-    const std::string filename(
-        Global::Problem::instance()->output_control_file()->file_name() + ".domain_int" + ".csv");
-    std::ofstream file;
-
-    if (step_ == 0)
-    {
-      // inform user that function output has been requested
-      std::cout << "\nINFO for domain integrals:\nUser requested " << num_domainint_funct_
-                << " function(s) which will be integrated over the entire domain" << std::endl;
-      std::cout << "The result will be written into " << filename << "\n" << std::endl;
-
-      // open file and write header
-      file.open(filename, std::fstream::trunc);
-      file << "Step,Time";
-      for (int i = 0; i < num_domainint_funct_; i++)
-      {
-        file << ",Function_" << domainint_funct_[i];
-      }
-      file << "\n";
-      file.close();
-    }
-
-    // usual output
-    file.open(filename, std::fstream::app);
-    // step, time and results for each function
-    file << step_ << "," << time_;
-    for (int i = 0; i < num_domainint_funct_; i++)
-      file << "," << std::setprecision(14) << (*domain_integrals_)[i];
-
-    // close file
-    file << "\n";
-    file.close();
-  }  // if myrank == 0
+    output_data["Function ID " + std::to_string(domainint_funct_[i])] = {(*domain_integrals_)[i]};
+  }
+  runtime_csvwriter_domain_integrals_->write_data_to_file(time(), step(), output_data);
 
   discret_->clear_state();
 }
