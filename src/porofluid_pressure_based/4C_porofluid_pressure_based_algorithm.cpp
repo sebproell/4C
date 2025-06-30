@@ -572,6 +572,12 @@ void PoroPressureBased::PorofluidAlgorithm::collect_runtime_output_data()
     }
   }
 
+  // write artery output if active
+  if (artery_coupling_active_)
+  {
+    meshtying_->output();
+  }
+
   const int numdof = discret_->num_dof(0, discret_->l_row_node(0));
   std::vector<std::optional<std::string>> context(numdof);
   {
@@ -717,13 +723,6 @@ void PoroPressureBased::PorofluidAlgorithm::output()
   // solution output and potentially restart data and/or flux data
   if (do_output())
   {
-    // TODO this is the artery output, arteries still need to be migrated to vtk-based output, then
-    // this method should be moved to collect_runtime_output_data()
-    if (artery_coupling_active_)
-    {
-      meshtying_->output();
-    }
-
     // reconstruct porosity for output; porosity is only needed for output and does not have to be
     // transferred between fields
     if (output_porosity_) reconstruct_porosity();
