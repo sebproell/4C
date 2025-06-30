@@ -9,7 +9,7 @@ message(STATUS "Fetch content for ryml")
 fetchcontent_declare(
   ryml
   GIT_REPOSITORY https://github.com/biojppm/rapidyaml.git
-  GIT_TAG e65999dc4d65368e1b3eb770e28d775885b0f525 # version 0.8.0
+  GIT_TAG 47ec2fa184209687c20fd5bc05621e1cb1200311 # version 0.9.0
   )
 set(RYML_INSTALL
     ON
