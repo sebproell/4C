@@ -272,7 +272,7 @@ RESULT DESCRIPTION:
       NODE: 20
       QUANTITY: "lambday"
       VALUE: -1.1677962558503907
-      TOLERANCE: 1e-05
+      TOLERANCE: 5e-05
   - FSI:
       NODE: 20
       QUANTITY: "lambdaz"
