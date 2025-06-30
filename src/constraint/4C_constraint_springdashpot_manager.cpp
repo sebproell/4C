@@ -85,6 +85,9 @@ void Constraints::SpringDashpotManager::reset_prestress(Core::LinAlg::Vector<dou
 void Constraints::SpringDashpotManager::output(Core::IO::DiscretizationWriter& output,
     Core::FE::Discretization& discret, Core::LinAlg::Vector<double>& disp)
 {
+  // only write spring output, if defined in input file
+  if (not Global::Problem::instance()->io_params().get<bool>("OUTPUT_SPRING")) return;
+
   // row maps for export
   std::shared_ptr<Core::LinAlg::Vector<double>> gap =
       std::make_shared<Core::LinAlg::Vector<double>>(*(actdisc_->node_row_map()), true);
@@ -110,11 +113,8 @@ void Constraints::SpringDashpotManager::output(Core::IO::DiscretizationWriter& o
     output.write_multi_vector("curnormals", normals);
   }
 
-  // write spring stress if defined in io-flag
-  if (Global::Problem::instance()->io_params().get<bool>("OUTPUT_SPRING"))
-    output.write_multi_vector("springstress", springstress);
-
-  return;
+  // write spring stress
+  output.write_multi_vector("springstress", springstress);
 }
 
 void Constraints::SpringDashpotManager::output_restart(

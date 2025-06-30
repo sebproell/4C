@@ -11,8 +11,9 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io.hpp"
+#include "4C_io_discretization_visualization_writer_mesh.hpp"
+#include "4C_io_visualization_parameters.hpp"
 #include "4C_linalg_sparsematrix.hpp"
-#include "4C_linalg_sparseoperator.hpp"
 #include "4C_linalg_utils_sparse_algebra_assemble.hpp"
 #include "4C_linalg_vector.hpp"
 #include "4C_structure_new_model_evaluator_data.hpp"
@@ -56,6 +57,17 @@ void Solid::ModelEvaluator::SpringDashpot::setup()
   stiff_spring_ptr_ = std::make_shared<Core::LinAlg::SparseMatrix>(
       *global_state().dof_row_map_view(), 81, true, true);
 
+  if (Global::Problem::instance()->io_params().get<bool>("OUTPUT_SPRING"))
+  {
+    const auto discretization = this->discret_ptr();
+    auto use_all_elements = [](const Core::Elements::Element* element) { return true; };
+    spring_dashpot_vtu_writer_ptr_ =
+        std::make_unique<Core::IO::DiscretizationVisualizationWriterMesh>(discretization,
+            Core::IO::visualization_parameters_factory(
+                Global::Problem::instance()->io_params().sublist("RUNTIME VTK OUTPUT"),
+                *Global::Problem::instance()->output_control_file(), global_state().get_time_n()),
+            use_all_elements, discretization->name() + "-dashpot");
+  }
   // set flag
   issetup_ = true;
 }
@@ -303,12 +315,12 @@ void Solid::ModelEvaluator::SpringDashpot::update_step_state(const double& timef
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void Solid::ModelEvaluator::SpringDashpot::output_step_state(
-    Core::IO::DiscretizationWriter& iowriter) const
+void Solid::ModelEvaluator::SpringDashpot::runtime_output_step_state() const
 {
+  if (spring_dashpot_vtu_writer_ptr_ == nullptr) return;
+
   // row maps for export
-  std::shared_ptr<Core::LinAlg::Vector<double>> gap =
-      std::make_shared<Core::LinAlg::Vector<double>>(*(discret().node_row_map()), true);
+  Core::LinAlg::Vector<double> gap(*(discret().node_row_map()), true);
   Core::LinAlg::MultiVector<double> normals(*(discret().node_row_map()), 3, true);
   Core::LinAlg::MultiVector<double> springstress(*(discret().node_row_map()), 3, true);
 
@@ -316,24 +328,34 @@ void Solid::ModelEvaluator::SpringDashpot::output_step_state(
   bool found_cursurfnormal = false;
   for (const auto& spring : springs_)
   {
-    spring->output_gap_normal(*gap, normals, springstress);
+    spring->output_gap_normal(gap, normals, springstress);
 
     // get spring type from current condition
-    const Constraints::SpringDashpot::RobinSpringDashpotType stype = spring->get_spring_type();
-    if (stype == Constraints::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
+    if (const Constraints::SpringDashpot::RobinSpringDashpotType stype = spring->get_spring_type();
+        stype == Constraints::SpringDashpot::RobinSpringDashpotType::cursurfnormal)
       found_cursurfnormal = true;
   }
+
+  // reset time and time step of the writer object
+  spring_dashpot_vtu_writer_ptr_->reset();
 
   // write vectors to output
   if (found_cursurfnormal)
   {
-    iowriter.write_vector("gap", gap);
-    iowriter.write_multi_vector("curnormals", normals);
+    spring_dashpot_vtu_writer_ptr_->append_result_data_vector_with_context(
+        gap, Core::IO::OutputEntity::node, {"gap"});
+    const std::vector<std::optional<std::string>> context(3, "curnormals");
+    spring_dashpot_vtu_writer_ptr_->append_result_data_vector_with_context(
+        normals, Core::IO::OutputEntity::node, context);
   }
 
-  // write spring stress if defined in io-flag
-  if (Global::Problem::instance()->io_params().get<bool>("OUTPUT_SPRING"))
-    iowriter.write_multi_vector("springstress", springstress);
+  // write spring stress
+  const std::vector<std::optional<std::string>> context(3, "springstress");
+  spring_dashpot_vtu_writer_ptr_->append_result_data_vector_with_context(
+      springstress, Core::IO::OutputEntity::node, context);
+
+  spring_dashpot_vtu_writer_ptr_->write_to_disk(
+      global_state().get_time_n(), global_state().get_step_n());
 }
 
 /*----------------------------------------------------------------------*

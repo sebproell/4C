@@ -23,7 +23,10 @@ void Inpar::IO::set_valid_parameters(std::map<std::string, Core::IO::InputSpec>&
           parameter<bool>("OUTPUT_GMSH", {.description = "", .default_value = false}),
           parameter<bool>("OUTPUT_ROT", {.description = "", .default_value = false}),
 
-          parameter<bool>("OUTPUT_SPRING", {.description = "", .default_value = false}),
+          parameter<bool>("OUTPUT_SPRING",
+              {.description = "Flag indicating whether quantities related to the spring dashpot "
+                              "conditions should be written to output.",
+                  .default_value = false}),
           parameter<bool>("OUTPUT_BIN",
               {.description = "Do you want to have binary output?", .default_value = true}),
 
