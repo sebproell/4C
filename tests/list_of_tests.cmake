@@ -2097,6 +2097,7 @@ four_c_test_vtk(solid_runtime_velocity_output-vtk-solid.4C.yaml solid_runtime_ve
 four_c_test_vtk(solid_runtime_vtk_2d-vtk.4C.yaml solid_runtime_vtk_2d.4C.yaml 2 xxx-structure.pvd ref/solid_runtime_vtk_2d-vtk-files/test-structure.pvd 1e-06)
 four_c_test_vtk(solid_runtime_vtk_offset-vtk.4C.yaml solid_runtime_vtk_offset.4C.yaml 2 xxx-structure.pvd ref/solid_runtime_vtk_offset-vtk-files/test-structure.pvd 1e-06)
 four_c_test_vtk(solid_runtime_wedge6-vtk.4C.yaml solid_runtime_wedge6.4C.yaml 1 xxx-structure.pvd ref/solid_runtime_wedge6-vtk/structure.pvd 1e-08)
+four_c_test_vtk(spring_dashpot_sohex8_struct_bc_new_struc-vtk-dashpot.4C.yaml spring_dashpot_sohex8_struct_bc_new_struc.4C.yaml 2 xxx-structure-dashpot.pvd ref/spring_dashpot_sohex8_struct_bc_new_struc-vtk/xxx-structure-dashpot.pvd 1e-08 0.5)
 four_c_test_vtk(ssi_mono_3D_2hex8_elch_s2i_butlervolmer_vtk_scatra.4C.yaml ssi_mono_3D_2hex8_elch_s2i_butlervolmer.4C.yaml 3 xxx-scatra.pvd ref/ssi_mono_3D_2hex8_elch_s2i_butlervolmer-scatra.pvd 1e-08)
 four_c_test_vtk(ssi_mono_3D_2hex8_elch_s2i_butlervolmer_vtk_structure.4C.yaml ssi_mono_3D_2hex8_elch_s2i_butlervolmer.4C.yaml 3 xxx-structure.pvd ref/ssi_mono_3D_2hex8_elch_s2i_butlervolmer-structure.pvd 1e-08)
 four_c_test_vtk(structure_solid_beam_element_gid_runtime_output-vtk-beam.4C.yaml structure_solid_beam_element_gid_runtime_output.4C.yaml 2 xxx-structure-beams.pvd ref/structure_solid_beam_element_gid_runtime_output-vtk/structure-beams.pvd 1e-08 1e-08 1.0)
