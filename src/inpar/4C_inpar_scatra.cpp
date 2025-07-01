@@ -7,8 +7,8 @@
 
 #include "4C_inpar_scatra.hpp"
 
+#include "4C_art_net_input.hpp"
 #include "4C_fem_condition_definition.hpp"
-#include "4C_inpar_bio.hpp"
 #include "4C_inpar_fluid.hpp"
 #include "4C_io_input_spec.hpp"
 #include "4C_io_input_spec_builders.hpp"
@@ -378,18 +378,17 @@ void Inpar::ScaTra::set_valid_parameters(std::map<std::string, Core::IO::InputSp
       "SCALAR TRANSPORT DYNAMIC/ARTERY COUPLING",
       {
 
-          deprecated_selection<Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
+          deprecated_selection<ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
               "ARTERY_COUPLING_METHOD",
               {
-                  {"None", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none},
-                  {"Nodal", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::nodal},
-                  {"GPTS", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::gpts},
-                  {"MP", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp},
-                  {"NTP", Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp},
+                  {"None", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none},
+                  {"Nodal", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::nodal},
+                  {"GPTS", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::gpts},
+                  {"MP", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp},
+                  {"NTP", ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp},
               },
               {.description = "Coupling method for artery coupling.",
-                  .default_value =
-                      Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none}),
+                  .default_value = ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::none}),
 
           // penalty parameter
           parameter<double>("PENALTY", {.description = "Penalty parameter for line-based coupling",

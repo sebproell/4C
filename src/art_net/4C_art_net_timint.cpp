@@ -8,9 +8,9 @@
 #include "4C_art_net_timint.hpp"
 
 #include "4C_art_net_artery_resulttest.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_comm_mpi_utils.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_bio.hpp"
 #include "4C_linear_solver_method_linalg.hpp"
 
 #include <Teuchos_StandardParameterEntryValidators.hpp>

@@ -7,9 +7,9 @@
 
 #include "4C_porofluid_pressure_based_meshtying_strategy_artery.hpp"
 
+#include "4C_art_net_input.hpp"
 #include "4C_art_net_utils.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_bio.hpp"
 #include "4C_io.hpp"
 #include "4C_io_control.hpp"
 #include "4C_linalg_utils_sparse_algebra_print.hpp"
@@ -44,7 +44,7 @@ PoroPressureBased::MeshtyingArtery::MeshtyingArtery(PorofluidAlgorithm* poroflui
   if (!artery_dis_->filled()) artery_dis_->fill_complete();
 
   const auto time_integration_scheme =
-      Teuchos::getIntegralValue<Inpar::ArtDyn::TimeIntegrationScheme>(artery_params, "DYNAMICTYPE");
+      Teuchos::getIntegralValue<ArtDyn::TimeIntegrationScheme>(artery_params, "DYNAMICTYPE");
 
   std::shared_ptr<Core::IO::DiscretizationWriter> artery_output = artery_dis_->writer();
   artery_output->write_mesh(0, 0.0);
@@ -74,12 +74,11 @@ PoroPressureBased::MeshtyingArtery::MeshtyingArtery(PorofluidAlgorithm* poroflui
   const std::string coupling_condition_name = std::invoke(
       [&]()
       {
-        if (Teuchos::getIntegralValue<
-                Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
+        if (Teuchos::getIntegralValue<ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
                 Global::Problem::instance()->poro_fluid_multi_phase_dynamic_params().sublist(
                     "ARTERY COUPLING"),
                 "ARTERY_COUPLING_METHOD") ==
-            Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
+            ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
         {
           return "ArtPorofluidCouplConNodeToPoint";
         }

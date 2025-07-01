@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_bio.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_porofluid_pressure_based_elast_scatra_artery_coupling_base.hpp"
 
 #include <Epetra_FEVector.h>
@@ -111,7 +111,7 @@ namespace PoroPressureBased
     std::vector<int> coupling_nodes_for_node_to_point_;
 
     //! type of coupling method
-    Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod artery_coupling_method_;
+    ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod artery_coupling_method_;
 
     //! phinp for artery discretization
     std::shared_ptr<const Core::LinAlg::Vector<double>> phinp_art_;

@@ -63,11 +63,11 @@ bool Discret::Elements::Artery::read_element(const std::string& eletype, const s
   std::string impltype = container.get<std::string>("TYPE");
 
   if (impltype == "Undefined")
-    impltype_ = Inpar::ArtDyn::impltype_undefined;
+    impltype_ = ArtDyn::impltype_undefined;
   else if (impltype == "LinExp")
-    impltype_ = Inpar::ArtDyn::impltype_lin_exp;
+    impltype_ = ArtDyn::impltype_lin_exp;
   else if (impltype == "PressureBased")
-    impltype_ = Inpar::ArtDyn::impltype_pressure_based;
+    impltype_ = ArtDyn::impltype_pressure_based;
   else
     FOUR_C_THROW("Invalid implementation type for ARTERY elements!");
 

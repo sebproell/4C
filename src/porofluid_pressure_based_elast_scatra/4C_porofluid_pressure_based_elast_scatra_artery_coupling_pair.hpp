@@ -10,8 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_art_net_input.hpp"
 #include "4C_fem_general_utils_local_connectivity_matrices.hpp"
-#include "4C_inpar_bio.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_linalg_utils_sparse_algebra_math.hpp"
@@ -566,7 +566,7 @@ namespace PoroPressureBased
     CouplingType coupling_type_;
 
     //! coupling method (either Gauss-point-to-segment or mortar-penalty coupling)
-    Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod coupling_method_;
+    ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod coupling_method_;
 
     //! name of the condition
     std::string condition_name_;

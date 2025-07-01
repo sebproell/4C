@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_bio.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_io.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_vector.hpp"
@@ -85,7 +85,7 @@ namespace PoroPressureBased
   std::map<int, std::set<int>> extended_ghosting_artery_discretization(
       Core::FE::Discretization& contdis, std::shared_ptr<Core::FE::Discretization> artdis,
       const bool evaluate_on_lateral_surface,
-      const Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod couplingmethod);
+      const ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod couplingmethod);
 
   /**
    * \brief get axis-aligned bounding box of element

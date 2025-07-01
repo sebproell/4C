@@ -72,7 +72,7 @@ void Discret::Elements::ArteryType::setup_element_definition(
  |  id             (in)  this element's global id                       |
  *----------------------------------------------------------------------*/
 Discret::Elements::Artery::Artery(int id, int owner)
-    : Core::Elements::Element(id, owner), impltype_(Inpar::ArtDyn::impltype_undefined)
+    : Core::Elements::Element(id, owner), impltype_(ArtDyn::impltype_undefined)
 {
   gaussrule_ = Core::FE::GaussRule1D::undefined;
 
@@ -164,12 +164,12 @@ int Discret::Elements::Artery::num_dof_per_node(const Core::Nodes::Node& node) c
 {
   switch (impltype_)
   {
-    case Inpar::ArtDyn::impltype_lin_exp:
+    case ArtDyn::impltype_lin_exp:
     {
       return 2;
       break;
     }
-    case Inpar::ArtDyn::impltype_pressure_based:
+    case ArtDyn::impltype_pressure_based:
     {
       return 1;
       break;

@@ -142,8 +142,7 @@ void Arteries::ArtNetImplStationary::init(const Teuchos::ParameterList& globalti
   // -------------------------------------------------------------------
   // set initial field
   // -------------------------------------------------------------------
-  set_initial_field(
-      Teuchos::getIntegralValue<Inpar::ArtDyn::InitialField>(arteryparams, "INITIALFIELD"),
+  set_initial_field(Teuchos::getIntegralValue<ArtDyn::InitialField>(arteryparams, "INITIALFIELD"),
       arteryparams.get<int>("INITFUNCNO"));
 
 
@@ -689,16 +688,16 @@ void Arteries::ArtNetImplStationary::read_restart(int step, bool coupledTo3D)
  |  set initial field for pressure                     kremheller 04/18 |
  *----------------------------------------------------------------------*/
 void Arteries::ArtNetImplStationary::set_initial_field(
-    const Inpar::ArtDyn::InitialField init, const int startfuncno)
+    const ArtDyn::InitialField init, const int startfuncno)
 {
   switch (init)
   {
-    case Inpar::ArtDyn::initfield_zero_field:
+    case ArtDyn::initfield_zero_field:
     {
       pressurenp_->put_scalar(0.0);
       break;
     }
-    case Inpar::ArtDyn::initfield_field_by_function:
+    case ArtDyn::initfield_field_by_function:
     {
       const Core::LinAlg::Map* dofrowmap = discret_->dof_row_map();
 
@@ -726,7 +725,7 @@ void Arteries::ArtNetImplStationary::set_initial_field(
 
       break;
     }
-    case Inpar::ArtDyn::initfield_field_by_condition:
+    case ArtDyn::initfield_field_by_condition:
     {
       // set initial field
       const std::string field = "Artery";

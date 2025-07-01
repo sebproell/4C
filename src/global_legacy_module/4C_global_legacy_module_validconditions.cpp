@@ -8,6 +8,7 @@
 #include "4C_global_legacy_module_validconditions.hpp"
 
 #include "4C_ale_input.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_beaminteraction_potential_input.hpp"
 #include "4C_ehl_input.hpp"
 #include "4C_elch_input.hpp"
@@ -824,7 +825,7 @@ std::vector<Core::Conditions::ConditionDefinition> Global::valid_conditions()
   Inpar::FPSI::set_valid_conditions(condlist);
   Inpar::XFEM::set_valid_conditions(condlist);
   Inpar::BioFilm::set_valid_conditions(condlist);
-  Inpar::ArteryNetwork::set_valid_conditions(condlist);
+  ArteryNetwork::set_valid_conditions(condlist);
   Airway::set_valid_conditions(condlist);
   Inpar::Cardiovascular0D::set_valid_conditions(condlist);
   Inpar::Solid::set_valid_conditions(condlist);

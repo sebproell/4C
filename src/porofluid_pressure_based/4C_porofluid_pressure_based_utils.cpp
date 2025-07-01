@@ -8,6 +8,7 @@
 #include "4C_porofluid_pressure_based_utils.hpp"
 
 #include "4C_adapter_porofluid_pressure_based.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_fem_general_utils_createdis.hpp"
 #include "4C_fem_geometry_intersection_service.hpp"
 #include "4C_fem_geometry_intersection_service.templates.hpp"
@@ -15,7 +16,6 @@
 #include "4C_fem_geometry_searchtree.hpp"
 #include "4C_fem_geometry_searchtree_service.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_bio.hpp"
 #include "4C_linalg_utils_densematrix_communication.hpp"
 #include "4C_mat_cnst_1d_art.hpp"
 #include "4C_mat_material_factory.hpp"
@@ -195,7 +195,7 @@ std::shared_ptr<Adapter::PoroFluidMultiphase> PoroPressureBased::create_algorith
 std::map<int, std::set<int>> PoroPressureBased::extended_ghosting_artery_discretization(
     Core::FE::Discretization& contdis, std::shared_ptr<Core::FE::Discretization> artdis,
     const bool evaluate_on_lateral_surface,
-    const Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod couplingmethod)
+    const ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod couplingmethod)
 {
   // user output
   if (Core::Communication::my_mpi_rank(contdis.get_comm()) == 0)
@@ -234,7 +234,7 @@ std::map<int, std::set<int>> PoroPressureBased::extended_ghosting_artery_discret
   const std::vector<int> artEleGIDs = std::invoke(
       [&]()
       {
-        if (couplingmethod == Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
+        if (couplingmethod == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
         {
           return get_coupling_arteries_node_to_point(artdis, *artsearchdis);
         }

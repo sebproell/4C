@@ -50,7 +50,7 @@ PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
               .sublist("ARTERY COUPLING")
               .get<double>("DELETE_SMALL_FREE_HANGING_COMPS")),
       artery_coupling_method_(
-          Teuchos::getIntegralValue<Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
+          Teuchos::getIntegralValue<ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod>(
               coupling_params, "ARTERY_COUPLING_METHOD")),
       timefacrhs_artery_(0.0),
       timefacrhs_homogenized_(0.0),
@@ -116,8 +116,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
 void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::setup()
 {
   // create the pairs
-  if (artery_coupling_method_ ==
-      Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
+  if (artery_coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp)
   {
     get_coupling_nodes_from_input_node_to_point();
     if (coupling_nodes_for_node_to_point_.size() == 0)
@@ -138,8 +137,8 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
 void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
     get_coupling_nodes_from_input_node_to_point()
 {
-  FOUR_C_ASSERT(artery_coupling_method_ ==
-                    Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp,
+  FOUR_C_ASSERT(
+      artery_coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp,
       "This method should only be called for node-to-point coupling.");
 
   // get the node IDs of coupled 1D nodes from the input file
@@ -289,8 +288,8 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
 void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm::
     create_coupling_pairs_node_to_point()
 {
-  FOUR_C_ASSERT(artery_coupling_method_ ==
-                    Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp,
+  FOUR_C_ASSERT(
+      artery_coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::ntp,
       "This method should only be called for node-to-point coupling.");
 
   const Teuchos::ParameterList& porofluid_coupling_params =
@@ -416,7 +415,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
         const std::shared_ptr<Core::LinAlg::Vector<double>> rhs)
 {
   // reset
-  if (artery_coupling_method_ == Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp)
+  if (artery_coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp)
   {
     mortar_matrix_d_->zero();
     mortar_matrix_m_->zero();
@@ -479,8 +478,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
         integrated_diameter, ele_rhs, ele_matrix, sysmat, rhs);
 
     // in the case of MP, assemble D, M and Kappa
-    if (artery_coupling_method_ ==
-            Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp and
+    if (artery_coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp and
         num_coupled_dofs_ > 0)
       assemble_mortar_matrices_and_vector(coupled_ele_pair->artery_ele_gid(),
           coupled_ele_pair->homogenized_ele_gid(), D_ele, M_ele, Kappa_ele);
@@ -510,8 +508,7 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
   sysmat->matrix(1, 1).add(artery_block->matrix(1, 1), false, 1.0, 0.0);
 
   // assemble D and M contributions into global force and stiffness
-  if (artery_coupling_method_ ==
-          Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp and
+  if (artery_coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp and
       num_coupled_dofs_ > 0)
     sum_mortar_matrices_into_global_matrix(*sysmat, rhs);
 }
@@ -825,10 +822,9 @@ void PoroPressureBased::PorofluidElastScatraArteryCouplingNonConformingAlgorithm
     print_coupling_method() const
 {
   std::string coupling_method;
-  if (artery_coupling_method_ == Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp)
+  if (artery_coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::mp)
     coupling_method = "Mortar Penalty";
-  else if (artery_coupling_method_ ==
-           Inpar::ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::gpts)
+  else if (artery_coupling_method_ == ArteryNetwork::ArteryPorofluidElastScatraCouplingMethod::gpts)
     coupling_method = "Gauss-Point-To-Segment";
   else
     FOUR_C_THROW("unknown coupling method");

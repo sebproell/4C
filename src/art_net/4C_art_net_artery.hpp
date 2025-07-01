@@ -10,13 +10,13 @@
 
 #include "4C_config.hpp"
 
+#include "4C_art_net_input.hpp"
 #include "4C_comm_parobjectfactory.hpp"
 #include "4C_fem_general_element.hpp"
 #include "4C_fem_general_elementtype.hpp"
 #include "4C_fem_general_node.hpp"
 #include "4C_fem_general_utils_integration.hpp"
 #include "4C_fluid_ele_nullspace.hpp"
-#include "4C_inpar_bio.hpp"
 #include "4C_linalg_vector.hpp"
 
 #include <memory>
@@ -292,7 +292,7 @@ namespace Discret
       \brief return implementation type (physics)
 
       */
-      Inpar::ArtDyn::ImplType impl_type() { return impltype_; }
+      ArtDyn::ImplType impl_type() { return impltype_; }
 
 
       //@}
@@ -308,7 +308,7 @@ namespace Discret
 
      private:
       //! implementation type (physics)
-      Inpar::ArtDyn::ImplType impltype_;
+      ArtDyn::ImplType impltype_;
 
       //! Gaussrule
       Core::FE::GaussRule1D gaussrule_;

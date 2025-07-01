@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_bio.hpp"
+#include "4C_art_net_input.hpp"
 #include "4C_io.hpp"
 #include "4C_utils_parameter_list.fwd.hpp"
 
@@ -71,8 +71,7 @@ namespace Arteries
   namespace Utils
   {
     // create algorithm depending on time integration scheme
-    std::shared_ptr<Adapter::ArtNet> create_algorithm(
-        Inpar::ArtDyn::TimeIntegrationScheme timintscheme,
+    std::shared_ptr<Adapter::ArtNet> create_algorithm(ArtDyn::TimeIntegrationScheme timintscheme,
         std::shared_ptr<Core::FE::Discretization> dis, const int linsolvernumber,
         const Teuchos::ParameterList& probparams, const Teuchos::ParameterList& artparams,
         Core::IO::DiscretizationWriter& output);
