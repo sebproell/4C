@@ -167,19 +167,6 @@ EMBEDDED MESH COUPLING:
   COUPLING_STRATEGY: mortar
   CONSTRAINT_ENFORCEMENT: penalty
   CONSTRAINT_ENFORCEMENT_PENALTYPARAM: 10000
-TITLE:
-  MeshPy:
-    creation_date: '2025-06-02 17:48:23'
-    Application:
-      path: /home/a11beulo/Documents/paper-workflow_iga_fem_em/sim/2d-hertzian-contact-qualitative-results/2d-hertzian-contact.py
-      git_sha: 5d440b2d93a95701b86a0354b36f8b23184ee0de
-      git_date: 2025-05-26 10:09:34 +0200
-    MeshPy:
-      git_SHA: 7411662e82585f6a51bb3f0d4cf7475779caf6c2
-      git_date: 2025-05-22 16:05:38 +0200
-    CubitPy:
-      git_SHA: 862512f997e77d7074bfdb46be25c05dd8ec4d6b
-      git_date: 2025-05-21 16:21:59 +0200
 STRUCTURE KNOTVECTORS:
   - NURBS_DIMENSION 3
   - BEGIN NURBSPATCH
