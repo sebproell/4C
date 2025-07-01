@@ -30,10 +30,10 @@ lnmmeshio
 
 `lnmmeshio <https://github.com/amgebauer/lnmmeshio>`_ is a Python package to read and write discretizations of different formats including the 4C format.
 
-meshpy
+beamme
 ~~~~~~
 
-`meshpy <https://github.com/imcs-compsim/meshpy>`_ is a general purpose 3D beam finite element input generator written in Python.
+`beamme <https://beamme-py.github.io/beamme/>`_ is a general purpose 3D beam finite element input generator written in Python.
 It contains advanced geometry creation and manipulation functions to create complex beam geometries, including a consistent handling of finite rotations.
 
 QUEENS

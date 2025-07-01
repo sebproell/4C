@@ -16,7 +16,7 @@ namespace
   using namespace FourC;
 
   /**
-   * \brief The following code part is generated with meshpy. The function defines element
+   * \brief The following code part is generated with beamme. The function defines element
    * coordinates for unit test examples.
    */
   void xtest_line_along_element_surface_geometry(
@@ -189,7 +189,7 @@ namespace
   }
 
   /**
-   * \brief The following code part is generated with meshpy. The function defines element
+   * \brief The following code part is generated with beamme. The function defines element
    * coordinates for unit test examples.
    */
   void xtest_multiple_intersections_hex27_geometry(
@@ -307,7 +307,7 @@ namespace
   }
 
   /**
-   * \brief The following code part is generated with meshpy. The function defines element
+   * \brief The following code part is generated with beamme. The function defines element
    * coordinates for unit test examples.
    */
   void xtest_multiple_intersections_tet10_geometry(
