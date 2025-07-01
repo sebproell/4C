@@ -266,7 +266,7 @@ RESULT DESCRIPTION:
   - FSI:
       NODE: 20
       QUANTITY: "lambdax"
-      VALUE: 2.7240872012880604
+      VALUE: 2.724065
       TOLERANCE: 5e-05
   - FSI:
       NODE: 20
