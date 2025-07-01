@@ -12,7 +12,7 @@ repos:
         name: Format C/C++
         # Only use on C and C++ files and not on other files that clang could format (e.g. json).
         types_or: [c++, c]
-        exclude: 'mm$'
+        exclude: "mm$"
 
   - repo: https://github.com/cheshirekow/cmake-format-precommit
     rev: v0.6.13
@@ -33,7 +33,7 @@ repos:
     hooks:
       - id: xml-formatter
         name: Format xml
-        args: [--indent, '2', --indent-char, ' ', --selfclose, --overwrite]
+        args: [--indent, "2", --indent-char, " ", --selfclose, --overwrite]
         # Only run on "pure" XML files and not on files that internally use XML (e.g. svg)
         files: \.xml$
 
@@ -55,7 +55,7 @@ repos:
       - id: trailing-whitespace
         name: Trim trailing whitespace
         # Do not modify reference vtu files, since we generate these and do not hand-edit them.
-        exclude: 'vtu$'
+        exclude: "vtu$"
         # Do not trim trailing whitespace in C++ files. It is not trivial to trim whitespace
         # correctly, e.g., when inside a string literal. Clang-format will do this correctly.
         exclude_types: [c, c++]
@@ -68,12 +68,12 @@ repos:
       - id: insert-license
         name: Insert license header (//)
         types_or: [c++, c]
-        exclude: 'mm$'
+        exclude: "mm$"
         args:
           - --license-filepath
           - utilities/license_header.txt
           - --comment-style
-          - '//'
+          - "//"
           - --detect-license-in-X-top-lines=1
       - id: insert-license
         name: Insert license header (#)
@@ -82,7 +82,7 @@ repos:
           - --license-filepath
           - utilities/license_header.txt
           - --comment-style
-          - '#'
+          - "#"
           # Allow the first line to be a shebang separated by a newline.
           - --detect-license-in-X-top-lines=3
 
@@ -92,7 +92,7 @@ repos:
       - id: typos
         name: Check for typos in code
         types_or: [c++, c, python, cmake, shell]
-        exclude: '(mm$|list_of_tests.cmake)'
+        exclude: "(mm$|list_of_tests.cmake)"
       - id: typos
         name: Check for typos in documentation
         types_or: [markdown, rst]
@@ -116,25 +116,25 @@ repos:
 
       - id: cpp-filename
         name: C++ file names
-        description: 'Check that all C++ files have the correct file name'
+        description: "Check that all C++ files have the correct file name"
         language: system
         types_or: [c++, c]
-        exclude: 'tests/cut_test/|mm$|dummy.cpp'
+        exclude: "tests/cut_test/|mm$|dummy.cpp"
         entry: utilities/python-venv/bin/check-filenames
         require_serial: true # To give a non duplicated error output
 
       - id: cpp-include
         name: C++ includes
-        description: 'Check that all C++ files have correct includes'
+        description: "Check that all C++ files have correct includes"
         language: system
         types_or: [c++, c]
-        exclude: 'tests/cut_test/|mm$'
+        exclude: "tests/cut_test/|mm$"
         entry: utilities/python-venv/bin/check-includes
         require_serial: true # To give a non duplicated error output
 
       - id: cpp-header-guard
         name: Header guards
-        description: 'Check that all C++ files have the correct header guards'
+        description: "Check that all C++ files have the correct header guards"
         language: python
         types_or: [c++, c]
         files: '\.(h|hpp)$'
@@ -142,7 +142,7 @@ repos:
 
       - id: cpp-include-cycles
         name: C++ include cycles
-        description: 'Check that all C++ headers do not have include cycles'
+        description: "Check that all C++ headers do not have include cycles"
         language: python
         always_run: true
         pass_filenames: false
@@ -150,16 +150,17 @@ repos:
 
       - id: cpp-preprocessor
         name: C++ preprocessor directives
-        description: 'Check that all C++ files only use acceptable preprocessor directives'
+        description: "Check that all C++ files only use acceptable preprocessor directives"
         language: python
         types_or: [c++, c]
         entry: utilities/python-venv/bin/check-preprocessor
 
       - id: input-files
         name: Test input files
-        description: 'Check input files conform to expectations'
+        description: "Check input files conform to expectations"
         language: python
-        files: 'tests/input_files/.*\.dat$'
+        files: 'tests/input_files/.*\.4C\.(yaml|json)$'
+        exclude: '.*\.mat\.4C\.(yaml|json)$'
         entry: utilities/python-venv/bin/check-test-files
 
       - id: non-ascii-chars
@@ -170,7 +171,7 @@ repos:
 
       - id: check-commit-msg
         name: Check commit message
-        description: 'Check for valid commit message'
+        description: "Check for valid commit message"
         language: system
         entry: ./utilities/code_checks/commit-msg
         stages: [commit-msg]
