@@ -69,6 +69,8 @@ void Core::IO::read_value_from_yaml(Core::IO::ConstYamlNodeRef node, double& val
   // Instead of relying on the ryml library to parse the double value, we do it ourselves to
   // ensure that we only accept data that fully parses as a double.
 
+  if (node.node.is_val_quoted()) throw YamlException("Found a quoted value.");
+
   // Null-terminate the string.
   std::string string(node.node.val().data(), node.node.val().size());
   std::size_t end;
@@ -90,6 +92,9 @@ void Core::IO::read_value_from_yaml(Core::IO::ConstYamlNodeRef node, double& val
 void Core::IO::read_value_from_yaml(FourC::Core::IO::ConstYamlNodeRef node, bool& value)
 {
   FOUR_C_ASSERT_ALWAYS(node.node.has_val(), "Expected a value node.");
+
+  if (node.node.is_val_quoted()) throw YamlException("Found a quoted value.");
+
   std::string token(node.node.val().data(), node.node.val().size());
   std::transform(token.begin(), token.end(), token.begin(), ::tolower);
   if (token == "true" || token == "yes" || token == "on" || token == "1")
