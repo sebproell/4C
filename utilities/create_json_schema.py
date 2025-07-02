@@ -7,28 +7,29 @@
 
 """Create JSON schema for YAML validation."""
 
-import json
 import argparse
+import json
+
 from pathlib import Path
 
 from metadata_utils import (
-    NotSet,
-    NOTSET,
-    NAMED_TYPES,
-    MISSING_DESCRIPTION,
     FOURC_BASE_TYPES_TO_JSON_SCHEMA_DICT,
-    Primitive,
-    Vector,
-    Map,
+    MISSING_DESCRIPTION,
+    NAMED_TYPES,
+    NOTSET,
+    All_Of,
     Enum,
     Group,
-    Selection,
     List,
-    All_Of,
+    Map,
+    NotSet,
     One_Of,
+    Primitive,
+    RangeValidator,
+    Selection,
+    Vector,
     metadata_object_from_file,
 )
-from dataclasses import asdict
 
 
 def set_description(schema, description):
@@ -45,6 +46,30 @@ def set_description(schema, description):
         if description is not None:
             # Add the description
             schema["description"] = description
+
+
+def validator_to_schema(validator):
+    match validator:
+
+        case RangeValidator():
+            data = {}
+
+            if validator.minimum_exclusive:
+                data["exclusiveMinimum"] = validator.minimum
+            else:
+                data["minimum"] = validator.minimum
+
+            if validator.maximum_exclusive:
+                data["exclusiveMaximum"] = validator.maximum
+            else:
+                data["maximum"] = validator.maximum
+
+            return data
+
+        case _:
+            if validator is not None:
+                print(f"Validator {validator} not supported by JSON schema.")
+            return None
 
 
 def json_schema(
@@ -66,6 +91,7 @@ def json_schema(
     items=None,
     minItems=None,
     maxItems=None,
+    validator=None,
 ):
     """Create JSON schema dict."""
 
@@ -118,6 +144,9 @@ def json_schema(
         set_if_not_none(schema, "maxItems", maxItems)
         set_if_not_none(schema, "minItems", minItems)
 
+    if (validator_data := validator_to_schema(validator)) is not None:
+        schema.update(validator_data)
+
     return schema
 
 
@@ -137,6 +166,7 @@ def schema_from_base_type(primitive):
         default=primitive.default,
         noneable=primitive.noneable,
         const=primitive.constant,
+        validator=primitive.validator,
     )
     return schema
 
@@ -187,7 +217,7 @@ def schema_from_group(group):
         return schema
 
     # Use All_of to create the schema
-    metadata_dict = asdict(group)
+    metadata_dict = group.__dict__.copy()
     noneable = metadata_dict.pop("noneable", False)
     schema = schema_from_all_of(All_Of(**metadata_dict))
     schema["title"] = group.short_description()
