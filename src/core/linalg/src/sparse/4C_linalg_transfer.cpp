@@ -18,7 +18,9 @@ FOUR_C_NAMESPACE_OPEN
 //! Standard constructor using source and target maps
 Core::LinAlg::Import::Import::Import(const Map& targetMap, const Map& sourceMap)
     : import_(Utils::make_owner<Epetra_Import>(
-          targetMap.get_epetra_block_map(), sourceMap.get_epetra_block_map()))
+          targetMap.get_epetra_block_map(), sourceMap.get_epetra_block_map())),
+      sourceMap_(sourceMap),
+      targetMap_(targetMap)
 {
 }
 
@@ -37,6 +39,11 @@ Core::LinAlg::Export::Export(const Export& exporter)
     : export_(Utils::make_owner<Epetra_Export>(exporter.get_epetra_export()))
 {
 }
+const Core::LinAlg::Map& Core::LinAlg::Import::Import::sourcemap() const { return sourceMap_; }
+
+const Core::LinAlg::Map& Core::LinAlg::Import::Import::targetmap() const { return targetMap_; }
+
+
 
 //! Getter for raw Epetra_Import reference
 const Epetra_Export& Core::LinAlg::Export::Export::get_epetra_export() const { return *export_; }
