@@ -540,8 +540,8 @@ void Core::FE::Discretization::set_state(
     }
     // (re)build importer if necessary
     if (stateimporter_[nds] == nullptr or
-        not stateimporter_[nds]->sourcemap().same_as(state.get_map().get_epetra_block_map()) or
-        not stateimporter_[nds]->targetmap().same_as(colmap->get_epetra_block_map()))
+        not stateimporter_[nds]->source_map().same_as(state.get_map().get_epetra_block_map()) or
+        not stateimporter_[nds]->target_map().same_as(colmap->get_epetra_block_map()))
     {
       stateimporter_[nds] = std::make_shared<Core::LinAlg::Import>(*colmap, state.get_map());
     }
