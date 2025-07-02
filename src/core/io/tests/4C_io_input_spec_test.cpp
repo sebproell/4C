@@ -1301,7 +1301,7 @@ specs:
                                           parameter<std::string>("b"),
                                       }),
                                       all_of({
-                                          parameter<std::string>("a"),
+                                          parameter<int>("a"),
                                           parameter<double>("d"),
                                       }),
                                   }),
@@ -1329,7 +1329,7 @@ specs:
       ryml::Tree tree = init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
       ryml::parse_in_arena(R"(data:
-  a: c
+  a: 1
   d: 2.0
 )",
           root);
@@ -1338,7 +1338,7 @@ specs:
       InputParameterContainer container;
       spec.match(node, container);
       const auto& data = container.group("data");
-      EXPECT_EQ(data.get<std::string>("a"), "c");
+      EXPECT_EQ(data.get<int>("a"), 1);
       EXPECT_EQ(data.get<double>("d"), 2.0);
     };
 
@@ -2369,5 +2369,67 @@ parameters:
     const auto& a = std::get<A>(model.model);
     EXPECT_EQ(a.a, 1);
     EXPECT_EQ(a.s, "abc");
+  }
+
+  TEST(InputSpecTest, QuotedStrings)
+  {
+    auto spec = group("test", {
+                                  parameter<std::string>("a"),
+                                  parameter<std::string>("b"),
+                                  parameter<std::string>("c"),
+                                  parameter<std::string>("d"),
+                                  parameter<std::string>("e"),
+                                  parameter<std::string>("f"),
+                              });
+
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    ryml::parse_in_arena(R"(test:
+  a: "double-quoted string"
+  b: 'single quoted string'
+  c: "123"
+  d: "null"
+  e: '1.23'
+  f: "true"
+        )",
+        root);
+
+    ConstYamlNodeRef node(root, "");
+    InputParameterContainer container;
+    spec.match(node, container);
+  }
+
+  TEST(InputSpecTest, QuoutedStringDoNotMatchOtherTypes)
+  {
+    auto spec = group("test", {
+                                  parameter<bool>("a"),
+                                  parameter<int>("b"),
+                                  parameter<double>("c"),
+                                  parameter<std::optional<int>>("d"),
+                              });
+
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    ryml::parse_in_arena(R"(test:
+  a: "true"
+  b: "123"
+  c: "1.23"
+  d: "null"
+        )",
+        root);
+
+    ConstYamlNodeRef node(root, "");
+    InputParameterContainer container;
+
+    // Matching should fail because the quoted strings do not match the expected types.
+    FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+        spec.match(node, container), Core::Exception, R"([!] Candidate group 'test'
+  {
+    [!] Candidate parameter 'a' has wrong type, expected type: bool
+    [!] Candidate parameter 'b' has wrong type, expected type: int
+    [!] Candidate parameter 'c' has wrong type, expected type: double
+    [!] Candidate parameter 'd' has wrong type, expected type: std::optional<int>
+  }
+)");
   }
 }  // namespace
