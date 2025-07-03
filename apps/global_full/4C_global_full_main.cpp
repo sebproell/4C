@@ -45,7 +45,7 @@ namespace
         << "\n"
         << "SYNOPSIS\n"
         << "\t"
-        << "4C [-h | --help] [-p | --parameters] [--to-yaml] [-d | --datfile] [-ngroup=<x>] \\ "
+        << "4C [-h | --help] [-p | --parameters] [-d | --datfile] [-ngroup=<x>] \\ "
            "\n"
            "\t\t[-glayout=a,b,c,...] [-nptype=<parallelism_type>] \\ \n"
         << "\t\t<dat_name> <output_name> [restart=<y>] [restartfrom=restart_file_name] \\ \n"
@@ -62,10 +62,6 @@ namespace
         << "\n"
         << "\t--parameters or -p\n"
         << "\t\tDumps information about the parameters for consumption by additional tools.\n"
-        << "\n"
-        << "\t--to-yaml <in_file_name> [<out_file_name>]\n"
-        << "\t\tRewrites a dat file to a yaml file. (default output: "
-           "<in_file_name_without_suffix>.4C.yaml\n"
         << "\n"
         << "\t-ngroup=<x>\n"
         << "\t\tSpecify the number of groups for nested parallelism. (default: 1)\n"
@@ -349,45 +345,6 @@ int main(int argc, char* argv[])
 
       // Finally, dump everything.
       std::cout << tree;
-    }
-  }
-  else if ((argc >= 3) && (strcmp(argv[1], "--to-yaml") == 0))
-  {
-    if (Core::Communication::my_mpi_rank(lcomm) == 0)
-    {
-      std::filesystem::path inputfile_name = argv[2];
-      // Always make the input file path relative to the working directory. This ensures that any
-      // absolute path encountered in the input file stays that way.
-      if (inputfile_name.is_absolute())
-      {
-        inputfile_name = std::filesystem::relative(inputfile_name);
-      }
-
-      std::filesystem::path outputfile_name;
-      if (argc == 3)
-      {
-        outputfile_name = inputfile_name;
-        outputfile_name.replace_extension("4C.yaml");
-        if (std::filesystem::exists(outputfile_name))
-        {
-          printf("You did not provide an output file name.\n");
-          printf("The default is to replace the original suffix by .4C.yaml.\n");
-          printf("However, the file '%s' already exists. I will not continue\n",
-              outputfile_name.c_str());
-          exit(EXIT_FAILURE);
-        }
-      }
-      else
-      {
-        outputfile_name = argv[3];
-      }
-      Core::IO::InputFile input_file = Global::set_up_input_file(lcomm);
-      input_file.read(inputfile_name);
-      std::ofstream output_file(outputfile_name);
-      input_file.write_as_yaml(output_file, outputfile_name);
-      printf("The input file has been converted to yaml format");
-      if (argc == 3) printf(", saved as %s", outputfile_name.c_str());
-      printf("\n");
     }
   }
   else

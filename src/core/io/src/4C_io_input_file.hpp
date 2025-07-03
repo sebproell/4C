@@ -44,45 +44,9 @@ namespace Core::IO
    * the special section named "INCLUDES" which can contain a list of other files that should be
    * read in addition to the current file.
    *
-   * Three file formats are supported: the custom .dat file format and the standard .yaml (or .yml)
-   * and .json formats. The format of a file is detected based on its ending. If the ending is not
-   * one of the above-mentioned, the file is assumed to be in the .dat format.
-   * Included files do not have to use the same format as the including file.
-   *
-   * The following example shows the structure of a .dat file:
-   *
-   * @code
-   * // A comment. Sections start with at least two dashes in the .dat file format.
-   * --INCLUDES
-   * include1.yml
-   * include2.json
-   * // More dashes are allowed to start a section.
-   * -------------SECTION1
-   * key1 = value1
-   * key2 = value2
-   * // The "=" is optional and can be replaced by whitespace. This only works if key and value do
-   * // not contain whitespace themselves.
-   * key3 value3
-   * --SECTION2
-   * A line with content that is not a key-value pair. It can contain anything.
-   * @endcode
-   *
-   * A similar example looks like this in .yaml format:
-   *
-   * @code
-   * INCLUDES:
-   *   - include1.yml
-   *   - include2.json
-   * # A comment. Note that sections do NOT start with dashes in the .yaml file format.
-   * SECTION1:
-   *   key1: value1
-   *   key2: value2
-   * SECTION2:
-   *   - A line with content that is not a key-value pair.
-   *   - It can contain anything.
-   *   - We call these unstructured sections "legacy sections".
-   * @endcode
-   *
+   * Two file formats are supported:  the standard .yaml (or .yml) and .json formats. The format of
+   * a file is detected based on its ending. Included files do not have to use the same format as
+   * the including file.
    *
    * @note The file is only read on rank 0 to save memory. All sections are broadcast to all other
    * ranks, except for the legacy sections (see the constructor). Legacy sections need to be
@@ -93,6 +57,9 @@ namespace Core::IO
    public:
     //! Name of the special section that can contain arbitrary data.
     static constexpr auto description_section_name = "TITLE";
+
+    //! Name of the special section that can contain a list of files to include.
+    static constexpr auto includes_section_name = "INCLUDES";
 
     /**
      * A Fragment is a part of the input file. Fragments are used to store the content of a section.
@@ -182,8 +149,7 @@ namespace Core::IO
 
     /**
      * Read the content of the input file. The file is read on rank 0 and distributed to all
-     * other ranks if necessary. The file format is detected based on the file ending. If the
-     * file ending is not recognized, the .dat format is assumed.
+     * other ranks if necessary. The file format is detected based on the file ending.
      */
     void read(const std::filesystem::path& top_level_file);
 
@@ -198,7 +164,8 @@ namespace Core::IO
      * Returns the lines in a section on rank 0 and returns an empty range on all other ranks. This
      * only works for legacy sections.
      */
-    FragmentIteratorRange in_section_rank_0_only(const std::string& section_name) const;
+    [[nodiscard]] FragmentIteratorRange in_section_rank_0_only(
+        const std::string& section_name) const;
 
     /**
      * Match a whole section named @p section_name against the input file content. The results

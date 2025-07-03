@@ -64,9 +64,7 @@ namespace Core::IO
     class InputFileFragmentImpl
     {
      public:
-      // This depends on the source of the fragment. Dat files produce string_views, yaml files
-      // can directly store the node with all internal structure.
-      std::variant<std::string_view, ryml::ConstNodeRef> fragment;
+      ryml::ConstNodeRef fragment;
 
       /**
        * Store a pointer to the whole section this fragment belongs to.
@@ -79,23 +77,11 @@ namespace Core::IO
      */
     struct SectionContent
     {
-      struct DatContent
-      {
-        //! The raw chars of the input.
-        std::vector<char> raw_content;
-
-        //! String views into #raw_content.
-        std::vector<std::string_view> lines;
-      };
-
       struct YamlContent
       {
         //! Node in the tree of the associated InputFileImpl.
         ryml::NodeRef node;
-      };
-
-      //! Content of the section is either in the .dat format or in the yaml format.
-      std::variant<DatContent, YamlContent> content;
+      } content;
 
       /**
        * The actual content of the section sorted into fragments.
@@ -111,130 +97,29 @@ namespace Core::IO
       //! The file the section was read from.
       std::string file;
 
-      DatContent& as_dat() { return std::get<DatContent>(content); }
-      [[nodiscard]] const DatContent& as_dat() const { return std::get<DatContent>(content); }
-
-      YamlContent& as_yaml() { return std::get<YamlContent>(content); }
-      [[nodiscard]] const YamlContent& as_yaml() const { return std::get<YamlContent>(content); }
-
       /**
        * Depending on what is stored in this section, set up the Fragment objects to point to the
        * correct backend data.
        */
       void set_up_fragments()
       {
-        if (std::holds_alternative<DatContent>(content))
+        // extract the fragments from the yaml node
+        auto& node = content.node;
+        fragments_impl.clear();
+        fragments.clear();
+        fragments_impl.reserve(node.num_children());
+        fragments.reserve(node.num_children());
+
+        FOUR_C_ASSERT(node.is_seq() || node.is_map(),
+            "Section '{}' is neither a sequence nor a map.", to_string(node.key()));
+
+        for (auto child : node.children())
         {
-          auto& lines = as_dat().lines;
-          fragments_impl.clear();
-          fragments.clear();
-          fragments_impl.reserve(lines.size());
-          fragments.reserve(lines.size());
-
-          for (const auto& line : lines)
-          {
-            auto& ref = fragments_impl.emplace_back(InputFileFragmentImpl{
-                .fragment = line,
-                .section = this,
-            });
-            fragments.emplace_back(&ref);
-          }
-        }
-        else
-        {
-          // extract the fragments from the yaml node
-          auto& node = as_yaml().node;
-          fragments_impl.clear();
-          fragments.clear();
-          fragments_impl.reserve(node.num_children());
-          fragments.reserve(node.num_children());
-
-          FOUR_C_ASSERT(node.is_seq() || node.is_map(),
-              "Section '{}' is neither a sequence nor a map.", to_string(node.key()));
-
-          for (auto child : node.children())
-          {
-            auto& ref = fragments_impl.emplace_back(InputFileFragmentImpl{
-                .fragment = child,
-                .section = this,
-            });
-            fragments.emplace_back(&ref);
-          }
-        }
-      }
-
-      void pack(Communication::PackBuffer& data) const
-      {
-        Core::Communication::add_to_pack(data, file);
-        Core::Communication::add_to_pack(data, content.index());
-        if (std::holds_alternative<DatContent>(content))
-        {
-          const auto& raw_content = as_dat().raw_content;
-          auto& lines = as_dat().lines;
-          Core::Communication::add_to_pack(data, raw_content);
-
-          // String_views are not packable, so we store offsets.
-          std::vector<std::size_t> offsets;
-          offsets.reserve(lines.size());
-          for (const auto& line : lines)
-          {
-            FOUR_C_ASSERT(line.data() >= raw_content.data() &&
-                              line.data() <= raw_content.data() + raw_content.size(),
-                "Line data out of bounds.");
-            const std::size_t offset = (line.data() - raw_content.data()) / sizeof(char);
-            FOUR_C_ASSERT(offset <= raw_content.size(), "Offset out of bounds.");
-            offsets.push_back(offset);
-          }
-          FOUR_C_ASSERT(
-              offsets.empty() || offsets.back() + lines.back().size() == raw_content.size(),
-              "Offset out of bounds.");
-          Core::Communication::add_to_pack(data, offsets);
-        }
-        else if (std::holds_alternative<YamlContent>(content))
-        {
-          // Nothing to communicate for yaml content.
-        }
-        else
-        {
-          FOUR_C_THROW("Unknown content type.");
-        }
-      }
-
-
-      void unpack(Communication::UnpackBuffer& buffer)
-      {
-        Core::Communication::extract_from_pack(buffer, file);
-        std::size_t content_index;
-        Core::Communication::extract_from_pack(buffer, content_index);
-
-        if (content_index == 0)
-        {
-          auto& raw_content = std::get<DatContent>(content).raw_content;
-          auto& lines = std::get<DatContent>(content).lines;
-
-          Core::Communication::extract_from_pack(buffer, raw_content);
-
-          std::vector<std::size_t> offsets;
-          Core::Communication::extract_from_pack(buffer, offsets);
-          lines.clear();
-          for (std::size_t i = 0; i < offsets.size(); ++i)
-          {
-            const char* start = raw_content.data() + offsets[i];
-            const std::size_t length = (i + 1 < offsets.size() ? (offsets[i + 1] - offsets[i])
-                                                               : (raw_content.size()) - offsets[i]);
-            FOUR_C_ASSERT(start >= raw_content.data() &&
-                              start + length <= raw_content.data() + raw_content.size(),
-                "Line data out of bounds.");
-            lines.emplace_back(start, length);
-          }
-        }
-        else if (content_index == 1)
-        {
-          // Nothing to communicate for yaml content.
-        }
-        else
-        {
-          FOUR_C_THROW("Unknown content index {}", content_index);
+          auto& ref = fragments_impl.emplace_back(InputFileFragmentImpl{
+              .fragment = child,
+              .section = this,
+          });
+          fragments.emplace_back(&ref);
         }
       }
 
@@ -347,140 +232,6 @@ namespace Core::IO
       return included_file;
     }
 
-    void join_lines(std::list<std::string>& list_of_lines, std::vector<char>& raw_content,
-        std::vector<std::string_view>& lines)
-    {
-      FOUR_C_ASSERT(raw_content.empty() && lines.empty(),
-          "Implementation error: raw_content and lines must be empty.");
-
-      // Sum up the length of all lines to reserve the memory for the raw content.
-      const std::size_t raw_content_size =
-          std::accumulate(list_of_lines.begin(), list_of_lines.end(), std::size_t{0},
-              [](std::size_t sum, const auto& line) { return sum + line.size(); });
-
-      raw_content.reserve(raw_content_size);
-      lines.reserve(list_of_lines.size());
-
-      for (const auto& line : list_of_lines)
-      {
-        FOUR_C_ASSERT(raw_content.data(), "Implementation error: raw_content must be allocated.");
-        const auto* start_of_line = raw_content.data() + raw_content.size();
-        raw_content.insert(raw_content.end(), line.begin(), line.end());
-        lines.emplace_back(start_of_line, line.size());
-      }
-    }
-
-    std::vector<std::filesystem::path> read_dat_content(
-        const std::filesystem::path& file_path, Internal::InputFileImpl& input_file_impl)
-    {
-      const auto name_of_section = [](const std::string& section_header)
-      {
-        auto pos = section_header.rfind("--");
-        if (pos == std::string::npos) return std::string{};
-        return Core::Utils::trim(section_header.substr(pos + 2));
-      };
-
-      std::ifstream file(file_path);
-      if (not file) FOUR_C_THROW("Unable to open file: {}", file_path.string());
-
-      // Tracking variables while walking through the file
-      std::vector<std::filesystem::path> included_files;
-      SectionType current_section_type = SectionType::normal;
-      std::list<std::string> list_of_lines;
-      Internal::SectionContent* current_section_content = nullptr;
-      std::string line;
-
-      // Loop over all input lines. This reads the actual file contents and determines whether a
-      // line is to be read immediately or should be excluded because it is in one of the excluded
-      // sections.
-      while (getline(file, line))
-      {
-        // In case we are reading an include section, a comment needs to be preceded by
-        // whitespace. Otherwise, we would treat double slashes as comments, although they are
-        // part of the file path.
-        if (current_section_type == SectionType::include)
-        {
-          // Take care to remove comments only if they are preceded by whitespace.
-          line = Core::Utils::strip_comment(line, " //");
-          if (line.empty()) continue;
-
-          // Additionally check if the first token is a comment to handle the case where the
-          // comment starts at the beginning of the line.
-          if (line.starts_with("//")) continue;
-        }
-        // Remove comments, trailing and leading whitespaces, compact internal whitespaces
-        else
-        {
-          line = Core::Utils::strip_comment(line);
-        }
-
-        // line is now empty
-        if (line.size() == 0) continue;
-
-        // This line starts a new section
-        if (line.starts_with("--"))
-        {
-          // Finish the current section.
-          if (current_section_content)
-          {
-            join_lines(list_of_lines, current_section_content->as_dat().raw_content,
-                current_section_content->as_dat().lines);
-          }
-          list_of_lines.clear();
-
-          const auto name = name_of_section(line);
-          FOUR_C_ASSERT(name.size() > 0, "Section name must not be empty.");
-
-          // Determine what kind of new section we started.
-          if (line.rfind("--INCLUDES") != std::string::npos)
-          {
-            current_section_type = SectionType::include;
-            current_section_content = nullptr;
-          }
-          else
-          {
-            current_section_type = SectionType::normal;
-            FOUR_C_ASSERT_ALWAYS(!input_file_impl.content_by_section_.contains(name),
-                "Section '{}' is defined again in file '{}'.", name, file_path.string());
-
-            input_file_impl.section_order_.emplace_back(name);
-            current_section_content = &input_file_impl.content_by_section_[name];
-            current_section_content->file = file_path;
-          }
-        }
-        // The line is part of a section.
-        else
-        {
-          switch (current_section_type)
-          {
-            case SectionType::normal:
-            {
-              list_of_lines.emplace_back(line);
-              break;
-            }
-            case SectionType::include:
-            {
-              if (!line.starts_with("--"))
-              {
-                included_files.emplace_back(get_include_path(line, file_path));
-              }
-              break;
-            }
-          }
-        }
-      }
-
-      // Finish the current section.
-      if (current_section_content)
-      {
-        join_lines(list_of_lines, current_section_content->as_dat().raw_content,
-            current_section_content->as_dat().lines);
-      }
-
-      return included_files;
-    }
-
-
     std::vector<std::filesystem::path> read_yaml_content(
         const std::filesystem::path& file_path, Internal::InputFileImpl& input_file_impl)
     {
@@ -520,9 +271,9 @@ namespace Core::IO
 
       // Treat the special section "INCLUDES" to find more included files. Remove the section once
       // processed.
-      if (file_node.has_child("INCLUDES"))
+      if (file_node.has_child(InputFile::includes_section_name))
       {
-        ryml::ConstNodeRef node = file_node["INCLUDES"];
+        ryml::ConstNodeRef node = file_node[InputFile::includes_section_name];
         if (node.is_seq())
         {
           for (const auto& include_node : node)
@@ -547,22 +298,14 @@ namespace Core::IO
   std::string_view InputFile::Fragment::get_as_dat_style_string() const
   {
     FOUR_C_ASSERT(pimpl_, "Implementation error: fragment is not initialized.");
-    if (std::holds_alternative<std::string_view>(pimpl_->fragment))
+    if (const auto node = pimpl_->fragment; node.is_val())
     {
-      return std::get<std::string_view>(pimpl_->fragment);
+      return std::string_view(node.val().data(), node.val().size());
     }
     else
     {
-      const auto& node = std::get<ryml::ConstNodeRef>(pimpl_->fragment);
-      if (node.is_val())
-      {
-        return std::string_view(node.val().data(), node.val().size());
-      }
-      else
-      {
-        FOUR_C_THROW(
-            "Yaml node does not contain a string. This legacy function is only meant for strings.");
-      }
+      FOUR_C_THROW(
+          "Yaml node does not contain a string. This legacy function is only meant for strings.");
     }
   }
 
@@ -639,7 +382,10 @@ namespace Core::IO
               }
               else
               {
-                return read_dat_content(*file_it, *pimpl_);
+                FOUR_C_THROW(
+                    "Cannot infer format of input file '{}'. "
+                    "Only .yaml, .yml, and .json are supported.",
+                    file_it->string());
               }
             });
 
@@ -657,34 +403,6 @@ namespace Core::IO
           }
         }
       }
-    }
-
-    // Communicate the dat content
-    if (Core::Communication::my_mpi_rank(pimpl_->comm_) == 0)
-    {
-      // Temporarily move the sections that we want to broadcast into a separate map.
-      std::unordered_map<std::string, Internal::SectionContent> non_legacy_sections;
-
-      for (auto&& [section_name, content] : pimpl_->content_by_section_)
-      {
-        if (std::holds_alternative<Internal::SectionContent::DatContent>(content.content) &&
-            !pimpl_->is_legacy_section(section_name))
-        {
-          non_legacy_sections[section_name] = std::move(content);
-        }
-      }
-
-      Core::Communication::broadcast(non_legacy_sections, 0, pimpl_->comm_);
-
-      for (auto&& [section_name, content] : non_legacy_sections)
-      {
-        pimpl_->content_by_section_[section_name] = std::move(content);
-      }
-    }
-    else
-    {
-      // Other ranks receive the non-legacy sections.
-      Core::Communication::broadcast(pimpl_->content_by_section_, 0, pimpl_->comm_);
     }
 
     // Communicate the yaml content
@@ -842,75 +560,10 @@ namespace Core::IO
       }
     }
 
-    // Section must be present.
-
-    // Dat file format
-    if (pimpl_->content_by_section_.at(section_name).content.index() == 0)
-    {
-      // Dat format has too little structure and the interpretation of line breaks differs
-      // depending on the expected spec.
-      const auto* list_spec =
-          dynamic_cast<const Internal::InputSpecTypeErasedImplementation<Internal::ListSpec>*>(
-              &spec.impl());
-
-      if (list_spec)
-      {
-        std::vector<InputParameterContainer> list_entries;
-        for (const auto& line : pimpl_->in_section(section_name))
-        {
-          Core::IO::ValueParser parser{line.get_as_dat_style_string(),
-              {.user_scope_message =
-                      "While parsing list entries in section '" + section_name + "': ",
-                  .base_path =
-                      std::filesystem::path(pimpl_->content_by_section_.at(section_name).file)
-                          .parent_path()}};
-          try
-          {
-            list_spec->wrapped.spec.fully_parse(parser, list_entries.emplace_back());
-          }
-          catch (const std::exception& e)
-          {
-            FOUR_C_THROW(
-                "Error while parsing list entries in section '{}': {}", section_name, e.what());
-          }
-        }
-        container.add_list(section_name, std::move(list_entries));
-      }
-      else
-      {
-        // Create a group in the dat file format by starting with the section name.
-        std::stringstream flattened_dat;
-        flattened_dat << std::quoted(section_name) << " ";
-        for (const auto& line : pimpl_->in_section(section_name))
-        {
-          std::string line_str(line.get_as_dat_style_string());
-          // Split the line into key-value according to the dat file format. Quote keys and values
-          // so the parser can identify them.
-          auto [key, value] = read_key_value(line_str);
-          flattened_dat << std::quoted(key) << " " << std::quoted(value) << " ";
-        }
-        std::string flattened_string = flattened_dat.str();
-        Core::IO::ValueParser parser{flattened_string,
-            {.base_path = std::filesystem::path(pimpl_->content_by_section_.at(section_name).file)
-                    .parent_path(),
-                .token_delimiter = '"'}};
-        try
-        {
-          spec.fully_parse(parser, container);
-        }
-        catch (const std::exception& e)
-        {
-          FOUR_C_THROW("Error while parsing section '{}': {}", section_name, e.what());
-        }
-      }
-    }
-    else
-    {
-      // For yaml file format, we can directly parse the node.
-      spec.match(ConstYamlNodeRef(pimpl_->content_by_section_.at(section_name).as_yaml().node,
-                     pimpl_->content_by_section_.at(section_name).file),
-          container);
-    }
+    // Section must be present, so we can match the content.
+    spec.match(ConstYamlNodeRef(pimpl_->content_by_section_.at(section_name).content.node,
+                   pimpl_->content_by_section_.at(section_name).file),
+        container);
   }
 
 
