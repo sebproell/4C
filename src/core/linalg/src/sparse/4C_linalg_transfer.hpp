@@ -22,13 +22,17 @@ namespace Core::LinAlg
   class Import
   {
    public:
-    Import(const Map& targetMap, const Map& sourceMap);
+    Import(const Map& target_map, const Map& source_map);
 
     const Epetra_Import& get_epetra_import() const;
+    const Map& source_map() const;
+    const Map& target_map() const;
 
 
    private:
     Utils::OwnerOrView<Epetra_Import> import_;
+    Map source_map_;
+    Map target_map_;
   };
   class Export
   {
