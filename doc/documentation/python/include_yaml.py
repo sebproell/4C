@@ -29,29 +29,40 @@ def load_meta_data():
     )
     section_dict = {}
     for section in metafile_data["sections"]:
+        params_avail = {}
         if "spec" in section:
             params_avail = section["spec"]["specs"]
         elif "specs" in section:
             params_avail = section["specs"][0]["specs"]
         else:
-            print(f"Parameters in section {section["name"]} not found.")
+            KeyError(f'Parameters in section {section["name"]} not found.')
+
+        def parse_parameters(params, parameters, section_name):
+            for item in params:
+                if item["type"] == "group":
+                    # Recursively process nested group specs
+                    parse_parameters(
+                        item["specs"][0]["specs"], parameters, section_name
+                    )
+                else:
+                    if "name" not in item:
+                        print(
+                            f"Currently, parameters in section {section_name} cannot be parsed."
+                        )
+                        continue
+
+                    if item["required"]:
+                        parameter_string = "# required parameter"
+                    else:
+                        parameter_string = f"{item['default']} # optional, the given value is the default"
+
+                    parameters[item["name"]] = parameter_string
+
         parameter_dict = {}
-        for item in params_avail:
-            parameter_string = ""
-            if "name" not in item:
-                print(
-                    f"Currently, parameters in section {section["name"]}"
-                    " cannot be parsed."
-                )
-                continue
-            if item["required"]:
-                parameter_string += " # required parameter"
-            else:
-                parameter_string += (
-                    f"{item['default']} # optional, the given value is the default"
-                )
-            parameter_dict[item["name"]] = parameter_string
+        parse_parameters(params_avail, parameter_dict, section["name"])
+
         section_dict[section["name"]] = parameter_dict
+
     for section in metafile_data["legacy_string_sections"]:
         section_dict[section] = "legacy section, no parameters available."
     return section_dict
