@@ -614,7 +614,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
       break;
     }
     case Core::ProblemType::poroelast:
-    case Core::ProblemType::poromultiphase:
+    case Core::ProblemType::porofluid_pressure_based_elast:
     {
       // create empty discretizations
       switch (distype)
@@ -632,14 +632,14 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
           break;
         }
       }
-      if (problem.poro_multi_phase_dynamic_params().get<bool>("ARTERY_COUPLING"))
+      if (problem.poro_multi_phase_dynamic_params().get<bool>("artery_coupling_active"))
       {
         discretization_types["artery"] = {DiscretizationType::plain, "ARTERY"};
       }
 
       break;
     }
-    case Core::ProblemType::poromultiphasescatra:
+    case Core::ProblemType::porofluid_pressure_based_elast_scatra:
     {
       // create empty discretizations
       switch (distype)
@@ -659,7 +659,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
           break;
         }
       }
-      if (problem.poro_multi_phase_scatra_dynamic_params().get<bool>("ARTERY_COUPLING"))
+      if (problem.poro_multi_phase_scatra_dynamic_params().get<bool>("artery_coupling_active"))
       {
         discretization_types["artery"] = {DiscretizationType::plain, "ARTERY"};
 
@@ -668,7 +668,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
 
       break;
     }
-    case Core::ProblemType::porofluidmultiphase:
+    case Core::ProblemType::porofluid_pressure_based:
     {
       // create empty discretizations
       switch (distype)
@@ -684,7 +684,7 @@ std::unique_ptr<Core::IO::MeshReader> Global::read_discretization(
           break;
         }
       }
-      if (problem.poro_fluid_multi_phase_dynamic_params().get<bool>("ARTERY_COUPLING"))
+      if (problem.porofluid_pressure_based_dynamic_params().get<bool>("artery_coupling_active"))
       {
         discretization_types["artery"] = {DiscretizationType::plain, "ARTERY"};
       }
