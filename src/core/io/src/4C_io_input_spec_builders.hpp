@@ -176,14 +176,6 @@ namespace Core::IO
       {
         FOUR_C_ASSERT(node.is_map(), "Expected a map node.");
         node["type"] = "enum";
-        node["choices"] |= ryml::SEQ;
-        for (const auto& choice_string : EnumTools::enum_values<Enum>())
-        {
-          auto entry = node["choices"].append_child();
-          // Write every choice entry as a map to easily extend the information at a later point.
-          entry |= ryml::MAP;
-          emit_value_as_yaml(YamlNodeRef(entry["name"], ""), choice_string);
-        }
       }
     };
 
@@ -1795,6 +1787,32 @@ void Core::IO::Internal::ParameterSpec<T>::emit_metadata(YamlNodeRef node) const
   if (data.default_value.index() == 1)
   {
     emit_value_as_yaml(node.wrap(node.node["default"]), std::get<1>(data.default_value));
+  }
+
+  // Enums are special: their validation is built in
+  if constexpr (std::is_enum_v<T>)
+  {
+    if (data.validator)
+    {
+      // Only use the valid values.
+      data.validator->emit_metadata(node);
+    }
+    else
+    {
+      // If no validator is set, we emit all enum values as valid values.
+      auto choices_node = node.node["choices"];
+      choices_node |= ryml::SEQ;
+      for (const auto& choice : EnumTools::enum_values<T>())
+      {
+        auto choice_node = choices_node.append_child();
+        choice_node |= ryml::MAP;
+        emit_value_as_yaml(node.wrap(choice_node["name"]), choice);
+      }
+    }
+  }
+  else if (data.validator)
+  {
+    data.validator->emit_metadata(node.wrap(node.node["validator"]));
   }
 }
 

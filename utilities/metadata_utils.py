@@ -9,11 +9,15 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from ruamel.yaml import YAML
+from typing import ClassVar
 
 
 # In order to allow None as defaults
 class NotSet:
     def __str__(self):
+        return "NOTSET singleton"
+
+    def __repr__(self):
         return "NOTSET singleton"
 
 
@@ -77,6 +81,7 @@ class Primitive(Parameter):
     default: int = NOTSET
     noneable: bool = False
     constant: object = NOTSET  # The primitive can only take this value
+    validator: object = None
 
     def short_description(self):
         """Create short description."""
@@ -88,6 +93,11 @@ class Primitive(Parameter):
         else:
             description += f"({self.type})"
         return description
+
+    def __post_init__(self):
+        if self.validator is not None and not isinstance(self.validator, Validator):
+            self.validator = validator_from_dict(self.validator)
+            self.validator.check_type(self.type)
 
 
 @dataclass
@@ -123,6 +133,7 @@ class Enum(Primitive):
     choices: list = field(default_factory=list)
 
     def __post_init__(self):
+        super().__post_init__()
         for i, choice in enumerate(self.choices):
             if isinstance(choice, dict):
                 self.choices[i] = choice["name"]
@@ -429,3 +440,40 @@ def metadata_object_from_file(metadata_4C_path):
         ) from exception
 
     return all_of, description_section_name, metadata["metadata"]
+
+
+@dataclass
+class Validator:
+    allowed_types: ClassVar[tuple]
+
+    def check_type(self, parameter_type):
+        if parameter_type not in self.allowed_types:
+            raise ValueError(
+                f"Can not use {self} for {parameter_type}. Only {self.allowed_types} can be validated with {type(self)}"
+            )
+
+
+@dataclass
+class RangeValidator(Validator):
+    allowed_types: ClassVar[tuple] = ("int", "double")
+    minimum: float
+    maximum: float
+    minimum_exclusive: bool
+    maximum_exclusive: bool
+
+
+def validator_from_dict(validator_dict):
+    if len(validator_dict) > 1:
+        raise ValueError(
+            f"Currently only a single validator function is allowed, you provided {validator_dict}"
+        )
+
+    validator_type, validator_settings = list(validator_dict.items())[0]
+
+    match validator_type:
+        case "range":
+            validator_class = RangeValidator
+        case _:
+            raise ValueError(f"Unknown validator {validator_dict}.")
+
+    return validator_class(**validator_settings)

@@ -135,11 +135,11 @@ namespace
 
       std::string expected = R"(name: enum
 type: enum
+required: true
 choices:
   - name: A
   - name: B
   - name: C
-required: true
 )";
       EXPECT_EQ(out.str(), expected);
     }
@@ -730,11 +730,13 @@ specs:
                 },
                 {.description = "A group"}),
         }),
-        parameter<EnumClass>("e", {.default_value = EnumClass::A}),
+        parameter<EnumClass>(
+            "e", {.default_value = EnumClass::A,
+                     .validator = Validators::in_set({EnumClass::A, EnumClass::C})}),
         parameter<std::optional<EnumClass>>("eo"),
         group("group2",
             {
-                parameter<int>("g"),
+                parameter<int>("g", {.validator = Validators::positive<int>()}),
             },
             {.required = false}),
         list("list",
@@ -791,19 +793,14 @@ specs:
             required: true
           - name: e
             type: enum
-            choices:
-              - name: A
-              - name: B
-              - name: C
             required: false
             default: A
+            choices:
+              - name: A
+              - name: C
           - name: eo
             noneable: true
             type: enum
-            choices:
-              - name: A
-              - name: B
-              - name: C
             required: false
             default: null
           - name: group2
@@ -815,6 +812,12 @@ specs:
                   - name: g
                     type: int
                     required: true
+                    validator:
+                      range:
+                        minimum: 0
+                        maximum: 2147483647
+                        minimum_exclusive: true
+                        maximum_exclusive: false
           - name: list
             type: list
             required: true
@@ -873,19 +876,14 @@ specs:
             required: true
           - name: e
             type: enum
-            choices:
-              - name: A
-              - name: B
-              - name: C
             required: false
             default: A
+            choices:
+              - name: A
+              - name: C
           - name: eo
             noneable: true
             type: enum
-            choices:
-              - name: A
-              - name: B
-              - name: C
             required: false
             default: null
           - name: group2
@@ -897,6 +895,12 @@ specs:
                   - name: g
                     type: int
                     required: true
+                    validator:
+                      range:
+                        minimum: 0
+                        maximum: 2147483647
+                        minimum_exclusive: true
+                        maximum_exclusive: false
           - name: list
             type: list
             required: true
@@ -959,19 +963,14 @@ specs:
                     required: true
           - name: e
             type: enum
-            choices:
-              - name: A
-              - name: B
-              - name: C
             required: false
             default: A
+            choices:
+              - name: A
+              - name: C
           - name: eo
             noneable: true
             type: enum
-            choices:
-              - name: A
-              - name: B
-              - name: C
             required: false
             default: null
           - name: group2
@@ -983,6 +982,12 @@ specs:
                   - name: g
                     type: int
                     required: true
+                    validator:
+                      range:
+                        minimum: 0
+                        maximum: 2147483647
+                        minimum_exclusive: true
+                        maximum_exclusive: false
           - name: list
             type: list
             required: true
