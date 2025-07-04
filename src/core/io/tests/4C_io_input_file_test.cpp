@@ -38,74 +38,6 @@ namespace
     }
   }
 
-  TEST(InputFile, Test1)
-  {
-    const std::string input_file_name = TESTING::get_support_file_path("test_files/test1.dat");
-
-    MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{},
-        {
-            "EMPTY",
-            "SECTION WITH SPACES",
-            "SECTION/WITH/SLASHES",
-            "SHORT SECTION",
-            "PARTICLES",
-        },
-        comm};
-    input.read(input_file_name);
-
-    EXPECT_TRUE(input.has_section("EMPTY"));
-    EXPECT_FALSE(input.has_section("NONEXISTENT SECTION"));
-
-    check_section_rank_0_only(input, "SECTION WITH SPACES", {"line in section with spaces"});
-    check_section_rank_0_only(input, "SECTION/WITH/SLASHES", {"line in section with slashes"});
-    check_section_rank_0_only(
-        input, "SHORT SECTION", std::vector<std::string>(3, "line in short section"));
-    check_section_rank_0_only(
-        input, "PARTICLES", std::vector<std::string>(30, "line in long section"));
-  }
-
-  TEST(InputFile, HasIncludes)
-  {
-    const std::string input_file_name =
-        TESTING::get_support_file_path("test_files/has_includes/main.dat");
-
-    MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{},
-        {
-            "EMPTY",
-            "SECTION 1",
-            "INCLUDED SECTION 1a",
-            "INCLUDED SECTION 1b",
-            "INCLUDED SECTION 2",
-            "INCLUDED SECTION 3",
-            "PARTICLES",
-            "ANOTHER SECTION",
-        },
-        comm};
-    input.read(input_file_name);
-
-    EXPECT_EQ(input.file_for_section("INCLUDED SECTION 1a").filename(), "include1a.dat");
-    EXPECT_EQ(input.file_for_section("SECTION 1").filename(), "main.dat");
-
-    check_section_rank_0_only(input, "INCLUDED SECTION 1a", std::vector<std::string>(2, "line"));
-    check_section_rank_0_only(input, "INCLUDED SECTION 1b", std::vector<std::string>(2, "line"));
-    check_section_rank_0_only(input, "INCLUDED SECTION 2", std::vector<std::string>(2, "line"));
-    check_section_rank_0_only(input, "INCLUDED SECTION 3", std::vector<std::string>(2, "line"));
-    check_section_rank_0_only(input, "PARTICLES", std::vector<std::string>(5, "line"));
-  }
-
-  TEST(InputFile, CyclicIncludes)
-  {
-    const std::string input_file_name =
-        TESTING::get_support_file_path("test_files/cyclic_includes/cycle1.dat");
-
-    MPI_Comm comm(MPI_COMM_WORLD);
-    Core::IO::InputFile input{{}, {}, comm};
-    FOUR_C_EXPECT_THROW_WITH_MESSAGE(
-        input.read(input_file_name), Core::Exception, "cycle1.dat' was already included before.");
-  }
-
   TEST(InputFile, BasicYaml)
   {
     const std::string input_file_name = TESTING::get_support_file_path("test_files/yaml/basic.yml");
@@ -153,13 +85,9 @@ namespace
                                               }))}},
         {
             "MAIN SECTION",
-            "INCLUDED SECTION 1",
-            "INCLUDED SECTION 3",
         },
         comm);
     input.read(input_file_name);
-
-    check_section_rank_0_only(input, "INCLUDED SECTION 1", std::vector<std::string>(2, "line"));
 
     EXPECT_EQ(input.file_for_section("INCLUDED SECTION 2").filename(), "included.yaml");
 

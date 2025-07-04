@@ -204,7 +204,6 @@ namespace Core::Communication
                (argument.substr(0, 2) != "-h") and (argument.substr(0, 6) != "--help") and
                (argument.substr(0, 2) != "-p") and (argument.substr(0, 12) != "--parameters") and
                (argument.substr(0, 2) != "-d") and (argument.substr(0, 9) != "--datfile") and
-               (argument.substr(0, 13) != "--to-yaml") and
                (argument.substr(0, 13) != "--interactive"))
       {
         printf(
