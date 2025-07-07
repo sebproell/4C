@@ -155,7 +155,7 @@ namespace FSI
 
     /// setup of NOX convergence tests
     Teuchos::RCP<::NOX::StatusTest::Combo> create_status_test(
-        Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Epetra::Group> grp) override;
+        Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Abstract::Group> grp) override;
 
     //! Extract the three field vectors from a given composed vector
     //!

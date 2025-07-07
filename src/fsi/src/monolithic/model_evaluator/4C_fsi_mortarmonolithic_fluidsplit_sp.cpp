@@ -305,7 +305,7 @@ void FSI::MortarMonolithicFluidSplitSaddlePoint::create_system_matrix()
 /*----------------------------------------------------------------------------*/
 Teuchos::RCP<::NOX::StatusTest::Combo>
 FSI::MortarMonolithicFluidSplitSaddlePoint::create_status_test(
-    Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Epetra::Group> grp)
+    Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Abstract::Group> grp)
 {
   // ---------------------------------------------------------------------------
   // Setup the test framework

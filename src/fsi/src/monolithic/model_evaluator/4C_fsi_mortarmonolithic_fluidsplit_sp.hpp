@@ -102,7 +102,7 @@ namespace FSI
     void create_system_matrix();
 
     Teuchos::RCP<::NOX::StatusTest::Combo> create_status_test(
-        Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Epetra::Group> grp) final;
+        Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Abstract::Group> grp) final;
 
     void update() final;
 

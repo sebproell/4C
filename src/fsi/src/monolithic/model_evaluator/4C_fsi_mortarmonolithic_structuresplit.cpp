@@ -1004,7 +1004,7 @@ void FSI::MortarMonolithicStructureSplit::unscale_solution(Core::LinAlg::BlockSp
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
 Teuchos::RCP<::NOX::StatusTest::Combo> FSI::MortarMonolithicStructureSplit::create_status_test(
-    Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Epetra::Group> grp)
+    Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Abstract::Group> grp)
 {
   // ---------------------------------------------------------------------------
   // Setup the test framework

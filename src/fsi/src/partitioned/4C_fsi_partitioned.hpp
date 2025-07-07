@@ -184,7 +184,7 @@ namespace FSI
 
     /// create convergence tests
     virtual void create_status_test(Teuchos::ParameterList& nlParams,
-        Teuchos::RCP<::NOX::Epetra::Group> grp, Teuchos::RCP<::NOX::StatusTest::Combo> converged);
+        Teuchos::RCP<::NOX::Abstract::Group> grp, Teuchos::RCP<::NOX::StatusTest::Combo> converged);
 
     /// return coupsfm_
     Coupling::Adapter::CouplingMortar& structure_fluid_coupling_mortar();
@@ -219,7 +219,7 @@ namespace FSI
 
     /// create convergence tests including testing framework
     Teuchos::RCP<::NOX::StatusTest::Combo> create_status_test(
-        Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Epetra::Group> grp);
+        Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Abstract::Group> grp);
 
     //! connection of interface dofs for finite differences
     std::shared_ptr<Core::LinAlg::Graph> raw_graph_;
