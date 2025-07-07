@@ -51,7 +51,8 @@ bool NOX::FSI::MinimalPolynomial::compute(
 {
   // We work in a local copy of the group so that we do not spoil the
   // current state.
-  ::NOX::Epetra::Group group(dynamic_cast<::NOX::Epetra::Group&>(grp));
+  Teuchos::RCP<::NOX::Abstract::Group> copy_group_ptr = grp.clone();
+  ::NOX::Abstract::Group& group = *copy_group_ptr;
 
   const ::NOX::Abstract::Vector& x = group.getX();
 

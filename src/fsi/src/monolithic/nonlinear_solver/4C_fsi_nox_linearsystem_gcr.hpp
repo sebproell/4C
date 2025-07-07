@@ -141,9 +141,8 @@ namespace NOX
         \brief Explicitly constructs a preconditioner based on the solution vector x and the
         parameter list p.
 
-        The user has the option of recomputing the graph when a new
-        preconditioner is created. The ::NOX::Epetra::Group controls the
-        isValid flag for the preconditioner and will control when to call this.
+        The user has the option of recomputing the graph when a new preconditioner is created. The
+        Group controls the isValid flag for the preconditioner and will control when to call this.
       */
       bool createPreconditioner(const ::NOX::Epetra::Vector& x, Teuchos::ParameterList& p,
           bool recomputeGraph) const override;
@@ -151,8 +150,8 @@ namespace NOX
       /*!
         \brief Deletes the preconditioner.
 
-        The ::NOX::Epetra::Group controls the isValid flag for the preconditioner and will control
-        when to call this.
+        The Group controls the isValid flag for the preconditioner and will control when to call
+        this.
       */
       bool destroyPreconditioner() const override;
 

@@ -42,9 +42,6 @@ namespace NOX
         //! generate a clone of the given object concerning the given \c CopyType
         Teuchos::RCP<::NOX::Abstract::Group> clone(::NOX::CopyType type) const override;
 
-        //! assign operator
-        ::NOX::Abstract::Group& operator=(const ::NOX::Epetra::Group& source) override;
-
         //! compute/update the current state variables
         void computeX(
             const NOX::Nln::SINGLESTEP::Group& grp, const ::NOX::Epetra::Vector& d, double step);

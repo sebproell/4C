@@ -39,14 +39,6 @@ Teuchos::RCP<::NOX::Abstract::Group> NOX::Nln::SINGLESTEP::Group::clone(::NOX::C
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
-::NOX::Abstract::Group& NOX::Nln::SINGLESTEP::Group::operator=(const ::NOX::Epetra::Group& source)
-{
-  NOX::Nln::Group::operator=(source);
-  return *this;
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
 void NOX::Nln::SINGLESTEP::Group::computeX(
     const ::NOX::Abstract::Group& grp, const ::NOX::Abstract::Vector& d, double step)
 {
