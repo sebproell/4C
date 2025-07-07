@@ -16,7 +16,7 @@ FOUR_C_NAMESPACE_OPEN
 NOX::Solid::Group::Group(FourC::Solid::TimIntImpl& sti, Teuchos::ParameterList& printParams,
     const Teuchos::RCP<::NOX::Epetra::Interface::Required>& i, const ::NOX::Epetra::Vector& x,
     const Teuchos::RCP<::NOX::Epetra::LinearSystem>& linSys)
-    : ::NOX::Epetra::Group(printParams, i, x, linSys)
+    : NOX::Nln::GroupBase(printParams, i, x, linSys)
 {
 }
 
@@ -24,7 +24,7 @@ NOX::Solid::Group::Group(FourC::Solid::TimIntImpl& sti, Teuchos::ParameterList& 
 /*----------------------------------------------------------------------------*/
 ::NOX::Abstract::Group::ReturnType NOX::Solid::Group::computeF()
 {
-  ::NOX::Abstract::Group::ReturnType ret = ::NOX::Epetra::Group::computeF();
+  ::NOX::Abstract::Group::ReturnType ret = NOX::Nln::GroupBase::computeF();
 
   // Not sure why we call this (historical reasons???)
   sharedLinearSystem.getObject(this);
@@ -39,7 +39,7 @@ NOX::Solid::Group::Group(FourC::Solid::TimIntImpl& sti, Teuchos::ParameterList& 
 /*----------------------------------------------------------------------------*/
 ::NOX::Abstract::Group::ReturnType NOX::Solid::Group::computeJacobian()
 {
-  ::NOX::Abstract::Group::ReturnType ret = ::NOX::Epetra::Group::computeJacobian();
+  ::NOX::Abstract::Group::ReturnType ret = NOX::Nln::GroupBase::computeJacobian();
   if (ret == ::NOX::Abstract::Group::Ok)
   {
     isValidJacobian = true;

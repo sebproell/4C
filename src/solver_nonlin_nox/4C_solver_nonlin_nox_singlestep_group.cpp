@@ -17,15 +17,14 @@ NOX::Nln::SINGLESTEP::Group::Group(Teuchos::ParameterList& printParams,
     Teuchos::ParameterList& grpOptionParams,
     const Teuchos::RCP<::NOX::Epetra::Interface::Required>& i, const ::NOX::Epetra::Vector& x,
     const Teuchos::RCP<::NOX::Epetra::LinearSystem>& linSys)
-    : ::NOX::Epetra::Group(printParams, i, x, linSys),
-      NOX::Nln::Group(printParams, grpOptionParams, i, x, linSys)
+    : NOX::Nln::Group(printParams, grpOptionParams, i, x, linSys)
 {
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 NOX::Nln::SINGLESTEP::Group::Group(const NOX::Nln::SINGLESTEP::Group& source, ::NOX::CopyType type)
-    : ::NOX::Epetra::Group(source, type), NOX::Nln::Group(source, type)
+    : NOX::Nln::Group(source, type)
 {
 }
 

@@ -12,6 +12,7 @@
 /* headers */
 #include "4C_config.hpp"
 
+#include "4C_solver_nonlin_nox_group_base.hpp"
 #include "4C_structure_timint_impl.hpp"
 
 #include <NOX_Epetra_Group.H>
@@ -34,12 +35,12 @@ namespace NOX
   {
     /*==================================================================*/
     /*!
-     * \brief Special ::NOX::Epetra::Group that always //ToDo (mayr) That's not correct anymore.
+     * \brief Special Group that always //ToDo (mayr) That's not correct anymore.
      *        sets Jacobian and RHS at the same time.
      *
 
      */
-    class Group : public ::NOX::Epetra::Group
+    class Group : public NOX::Nln::GroupBase
     {
      public:
       //! Constructor

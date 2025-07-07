@@ -29,7 +29,7 @@ namespace NOX
   {
     namespace CONSTRAINT
     {
-      class Group : public virtual NOX::Nln::Group
+      class Group : public NOX::Nln::Group
       {
        public:
         //! Standard constructor

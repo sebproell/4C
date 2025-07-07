@@ -10,7 +10,7 @@
 
 #include "4C_config.hpp"
 
-#include <NOX_Epetra_Group.H>
+#include "4C_solver_nonlin_nox_group_base.hpp"
 
 FOUR_C_NAMESPACE_OPEN
 
@@ -25,7 +25,7 @@ namespace NOX
   namespace FSI
   {
     /// Special NOX group that always sets Jacobian and RHS at the same time.
-    class Group : public ::NOX::Epetra::Group
+    class Group : public NOX::Nln::GroupBase
     {
      public:
       Group(FourC::FSI::MonolithicInterface& mfsi,                    ///< monolithic FSI interface

@@ -14,9 +14,9 @@
 
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_solver_nonlin_nox_forward_decl.hpp"
+#include "4C_solver_nonlin_nox_group_base.hpp"
 #include "4C_solver_nonlin_nox_statustest_normupdate.hpp"
 
-#include <NOX_Epetra_Group.H>  // base class
 #include <NOX_StatusTest_NormF.H>
 
 #include <set>
@@ -48,7 +48,7 @@ namespace NOX
       class PrePostOperator;
     }  // namespace GROUP
 
-    class Group : public virtual ::NOX::Epetra::Group
+    class Group : public GroupBase
     {
      public:
       //! Standard Constructor

@@ -22,8 +22,7 @@ NOX::Nln::CONSTRAINT::Group::Group(Teuchos::ParameterList& printParams,
     const Teuchos::RCP<::NOX::Epetra::Interface::Required>& i, const ::NOX::Epetra::Vector& x,
     const Teuchos::RCP<::NOX::Epetra::LinearSystem>& linSys,
     const NOX::Nln::CONSTRAINT::ReqInterfaceMap& iConstr)
-    : ::NOX::Epetra::Group(printParams, i, x, linSys),
-      NOX::Nln::Group(printParams, grpOptionParams, i, x, linSys),
+    : NOX::Nln::Group(printParams, grpOptionParams, i, x, linSys),
       user_constraint_interfaces_(iConstr)
 {
   return;
@@ -32,9 +31,7 @@ NOX::Nln::CONSTRAINT::Group::Group(Teuchos::ParameterList& printParams,
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 NOX::Nln::CONSTRAINT::Group::Group(const NOX::Nln::CONSTRAINT::Group& source, ::NOX::CopyType type)
-    : ::NOX::Epetra::Group(source, type),
-      NOX::Nln::Group(source, type),
-      user_constraint_interfaces_(source.user_constraint_interfaces_)
+    : NOX::Nln::Group(source, type), user_constraint_interfaces_(source.user_constraint_interfaces_)
 {
   // empty
 }
