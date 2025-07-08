@@ -10,6 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_utils_enum.hpp"
+
 #include <filesystem>
 #include <map>
 #include <optional>
@@ -28,10 +30,41 @@ namespace Core::IO
     {
     };
 
+    // see https://yaml.org/spec/1.2.2/#1032-tag-resolution
+    // note that `true`, `false`, `.inf`, `.Inf`, `.INF`, `.nan`, `.NaN`, `.NAN` and `~` cannot be
+    // used as enum names anyways
+    constexpr std::array illegal_enum_names = {
+        "True",
+        "TRUE",
+        "False",
+        "FALSE",
+        "null",
+        "Null",
+        "NULL",
+    };
+
+    template <typename T>
+    concept LegalEnum =
+        std::is_enum_v<T> && std::invoke(
+                                 []
+                                 {
+                                   for (std::string_view name : EnumTools::enum_names<T>())
+                                   {
+                                     for (auto reserved : illegal_enum_names)
+                                     {
+                                       if (name == reserved)
+                                       {
+                                         return false;
+                                       }
+                                     }
+                                   }
+                                   return true;
+                                 });
+
     template <typename T>
     concept SupportedTypePrimitives =
         std::same_as<T, int> || std::same_as<T, double> || std::same_as<T, bool> ||
-        std::same_as<T, std::string> || std::same_as<T, std::filesystem::path> || std::is_enum_v<T>;
+        std::same_as<T, std::string> || std::same_as<T, std::filesystem::path> || LegalEnum<T>;
 
     template <SupportedTypePrimitives T>
     struct SupportedTypeHelper<T> : std::true_type
