@@ -32,7 +32,7 @@ if(FOUR_C_BUILD_DOCUMENTATION)
       ${PROJECT_SOURCE_DIR}/tests/input_files/f3_forced_hit_geogen_hdg.4C.yaml
       ${PROJECT_SOURCE_DIR}/tests/input_files/fbi_fluid_obstacle.4C.yaml
       ${PROJECT_SOURCE_DIR}/tests/input_files/tsi_lincompression_iterstaggtemp.4C.yaml
-      ${PROJECT_SOURCE_DIR}/tests/input_files/porofluidmulti_2D_quad4.4C.yaml
+      ${PROJECT_SOURCE_DIR}/tests/input_files/porofluid_pressure_based_2D_quad4.4C.yaml
       ${PROJECT_SOURCE_DIR}/tests/input_files/contact2D_centrdiff.4C.yaml
       ${PROJECT_SOURCE_DIR}/tests/input_files/contact2D_multibody.4C.yaml
       ${PROJECT_SOURCE_DIR}/tests/input_files/contact3D_unbiased_self_hex8_nitsche.4C.yaml
