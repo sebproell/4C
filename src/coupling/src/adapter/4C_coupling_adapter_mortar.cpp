@@ -1287,10 +1287,8 @@ void Coupling::Adapter::CouplingMortar::master_to_slave(
     const Core::LinAlg::MultiVector<double>& mv, Core::LinAlg::MultiVector<double>& sv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.get_map().point_same_as(P_->col_map().get_epetra_block_map()))
-    FOUR_C_THROW("master dof map vector expected");
-  if (not sv.get_map().point_same_as(D_->col_map().get_epetra_block_map()))
-    FOUR_C_THROW("slave dof map vector expected");
+  if (not mv.get_map().point_same_as(P_->col_map())) FOUR_C_THROW("master dof map vector expected");
+  if (not sv.get_map().point_same_as(D_->col_map())) FOUR_C_THROW("slave dof map vector expected");
 #endif
 
   // safety check
@@ -1318,10 +1316,8 @@ void Coupling::Adapter::CouplingMortar::slave_to_master(
     const Core::LinAlg::MultiVector<double>& sv, Core::LinAlg::MultiVector<double>& mv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.get_map().point_same_as(P_->col_map().get_epetra_block_map()))
-    FOUR_C_THROW("master dof map vector expected");
-  if (not sv.get_map().point_same_as(D_->col_map().get_epetra_block_map()))
-    FOUR_C_THROW("slave dof map vector expected");
+  if (not mv.get_map().point_same_as(P_->col_map())) FOUR_C_THROW("master dof map vector expected");
+  if (not sv.get_map().point_same_as(D_->col_map())) FOUR_C_THROW("slave dof map vector expected");
 #endif
 
   // safety check

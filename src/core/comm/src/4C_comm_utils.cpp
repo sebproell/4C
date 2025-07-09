@@ -354,8 +354,7 @@ namespace Core::Communication
           vec.get_map(), Core::Communication::num_mpi_ranks(lcomm) - 1);
 
     // export full vectors to the two desired processors
-    Core::LinAlg::MultiVector<double> fullvec(
-        proc0map->get_epetra_block_map(), vec.NumVectors(), true);
+    Core::LinAlg::MultiVector<double> fullvec(*proc0map, vec.NumVectors(), true);
     Core::LinAlg::export_to(vec, fullvec);
 
     const int myglobalrank = Core::Communication::my_mpi_rank(gcomm);

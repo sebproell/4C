@@ -121,7 +121,7 @@ bool Coupling::Adapter::MatrixLogicalSplitAndTransform::operator()(
     // check if the permuted map is simply a subset of the current rowmap (no communication)
     int subset = 1;
     for (int i = 0; i < permsrcmap.num_my_elements(); ++i)
-      if (!src.row_map().my_gid(permsrcmap.get_epetra_block_map().GID(i)))
+      if (!src.row_map().my_gid(permsrcmap.gid(i)))
       {
         subset = 0;
         break;

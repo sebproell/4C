@@ -1762,8 +1762,7 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions(Core::LinAlg::Spar
   // create new contact force vector for LTL contact
   auto fc = std::make_shared<Epetra_FEVector>(feff->get_map().get_epetra_block_map());
 
-  fconservation_ =
-      std::make_shared<Core::LinAlg::Vector<double>>(feff->get_map().get_epetra_block_map());
+  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_map());
 
   // create new contact stiffness matric for LTL contact
   auto kc = std::make_shared<Core::LinAlg::SparseMatrix>(
@@ -1818,8 +1817,7 @@ void CONTACT::LagrangeStrategy::add_line_to_lin_contributions_friction(
   // create new contact force vector for LTL contact
   auto fc = std::make_shared<Epetra_FEVector>(feff->get_map().get_epetra_block_map());
 
-  fconservation_ =
-      std::make_shared<Core::LinAlg::Vector<double>>(feff->get_map().get_epetra_block_map());
+  fconservation_ = std::make_shared<Core::LinAlg::Vector<double>>(feff->get_map());
 
   // create new contact stiffness matric for LTL contact
   auto kc = std::make_shared<Core::LinAlg::SparseMatrix>(

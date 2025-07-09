@@ -141,12 +141,6 @@ namespace Core::LinAlg
     //! Returns local ID of global ID, return -1 if not found on this processor.
     int lid(int GID) const { return wrapped().LID(GID); }
 
-    //! Returns true if this and Map have identical point-wise structure
-    bool point_same_as(const Epetra_Map& Map) const { return wrapped().PointSameAs(Map); }
-
-    //! Returns true if this and Map have identical point-wise structure
-    bool point_same_as(const Epetra_BlockMap& Map) const { return wrapped().PointSameAs(Map); }
-
     //! Returns the processor IDs and corresponding local index value for a given list of global
     //! indices
     int remote_id_list(int NumIDs, int* GIDList, int* PIDList, int* LIDList) const

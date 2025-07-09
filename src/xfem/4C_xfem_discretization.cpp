@@ -224,7 +224,7 @@ void XFEM::DiscretizationXFEM::set_initial_state(unsigned nds, const std::string
   // This is a rough test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.point_same_as(colmap->get_epetra_block_map()))
+  if (vecmap.point_same_as(*colmap))
   {
     state_[nds][name] = state;
   }

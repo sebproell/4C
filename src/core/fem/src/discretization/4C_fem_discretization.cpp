@@ -515,7 +515,7 @@ void Core::FE::Discretization::set_state(
   // This is a rough test, but it might be ok at this place. It is an
   // error anyway to hand in a vector that is not related to our dof
   // maps.
-  if (vecmap.point_same_as(colmap->get_epetra_block_map()))
+  if (vecmap.point_same_as(*colmap))
   {
     FOUR_C_ASSERT(colmap->same_as(vecmap),
         "col map of discretization {} and state vector {} are different. This is a fatal bug!",
@@ -540,8 +540,8 @@ void Core::FE::Discretization::set_state(
     }
     // (re)build importer if necessary
     if (stateimporter_[nds] == nullptr or
-        not stateimporter_[nds]->source_map().same_as(state.get_map().get_epetra_block_map()) or
-        not stateimporter_[nds]->target_map().same_as(colmap->get_epetra_block_map()))
+        not stateimporter_[nds]->source_map().same_as(state.get_map()) or
+        not stateimporter_[nds]->target_map().same_as(*colmap))
     {
       stateimporter_[nds] = std::make_shared<Core::LinAlg::Import>(*colmap, state.get_map());
     }
@@ -784,7 +784,7 @@ void Core::FE::Discretization::add_multi_vector_to_parameter_list(Teuchos::Param
 
     // if it's already in column map just copy it
     // This is a rough test, but it might be ok at this place.
-    if (vec->get_map().point_same_as(nodecolmap->get_epetra_block_map()))
+    if (vec->get_map().point_same_as(*nodecolmap))
     {
       // make a copy as in parallel such that no additional RCP points to the state vector
       std::shared_ptr<Core::LinAlg::MultiVector<double>> tmp =
