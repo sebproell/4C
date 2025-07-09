@@ -37,10 +37,12 @@
 #include "4C_tsi_dyn.hpp"
 #include "4C_utils_enum.hpp"
 
-/*----------------------------------------------------------------------*
- |  routine to control execution phase                   m.gee 6/01     |
- *----------------------------------------------------------------------*/
-void ntacal()
+/**
+ * \brief The main entrypoint for the 4C multiphysics application.
+ *
+ * Decides on the entrypoint function to call based on the problem type.
+ */
+void entrypoint_switch()
 {
   using namespace FourC;
 

@@ -9,14 +9,11 @@
 #include "4C_config_revision.hpp"
 
 #include "4C_comm_utils.hpp"
-#include "4C_contact_constitutivelaw_valid_laws.hpp"
-#include "4C_fem_general_element_definition.hpp"
-#include "4C_fem_general_utils_createdis.hpp"
-#include "4C_global_data.hpp"
-#include "4C_global_data_read.hpp"
+#include "4C_global_full_io.hpp"
 #include "4C_global_legacy_module.hpp"
 #include "4C_io_input_file_utils.hpp"
 #include "4C_io_input_spec_builders.hpp"
+#include "4C_io_pstream.hpp"
 #include "4C_utils_exceptions.hpp"
 #include "4C_utils_singleton_owner.hpp"
 
@@ -48,8 +45,8 @@ namespace
         << "4C [-h | --help] [-p | --parameters] [-d | --datfile] [-ngroup=<x>] \\ "
            "\n"
            "\t\t[-glayout=a,b,c,...] [-nptype=<parallelism_type>] \\ \n"
-        << "\t\t<dat_name> <output_name> [restart=<y>] [restartfrom=restart_file_name] \\ \n"
-           "\t\t[ <dat_name0> <output_name0> [restart=<y>] [restartfrom=restart_file_name] ... "
+        << "\t\t<input_name> <output_name> [restart=<y>] [restartfrom=restart_file_name] \\ \n"
+           "\t\t[ <input_name0> <output_name0> [restart=<y>] [restartfrom=restart_file_name] ... "
            "] \\ \n"
            "\t\t[--interactive]\n"
         << "\n"
@@ -72,13 +69,13 @@ namespace
            "\t\t(default: equal distribution)\n"
         << "\n"
         << "\t-nptype=<parallelism_type>\n"
-        << "\t\tAvailable options: \"separateDatFiles\" and \"everyGroupReadDatFile\"; \n"
+        << "\t\tAvailable options: \"separateInputFiles\" and \"everyGroupReadInputFile\"; \n"
            "\t\tMust be set if \"-ngroup\" > 1.\n"
         << "\t\t\"diffgroupx\" can be used to compare results from separate but parallel 4C "
            "runs; \n"
            "\t\tx must be 0 and 1 for the respective run\n"
         << "\n"
-        << "\t<dat_name>\n"
+        << "\t<input_name>\n"
         << "\t\tName of the input file, including the suffix\n"
         << "\n"
         << "\t<output_name>\n"
@@ -86,8 +83,8 @@ namespace
         << "\n"
         << "\trestart=<y>\n"
         << "\t\tRestart the simulation from step <y>. \n"
-           "\t\tIt always refers to the previously defined <dat_name> and <output_name>. \n"
-           "\t\t(default: 0 or from <dat_name>)\n"
+           "\t\tIt always refers to the previously defined <input_name> and <output_name>. \n"
+           "\t\t(default: 0 or from <input_name>)\n"
            "\t\tIf y=last_possible, it will restart from the last restart step defined in the "
            "control file.\n"
         << "\n"
@@ -261,7 +258,8 @@ namespace
 
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
-void ntam(int argc, char* argv[]);
+void entrypoint_switch();
+void run(CommandlineArguments& arguments);
 
 /**
  * @brief The main function of the central 4C executable.
@@ -291,18 +289,24 @@ int main(int argc, char* argv[])
 
   std::shared_ptr<Core::Communication::Communicators> communicators =
       Core::Communication::create_comm(std::vector<std::string>(argv, argv + argc));
-  Global::Problem::instance()->set_communicators(communicators);
-  MPI_Comm lcomm = communicators->local_comm();
-  MPI_Comm gcomm = communicators->global_comm();
-  int ngroups = communicators->num_groups();
+
+  CommandlineArguments arguments{
+      .argc = argc,
+      .argv = argv,
+      .input_file_name = "",
+      .output_file_identifier = "",
+      .restart_file_identifier = "",
+      .restart_step = 0,
+      .comms = communicators,
+  };
 
   if (strcmp(argv[argc - 1], "--interactive") == 0)
   {
     char hostname[256];
     gethostname(hostname, sizeof(hostname));
     printf("Global rank %d with PID %d on %s is ready for attach\n",
-        Core::Communication::my_mpi_rank(gcomm), getpid(), hostname);
-    if (Core::Communication::my_mpi_rank(gcomm) == 0)
+        Core::Communication::my_mpi_rank(arguments.comms->global_comm()), getpid(), hostname);
+    if (Core::Communication::my_mpi_rank(arguments.comms->global_comm()) == 0)
     {
       printf("\n** Enter a character to continue > \n");
       fflush(stdout);
@@ -314,13 +318,11 @@ int main(int argc, char* argv[])
     }
   }
 
-  Core::Communication::barrier(gcomm);
-
-  global_legacy_module_callbacks().RegisterParObjectTypes();
+  Core::Communication::barrier(arguments.comms->global_comm());
 
   if ((argc == 2) && ((strcmp(argv[1], "-h") == 0) || (strcmp(argv[1], "--help") == 0)))
   {
-    if (Core::Communication::my_mpi_rank(lcomm) == 0)
+    if (Core::Communication::my_mpi_rank(arguments.comms->local_comm()) == 0)
     {
       printf("\n\n");
       print_help_message();
@@ -329,7 +331,7 @@ int main(int argc, char* argv[])
   }
   else if ((argc == 2) && ((strcmp(argv[1], "-p") == 0) || (strcmp(argv[1], "--parameters") == 0)))
   {
-    if (Core::Communication::my_mpi_rank(lcomm) == 0)
+    if (Core::Communication::my_mpi_rank(arguments.comms->local_comm()) == 0)
     {
       ryml::Tree tree = Core::IO::init_yaml_tree_with_exceptions();
       ryml::NodeRef root = tree.rootref();
@@ -337,10 +339,10 @@ int main(int argc, char* argv[])
       Core::IO::YamlNodeRef root_ref(root, "");
 
       // Write the non-user input metadata that is defined globally for 4C.
-      Global::emit_general_metadata(root_ref);
+      emit_general_metadata(root_ref);
 
       // Write the user input defined for various physics module.
-      Core::IO::InputFile input_file = Global::set_up_input_file(lcomm);
+      Core::IO::InputFile input_file = setup_input_file(arguments.comms->local_comm());
       input_file.emit_metadata(root_ref);
 
       // Finally, dump everything.
@@ -349,7 +351,7 @@ int main(int argc, char* argv[])
   }
   else
   {
-    if (Core::Communication::my_mpi_rank(gcomm) == 0)
+    if (Core::Communication::my_mpi_rank(arguments.comms->global_comm()) == 0)
     {
       constexpr int box_width = 54;
 
@@ -375,8 +377,8 @@ int main(int argc, char* argv[])
       std::cout << '\n';
 
       std::cout << "Trilinos Version: " << FOUR_C_TRILINOS_HASH << " (git SHA1)\n";
-      std::cout << "Total number of MPI ranks: " << Core::Communication::num_mpi_ranks(gcomm)
-                << '\n';
+      std::cout << "Total number of MPI ranks: "
+                << Core::Communication::num_mpi_ranks(arguments.comms->global_comm()) << '\n';
     }
 
     /* Here we turn the NaN and INF numbers off. No need to calculate
@@ -405,11 +407,11 @@ int main(int argc, char* argv[])
 
 /*----------------------------------------------- everything is in here */
 #ifdef FOUR_C_ENABLE_CORE_DUMP
-    ntam(argc, argv);
+    run(arguments);
 #else
     try
     {
-      ntam(argc, argv);
+      run(arguments);
     }
     catch (Core::Exception& err)
     {
@@ -419,11 +421,11 @@ int main(int argc, char* argv[])
                 << line << "\n"
                 << std::endl;
 
-      if (ngroups > 1)
+      if (arguments.comms->num_groups() > 1)
       {
         printf("Global processor %d has thrown an error and is waiting for the remaining procs\n\n",
-            Core::Communication::my_mpi_rank(gcomm));
-        Core::Communication::barrier(gcomm);
+            Core::Communication::my_mpi_rank(arguments.comms->global_comm()));
+        Core::Communication::barrier(arguments.comms->global_comm());
       }
 
       MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -431,21 +433,63 @@ int main(int argc, char* argv[])
 #endif
     /*----------------------------------------------------------------------*/
 
-    get_memory_high_water_mark(gcomm);
+    get_memory_high_water_mark(arguments.comms->global_comm());
 
-    Core::Communication::barrier(lcomm);
-    if (ngroups > 1)
+    Core::Communication::barrier(arguments.comms->local_comm());
+    if (arguments.comms->num_groups() > 1)
     {
       printf("Global processor %d with local rank %d finished normally\n",
-          Core::Communication::my_mpi_rank(gcomm), Core::Communication::my_mpi_rank(lcomm));
-      Core::Communication::barrier(gcomm);
+          Core::Communication::my_mpi_rank(arguments.comms->global_comm()),
+          Core::Communication::my_mpi_rank(arguments.comms->local_comm()));
+      Core::Communication::barrier(arguments.comms->global_comm());
     }
     else
     {
-      Core::Communication::barrier(gcomm);
-      printf("processor %d finished normally\n", Core::Communication::my_mpi_rank(lcomm));
+      Core::Communication::barrier(arguments.comms->global_comm());
+      printf("processor %d finished normally\n",
+          Core::Communication::my_mpi_rank(arguments.comms->local_comm()));
     }
   }
 
   return (0);
+}
+
+void run(CommandlineArguments& arguments)
+{
+  parse_commandline_arguments(arguments);
+
+  /* input phase, input of all information */
+  global_legacy_module_callbacks().RegisterParObjectTypes();
+  double t0 = walltime_in_seconds();
+
+  // and now the actual reading
+  Core::IO::InputFile input_file = setup_input_file(arguments.comms->local_comm());
+  input_file.read(arguments.input_file_name);
+  setup_global_problem(input_file, arguments);
+
+  // we wait till all procs are here. Otherwise a hang up might occur where
+  // one proc ended with FOUR_C_THROW but other procs were not finished and waited...
+  // we also want to have the printing above being finished.
+  Core::Communication::barrier(arguments.comms->local_comm());
+
+
+  const double ti = walltime_in_seconds() - t0;
+  if (Core::Communication::my_mpi_rank(arguments.comms->global_comm()) == 0)
+  {
+    Core::IO::cout << "\nTotal wall time for INPUT:       " << std::setw(10) << std::setprecision(3)
+                   << std::scientific << ti << " sec \n\n";
+  }
+
+  /*--------------------------------------------------calculation phase */
+  t0 = walltime_in_seconds();
+
+  entrypoint_switch();
+
+
+  const double tc = walltime_in_seconds() - t0;
+  if (Core::Communication::my_mpi_rank(arguments.comms->global_comm()) == 0)
+  {
+    Core::IO::cout << "\nTotal wall time for CALCULATION: " << std::setw(10) << std::setprecision(3)
+                   << std::scientific << tc << " sec \n\n";
+  }
 }
