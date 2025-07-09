@@ -8,11 +8,9 @@
 #ifndef FOUR_C_SOLVER_NONLIN_NOX_GROUP_BASE_HPP
 #define FOUR_C_SOLVER_NONLIN_NOX_GROUP_BASE_HPP
 
-/*----------------------------------------------------------------------------*/
-/* headers */
 #include "4C_config.hpp"
 
-#include <NOX_Epetra_Group.H>  // base class
+#include <NOX_Epetra_Group.H>
 
 FOUR_C_NAMESPACE_OPEN
 

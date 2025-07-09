@@ -35,10 +35,8 @@ namespace NOX
   {
     /*==================================================================*/
     /*!
-     * \brief Special Group that always //ToDo (mayr) That's not correct anymore.
-     *        sets Jacobian and RHS at the same time.
-     *
-
+     * \brief Customized Group that is currently based on NOX::Epetra::Group, but will be ultimately
+     *        replaced with an implementation not dependent on Epetra at all.
      */
     class Group : public NOX::Nln::GroupBase
     {
