@@ -17,7 +17,7 @@ FOUR_C_NAMESPACE_OPEN
 NOX::FSI::Group::Group(FourC::FSI::MonolithicInterface& mfsi, Teuchos::ParameterList& printParams,
     const Teuchos::RCP<::NOX::Epetra::Interface::Required>& i, const ::NOX::Epetra::Vector& x,
     const Teuchos::RCP<::NOX::Epetra::LinearSystem>& linSys)
-    : ::NOX::Epetra::Group(printParams, i, x, linSys), mfsi_(mfsi)
+    : NOX::Nln::GroupBase(printParams, i, x, linSys), mfsi_(mfsi)
 {
 }
 
@@ -42,7 +42,7 @@ void NOX::FSI::Group::capture_system_state()
  *----------------------------------------------------------------------*/
 ::NOX::Abstract::Group::ReturnType NOX::FSI::Group::computeF()
 {
-  ::NOX::Abstract::Group::ReturnType ret = ::NOX::Epetra::Group::computeF();
+  ::NOX::Abstract::Group::ReturnType ret = NOX::Nln::GroupBase::computeF();
   if (ret == ::NOX::Abstract::Group::Ok)
   {
     if (not isValidJacobian)
@@ -60,7 +60,7 @@ void NOX::FSI::Group::capture_system_state()
  *----------------------------------------------------------------------*/
 ::NOX::Abstract::Group::ReturnType NOX::FSI::Group::computeJacobian()
 {
-  ::NOX::Abstract::Group::ReturnType ret = ::NOX::Epetra::Group::computeJacobian();
+  ::NOX::Abstract::Group::ReturnType ret = NOX::Nln::GroupBase::computeJacobian();
   if (ret == ::NOX::Abstract::Group::Ok)
   {
     if (not isValidRHS)
@@ -81,7 +81,7 @@ void NOX::FSI::Group::capture_system_state()
   Core::LinAlg::View rhs_view(RHSVector.getEpetraVector());
   mfsi_.scale_system(rhs_view);
 
-  ::NOX::Abstract::Group::ReturnType status = ::NOX::Epetra::Group::computeNewton(p);
+  ::NOX::Abstract::Group::ReturnType status = NOX::Nln::GroupBase::computeNewton(p);
   Core::LinAlg::View newton_vector_view(NewtonVector.getEpetraVector());
 
   mfsi_.unscale_solution(newton_vector_view, rhs_view);

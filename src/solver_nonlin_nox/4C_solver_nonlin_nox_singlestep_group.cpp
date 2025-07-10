@@ -17,15 +17,14 @@ NOX::Nln::SINGLESTEP::Group::Group(Teuchos::ParameterList& printParams,
     Teuchos::ParameterList& grpOptionParams,
     const Teuchos::RCP<::NOX::Epetra::Interface::Required>& i, const ::NOX::Epetra::Vector& x,
     const Teuchos::RCP<::NOX::Epetra::LinearSystem>& linSys)
-    : ::NOX::Epetra::Group(printParams, i, x, linSys),
-      NOX::Nln::Group(printParams, grpOptionParams, i, x, linSys)
+    : NOX::Nln::Group(printParams, grpOptionParams, i, x, linSys)
 {
 }
 
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 NOX::Nln::SINGLESTEP::Group::Group(const NOX::Nln::SINGLESTEP::Group& source, ::NOX::CopyType type)
-    : ::NOX::Epetra::Group(source, type), NOX::Nln::Group(source, type)
+    : NOX::Nln::Group(source, type)
 {
 }
 
@@ -36,14 +35,6 @@ Teuchos::RCP<::NOX::Abstract::Group> NOX::Nln::SINGLESTEP::Group::clone(::NOX::C
   Teuchos::RCP<::NOX::Abstract::Group> newgrp =
       Teuchos::make_rcp<NOX::Nln::SINGLESTEP::Group>(*this, type);
   return newgrp;
-}
-
-/*----------------------------------------------------------------------------*
- *----------------------------------------------------------------------------*/
-::NOX::Abstract::Group& NOX::Nln::SINGLESTEP::Group::operator=(const ::NOX::Epetra::Group& source)
-{
-  NOX::Nln::Group::operator=(source);
-  return *this;
 }
 
 /*----------------------------------------------------------------------------*

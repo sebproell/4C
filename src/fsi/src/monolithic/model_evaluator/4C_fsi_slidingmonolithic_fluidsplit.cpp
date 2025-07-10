@@ -1121,7 +1121,7 @@ void FSI::SlidingMonolithicFluidSplit::unscale_solution(Core::LinAlg::BlockSpars
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
 Teuchos::RCP<::NOX::StatusTest::Combo> FSI::SlidingMonolithicFluidSplit::create_status_test(
-    Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Epetra::Group> grp)
+    Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Abstract::Group> grp)
 {
   // ---------------------------------------------------------------------------
   // Setup the test framework

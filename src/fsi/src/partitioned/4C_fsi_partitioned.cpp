@@ -27,6 +27,7 @@
 #include "4C_global_data.hpp"
 #include "4C_inpar_fsi.hpp"
 #include "4C_io_control.hpp"
+#include "4C_solver_nonlin_nox_group_base.hpp"
 #include "4C_structure_aux.hpp"
 #include "4C_utils_enum.hpp"
 
@@ -451,8 +452,8 @@ void FSI::Partitioned::timeloop(const Teuchos::RCP<::NOX::Epetra::Interface::Req
         create_linear_system(nlParams, interface, noxSoln, *utils_);
 
     // Create the Group
-    Teuchos::RCP<::NOX::Epetra::Group> grp =
-        Teuchos::make_rcp<::NOX::Epetra::Group>(printParams, interface, noxSoln, linSys);
+    Teuchos::RCP<::NOX::Abstract::Group> grp =
+        Teuchos::make_rcp<NOX::Nln::GroupBase>(printParams, interface, noxSoln, linSys);
 
     // Convergence Tests
     Teuchos::RCP<::NOX::StatusTest::Combo> combo = create_status_test(nlParams, grp);
@@ -693,7 +694,7 @@ Teuchos::RCP<::NOX::Epetra::LinearSystem> FSI::Partitioned::create_linear_system
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 Teuchos::RCP<::NOX::StatusTest::Combo> FSI::Partitioned::create_status_test(
-    Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Epetra::Group> grp)
+    Teuchos::ParameterList& nlParams, Teuchos::RCP<::NOX::Abstract::Group> grp)
 {
   // Create the convergence tests
   Teuchos::RCP<::NOX::StatusTest::Combo> combo =
@@ -720,7 +721,7 @@ Teuchos::RCP<::NOX::StatusTest::Combo> FSI::Partitioned::create_status_test(
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void FSI::Partitioned::create_status_test(Teuchos::ParameterList& nlParams,
-    Teuchos::RCP<::NOX::Epetra::Group> grp, Teuchos::RCP<::NOX::StatusTest::Combo> converged)
+    Teuchos::RCP<::NOX::Abstract::Group> grp, Teuchos::RCP<::NOX::StatusTest::Combo> converged)
 {
   Teuchos::RCP<::NOX::StatusTest::NormF> absresid =
       Teuchos::make_rcp<::NOX::StatusTest::NormF>(nlParams.get("Norm abs F", 1.0e-6));
@@ -779,9 +780,7 @@ bool FSI::Partitioned::computeF(const Epetra_Vector& x, Epetra_Vector& F, const 
 
   if (Core::Communication::my_mpi_rank(get_comm()) == 0)
   {
-    utils_->out() << "\n "
-                  << "FSI residual calculation"
-                  << ".\n";
+    utils_->out() << "\n " << "FSI residual calculation" << ".\n";
     if (fillFlag != Residual) utils_->out() << " fillFlag = " << flags[fillFlag] << "\n";
   }
 

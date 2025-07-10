@@ -112,9 +112,7 @@ bool NOX::Nln::LineSearch::Backtrack::compute(::NOX::Abstract::Group& grp, doubl
   // want to access the jacobian, we have to use the oldGrp
   // (target of the copy process), instead.                hiermeier 08/15
   // ----------------------------------------------------------------------
-  const ::NOX::Epetra::Group* epetraOldGrpPtr = dynamic_cast<const ::NOX::Epetra::Group*>(&oldGrp);
-  if (not epetraOldGrpPtr->isJacobian())
-    throw_error("compute()", "Ownership changed unexpectedly!");
+  if (not oldGrp.isJacobian()) throw_error("compute()", "Ownership changed unexpectedly!");
 
   /* Setup the inner status test */
   status_ = inner_tests_ptr_->check_status(*this, s, oldGrp, check_type_);

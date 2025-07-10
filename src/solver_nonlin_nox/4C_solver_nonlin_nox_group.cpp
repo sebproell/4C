@@ -23,7 +23,7 @@ FOUR_C_NAMESPACE_OPEN
 NOX::Nln::Group::Group(Teuchos::ParameterList& printParams, Teuchos::ParameterList& grpOptionParams,
     const Teuchos::RCP<::NOX::Epetra::Interface::Required>& i, const ::NOX::Epetra::Vector& x,
     const Teuchos::RCP<::NOX::Epetra::LinearSystem>& linSys)
-    : ::NOX::Epetra::Group(printParams, i, x, linSys),
+    : GroupBase(printParams, i, x, linSys),
       skipUpdateX_(false),
       corr_type_(NOX::Nln::CorrectionType::vague),
       prePostOperatorPtr_(Teuchos::make_rcp<NOX::Nln::GROUP::PrePostOperator>(grpOptionParams))
@@ -34,7 +34,7 @@ NOX::Nln::Group::Group(Teuchos::ParameterList& printParams, Teuchos::ParameterLi
 /*----------------------------------------------------------------------------*
  *----------------------------------------------------------------------------*/
 NOX::Nln::Group::Group(const NOX::Nln::Group& source, ::NOX::CopyType type)
-    : ::NOX::Epetra::Group(source, type),
+    : GroupBase(source, type),
       skipUpdateX_(false),
       corr_type_(NOX::Nln::CorrectionType::vague),
       prePostOperatorPtr_(source.prePostOperatorPtr_)
