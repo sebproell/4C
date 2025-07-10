@@ -20,10 +20,10 @@
 #include "4C_io_yaml.hpp"
 #include "4C_utils_enum.hpp"
 #include "4C_utils_string.hpp"
+#include "4C_utils_symbolic_expression.hpp"
 
 #include <algorithm>
 #include <functional>
-#include <numeric>
 #include <optional>
 #include <ostream>
 #include <variant>
@@ -584,13 +584,13 @@ namespace Core::IO
               std::filesystem::path file_path = in.get<std::filesystem::path>("from_file");
               IO::read_value_from_yaml(file_path, name, map_data);
               auto field = IO::InputField<T>(std::move(map_data));
-              store(out, std::move(field));
+              return store(out, std::move(field));
             }
             else if (in.get<InputFieldType>("_selector") == InputFieldType::constant)
             {
               T data = in.get<T>("constant");
               auto field = IO::InputField<T>(data);
-              store(out, std::move(field));
+              return store(out, std::move(field));
             }
             else
             {
@@ -832,6 +832,22 @@ namespace Core::IO
        * store the InputField in a struct.
        */
       StoreFunction<InputField<T>> store{nullptr};
+    };
+
+    template <typename Number, Utils::CompileTimeString... variables>
+    struct SymbolicExpressionData
+    {
+      /**
+       * An optional description of the symbolic expression.
+       */
+      std::string description{};
+
+      /**
+       * An optional function to store the parsed symbolic expression. By default, the result is
+       * stored in an InputParameterContainer. See the in_struct() function for more details on how
+       * to store the symbolic expression in a struct.
+       */
+      StoreFunction<Utils::SymbolicExpression<Number, variables...>> store{nullptr};
     };
   }  // namespace InputSpecBuilders
 
@@ -1451,6 +1467,32 @@ namespace Core::IO
     [[nodiscard]] InputSpec input_field(std::string name, InputFieldData<T> data = {});
 
     /**
+     * @brief Define an input parameter that is a SymbolicExpression.
+     *
+     * The template parameters are the same as for the SymbolicExpression class. Refer to the
+     * class documentation for more details.
+     *
+     * Example:
+     *
+     * @code
+     * symbolic_expression<double, "x", "y">("expr");
+     * @endcode
+     *
+     * will match the following input:
+     *
+     * @code
+     * expr: "x + y"
+     * @endcode
+     *
+     * Note that the SymbolicExpression is parsed right away, and you will need to retrieve the
+     * parameter as a SymbolicExpression<double, "x", "y"> from the InputParameterContainer or store
+     * it in an appropriate struct member using the in_struct() function.
+     */
+    template <typename Number, Utils::CompileTimeString... variables>
+    [[nodiscard]] InputSpec symbolic_expression(
+        std::string name, SymbolicExpressionData<Number, variables...> data = {});
+
+    /**
      * All of the given InputSpecs are expected, e.g.,
      *
      * @code
@@ -1701,34 +1743,10 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
 
   FOUR_C_ASSERT(entry_node.node.key() == name, "Internal error.");
 
+  T value;
   try
   {
-    T value;
     read_value_from_yaml(entry_node, value);
-    // Perform validation of the value here if necessary. Currently, we only validate sizes.
-    if constexpr (rank<T>() > 0)
-    {
-      if (!has_correct_size(value, container))
-      {
-        match_entry.additional_info = "value has incorrect size";
-        return false;
-      }
-    }
-    if (!validate_helper(value, data.validator))
-    {
-      std::ostringstream ss;
-      ss << "does not pass validation: ";
-      ss << *data.validator;
-      match_entry.additional_info = ss.str();
-      return false;
-    }
-
-    data.store(container, std::move(value));
-
-    match_entry.state = IO::Internal::MatchEntry::State::matched;
-    if (data.on_parse_callback && Internal::holds<InputParameterContainer>(container))
-      data.on_parse_callback(std::any_cast<InputParameterContainer&>(container));
-    return true;
   }
   catch (const Core::Exception& e)
   {
@@ -1749,6 +1767,35 @@ bool Core::IO::Internal::ParameterSpec<T>::match(ConstYamlNodeRef node,
     }
     return false;
   }
+  // Perform validation of the value here if necessary. Currently, we only validate sizes.
+  if constexpr (rank<T>() > 0)
+  {
+    if (!has_correct_size(value, container))
+    {
+      match_entry.additional_info = "value has incorrect size";
+      return false;
+    }
+  }
+  if (!validate_helper(value, data.validator))
+  {
+    std::ostringstream ss;
+    ss << "does not pass validation: ";
+    ss << *data.validator;
+    match_entry.additional_info = ss.str();
+    return false;
+  }
+
+  auto [ok, msg] = data.store(container, std::move(value));
+  if (!ok)
+  {
+    match_entry.additional_info = msg;
+    return false;
+  }
+
+  match_entry.state = IO::Internal::MatchEntry::State::matched;
+  if (data.on_parse_callback && Internal::holds<InputParameterContainer>(container))
+    data.on_parse_callback(std::any_cast<InputParameterContainer&>(container));
+  return true;
 }
 
 
@@ -1854,7 +1901,8 @@ template <Core::IO::SupportedType T>
 void Core::IO::Internal::ParameterSpec<T>::set_default_value(
     InputSpecBuilders::Storage& container) const
 {
-  data.store(container, T{std::get<1>(data.default_value)});
+  auto [ok, _] = data.store(container, T{std::get<1>(data.default_value)});
+  FOUR_C_ASSERT(ok, "Internal error: could not set default value for parameter '{}'.", name);
 }
 
 
@@ -1941,7 +1989,8 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
     // It is OK to not encounter an optional parameter
     if (data.default_value.index() == 1)
     {
-      data.store(container, T(std::get<1>(data.default_value)));
+      [[maybe_unused]] auto [ok, _] = data.store(container, T(std::get<1>(data.default_value)));
+      FOUR_C_ASSERT(ok, "Internal error: could not set default value for parameter '{}'.", name);
       match_entry.state = IO::Internal::MatchEntry::State::defaulted;
       return true;
     }
@@ -1967,7 +2016,12 @@ bool Core::IO::Internal::DeprecatedSelectionSpec<T>::match(ConstYamlNodeRef node
     {
       if (choice.first == value)
       {
-        data.store(container, T(choice.second));
+        auto [ok, msg] = data.store(container, T(choice.second));
+        if (!ok)
+        {
+          match_entry.additional_info = msg;
+          return false;
+        }
         match_entry.state = IO::Internal::MatchEntry::State::matched;
         match_entry.matched_node = entry_node.node.id();
         if (data.on_parse_callback && Internal::holds<InputParameterContainer>(container))
@@ -2098,7 +2152,8 @@ template <typename T>
 void Core::IO::Internal::DeprecatedSelectionSpec<T>::set_default_value(
     InputSpecBuilders::Storage& container) const
 {
-  data.store(container, T{std::get<1>(data.default_value)});
+  [[maybe_unused]] auto [ok, _] = data.store(container, T{std::get<1>(data.default_value)});
+  FOUR_C_ASSERT(ok, "Internal error: could not set default value for parameter '{}'.", name);
 }
 
 template <typename T>
@@ -2167,17 +2222,32 @@ bool Core::IO::Internal::SelectionSpec<T>::match(ConstYamlNodeRef node,
 
   if (data.store_selector)
   {
-    data.store_selector(subcontainer, std::move(*selector_value));
+    auto [ok, msg] = data.store_selector(subcontainer, std::move(*selector_value));
+    if (!ok)
+    {
+      match_entry.additional_info = msg;
+      return false;
+    }
   }
 
   if (data.transform_data)
   {
-    data.transform_data(
+    auto [ok, msg] = data.transform_data(
         container, std::any_cast<InputParameterContainer&&>(std::move(subcontainer)));
+    if (!ok)
+    {
+      match_entry.additional_info = msg;
+      return false;
+    }
   }
   else
   {
-    move_my_storage(container, std::move(subcontainer));
+    auto [ok, msg] = move_my_storage(container, std::move(subcontainer));
+    if (!ok)
+    {
+      match_entry.additional_info = msg;
+      return false;
+    }
   }
 
   // Everything was correctly matched, so mark the whole node as matched.
@@ -2439,6 +2509,40 @@ Core::IO::InputSpec Core::IO::InputSpecBuilders::input_field(
       });
   return spec;
 };
+
+
+template <typename Number, Core::Utils::CompileTimeString... variables>
+Core::IO::InputSpec Core::IO::InputSpecBuilders::symbolic_expression(
+    std::string name, SymbolicExpressionData<Number, variables...> data)
+{
+  auto store =
+      data.store ? data.store : in_container<Utils::SymbolicExpression<Number, variables...>>(name);
+  const std::type_info& stores_to = store.stores_to();
+
+  StoreFunction<std::string> convert_to_symbolic_expression{[store](Storage& out, std::string&& in)
+      {
+        try
+        {
+          Utils::SymbolicExpression<Number, variables...> expr(std::move(in));
+          return store(out, std::move(expr));
+        }
+        catch (const Core::Exception& e)
+        {
+          // Make a string from all variables.
+          std::stringstream message;
+          message << "could not be parsed as symbolic expression with variables: ";
+          ((message << std::quoted(variables.value) << " "), ...);
+
+          return StoreStatus::fail(message.str());
+        }
+      },
+      stores_to};
+
+  return parameter<std::string>(name, {
+                                          .description = data.description,
+                                          .store = convert_to_symbolic_expression,
+                                      });
+}
 
 
 template <typename T>

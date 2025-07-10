@@ -2437,4 +2437,73 @@ parameters:
   }
 )");
   }
+
+  TEST(InputSpecSymbolicExpression, StoreInContainer)
+  {
+    auto spec = group("test", {
+                                  symbolic_expression<double, "x", "y">("expr"),
+                              });
+
+    {
+      SCOPED_TRACE("OK");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(test:
+  expr: "x + y * 2.0"
+        )",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      spec.match(node, container);
+      const auto& expr =
+          container.group("test").get<Core::Utils::SymbolicExpression<double, "x", "y">>("expr");
+      EXPECT_DOUBLE_EQ(expr.value(Core::Utils::var<"x">(1.0), Core::Utils::var<"y">(2.0)), 5.0);
+    }
+
+    {
+      SCOPED_TRACE("Wrong variables.");
+      ryml::Tree tree = init_yaml_tree_with_exceptions();
+      ryml::NodeRef root = tree.rootref();
+      ryml::parse_in_arena(R"(test:
+  expr: "x + y * 2.0 + z" # z is not defined in the expression
+        )",
+          root);
+
+      ConstYamlNodeRef node(root, "");
+      InputParameterContainer container;
+      FOUR_C_EXPECT_THROW_WITH_MESSAGE(
+          spec.match(node, container), Core::Exception, R"([!] Candidate group 'test'
+  {
+    [!] Candidate parameter 'expr' could not be parsed as symbolic expression with variables: "x" "y" 
+  }
+)");
+    }
+  }
+
+  TEST(InputSpecSymbolicExpression, StoreInStruct)
+  {
+    struct S
+    {
+      Core::Utils::SymbolicExpression<double, "x", "y"> expr;
+    };
+
+    auto spec = group<S>(
+        "test", {
+                    symbolic_expression<double, "x", "y">("expr", {.store = in_struct(&S::expr)}),
+                });
+
+    ryml::Tree tree = init_yaml_tree_with_exceptions();
+    ryml::NodeRef root = tree.rootref();
+    ryml::parse_in_arena(R"(test:
+  expr: "x + y * 2.0"
+        )",
+        root);
+
+    ConstYamlNodeRef node(root, "");
+    InputParameterContainer container;
+    spec.match(node, container);
+    const auto& expr = container.get<S>("test").expr;
+    EXPECT_DOUBLE_EQ(expr.value(Core::Utils::var<"x">(1.0), Core::Utils::var<"y">(2.0)), 5.0);
+  }
 }  // namespace
