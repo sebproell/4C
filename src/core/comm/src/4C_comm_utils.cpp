@@ -160,13 +160,13 @@ namespace Core::Communication
       {
         nptypeisset = true;
         argument = argument.substr(8, std::string::npos).c_str();
-        if (argument == "everyGroupReadDatFile")
-          npType = NestedParallelismType::every_group_read_dat_file;
-        else if (argument == "separateDatFiles")
-          npType = NestedParallelismType::separate_dat_files;
+        if (argument == "everyGroupReadInputFile")
+          npType = NestedParallelismType::every_group_read_input_file;
+        else if (argument == "separateInputFiles")
+          npType = NestedParallelismType::separate_input_files;
         else if (argument == "nestedMultiscale")
         {
-          npType = NestedParallelismType::separate_dat_files;
+          npType = NestedParallelismType::separate_input_files;
           // the color is specified: only two groups and group one (macro problem) is distributed
           // over all processors
           color = -1;
@@ -188,7 +188,7 @@ namespace Core::Communication
                                      // external codes)
           {
             printf(
-                "\n\nOnly everyGroupReadDatFile and separateDatFiles is available for "
+                "\n\nOnly everyGroupReadInputFile and separateInputFiles is available for "
                 "nptype=  \n\n");
             printf("Try again!\n");
           }

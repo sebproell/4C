@@ -29,8 +29,8 @@ namespace Core::Communication
    */
   enum class NestedParallelismType
   {
-    every_group_read_dat_file,
-    separate_dat_files,
+    every_group_read_input_file,
+    separate_input_files,
     no_nested_parallelism
   };
 
