@@ -89,13 +89,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::KirchhoffLoveShellNurbsType::
  *
  */
 void Discret::Elements::KirchhoffLoveShellNurbsType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["SHELL_KIRCHHOFF_LOVE_NURBS"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["NURBS9"] = all_of({
+  defs[Core::FE::CellType::nurbs9] = all_of({
       parameter<int>("MAT"),
       parameter<std::vector<int>>("GP", {.size = 2}),
   });

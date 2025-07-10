@@ -49,7 +49,8 @@ namespace Discret
 
       /// setup the input file input line definitions for this type of element
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
       /// initialize element
       int initialize(Core::FE::Discretization& dis) override;

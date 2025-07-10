@@ -67,20 +67,20 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::Truss3ScatraType::cr
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Discret::Elements::Truss3ScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["TRUSS3SCATRA"];
 
   using namespace Core::IO::InputSpecBuilders;
 
   // get definitions from standard truss element
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_truss;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_truss;
   Truss3Type::setup_element_definition(definitions_truss);
   auto& defs_truss = definitions_truss["TRUSS3"];
 
   // copy definitions of standard truss element to truss element for scalar transport coupling
-  defs["LINE2"] = all_of({
-      defs_truss["LINE2"],
+  defs[Core::FE::CellType::line2] = all_of({
+      defs_truss[Core::FE::CellType::line2],
       parameter<std::string>("TYPE"),
   });
 }

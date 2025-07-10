@@ -66,13 +66,13 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::RedInterAcinarDepTyp
  |  setup_element_definition                                              |
  *----------------------------------------------------------------------*/
 void Discret::Elements::RedInterAcinarDepType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["RED_ACINAR_INTER_DEP"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("MAT"),
   });
 }

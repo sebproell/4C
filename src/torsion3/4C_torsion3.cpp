@@ -68,13 +68,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Torsion3Type::compute_null_sp
 }
 
 void Discret::Elements::Torsion3Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["TORSION3"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE3"] = all_of({
+  defs[Core::FE::CellType::line3] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("BENDINGPOTENTIAL"),
   });

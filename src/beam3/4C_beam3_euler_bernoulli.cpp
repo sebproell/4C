@@ -207,13 +207,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Beam3ebType::compute_null_spa
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Discret::Elements::Beam3ebType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["BEAM3EB"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("MAT"),
   });
 }

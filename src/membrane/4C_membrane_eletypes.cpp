@@ -68,13 +68,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::MembraneTri3Type::compute_nul
 }
 
 void Discret::Elements::MembraneTri3Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["MEMBRANE3"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI3"] = all_of({
+  defs[Core::FE::CellType::tri3] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<double>("THICK"),
@@ -142,13 +142,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::MembraneTri6Type::compute_nul
 }
 
 void Discret::Elements::MembraneTri6Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["MEMBRANE6"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI6"] = all_of({
+  defs[Core::FE::CellType::tri6] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<double>("THICK"),
@@ -216,13 +216,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::MembraneQuad4Type::compute_nu
 }
 
 void Discret::Elements::MembraneQuad4Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["MEMBRANE4"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = all_of({
+  defs[Core::FE::CellType::quad4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<double>("THICK"),
@@ -290,13 +290,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::MembraneQuad9Type::compute_nu
 }
 
 void Discret::Elements::MembraneQuad9Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["MEMBRANE9"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD9"] = all_of({
+  defs[Core::FE::CellType::quad9] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<double>("THICK"),

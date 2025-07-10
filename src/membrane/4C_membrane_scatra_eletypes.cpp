@@ -52,9 +52,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::MembraneScatraTri3Ty
 }
 
 void Discret::Elements::MembraneScatraTri3Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_membrane;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_membrane;
   MembraneTri3Type::setup_element_definition(definitions_membrane);
 
   auto& defs_membrane = definitions_membrane["MEMBRANE3"];
@@ -62,8 +62,8 @@ void Discret::Elements::MembraneScatraTri3Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI3"] = all_of({
-      defs_membrane["TRI3"],
+  defs[Core::FE::CellType::tri3] = all_of({
+      defs_membrane[Core::FE::CellType::tri3],
       parameter<std::string>("TYPE"),
   });
 }
@@ -108,9 +108,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::MembraneScatraTri6Ty
 }
 
 void Discret::Elements::MembraneScatraTri6Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_membrane;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_membrane;
   MembraneTri6Type::setup_element_definition(definitions_membrane);
 
   auto& defs_membrane = definitions_membrane["MEMBRANE6"];
@@ -119,8 +119,8 @@ void Discret::Elements::MembraneScatraTri6Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI6"] = all_of({
-      defs_membrane["TRI6"],
+  defs[Core::FE::CellType::tri6] = all_of({
+      defs_membrane[Core::FE::CellType::tri6],
       parameter<std::string>("TYPE"),
   });
 }
@@ -165,9 +165,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::MembraneScatraQuad4T
 }
 
 void Discret::Elements::MembraneScatraQuad4Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_membrane;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_membrane;
   MembraneQuad4Type::setup_element_definition(definitions_membrane);
 
   auto& defs_membrane = definitions_membrane["MEMBRANE4"];
@@ -176,8 +176,8 @@ void Discret::Elements::MembraneScatraQuad4Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = all_of({
-      defs_membrane["QUAD4"],
+  defs[Core::FE::CellType::quad4] = all_of({
+      defs_membrane[Core::FE::CellType::quad4],
       parameter<std::string>("TYPE"),
   });
 }
@@ -222,9 +222,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::MembraneScatraQuad9T
 }
 
 void Discret::Elements::MembraneScatraQuad9Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_membrane;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_membrane;
   MembraneQuad9Type::setup_element_definition(definitions_membrane);
 
   auto& defs_membrane = definitions_membrane["MEMBRANE9"];
@@ -233,8 +233,8 @@ void Discret::Elements::MembraneScatraQuad9Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD9"] = all_of({
-      defs_membrane["QUAD9"],
+  defs[Core::FE::CellType::quad9] = all_of({
+      defs_membrane[Core::FE::CellType::quad9],
       parameter<std::string>("TYPE"),
   });
 }

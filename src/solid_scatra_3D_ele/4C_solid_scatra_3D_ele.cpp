@@ -64,26 +64,22 @@ Discret::Elements::SolidScatraType& Discret::Elements::SolidScatraType::instance
 }
 
 void Discret::Elements::SolidScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defsgeneral = definitions["SOLIDSCATRA"];
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = all_of({
+  defsgeneral[Core::FE::CellType::hex8] = all_of({
       get_default_input_spec<Core::FE::CellType::hex8>(),
       parameter<ElementTechnology>("TECH", {.default_value = ElementTechnology::none}),
   });
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex27)] =
-      get_default_input_spec<Core::FE::CellType::hex27>();
+  defsgeneral[Core::FE::CellType::hex27] = get_default_input_spec<Core::FE::CellType::hex27>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet4)] =
-      get_default_input_spec<Core::FE::CellType::tet4>();
+  defsgeneral[Core::FE::CellType::tet4] = get_default_input_spec<Core::FE::CellType::tet4>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet10)] =
-      get_default_input_spec<Core::FE::CellType::tet10>();
+  defsgeneral[Core::FE::CellType::tet10] = get_default_input_spec<Core::FE::CellType::tet10>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::nurbs27)] =
-      get_default_input_spec<Core::FE::CellType::nurbs27>();
+  defsgeneral[Core::FE::CellType::nurbs27] = get_default_input_spec<Core::FE::CellType::nurbs27>();
 }
 
 std::shared_ptr<Core::Elements::Element> Discret::Elements::SolidScatraType::create(

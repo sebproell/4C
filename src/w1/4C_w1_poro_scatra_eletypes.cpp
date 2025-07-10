@@ -62,9 +62,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::WallQuad4PoroScatraT
  |                                                        schmidt 09/17 |
  *----------------------------------------------------------------------*/
 void Discret::Elements::WallQuad4PoroScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wall;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wall;
   WallQuad4PoroType::setup_element_definition(definitions_wall);
 
   auto& defs_wall = definitions_wall["WALLQ4PORO"];
@@ -73,8 +73,8 @@ void Discret::Elements::WallQuad4PoroScatraType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = all_of({
-      defs_wall["QUAD4"],
+  defs[Core::FE::CellType::quad4] = all_of({
+      defs_wall[Core::FE::CellType::quad4],
       parameter<std::string>("TYPE"),
   });
 }
@@ -129,9 +129,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::WallQuad9PoroScatraT
  |                                                        schmidt 09/17 |
  *----------------------------------------------------------------------*/
 void Discret::Elements::WallQuad9PoroScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wall;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wall;
   WallQuad9PoroType::setup_element_definition(definitions_wall);
 
   auto& defs_wall = definitions_wall["WALLQ9PORO"];
@@ -140,8 +140,8 @@ void Discret::Elements::WallQuad9PoroScatraType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD9"] = all_of({
-      defs_wall["QUAD9"],
+  defs[Core::FE::CellType::quad9] = all_of({
+      defs_wall[Core::FE::CellType::quad9],
       parameter<std::string>("TYPE"),
   });
 }
@@ -196,9 +196,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::WallNurbs4PoroScatra
  |                                                        schmidt 09/17 |
  *----------------------------------------------------------------------*/
 void Discret::Elements::WallNurbs4PoroScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wall;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wall;
   WallNurbs4PoroType::setup_element_definition(definitions_wall);
 
   auto& defs_wall = definitions_wall["WALLN4PORO"];
@@ -207,8 +207,8 @@ void Discret::Elements::WallNurbs4PoroScatraType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["NURBS4"] = all_of({
-      defs_wall["NURBS4"],
+  defs[Core::FE::CellType::nurbs4] = all_of({
+      defs_wall[Core::FE::CellType::nurbs4],
       parameter<std::string>("TYPE"),
   });
 }
@@ -263,9 +263,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::WallNurbs9PoroScatra
  |                                                        schmidt 09/17 |
  *----------------------------------------------------------------------*/
 void Discret::Elements::WallNurbs9PoroScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wall;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wall;
   WallNurbs9PoroType::setup_element_definition(definitions_wall);
 
   auto& defs_wall = definitions_wall["WALLN9PORO"];
@@ -274,8 +274,8 @@ void Discret::Elements::WallNurbs9PoroScatraType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["NURBS9"] = all_of({
-      defs_wall["NURBS9"],
+  defs[Core::FE::CellType::nurbs9] = all_of({
+      defs_wall[Core::FE::CellType::nurbs9],
       parameter<std::string>("TYPE"),
   });
 }
@@ -330,9 +330,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::WallTri3PoroScatraTy
  |                                                        schmidt 09/17 |
  *----------------------------------------------------------------------*/
 void Discret::Elements::WallTri3PoroScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wall;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wall;
   WallTri3PoroType::setup_element_definition(definitions_wall);
 
   auto& defs_wall = definitions_wall["WALLT3PORO"];
@@ -341,8 +341,8 @@ void Discret::Elements::WallTri3PoroScatraType::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI3"] = all_of({
-      defs_wall["TRI3"],
+  defs[Core::FE::CellType::tri3] = all_of({
+      defs_wall[Core::FE::CellType::tri3],
       parameter<std::string>("TYPE"),
   });
 }

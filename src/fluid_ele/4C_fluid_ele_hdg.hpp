@@ -47,7 +47,8 @@ namespace Discret
           const double* x0, int numdf, int dimns);
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static FluidHDGType instance_;

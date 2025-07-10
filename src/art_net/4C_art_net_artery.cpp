@@ -53,13 +53,13 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::ArteryType::create(
 
 
 void Discret::Elements::ArteryType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["ART"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("MAT"),
       parameter<int>("GP"),
       parameter<std::string>("TYPE"),

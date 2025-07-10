@@ -30,11 +30,11 @@ namespace Core::IO::GridGenerator
   // forward declarations
   std::shared_ptr<Core::Elements::Element> create_hex_element(int eleid, int nodeoffset, int myrank,
       const Core::IO::InputParameterContainer& ele_data, std::array<int, 3> interval,
-      std::string elementtype, std::string distype);
+      std::string elementtype, Core::FE::CellType cell_type);
 
   std::shared_ptr<Core::Elements::Element> create_wedge_element(int eleid, int nodeoffset,
       int myrank, const Core::IO::InputParameterContainer& ele_data, std::array<int, 3> interval,
-      std::string elementtype, std::string distype);
+      std::string elementtype, Core::FE::CellType cell_type);
 
   /*----------------------------------------------------------------------*/
   /*----------------------------------------------------------------------*/
@@ -45,9 +45,7 @@ namespace Core::IO::GridGenerator
     const int myrank = Core::Communication::my_mpi_rank(comm);
     const int numproc = Core::Communication::num_mpi_ranks(comm);
 
-    Core::Elements::ElementDefinition ed;
-    ed.setup_valid_element_lines();
-
+    const Core::Elements::ElementDefinition ed;
     // safety checks
     for (int i = 0; i < 3; ++i)
     {
@@ -64,12 +62,12 @@ namespace Core::IO::GridGenerator
     std::shared_ptr<Core::LinAlg::Map> elementColMap;
 
     // Create initial (or final) map of row elements
-    Core::FE::CellType distype_enum = Core::FE::string_to_cell_type(inputData.distype_);
     int numnewele = inputData.interval_[0] * inputData.interval_[1] * inputData.interval_[2];
     if (inputData.autopartition_)  // linear map
     {
       int scale = 1;
-      if (distype_enum == Core::FE::CellType::wedge6 or distype_enum == Core::FE::CellType::wedge15)
+      if (inputData.cell_type == Core::FE::CellType::wedge6 or
+          inputData.cell_type == Core::FE::CellType::wedge15)
       {
         scale = 2;
       }
@@ -78,8 +76,9 @@ namespace Core::IO::GridGenerator
     else  // fancy final box map
     {
       // Error for invalid element types!!!
-      if (distype_enum != Core::FE::CellType::hex8 and distype_enum != Core::FE::CellType::hex20 and
-          distype_enum != Core::FE::CellType::hex27)
+      if (inputData.cell_type != Core::FE::CellType::hex8 and
+          inputData.cell_type != Core::FE::CellType::hex20 and
+          inputData.cell_type != Core::FE::CellType::hex27)
       {
         FOUR_C_THROW("This map-partition is only available for HEX-elements!");
       }
@@ -159,7 +158,7 @@ namespace Core::IO::GridGenerator
       int eleid = elementRowMap->gid(lid);
       FOUR_C_ASSERT(eleid >= 0, "Missing gid");
 
-      const auto& linedef = ed.element_lines(inputData.elementtype_, inputData.distype_);
+      const auto& linedef = ed.get(inputData.elementtype_, inputData.cell_type);
 
       Core::IO::InputParameterContainer ele_data;
       Core::IO::ValueParser parser(
@@ -167,7 +166,7 @@ namespace Core::IO::GridGenerator
       linedef.fully_parse(parser, ele_data);
 
       // Create specified elements
-      switch (distype_enum)
+      switch (inputData.cell_type)
       {
         case Core::FE::CellType::hex8:
         case Core::FE::CellType::hex20:
@@ -175,7 +174,7 @@ namespace Core::IO::GridGenerator
         {
           std::shared_ptr<Core::Elements::Element> ele =
               create_hex_element(eleid, inputData.node_gid_of_first_new_node_, myrank, ele_data,
-                  inputData.interval_, inputData.elementtype_, inputData.distype_);
+                  inputData.interval_, inputData.elementtype_, inputData.cell_type);
           // add element to discretization
           dis.add_element(ele);
           break;
@@ -185,7 +184,7 @@ namespace Core::IO::GridGenerator
         {
           std::shared_ptr<Core::Elements::Element> ele = IO::GridGenerator::create_wedge_element(
               eleid, inputData.node_gid_of_first_new_node_, myrank, ele_data, inputData.interval_,
-              inputData.elementtype_, inputData.distype_);
+              inputData.elementtype_, inputData.cell_type);
           dis.add_element(ele);
           break;
         }
@@ -193,7 +192,7 @@ namespace Core::IO::GridGenerator
           FOUR_C_THROW(
               "The discretization type {}, is not implemented. Currently only HEX(8,20,27) and "
               "WEDGE(6,15) are implemented for the box geometry generation.",
-              inputData.distype_.c_str());
+              inputData.cell_type);
       }
     }
 
@@ -312,11 +311,10 @@ namespace Core::IO::GridGenerator
    *----------------------------------------------------------------------*/
   std::shared_ptr<Core::Elements::Element> create_hex_element(int eleid, int nodeOffset, int myrank,
       const Core::IO::InputParameterContainer& ele_data, std::array<int, 3> interval,
-      std::string elementtype, std::string distype)
+      std::string elementtype, Core::FE::CellType cell_type)
   {
     // Reserve nodeids for this element type
-    std::vector<int> nodeids(
-        Core::FE::get_number_of_element_nodes(Core::FE::string_to_cell_type(distype)));
+    std::vector<int> nodeids(Core::FE::get_number_of_element_nodes(cell_type));
 
     // current element position
     const size_t ex = 2 * (eleid % interval[0]);
@@ -368,10 +366,10 @@ namespace Core::IO::GridGenerator
         break;
     }
     // let the factory create a matching empty element
-    std::shared_ptr<Core::Elements::Element> ele =
-        Core::Communication::factory(elementtype, distype, eleid, myrank);
+    std::shared_ptr<Core::Elements::Element> ele = Core::Communication::factory(
+        elementtype, Core::FE::cell_type_to_string(cell_type), eleid, myrank);
     ele->set_node_ids(nodeids.size(), &(nodeids[0]));
-    ele->read_element(elementtype, distype, ele_data);
+    ele->read_element(elementtype, Core::FE::cell_type_to_string(cell_type), ele_data);
     return ele;
   }
 
@@ -383,11 +381,10 @@ namespace Core::IO::GridGenerator
    *----------------------------------------------------------------------*/
   std::shared_ptr<Core::Elements::Element> create_wedge_element(int eleid, int nodeoffset,
       int myrank, const Core::IO::InputParameterContainer& ele_data, std::array<int, 3> interval,
-      std::string elementtype, std::string distype)
+      std::string elementtype, Core::FE::CellType cell_type)
   {
     // Reserve nodeids for this element type
-    std::vector<int> nodeids(
-        Core::FE::get_number_of_element_nodes(Core::FE::string_to_cell_type(distype)));
+    std::vector<int> nodeids(Core::FE::get_number_of_element_nodes(cell_type));
 
     // HEX-equivalent element
     int hex_equiv_eleid = int(eleid / 2);
@@ -466,10 +463,10 @@ namespace Core::IO::GridGenerator
     }
 
     // let the factory create a matching empty element
-    std::shared_ptr<Core::Elements::Element> ele =
-        Core::Communication::factory(elementtype, distype, eleid, myrank);
+    std::shared_ptr<Core::Elements::Element> ele = Core::Communication::factory(
+        elementtype, FE::cell_type_to_string(cell_type), eleid, myrank);
     ele->set_node_ids(nodeids.size(), &(nodeids[0]));
-    ele->read_element(elementtype, distype, ele_data);
+    ele->read_element(elementtype, FE::cell_type_to_string(cell_type), ele_data);
     return ele;
   }
 

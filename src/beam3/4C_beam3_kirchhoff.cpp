@@ -90,13 +90,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Beam3kType::compute_null_spac
 /*------------------------------------------------------------------------------------------------*
  *------------------------------------------------------------------------------------------------*/
 void Discret::Elements::Beam3kType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["BEAM3K"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("WK"),
       parameter<int>("ROTVEC"),
       parameter<int>("MAT"),
@@ -104,7 +104,7 @@ void Discret::Elements::Beam3kType::setup_element_definition(
       parameter<bool>("USE_FAD", {.default_value = false}),
   });
 
-  defs["LINE3"] = all_of({
+  defs[Core::FE::CellType::line3] = all_of({
       parameter<int>("WK"),
       parameter<int>("ROTVEC"),
       parameter<int>("MAT"),
@@ -112,7 +112,7 @@ void Discret::Elements::Beam3kType::setup_element_definition(
       parameter<bool>("USE_FAD", {.default_value = false}),
   });
 
-  defs["LINE4"] = all_of({
+  defs[Core::FE::CellType::line4] = all_of({
       parameter<int>("WK"),
       parameter<int>("ROTVEC"),
       parameter<int>("MAT"),

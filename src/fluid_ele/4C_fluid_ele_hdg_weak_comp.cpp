@@ -84,9 +84,9 @@ void Discret::Elements::FluidHDGWeakCompType::compute_null_space(
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Discret::Elements::FluidHDGWeakCompType ::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_fluid;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_fluid;
   FluidType::setup_element_definition(definitions_fluid);
 
   auto& defs_fluid = definitions_fluid["FLUID"];

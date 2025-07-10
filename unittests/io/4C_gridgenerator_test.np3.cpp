@@ -68,7 +68,7 @@ namespace
   TEST_F(GridGeneratorTest, TestGridGeneratorWithHex27Elements)
   {
     inputData_.elementtype_ = "SOLID";
-    inputData_.distype_ = "HEX27";
+    inputData_.cell_type = Core::FE::CellType::hex27;
     inputData_.elearguments_ = "MAT 1 KINEM nonlinear";
 
     Core::IO::GridGenerator::create_rectangular_cuboid_discretization(*testdis_, inputData_, true);
@@ -116,7 +116,7 @@ namespace
   TEST_F(GridGeneratorTest, TestGridGeneratorWithWedge6Elements)
   {
     inputData_.elementtype_ = "SOLID";
-    inputData_.distype_ = "WEDGE6";
+    inputData_.cell_type = Core::FE::CellType::wedge6;
     inputData_.elearguments_ = "MAT 1 KINEM nonlinear";
     inputData_.autopartition_ = true;
 

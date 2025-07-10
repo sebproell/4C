@@ -50,7 +50,8 @@ namespace Discret
           Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static MembraneTri3Type instance_;
@@ -82,7 +83,8 @@ namespace Discret
           Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static MembraneTri6Type instance_;
@@ -114,7 +116,8 @@ namespace Discret
           Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static MembraneQuad4Type instance_;
@@ -146,7 +149,8 @@ namespace Discret
           Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static MembraneQuad9Type instance_;

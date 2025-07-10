@@ -41,7 +41,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static WallQuad4PoroScatraType instance_;
@@ -65,7 +66,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static WallQuad9PoroScatraType instance_;
@@ -89,7 +91,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static WallNurbs4PoroScatraType instance_;
@@ -113,7 +116,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static WallNurbs9PoroScatraType instance_;
@@ -137,7 +141,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static WallTri3PoroScatraType instance_;

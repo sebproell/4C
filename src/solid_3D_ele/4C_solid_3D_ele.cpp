@@ -67,31 +67,26 @@ Discret::Elements::SolidType Discret::Elements::SolidType::instance_;
 Discret::Elements::SolidType& Discret::Elements::SolidType::instance() { return instance_; }
 
 void Discret::Elements::SolidType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defsgeneral = definitions["SOLID"];
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = all_of({
+  defsgeneral[Core::FE::CellType::hex8] = all_of({
       get_default_input_spec<Core::FE::CellType::hex8>(),
       parameter<ElementTechnology>("TECH", {.default_value = ElementTechnology::none}),
   });
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex18)] =
-      get_default_input_spec<Core::FE::CellType::hex18>();
+  defsgeneral[Core::FE::CellType::hex18] = get_default_input_spec<Core::FE::CellType::hex18>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex20)] =
-      get_default_input_spec<Core::FE::CellType::hex20>();
+  defsgeneral[Core::FE::CellType::hex20] = get_default_input_spec<Core::FE::CellType::hex20>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex27)] =
-      get_default_input_spec<Core::FE::CellType::hex27>();
+  defsgeneral[Core::FE::CellType::hex27] = get_default_input_spec<Core::FE::CellType::hex27>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet4)] =
-      get_default_input_spec<Core::FE::CellType::tet4>();
+  defsgeneral[Core::FE::CellType::tet4] = get_default_input_spec<Core::FE::CellType::tet4>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet10)] =
-      get_default_input_spec<Core::FE::CellType::tet10>();
+  defsgeneral[Core::FE::CellType::tet10] = get_default_input_spec<Core::FE::CellType::tet10>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::wedge6)] = all_of({
+  defsgeneral[Core::FE::CellType::wedge6] = all_of({
       get_default_input_spec<Core::FE::CellType::wedge6>(),
       deprecated_selection<ElementTechnology>("TECH",
           {
@@ -104,7 +99,7 @@ void Discret::Elements::SolidType::setup_element_definition(
           {.default_value = ElementTechnology::none}),
   });
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::pyramid5)] = all_of({
+  defsgeneral[Core::FE::CellType::pyramid5] = all_of({
       get_default_input_spec<Core::FE::CellType::pyramid5>(),
       deprecated_selection<ElementTechnology>("TECH",
           {
@@ -114,7 +109,7 @@ void Discret::Elements::SolidType::setup_element_definition(
           {.default_value = ElementTechnology::none}),
   });
 
-  defsgeneral["NURBS27"] = all_of({
+  defsgeneral[Core::FE::CellType::nurbs27] = all_of({
       parameter<int>("MAT"),
       get_kinem_type_input_spec(),
   });

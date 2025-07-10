@@ -68,13 +68,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Truss3Type::compute_null_spac
 }
 
 void Discret::Elements::Truss3Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["TRUSS3"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("MAT"),
       parameter<double>("CROSS"),
       parameter<std::string>("KINEM"),

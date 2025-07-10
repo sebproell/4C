@@ -89,29 +89,29 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Bele3Type::compute_null_space
 }
 
 void Discret::Elements::Bele3Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs3 = definitions["BELE3_3"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs3["TRI3"] = all_of({
+  defs3[Core::FE::CellType::tri3] = all_of({
       parameter<std::optional<int>>("MAT"),
   });
 
-  defs3["TRI6"] = all_of({
+  defs3[Core::FE::CellType::tri6] = all_of({
       parameter<std::optional<int>>("MAT"),
   });
 
-  defs3["QUAD4"] = all_of({
+  defs3[Core::FE::CellType::quad4] = all_of({
       parameter<std::optional<int>>("MAT"),
   });
 
-  defs3["QUAD8"] = all_of({
+  defs3[Core::FE::CellType::quad8] = all_of({
       parameter<std::optional<int>>("MAT"),
   });
 
-  defs3["QUAD9"] = all_of({
+  defs3[Core::FE::CellType::quad9] = all_of({
       parameter<std::optional<int>>("MAT"),
   });
 }

@@ -53,7 +53,7 @@ namespace
       inputData_.node_gid_of_first_new_node_ = 0;
 
       inputData_.elementtype_ = "SOLID";
-      inputData_.distype_ = "HEX8";
+      inputData_.cell_type = Core::FE::CellType::hex8;
       inputData_.elearguments_ = "MAT 1 KINEM nonlinear";
 
       Core::IO::GridGenerator::create_rectangular_cuboid_discretization(

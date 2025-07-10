@@ -89,13 +89,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::RigidsphereType::compute_null
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Discret::Elements::RigidsphereType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["RIGIDSPHERE"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["POINT1"] = all_of({
+  defs[Core::FE::CellType::point1] = all_of({
       parameter<double>("RADIUS"),
       parameter<double>("DENSITY"),
   });

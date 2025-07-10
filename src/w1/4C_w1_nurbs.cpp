@@ -64,13 +64,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Nurbs::Wall1NurbsType::comput
 }
 
 void Discret::Elements::Nurbs::Wall1NurbsType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["WALLNURBS"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["NURBS4"] = all_of({
+  defs[Core::FE::CellType::nurbs4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),
@@ -79,7 +79,7 @@ void Discret::Elements::Nurbs::Wall1NurbsType::setup_element_definition(
       parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
-  defs["NURBS9"] = all_of({
+  defs[Core::FE::CellType::nurbs9] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),

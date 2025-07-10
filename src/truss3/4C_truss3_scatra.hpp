@@ -34,7 +34,8 @@ namespace Discret
       std::string name() const override { return "Truss3ScatraType"; }
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static Truss3ScatraType instance_;

@@ -58,13 +58,13 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::RedAcinusType::creat
  |                                                           roth 10/14 |
  *----------------------------------------------------------------------*/
 void Discret::Elements::RedAcinusType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["RED_ACINUS"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("MAT"),
       deprecated_selection<std::string>("TYPE",
           {"NeoHookean", "Exponential", "DoubleExponential", "VolumetricOgden"},

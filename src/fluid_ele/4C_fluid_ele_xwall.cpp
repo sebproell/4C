@@ -64,17 +64,17 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::FluidXWallType::compute_null_
 }
 
 void Discret::Elements::FluidXWallType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defsxwall = definitions["FLUIDXW"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defsxwall["HEX8"] = all_of({
+  defsxwall[Core::FE::CellType::hex8] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
-  defsxwall["TET4"] = all_of({
+  defsxwall[Core::FE::CellType::tet4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });

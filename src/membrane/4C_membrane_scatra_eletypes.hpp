@@ -41,7 +41,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static MembraneScatraTri3Type instance_;
@@ -65,7 +66,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static MembraneScatraTri6Type instance_;
@@ -89,7 +91,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static MembraneScatraQuad4Type instance_;
@@ -113,7 +116,8 @@ namespace Discret
       std::shared_ptr<Core::Elements::Element> create(const int id, const int owner) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static MembraneScatraQuad9Type instance_;

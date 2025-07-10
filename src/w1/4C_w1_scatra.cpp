@@ -48,9 +48,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::Wall1ScatraType::cre
 }
 
 void Discret::Elements::Wall1ScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wall;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wall;
   Wall1Type::setup_element_definition(definitions_wall);
 
   auto& defs_wall = definitions_wall["WALL"];

@@ -73,13 +73,13 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::Shell7pScatraType::c
 }
 
 void Discret::Elements::Shell7pScatraType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defsgeneral = definitions["SHELL7PSCATRA"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defsgeneral["QUAD4"] = all_of({
+  defsgeneral[Core::FE::CellType::quad4] = all_of({
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
@@ -94,7 +94,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
       parameter<std::string>("TYPE"),
   });
 
-  defsgeneral["QUAD8"] = all_of({
+  defsgeneral[Core::FE::CellType::quad8] = all_of({
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
@@ -109,7 +109,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
       parameter<std::string>("TYPE"),
   });
 
-  defsgeneral["QUAD9"] = all_of({
+  defsgeneral[Core::FE::CellType::quad9] = all_of({
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<std::vector<std::string>>("EAS", {.size = 5}),
@@ -124,7 +124,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
       parameter<std::string>("TYPE"),
   });
 
-  defsgeneral["TRI3"] = all_of({
+  defsgeneral[Core::FE::CellType::tri3] = all_of({
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<double>("SDC"),
@@ -137,7 +137,7 @@ void Discret::Elements::Shell7pScatraType::setup_element_definition(
       parameter<std::string>("TYPE"),
   });
 
-  defsgeneral["TRI6"] = all_of({
+  defsgeneral[Core::FE::CellType::tri6] = all_of({
       parameter<int>("MAT"),
       parameter<double>("THICK"),
       parameter<double>("SDC"),

@@ -122,9 +122,9 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::ScaTraHDGType::compute_null_s
 /*----------------------------------------------------------------------*
  *----------------------------------------------------------------------*/
 void Discret::Elements::ScaTraHDGType ::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_scatra;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_scatra;
   TransportType::setup_element_definition(definitions_scatra);
 
   auto& defs_scatra = definitions_scatra["TRANSP"];
