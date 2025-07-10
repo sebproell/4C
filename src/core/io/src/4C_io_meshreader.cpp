@@ -304,7 +304,7 @@ namespace
             Core::Communication::factory(eletype, cell_info.cell_type_str, elenumber, 0);
         if (!ele) FOUR_C_THROW("element creation failed");
 
-        const auto& linedef = ed.get(eletype, cell_info.cell_type_str);
+        const auto& linedef = ed.get(eletype, cell_info.cell_type);
 
         Core::IO::InputParameterContainer data;
         linedef.fully_parse(parser, data);
@@ -395,7 +395,7 @@ namespace
       add_to_pack(buffer, inputData.rotation_angle_);
       add_to_pack(buffer, inputData.autopartition_);
       add_to_pack(buffer, inputData.elementtype_);
-      add_to_pack(buffer, inputData.distype_);
+      add_to_pack(buffer, inputData.cell_type);
       add_to_pack(buffer, inputData.elearguments_);
       std::swap(data, buffer());
     }
@@ -414,7 +414,7 @@ namespace
       extract_from_pack(buffer, inputData.rotation_angle_);
       extract_from_pack(buffer, inputData.autopartition_);
       extract_from_pack(buffer, inputData.elementtype_);
-      extract_from_pack(buffer, inputData.distype_);
+      extract_from_pack(buffer, inputData.cell_type);
       extract_from_pack(buffer, inputData.elearguments_);
     }
   }
@@ -486,7 +486,9 @@ namespace
               inputData.rotation_angle_[2];
         else if (key == "ELEMENTS")
         {
-          t >> inputData.elementtype_ >> inputData.distype_;
+          std::string temp_str;
+          t >> inputData.elementtype_ >> temp_str;
+          inputData.cell_type = Core::FE::string_to_cell_type(temp_str);
           getline(t, inputData.elearguments_);
         }
         else if (key == "PARTITION")
@@ -857,7 +859,7 @@ namespace
         const auto cell_type_string = Core::FE::cell_type_to_string(cell_type);
 
         Core::Elements::ElementDefinition ed;
-        const auto& linedef = ed.get(element_name, cell_type_string);
+        const auto& linedef = ed.get(element_name, cell_type);
 
 
         const auto& element_string = current_block_data->get<std::string>("ELEMENT_DATA");

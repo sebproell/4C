@@ -54,7 +54,7 @@ namespace Core::Elements
    public:
     /// setup the input file input line definitions for this type of element
     virtual void setup_element_definition(
-        std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+        std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
     {
     }
 

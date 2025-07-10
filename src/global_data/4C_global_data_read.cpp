@@ -191,7 +191,7 @@ void Global::emit_general_metadata(Core::IO::YamlNodeRef node)
       {
         auto cell_spec = element_specs.append_child();
         cell_spec |= ryml::MAP;
-        cell_spec["cell_type"] << ryml::to_csubstr(cell_type);
+        cell_spec["cell_type"] << ryml::to_csubstr(Core::FE::cell_type_to_string(cell_type));
         auto spec_node = cell_spec["spec"];
         spec.emit_metadata(Core::IO::YamlNodeRef(spec_node, ""));
       }

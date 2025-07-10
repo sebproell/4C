@@ -75,49 +75,49 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::PoroFluidMultiPhaseType::comp
 }
 
 void Discret::Elements::PoroFluidMultiPhaseType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["POROFLUIDMULTIPHASE"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = all_of({
+  defs[Core::FE::CellType::quad4] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["QUAD8"] = all_of({
+  defs[Core::FE::CellType::quad8] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["QUAD9"] = all_of({
+  defs[Core::FE::CellType::quad9] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["TRI3"] = all_of({
+  defs[Core::FE::CellType::tri3] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["TRI6"] = all_of({
+  defs[Core::FE::CellType::tri6] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["LINE3"] = all_of({
+  defs[Core::FE::CellType::line3] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["HEX8"] = all_of({
+  defs[Core::FE::CellType::hex8] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["TET4"] = all_of({
+  defs[Core::FE::CellType::tet4] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["TET10"] = all_of({
+  defs[Core::FE::CellType::tet10] = all_of({
       parameter<int>("MAT"),
   });
 }

@@ -49,7 +49,8 @@ namespace Discret
       int initialize(Core::FE::Discretization& dis) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static WallQuad4PoroP1Type instance_;
@@ -81,7 +82,8 @@ namespace Discret
       int initialize(Core::FE::Discretization& dis) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static WallQuad9PoroP1Type instance_;
@@ -113,7 +115,8 @@ namespace Discret
       int initialize(Core::FE::Discretization& dis) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static WallTri3PoroP1Type instance_;

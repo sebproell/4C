@@ -97,7 +97,8 @@ namespace Discret::Elements
         Core::Nodes::Node& node, const double* x0, const int numdof, const int dimnsp) override;
 
     void setup_element_definition(
-        std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+        std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+        override;
 
    private:
     static Beam3ebType instance_;

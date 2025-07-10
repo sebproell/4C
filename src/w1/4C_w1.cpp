@@ -67,13 +67,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Wall1Type::compute_null_space
 }
 
 void Discret::Elements::Wall1Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["WALL"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = all_of({
+  defs[Core::FE::CellType::quad4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),
@@ -82,7 +82,7 @@ void Discret::Elements::Wall1Type::setup_element_definition(
       parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
-  defs["QUAD8"] = all_of({
+  defs[Core::FE::CellType::quad8] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),
@@ -91,7 +91,7 @@ void Discret::Elements::Wall1Type::setup_element_definition(
       parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
-  defs["QUAD9"] = all_of({
+  defs[Core::FE::CellType::quad9] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),
@@ -100,7 +100,7 @@ void Discret::Elements::Wall1Type::setup_element_definition(
       parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
-  defs["TRI3"] = all_of({
+  defs[Core::FE::CellType::tri3] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),
@@ -109,7 +109,7 @@ void Discret::Elements::Wall1Type::setup_element_definition(
       parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
-  defs["TRI6"] = all_of({
+  defs[Core::FE::CellType::tri6] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),
@@ -118,7 +118,7 @@ void Discret::Elements::Wall1Type::setup_element_definition(
       parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
-  defs["NURBS4"] = all_of({
+  defs[Core::FE::CellType::nurbs4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),
@@ -127,7 +127,7 @@ void Discret::Elements::Wall1Type::setup_element_definition(
       parameter<std::vector<int>>("GP", {.size = 2}),
   });
 
-  defs["NURBS9"] = all_of({
+  defs[Core::FE::CellType::nurbs9] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("KINEM"),
       parameter<std::string>("EAS"),

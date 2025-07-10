@@ -64,13 +64,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Vele3Type::compute_null_space
 }
 
 void Discret::Elements::Vele3Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["VELE3"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["HEX8"] = all_of({});
+  defs[Core::FE::CellType::hex8] = all_of({});
 }
 
 std::shared_ptr<Core::Elements::Element> Discret::Elements::Vele3SurfaceType::create(

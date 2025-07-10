@@ -55,7 +55,8 @@ namespace Discret
           Core::Elements::Element* dwele, int& numdf, int& dimns, int& nv, int& np) override;
 
       void setup_element_definition(
-          std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions) override;
+          std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
+          override;
 
      private:
       static Truss3Type instance_;

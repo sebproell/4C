@@ -243,7 +243,7 @@ void Core::Communication::ParObjectFactory::initialize_elements(Core::FE::Discre
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 void Core::Communication::ParObjectFactory::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   finalize_registration();
 

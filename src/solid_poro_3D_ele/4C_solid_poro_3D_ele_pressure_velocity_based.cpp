@@ -72,11 +72,11 @@ Discret::Elements::SolidPoroPressureVelocityBasedType::instance()
 }
 
 void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defsgeneral = definitions["SOLIDPORO_PRESSURE_VELOCITY_BASED"];
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] = all_of({
+  defsgeneral[Core::FE::CellType::hex8] = all_of({
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex8>(),
       parameter<std::optional<std::vector<double>>>(
@@ -87,12 +87,12 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
           "POROANISONODALCOEFFS3", {.size = Core::FE::num_nodes(Core::FE::CellType::hex8)}),
   });
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex27)] =
+  defsgeneral[Core::FE::CellType::hex27] =
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex27>();
 
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet4)] = all_of({
+  defsgeneral[Core::FE::CellType::tet4] = all_of({
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::tet4>(),
       parameter<std::optional<std::vector<double>>>(
@@ -105,7 +105,7 @@ void Discret::Elements::SolidPoroPressureVelocityBasedType::setup_element_defini
 
 
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet10)] =
+  defsgeneral[Core::FE::CellType::tet10] =
       Discret::Elements::SolidPoroPressureVelocityBasedInternal::get_default_input_spec<
           Core::FE::CellType::tet10>();
 }

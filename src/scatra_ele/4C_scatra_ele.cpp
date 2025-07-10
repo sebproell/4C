@@ -89,133 +89,133 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::TransportType::compute_null_s
 }
 
 void Discret::Elements::TransportType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["TRANSP"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["HEX8"] = all_of({
+  defs[Core::FE::CellType::hex8] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["HEX20"] = all_of({
+  defs[Core::FE::CellType::hex20] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["HEX27"] = all_of({
+  defs[Core::FE::CellType::hex27] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["NURBS27"] = all_of({
+  defs[Core::FE::CellType::nurbs27] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["NURBS8"] = all_of({
+  defs[Core::FE::CellType::nurbs8] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["TET4"] = all_of({
+  defs[Core::FE::CellType::tet4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["TET10"] = all_of({
+  defs[Core::FE::CellType::tet10] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["WEDGE6"] = all_of({
+  defs[Core::FE::CellType::wedge6] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["WEDGE15"] = all_of({
+  defs[Core::FE::CellType::wedge15] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["PYRAMID5"] = all_of({
+  defs[Core::FE::CellType::pyramid5] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["QUAD4"] = all_of({
+  defs[Core::FE::CellType::quad4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["QUAD8"] = all_of({
+  defs[Core::FE::CellType::quad8] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["QUAD9"] = all_of({
+  defs[Core::FE::CellType::quad9] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["TRI3"] = all_of({
+  defs[Core::FE::CellType::tri3] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["TRI6"] = all_of({
+  defs[Core::FE::CellType::tri6] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["NURBS4"] = all_of({
+  defs[Core::FE::CellType::nurbs4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["NURBS9"] = all_of({
+  defs[Core::FE::CellType::nurbs9] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["LINE3"] = all_of({
+  defs[Core::FE::CellType::line3] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["NURBS2"] = all_of({
+  defs[Core::FE::CellType::nurbs2] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),
   });
 
-  defs["NURBS3"] = all_of({
+  defs[Core::FE::CellType::nurbs3] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("TYPE"),
       parameter<std::optional<std::vector<double>>>("FIBER1", {.size = 3}),

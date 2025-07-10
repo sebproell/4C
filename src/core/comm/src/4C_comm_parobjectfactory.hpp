@@ -11,6 +11,7 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_pack_buffer.hpp"
+#include "4C_fem_general_cell_type.hpp"
 
 #include <map>
 #include <memory>
@@ -111,7 +112,7 @@ namespace Core::Communication
 
     /// setup definition of element input file lines
     void setup_element_definition(
-        std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions);
+        std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions);
 
    private:
     void do_register(ParObjectType* object_type);

@@ -101,13 +101,13 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Beam3rType::compute_null_spac
 /*------------------------------------------------------------------------------------------------*
  *------------------------------------------------------------------------------------------------*/
 void Discret::Elements::Beam3rType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["BEAM3R"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["LINE2"] = all_of({
+  defs[Core::FE::CellType::line2] = all_of({
       parameter<int>("MAT"),
       parameter<std::vector<double>>("TRIADS", {.size = 6}),
       parameter<bool>("USE_FAD", {.default_value = false}),
@@ -119,7 +119,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
           }),
   });
 
-  defs["LINE3"] = all_of({
+  defs[Core::FE::CellType::line3] = all_of({
       parameter<int>("MAT"),
       parameter<std::vector<double>>("TRIADS", {.size = 9}),
       parameter<bool>("USE_FAD", {.default_value = false}),
@@ -131,7 +131,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
           }),
   });
 
-  defs["LINE4"] = all_of({
+  defs[Core::FE::CellType::line4] = all_of({
       parameter<int>("MAT"),
       parameter<std::vector<double>>("TRIADS", {.size = 12}),
       parameter<bool>("USE_FAD", {.default_value = false}),
@@ -143,7 +143,7 @@ void Discret::Elements::Beam3rType::setup_element_definition(
           }),
   });
 
-  defs["LINE5"] = all_of({
+  defs[Core::FE::CellType::line5] = all_of({
       parameter<int>("MAT"),
       parameter<std::vector<double>>("TRIADS", {.size = 15}),
       parameter<bool>("USE_FAD", {.default_value = false}),

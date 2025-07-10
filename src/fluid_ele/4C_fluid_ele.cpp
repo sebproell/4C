@@ -69,94 +69,94 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::FluidType::compute_null_space
 }
 
 void Discret::Elements::FluidType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defsgeneral = definitions["FLUID"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defsgeneral["HEX8"] = all_of({
+  defsgeneral[Core::FE::CellType::hex8] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["HEX20"] = all_of({
+  defsgeneral[Core::FE::CellType::hex20] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["HEX27"] = all_of({
+  defsgeneral[Core::FE::CellType::hex27] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["TET4"] = all_of({
+  defsgeneral[Core::FE::CellType::tet4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["TET10"] = all_of({
+  defsgeneral[Core::FE::CellType::tet10] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["WEDGE6"] = all_of({
+  defsgeneral[Core::FE::CellType::wedge6] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["WEDGE15"] = all_of({
+  defsgeneral[Core::FE::CellType::wedge15] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["PYRAMID5"] = all_of({
+  defsgeneral[Core::FE::CellType::pyramid5] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["NURBS8"] = all_of({
+  defsgeneral[Core::FE::CellType::nurbs8] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["NURBS27"] = all_of({
+  defsgeneral[Core::FE::CellType::nurbs27] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
   // 2D elements
-  defsgeneral["QUAD4"] = all_of({
+  defsgeneral[Core::FE::CellType::quad4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["QUAD8"] = all_of({
+  defsgeneral[Core::FE::CellType::quad8] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["QUAD9"] = all_of({
+  defsgeneral[Core::FE::CellType::quad9] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["TRI3"] = all_of({
+  defsgeneral[Core::FE::CellType::tri3] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["TRI6"] = all_of({
+  defsgeneral[Core::FE::CellType::tri6] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["NURBS4"] = all_of({
+  defsgeneral[Core::FE::CellType::nurbs4] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });
 
-  defsgeneral["NURBS9"] = all_of({
+  defsgeneral[Core::FE::CellType::nurbs9] = all_of({
       parameter<int>("MAT"),
       parameter<std::string>("NA"),
   });

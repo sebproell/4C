@@ -54,9 +54,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::WallQuad4PoroP1Type:
 }
 
 void Discret::Elements::WallQuad4PoroP1Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wallporo;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wallporo;
   WallQuad4PoroType::setup_element_definition(definitions_wallporo);
 
   auto& defs_wallporo = definitions_wallporo["WALLQ4PORO"];
@@ -65,7 +65,7 @@ void Discret::Elements::WallQuad4PoroP1Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD4"] = defs_wallporo["QUAD4"];
+  defs[Core::FE::CellType::quad4] = defs_wallporo[Core::FE::CellType::quad4];
 }
 
 void Discret::Elements::WallQuad4PoroP1Type::nodal_block_information(
@@ -137,9 +137,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::WallQuad9PoroP1Type:
 }
 
 void Discret::Elements::WallQuad9PoroP1Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wallporo;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wallporo;
   WallQuad9PoroType::setup_element_definition(definitions_wallporo);
 
   auto& defs_wallporo = definitions_wallporo["WALLQ9PORO"];
@@ -148,7 +148,7 @@ void Discret::Elements::WallQuad9PoroP1Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["QUAD9"] = defs_wallporo["QUAD9"];
+  defs[Core::FE::CellType::quad9] = defs_wallporo[Core::FE::CellType::quad9];
 }
 
 void Discret::Elements::WallQuad9PoroP1Type::nodal_block_information(
@@ -221,9 +221,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::WallTri3PoroP1Type::
 }
 
 void Discret::Elements::WallTri3PoroP1Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_wallporo;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_wallporo;
   WallTri3PoroType::setup_element_definition(definitions_wallporo);
 
   auto& defs_wallporo = definitions_wallporo["WALLT3PORO"];
@@ -232,7 +232,7 @@ void Discret::Elements::WallTri3PoroP1Type::setup_element_definition(
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["TRI3"] = defs_wallporo["TRI3"];
+  defs[Core::FE::CellType::tri3] = defs_wallporo[Core::FE::CellType::tri3];
 }
 
 void Discret::Elements::WallTri3PoroP1Type::nodal_block_information(

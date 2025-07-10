@@ -67,24 +67,24 @@ Discret::Elements::SolidPoroPressureBasedType::instance()
 }
 
 void Discret::Elements::SolidPoroPressureBasedType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defsgeneral = definitions["SOLIDPORO_PRESSURE_BASED"];
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex8)] =
+  defsgeneral[Core::FE::CellType::hex8] =
       all_of({Discret::Elements::SolidPoroPressureBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex8>()});
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::hex27)] =
+  defsgeneral[Core::FE::CellType::hex27] =
       Discret::Elements::SolidPoroPressureBasedInternal::get_default_input_spec<
           Core::FE::CellType::hex27>();
 
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet4)] =
+  defsgeneral[Core::FE::CellType::tet4] =
       Discret::Elements::SolidPoroPressureBasedInternal::get_default_input_spec<
           Core::FE::CellType::tet4>();
 
-  defsgeneral[Core::FE::cell_type_to_string(Core::FE::CellType::tet10)] =
+  defsgeneral[Core::FE::CellType::tet10] =
       Discret::Elements::SolidPoroPressureBasedInternal::get_default_input_spec<
           Core::FE::CellType::tet10>();
 }

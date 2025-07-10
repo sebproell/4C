@@ -10,6 +10,8 @@
 
 #include "4C_config.hpp"
 
+#include "4C_fem_general_cell_type.hpp"
+
 #include <array>
 #include <string>
 
@@ -56,7 +58,7 @@ namespace Core::IO::GridGenerator
     std::string elementtype_;
 
     /// discretization type of the domain to be created
-    std::string distype_;
+    Core::FE::CellType cell_type;
 
     /// further arguments to the elements to be created
     std::string elearguments_;

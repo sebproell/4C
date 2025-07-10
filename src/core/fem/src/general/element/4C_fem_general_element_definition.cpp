@@ -20,7 +20,7 @@ Core::Elements::ElementDefinition::ElementDefinition()
 }
 
 const Core::IO::InputSpec& Core::Elements::ElementDefinition::get(
-    const std::string& element_name, const std::string& cell_type) const
+    const std::string& element_name, Core::FE::CellType cell_type) const
 {
   auto it = definitions.find(element_name);
   if (it == definitions.end()) FOUR_C_THROW("No element '{}' found.", element_name);

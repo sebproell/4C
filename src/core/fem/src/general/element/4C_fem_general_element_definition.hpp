@@ -39,10 +39,10 @@ namespace Core::Elements
      * Convenience access with check for existence of element definition.
      */
     const Core::IO::InputSpec& get(
-        const std::string& element_name, const std::string& cell_type) const;
+        const std::string& element_name, Core::FE::CellType cell_type) const;
 
     //! Map from physics to cell type to InputSpec.
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions;
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions;
   };
 
 }  // namespace Core::Elements

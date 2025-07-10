@@ -78,41 +78,41 @@ Core::LinAlg::SerialDenseMatrix Discret::Elements::Ale3Type::compute_null_space(
 /*----------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------*/
 void Discret::Elements::Ale3Type::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
   auto& defs = definitions["ALE3"];
 
   using namespace Core::IO::InputSpecBuilders;
 
-  defs["HEX8"] = all_of({
+  defs[Core::FE::CellType::hex8] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["HEX20"] = all_of({
+  defs[Core::FE::CellType::hex20] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["HEX27"] = all_of({
+  defs[Core::FE::CellType::hex27] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["TET4"] = all_of({
+  defs[Core::FE::CellType::tet4] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["TET10"] = all_of({
+  defs[Core::FE::CellType::tet10] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["WEDGE6"] = all_of({
+  defs[Core::FE::CellType::wedge6] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["WEDGE15"] = all_of({
+  defs[Core::FE::CellType::wedge15] = all_of({
       parameter<int>("MAT"),
   });
 
-  defs["PYRAMID5"] = all_of({
+  defs[Core::FE::CellType::pyramid5] = all_of({
       parameter<int>("MAT"),
   });
 }

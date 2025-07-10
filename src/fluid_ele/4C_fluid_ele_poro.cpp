@@ -46,9 +46,9 @@ std::shared_ptr<Core::Elements::Element> Discret::Elements::FluidPoroEleType::cr
 }
 
 void Discret::Elements::FluidPoroEleType::setup_element_definition(
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>>& definitions)
+    std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>>& definitions)
 {
-  std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_fluid;
+  std::map<std::string, std::map<Core::FE::CellType, Core::IO::InputSpec>> definitions_fluid;
   FluidType::setup_element_definition(definitions_fluid);
 
   auto& defs_fluid = definitions_fluid["FLUID"];
@@ -58,25 +58,25 @@ void Discret::Elements::FluidPoroEleType::setup_element_definition(
   using namespace Core::IO::InputSpecBuilders;
 
   // 3D
-  defs["HEX8"] = defs_fluid["HEX8"];
-  defs["HEX20"] = defs_fluid["HEX20"];
-  defs["HEX27"] = defs_fluid["HEX27"];
-  defs["TET4"] = defs_fluid["TET4"];
-  defs["TET10"] = defs_fluid["TET10"];
-  defs["WEDGE6"] = defs_fluid["WEDGE6"];
-  defs["WEDGE15"] = defs_fluid["WEDGE15"];
-  defs["PYRAMID5"] = defs_fluid["PYRAMID5"];
-  defs["NURBS8"] = defs_fluid["NURBS8"];
-  defs["NURBS27"] = defs_fluid["NURBS27"];
+  defs[Core::FE::CellType::hex8] = defs_fluid[Core::FE::CellType::hex8];
+  defs[Core::FE::CellType::hex20] = defs_fluid[Core::FE::CellType::hex20];
+  defs[Core::FE::CellType::hex27] = defs_fluid[Core::FE::CellType::hex27];
+  defs[Core::FE::CellType::tet4] = defs_fluid[Core::FE::CellType::tet4];
+  defs[Core::FE::CellType::tet10] = defs_fluid[Core::FE::CellType::tet10];
+  defs[Core::FE::CellType::wedge6] = defs_fluid[Core::FE::CellType::wedge6];
+  defs[Core::FE::CellType::wedge15] = defs_fluid[Core::FE::CellType::wedge15];
+  defs[Core::FE::CellType::pyramid5] = defs_fluid[Core::FE::CellType::pyramid5];
+  defs[Core::FE::CellType::nurbs8] = defs_fluid[Core::FE::CellType::nurbs8];
+  defs[Core::FE::CellType::nurbs27] = defs_fluid[Core::FE::CellType::nurbs27];
 
   // 2D
-  defs["QUAD4"] = defs_fluid["QUAD4"];
-  defs["QUAD8"] = defs_fluid["QUAD8"];
-  defs["QUAD9"] = defs_fluid["QUAD9"];
-  defs["TRI3"] = defs_fluid["TRI3"];
-  defs["TRI6"] = defs_fluid["TRI6"];
-  defs["NURBS4"] = defs_fluid["NURBS4"];
-  defs["NURBS9"] = defs_fluid["NURBS9"];
+  defs[Core::FE::CellType::quad4] = defs_fluid[Core::FE::CellType::quad4];
+  defs[Core::FE::CellType::quad8] = defs_fluid[Core::FE::CellType::quad8];
+  defs[Core::FE::CellType::quad9] = defs_fluid[Core::FE::CellType::quad9];
+  defs[Core::FE::CellType::tri3] = defs_fluid[Core::FE::CellType::tri3];
+  defs[Core::FE::CellType::tri6] = defs_fluid[Core::FE::CellType::tri6];
+  defs[Core::FE::CellType::nurbs4] = defs_fluid[Core::FE::CellType::nurbs4];
+  defs[Core::FE::CellType::nurbs9] = defs_fluid[Core::FE::CellType::nurbs9];
 }
 
 Discret::Elements::FluidPoro::FluidPoro(int id, int owner)
