@@ -268,7 +268,6 @@ namespace
   void ElementReader::get_and_distribute_elements(const int nblock, const int bsize)
   {
     Core::Elements::ElementDefinition ed;
-    ed.setup_valid_element_lines();
 
     // All ranks > 0 will receive the node ids of the elements from rank 0.
     // We know that we will read nblock blocks of elements, so call the
@@ -305,7 +304,7 @@ namespace
             Core::Communication::factory(eletype, cell_info.cell_type_str, elenumber, 0);
         if (!ele) FOUR_C_THROW("element creation failed");
 
-        const auto& linedef = ed.element_lines(eletype, cell_info.cell_type_str);
+        const auto& linedef = ed.get(eletype, cell_info.cell_type_str);
 
         Core::IO::InputParameterContainer data;
         linedef.fully_parse(parser, data);
@@ -858,8 +857,7 @@ namespace
         const auto cell_type_string = Core::FE::cell_type_to_string(cell_type);
 
         Core::Elements::ElementDefinition ed;
-        ed.setup_valid_element_lines();
-        const auto& linedef = ed.element_lines(element_name, cell_type_string);
+        const auto& linedef = ed.get(element_name, cell_type_string);
 
 
         const auto& element_string = current_block_data->get<std::string>("ELEMENT_DATA");

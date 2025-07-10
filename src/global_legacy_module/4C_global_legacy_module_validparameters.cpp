@@ -19,6 +19,7 @@
 #include "4C_ehl_input.hpp"
 #include "4C_elch_input.hpp"
 #include "4C_fbi_input.hpp"
+#include "4C_fem_general_element_definition.hpp"
 #include "4C_geometric_search_input.hpp"
 #include "4C_inpar_beaminteraction.hpp"
 #include "4C_inpar_bio.hpp"

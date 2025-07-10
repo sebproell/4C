@@ -14,23 +14,20 @@
 FOUR_C_NAMESPACE_OPEN
 
 
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-void Core::Elements::ElementDefinition::setup_valid_element_lines()
+Core::Elements::ElementDefinition::ElementDefinition()
 {
-  Core::Communication::ParObjectFactory::instance().setup_element_definition(definitions_);
+  Core::Communication::ParObjectFactory::instance().setup_element_definition(definitions);
 }
 
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-const Core::IO::InputSpec& Core::Elements::ElementDefinition::element_lines(
-    std::string name, std::string cell_type)
+const Core::IO::InputSpec& Core::Elements::ElementDefinition::get(
+    const std::string& element_name, const std::string& cell_type) const
 {
-  FOUR_C_ASSERT(definitions_.contains(name), "Element type not found: {}", name);
-  auto& defs = definitions_.at(name);
-  FOUR_C_ASSERT(defs.contains(cell_type), "Cell type not found: {}", cell_type);
-  return defs.at(cell_type);
+  auto it = definitions.find(element_name);
+  if (it == definitions.end()) FOUR_C_THROW("No element '{}' found.", element_name);
+  auto it2 = it->second.find(cell_type);
+  if (it2 == it->second.end())
+    FOUR_C_THROW("Element '{}' does not seem to know cell type '{}'.", element_name, cell_type);
+  return it2->second;
 }
 
 FOUR_C_NAMESPACE_CLOSE

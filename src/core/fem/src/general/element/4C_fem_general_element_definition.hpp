@@ -10,6 +10,7 @@
 
 #include "4C_config.hpp"
 
+#include "4C_fem_general_cell_type.hpp"
 #include "4C_io_input_spec.hpp"
 
 #include <iostream>
@@ -23,24 +24,25 @@ FOUR_C_NAMESPACE_OPEN
 
 namespace Core::Elements
 {
-  /// Collection of valid element input file line definitions
-  /*!
-    The actual definition is done by each element's type class.
+  /**
+   * Collection of valid element input.
+   *
+   * This glass gathers all valid element definitions from the global state. This is possible
+   * since the ElementType subclass register themselves in the global Factory.
    */
-  class ElementDefinition
+  struct ElementDefinition
   {
-   public:
-    /// Setup of
-    void setup_valid_element_lines();
+    //! Gather all valid element definitions from global state
+    ElementDefinition();
 
-    /// return line definitions for given element type
-    const Core::IO::InputSpec& element_lines(std::string name, std::string cell_type);
+    /**
+     * Convenience access with check for existence of element definition.
+     */
+    const Core::IO::InputSpec& get(
+        const std::string& element_name, const std::string& cell_type) const;
 
-    const auto& definitions() const { return definitions_; }
-
-   private:
-    /// input line definitions per element type
-    std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions_;
+    //! Map from physics to cell type to InputSpec.
+    std::map<std::string, std::map<std::string, Core::IO::InputSpec>> definitions;
   };
 
 }  // namespace Core::Elements

@@ -45,9 +45,7 @@ namespace Core::IO::GridGenerator
     const int myrank = Core::Communication::my_mpi_rank(comm);
     const int numproc = Core::Communication::num_mpi_ranks(comm);
 
-    Core::Elements::ElementDefinition ed;
-    ed.setup_valid_element_lines();
-
+    const Core::Elements::ElementDefinition ed;
     // safety checks
     for (int i = 0; i < 3; ++i)
     {
@@ -159,7 +157,7 @@ namespace Core::IO::GridGenerator
       int eleid = elementRowMap->gid(lid);
       FOUR_C_ASSERT(eleid >= 0, "Missing gid");
 
-      const auto& linedef = ed.element_lines(inputData.elementtype_, inputData.distype_);
+      const auto& linedef = ed.get(inputData.elementtype_, inputData.distype_);
 
       Core::IO::InputParameterContainer ele_data;
       Core::IO::ValueParser parser(

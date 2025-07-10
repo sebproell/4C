@@ -177,12 +177,11 @@ void Global::emit_general_metadata(Core::IO::YamlNodeRef node)
   // Element types.
   {
     Core::Elements::ElementDefinition element_definition;
-    element_definition.setup_valid_element_lines();
 
     auto legacy_element_specs = root["legacy_element_specs"];
     legacy_element_specs |= ryml::MAP;
 
-    for (const auto& [element_type, cell_specs] : element_definition.definitions())
+    for (const auto& [element_type, cell_specs] : element_definition.definitions)
     {
       auto element_specs = legacy_element_specs.append_child();
       element_specs << ryml::key(element_type);
