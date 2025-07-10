@@ -49,8 +49,7 @@ namespace
     vector.replace_map(*new_map);
 
     // Ensure that the underlying epetra maps are identical
-    EXPECT_EQ(
-        vector.get_map().get_epetra_block_map().SameAs(new_map->get_epetra_block_map()), true);
+    EXPECT_EQ(vector.get_map().same_as(*new_map), true);
 
     // create a new map with index base 2
     new_map = std::make_shared<Core::LinAlg::Map>(NumGlobalElements, 2, comm);
@@ -72,11 +71,10 @@ namespace
         std::make_shared<Core::LinAlg::Map>(NumGlobalElements, 0, comm);
 
     // create a multi vector
-    auto vector = Core::LinAlg::MultiVector<double>(starting_map->get_epetra_block_map(), true);
+    auto vector = Core::LinAlg::MultiVector<double>(*starting_map, true);
 
     // check that the vector has the same epetra map
-    EXPECT_TRUE(
-        vector.get_map().get_epetra_block_map().SameAs(starting_map->get_epetra_block_map()));
+    EXPECT_TRUE(vector.get_map().same_as(*starting_map));
 
     // create a new map with different index base
     auto new_map = std::make_shared<Core::LinAlg::Map>(NumGlobalElements, 1, comm);
@@ -88,7 +86,7 @@ namespace
     EXPECT_TRUE(vector.get_map().same_as(*new_map));
 
     // check that the epetra maps are same
-    EXPECT_TRUE(vector.get_map().get_epetra_block_map().SameAs(new_map->get_epetra_block_map()));
+    EXPECT_TRUE(vector.get_map().same_as(*new_map));
 
     // create a new map with index base 2
     new_map = std::make_shared<Core::LinAlg::Map>(NumGlobalElements, 2, comm);

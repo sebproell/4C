@@ -845,8 +845,8 @@ void Core::FE::Discretization::setup_ghosting(
   // Construct FE graph. This graph allows processor off-rows to be inserted
   // as well. The communication issue is solved.
 
-  auto graph = std::make_shared<Core::LinAlg::Graph>(Copy, rownodes.get_epetra_block_map(),
-      entriesperrow.data(), false, Core::LinAlg::Graph::GraphType::FE_GRAPH);
+  auto graph = std::make_shared<Core::LinAlg::Graph>(
+      Copy, rownodes, entriesperrow.data(), false, Core::LinAlg::Graph::GraphType::FE_GRAPH);
 
   gids.clear();
   entriesperrow.clear();

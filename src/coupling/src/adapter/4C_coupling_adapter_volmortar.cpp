@@ -297,10 +297,8 @@ void Coupling::Adapter::MortarVolCoupl::master_to_slave(
     const Core::LinAlg::MultiVector<double>& mv, Core::LinAlg::MultiVector<double>& sv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  FOUR_C_ASSERT(mv.get_map().point_same_as(p21_->domain_map().get_epetra_block_map()),
-      "master dof map vector expected");
-  FOUR_C_ASSERT(sv.get_map().point_same_as(p21_->row_map().get_epetra_block_map()),
-      "slave dof map vector expected");
+  FOUR_C_ASSERT(mv.get_map().point_same_as(p21_->domain_map()), "master dof map vector expected");
+  FOUR_C_ASSERT(sv.get_map().point_same_as(p21_->row_map()), "slave dof map vector expected");
   FOUR_C_ASSERT(sv.NumVectors() == mv.NumVectors(), "column number mismatch {}!={}",
       sv.NumVectors(), mv.NumVectors());
 #endif
@@ -390,10 +388,8 @@ void Coupling::Adapter::MortarVolCoupl::slave_to_master(
     const Core::LinAlg::MultiVector<double>& sv, Core::LinAlg::MultiVector<double>& mv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  FOUR_C_ASSERT(mv.get_map().point_same_as(p12_->row_map().get_epetra_block_map()),
-      "master dof map vector expected");
-  FOUR_C_ASSERT(sv.get_map().point_same_as(p21_->row_map().get_epetra_block_map()),
-      "slave dof map vector expected");
+  FOUR_C_ASSERT(mv.get_map().point_same_as(p12_->row_map()), "master dof map vector expected");
+  FOUR_C_ASSERT(sv.get_map().point_same_as(p21_->row_map()), "slave dof map vector expected");
   FOUR_C_ASSERT(sv.NumVectors() == mv.NumVectors(), "column number mismatch {}!={}",
       sv.NumVectors(), mv.NumVectors());
 #endif

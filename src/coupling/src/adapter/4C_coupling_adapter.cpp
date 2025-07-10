@@ -614,10 +614,9 @@ void Coupling::Adapter::Coupling::master_to_slave(
     const Core::LinAlg::MultiVector<double>& mv, Core::LinAlg::MultiVector<double>& sv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.get_map().point_same_as(masterdofmap_->get_epetra_block_map()))
+  if (not mv.get_map().point_same_as(*masterdofmap_))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.get_map().point_same_as(slavedofmap_->get_epetra_block_map()))
-    FOUR_C_THROW("slave dof map vector expected");
+  if (not sv.get_map().point_same_as(*slavedofmap_)) FOUR_C_THROW("slave dof map vector expected");
   if (sv.NumVectors() != mv.NumVectors())
     FOUR_C_THROW("column number mismatch {}!={}", sv.NumVectors(), mv.NumVectors());
 #endif
@@ -649,9 +648,9 @@ void Coupling::Adapter::Coupling::slave_to_master(
     const Core::LinAlg::MultiVector<double>& sv, Core::LinAlg::MultiVector<double>& mv) const
 {
 #ifdef FOUR_C_ENABLE_ASSERTIONS
-  if (not mv.get_map().point_same_as(masterdofmap_->get_epetra_block_map()))
+  if (not mv.get_map().point_same_as(*masterdofmap_))
     FOUR_C_THROW("master dof map vector expected");
-  if (not sv.get_map().point_same_as(slavedofmap_->get_epetra_block_map()))
+  if (not sv.get_map().point_same_as(*slavedofmap_))
   {
     std::cout << "slavedofmap_" << std::endl;
     std::cout << *slavedofmap_ << std::endl;

@@ -1174,8 +1174,7 @@ void FSI::FluidFluidMonolithicFluidSplitNoNOX::handle_fluid_dof_map_change_in_ne
 bool FSI::FluidFluidMonolithicFluidSplitNoNOX::has_fluid_dof_map_changed(
     const Core::LinAlg::Map& fluidincrementmap)
 {
-  bool isoldmap =
-      fluidincrementmap.same_as(fluid_field()->interface()->other_map()->get_epetra_block_map());
+  bool isoldmap = fluidincrementmap.same_as(*fluid_field()->interface()->other_map());
   return !isoldmap;
 }
 

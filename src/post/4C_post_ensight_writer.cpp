@@ -1523,9 +1523,8 @@ void EnsightWriter::write_dof_result_step(std::ofstream& file, PostResult& resul
   // get min. value on this proc or set to max. value of integers if this proc has no elements
   int min_gid_my_datamap =
       num_my_datamap > 0 ? datamap.min_my_gid() : std::numeric_limits<int>::max();
-  int min_gid_my_dofrowmap = num_my_dofrowmap > 0
-                                 ? dis->dof_row_map()->get_epetra_block_map().MinMyGID()
-                                 : std::numeric_limits<int>::max();
+  int min_gid_my_dofrowmap =
+      num_my_dofrowmap > 0 ? dis->dof_row_map()->min_my_gid() : std::numeric_limits<int>::max();
 
   // find min. GID over all procs
   int min_gid_glob_datamap = std::numeric_limits<int>::max();
