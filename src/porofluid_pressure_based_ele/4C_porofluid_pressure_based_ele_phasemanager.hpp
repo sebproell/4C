@@ -10,7 +10,6 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_material.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"
 #include "4C_linalg_serialdensevector.hpp"
 #include "4C_mat_scatra_multiporo.hpp"

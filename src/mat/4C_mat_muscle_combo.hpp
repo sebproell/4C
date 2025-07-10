@@ -11,7 +11,6 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
-#include "4C_inpar_material.hpp"
 #include "4C_io_input_field.hpp"
 #include "4C_mat_anisotropy.hpp"
 #include "4C_mat_anisotropy_extension_default.hpp"
@@ -32,6 +31,14 @@ namespace Mat
     class MuscleCombo : public Core::Mat::PAR::Parameter
     {
      public:
+      //! valid types for prescription of time-/space-dependent muscle activation
+      enum class ActivationType
+      {
+        function_of_space_time,  ///< analytical activation prescription via a symbolic function of
+                                 ///< space and time
+        map  ///< discrete elementwise-defined activation prescription via an input pattern file
+      };
+
       /// constructor
       MuscleCombo(const Core::Mat::PAR::Parameter::Data& matdata);
 
@@ -63,7 +70,7 @@ namespace Mat
       //! @name time-/space-dependent activation
 
       //! type of activation prescription
-      const Inpar::Mat::ActivationType activationType_;
+      const ActivationType activationType_;
 
       /*!
        * @brief type-dependent parameters for activation

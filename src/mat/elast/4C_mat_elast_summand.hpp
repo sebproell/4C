@@ -11,7 +11,6 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobject.hpp"
-#include "4C_inpar_material.hpp"
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_legacy_enum_definitions_materials.hpp"
 #include "4C_linalg_fixedsizematrix.hpp"

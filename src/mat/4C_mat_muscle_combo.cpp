@@ -33,15 +33,15 @@ namespace
 
   Mat::PAR::MuscleCombo::ActivationParameterVariant get_activation_params(
       const Core::Mat::PAR::Parameter::Data& matdata,
-      const Inpar::Mat::ActivationType& activation_type)
+      const Mat::PAR::MuscleCombo::ActivationType& activation_type)
   {
-    if (activation_type == Inpar::Mat::ActivationType::function_of_space_time)
+    if (activation_type == Mat::PAR::MuscleCombo::ActivationType::function_of_space_time)
     {
       auto actFunctId = matdata.parameters.get<int>("FUNCTID");
       if (actFunctId <= 0) FOUR_C_THROW("Function id must be positive");
       return actFunctId;
     }
-    else if (activation_type == Inpar::Mat::ActivationType::map)
+    else if (activation_type == Mat::PAR::MuscleCombo::ActivationType::map)
     {
       return matdata.parameters.get<ActivationFieldType>("MAPFILE_CONTENT");
     }
@@ -109,7 +109,7 @@ Mat::PAR::MuscleCombo::MuscleCombo(const Core::Mat::PAR::Parameter::Data& matdat
       Popt_(matdata.parameters.get<double>("POPT")),
       lambdaMin_(matdata.parameters.get<double>("LAMBDAMIN")),
       lambdaOpt_(matdata.parameters.get<double>("LAMBDAOPT")),
-      activationType_(matdata.parameters.get<Inpar::Mat::ActivationType>("ACTEVALTYPE")),
+      activationType_(matdata.parameters.get<ActivationType>("ACTEVALTYPE")),
       activationParams_(get_activation_params(matdata, activationType_)),
       density_(matdata.parameters.get<double>("DENS"))
 {

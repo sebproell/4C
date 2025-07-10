@@ -11,7 +11,6 @@
 
 #include "4C_config.hpp"
 
-#include "4C_inpar_material.hpp"
 #include "4C_linalg_serialdensematrix.hpp"
 #include "4C_material_parameter_base.hpp"
 

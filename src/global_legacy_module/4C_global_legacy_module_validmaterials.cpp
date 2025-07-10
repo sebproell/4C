@@ -8,13 +8,13 @@
 #include "4C_global_legacy_module_validmaterials.hpp"
 
 #include "4C_global_data.hpp"
-#include "4C_inpar_material.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io_file_reader.hpp"
 #include "4C_io_input_field.hpp"
 #include "4C_io_input_spec_builders.hpp"
 #include "4C_mat_electrode.hpp"
 #include "4C_mat_micromaterial.hpp"
+#include "4C_mat_muscle_combo.hpp"
 
 #include <filesystem>
 #include <string>
@@ -495,9 +495,9 @@ std::unordered_map<Core::Materials::MaterialType, Core::IO::InputSpec> Global::v
             parameter<double>("LAMBDAOPT",
                 {.description =
                         "optimal active fiber stretch related to active nominal stress maximum"}),
-            deprecated_selection<Inpar::Mat::ActivationType>("ACTEVALTYPE",
-                {{"function", Inpar::Mat::ActivationType::function_of_space_time},
-                    {"map", Inpar::Mat::ActivationType::map}},
+            deprecated_selection<Mat::PAR::MuscleCombo::ActivationType>("ACTEVALTYPE",
+                {{"function", Mat::PAR::MuscleCombo::ActivationType::function_of_space_time},
+                    {"map", Mat::PAR::MuscleCombo::ActivationType::map}},
                 {.description = "type of activation evaluation"}),
             one_of({
                 parameter<int>("FUNCTID",
