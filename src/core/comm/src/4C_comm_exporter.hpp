@@ -122,6 +122,13 @@ namespace Core::Communication
       requires Packable<T> && Unpackable<T> && std::default_initializable<T>
     void do_export(std::map<int, T>& data);
 
+    /**
+     * Same as the other function, but for std::unordered_map.
+     */
+    template <typename T>
+      requires Packable<T> && Unpackable<T> && std::default_initializable<T>
+    void do_export(std::unordered_map<int, T>& data);
+
     /*!
     \brief Communicate a map of serial dense matrices
 
@@ -538,16 +545,19 @@ namespace Core::Communication
     /**
      * Export anything that is default-initializable, Packable and Unpackable.
      */
-    template <typename T>
+    template <template <typename, typename, typename...> typename MapType, typename T,
+        typename... Args>
       requires std::default_initializable<T> && Packable<T> && Unpackable<T>
     class DefaultExporterHelper : public ExporterHelper
     {
      public:
-      explicit DefaultExporterHelper(std::map<int, T>& objects) : objects_(objects) {}
+      using Map = MapType<int, T, Args...>;
+
+      explicit DefaultExporterHelper(Map& objects) : objects_(objects) {}
 
       bool pack_object(int gid, PackBuffer& sendblock) override
       {
-        typename std::map<int, T>::const_iterator curr = objects_.find(gid);
+        auto curr = objects_.find(gid);
         if (curr != objects_.end())
         {
           add_to_pack(sendblock, curr->second);
@@ -564,22 +574,19 @@ namespace Core::Communication
       void post_export_cleanup(Exporter* exporter) override
       {
         // loop map and kick out everything that's not in TargetMap()
-        std::map<int, T> newmap;
-        typename std::map<int, T>::const_iterator fool;
-        for (fool = objects_.begin(); fool != objects_.end(); ++fool)
-          if (exporter->target_map().my_gid(fool->first)) newmap[fool->first] = fool->second;
+        Map newmap;
+        for (const auto& [id, obj] : objects_)
+          if (exporter->target_map().my_gid(id)) newmap[id] = obj;
         swap(newmap, objects_);
       }
 
      private:
-      std::map<int, T>& objects_;
+      Map& objects_;
     };
   };
 }  // namespace Core::Communication
 
-/*----------------------------------------------------------------------*
- |  communicate objects (public)                             mwgee 11/06|
- *----------------------------------------------------------------------*/
+
 template <typename T>
 void Core::Communication::Exporter::do_export(std::map<int, std::shared_ptr<T>>& parobjects)
 {
@@ -592,7 +599,16 @@ template <typename T>
            std::default_initializable<T>
 void Core::Communication::Exporter::do_export(std::map<int, T>& data)
 {
-  DefaultExporterHelper<T> helper(data);
+  DefaultExporterHelper helper(data);
+  generic_export(helper);
+}
+
+template <typename T>
+  requires Core::Communication::Packable<T> && Core::Communication::Unpackable<T> &&
+           std::default_initializable<T>
+void Core::Communication::Exporter::do_export(std::unordered_map<int, T>& data)
+{
+  DefaultExporterHelper helper(data);
   generic_export(helper);
 }
 
