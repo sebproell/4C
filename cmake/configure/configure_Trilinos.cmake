@@ -46,6 +46,8 @@ if(EXISTS "${Trilinos_DIR}/../../../TrilinosRepoVersion.txt")
   list(GET TrilinosRepoVersionFileLine2 0 _sha)
 
   set(FOUR_C_Trilinos_GIT_HASH ${_sha})
+else()
+  set(FOUR_C_Trilinos_GIT_HASH "unknown")
 endif()
 
 target_link_libraries(
