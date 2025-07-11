@@ -128,7 +128,7 @@ namespace Core::IO::Exodus
     std::string title_;
 
     //! exodus filename
-    std::string exodus_filename_;
+    std::filesystem::path exodus_filename_;
   };
 
 
