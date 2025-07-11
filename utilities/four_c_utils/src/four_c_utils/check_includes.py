@@ -63,7 +63,7 @@ def check_and_fix_includes(file: Path) -> Tuple[list, bool]:
             continue
 
         if "4C" in line:
-            match = re.search(r"#include <(4C_\w+\.hpp)>(.*)", line)
+            match = re.search(r"#include <(4C_.*\.hpp)>(.*)", line)
             if match:
                 new_line = f'#include "{match[1]}"{match[2]}\n'
                 replace_line_in_file(file, line_no, new_line)
