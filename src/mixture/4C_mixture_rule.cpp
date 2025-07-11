@@ -10,7 +10,6 @@
 #include "4C_comm_pack_helpers.hpp"
 #include "4C_comm_parobject.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_material.hpp"
 #include "4C_mat_par_bundle.hpp"
 #include "4C_mat_service.hpp"
 #include "4C_material_parameter_base.hpp"

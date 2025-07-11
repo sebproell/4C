@@ -11,7 +11,6 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
-#include "4C_inpar_material.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_io_input_parameter_container.hpp"
 #include "4C_mat_so3_material.hpp"

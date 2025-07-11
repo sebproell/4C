@@ -16,7 +16,6 @@
 #include "4C_fluid_ele_parameter_std.hpp"
 #include "4C_fluid_ele_parameter_timint.hpp"
 #include "4C_global_data.hpp"
-#include "4C_inpar_material.hpp"
 #include "4C_mat_carreauyasuda.hpp"
 #include "4C_mat_fluid_linear_density_viscosity.hpp"
 #include "4C_mat_fluid_murnaghantait.hpp"

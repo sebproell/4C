@@ -11,7 +11,6 @@
 #include "4C_config.hpp"
 
 #include "4C_comm_parobjectfactory.hpp"
-#include "4C_inpar_material.hpp"
 #include "4C_inpar_structure.hpp"
 #include "4C_linalg_tensor_matrix_conversion.hpp"
 #include "4C_mat_material_factory.hpp"
