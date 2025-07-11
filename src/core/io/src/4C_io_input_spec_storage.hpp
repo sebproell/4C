@@ -36,6 +36,16 @@ namespace Core::IO
      */
     using DefaultStorage = InputParameterContainer;
 
+    struct StoreStatus
+    {
+      bool success;
+      //! In case of failure, this message contains the reason for the failure.
+      std::string message;
+
+      static StoreStatus ok() { return {true, {}}; }
+      static StoreStatus fail(std::string message) { return {false, std::move(message)}; }
+    };
+
     /**
      * A function type to store a value of type T in a Storage.
      */
@@ -47,20 +57,23 @@ namespace Core::IO
 
       explicit StoreFunction(std::nullptr_t) {}
 
-      StoreFunction(std::function<void(Storage&, T&&)> fn, const std::type_info& stores_to)
+      StoreFunction(std::function<StoreStatus(Storage&, T&&)> fn, const std::type_info& stores_to)
           : fn_(std::move(fn)), stores_to_(&stores_to)
       {
         FOUR_C_ASSERT(stores_to != typeid(void), "Cannot store to void type.");
       }
 
-      void operator()(Storage& storage, T&& value) const { fn_(storage, std::move(value)); }
+      [[nodiscard]] StoreStatus operator()(Storage& storage, T&& value) const
+      {
+        return fn_(storage, std::move(value));
+      }
 
       explicit operator bool() const { return static_cast<bool>(fn_); }
 
       [[nodiscard]] const std::type_info& stores_to() const { return *stores_to_; }
 
      private:
-      std::function<void(Storage&, T&&)> fn_{nullptr};
+      std::function<StoreStatus(Storage&, T&&)> fn_{nullptr};
       const std::type_info* stores_to_{nullptr};
     };
 
@@ -158,6 +171,7 @@ namespace Core::IO
                 "Internal error: value must be an InputParameterContainer.");
             std::any_cast<InputParameterContainer&>(storage).group(name) =
                 std::any_cast<InputParameterContainer&&>(std::move(group_storage));
+            return InputSpecBuilders::StoreStatus::ok();
           },
           typeid(InputParameterContainer));
     }
@@ -170,7 +184,7 @@ namespace Core::IO
           {
             FOUR_C_ASSERT(holds<S>(group_storage), "Internal error: group_storage must be {}.",
                 typeid(S).name());
-            f(storage, std::any_cast<S&&>(std::move(group_storage)));
+            return f(storage, std::any_cast<S&&>(std::move(group_storage)));
           },
           f.stores_to());
     }
@@ -190,6 +204,7 @@ namespace Core::IO
         {
           FOUR_C_ASSERT(storage.has_value(), "Storage must be initialized before storing.");
           std::any_cast<InputParameterContainer&>(storage).add(name, std::move(value));
+          return StoreStatus::ok();
         },
         typeid(InputParameterContainer));
   }
@@ -205,6 +220,7 @@ namespace Core::IO
               "Implementation error: expected an object of type {}, but got {}",
               typeid(StructType).name(), obj.type().name());
           std::any_cast<StructType&>(obj).*p = std::move(val);
+          return StoreStatus::ok();
         },
         typeid(StructType));
   }
@@ -219,6 +235,7 @@ namespace Core::IO
               "Implementation error: expected an object of type {}, but got {}",
               typeid(StructType).name(), obj.type().name());
           std::any_cast<StructType&>(obj).*p = std::move(val);
+          return StoreStatus::ok();
         },
         typeid(StructType));
   }

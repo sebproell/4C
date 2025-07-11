@@ -701,7 +701,8 @@ bool Core::IO::Internal::GroupSpec::match(ConstYamlNodeRef node,
     return false;
   }
   match_entry.state = IO::Internal::MatchEntry::State::matched;
-  move_my_storage(container, std::move(struct_storage));
+  [[maybe_unused]] auto [ok, msg] = move_my_storage(container, std::move(struct_storage));
+  FOUR_C_ASSERT(ok, "Internal error: could not move storage: {}.", msg);
   return true;
 }
 
@@ -714,7 +715,8 @@ void Core::IO::Internal::GroupSpec::set_default_value(InputSpecBuilders::Storage
     InputSpecBuilders::Storage subcontainer;
     init_my_storage(subcontainer);
     spec.impl().set_default_value(subcontainer);
-    move_my_storage(container, std::move(subcontainer));
+    [[maybe_unused]] auto [ok, msg] = move_my_storage(container, std::move(subcontainer));
+    FOUR_C_ASSERT(ok, "Internal error: could not move storage: {}.", msg);
   }
 }
 

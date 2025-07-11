@@ -78,6 +78,10 @@ namespace Core::Utils
     //! True if the expression contains compile-time variables, false otherwise.
     static constexpr bool has_compile_time_variables = (sizeof...(variables) > 0);
 
+    //! Default constructor without any expression. Assign an expression to this object
+    //! before using it.
+    SymbolicExpression() = default;
+
     //! Construct a SymbolicExpression from the given @p expression string. The expression must only
     //! contain supported functions, literals and operators, as well as arbitrary number of
     //! variables. See the class documentation for more details.
@@ -108,6 +112,8 @@ namespace Core::Utils
       requires(has_compile_time_variables)
     ValueType value(VarWrapper<variables, ValueType>&&... vars) const
     {
+      FOUR_C_ASSERT_ALWAYS(impl_value_,
+          "SymbolicExpression not initialized. Please assign an expression before using it.");
       return impl_value_->evaluate(std::move(vars)...);
     }
 
@@ -122,6 +128,8 @@ namespace Core::Utils
       requires(!has_compile_time_variables)
     ValueType value(const std::map<std::string, ValueType>& args) const
     {
+      FOUR_C_ASSERT_ALWAYS(impl_value_,
+          "SymbolicExpression not initialized. Please assign an expression before using it.");
       return impl_value_->evaluate(args);
     }
 
@@ -147,6 +155,8 @@ namespace Core::Utils
       requires(has_compile_time_variables)
     FirstDerivativeType first_derivative(VarWrapper<variables, FirstDerivativeType>&&... vars) const
     {
+      FOUR_C_ASSERT_ALWAYS(impl_first_deriv_,
+          "SymbolicExpression not initialized. Please assign an expression before using it.");
       return impl_first_deriv_->evaluate(std::move(vars)...);
     }
 
@@ -162,6 +172,8 @@ namespace Core::Utils
     FirstDerivativeType first_derivative(
         const std::map<std::string, FirstDerivativeType>& args) const
     {
+      FOUR_C_ASSERT_ALWAYS(impl_first_deriv_,
+          "SymbolicExpression not initialized. Please assign an expression before using it.");
       return impl_first_deriv_->evaluate(args);
     }
 
@@ -177,6 +189,8 @@ namespace Core::Utils
     SecondDerivativeType second_derivative(
         VarWrapper<variables, SecondDerivativeType>&&... vars) const
     {
+      FOUR_C_ASSERT_ALWAYS(impl_second_deriv_,
+          "SymbolicExpression not initialized. Please assign an expression before using it.");
       return impl_second_deriv_->evaluate(std::move(vars)...);
     }
 
@@ -192,6 +206,8 @@ namespace Core::Utils
     SecondDerivativeType second_derivative(
         const std::map<std::string, SecondDerivativeType>& args) const
     {
+      FOUR_C_ASSERT_ALWAYS(impl_second_deriv_,
+          "SymbolicExpression not initialized. Please assign an expression before using it.");
       return impl_second_deriv_->evaluate(args);
     }
 
